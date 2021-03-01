@@ -3,11 +3,11 @@ Section: vcs
 Priority: optional
 Maintainer: Peter Miller <pmiller@opensource.org.au>
 Homepage: http://aegis.sourceforge.net
-Build-Depends: bison, bzip2, cdbs (>= 0.4.23-1.1), cssc, cvs, debhelper (>= 5),
- debhelper (>= 7), ed, fhist, flex, gawk, gettext, ghostscript, groff,
- iso-codes, libbz2-dev, libcurl4-gnutls-dev, libmagic-dev, libxml2-dev,
- linux-libc-dev, locales, patchutils (>= 0.2.25), perl, po-debconf, rcs,
- subversion [!sh4 !avr32], uuid-dev, zlib1g-dev
+Build-Depends: bison, bzip2, cssc, cvs, debhelper (>= 5), debhelper (>= 7), ed,
+ fhist, flex, gawk, gettext, ghostscript, groff, iso-codes, libbz2-dev,
+ libcurl4-gnutls-dev, libmagic-dev, libxml2-dev, linux-libc-dev, locales,
+ patchutils (>= 0.2.25), perl, po-debconf, rcs, subversion [!sh4 !avr32],
+ uuid-dev, zlib1g-dev
 Standards-Version: 3.9.3
 
 Package: aegis

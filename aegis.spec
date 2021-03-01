@@ -16,19 +16,18 @@
 #
 Summary: aegis
 Name: aegis
-Version: 4.25.D507
+Version: 4.25.D508
 Release: 1
 License: GPL
 Group: Development/Tools
 Source: http://aegis.sourceforge.net/%{name}-%{version}.tar.gz
 URL: http://aegis.sourceforge.net/
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildPrereq: bison, bzip2, cdbs (>= 0.4.23-1.1), cssc, cvs, debhelper (>= 7)
-BuildPrereq: diffutils, ed, fhist, flex, gawk, gettext, ghostscript, groff
-BuildPrereq: iso-codes, libbz2-dev, libcurl4-gnutls-dev, libmagic-dev
-BuildPrereq: libxml2-dev, linux-libc-dev, locales, patchutils (>= 0.2.25), perl
-BuildPrereq: po-debconf, rcs, sharutils, subversion [!sh4 !avr32], uuid-dev
-BuildPrereq: zlib1g-dev
+BuildPrereq: bison, bzip2, cssc, cvs, debhelper (>= 7), diffutils, ed, fhist
+BuildPrereq: flex, gawk, gettext, ghostscript, groff, iso-codes, libbz2-dev
+BuildPrereq: libcurl4-gnutls-dev, libmagic-dev, libxml2-dev, linux-libc-dev
+BuildPrereq: locales, patchutils (>= 0.2.25), perl, po-debconf, rcs, sharutils
+BuildPrereq: subversion [!sh4 !avr32], uuid-dev, zlib1g-dev
 
 %description
 transaction-based software configuration management (DVCS)

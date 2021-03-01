@@ -27,7 +27,6 @@ project_specific =
         value =
             "bison, "
             "bzip2, "
-            "cdbs (>= 0.4.23-1.1), "
             // "cook, "                  # for testing
             "cssc, "                     # for testing
             "cvs, "                      # for testing

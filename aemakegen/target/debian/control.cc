@@ -235,6 +235,79 @@ check_section(const nstring &name)
 }
 
 
+static nstring
+doc_base_section_from_debian_section(const nstring &name)
+{
+    struct table_t
+    {
+        const char *deb_name;
+        const char *doc_base_name;
+    };
+
+    static const table_t table[] =
+    {
+        { "admin", "System/Administration" },
+        { "cli-mono", "Programming" },
+        { "comm", "Network" },
+        { "database", "Data Management" },
+        { "debug", "Programming", },
+        { "devel", "Programming" },
+        { "doc", "Debian" },
+        { "editors", "Editors" },
+        { "electronics", "Science/Electronics" },
+        { "embedded", "Programming" },
+        { "fonts", "Office" },
+        { "games", "Games" },
+        { "gnome", "Graphics" },
+        { "gnu-r", "Programming" },
+        { "gnustep", "Programming" },
+        { "graphics", "Graphics" },
+        { "hamradio", "Amateur Radio" },
+        { "haskell", "Programming" },
+        { "httpd", "Network" },
+        { "interpreters", "Emulators" },
+        { "java", "Programming/Java" },
+        { "kde", "Graphics" },
+        { "kernel", "System" },
+        { "libdevel", "Programming" },
+        { "libs", "Programming" },
+        { "lisp", "Programming/Lisp" },
+        { "localization", "Programming" },
+        { "mail", "Network/Communication" },
+        { "math", "Science/Mathematics" },
+        { "misc", "Programming" },
+        { "net", "Network" },
+        { "news", "Network" },
+        { "ocaml", "Programming/Ocaml" },
+        { "oldlibs", "Programming" },
+        { "otherosfs", "Programming" },
+        { "perl", "Programming/Perl" },
+        { "php", "Programming/Php" },
+        { "python", "Programming/Python" },
+        { "ruby", "Programming/Ruby" },
+        { "science", "Science" },
+        { "shells", "Shells" },
+        { "sound", "Sound" },
+        { "tex", "Typesetting" },
+        { "text", "Text" },
+        { "utils", "Programming" },
+        { "vcs", "Programming" },
+        { "video", "Video" },
+        { "web", "Network" },
+        { "x11", "Graphics" },
+        { "xfce", "Graphics" },
+        { "zope", "Network" },
+    };
+
+    for (const table_t *tp = table; tp < ENDOF(table); ++tp)
+    {
+        if (name == tp->deb_name)
+            return tp->doc_base_name;
+    }
+    return "Programming";
+}
+
+
 static void
 check_priority(const nstring &name)
 {
@@ -728,6 +801,47 @@ target_debian::gen_control(void)
         maybe_field(fp, "recommends", documentation_package_name);
         maybe_field(fp, "replaces", documentation_package_name);
         maybe_field(fp, "suggests", documentation_package_name);
+
+        //
+        // Generate the debian/<name>-doc.doc-base file.
+        //
+        // We will do it as a single document, it simplifies everything
+        // except doc-base.  I wonder if anyone actually uses this
+        // facility?
+        //
+        // According to dh_installdocs(1),
+        //
+        //    debian/<package>.doc-base.*
+        //        "If your package needs to register more than one
+        //        document, you need multiple doc-base files, and can
+        //        name them like this."
+        //
+        // Which is a whole lot of work for not much gain.
+        //
+        nstring fn2 = "debian/" + documentation_package_name + ".doc-base";
+        os_become_orig();
+        output::pointer op2 = output_file::open(fn2);
+        os_become_undo();
+        nstring uc_source_package_name = source_package_name.capitalize();
+        op2->fputs("Document: ");
+        op2->fputs(source_package_name);
+        op2->fputs("\nTitle: ");
+        op2->fputs(uc_source_package_name);
+        op2->fputs(" Manuals\nAuthor: ");
+        op2->fputs(get_cp()->pconf_copyright_owner_get());
+        op2->fputs("\nAbstract: ");
+        op2->fputs(uc_source_package_name);
+        op2->fputs(" Manuals\nSection: ");
+        op2->fputs(doc_base_section_from_debian_section(section));
+        op2->fputs("\n\nFormat: PDF\nFiles:");
+        for (size_t j = 0; j < documentation_package_files.size(); ++j)
+        {
+            op2->fputs(" /");
+            op2->fputs(expand_make_macro(documentation_package_files[j]));
+            // we need the wildcard, because they may or may not be
+            // compressed by the time we see this.
+            op2->fputs("*\n");
+        }
     }
 
     if (data.use_libtool())

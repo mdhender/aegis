@@ -14228,13 +14228,13 @@ $(mandir)/man1/aefp.1: .mkdir.__mandir__man1 etc/version.so lib/en/man1/aefp.1 \
 	@rm -f lib/en/man1/aefp.1.tmp
 
 #line 1138 "aemakegen/target/make/makefile.cc"
-lib/en/cat1/aeget.1: etc/version.so lib/en/man1/aeget.1 lib/en/man1/z_cr.so \
-		lib/en/man1/z_name.so
+lib/en/cat1/aeget.1: etc/libdir.so etc/version.so lib/en/man1/aeget.1 \
+		lib/en/man1/z_cr.so lib/en/man1/z_name.so
 	@mkdir -p lib/en/cat1
 	GROFF_NO_SGR=-c $(GROFF) -I. -Tascii -t -man lib/en/man1/aeget.1 > $@
 
 #line 1219 "aemakegen/target/make/makefile.cc"
-$(mandir)/man1/aeget.1: .mkdir.__mandir__man1 etc/version.so \
+$(mandir)/man1/aeget.1: .mkdir.__mandir__man1 etc/libdir.so etc/version.so \
 		lib/en/man1/aeget.1 lib/en/man1/z_cr.so lib/en/man1/z_name.so
 	$(SOELIM) -I. lib/en/man1/aeget.1 | sed '/^[.]XX ./d' > \
 		lib/en/man1/aeget.1.tmp
@@ -15910,13 +15910,13 @@ $(mandir)/man5/aegstate.5: .mkdir.__mandir__man5 etc/libdir.so etc/version.so \
 	@rm -f lib/en/man5/aegstate.5.tmp
 
 #line 1138 "aemakegen/target/make/makefile.cc"
-lib/en/cat5/aelock.5: etc/version.so lib/en/man1/z_cr.so lib/en/man1/z_name.so \
-		lib/en/man5/aelock.5
+lib/en/cat5/aelock.5: etc/libdir.so etc/version.so lib/en/man1/z_cr.so \
+		lib/en/man1/z_name.so lib/en/man5/aelock.5
 	@mkdir -p lib/en/cat5
 	GROFF_NO_SGR=-c $(GROFF) -I. -Tascii -t -man lib/en/man5/aelock.5 > $@
 
 #line 1219 "aemakegen/target/make/makefile.cc"
-$(mandir)/man5/aelock.5: .mkdir.__mandir__man5 etc/version.so \
+$(mandir)/man5/aelock.5: .mkdir.__mandir__man5 etc/libdir.so etc/version.so \
 		lib/en/man1/z_cr.so lib/en/man1/z_name.so lib/en/man5/aelock.5
 	$(SOELIM) -I. lib/en/man5/aelock.5 | sed '/^[.]XX ./d' > \
 		lib/en/man5/aelock.5.tmp
@@ -16040,13 +16040,13 @@ $(mandir)/man5/aetest.5: .mkdir.__mandir__man5 etc/version.so \
 	@rm -f lib/en/man5/aetest.5.tmp
 
 #line 1138 "aemakegen/target/make/makefile.cc"
-lib/en/cat5/aeuconf.5: etc/version.so lib/en/man1/z_cr.so \
+lib/en/cat5/aeuconf.5: etc/libdir.so etc/version.so lib/en/man1/z_cr.so \
 		lib/en/man1/z_name.so lib/en/man5/aeuconf.5
 	@mkdir -p lib/en/cat5
 	GROFF_NO_SGR=-c $(GROFF) -I. -Tascii -t -man lib/en/man5/aeuconf.5 > $@
 
 #line 1219 "aemakegen/target/make/makefile.cc"
-$(mandir)/man5/aeuconf.5: .mkdir.__mandir__man5 etc/version.so \
+$(mandir)/man5/aeuconf.5: .mkdir.__mandir__man5 etc/libdir.so etc/version.so \
 		lib/en/man1/z_cr.so lib/en/man1/z_name.so lib/en/man5/aeuconf.5
 	$(SOELIM) -I. lib/en/man5/aeuconf.5 | sed '/^[.]XX ./d' > \
 		lib/en/man5/aeuconf.5.tmp

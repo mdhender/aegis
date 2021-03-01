@@ -1,7 +1,8 @@
-aegis (4.25.D507-1) unstable; urgency=low
+aegis (4.25.D508-1) unstable; urgency=low
 
-  * This change set makes aemakegen more policy-conforming about its build
-    targets, when writing debian/rules file.
+  * This change set adds the necessary code so that when a debian/*-doc.install
+    file is required, the corresponding debian/*-doc.doc-base fiel is also
+    created.
   * Signed-off-by: Peter Miller <pmiller@opensource.org.au>
   * 4.22.D048: Closes: #435422
   * 4.23.D099: Closes: #393624
@@ -15,7 +16,15 @@ aegis (4.25.D507-1) unstable; urgency=low
   * This is a summary, see earlier changelog entries for details of individual
     bug fixes.
 
- -- Peter Miller <pmiller@opensource.org.au>  Tue, 27 Nov 2012 10:09:32 +1100
+ -- Peter Miller <pmiller@opensource.org.au>  Tue, 27 Nov 2012 23:05:01 +1100
+
+aegis (4.25.D507-1) unstable; urgency=low
+
+  * This change set makes aemakegen more policy-conforming about its build
+    targets, when writing debian/rules file.
+  * Signed-off-by: Peter Miller <pmiller@opensource.org.au>
+
+ -- Peter Miller <pmiller@opensource.org.au>  Tue, 27 Nov 2012 10:25:11 +1100
 
 aegis (4.25.D506-1) unstable; urgency=low
 

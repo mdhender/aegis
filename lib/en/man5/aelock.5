@@ -15,6 +15,7 @@
 .\" You should have received a copy of the GNU General Public License
 .\" along with this program. If not, see <http://www.gnu.org/licenses/>.
 .\"
+.so etc/libdir.so
 .so lib/en/man1/z_name.so
 .TH "\*(n) locking" 5 \*(N) "Reference Manual" ""
 .SH NAME
@@ -61,7 +62,7 @@ locks are hashed over a 16\[hy]bit range, and range overlaps are possible.
 Collisions are also possible, but fortunately rarer.
 .SS Known Problems
 There is a known problem with the HP/UX NFS clients.  If you see
-persistent "no locks available" error messages when \fI\*(L)\fP is NFS
+persistent \[lq]no locks available\[rq] error messages when \fI\*(L)\fP is NFS
 mounted, try making the \fI\*(L)/lockfile\fP file world writable.
 .E(
 chmod 666 \*(L)/lockfile
