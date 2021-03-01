@@ -49,7 +49,7 @@ msgstr ""
 "Content-Type: text/plain; charset=ascii\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: aegis 4.25\n"
-"POT-Creation-Date: Mon Nov 26 22:36:10 EST 2012\n"
+"POT-Creation-Date: Tue Nov 27 03:12:27 EST 2012\n"
 
 #
 # This error message is issued when an environment variable is meant to
@@ -2367,7 +2367,7 @@ msgstr ""
 # This error message is issued when aedeu is invoked for a change which
 # is not in the 'being reviewed' or 'awaiting integration' state.
 #
-#: aegis/aedeu.cc:244 aegis/aedeu.cc:260
+#: aegis/aedeu.cc:206 aegis/aedeu.cc:222
 # For consistent translation, here is the English text:
 #  msgstr ""
 #  "this change is in the '$state' state, it must be in the 'being reviewed' or "
@@ -3737,7 +3737,7 @@ msgstr ""
 #
 # This progress message is issued when aedeu completes successfully.
 #
-#: aegis/aedeu.cc:375
+#: aegis/aedeu.cc:337
 # For consistent translation, here is the English text:
 #  msgstr "development resumed"
 # Please translate the English msgstr, not the msgid.
@@ -9189,7 +9189,7 @@ msgstr ""
 # This error message is issued when a aedbu command is run by a
 # user who was not the developer of the change being operated on.
 #
-#: aegis/aedeu.cc:262
+#: aegis/aedeu.cc:224
 # For consistent translation, here is the English text:
 #  msgstr ""
 #  "user \"$user\" was not the developer of this change, only user \"$developer"

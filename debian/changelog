@@ -1,6 +1,7 @@
-aegis (4.25.D505-1) unstable; urgency=low
+aegis (4.25.D506-1) unstable; urgency=low
 
-  * This change set fixes a problem with building Aegis' own debian package.
+  * This change set refactors aedeu to use change_identifier to parse the comand
+    line, and figure out the change number, etc.
   * Signed-off-by: Peter Miller <pmiller@opensource.org.au>
   * 4.22.D048: Closes: #435422
   * 4.23.D099: Closes: #393624
@@ -14,7 +15,14 @@ aegis (4.25.D505-1) unstable; urgency=low
   * This is a summary, see earlier changelog entries for details of individual
     bug fixes.
 
- -- Peter Miller <pmiller@opensource.org.au>  Mon, 26 Nov 2012 22:42:32 +1100
+ -- Peter Miller <pmiller@opensource.org.au>  Tue, 27 Nov 2012 03:14:24 +1100
+
+aegis (4.25.D505-1) unstable; urgency=low
+
+  * This change set fixes a problem with building Aegis' own debian package.
+  * Signed-off-by: Peter Miller <pmiller@opensource.org.au>
+
+ -- Peter Miller <pmiller@opensource.org.au>  Mon, 26 Nov 2012 23:54:26 +1100
 
 aegis (4.25.D504-1) unstable; urgency=low
 

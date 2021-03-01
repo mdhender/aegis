@@ -105,18 +105,9 @@ develop_end_undo_list(void)
 static void
 develop_end_undo_main(void)
 {
-    cstate_ty       *cstate_data;
-    cstate_history_ty *history_data;
-    int             j;
-    string_ty       *project_name;
-    project      *pp;
-    long            change_number;
-    change::pointer cp;
-
     trace(("develop_end_undo_main()\n{\n"));
+    change_identifier cid;
     arglex();
-    project_name = 0;
-    change_number = 0;
     string_ty *reason = 0;
     while (arglex_token != arglex_token_eoln)
     {
@@ -126,25 +117,17 @@ develop_end_undo_main(void)
             generic_argument(develop_end_undo_usage);
             continue;
 
+        case arglex_token_branch:
         case arglex_token_change:
-            arglex();
-            // fall through...
-
+        case arglex_token_delta_from_change:
+        case arglex_token_delta:
+        case arglex_token_delta_date:
+        case arglex_token_grandparent:
         case arglex_token_number:
-            arglex_parse_change
-            (
-                &project_name,
-                &change_number,
-                develop_end_undo_usage
-            );
-            continue;
-
         case arglex_token_project:
-            arglex();
-            // fall through...
-
         case arglex_token_string:
-            arglex_parse_project(&project_name, develop_end_undo_usage);
+        case arglex_token_trunk:
+            cid.command_line_parse(develop_end_undo_usage);
             continue;
 
         case arglex_token_wait:
@@ -174,57 +157,36 @@ develop_end_undo_main(void)
         }
         arglex();
     }
+    cid.command_line_check(develop_end_undo_usage);
 
-    //
-    // locate project data
-    //
-    if (!project_name)
-    {
-        nstring n = user_ty::create()->default_project();
-        project_name = str_copy(n.get_ref());
-    }
-    pp = project_alloc(project_name);
-    str_free(project_name);
-    pp->bind_existing();
-
-    //
-    // locate user data
-    //
-    user_ty::pointer up = user_ty::create();
+    user_ty::pointer up = cid.get_up();
     user_ty::pointer up_admin;
-
-    //
-    // locate change data
-    //
-    if (!change_number)
-        change_number = up->default_change(pp);
-    cp = change_alloc(pp, change_number);
-    change_bind_existing(cp);
 
     //
     // lock the change for writing
     //
-    pp->pstate_lock_prepare();
-    change_cstate_lock_prepare(cp);
+    cid.get_pp()->pstate_lock_prepare();
+    change_cstate_lock_prepare(cid.get_cp());
     up->ustate_lock_prepare();
     lock_take();
-    cstate_data = cp->cstate_get();
+    cstate_ty *cstate_data = cid.get_cp()->cstate_get();
 
     //
-    // Project administrators are allowed to undo end the development
+    // Project administrators are allowed to undo the end of development
     // of a branch, no matter who created it.
     //
     if
     (
-        cp->was_a_branch()
+        cid.get_cp()->was_a_branch()
     &&
-        nstring(cp->developer_name()) != up->name()
+        nstring(cid.get_cp()->developer_name()) != up->name()
     &&
-        project_administrator_query(pp, up->name())
+        project_administrator_query(cid.get_pp(), up->name())
     )
     {
         up_admin = up;
-        up = user_ty::create(nstring(cp->developer_name()));
+        up = user_ty::create(nstring(cid.get_cp()->developer_name()));
+        // FIXME: lock is now against wrong user
     }
 
     //
@@ -241,7 +203,7 @@ develop_end_undo_main(void)
     )
     {
         assert(cstate_data->state == cstate_state_being_reviewed);
-        change_fatal(cp, 0, i18n("bad deu state"));
+        change_fatal(cid.get_cp(), 0, i18n("bad deu state"));
     }
 
     //
@@ -257,16 +219,16 @@ develop_end_undo_main(void)
     &&
         cstate_data->state != cstate_state_awaiting_integration
     )
-        change_fatal(cp, 0, i18n("bad deu state"));
-    if (nstring(cp->developer_name()) != up->name())
-        change_fatal(cp, 0, i18n("was not developer"));
+        change_fatal(cid.get_cp(), 0, i18n("bad deu state"));
+    if (nstring(cid.get_cp()->developer_name()) != up->name())
+        change_fatal(cid.get_cp(), 0, i18n("was not developer"));
 
     //
     // Change the state.
     // Add to the change's history.
     //
     cstate_data->state = cstate_state_being_developed;
-    history_data = change_history_new(cp, up);
+    cstate_history_ty *history_data = change_history_new(cid.get_cp(), up);
     history_data->what = cstate_history_what_develop_end_undo;
     if (up_admin)
     {
@@ -291,22 +253,22 @@ develop_end_undo_main(void)
     //
     // add it back into the user's change list
     //
-    up->own_add(pp, change_number);
+    up->own_add(cid.get_pp(), cid.get_cp()->number);
 
     //
     // go through the files in the change and unlock them
     // in the baseline
     //
-    for (j = 0;; ++j)
+    for (int j = 0;; ++j)
     {
         fstate_src_ty   *c_src_data;
         fstate_src_ty   *p_src_data;
 
-        c_src_data = change_file_nth(cp, j, view_path_first);
+        c_src_data = change_file_nth(cid.get_cp(), j, view_path_first);
         if (!c_src_data)
             break;
         p_src_data =
-            pp->file_find(c_src_data->file_name, view_path_none);
+            cid.get_pp()->file_find(c_src_data->file_name, view_path_none);
         if (!p_src_data)
         {
             // this is really a corrupted file
@@ -335,7 +297,7 @@ develop_end_undo_main(void)
                 p_src_data->about_to_be_created_by = 0;
             }
             else
-                project_file_remove(pp, c_src_data->file_name);
+                project_file_remove(cid.get_pp(), c_src_data->file_name);
         }
     }
 
@@ -343,18 +305,18 @@ develop_end_undo_main(void)
     // Make the development directory writable again.
     //
     // This is actually conditional upon project_protect_development_
-    // directory_get(pp) but the test is inside the change_
-    // development_directory_chmod_read_write(cp) function, because it
+    // directory_get(cid.get_pp()) but the test is inside the change_
+    // development_directory_chmod_read_write(cid.get_cp()) function, because it
     // also makes sure the source files are readable and writable by the
     // developer.
     //
-    change_development_directory_chmod_read_write(cp);
+    change_development_directory_chmod_read_write(cid.get_cp());
 
     //
     // write out the data and release the locks
     //
-    cp->cstate_write();
-    pp->pstate_write();
+    cid.get_cp()->cstate_write();
+    cid.get_pp()->pstate_write();
     up->ustate_write();
     commit();
     lock_release();
@@ -362,19 +324,17 @@ develop_end_undo_main(void)
     //
     // run the notify command
     //
-    cp->run_develop_end_undo_notify_command();
+    cid.get_cp()->run_develop_end_undo_notify_command();
 
     //
     // Update the RSS feed file if necessary.
     //
-    rss_add_item_by_change(pp, cp);
+    rss_add_item_by_change(cid.get_pp(), cid.get_cp());
 
     //
     // verbose success message
     //
-    change_verbose(cp, 0, i18n("develop end undo complete"));
-    change_free(cp);
-    project_free(pp);
+    change_verbose(cid.get_cp(), 0, i18n("develop end undo complete"));
     trace(("}\n"));
 }
 

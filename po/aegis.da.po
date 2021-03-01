@@ -75,7 +75,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: aegis 4.24\n"
-"POT-Creation-Date: Mon Nov 26 22:36:10 EST 2012\n"
+"POT-Creation-Date: Tue Nov 27 03:12:27 EST 2012\n"
 "PO-Revision-Date: 2012-08-13\n"
 "Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
@@ -2520,7 +2520,7 @@ msgstr ""
 #  "this change is in the '$state' state, it must be in the 'being reviewed' or "
 #  "'awaiting integration' state to undo develop end"
 # Please translate the English msgstr, not the msgid.
-#: aegis/aedeu.cc:244 aegis/aedeu.cc:260
+#: aegis/aedeu.cc:206 aegis/aedeu.cc:222
 msgid "bad deu state"
 msgstr ""
 "denne ændring er i tilstanden '$state', den skal være i en af tilstandene "
@@ -4002,7 +4002,7 @@ msgstr "fandt $number fejl, denne ændring forbliver i tilstanden '$state'"
 # For consistent translation, here is the English text:
 #  msgstr "development resumed"
 # Please translate the English msgstr, not the msgid.
-#: aegis/aedeu.cc:375
+#: aegis/aedeu.cc:337
 msgid "develop end undo complete"
 msgstr "udvikling genoptaget"
 
@@ -9626,7 +9626,7 @@ msgstr "advarsel: utime $filename: $errno"
 #  "user \"$user\" was not the developer of this change, only user \"$developer"
 #  "\" may undo develop end"
 # Please translate the English msgstr, not the msgid.
-#: aegis/aedeu.cc:262
+#: aegis/aedeu.cc:224
 msgid "was not developer"
 msgstr "var ikke udvikler"
 

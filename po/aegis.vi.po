@@ -50,7 +50,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aegis 4.24\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: Mon Nov 26 22:36:10 EST 2012\n"
+"POT-Creation-Date: Tue Nov 27 03:12:27 EST 2012\n"
 "PO-Revision-Date: 2012-08-13\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 "Language-Team: Vietnamese <vi-VN@googlegroups.com>\n"
@@ -1904,7 +1904,7 @@ msgstr ""
 # This error message is issued when aedeu is invoked for a change which
 # is not in the 'being reviewed' or 'awaiting integration' state.
 #
-#: aegis/aedeu.cc:244 aegis/aedeu.cc:260
+#: aegis/aedeu.cc:206 aegis/aedeu.cc:222
 msgid "bad deu state"
 msgstr ""
 "thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đang được xem "
@@ -2971,7 +2971,7 @@ msgstr "tìm $number lỗi; thay đổi này còn lại ở tình trạng « $st
 #
 # This progress message is issued when aedeu completes successfully.
 #
-#: aegis/aedeu.cc:375
+#: aegis/aedeu.cc:337
 msgid "develop end undo complete"
 msgstr "tiến trình phát triển đã tiếp tục lại"
 
@@ -7163,7 +7163,7 @@ msgstr "cảnh báo : utime \"$filename\": $errno"
 # This error message is issued when a aedbu command is run by a
 # user who was not the developer of the change being operated on.
 #
-#: aegis/aedeu.cc:262
+#: aegis/aedeu.cc:224
 msgid "was not developer"
 msgstr ""
 "người dùng « $user » đã không phải là nhà phát triển của thay đổi này nên "
