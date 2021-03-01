@@ -71,7 +71,7 @@ report_parse_argument_set(string_list_ty *a)
 {
     trace(("report_parse_argument_set()\n{\n"));
     assert(!arg.nstrings);
-    string_list_copy(&arg, a);
+    arg = *a;
     trace(("}\n"));
 }
 
@@ -116,7 +116,7 @@ find_filename_process(string_ty *name, string_ty *dir, const char *nondir,
 		continue;
 	    trace(("arglex_compare(\"%s\", \"%s\")\n",
 		in->name->str_text, name->str_text));
-	    if (!arglex_compare(in->name->str_text, name->str_text))
+	    if (!arglex_compare(in->name->str_text, name->str_text, 0))
 		continue;
 
 	    //
@@ -164,7 +164,6 @@ find_filename_process(string_ty *name, string_ty *dir, const char *nondir,
 static string_ty *
 find_filename(string_ty *name)
 {
-    string_list_ty  path;
     rptidx_where_list_ty *result;
     string_ty       *tmp;
     size_t          j;
@@ -173,6 +172,7 @@ find_filename(string_ty *name)
     // find all reports matching the name given
     //
     trace(("find_filename(name = \"%s\")\n{\n", name->str_text));
+    string_list_ty path;
     gonzo_report_path(&path);
     result = (rptidx_where_list_ty *)rptidx_where_list_type.alloc();
     for (j = 0; j < path.nstrings; ++j)
@@ -180,7 +180,6 @@ find_filename(string_ty *name)
 	find_filename_process(name, path.string[j], "report.index", result);
 	find_filename_process(name, path.string[j], "report.local", result);
     }
-    string_list_destructor(&path);
 
     //
     // it is an error if there was no matching report
@@ -204,15 +203,12 @@ find_filename(string_ty *name)
     trace(("test if too many answers\n"));
     if (result->length > 1)
     {
-	sub_context_ty	*scp;
-
-	string_list_constructor(&path);
+	string_list_ty path2;
 	for (j = 0; j < result->length; ++j)
-	    string_list_append_unique(&path, result->list[j]->name);
+	    path2.push_back_unique(result->list[j]->name);
 	rptidx_where_list_type.free(result);
-	tmp = wl2str(&path, 0, path.nstrings - 1, ", ");
-	string_list_destructor(&path);
-	scp = sub_context_new();
+	tmp = path2.unsplit(", ");
+	sub_context_ty *scp = sub_context_new();
 	sub_var_set_string(scp, "Name", name);
 	sub_var_set_string(scp, "Name_List", tmp);
 	sub_var_optional(scp, "Name_List");
@@ -307,6 +303,6 @@ report_run()
     str_free(input);
     if (output)
 	str_free(output);
-    string_list_destructor(&arg);
+    arg.clear();
     trace(("}\n"));
 }

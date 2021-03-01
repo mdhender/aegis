@@ -69,10 +69,10 @@ if [find_command png2ico] then
 
 html-targets: [html-targets];
 
-html-sources = [match_mask etc/%.html [source_files]];
+html-sources = [match_mask etc/%0%.html [source_files]];
 
 html-targets =
-	[fromto etc/%.html archive/%.html
+	[fromto etc/%0%.html archive/%0%.html
 		[html-sources]
 	]
 	archive/index.html
@@ -83,28 +83,28 @@ if [find_command uudecode] then
 if [count [html-sources]] then
 cascade [html-sources] = etc/version.so;
 
-etc/%.html.d: etc/%.html
+etc/%0%.html.d: etc/%0%.html
 	set no-cascade
 {
 	c_incl -nc -ns -eia -r -nrec
 		[prepost "-I" /[arch]/etc [search_list]]
 		[prepost "-I" "/etc" [search_list]]
-		-prefix "'cascade etc/%.html ='"
+		-prefix "'cascade etc/%0%.html ='"
 		-suffix "';'"
-		[resolve etc/%.html]
+		[resolve etc/%0%.html]
 		[prepost "-rlp=" "" [search_list]] /* remove leading path */
 		-slp [arch] "'[arch]'" /* substitute leading path */
 		-o [target];
 }
-#include-cooked-nowarn [addsuffix ".d" [match_mask etc/%.html [source_files]]]
+#include-cooked-nowarn [addsuffix ".d" [match_mask etc/%0%.html [source_files]]]
 
-archive/%.html: etc/%.html: etc/ssp.awk
+archive/%0%.html: etc/%0%.html: etc/ssp.awk
 	set shallow
 {
 	roffpp
 		[prepost "-I" /[arch]/etc [search_list]]
 		[prepost "-I" "/etc" [search_list]]
-		[resolve etc/%.html]
+		[resolve etc/%0%.html]
 	| GROFF_NO_SGR\=-c groff -Tascii -t -P-bhu -man
 	| [awk] -f [resolve etc/ssp.awk]
 	> [target];

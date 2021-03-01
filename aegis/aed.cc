@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -127,8 +127,6 @@ static void
 anticipate(string_ty *project_name, long change_number, const char *branch,
     long cn2, log_style_ty log_style, string_list_ty *wl)
 {
-    string_ty       *dd1;
-    string_ty       *dd2;
     cstate_ty       *cstate_data;
     cstate_ty       *cstate2_data;
     size_t          j;
@@ -212,8 +210,6 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
     // then diff every file the two changes have in common.
     // Ignore all but the most obvious of combinations.
     //
-    dd1 = change_development_directory_get(cp, 1);
-    dd2 = change_development_directory_get(acp, 1);
     if (!wl->nstrings)
     {
 	for (j = 0;; ++j)
@@ -256,7 +252,7 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 #endif
 		continue;
 	    }
-	    string_list_append(wl, src1_data->file_name);
+	    wl->push_back(src1_data->file_name);
 	}
 	if (!wl->nstrings)
 	    change_fatal(cp, 0, i18n("no suitable files in common"));
@@ -267,7 +263,6 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 	string_list_ty  search_path2;
 	size_t          k;
 	int             number_of_errors;
-	string_list_ty  wl2;
 
 	//
 	// resolve the path of each file
@@ -279,9 +274,8 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 	number_of_errors = 0;
 	change_search_path_get(cp, &search_path, 1);
 	change_search_path_get(acp, &search_path2, 1);
-	for (k = 0; k < search_path2.nstrings; ++k)
-	    string_list_append_unique(&search_path, search_path2.string[k]);
-	string_list_constructor(&wl2);
+	search_path.push_back_unique(search_path2);
+	string_list_ty wl2;
 	for (j = 0; j < wl->nstrings; ++j)
 	{
 	    string_ty       *s1;
@@ -307,12 +301,9 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 		++number_of_errors;
 	    }
 	    else
-		string_list_append_unique(&wl2, s1);
+		wl2.push_back_unique(s1);
 	}
-	string_list_destructor(wl);
 	*wl = wl2;
-	string_list_destructor(&search_path);
-	string_list_destructor(&search_path2);
 
 	//
 	// confirm that each file is in both changes
@@ -493,7 +484,9 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 		input,
 		output
 	    );
+	    user_become(up);
             undo_rename_cancel(input, output);
+	    user_become_undo();
 	}
 	else
 	{
@@ -577,11 +570,8 @@ static void
 difference_main(void)
 {
     string_ty       *dd;
-    string_list_ty  wl;
-    string_list_ty  wl2;
     string_ty       *s1 = 0;
     string_ty       *s2;
-    string_list_ty  need_new_build;
     cstate_ty       *cstate_data;
     size_t          j;
     size_t          k;
@@ -604,8 +594,8 @@ difference_main(void)
 
     trace(("difference_main()\n{\n"));
     arglex();
-    string_list_constructor(&wl);
-    string_list_constructor(&need_new_build);
+    string_list_ty wl;
+    string_list_ty need_new_build;
     project_name = 0;
     change_number = 0;
     log_style = log_style_snuggle_default;
@@ -639,7 +629,7 @@ difference_main(void)
 	    os_become_orig();
 	    s2 = os_pathname(s1, 1);
 	    os_become_undo();
-	    if (string_list_member(&wl, s2))
+	    if (wl.member(s2))
 	    {
 		sub_context_ty  *scp;
 
@@ -649,7 +639,7 @@ difference_main(void)
 		// NOTREACHED
 		sub_context_delete(scp);
 	    }
-	    string_list_append(&wl, s2);
+	    wl.push_back(s2);
 	    str_free(s1);
 	    str_free(s2);
 	    break;
@@ -952,7 +942,7 @@ difference_main(void)
 	    src_data = change_file_nth(cp, j, view_path_first);
 	    if (!src_data)
 		break;
-	    string_list_append(&wl, src_data->file_name);
+	    wl.push_back(src_data->file_name);
 	}
     }
     else
@@ -985,7 +975,7 @@ difference_main(void)
 	// 4.   if neither, error
 	//
 	change_search_path_get(cp, &search_path, 1);
-	string_list_constructor(&wl2);
+	string_list_ty wl2;
 	for (j = 0; j < wl.nstrings; ++j)
 	{
 	    s1 = wl.string[j];
@@ -1009,19 +999,17 @@ difference_main(void)
 	    }
 	    else
 	    {
-		string_list_append_unique(&wl2, s2);
+		wl2.push_back_unique(s2);
 		str_free(s2);
 	    }
 	}
-	string_list_destructor(&search_path);
-	string_list_destructor(&wl);
 	wl = wl2;
 
 	//
 	// confirm that each file is in the change
 	// and resolve directories into files
 	//
-	string_list_constructor(&wl2);
+	wl2.clear();
 	for (j = 0; j < wl.nstrings; ++j)
 	{
 	    string_list_ty  wl_in;
@@ -1029,9 +1017,9 @@ difference_main(void)
 	    s1 = wl.string[j];
 	    change_file_directory_query(cp, s1, &wl_in, 0);
 	    if (wl_in.nstrings)
-		string_list_append_list_unique(&wl2, &wl_in);
+		wl2.push_back_unique(wl_in);
 	    else if (change_file_find(cp, s1, view_path_first))
-		string_list_append_unique(&wl2, s1);
+		wl2.push_back_unique(s1);
 	    else
 	    {
 		sub_context_ty  *scp;
@@ -1042,9 +1030,7 @@ difference_main(void)
 		sub_context_delete(scp);
 		++number_of_errors;
 	    }
-	    string_list_destructor(&wl_in);
 	}
-	string_list_destructor(&wl);
 	wl = wl2;
 
 	//
@@ -1412,7 +1398,9 @@ difference_main(void)
 		    curfile,
 		    outname
 		);
+		user_become(diff_user_p);
                 undo_rename_cancel(curfile, outname);
+		user_become_undo();
             }
 	    else
 	    {
@@ -1491,7 +1479,7 @@ difference_main(void)
 	    // Remember this file name, so that we can give
 	    // a verbose success message at the end.
 	    //
-	    string_list_append(&need_new_build, src1_data->file_name);
+	    need_new_build.push_back(src1_data->file_name);
 
 	    //
 	    // Nuke the build times.
@@ -1522,7 +1510,7 @@ difference_main(void)
 	    sub_context_delete(scp);
 	}
 
-	if (need_new_build.nstrings)
+	if (!need_new_build.empty())
 	{
 	    sub_context_ty  *scp;
 
@@ -1532,7 +1520,6 @@ difference_main(void)
 	    change_error(cp, scp, i18n("merge complete"));
 	    sub_context_delete(scp);
 	}
-	string_list_destructor(&need_new_build);
     }
     else
     {
@@ -1554,8 +1541,6 @@ difference_main(void)
 	{
 	    fstate_src_ty   *src1_data;
 	    fstate_src_ty   *src2_data;
-	    string_ty       *original;
-	    string_ty       *input;
 	    string_ty       *path;
 	    string_ty       *path_d;
 	    int             ignore;
@@ -1756,29 +1741,54 @@ difference_main(void)
 		// from nothing
 		//
 	      creating_file:
-		if
-		(
-		    src1_data->move
-		&&
-		    project_file_exists(pp2bl, src1_data->move)
-		)
 		{
-		    trace(("project_file_path %s\n",
-			src1_data->move->str_text));
-		    original = project_file_path(pp2bl, src1_data->move);
-		    assert(original);
+		    string_ty *original;
+		    int org_unlink = 0;
+		    if
+		    (
+			src1_data->move
+		    &&
+			project_file_exists(pp2bl, src1_data->move)
+		    )
+		    {
+			trace(("project_file_path %s\n",
+			    src1_data->move->str_text));
+			original = project_file_path(pp2bl, src1_data->move);
+			os_become_orig();
+			int file_exists = os_exists(original);
+			os_become_undo();
+			assert(file_exists);
+			if (!file_exists)
+			{
+			    original =
+				project_file_version_path
+				(
+				    pp2bl,
+				    src1_data,
+				    &org_unlink
+				);
+			}
+			assert(original);
+		    }
+		    else
+			original = str_from_c("/dev/null");
+		    change_run_diff_command
+		    (
+			cp,
+			diff_user_p,
+			original,
+			path,
+			path_d
+		    );
+		    if (org_unlink)
+		    {
+			assert(original);
+			os_become_orig();
+			os_unlink(original);
+			os_become_undo();
+		    }
+		    str_free(original);
 		}
-		else
-		    original = str_from_c("/dev/null");
-		change_run_diff_command
-		(
-		    cp,
-		    diff_user_p,
-		    original,
-		    path,
-		    path_d
-		);
-		str_free(original);
 
 		//
 		// remember the new fingerprint
@@ -1838,31 +1848,68 @@ difference_main(void)
 		// difference the file
 		// to nothing
 		//
-		if (src2_data)
 		{
-		    trace(("project file path %s\n", s1->str_text));
-		    original = project_file_path(pp2bl, s1);
+		    string_ty *original;
+		    string_ty *input;
+		    int org_unlink = 0;
+		    if (src2_data)
+		    {
+			trace(("project file path %s\n", s1->str_text));
+			original = project_file_path(pp2bl, s1);
+
+			//
+			// The following code is needed to make it
+			// possible for aegis to cope with broken
+			// baseline.
+			//
+			os_become_orig();
+			int file_exists = os_exists(original);
+			os_become_undo();
+			assert(file_exists);
+			if (!file_exists)
+			{
+			    original =
+				project_file_version_path
+				(
+				    pp2bl,
+				    src2_data,
+				    &org_unlink
+				);
+			}
+		    }
+		    else
+			original = str_from_c("/dev/null");
+		    assert(original);
+		    if
+		    (
+			src1_data->move
+		    &&
+			change_file_exists(cp, src1_data->move)
+		    )
+		    {
+			input = change_file_path(cp, src1_data->move);
+			assert(input);
+		    }
+		    else
+			input = str_from_c("/dev/null");
+		    change_run_diff_command
+		    (
+			cp,
+			diff_user_p,
+			original,
+			input,
+			path_d
+		    );
+		    if (org_unlink)
+		    {
+			assert(original);
+			os_become_orig();
+			os_unlink(original);
+			os_become_undo();
+		    }
+		    str_free(original);
+		    str_free(input);
 		}
-		else
-		    original = str_from_c("/dev/null");
-		assert(original);
-		if (src1_data->move && change_file_exists(cp, src1_data->move))
-		{
-		    input = change_file_path(cp, src1_data->move);
-		    assert(input);
-		}
-		else
-		    input = str_from_c("/dev/null");
-		change_run_diff_command
-		(
-		    cp,
-		    diff_user_p,
-		    original,
-		    input,
-		    path_d
-		);
-		str_free(original);
-		str_free(input);
 		goto set_fingerprint;
 
 	    case file_action_modify:
@@ -1899,18 +1946,50 @@ difference_main(void)
 		// use the diff-command
 		//
 		modifying_file:
-		trace(("project file path %s\n", s1->str_text));
-		original = project_file_path(pp2bl, s1);
-		assert(original);
-		change_run_diff_command
-		(
-		    cp,
-		    diff_user_p,
-		    original,
-		    path,
-		    path_d
-		);
-		str_free(original);
+		{
+		    trace(("project file path %s\n", s1->str_text));
+		    string_ty *original;
+		    int org_unlink = 0;
+		    original = project_file_path(pp2bl, s1);
+
+		    //
+		    // The following code is needed to make it
+		    // possible for aegis to cope with broken
+		    // baseline.
+		    //
+		    os_become_orig();
+		    int file_exists = os_exists(original);
+		    os_become_undo();
+		    assert(file_exists);
+		    if (!file_exists)
+		    {
+			original =
+			    project_file_version_path
+			    (
+				pp2bl,
+				src2_data,
+				&org_unlink
+			    );
+		    }
+
+		    assert(original);
+		    change_run_diff_command
+		    (
+			cp,
+			diff_user_p,
+			original,
+			path,
+			path_d
+		    );
+		    if (org_unlink)
+		    {
+			assert(original);
+			os_become_orig();
+			os_unlink(original);
+			os_become_undo();
+		    }
+		    str_free(original);
+		}
 		goto set_fingerprint;
 
 	    case file_action_transparent:
@@ -1942,7 +2021,7 @@ difference_main(void)
 		//
 		goto modifying_file;
 	    }
-	    str_free(path);
+            str_free(path);
 	    str_free(path_d);
 	}
 

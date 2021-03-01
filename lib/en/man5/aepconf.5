@@ -1089,6 +1089,9 @@ using information attached to the change file information.  This is
 because each put could use a different encoding (although in practice,
 file contents rarely change that dramatically, and the same encoding is
 likely to be deduced every time).
+.PP
+Please note that this field \fBdoes not\fP apply to the
+\fIdiff_\%command\fP or \fImerge_\%command\fP fields.
 .RE
 .TP 8n
 diff_command = string;
@@ -1275,6 +1278,44 @@ Current directory: the integration directory (for integration diffs),
 or the development directory (for development diffs).
 Exit status: zero indicates succes, all non-zero exits indicate failure
 (the aed will fail).
+.RE
+.TP 8n
+review_policy_command = string;
+.RS
+This field is used to set the command to be executed by the
+\fIaerpass\fP(1) command.  This command is useful in cases where the
+enterprise has determined that more than one review is necessary or that
+the reviewer must be senior to the developer, \fIetc\fR.
+Defaults to "\f[CW]exit 0\fP" if not set.
+.PP
+The exit status is examined.  An zero exit status (success) means that
+the change will proceed to the \fIawaiting integration\fP state; a
+non-zero exit status (failure) means that the change requires further
+review state, and the \fIdevelop_\%end_\%action\fP is colsulted
+to determine the appropriate state (\fIawaiting_\%review\fP or
+\fIbeing_\%reviewed\fP) for the change to move to.
+.PP
+All of the substitutions described by \fIaesub\fP(5) are available.
+Of particular interest are \f[CW]${Change_Developer_List}\fP and
+\f[CW]${Change_Reviewer_List}\fP for passing the specific staff involved
+with the change.
+.PP
+Executed as: the current reviewer.
+Current directory: the development directory.
+Exit status: zero indicates success, non-zero indicates failure.
+.PP
+For example, to have a script which is a project source file to be used
+to gate the code review process, a setting such as the following may be
+used:
+.RS
+review_policy_command =
+    "$sh ${source script/reviewpolicy.sh} "
+    "-p $project -c $change "
+    "-d ${developer_list} "
+    "-r ${reviewer_list}"
+    ;
+.RE
+This is only one of many ways to implement a project specific review policy.
 .RE
 .TP 8n
 test_command = string;
@@ -1790,6 +1831,9 @@ The sub-fields are
 .TP 8n
 name = string;
 The name of the value.
+By convention, names which start with an upper-case letter will appear
+in listings, and lower-case will not.
+Attribute names are case-insensitive.
 .TP 8n
 value = string;
 The value to be substituted.
@@ -1971,6 +2015,9 @@ find differences between a change and the baseline
 .TP 8n
 .IR aede (1)
 end development of a change
+.TP 8n
+.IR aerpass (1)
+pass a review of a change
 .TP 8n
 .IR aeib (1)
 begin integration of a change

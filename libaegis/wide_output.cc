@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999-2004 Peter Miller;
+//      Copyright (C) 1999-2005 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -236,8 +236,8 @@ wide_output_end_of_line(wide_output_ty *fp)
     // If possible, just stuff a newline into the buffer and bail.
     // This results in the fewest deeper calls.
     //
-    trace(("wide_output_end_of_line(fp = %08lX)\n{\n\
-type is wide_output_%s\n", (long)fp, fp->vptr->type_name));
+    trace(("wide_fp = %08lX->end_of_line()\n{\ntype is wide_output_%s\n",
+	(long)fp, fp->vptr->type_name));
     assert(fp);
     if
     (
@@ -310,7 +310,7 @@ wide_output_put_wstr(wide_output_ty *fp, wstring_ty *ws)
 
 
 void
-wide_output_put_str(wide_output_ty *fp, string_ty *s)
+wide_output_fputs(wide_output_ty *fp, string_ty *s)
 {
     wstring_ty      *ws;
 

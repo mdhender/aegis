@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997-2004 Peter Miller;
+//	Copyright (C) 1997-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -146,6 +146,7 @@ static arglex_table_ty argtab[] =
     { "-Signed_Off_By", arglex_token_signed_off_by, },
     { "-Not_Signed_Off_By", arglex_token_signed_off_by_not, },
     { "-SUGgest", arglex_token_suggest, },
+    { "-SUGgest_Limit", arglex_token_suggest_limit, },
     { "-SUGgest_Noise", arglex_token_suggest_noise, },
     { "-Verify_Symbolic_Links", arglex_token_symbolic_links, },
     { "-Tab_Width", arglex_token_tab_width, },

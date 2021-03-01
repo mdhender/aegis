@@ -24,7 +24,7 @@
 #include <sub/identifier.h>
 #include <trace.h>
 #include <wstr.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 //
@@ -56,7 +56,7 @@ sub_identifier(sub_context_ty *scp, wstring_list_ty *arg)
     wstring_ty	    *result;
 
     trace(("sub_identifier()\n{\n"));
-    if (arg->nitems < 2)
+    if (arg->size() < 2)
     {
 	sub_context_error_set(scp, i18n("requires one argument"));
 	result = 0;
@@ -64,19 +64,13 @@ sub_identifier(sub_context_ty *scp, wstring_list_ty *arg)
     else
     {
 	wstring_list_ty	results;
-	size_t		j;
-
-	wstring_list_constructor(&results);
-	for (j = 1; j < arg->nitems; ++j)
+	for (size_t j = 1; j < arg->size(); ++j)
 	{
-	    wstring_ty	*ws;
-
-	    ws = wstr_to_ident(arg->item[j]);
-	    wstring_list_append(&results, ws);
+	    wstring_ty *ws = wstr_to_ident(arg->get(j));
+	    results.push_back(ws);
 	    wstr_free(ws);
 	}
-	result = wstring_list_to_wstring(&results, 0, results.nitems, 0);
-	wstring_list_destructor(&results);
+	result = results.unsplit();
     }
     trace(("return %8.8lX;\n", (long)result));
     trace(("}\n"));

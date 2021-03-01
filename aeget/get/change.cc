@@ -31,6 +31,7 @@
 #include <get/change/download.h>
 #include <get/change/file_invento.h>
 #include <get/change/files.h>
+#include <get/change/history.h>
 #include <get/change/menu.h>
 #include <get/file.h>
 #include <get/project.h>
@@ -57,8 +58,8 @@ static const table_ty table[] =
 {
     //
     // To remove ambiguity at the root level, sometimes you have
-    // to say "@@file@history" to distinguish the request from
-    // "@@project@history"
+    // to say "?file+history" to distinguish the request from
+    // "?project+history"
     //
     { "project", project_handoff, 1 },
     { "file", get_file, 1 },
@@ -70,6 +71,7 @@ static const table_ty table[] =
     { "download", get_change_download },
     { "files", get_change_files },
     { "file-inventory", get_change_file_inventory },
+    { "history", get_change_history },
     { "menu", get_change_menu },
 };
 
@@ -100,7 +102,7 @@ whine(change_ty *cp, string_list_ty *modifier)
     {
 	if (tp->hide_me)
 	    continue;
-	string_ty *s = str_format("change@%s", tp->name);
+	string_ty *s = str_format("change+%s", tp->name);
 	printf("<li>");
 	emit_change_href(cp, s->str_text);
 	printf("%s</a>\n", tp->name);

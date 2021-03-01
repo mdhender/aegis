@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2004 Peter Miller;
+//	Copyright (C) 1991-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -476,6 +476,7 @@ project_copy(project_ty *pp)
 change_ty *
 project_change_get(project_ty *pp)
 {
+    trace(("project_change_get(pp = %08lX)\n{\n", (long)pp));
     //
     // It could be an old project.  Make sure the pstate is read in,
     // and converted if necessary.
@@ -492,6 +493,7 @@ project_change_get(project_ty *pp)
 	pp->pcp = change_alloc(pp, TRUNK_CHANGE_NUMBER);
 	change_bind_existing(pp->pcp);
     }
+    trace(("return %08lX;\n}\n", (long)pp->pcp));
     return pp->pcp;
 }
 
@@ -542,7 +544,7 @@ project_file_list_invalidate(project_ty *pp)
     {
 	if (pp->file_list[n])
 	{
-	    string_list_delete(pp->file_list[n]);
+	    delete pp->file_list[n];
 	    pp->file_list[n] = 0;
 	}
     }
@@ -550,7 +552,7 @@ project_file_list_invalidate(project_ty *pp)
     {
 	if (pp->file_by_uuid[n])
 	{
-	    symtab_free(pp->file_by_uuid[n]);
+	    delete pp->file_by_uuid[n];
 	    pp->file_by_uuid[n] = 0;
 	}
     }
@@ -1483,10 +1485,9 @@ project_version_short_get(project_ty *pp)
     }
     else
     {
-	change_ty	*cp;
 	pstate_ty	*pstate_data;
 
-	cp = project_change_get(pp);
+	project_change_get(pp); // make sure is in memory
 	pstate_data = project_pstate_get(pp);
 	if (pstate_data->version_major || pstate_data->version_minor)
 	{

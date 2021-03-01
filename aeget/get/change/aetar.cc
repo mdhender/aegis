@@ -97,7 +97,7 @@ get_change_aetar(change_ty *cp, string_ty *fn, string_list_ty *modifier)
     bool entire_source = false;
     bool noprefix = false;
     nstring prefix;
-    for (size_t j = 1; j < modifier->nstrings; ++j)
+    for (size_t j = 0; j < modifier->nstrings; ++j)
     {
 	const char *s = modifier->string[j]->str_text;
 	if (0 == strcasecmp(s, "es"))

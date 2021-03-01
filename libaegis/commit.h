@@ -23,7 +23,7 @@
 #ifndef COMMIT_H
 #define COMMIT_H
 
-/** \defgroup Transaction
+/** \defgroup Transaction - meta-data database transactions
   * \ingroup AegisLibrary
   * \brief Functions to handle commit and rollback.
   *

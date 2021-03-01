@@ -48,12 +48,12 @@ str_replace(string_ty *str, string_ty *lhs, string_ty *rhs, int how_many_times)
     //
     const char *ip = str->str_text;
     const char *ip_end = str->str_text + str->str_length;
-    stracc_open(&sa);
+    sa.clear();
     while (ip < ip_end && (size_t)(ip_end - ip) >= lhs->str_length)
     {
 	if (0 == memcmp(ip, lhs->str_text, lhs->str_length))
 	{
-	    stracc_chars(&sa, rhs->str_text, rhs->str_length);
+	    sa.push_back(rhs->str_text, rhs->str_length);
 	    ip += lhs->str_length;
 	    if (--how_many_times <= 0)
 		break;
@@ -61,17 +61,17 @@ str_replace(string_ty *str, string_ty *lhs, string_ty *rhs, int how_many_times)
 	else
 	{
 	    char c = *ip++;
-	    stracc_char(&sa, c);
+	    sa.push_back(c);
 	}
     }
 
     //
     // Collect the tail-end of the input.
     //
-    stracc_chars(&sa, ip, ip_end - ip);
+    sa.push_back(ip, ip_end - ip);
 
     //
     // Build ther answer.
     //
-    return stracc_close(&sa);
+    return sa.mkstr();
 }

@@ -32,18 +32,77 @@ enum change_set_file_action_ty
     change_set_file_action_remove
 };
 
+/**
+  * The change_set_file_ty class is used to represent a single operation
+  * on a single file in a single change set.
+  */
 struct change_set_file_ty
 {
-    string_ty       *filename;
-    string_ty       *edit;
+public:
+    /**
+      * The destructpr.
+      * DO NOT subclass me, I'm not virtual.
+      */
+    ~change_set_file_ty();
+
+    /**
+      * The constructor.
+      */
+    change_set_file_ty(string_ty *filename, string_ty *edit,
+	change_set_file_action_ty action, string_list_ty *tag);
+
+    void validate() const;
+
+    void merge(const change_set_file_ty &);
+
+// private:
+    /**
+      * The filename instance variable is used to remember the name of
+      * the file in a change set.
+      */
+    string_ty *filename;
+
+    /**
+      * The edit instance variable is used to remember the edit number
+      * of the file in a change set.
+      */
+    string_ty *edit;
+
+    /**
+      * The filename instance variable is used to remember what is being
+      * done to the file in a change set.
+      */
     change_set_file_action_ty action;
-    string_list_ty  tag;
+
+    /**
+      * The filename instance variable is used to remember the tag names
+      * attached to a file in a change set.
+      */
+    string_list_ty tag;
+
+private:
+    /**
+      * The default constructor.  Do not use.
+      */
+    change_set_file_ty();
+
+    /**
+      * The copy constructor.  Do not use.
+      */
+    change_set_file_ty(const change_set_file_ty &);
+
+    /**
+      * The assignment operator.  Do not use.
+      */
+    change_set_file_ty &operator=(const change_set_file_ty &);
 };
 
-void change_set_file_constructor(change_set_file_ty *, string_ty *,
-    string_ty *, change_set_file_action_ty, string_list_ty *);
-void change_set_file_destructor(change_set_file_ty *);
 const char *change_set_file_action_name(change_set_file_action_ty);
-void change_set_file_validate(change_set_file_ty *);
+
+inline void
+change_set_file_validate(change_set_file_ty *csfp)
+{
+    csfp->validate();
+}
 
 #endif // AEIMPORT_CHANGE_SET_FILE_H

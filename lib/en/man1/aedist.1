@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001-2004 Peter Miller;
+.\"	Copyright (C) 1999, 2001-2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,7 @@
 .\"
 .\" MANIFEST: manual page describing the aedist command.
 .\"
+.so version.so
 .so z_name.so
 .ds n) aedist
 .TH "\*(n)" 1 \*(N) "Reference Manual" ""
@@ -37,6 +38,18 @@ aedist \- remotely distribute a change
 [
 .IR option \&...
 ]
+.br
+.B \*(n)
+.B -REPlay
+[
+.IR option \&...
+] -f \fIURL\fP
+.br
+.B \*(n)
+.B -MIssing
+[
+.IR option \&...
+] -f \fIURL\fP
 .br
 .B \*(n)
 .B -List
@@ -252,6 +265,130 @@ before and build or difference or test is performed.  The ``\fIaecpu
 repository already has in the desired form.  If no change files remain
 after this, the change is dropped entirely (see \&\fIaedbu\fP(1) and
 \&\fIaencu\fP(1)).
+.SH REPLAY
+If you are tracking a remote site which makes a project available via the
+\fIaeget\fP(1) web interface, you can automatically synchronize with the
+remote site using the \fIaedist \-replay\fP command.
+.PP
+For example, Aegis developers can track the master project with
+a command of the form:
+.RS
+.ft CW
+aedist -p aegis.\*(v) --replay -f aegis.sourceforge.net
+.ft P
+.RE
+This command is internally rewritten as
+.RS
+.ft CW
+aedist --replay -p aegis.\*(v) -f \e
+  http://aegis.sf.net/cgi-bin/aeget/aegis.\*(v)/?inventory
+.ft P
+.RE
+If your \f[CW]cgi-bin\fP directory is somewhere else, you will need to
+use the long form.
+.PP
+The change set inventory page is human readable if you want to see
+what it contains.  The links on this page provide all the information
+necessary to download any of the change sets listed.
+.PP
+This command reads the list of change set UUIDs from the remote
+repository, and compares it with the list of change set UUIDs in the
+local repository, and fetches any that are not present locally.
+.PP
+Each of the change sets required are downloaded and unpacked by issuing
+a command such as
+.RS
+.ft CW
+aedist -rec -f \e
+  http://aegis.sf.net/cgi-bin/aeget/aegis.4.19.C010/?aedist
+.ft R
+.RE
+If this completes successfully (and it is possible it won't,
+either because of trojan warnings, or some conflict between local
+changes and the imcoming remote changes), and your project has its
+\fIdevelop_\%end_\%action\fP set to \fIgoto_\%awaiting_\%integration\fP,
+the change will be integrated using a command such as:
+.RS
+.ft CW
+aeintegratq -p aegis.\*(v) -c 10
+.ft R
+.RE
+and then starts over again for the next missing change set.
+.SS Options
+The following options are understood by this variant:
+.TP 8n
+\fB\-EXclude_UUID\fP \fIUUID\fP
+This option may be used to exclude some change sets from being
+downloaded and unpacked.  This option may be used more than once.
+.TP 8n
+\fB\-No_EXclude_UUID\fP \fIUUID\fP
+This option may be used to explicitly list change sets to be downloaded
+and unpacked, to the exclusion of all others.  This option may be used
+more than once.
+.TP 8n
+\fB\-EXclude_version\fP \fIpattern\fP
+This option may be used to explicitly exclude some change set from
+being downloaded and unpacked.  The \fIpattern\fP is matched against
+the version as displayed in the inventory.  This option may be used
+more than once.
+.TP 8n
+\fB\-INclude_Version\fP \fIpattern\fP
+This option may be used to explicitly list change sets to be downloaded
+and unpacked, to the exclusion of all others.  The \fIpattern\fP is
+matched against the version as displayed in the inventory.  This
+option may be used more than once.
+.so o_file_cs.so
+.TP 8n
+.B -PErsevere
+This option may be used to specify that all relevant change sets
+should be downloaded, even if some fail.  Defaults to the user's
+\fIpersevere_\%preference\fP if not specified, see \fIaeuconf\fP(5) for
+more information.
+.TP 8n
+.B -No_PErsevere
+This option may be used to specify that the downloading of change
+sets should stop after the first failure.  Defaults to the user's
+\fIpersevere_\%preference\fP if not specified, see \fIaeuconf\fP(5) for
+more information.
+.so o_project.so
+.TP 8n
+\-Trojan
+This option is passed to any \fIaedist\fP(1) commands spawned by this command.
+.TP 8n
+\-No_Trojan
+This option is passed to any \fIaedist\fP(1) commands spawned by this command.
+.SH MISSING
+If you want to see the change sets that \fIaedist \-missing\fP may
+download before it goes ahead and does it, you can use a command such as:
+.RS
+.ft CW
+aedist --missing -f aegis.sf.net
+.ft R
+.RE
+In particular, this allows you to select apropriate UUIDs for the
+\fIaedist \-replay \-exclude\fP or \fI\-no-exclude\fP options.
+.SS Options
+The following options are understood by this variant:
+.TP 8n
+\fB\-EXclude_UUID\fP \fIUUID\fP
+This option may be used to exclude some change sets from being
+listed.  This option may be used more than once.
+.TP 8n
+\fB\-No_EXclude_UUID\fP \fIUUID\fP
+This option may be used to explicitly list change sets to be listed,
+to the exclusion of all others.  This option may be used more than
+once.
+.TP 8n
+\fB\-EXclude_version\fP \fIpattern\fP
+This option may be used to explicitly exclude some change set from
+being listed.  The \fIpattern\fP is matched against the version as
+displayed in the inventory.  This option may be used more than once.
+.TP 8n
+\fB\-INclude_Version\fP \fIpattern\fP
+This option may be used to explicitly list change sets to be listed,
+to the exclusion of all others.  The \fIpattern\fP is matched against
+the version as displayed in the inventory.  This option may be used
+more than once.
 .SH LIST
 The list variant can be used to list the contents of a package without
 actually unpacking it first.
@@ -306,6 +443,7 @@ If I have forgotten anyone, it wasn't intentional.
 tab(;);
 l l l.
 Ralf Fassel;<ralf@akutech.de>;Catching trojan horses.
+Walter Franzini;<walter.franzini@sys-net.it>;coding \-replay download
 Florian Xhumari;<Florian.Xhumari@inria.fr>;On the need for pull interfaces.
 Graham Wheeler;<gram@cdsec.com>;HTTP pull interfacing.
 .TE

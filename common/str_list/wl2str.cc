@@ -17,7 +17,7 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 //
-// MANIFEST: functions to manipulate wl2strs
+// MANIFEST: method to unsplit string lists
 //
 
 #include <ac/string.h>
@@ -26,42 +26,29 @@
 #include <str_list.h>
 
 
-//
-// NAME
-//	wl2str - form a string from a word list
-//
-// SYNOPSIS
-//	string_ty *wl2str(string_list_ty *wlp, int start, int stop, char *sep);
-//
-// DESCRIPTION
-//	Wl2str is used to form a string from a word list.
-//
-// RETURNS
-//	A pointer to the newly formed string in dynamic memory.
-//
-// CAVEAT
-//	It is the responsibility of the caller to ensure that the
-//	new string is freed when finished with, by a call to free().
-//
-
-string_ty      *
-wl2str(const string_list_ty *wl, int start, int stop, const char *sep)
+string_ty *
+string_list_ty::unsplit(const char *sep)
+    const
 {
-    int             j;
-    static char     *tmp;
-    static size_t   tmplen;
-    size_t          length;
-    size_t          seplen;
-    char            *pos;
-    string_ty       *s;
+    return unsplit(0, size(), sep);
+}
+
+
+string_ty *
+string_list_ty::unsplit(size_t start, size_t stop, const char *sep)
+    const
+{
+    static char *tmp;
+    static size_t tmplen;
 
     if (!sep)
 	sep = " ";
-    seplen = strlen(sep);
-    length = 0;
-    for (j = start; j <= stop && j < (int)wl->nstrings; j++)
+    size_t seplen = strlen(sep);
+    size_t length = 0;
+    size_t j;
+    for (j = start; j <= stop && j < nstrings; j++)
     {
-	s = wl->string[j];
+	string_ty *s = string[j];
 	if (s->str_length)
 	{
 	    if (length)
@@ -76,10 +63,10 @@ wl2str(const string_list_ty *wl, int start, int stop, const char *sep)
 	tmp = (char *)mem_change_size(tmp, tmplen);
     }
 
-    pos = tmp;
-    for (j = start; j <= stop && j < (int)wl->nstrings; j++)
+    char *pos = tmp;
+    for (j = start; j <= stop && j < nstrings; j++)
     {
-	s = wl->string[j];
+	string_ty *s = string[j];
 	if (s->str_length)
 	{
 	    if (pos != tmp)
@@ -92,6 +79,5 @@ wl2str(const string_list_ty *wl, int start, int stop, const char *sep)
 	}
     }
 
-    s = str_n_from_c(tmp, length);
-    return s;
+    return str_n_from_c(tmp, length);
 }

@@ -26,7 +26,7 @@
 #include <trace.h>
 #include <user.h>
 #include <wstr.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 static string_ty *
@@ -127,15 +127,15 @@ sub_user(sub_context_ty *scp, wstring_list_ty *arg)
     sub_user_func_ptr func;
 
     trace(("sub_user()\n{\n"));
-    if (arg->nitems == 1)
+    if (arg->size() == 1)
     {
 	up = user_executing(0);
 	result = str_to_wstr(user_name(up));
 	user_free(up);
     }
-    else if (arg->nitems == 2)
+    else if (arg->size() == 2)
     {
-	s = wstr_to_str(arg->item[1]);
+	s = wstr_to_str(arg->get(1));
 	func = sub_user_func(s);
 	str_free(s);
 	if (!func)

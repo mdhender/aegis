@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993, 1995, 1999-2003 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 1992, 1993, 1995, 1999-2004 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -55,7 +54,6 @@ then
 	reviewers=`$aegis -list integrators -project $project -terse`
 	if [ $? -ne 0 ]; then quit; fi
 fi
-reviewers=`echo $reviewers | sed 's/ /,/g'`
 
 #
 # Get any aliases for the project
@@ -67,12 +65,14 @@ then
    aliases=" ["`echo $aliases | tr ' ' ','`"]"
 fi
 
+to=`aesub "\${email_address -comma $reviewers}"`
+
 #
 # build the notice to be mailed
 #
 cat > $tmp << TheEnd
 Subject: Project ${project}$aliases: Change $change: withdrawn from review
-To: $reviewers
+To: $to
 
 The change described below is no longer available for review.
 It has been withdrawn for further development.

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -37,6 +37,7 @@
 #include <synthesize.h>
 #include <trace.h>
 #include <user.h>
+#include <uuidentifier.h>
 
 
 static string_ty *
@@ -96,7 +97,6 @@ synthesize(string_ty *project_name, change_set_ty *csp)
     long	    change_number;
     change_ty	    *cp;
     cstate_ty	    *cstate_data;
-    user_ty	    *up;
     fstate_src_ty   *c_src_data;
     fstate_src_ty   *p_src_data;
     size_t	    j;
@@ -135,7 +135,6 @@ synthesize(string_ty *project_name, change_set_ty *csp)
     //
     // add to history for change creation
     //
-    up = project_user(pp);
     cstate_data->state = cstate_state_awaiting_development;
     history_data = change_history_fake(cp, csp->who, csp->when - 5);
     history_data->what = cstate_history_what_new_change;
@@ -155,11 +154,9 @@ synthesize(string_ty *project_name, change_set_ty *csp)
     //
     // Add the files to the change.
     //
-    for (j = 0; j < csp->file.length; ++j)
+    for (j = 0; j < csp->file.size(); ++j)
     {
-	change_set_file_ty *csfp;
-
-	csfp = csp->file.item + j;
+	change_set_file_ty *csfp = csp->file[j];
 	trace(("%s\n", csfp->filename->str_text));
 	c_src_data = change_file_new(cp, csfp->filename);
 
@@ -226,11 +223,13 @@ synthesize(string_ty *project_name, change_set_ty *csp)
     history_data->what = cstate_history_what_integrate_begin;
 
     cstate_data->delta_number = project_next_delta_number(pp);
+    cstate_data->delta_uuid = universal_unique_identifier();
 
     //
     // add to history for integrate pass
     //
     cstate_data->state = cstate_state_completed;
+    cstate_data->uuid = universal_unique_identifier();
     history_data = change_history_fake(cp, csp->who, csp->when);
     history_data->what = cstate_history_what_integrate_pass;
 

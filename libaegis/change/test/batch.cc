@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000-2004 Peter Miller;
+//	Copyright (C) 2000-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -40,8 +40,8 @@
 
 
 batch_result_list_ty *
-change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
-    int current, int total)
+change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
+    bool baseline_flag, int current, int total)
 {
     sub_context_ty  *scp;
     int		    flags;
@@ -54,11 +54,10 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
     size_t	    j;
     size_t          k;
     string_ty	    *dir;
-    string_list_ty  wl2;
 
     trace(("change_test_batch(cp = %08lX, wlp = %08lX, up = %08lX, "
-	"bl = %d, current = %d, total = %d)\n{\n", (long)cp, (long)wlp,
-	(long)up, bl, current, total));
+	"baseline_flag = %d, current = %d, total = %d)\n{\n", (long)cp,
+	(long)wlp, (long)up, baseline_flag, current, total));
     pconf_data = change_pconf_get(cp, 1);
     the_command = pconf_data->batch_test_command;
     assert(the_command);
@@ -67,7 +66,7 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
     // resolve the file names
     //
     trace(("mark\n"));
-    string_list_constructor(&wl2);
+    string_list_ty wl2;
     for (j = 0; j < wlp->nstrings; ++j)
     {
 	string_ty	*fn;
@@ -87,31 +86,28 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
 	    fn_abs = project_file_path(cp->pp, fn);
 	}
 	assert(fn_abs);
-	string_list_append(&wl2, fn_abs);
+	wl2.push_back(fn_abs);
 	str_free(fn_abs);
     }
 
     trace(("mark\n"));
     assert(cp->reference_count>=1);
     scp = sub_context_new();
-    s = wl2str(&wl2, 0, wl2.nstrings, (char *)0);
+    s = wl2.unsplit();
     sub_var_set_string(scp, "File_Names", s);
     str_free(s);
     trace(("mark\n"));
     output_file_name = os_edit_filename(0);
     sub_var_set_string(scp, "Output", output_file_name);
-    if (bl && !cp->bogus)
+    if (baseline_flag && !cp->bogus)
     {
-	string_list_ty	spbl;
-
-	string_list_constructor(&spbl);
+	string_list_ty spbl;
 	project_search_path_get(cp->pp, &spbl, 0);
-	s = wl2str(&spbl, 0, spbl.nstrings, ":");
+	s = spbl.unsplit(":");
 	sub_var_set_string(scp, "Search_Path_Executable", s);
 	str_free(s);
 	sub_var_override(scp, "Search_Path_Executable");
 	sub_var_optional(scp, "Search_Path_Executable");
-	string_list_destructor(&spbl);
     }
     sub_var_set_long(scp, "Current", current);
     sub_var_optional(scp, "Current");
@@ -168,7 +164,7 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
     //
     trace(("mark\n"));
     dir = project_baseline_path_get(cp->pp, 0);
-    if (!bl && !cp->bogus)
+    if (!baseline_flag && !cp->bogus)
     {
 	cstate_ty       *cstate_data;
 
@@ -270,7 +266,7 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
 	}
 	if
 	(
-	    !string_list_member(wlp, p->file_name)
+	    !wlp->member(p->file_name)
 	||
 	    batch_result_list_member(result, p->file_name)
 	)
@@ -306,7 +302,7 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
 	switch (p->exit_status)
 	{
 	case 1:
-	    if (bl)
+	    if (baseline_flag)
 	    {
 		scp = sub_context_new();
 		sub_var_set_string(scp, "File_Name", p->file_name);
@@ -325,7 +321,7 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
 	    break;
 
 	case 0:
-	    if (bl)
+	    if (baseline_flag)
 	    {
 		scp = sub_context_new();
 		sub_var_set_string(scp, "File_Name", p->file_name);

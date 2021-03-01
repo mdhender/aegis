@@ -193,12 +193,7 @@ public:
       *     finished with.  The contents of the structure pointed to
       *     <b>shall not</b> be altered.
       */
-    nstring
-    cat_three(const nstring &str2, const nstring &str3)
-	const
-    {
-	return nstring(str_cat_three(ref, str2.ref, str3.ref));
-    }
+    nstring cat_three(const nstring &str2, const nstring &str3) const;
 
     /**
       * \brief
@@ -213,18 +208,13 @@ public:
       *     empty string.  True if the numeric value in the string was
       *     non-zero, or the string was non-numeric.
       */
-    operator bool()
-	const
-    {
-	return str_bool(ref);
-    }
+    operator bool() const;
 
-    bool
-    operator!()
-	const
-    {
-	return !str_bool(ref);
-    }
+    /**
+      * The logical netation operator.
+      * Returns the negation of the bool() operator.
+      */
+    bool operator!() const;
 
     /**
       * \brief
@@ -239,12 +229,7 @@ public:
       *     when finished with.  The contents of the structure pointed
       *     to <b>shall not</b> be altered.
       */
-    nstring
-    upcase()
-	const
-    {
-	return nstring(str_upcase(ref));
-    }
+    nstring upcase() const;
 
     /**
       * \brief
@@ -259,12 +244,7 @@ public:
       *     when finished with.  The contents of the structure pointed
       *     to <b>shall not</b> be altered.
       */
-    nstring
-    downcase()
-	const
-    {
-	return nstring(str_downcase(ref));
-    }
+    nstring downcase() const;
 
     /**
       * \brief
@@ -278,12 +258,7 @@ public:
       * \returns
       *	    a pointer to a string in dynamic memory.
       */
-    nstring
-    capitalize()
-	const
-    {
-	return nstring(str_capitalize(ref));
-    }
+    nstring capitalize() const;
 
     /**
       * \brief
@@ -303,12 +278,7 @@ public:
       *     finished with.  The contents of the structure pointed to
       *     <b>shall not</b> be altered.
       */
-    nstring
-    field(char sep, int nth)
-	const
-    {
-	return nstring(str_field(ref, sep, nth));
-    }
+    nstring field(char sep, int nth) const;
 
     /**
       * \brief
@@ -405,12 +375,7 @@ public:
       *     when finished with.  The contents of the structure pointed
       *     to <b>shall not</b> be altered.
       */
-    nstring
-    quote_shell()
-	const
-    {
-	return nstring(str_quote_shell(ref));
-    }
+    nstring quote_shell() const;
 
     /**
       * \brief
@@ -425,12 +390,7 @@ public:
       *     when finished with.  The contents of the structure pointed
       *     to <b>shall not</b> be altered.
       */
-    nstring
-    trim()
-	const
-    {
-	return nstring(str_trim(ref));
-    }
+    nstring trim() const;
 
 #ifdef DEBUG
     /**
@@ -474,12 +434,7 @@ public:
       * @param prefix
       *     The string to test for.
       */
-    bool
-    starts_with(const nstring &prefix)
-	const
-    {
-	return !!str_leading_prefix(get_ref(), prefix.get_ref());
-    }
+    bool starts_with(const nstring &prefix) const;
 
     /**
       * The ends_with method is ised to test whether this string
@@ -488,12 +443,7 @@ public:
       * @param suffix
       *     The string to test for.
       */
-    bool
-    ends_with(const nstring &suffix)
-	const
-    {
-	return !!str_trailing_suffix(get_ref(), suffix.get_ref());
-    }
+    bool ends_with(const nstring &suffix) const;
 
     /**
       * The gmatch function is used to match the string against a file
@@ -506,12 +456,7 @@ public:
       * characters in the string to underscores.  The intention is to
       * create a valid C identifier from the string.
       */
-    nstring
-    identifier()
-	const
-    {
-	return str_identifier(get_ref());
-    }
+    nstring identifier() const;
 
     /**
       * The replace method may be used to alter a string by replacing
@@ -531,11 +476,8 @@ public:
       * @returns
       *     A new string with the replacements made.
       */
-    nstring
-    replace(const nstring &lhs, const nstring &rhs, int maximum = -1)
-    {
-	return str_replace(get_ref(), lhs.get_ref(), rhs.get_ref(), maximum);
-    }
+    nstring replace(const nstring &lhs, const nstring &rhs, int maximum = -1)
+	const;
 
     /**
       * The indexing operator is used to extract the nth character of a
@@ -555,6 +497,50 @@ public:
 	return (n < size() ? ref->str_text[n] : '\0');
     }
 
+    /**
+      * The clear method is used to delete to contents of the string,
+      * and replace it with the empty string/
+      */
+    void clear();
+
+    /**
+      * The url_quote mwthod is used to form a string suitable for use
+      * within an HTML href="" string, or similar.  This means that
+      * special characters and unprintable characters are replaced with
+      * %NN escape sequences.
+      */
+    nstring url_quote() const;
+
+    /**
+      * The url_unquote method is used to form a normal string given an
+      * HTML href="" string, or similar.  This means that %NN escape
+      * sequences are replaced with single bytes.
+      */
+    nstring url_unquote() const;
+
+    /**
+      * The html_quote method is used to form a string suitable for use
+      * withing an HTML paragraph.  This means that special characters
+      * and unprintable characters are replaced with &#DDD; escape
+      * sequences.  Some special characters are also replaced, e.g. &lt;
+      *
+      * \param para
+      *     Whether or not to translate \n\n and \n as <p> and <br>.
+      *     Defaults to false (no translation).
+      */
+    nstring html_quote(bool para = false) const;
+
+    /**
+      * The html_unquote method is used to form a normal string given
+      * text from an HTML paragraph.  This means that &#DDD; escape
+      * sequences are replaced by single bytes.  Some special characters
+      * are also replaced, e.g. &lt;
+      *
+      * \note
+      *     unicode values (DDD > 255) are not understood.
+     */
+    nstring html_unquote() const;
+
 private:
     /**
       * The ref instance variable is used to remember the location of
@@ -567,11 +553,7 @@ private:
       * The get_empty_ref() class method is used to get a
       * pointer to an underlying string object of length zero.
       */
-    static string_ty *
-    get_empty_ref()
-    {
-	return str_from_c("");
-    }
+    static string_ty *get_empty_ref();
 };
 
 inline nstring

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 2001, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -21,136 +21,97 @@
 //
 
 #include <output/tee.h>
-#include <output/private.h>
-#include <str.h>
 
 
-struct output_tee_ty
+output_tee_ty::~output_tee_ty()
 {
-	output_ty	inherited;
-	output_ty	*d1;
-	int		d1_close;
-	output_ty	*d2;
-	int		d2_close;
-};
+    //
+    // Make sure all buffered data has been passed to our write_inner
+    // method.
+    //
+    flush();
 
-
-static void
-output_tee_destructor(output_ty *fp)
-{
-	output_tee_ty *this_thing;
-
-	this_thing = (output_tee_ty *)fp;
-	if (this_thing->d1_close)
-		output_delete(this_thing->d1);
-	if (this_thing->d2_close)
-		output_delete(this_thing->d2);
+    if (d1_close)
+	delete d1;
+    d1 = 0;
+    if (d2_close)
+	delete d2;
+    d2 = 0;
 }
 
 
-static void
-output_tee_write(output_ty *fp, const void *data, size_t nbytes)
+output_tee_ty::output_tee_ty(output_ty *arg1, bool arg2, output_ty *arg3,
+	bool arg4) :
+    d1(arg1),
+    d1_close(arg2),
+    d2(arg3),
+    d2_close(arg4)
 {
-	output_tee_ty *this_thing;
-
-	this_thing = (output_tee_ty *)fp;
-	output_write(this_thing->d1, data, nbytes);
-	output_write(this_thing->d2, data, nbytes);
 }
 
 
-static void
-output_tee_flush(output_ty *fp)
+void
+output_tee_ty::write_inner(const void *data, size_t nbytes)
 {
-	output_tee_ty *this_thing;
-
-	this_thing = (output_tee_ty *)fp;
-	output_flush(this_thing->d1);
-	output_flush(this_thing->d2);
+    d1->write(data, nbytes);
+    d2->write(data, nbytes);
 }
 
 
-static string_ty *
-output_tee_filename(output_ty *fp)
+void
+output_tee_ty::flush_inner()
 {
-	output_tee_ty *this_thing;
-
-	this_thing = (output_tee_ty *)fp;
-	return output_filename(this_thing->d1);
+    d1->flush();
+    d2->flush();
 }
 
 
-static long
-output_tee_ftell(output_ty *fp)
+string_ty *
+output_tee_ty::filename()
+    const
 {
-	output_tee_ty	*this_thing;
-	long		result;
-
-	this_thing = (output_tee_ty *)fp;
-	result = output_ftell(this_thing->d1);
-	if (result < 0)
-		result = output_ftell(this_thing->d2);
-	return result;
+    return d1->filename();
 }
 
 
-static int
-output_tee_page_width(output_ty *fp)
+long
+output_tee_ty::ftell_inner()
+    const
 {
-	output_tee_ty *this_thing;
-
-	this_thing = (output_tee_ty *)fp;
-	return output_page_width(this_thing->d1);
+    long result = d1->ftell();
+    if (result < 0)
+	    result = d2->ftell();
+    return result;
 }
 
 
-static int
-output_tee_page_length(output_ty *fp)
+int
+output_tee_ty::page_width()
+    const
 {
-	output_tee_ty *this_thing;
-
-	this_thing = (output_tee_ty *)fp;
-	return output_page_length(this_thing->d1);
+    return d1->page_width();
 }
 
 
-static void
-output_tee_eoln(output_ty *fp)
+int
+output_tee_ty::page_length()
+    const
 {
-	output_tee_ty *this_thing;
-
-	this_thing = (output_tee_ty *)fp;
-	output_end_of_line(this_thing->d1);
-	output_end_of_line(this_thing->d2);
+    return d1->page_length();
 }
 
 
-static output_vtbl_ty vtbl =
+void
+output_tee_ty::end_of_line_inner()
 {
-	sizeof(output_tee_ty),
-	output_tee_destructor,
-	output_tee_filename,
-	output_tee_ftell,
-	output_tee_write,
-	output_tee_flush,
-	output_tee_page_width,
-	output_tee_page_length,
-	output_tee_eoln,
-	"tee",
-};
+    d1->end_of_line();
+    d2->end_of_line();
+}
 
 
-output_ty *
-output_tee(output_ty *d1, int d1_close, output_ty *d2, int d2_close)
+const char *
+output_tee_ty::type_name()
+    const
 {
-	output_ty	*result;
-	output_tee_ty *this_thing;
-
-	result = output_new(&vtbl);
-	this_thing = (output_tee_ty *)result;
-	this_thing->d1 = d1;
-	this_thing->d1_close = !!d1_close;
-	this_thing->d2 = d2;
-	this_thing->d2_close = !!d2_close;
-	return result;
+    return "tee";
 }

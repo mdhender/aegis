@@ -1,0 +1,32 @@
+//
+//	aegis - project change supervisor
+//	Copyright (C) 2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface of the sub_email_addres class
+//
+
+#ifndef LIBAEGIS_SUB_EMAIL_ADDRES_H
+#define LIBAEGIS_SUB_EMAIL_ADDRES_H
+
+struct wstring_list_ty; // existence
+struct sub_context_ty; // existence
+
+struct wstring_ty *sub_email_address(struct sub_context_ty *,
+	struct wstring_list_ty *);
+
+#endif // LIBAEGIS_SUB_EMAIL_ADDRES_H

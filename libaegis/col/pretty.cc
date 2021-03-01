@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -85,7 +85,10 @@ destructor(col_ty *fp)
 	cp = &this_thing->column[j];
 	trace(("cp = %08lX\n", (long)cp));
 	if (cp->content_filter)
-	    output_delete(cp->content_filter);
+	{
+	    delete cp->content_filter;
+	    cp->content_filter = 0;
+	}
     }
     trace(("column = %08lX\n", (long)this_thing->column));
     if (this_thing->column)
@@ -334,8 +337,8 @@ emit_content(col_pretty_ty *this_thing)
 	output_ty	*w;
 
 	w = this_thing->column[j].content_filter;
-	output_end_of_line(w);
-	output_flush(w);
+	w->end_of_line();
+	w->flush();
     }
 
     //
@@ -528,16 +531,16 @@ create(col_ty *fp, int left, int right, const char *title)
     // filter into the column content.
     //
     cp->content_filter =
-	output_to_wide_open
+	new output_to_wide_ty
 	(
 	    wide_output_expand_open
 	    (
 		wide_output_wrap_open(cp->content, 1, right - left),
 		1
 	    ),
-	    1
+	    true
 	);
-    output_delete_callback(cp->content_filter, delcb, this_thing);
+    cp->content_filter->delete_callback(delcb, this_thing);
     trace(("return %08lX;\n", (long)cp->content_filter));
     trace(("}\n"));
     return cp->content_filter;

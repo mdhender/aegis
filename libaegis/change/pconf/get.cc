@@ -33,6 +33,8 @@
 #include <os.h>
 #include <os/isa/path_prefix.h>
 #include <project/file.h>
+#include <quit.h>
+#include <quit/action/unlink.h>
 #include <str_list.h>
 #include <sub.h>
 #include <symtab.h>
@@ -419,13 +421,7 @@ candidate(fstate_src_ty *src)
 static pconf_ty *
 pconf_read_by_usage(change_ty *cp)
 {
-    string_ty       *s;
-    input_ty        *ifp;
-    string_list_ty  filename;
-    size_t          j;
-    fstate_src_ty   *src;
-    pconf_ty        *result;
-    string_ty       *dir;
+    trace(("pconf_read_by_usage(cp = %08lX)\n{\n", (long)cp));
 
     //
     // Build the list of files.
@@ -433,21 +429,43 @@ pconf_read_by_usage(change_ty *cp)
     // We use a symbol table so that we get O(n) behaviour.
     // (The string_list_append_list_unique is O(n**2), oops.)
     //
-    string_list_constructor(&filename);
-    for (j = 0;; ++j)
+    string_list_ty filename;
+    for (size_t j = 0;; ++j)
     {
-	src = change_file_nth(cp, j, view_path_extreme);
+	fstate_src_ty *src = change_file_nth(cp, j, view_path_extreme);
 	if (!src)
 	    break;
 	if (src->usage != file_usage_config)
 	    continue;
 	if (!candidate(src))
 	    continue;
-	s = change_file_path(cp, src->file_name);
-	if (!s)
-	    s = project_file_path(cp->pp, src->file_name);
-	assert(s);
-	string_list_append(&filename, s);
+	fstate_src_trace(src);
+
+	//
+        // It may be necessary to get the file out of history when we
+        // are dealing with an historical change set, and the particular
+        // file's version is not in a baseline any longer, and must be
+        // extracted from history.
+	//
+	int need_to_unlink = 0;
+	string_ty *s = change_file_version_path(cp, src, &need_to_unlink);
+        assert(s);
+	if (need_to_unlink)
+	{
+	    //
+	    // Remember to remove the temporary file on exit.
+	    //
+	    nstring path(str_copy(s));
+	    os_become_orig();
+	    quit_action *qap = new quit_action_unlink(path);
+	    os_become_undo();
+	    quit_register(*qap);
+        }
+
+	//
+	// Add the filename to the list.
+	//
+        filename.push_back(s);
 	str_free(s);
     }
 
@@ -458,8 +476,8 @@ pconf_read_by_usage(change_ty *cp)
     //
     if (filename.nstrings < 1)
     {
-	s = str_from_c(THE_CONFIG_FILE_NEW);
-	src = change_file_find(cp, s, view_path_extreme);
+	string_ty *s = str_from_c(THE_CONFIG_FILE_NEW);
+	fstate_src_ty *src = change_file_find(cp, s, view_path_extreme);
 	str_free(s);
 
 	if (!src)
@@ -475,7 +493,7 @@ pconf_read_by_usage(change_ty *cp)
 	    if (!s)
 		s = project_file_path(cp->pp, src->file_name);
 	    assert(s);
-	    string_list_append(&filename, s);
+	    filename.push_back(s);
 	    str_free(s);
 
 	    //
@@ -493,9 +511,9 @@ pconf_read_by_usage(change_ty *cp)
     // If there are no candidate files,
     // return a NULL pointer.
     //
-    if (filename.nstrings < 1)
+    if (filename.empty())
     {
-	string_list_destructor(&filename);
+	trace(("return NULL;\n}\n"));
 	return 0;
     }
 
@@ -503,8 +521,8 @@ pconf_read_by_usage(change_ty *cp)
     // Read the configuration information.
     //
     change_become(cp);
-    ifp = input_catenate_tricky(&filename);
-    result = (pconf_ty *)parse_input(ifp, &pconf_type);
+    input_ty *ifp = input_catenate_tricky(&filename);
+    pconf_ty *result = (pconf_ty *)parse_input(ifp, &pconf_type);
     // as a side-effect, parse_input will delete fp
     change_become_undo();
 
@@ -518,15 +536,13 @@ pconf_read_by_usage(change_ty *cp)
     // nothing else to add to the file list, in which case we *dont't*
     // re-read the project config.
     //
-    dir = result->configuration_directory;
+    string_ty *dir = result->configuration_directory;
     if (dir)
     {
-	int             more;
-
-	more = 0;
-	for (j = 0;; ++j)
+	bool more = false;
+	for (size_t k = 0;; ++k)
 	{
-	    src = change_file_nth(cp, j, view_path_extreme);
+	    fstate_src_ty *src = change_file_nth(cp, k, view_path_extreme);
 	    if (!src)
 		break;
 	    if (src->usage == file_usage_config)
@@ -536,13 +552,13 @@ pconf_read_by_usage(change_ty *cp)
 	    if (!os_isa_path_prefix(dir, src->file_name))
 		continue;
 
-	    s = change_file_path(cp, src->file_name);
+	    string_ty *s = change_file_path(cp, src->file_name);
 	    if (!s)
 		s = project_file_path(cp->pp, src->file_name);
 	    assert(s);
-	    string_list_append(&filename, s);
+	    filename.push_back(s);
 	    str_free(s);
-	    more = 1;
+	    more = true;
 
 	    //
 	    // This is a hack, but it makes transition from the old
@@ -568,11 +584,11 @@ pconf_read_by_usage(change_ty *cp)
 	    change_become_undo();
 	}
     }
-    string_list_destructor(&filename);
 
     //
     // Report success.
     //
+    trace(("return %08lX;\n}\n", (long)result));
     return result;
 }
 

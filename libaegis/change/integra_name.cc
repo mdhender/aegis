@@ -42,7 +42,24 @@ change_integrator_name(change_ty *cp)
 	history_data = cstate_data->history->list[pos];
 	switch (history_data->what)
 	{
+	case cstate_history_what_develop_begin:
+	case cstate_history_what_develop_begin_undo:
+	case cstate_history_what_develop_end:
+	case cstate_history_what_develop_end_2ai:
+	case cstate_history_what_develop_end_2ar:
+	case cstate_history_what_develop_end_undo:
+	case cstate_history_what_new_change:
+	case cstate_history_what_review_begin:
+	case cstate_history_what_review_begin_undo:
+	case cstate_history_what_review_pass:
+	case cstate_history_what_review_pass_2ar:
+	case cstate_history_what_review_pass_2br:
+	case cstate_history_what_review_pass_undo:
+	case cstate_history_what_review_pass_undo_2ar:
+	case cstate_history_what_review_fail:
+#ifndef DEBUG
 	default:
+#endif
 	    history_data = 0;
 	    continue;
 

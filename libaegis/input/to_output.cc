@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -35,6 +35,6 @@ input_to_output(input_ty *ifp, output_ty *ofp)
 	n = input_read(ifp, buffer, sizeof(buffer));
 	if (!n)
     	    break;
-	output_write(ofp, buffer, n);
+	ofp->write(buffer, n);
     }
 }

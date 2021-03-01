@@ -23,28 +23,9 @@
 #include <str_list.h>
 
 
-//
-// NAME
-//	wl_insert - a insert a word into a list
-//
-// SYNOPSIS
-//	void wl_insert(string_list_ty *wlp, string_ty *wp);
-//
-// DESCRIPTION
-//	Wl_insert is similar to string_list_append, however it does not
-//	append the word unless it is not already in the list.
-//
-// CAVEAT
-//	If the word is inserted it is copied.
-//
-
 void
-string_list_append_unique(string_list_ty *wlp, string_ty *wp)
+string_list_ty::push_back_unique(string_ty *wp)
 {
-    size_t          j;
-
-    for (j = 0; j < wlp->nstrings; j++)
-	if (str_equal(wlp->string[j], wp))
-	    return;
-    string_list_append(wlp, wp);
+    if (!member(wp))
+	push_back(wp);
 }

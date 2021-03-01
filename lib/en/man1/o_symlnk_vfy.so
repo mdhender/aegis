@@ -1,0 +1,42 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2004 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing symbolic link verification options
+.\"
+.TP 8n
+\fB\-Verify_Symbolic_Links\fP
+This option may be used to request that the symbolic links, or hard
+links, or file copies, in the work area be updated to reflect the
+current state of the baseline.
+This is controlled by the \fIdevelopment_\%directory_\%style\fP field of
+the project configuration file.
+Only files which are not involved in the change are updated.
+See also the ``symbolic_links_preference'' field of \fIaeuconf\fP(5).
+This option is the default, if meaningful for your configuration.
+The name is an historical accident, hard links and file copies are included.
+.TP 8n
+\fB\-Assume_Symbolic_Links\fP
+This option may be used to request that no update of baseline mirror
+files take place.
+This options is useful when you \fIdefinitely know\fP the files'
+up-to-date-ness isn't important right now; incorrect use of this option
+may have unanticipated build side-effects.
+See also the ``symbolic_links_preference'' field of \fIaeuconf\fP(5).
+This option is the default, if not meaningful for your configuration.
+The name is an historical accident, hard links and file copies are included.

@@ -66,7 +66,7 @@ get_change_download(change_ty *cp, string_ty *fn, string_list_ty *modifier)
     if (ok)
     {
 	printf(" (");
-	emit_change_href(cp, "aedist@es");
+	emit_change_href(cp, "aedist+es");
 	printf("entire source</a>)");
     }
     printf("<dd>\n");
@@ -87,7 +87,7 @@ get_change_download(change_ty *cp, string_ty *fn, string_list_ty *modifier)
 	printf("<dt>");
 	emit_change_href(cp, "aepatch");
 	printf("patch</a> (");
-	emit_change_href(cp, "aepatch@compat=4.16");
+	emit_change_href(cp, "aepatch+compat=4.16");
         printf("no meta data</a>)<dd>This item allows you to\n");
         printf("download a change set as a conventional patch.\n");
         printf("It even preserves most of the meta-data for the\n");
@@ -99,7 +99,7 @@ get_change_download(change_ty *cp, string_ty *fn, string_list_ty *modifier)
 	printf("<dt>");
 	emit_change_href(cp, "aetar");
 	printf("tar.gz</a> (");
-	emit_change_href(cp, "aetar@es");
+	emit_change_href(cp, "aetar+es");
         printf("entire source</a>)<dd>This item allows you\n");
         printf("to download change sets as a tarball.  It\n");
         printf("loses most of the meta-data for the change set\n");
@@ -111,37 +111,37 @@ get_change_download(change_ty *cp, string_ty *fn, string_list_ty *modifier)
         printf("name and version added as a default path prefix, so\n");
         printf("they unpack into a single directory.  If you don't\n");
         printf("want the extra top-level directory, use these links:\n");
-	emit_change_href(cp, "aetar@noprefix");
+	emit_change_href(cp, "aetar+noprefix");
 	printf("tar.gz</a> (");
-	emit_change_href(cp, "aetar@noprefix@es");
+	emit_change_href(cp, "aetar+noprefix+es");
 	printf("entire source</a>).<p>\n");
     }
 
     printf("<dt> ");
-    emit_change_href(cp, "aedist@compat=4.6");
+    emit_change_href(cp, "aedist+compat=4.6");
     printf("Pre-4.7 aedist</a>");
     if (ok)
     {
 	printf(" (");
-	emit_change_href(cp, "aedist@compat=4.6@es");
+	emit_change_href(cp, "aedist+compat=4.6+es");
 	printf("entire source</a>)");
     }
     printf(", ");
-    emit_change_href(cp, "aedist@compat=4.9");
+    emit_change_href(cp, "aedist+compat=4.9");
     printf("pre-4.10 aedist</a>");
     if (ok)
     {
 	printf(" (");
-	emit_change_href(cp, "aedist@compat=4.9@es");
+	emit_change_href(cp, "aedist+compat=4.9+es");
 	printf("entire source</a>)");
     }
     printf(", ");
-    emit_change_href(cp, "aedist@compat=4.16");
+    emit_change_href(cp, "aedist+compat=4.16");
     printf("pre-4.17 aedist</a>");
     if (ok)
     {
 	printf(" (");
-	emit_change_href(cp, "aedist@compat=4.16@es");
+	emit_change_href(cp, "aedist+compat=4.16+es");
 	printf("entire source</a>)");
     }
     printf(" compatibility<dd>\n");

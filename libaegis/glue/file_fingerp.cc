@@ -29,7 +29,7 @@
 
 
 int
-file_fingerprint(char *path, char *buf, int max)
+file_fingerprint(const char *path, char *buf, int max)
 {
 	fingerprint_ty	*fp;
 	int		result;

@@ -29,6 +29,7 @@
 .\"	groff -s -p -t -ms aegis.ms | lpr
 .\" and gives PostScript output and far better error messages.
 .\"
+.lg 0 \" turn off ligatures: groff diagrees with everyone else about widths
 .if n .ftr CB B
 .if n .ftr CI I
 .if n .ftr CW R

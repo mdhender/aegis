@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -76,7 +76,7 @@ output_reaper(void *p)
     output_ty       *op;
 
     op = (output_ty *)p;
-    output_delete(op);
+    delete op;
 }
 
 
@@ -94,12 +94,11 @@ list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
     int             left;
     col_ty	    *colp;
     user_ty         *up;
-    symtab_ty       *attr_col_stp;
+    symtab_ty       *attr_col_stp = 0;
 
     //
     // Check that the specified user exists.
     //
-    attr_col_stp = 0;
     if (login)
         up = user_symbolic((project_ty *)0, login);
     else
@@ -161,8 +160,8 @@ list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
 	    col_create(colp, left, left + STATE_WIDTH, "State\n-------");
 	left += STATE_WIDTH + 1;
 
-	attr_col_stp = symtab_alloc(5);
-	attr_col_stp->reap = output_reaper;
+	attr_col_stp = new symtab_ty(5);
+	attr_col_stp->set_reap(output_reaper);
 	for (j = 0; ; ++j)
 	{
 	    cstate_ty       *cstate_data;
@@ -191,14 +190,11 @@ list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
 
 		for (k = 0; k < cstate_data->attribute->length; ++k)
 		{
-		    attributes_ty   *ap;
-
-		    ap = cstate_data->attribute->list[k];
+		    attributes_ty *ap = cstate_data->attribute->list[k];
 		    if (ael_attribute_listable(ap))
 		    {
-			void            *p;
-
-			p = symtab_query(attr_col_stp, ap->name);
+			string_ty *lc_name = str_downcase(ap->name);
+			void *p = attr_col_stp->query(lc_name);
 			if (!p)
 			{
 			    string_ty       *s;
@@ -214,9 +210,10 @@ list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
 				    s->str_text
 				);
 			    str_free(s);
-			    symtab_assign(attr_col_stp, ap->name, op);
+			    attr_col_stp->assign(lc_name, op);
 			    left += ATTR_WIDTH + 1;
 			}
+			str_free(lc_name);
 		    }
 		}
 	    }
@@ -252,15 +249,10 @@ list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
             (!login || str_equal(login, change_developer_name(cp)))
 	)
 	{
-	    output_fprintf
-	    (
-		number_col,
-		"%4ld",
-		magic_zero_decode(change_number)
-	    );
+	    number_col->fprintf("%4ld", magic_zero_decode(change_number));
 	    if (state_col)
 	    {
-		output_fputs(state_col, cstate_state_ename(cstate_data->state));
+		state_col->fputs(cstate_state_ename(cstate_data->state));
 		if
 		(
 		    option_verbose_get()
@@ -268,8 +260,8 @@ list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
 		    cstate_data->state == cstate_state_being_developed
 		)
 		{
-		    output_end_of_line(state_col);
-		    output_put_str(state_col, change_developer_name(cp));
+		    state_col->end_of_line();
+		    state_col->fputs(change_developer_name(cp));
 		}
 		if
 		(
@@ -278,13 +270,13 @@ list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
 		    cstate_data->state == cstate_state_being_integrated
 		)
 		{
-		    output_end_of_line(state_col);
-		    output_put_str(state_col, change_integrator_name(cp));
+		    state_col->end_of_line();
+		    state_col->fputs(change_integrator_name(cp));
 		}
 	    }
 	    if (description_col && cstate_data->brief_description)
 	    {
-		output_put_str(description_col, cstate_data->brief_description);
+		description_col->fputs(cstate_data->brief_description);
 	    }
 	    if (attr_col_stp && cstate_data->attribute)
 	    {
@@ -292,16 +284,15 @@ list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
 
 		for (k = 0; k < cstate_data->attribute->length; ++k)
 		{
-		    attributes_ty   *ap;
-
-		    ap = cstate_data->attribute->list[k];
+		    attributes_ty *ap = cstate_data->attribute->list[k];
 		    if (ap->name && ap->value)
 		    {
-			output_ty       *op;
-
-			op = (output_ty *)symtab_query(attr_col_stp, ap->name);
+			string_ty *lc_name = str_downcase(ap->name);
+			output_ty *op =
+			    (output_ty *)attr_col_stp->query(lc_name);
 			if (op)
-			    output_put_str(op, ap->value);
+			    op->fputs(ap->value);
+			str_free(lc_name);
 		    }
 		}
 	    }
@@ -310,7 +301,7 @@ list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
 	change_free(cp);
     }
     if (attr_col_stp)
-	symtab_free(attr_col_stp);
+	delete attr_col_stp;
 
     //
     // clean up and go home

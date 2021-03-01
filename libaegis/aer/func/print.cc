@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1994-1996, 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -144,11 +144,7 @@ run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 	assert(vp->method->type==rpt_value_type_string);
 	if (rpt_func_print__column[j])
 	{
-	    output_put_str
-	    (
-		rpt_func_print__column[j],
-		rpt_value_string_query(vp)
-	    );
+	    rpt_func_print__column[j]->fputs(rpt_value_string_query(vp));
 	}
     }
 

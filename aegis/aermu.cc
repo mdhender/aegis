@@ -198,32 +198,25 @@ candidate(fstate_src_ty *src)
 static void
 remove_file_undo_main(void)
 {
-    string_list_ty  wl;
-    string_list_ty  wl2;
     string_ty	    *s1;
     string_ty	    *s2;
     size_t	    j;
     size_t	    k;
-    string_ty	    *project_name;
     project_ty	    *pp;
-    long	    change_number;
     change_ty	    *cp;
-    log_style_ty    log_style;
     user_ty	    *up;
     string_ty	    *dd;
     int		    number_of_errors;
     string_list_ty  search_path;
-    int		    mend_symlinks;
-    pconf_ty        *pconf_data;
     int		    based;
     string_ty	    *base;
 
     trace(("remove_file_undo_main()\n{\n"));
     arglex();
-    project_name = 0;
-    change_number = 0;
-    string_list_constructor(&wl);
-    log_style = log_style_append_default;
+    string_ty *project_name = 0;
+    long change_number = 0;
+    string_list_ty wl;
+    log_style_ty log_style = log_style_append_default;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -240,7 +233,7 @@ remove_file_undo_main(void)
 
 	case arglex_token_string:
 	    s2 = str_from_c(arglex_value.alv_string);
-	    string_list_append(&wl, s2);
+	    wl.push_back(s2);
 	    str_free(s2);
 	    break;
 
@@ -276,6 +269,11 @@ remove_file_undo_main(void)
 	case arglex_token_base_relative:
 	case arglex_token_current_relative:
 	    user_relative_filename_preference_argument(remove_file_undo_usage);
+	    break;
+
+	case arglex_token_symbolic_links:
+	case arglex_token_symbolic_links_not:
+	    user_symlink_pref_argument(remove_file_undo_usage);
 	    break;
 	}
 	arglex();
@@ -365,7 +363,7 @@ remove_file_undo_main(void)
     // 3.   if the file is inside the baseline, ok
     // 4.   if neither, error
     //
-    string_list_constructor(&wl2);
+    string_list_ty wl2;
     number_of_errors = 0;
     for (j = 0; j < wl.nstrings; ++j)
     {
@@ -420,7 +418,7 @@ remove_file_undo_main(void)
 		assert(src_data);
 		if (src_data && candidate(src_data))
 		{
-		    if (string_list_member(&wl2, s3))
+		    if (wl2.member(s3))
 		    {
 			sub_context_ty	*scp;
 
@@ -431,7 +429,7 @@ remove_file_undo_main(void)
 			++number_of_errors;
 		    }
 		    else
-			string_list_append(&wl2, s3);
+			wl2.push_back(s3);
 		    ++used;
 		}
 	    }
@@ -458,7 +456,7 @@ remove_file_undo_main(void)
 	}
 	else
 	{
-	    if (string_list_member(&wl2, s2))
+	    if (wl2.member(s2))
 	    {
 		sub_context_ty	*scp;
 
@@ -469,14 +467,11 @@ remove_file_undo_main(void)
 		++number_of_errors;
 	    }
 	    else
-		string_list_append(&wl2, s2);
+		wl2.push_back(s2);
 	}
-	string_list_destructor(&wl_in);
 	str_free(s2);
     }
-    string_list_destructor(&wl);
     wl = wl2;
-    string_list_destructor(&search_path);
 
     //
     // ensure that each file is part of the change
@@ -538,17 +533,6 @@ remove_file_undo_main(void)
     }
 
     //
-    // Figure out if we need to mend symlinks as we go.
-    //
-    pconf_data = change_pconf_get(cp, 0);
-    mend_symlinks =
-	(
-	    pconf_data->create_symlinks_before_build
-	&&
-	    !pconf_data->remove_symlinks_after_build
-	);
-
-    //
     // Remove the difference files,
     // and the dummy files,
     // if they exist.
@@ -557,52 +541,35 @@ remove_file_undo_main(void)
     user_become(up);
     for (j = 0; j < wl.nstrings; ++j)
     {
-	fstate_src_ty   *psrc_data;
-
 	s1 = wl.string[j];
-	if (mend_symlinks)
-	{
-	    user_become_undo();
-	    psrc_data = project_file_find(pp, s1, view_path_extreme);
-	    user_become(up);
-	}
-	else
-	    psrc_data = 0;
-
 	s2 = os_path_join(dd, s1);
-	if (psrc_data)
-	{
-	    string_ty	    *blf;
 
-	    //
-	    // This is not as robust in the face of errors
-	    // as using commit.	 Its merit is its simplicity.
-	    //
-	    // Also, the rename-and-delete shenanigans take
-	    // a long time over NFS, and users expect this
-	    // to be fast.
-	    //
-	    user_become_undo();
-	    blf = project_file_path(pp, s1);
-	    assert(blf);
-	    user_become(up);
-	    if (os_exists(s2))
-		os_unlink(s2);
-	    os_symlink(blf, s2);
-	    str_free(blf);
-	}
-	else
-	{
-	    if (os_exists(s2))
-		commit_unlink_errok(s2);
-	}
+	//
+	// This is not as robust in the face of errors
+	// as using commit.  Its merit is its simplicity.
+	//
+	// It plays nice with the change_maintain_symlinks_to_baseline
+	// call below.
+	//
+	// Also, the rename-and-delete shenanigans take
+	// a long time over NFS, and users expect this
+	// to be fast.
+	//
+	if (os_exists(s2))
+	    os_unlink(s2);
 	str_free(s2);
 
+	//
+	// Always unlink the difference file.
+	//
 	s2 = str_format("%s/%s,D", dd->str_text, s1->str_text);
 	if (os_exists(s2))
 	    commit_unlink_errok(s2);
 	str_free(s2);
 
+	//
+	// Always unlink the merge backup file.
+	//
 	s2 = str_format("%s/%s,B", dd->str_text, s1->str_text);
 	if (os_exists(s2))
 	    commit_unlink_errok(s2);
@@ -623,6 +590,11 @@ remove_file_undo_main(void)
     // as was received by aedist or aepatch, and the UUID is invalidated.
     //
     change_uuid_clear(cp);
+
+    //
+    // Maintain the symlinks (etc) to the baseline.
+    //
+    change_maintain_symlinks_to_baseline(cp, up);
 
     //
     // run the change file command
@@ -650,7 +622,6 @@ remove_file_undo_main(void)
 	change_verbose(cp, scp, i18n("remove file undo $filename complete"));
 	sub_context_delete(scp);
     }
-    string_list_destructor(&wl);
     change_free(cp);
     project_free(pp);
     user_free(up);

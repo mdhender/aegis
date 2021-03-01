@@ -25,16 +25,20 @@
 
 #include <main.h>
 
+class nstring; // forward
 struct change_ty; // forward
 struct project_ty; // forward
 struct string_ty; // forward
+class nstring; // forward
 struct string_list_ty; // forward
 
 void http_fatal(const char *, ...)			      ATTR_PRINTF(1, 2);
 const char *http_getenv(const char *);
 void html_escape_string(string_ty *);
+void html_escape_string(const nstring &);
 void html_escape_charstar(const char *);
 void html_encode_string(string_ty *);
+void html_encode_string(const nstring &);
 void html_encode_charstar(const char *);
 void http_content_type_header(string_ty *);
 
@@ -85,7 +89,9 @@ const char *http_script_name(void);
   * The emit_project_href function is used to print the leading <a>
   * portion of a project reference.
   */
-void emit_project_href(project_ty *pp, const char *modifier);
+void emit_project_href(project_ty *pp);
+void emit_project_href(project_ty *pp, const char *modifier, ...)
+							      ATTR_PRINTF(2, 3);
 
 /**
   * The emit_change_href function is used to print the leading <a>
@@ -103,6 +109,29 @@ void emit_change_href_n(project_ty *pp, long change_number,
 /**
   * The emit_file_href function is used to print the leading <a> portion
   * of a file reference.
+  *
+  * \param cp
+  *     The change to work within.
+  * \param filename
+  *     The name of the file being linked.
+  * \param modifier
+  *     extra equery elements
+  */
+void emit_file_href(change_ty *cp, const nstring &filename,
+    const char *modifier);
+
+/**
+  * The emit_file_href function is used to print the leading <a> portion
+  * of a file reference.
+  *
+  * \param cp
+  *     The change to work within.
+  * \param filename
+  *     The name of the file being linked.
+  * \param modifier
+  *     extra equery elements
+  * \note
+  *     This function will be DEPRECATED one day
   */
 void emit_file_href(change_ty *cp, string_ty *filename,
     const char *modifier);
@@ -111,7 +140,14 @@ void emit_file_href(change_ty *cp, string_ty *filename,
   * The emit_rect_image function is used to print an <img> of a rectangle,
   * use for drawing histograms.
   */
-void emit_rect_image(int width, int height, const char *label);
+void emit_rect_image(int width, int height, const char *label, int hspace = -1);
+
+/**
+  * The emit_rect_image_rgb function is used to print an <img> of a
+  * rectangle, use for drawing histograms, of s specific color.
+  */
+void emit_rect_image_rgb(int width, int height, const char *color,
+    int hspace = -1);
 
 /**
   * The modifier_test_and_clear function may be used to look for the

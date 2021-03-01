@@ -23,7 +23,7 @@
 #include <sub.h>
 #include <sub/length.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 wstring_ty *
@@ -32,7 +32,7 @@ sub_length(sub_context_ty *scp, wstring_list_ty *arg)
     wstring_ty	*result;
 
     trace(("sub_length()\n{\n"));
-    if (arg->nitems < 2)
+    if (arg->size() < 2)
     {
        	sub_context_error_set(scp, i18n("requires one argument"));
 	result = 0;
@@ -40,23 +40,16 @@ sub_length(sub_context_ty *scp, wstring_list_ty *arg)
     else
     {
 	wstring_list_ty results;
-	size_t		j;
-
-	wstring_list_constructor(&results);
-	for (j = 1; j < arg->nitems; ++j)
+	for (size_t j = 1; j < arg->size(); ++j)
 	{
-    	    string_ty       *s;
-    	    wstring_ty      *ws;
-
-    	    s = str_format("%ld", (long)arg->item[j]->wstr_length);
+    	    string_ty *s = str_format("%ld", (long)arg->get(j)->wstr_length);
     	    trace(("result = \"%s\";\n", s->str_text));
-    	    ws = str_to_wstr(s);
+    	    wstring_ty *ws = str_to_wstr(s);
     	    str_free(s);
-	    wstring_list_append(&results, ws);
+	    results.push_back(ws);
 	    wstr_free(ws);
 	}
-	result = wstring_list_to_wstring(&results, 0, results.nitems, 0);
-	wstring_list_destructor(&results);
+	result = results.unsplit();
     }
     trace(("return %8.8lX;\n", (long)result));
     trace(("}\n"));

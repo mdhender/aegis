@@ -183,12 +183,15 @@ get_project_statistics(project_ty *pp, string_ty *fn, string_list_ty *modifier)
 
 	    case cstate_history_what_develop_end_2ar:
 	    case cstate_history_what_review_begin_undo:
+	    case cstate_history_what_review_pass_2ar:
+	    case cstate_history_what_review_pass_undo_2ar:
 		hist_state = cstate_state_awaiting_review;
 		break;
 
 	    case cstate_history_what_develop_end:
 	    case cstate_history_what_review_begin:
 	    case cstate_history_what_review_pass_undo:
+	    case cstate_history_what_review_pass_2br:
 		hist_state = cstate_state_being_reviewed;
 		break;
 

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2001, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -51,7 +51,7 @@ list_project_aliases(string_ty *project_name, long change_number,
     // list the projects
     //
     gonzo_alias_list(&name);
-    string_list_sort(&name);
+    name.sort();
 
     //
     // create the columns
@@ -90,16 +90,16 @@ list_project_aliases(string_ty *project_name, long change_number,
 		)
 	    )
 	    {
-		output_put_str(name_col, name.string[j]);
+		name_col->fputs(name.string[j]);
 		if (desc_col)
-	    	    output_put_str(desc_col, other);
+	    	    desc_col->fputs(other);
 		col_eoln(colp);
 		++nprinted;
 	    }
 	}
 	else
 	{
-	    output_put_str(name_col, name.string[j]);
+	    name_col->fputs(name.string[j]);
 
 	    if (desc_col)
 	    {
@@ -108,7 +108,7 @@ list_project_aliases(string_ty *project_name, long change_number,
 		other = gonzo_alias_to_actual(name.string[j]);
 		assert(other);
 		if (other)
-	    	    output_put_str(desc_col, other);
+	    	    desc_col->fputs(other);
 	    }
 	    col_eoln(colp);
 	    ++nprinted;
@@ -118,11 +118,11 @@ list_project_aliases(string_ty *project_name, long change_number,
     {
 	output_ty       *fp;
 
-	output_delete(name_col);
+	delete name_col;
 	if (desc_col)
-		output_delete(desc_col);
+	    delete desc_col;
 	fp = col_create(colp, 0, 0, (const char *)0);
-	output_fputs(fp, "No project aliases.\n");
+	fp->fputs("No project aliases.\n");
 	col_eoln(colp);
     }
 

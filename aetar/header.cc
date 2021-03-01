@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 #include <ac/string.h>
 
 #include <header.h>
+#include <nstring.h>
 
 
 static long
@@ -95,10 +96,10 @@ careful_strlen(char *s, size_t n)
 
 
 static void
-string_field_set(char *to_buf, size_t to_len, string_ty *from)
+string_field_set(char *to_buf, size_t to_len, const nstring &from)
 {
-    size_t from_len = (size_t)from->str_length;
-    const char *from_buf = from->str_text;
+    size_t from_len = from.length();
+    const char *from_buf = from.c_str();
     if (from_len > to_len - 1)
 	from_len = to_len - 1;
     if (from_len)
@@ -117,6 +118,13 @@ header_name_get(header_ty *hp)
 
 void
 header_name_set(header_ty *hp, string_ty *arg)
+{
+    header_name_set(hp, nstring(str_copy(arg)));
+}
+
+
+void
+header_name_set(header_ty *hp, const nstring &arg)
 {
     string_field_set(hp->name, sizeof(hp->name), arg);
 }
@@ -235,6 +243,13 @@ header_linkname_get(header_ty *hp)
 void
 header_linkname_set(header_ty *hp, string_ty *arg)
 {
+    header_linkname_set(hp, nstring(str_copy(arg)));
+}
+
+
+void
+header_linkname_set(header_ty *hp, const nstring &arg)
+{
     string_field_set(hp->linkname, sizeof(hp->linkname), arg);
 }
 
@@ -251,6 +266,13 @@ header_uname_get(header_ty *hp)
 
 void
 header_uname_set(header_ty *hp, string_ty *arg)
+{
+    header_uname_set(hp, nstring(str_copy(arg)));
+}
+
+
+void
+header_uname_set(header_ty *hp, const nstring &arg)
 {
     string_field_set(hp->uname, sizeof(hp->uname), arg);
     strlcpy(hp->magic, TMAGIC, sizeof(hp->magic));
@@ -269,6 +291,13 @@ header_gname_get(header_ty *hp)
 
 void
 header_gname_set(header_ty *hp, string_ty *arg)
+{
+    header_gname_set(hp, nstring(str_copy(arg)));
+}
+
+
+void
+header_gname_set(header_ty *hp, const nstring &arg)
 {
     string_field_set(hp->gname, sizeof(hp->gname), arg);
     strlcpy(hp->magic, TMAGIC, sizeof(hp->magic));

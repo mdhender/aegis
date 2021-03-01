@@ -23,31 +23,28 @@
 #include <sub.h>
 #include <sub/quote.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 wstring_ty *
 sub_quote(sub_context_ty *scp, wstring_list_ty *arg)
 {
-	wstring_ty	*s;
-	wstring_ty	*result;
+    //
+    // Convert the work list to a single string.
+    //
+    trace(("sub_quote()\n{\n"));
+    wstring_ty *s = arg->unsplit(1, arg->size());
 
-	//
-	// Convert the work list to a single string.
-	//
-	trace(("sub_quote()\n{\n"));
-	s = wstring_list_to_wstring(arg, (size_t)1, arg->nitems, (char *)0);
+    //
+    // quote the string as required
+    //
+    wstring_ty *result = wstr_quote_shell(s);
 
-	//
-	// quote the string as required
-	//
-	result = wstr_quote_shell(s);
-
-	//
-	// clean up and return
-	//
-	wstr_free(s);
-	trace(("return %8.8lX;\n", (long)result));
-	trace(("}\n"));
-	return result;
+    //
+    // clean up and return
+    //
+    wstr_free(s);
+    trace(("return %8.8lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }

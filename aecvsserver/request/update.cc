@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -206,6 +206,8 @@
 //     to be simple directory name aliases.
 //
 
+#include <ac/string.h>
+
 #include <module.h>
 #include <os.h>
 #include <request/update.h>
@@ -229,13 +231,16 @@ run(server_ty *sp, string_ty *fn)
     // Process the options.
     //
     module_options_constructor(&opt);
-    for (j = 0; j < sp->np->argument_list.nstrings; ++j)
+    for (j = 0; j < sp->np->argument_count(); ++j)
     {
-	string_ty       *arg;
-
-	arg = sp->np->argument_list.string[j];
+	string_ty *arg = sp->np->argument_nth(j);
 	if (arg->str_text[0] != '-')
 	    break;
+	if (0 == strcmp(arg->str_text, "--"))
+	{
+	    ++j;
+	    break;
+	}
 	switch (arg->str_text[1])
 	{
 	case 'A':
@@ -257,7 +262,7 @@ run(server_ty *sp, string_ty *fn)
 	    //
 	    // Set date to update from (is sticky).
 	    //
-	    opt.D = str_copy(sp->np->argument_list.string[++j]);
+	    opt.D = str_copy(sp->np->argument_nth(++j));
 	    break;
 
 	case 'd':
@@ -278,21 +283,21 @@ run(server_ty *sp, string_ty *fn)
 	    //
 	    // More files to ignore (! to reset).
 	    //
-	    opt.I = str_copy(sp->np->argument_list.string[++j]);
+	    opt.I = str_copy(sp->np->argument_nth(++j));
 	    break;
 
 	case 'j':
 	    //
 	    // Merge in changes made between current revision and rev.
 	    //
-	    opt.j = str_copy(sp->np->argument_list.string[++j]);
+	    opt.j = str_copy(sp->np->argument_nth(++j));
 	    break;
 
 	case 'k':
 	    //
 	    // Use RCS kopt -k option on checkout. (is sticky)
 	    //
-	    opt.k = str_copy(sp->np->argument_list.string[++j]);
+	    opt.k = str_copy(sp->np->argument_nth(++j));
 	    break;
 
 	case 'l':
@@ -327,14 +332,14 @@ run(server_ty *sp, string_ty *fn)
 	    //
 	    // Update using specified revision/tag (is sticky).
 	    //
-	    opt.r = str_copy(sp->np->argument_list.string[++j]);
+	    opt.r = str_copy(sp->np->argument_nth(++j));
 	    break;
 
 	case 'W':
 	    //
 	    // Wrappers specification line.
 	    //
-	    opt.W = str_copy(sp->np->argument_list.string[++j]);
+	    opt.W = str_copy(sp->np->argument_nth(++j));
 	    break;
 
 	default:
@@ -348,8 +353,8 @@ run(server_ty *sp, string_ty *fn)
     // Each is a file or directory to be updated.
     //
     ok = 1;
-    dp = sp->np->curdir;
-    for (; j < sp->np->argument_list.nstrings; ++j)
+    dp = sp->np->get_curdir();
+    for (; j < sp->np->argument_count(); ++j)
     {
 	string_ty       *arg;
 	module_ty       *mp;
@@ -360,7 +365,7 @@ run(server_ty *sp, string_ty *fn)
 	// Build the (more complete) name of the file on both the client
 	// side and the server side.
 	//
-	arg = sp->np->argument_list.string[j];
+	arg = sp->np->argument_nth(j);
 	client_side = os_path_cat(dp->client_side, arg);
 	server_side = os_path_cat(dp->server_side, arg);
 

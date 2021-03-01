@@ -380,7 +380,7 @@ cmdline_grammar(int argc, char **argv)
     str_free(project_name);
     project_bind_existing(pp);
 
-    stack = string_list_new();
+    stack = new string_list_ty();
     if (baseline)
     {
        	if (change_number)
@@ -577,9 +577,9 @@ strings_or_dot
 	    /*
 	     * Default the path list to "." (the current directory).
 	     */
-	    $$ = string_list_new();
+	    $$ = new string_list_ty();
 	    dot = str_from_c(".");
-	    string_list_append($$, dot);
+	    $$->push_back(dot);
 	    str_free(dot);
 	}
     ;
@@ -587,14 +587,14 @@ strings_or_dot
 strings
     : STRING
        	{
-	    $$ = string_list_new();
-	    string_list_append($$, $1);
+	    $$ = new string_list_ty();
+	    $$->push_back($1);
 	    str_free($1);
        	}
     | strings STRING
        	{
 	    $$ = $1;
-	    string_list_append($$, $2);
+	    $$->push_back($2);
 	    str_free($2);
        	}
     ;

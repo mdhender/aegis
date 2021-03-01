@@ -1,6 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
+#	Copyright (C) 2005 Peter Miller
 #	Copyright (C) 2004 Walter Franzini;
 #	All rights reserved.
 #
@@ -249,10 +250,10 @@ history_put_command =
 	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
 history_query_command =
 	"rlog -r $h,v | awk '/^head:/ {print $$2}'";
-diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
+diff_command = "set +e; $diff $orig $i > $out; test $$? -le 1";
 merge_command = "(diff3 -e $i $orig $mr | sed -e '/^w$$/d' -e '/^q$$/d'; \
 	echo '1,$$p' ) | ed - $i > $out";
-patch_diff_command = "set +e; diff -C0 -L $index -L $index $orig $i > $out; \
+patch_diff_command = "set +e; $diff -C0 -L $index -L $index $orig $i > $out; \
 test $$? -le 1";
 end
 if test $? -ne 0 ; then no_result; fi

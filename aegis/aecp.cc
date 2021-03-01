@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -132,10 +132,6 @@ static void
 copy_file_independent(void)
 {
     string_ty       *dd;
-    string_list_ty  wl;
-    string_list_ty  wl2;
-    string_list_ty  wl_in;
-    string_list_ty  wl_out;
     string_ty       *s1;
     string_ty       *s2;
     size_t          j;
@@ -149,7 +145,6 @@ copy_file_independent(void)
     time_t          delta_date;
     const char      *delta_name;
     int             number_of_errors;
-    string_list_ty  search_path;
     const char      *branch;
     int             trunk;
     int             based;
@@ -159,7 +154,7 @@ copy_file_independent(void)
 
     trace(("copy_file_independent()\n{\n"));
     arglex();
-    string_list_constructor(&wl);
+    string_list_ty wl;
     project_name = 0;
     delta_date = NO_TIME_SET;
     delta_number = -1;
@@ -189,7 +184,7 @@ copy_file_independent(void)
 	case arglex_token_string:
 	    get_file_names:
 	    s2 = str_from_c(arglex_value.alv_string);
-	    string_list_append(&wl, s2);
+	    wl.push_back(s2);
 	    str_free(s2);
 	    break;
 
@@ -211,13 +206,10 @@ copy_file_independent(void)
 		delta_number = arglex_value.alv_number;
 		if (delta_number < 0)
 		{
-		    sub_context_ty *scp;
-
-		    scp = sub_context_new();
-		    sub_var_set_long(scp, "Number", delta_number);
-		    fatal_intl(scp, i18n("delta $number out of range"));
+		    sub_context_ty sc;
+		    sc.var_set_long("Number", delta_number);
+		    sc.fatal_intl(i18n("delta $number out of range"));
 		    // NOTREACHED
-		    sub_context_delete(scp);
 		}
 		break;
 
@@ -262,13 +254,10 @@ copy_file_independent(void)
 		delta_from_change = MAGIC_ZERO;
 	    else if (delta_from_change < 1)
 	    {
-		sub_context_ty *scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", delta_from_change);
-		fatal_intl(scp, i18n("change $number out of range"));
+		sub_context_ty sc;
+		sc.var_set_long("Number", delta_from_change);
+		sc.fatal_intl(i18n("change $number out of range"));
 		// NOTREACHED
-		sub_context_delete(scp);
 	    }
 	    break;
 
@@ -369,14 +358,11 @@ copy_file_independent(void)
     {
 	if (wl.nstrings != 1)
 	{
-	    sub_context_ty *scp;
-
-	    scp = sub_context_new();
-	    sub_var_set_long(scp, "Number", (long)wl.nstrings);
-	    sub_var_optional(scp, "Number");
-	    fatal_intl(scp, i18n("single file with -Output"));
+	    sub_context_ty sc;
+	    sc.var_set_long("Number", (long)wl.nstrings);
+	    sc.var_optional("Number");
+	    sc.fatal_intl(i18n("single file with -Output"));
 	    // NOTREACHED
-	    sub_context_delete(scp);
 	}
     }
 
@@ -449,13 +435,10 @@ copy_file_independent(void)
 	delta_date = project_history_delta_to_timestamp(pp2, delta_number);
 	if (delta_date == NO_TIME_SET)
 	{
-	    sub_context_ty *scp;
-
-	    scp = sub_context_new();
-	    sub_var_set_long(scp, "Name", delta_number);
-	    project_fatal(pp2, scp, i18n("no delta $name"));
+	    sub_context_ty sc;
+	    sc.var_set_long("Name", delta_number);
+	    project_fatal(pp2, &sc, i18n("no delta $name"));
 	    // NOTREACHED
-	    sub_context_delete(scp);
 	}
     }
 
@@ -472,7 +455,7 @@ copy_file_independent(void)
     os_become_orig();
     dd = os_curdir();
     os_become_undo();
-    string_list_constructor(&search_path);
+    string_list_ty search_path;
     project_search_path_get(pp2, &search_path, 1);
 
     //
@@ -496,7 +479,7 @@ copy_file_independent(void)
 	base = str_copy(search_path.string[0]);
     else
 	base = dd;
-    string_list_prepend(&search_path, dd);
+    search_path.push_front(dd);
 
     //
     // resolve the path of each file
@@ -504,7 +487,7 @@ copy_file_independent(void)
     // 2. if the file is inside the search list
     // 3. if neither, error
     //
-    string_list_constructor(&wl2);
+    string_list_ty wl2;
     number_of_errors = 0;
     for (j = 0; j < wl.nstrings; ++j)
     {
@@ -527,15 +510,14 @@ copy_file_independent(void)
 	str_free(s1);
 	if (!s2)
 	{
-	    sub_context_ty *scp;
-
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", wl.string[j]);
-	    project_error(pp, scp, i18n("$filename unrelated"));
-	    sub_context_delete(scp);
+	    sub_context_ty sc;
+	    sc.var_set_string("File_Name", wl.string[j]);
+	    project_error(pp, &sc, i18n("$filename unrelated"));
 	    ++number_of_errors;
 	    continue;
 	}
+	string_list_ty wl_in;
+	string_list_ty wl_out;
 	project_file_directory_query
 	(
 	    pp2,
@@ -545,35 +527,27 @@ copy_file_independent(void)
 	    view_path_simple
 	);
 	if (delta_date != NO_TIME_SET)
-	    string_list_append_list(&wl_in, &wl_out);
+	    wl_in.push_back(wl_out);
 	if (wl_in.nstrings)
 	{
 	    if (output)
 	    {
-		sub_context_ty *scp;
-
-		scp = sub_context_new();
-		sub_var_set_charstar
+		sub_context_ty sc;
+		sc.var_set_charstar
 		(
-		    scp,
 		    "Name",
 		    arglex_token_name(arglex_token_output)
 		);
-		error_intl(scp, i18n("no dir with $name"));
-		sub_context_delete(scp);
+		sc.error_intl(i18n("no dir with $name"));
 		++number_of_errors;
 	    }
 
-	    string_list_append_list_unique(&wl2, &wl_in);
+	    wl2.push_back_unique(wl_in);
 	}
 	else
-	    string_list_append_unique(&wl2, s2);
-	string_list_destructor(&wl_in);
-	string_list_destructor(&wl_out);
+	    wl2.push_back_unique(s2);
 	str_free(s2);
     }
-    string_list_destructor(&search_path);
-    string_list_destructor(&wl);
     wl = wl2;
 
     //
@@ -593,37 +567,31 @@ copy_file_independent(void)
 	    (delta_date == NO_TIME_SET && src_data->deleted_by)
 	)
 	{
-	    sub_context_ty *scp;
-
-	    scp = sub_context_new();
 	    src_data = project_file_find_fuzzy(pp2, s1, view_path_extreme);
-	    sub_var_set_string(scp, "File_Name", s1);
+	    sub_context_ty sc;
+	    sc.var_set_string("File_Name", s1);
 	    if (src_data)
 	    {
-		sub_var_set_string(scp, "Guess", src_data->file_name);
+		sc.var_set_string("Guess", src_data->file_name);
 		project_error
 		(
 		    pp2,
-		    scp,
+		    &sc,
 		    i18n("no $filename, closest is $guess")
 		);
 	    }
 	    else
-		project_error(pp2, scp, i18n("no $filename"));
-	    sub_context_delete(scp);
+		project_error(pp2, &sc, i18n("no $filename"));
 	    ++number_of_errors;
 	    continue;
 	}
     }
     if (number_of_errors)
     {
-	sub_context_ty *scp;
-
-	scp = sub_context_new();
-	sub_var_set_long(scp, "Number", number_of_errors);
-	sub_var_optional(scp, "Number");
-	project_fatal(pp, scp, i18n("no files copied"));
-	sub_context_delete(scp);
+	sub_context_ty sc;
+	sc.var_set_long("Number", number_of_errors);
+	sc.var_optional("Number");
+	project_fatal(pp, &sc, i18n("no files copied"));
     }
 
     //
@@ -656,7 +624,7 @@ copy_file_independent(void)
 		continue;
 	    }
 
-	    old_src = change_file_find(fep->cp, s1, view_path_first);
+	    old_src = fep->src;
 	    assert(old_src);
 	    switch (old_src->action)
 	    {
@@ -703,17 +671,7 @@ copy_file_independent(void)
 		mode |= 0111;
 	    mode &= ~original_umask;
 	    os_chmod(to, mode);
-
-	    //
-	    // clean up afterwards
-	    //
-	    if (from_unlink)
-	    {
-		os_unlink_errok(from);
-	    }
 	    os_become_undo();
-	    str_free(from);
-	    str_free(to);
 	}
 	else
 	{
@@ -724,7 +682,14 @@ copy_file_independent(void)
 		continue;
 
 	    from = project_file_path(pp2, s1);
-	    if (output)
+            os_become_orig();
+            int file_exists = os_exists(from);
+            os_become_undo();
+            assert(file_exists);
+            if (!file_exists)
+                from = project_file_version_path(pp2, old_src, &from_unlink);
+
+            if (output)
 		to = str_from_c(output);
 	    else
 		to = os_path_join(dd, s1);
@@ -750,13 +715,19 @@ copy_file_independent(void)
 	    mode &= ~original_umask;
 	    os_chmod(to, mode);
 	    os_become_undo();
+        }
 
-	    //
-	    // clean up afterwards
-	    //
-	    str_free(from);
-	    str_free(to);
-	}
+        //
+        // clean up afterwards
+        //
+        if (from_unlink)
+        {
+            os_become_orig();
+            os_unlink_errok(from);
+            os_become_undo();
+        }
+        str_free(from);
+        str_free(to);
     }
 
     //
@@ -770,15 +741,11 @@ copy_file_independent(void)
     //
     for (j = 0; j < wl.nstrings; ++j)
     {
-	sub_context_ty *scp;
-
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", wl.string[j]);
-	project_verbose(pp, scp, i18n("copied $filename"));
-	sub_context_delete(scp);
+	sub_context_ty sc;
+	sc.var_set_string("File_Name", wl.string[j]);
+	project_verbose(pp, &sc, i18n("copied $filename"));
     }
 
-    string_list_destructor(&wl);
     project_free(pp);
     user_free(up);
     trace(("}\n"));
@@ -828,10 +795,6 @@ static void
 copy_file_main(void)
 {
     string_ty       *dd;
-    string_list_ty  wl;
-    string_list_ty  wl2;
-    string_list_ty  wl_in;
-    string_list_ty  wl_out;
     string_ty       *s1;
     string_ty       *s2;
     int             overwriting;
@@ -852,19 +815,16 @@ copy_file_main(void)
     long            delta_from_change;
     int             config_seen;
     int             number_of_errors;
-    string_list_ty  search_path;
     const char      *branch;
     int             trunk;
     int             read_only;
     int             mode;
     int             based;
     string_ty       *base;
-    sub_context_ty  *scp;
-    int             rescind;
 
     trace(("copy_file_main()\n{\n"));
     arglex();
-    string_list_constructor(&wl);
+    string_list_ty wl;
     overwriting = 0;
     project_name = 0;
     change_number = 0;
@@ -877,7 +837,7 @@ copy_file_main(void)
     branch = 0;
     trunk = 0;
     read_only = 0;
-    rescind = 0;
+    bool rescind = false;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -905,7 +865,7 @@ copy_file_main(void)
 	case arglex_token_string:
 	  get_file_names:
 	    s2 = str_from_c(arglex_value.alv_string);
-	    string_list_append(&wl, s2);
+	    wl.push_back(s2);
 	    str_free(s2);
 	    break;
 
@@ -947,11 +907,10 @@ copy_file_main(void)
 		delta_number = arglex_value.alv_number;
 		if (delta_number < 0)
 		{
-		    scp = sub_context_new();
-		    sub_var_set_long(scp, "Number", delta_number);
-		    fatal_intl(scp, i18n("delta $number out of range"));
+		    sub_context_ty sc;
+		    sc.var_set_long("Number", delta_number);
+		    sc.fatal_intl(i18n("delta $number out of range"));
 		    // NOTREACHED
-		    sub_context_delete(scp);
 		}
 		break;
 
@@ -972,11 +931,10 @@ copy_file_main(void)
 	    delta_date = date_scan(arglex_value.alv_string);
 	    if (delta_date == NO_TIME_SET)
 	    {
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Name", arglex_value.alv_string);
-		fatal_intl(scp, i18n("date $name unknown"));
+		sub_context_ty sc;
+		sc.var_set_charstar("Name", arglex_value.alv_string);
+		sc.fatal_intl(i18n("date $name unknown"));
 		// NOTREACHED
-		sub_context_delete(scp);
 	    }
 	    break;
 
@@ -1002,11 +960,10 @@ copy_file_main(void)
 		delta_from_change = MAGIC_ZERO;
 	    else if (delta_from_change < 1)
 	    {
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
+		sub_context_ty sc;
+		sc.var_set_long("Number", change_number);
+		sc.fatal_intl(i18n("change $number out of range"));
 		// NOTREACHED
-		sub_context_delete(scp);
 	    }
 	    break;
 
@@ -1072,7 +1029,7 @@ copy_file_main(void)
 	case arglex_token_rescind:
 	    if (rescind)
 		duplicate_option(copy_file_usage);
-	    rescind = 1;
+	    rescind = true;
 	    break;
 
 	case arglex_token_keep:
@@ -1083,7 +1040,7 @@ copy_file_main(void)
 	}
 	arglex();
     }
-    if (!wl.nstrings)
+    if (!wl.nstrings && !rescind)
     {
 	error_intl(0, i18n("no file names"));
 	copy_file_usage();
@@ -1100,6 +1057,15 @@ copy_file_main(void)
 	    );
 	}
 	branch = "";
+    }
+    if (rescind && output && wl.nstrings != 1)
+    {
+	mutually_exclusive_options
+	(
+	    arglex_token_rescind,
+	    arglex_token_output,
+	    copy_file_usage
+	);
     }
     if
     (
@@ -1135,22 +1101,11 @@ copy_file_main(void)
 	delta_date == NO_TIME_SET
     )
     {
-	scp = sub_context_new();
-	sub_var_set_charstar
-	(
-	    scp,
-	    "Name1",
-	    arglex_token_name(arglex_token_rescind)
-	);
-	sub_var_set_charstar
-	(
-	    scp,
-	    "Name2",
-	    arglex_token_name(arglex_token_delta)
-	);
-	fatal_intl(scp, i18n("$name1 needs $name2"));
+	sub_context_ty sc;
+	sc.var_set_charstar("Name1", arglex_token_name(arglex_token_rescind));
+	sc.var_set_charstar("Name2", arglex_token_name(arglex_token_delta));
+	sc.fatal_intl(i18n("$name1 needs $name2"));
 	// NOTREACHED
-	sub_context_delete(scp);
     }
 
     //
@@ -1160,12 +1115,11 @@ copy_file_main(void)
     {
 	if (wl.nstrings != 1)
 	{
-	    scp = sub_context_new();
-	    sub_var_set_long(scp, "Number", (long)wl.nstrings);
-	    sub_var_optional(scp, "Number");
-	    fatal_intl(scp, i18n("single file with -Output"));
+	    sub_context_ty sc;
+	    sc.var_set_long("Number", (long)wl.nstrings);
+	    sc.var_optional("Number");
+	    sc.fatal_intl(i18n("single file with -Output"));
 	    // NOTREACHED
-	    sub_context_delete(scp);
 	}
 	overwriting = 1;
     }
@@ -1225,15 +1179,19 @@ copy_file_main(void)
     {
 	switch (cstate_data->state)
 	{
-	case cstate_state_being_developed:
-	case cstate_state_awaiting_review:
-	case cstate_state_being_reviewed:
+	case cstate_state_awaiting_development:
 	case cstate_state_awaiting_integration:
+	case cstate_state_awaiting_review:
+	case cstate_state_being_developed:
 	case cstate_state_being_integrated:
+	case cstate_state_being_reviewed:
+	case cstate_state_completed:
 	    break;
 
+#ifndef DEBUG
 	default:
-	  wrong_state:
+#endif
+	    wrong_state:
 	    change_fatal(cp, 0, i18n("bad cp state"));
 	}
     }
@@ -1278,14 +1236,69 @@ copy_file_main(void)
 	delta_date = project_history_delta_to_timestamp(pp2, delta_number);
 	if (delta_date == NO_TIME_SET)
 	{
-	    scp = sub_context_new();
-	    sub_var_set_long(scp, "Name", delta_number);
-	    change_fatal(cp, scp, i18n("no delta $name"));
+	    sub_context_ty sc;
+	    sc.var_set_long("Name", delta_number);
+	    change_fatal(cp, &sc, i18n("no delta $name"));
 	    // NOTREACHED
-	    sub_context_delete(scp);
 	}
 	trace(("delta %ld -> delta date %ld\n", delta_number,
 	       (long)delta_date));
+    }
+
+    //
+    // We may need to consult the project historian
+    // for the historical list of files.
+    //
+    project_file_roll_forward historian;
+    if (delta_date != NO_TIME_SET)
+    {
+	historian.set(pp2, delta_date, 0);
+
+	if (wl.nstrings == 0)
+	{
+	    assert(rescind);
+	    //
+            // If no files are named in an aecp -rescind command, the
+            // list of files is implied by the change being rescinded.
+            //
+            // However, files which are already in the change are to be
+            // avoided unless -overwriting is specified.
+	    //
+	    size_t used = 0;
+	    size_t available = 0;
+	    change_ty *cp2 = historian.get_last_change();
+	    assert(cp2);
+	    for (size_t n = 0; ; ++n)
+	    {
+		fstate_src_ty *src = change_file_nth(cp2, n, view_path_first);
+		if (!src)
+		    break;
+		if (overwriting || !change_file_find(cp, src, view_path_first))
+		{
+		    wl.push_back(src->file_name);
+		    ++used;
+		}
+		++available;
+	    }
+	    if (!used)
+	    {
+		//
+                // FIXME: This isn't exactly the best error message,
+		// but it will do for now.
+		//
+		sub_context_ty sc;
+		sc.var_set_charstar("File_Name", ".");
+		sc.var_set_long("Number", (long)available);
+		sc.var_optional("Number");
+		change_fatal
+		(
+		    cp,
+		    &sc,
+		    i18n("directory $filename contains no relevant files")
+		);
+		// NOTREACHED
+	    }
+	}
     }
 
     //
@@ -1298,6 +1311,7 @@ copy_file_main(void)
     // and any comparison of paths is done on this "system idea"
     // of the pathname.
     //
+    string_list_ty search_path;
     change_search_path_get(cp, &search_path, 1);
 
     //
@@ -1333,7 +1347,7 @@ copy_file_main(void)
     // 3. if neither, error
     //
     config_seen = 0;
-    string_list_constructor(&wl2);
+    string_list_ty wl2;
     number_of_errors = 0;
     for (j = 0; j < wl.nstrings; ++j)
     {
@@ -1356,13 +1370,14 @@ copy_file_main(void)
 	str_free(s1);
 	if (!s2)
 	{
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", wl.string[j]);
-	    change_error(cp, scp, i18n("$filename unrelated"));
-	    sub_context_delete(scp);
+	    sub_context_ty sc;
+	    sc.var_set_string("File_Name", wl.string[j]);
+	    change_error(cp, &sc, i18n("$filename unrelated"));
 	    ++number_of_errors;
 	    continue;
 	}
+	string_list_ty wl_out;
+	string_list_ty wl_in;
 	project_file_directory_query
 	(
 	    pp2,
@@ -1372,7 +1387,7 @@ copy_file_main(void)
 	    view_path_simple
 	);
 	if (delta_date != NO_TIME_SET)
-	    string_list_append_list(&wl_in, &wl_out);
+	    wl_in.push_back(wl_out);
 	if (wl_in.nstrings)
 	{
 	    int             used;
@@ -1384,15 +1399,13 @@ copy_file_main(void)
 	    //
 	    if (output)
 	    {
-		scp = sub_context_new();
-		sub_var_set_charstar
+		sub_context_ty sc;
+		sc.var_set_charstar
 		(
-		    scp,
 		    "Name",
 		    arglex_token_name(arglex_token_output)
 		);
-		error_intl(scp, i18n("no dir with $name"));
-		sub_context_delete(scp);
+		sc.error_intl(i18n("no dir with $name"));
 		++number_of_errors;
 	    }
 	    used = 0;
@@ -1403,16 +1416,15 @@ copy_file_main(void)
 		s3 = wl_in.string[k];
 		if (overwriting || !change_file_find(cp, s3, view_path_first))
 		{
-		    if (string_list_member(&wl2, s3))
+		    if (wl2.member(s3))
 		    {
-			scp = sub_context_new();
-			sub_var_set_string(scp, "File_Name", s3);
-			change_error(cp, scp, i18n("too many $filename"));
-			sub_context_delete(scp);
+			sub_context_ty sc;
+			sc.var_set_string("File_Name", s3);
+			change_error(cp, &sc, i18n("too many $filename"));
 			++number_of_errors;
 		    }
 		    else
-			string_list_append(&wl2, s3);
+			wl2.push_back(s3);
 		    if (change_file_is_config(cp, s3))
 			++config_seen;
 		    ++used;
@@ -1420,44 +1432,38 @@ copy_file_main(void)
 	    }
 	    if (!used)
 	    {
-		scp = sub_context_new();
+		sub_context_ty sc;
 		if (s2->str_length)
-		    sub_var_set_string(scp, "File_Name", s2);
+		    sc.var_set_string("File_Name", s2);
 		else
-		    sub_var_set_charstar(scp, "File_Name", ".");
-		sub_var_set_long(scp, "Number", (long)wl_in.nstrings);
-		sub_var_optional(scp, "Number");
+		    sc.var_set_charstar("File_Name", ".");
+		sc.var_set_long("Number", (long)wl_in.nstrings);
+		sc.var_optional("Number");
 		change_error
 		(
 		    cp,
-		    scp,
+		    &sc,
 		    i18n("directory $filename contains no relevant files")
 		);
-		sub_context_delete(scp);
 		++number_of_errors;
 	    }
 	}
 	else
 	{
-	    if (string_list_member(&wl2, s2))
+	    if (wl2.member(s2))
 	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", s2);
-		change_error(cp, scp, i18n("too many $filename"));
-		sub_context_delete(scp);
+		sub_context_ty sc;
+		sc.var_set_string("File_Name", s2);
+		change_error(cp, &sc, i18n("too many $filename"));
 		++number_of_errors;
 	    }
 	    else
-		string_list_append(&wl2, s2);
+		wl2.push_back(s2);
 	    if (change_file_is_config(cp, s2))
 		++config_seen;
 	}
-	string_list_destructor(&wl_in);
-	string_list_destructor(&wl_out);
 	str_free(s2);
     }
-    string_list_destructor(&search_path);
-    string_list_destructor(&wl);
     wl = wl2;
 
     //
@@ -1479,10 +1485,9 @@ copy_file_main(void)
 	    !output
 	)
 	{
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", s1);
-	    change_error(cp, scp, i18n("bad cp, file $filename dup"));
-	    sub_context_delete(scp);
+	    sub_context_ty sc;
+	    sc.var_set_string("File_Name", s1);
+	    change_error(cp, &sc, i18n("bad cp, file $filename dup"));
 	    ++number_of_errors;
 	    continue;
 	}
@@ -1518,22 +1523,21 @@ copy_file_main(void)
 	    (delta_date == NO_TIME_SET && src_data->deleted_by)
 	)
 	{
-	    scp = sub_context_new();
+	    sub_context_ty sc;
 	    src_data = project_file_find_fuzzy(pp2, s1, view_path_extreme);
-	    sub_var_set_string(scp, "File_Name", s1);
+	    sc.var_set_string("File_Name", s1);
 	    if (src_data)
 	    {
-		sub_var_set_string(scp, "Guess", src_data->file_name);
+		sc.var_set_string("Guess", src_data->file_name);
 		project_error
 		(
 		    pp2,
-		    scp,
+		    &sc,
 		    i18n("no $filename, closest is $guess")
 		);
 	    }
 	    else
-		project_error(pp2, scp, i18n("no $filename"));
-	    sub_context_delete(scp);
+		project_error(pp2, &sc, i18n("no $filename"));
 	    ++number_of_errors;
 	    continue;
 	}
@@ -1548,22 +1552,22 @@ copy_file_main(void)
 		break;
 
 	    case file_usage_build:
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", s1);
-		change_error(cp, scp, i18n("$filename is built"));
-		sub_context_delete(scp);
-		++number_of_errors;
+		{
+		    sub_context_ty sc;
+		    sc.var_set_string("File_Name", s1);
+		    change_error(cp, &sc, i18n("$filename is built"));
+		    ++number_of_errors;
+		}
 		break;
 	    }
 	}
     }
     if (number_of_errors)
     {
-	scp = sub_context_new();
-	sub_var_set_long(scp, "Number", number_of_errors);
-	sub_var_optional(scp, "Number");
-	change_fatal(cp, scp, i18n("no files copied"));
-	sub_context_delete(scp);
+	sub_context_ty sc;
+	sc.var_set_long("Number", number_of_errors);
+	sc.var_optional("Number");
+	change_fatal(cp, &sc, i18n("no files copied"));
     }
 
     //
@@ -1574,22 +1578,19 @@ copy_file_main(void)
     // or update the edit number.
     //
     dd = change_development_directory_get(cp, 0);
-    project_file_roll_forward historian;
-    if (delta_date != NO_TIME_SET)
-	historian.set(pp2, delta_date, 0);
     for (j = 0; j < wl.nstrings; ++j)
     {
 	string_ty       *from = 0;
 	string_ty       *to;
 	fstate_src_ty   *old_src = 0;
 	fstate_src_ty   *older_src = 0;
+        int             from_unlink = 0;
 
 	s1 = wl.string[j];
 	trace(("s1 = \"%s\";\n", s1->str_text));
 	if (delta_date != NO_TIME_SET)
 	{
 	    file_event_ty   *fep;
-	    int             from_unlink = 0;
 
 	    fep = historian.get_last(s1);
 	    if (!fep)
@@ -1609,15 +1610,14 @@ copy_file_main(void)
 	    }
 	    else
 	    {
-		old_src = change_file_find(fep->cp, s1, view_path_first);
+		old_src = fep->src;
 		if (rescind)
 		{
 		    fep = historian.get_older(s1);
 		    trace(("fep = %lX\n", (long)fep));
 		    if (fep)
 		    {
-			older_src =
-			    change_file_find(fep->cp, s1, view_path_first);
+			older_src = fep->src;
 		    }
 		    else
 		    {
@@ -1739,7 +1739,14 @@ copy_file_main(void)
 	    assert(old_src);
 	    older_src = old_src;
 
-	    //
+            os_become_orig();
+            int file_exists = os_exists(from);
+            os_become_undo();
+            if (!file_exists)
+                from =
+                    project_file_version_path (pp2, old_src, &from_unlink);
+
+            //
 	    // copy the file
 	    //
 	    user_become(up);
@@ -1965,10 +1972,9 @@ copy_file_main(void)
 	//
 	// verbose progress message
 	//
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", s1);
-	change_verbose(cp, scp, i18n("copied $filename"));
-	sub_context_delete(scp);
+	sub_context_ty sc;
+	sc.var_set_string("File_Name", s1);
+	change_verbose(cp, &sc, i18n("copied $filename"));
     }
 
     if (!output)
@@ -2010,16 +2016,14 @@ copy_file_main(void)
     //
     // verbose success message
     //
-    scp = sub_context_new();
-    sub_var_set_long(scp, "Number", (long)wl.nstrings);
-    sub_var_optional(scp, "Number");
-    change_verbose(cp, scp, i18n("copy file complete"));
-    sub_context_delete(scp);
+    sub_context_ty sc;
+    sc.var_set_long("Number", (long)wl.nstrings);
+    sc.var_optional("Number");
+    change_verbose(cp, &sc, i18n("copy file complete"));
 
     //
     // run the change file command
     //
-    string_list_destructor(&wl);
     project_free(pp);
     change_free(cp);
     user_free(up);

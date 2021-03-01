@@ -22,73 +22,107 @@
 
 #include <ac/string.h>
 
-#include <mem.h>
 #include <stracc.h>
 
 
-void
-stracc_constructor(stracc_t *sap)
+stracc_t::~stracc_t()
 {
-    sap->length = 0;
-    sap->maximum = 0;
-    sap->buffer = 0;
+    delete [] buffer;
+    length = 0;
+    maximum = 0;
+    buffer = 0;
 }
 
 
-void
-stracc_destructor(stracc_t *sap)
+stracc_t::stracc_t() :
+    length(0),
+    maximum(0),
+    buffer(0)
 {
-    if (sap->buffer)
-	mem_free(sap->buffer);
-    sap->length = 0;
-    sap->maximum = 0;
-    sap->buffer = 0;
 }
 
 
-void
-stracc_open(stracc_t *sap)
+stracc_t::stracc_t(const stracc_t &arg) :
+    length(0),
+    maximum(0),
+    buffer(0)
 {
-    sap->length = 0;
+    push_back(arg);
+}
+
+
+stracc_t &
+stracc_t::operator=(const stracc_t &arg)
+{
+    if (this != &arg)
+    {
+	clear();
+	push_back(arg);
+    }
+    return *this;
 }
 
 
 string_ty *
-stracc_close(const stracc_t *sap)
+stracc_t::mkstr()
+    const
 {
-    return str_n_from_c(sap->buffer, sap->length);
+    return str_n_from_c(buffer, length);
 }
 
 
-#undef stracc_char
-
 void
-stracc_char(stracc_t *sap, int c)
+stracc_t::overflow(char c)
 {
-    if (sap->length >= sap->maximum)
+    if (length >= maximum)
     {
-	sap->maximum = sap->maximum * 2 + 16;
-	sap->buffer = (char *)mem_change_size(sap->buffer, sap->maximum);
+	size_t new_maximum = maximum * 2 + 16;
+	char *new_buffer = new char [new_maximum];
+	if (length)
+	    memcpy(new_buffer, buffer, length);
+	delete [] buffer;
+	buffer = new_buffer;
+	maximum = new_maximum;
     }
-    sap->buffer[sap->length++] = c;
+    buffer[length++] = c;
 }
 
 
 void
-stracc_chars(stracc_t *sap, const char *cp, size_t n)
+stracc_t::push_back(const stracc_t &arg)
+{
+    push_back(arg.buffer, arg.length);
+}
+
+
+void
+stracc_t::push_back(const char *cp, size_t n)
 {
     if (!n)
 	return;
-    if (sap->length + n > sap->maximum)
+    if (length + n > maximum)
     {
+	size_t new_maximum = maximum;
 	for (;;)
 	{
-	    sap->maximum = sap->maximum * 2 + 16;
-	    if (sap->length + n <= sap->maximum)
+	    new_maximum = new_maximum * 2 + 16;
+	    if (length + n <= new_maximum)
 		break;
 	}
-	sap->buffer = (char *)mem_change_size(sap->buffer, sap->maximum);
+	char *new_buffer = new char [new_maximum];
+	if (length)
+	    memcpy(new_buffer, buffer, length);
+	delete [] buffer;
+	buffer = new_buffer;
+	maximum = new_maximum;
     }
-    memcpy(sap->buffer + sap->length, cp, n);
-    sap->length += n;
+    memcpy(buffer + length, cp, n);
+    length += n;
+}
+
+
+void
+stracc_t::push_back(const char *s)
+{
+    push_back(s, strlen(s));
 }

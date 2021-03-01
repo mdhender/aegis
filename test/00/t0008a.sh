@@ -263,6 +263,9 @@ pass
 end
 if test $? -ne 0 ; then no_result; fi
 
+# make sure time stamps differ
+sleep 1
+
 #
 # build the change
 #
@@ -318,6 +321,9 @@ if test $? -ne 0 ; then cat log; fail; fi
 activity="integrate begin 296"
 $bin/aegis -intbeg 1 -p foo -v -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
+
+# make sure time stamps differ
+sleep 1
 
 #
 # integrate build
@@ -404,6 +410,9 @@ pass
 end
 if test $? -ne 0 ; then no_result; fi
 
+# make sure time stamps differ
+sleep 1
+
 #
 # build the change
 # diff the change
@@ -437,6 +446,9 @@ if test $? -ne 0 ; then cat log; fail; fi
 activity="integrate begin 413"
 $bin/aegis -intbeg -v -c 2 -p foo -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
+
+# make sure time stamps differ
+sleep 1
 
 #
 # build the integration

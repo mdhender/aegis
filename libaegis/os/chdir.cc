@@ -28,19 +28,23 @@
 
 
 void
-os_chdir(string_ty *path)
+os_chdir(const nstring &path)
 {
     os_become_must_not_be_active();
-    if (chdir(path->str_text))
+    if (chdir(path.c_str()))
     {
-	sub_context_ty  *scp;
-	int             errno_old;
-
-	errno_old = errno;
-	scp = sub_context_new();
+	int errno_old = errno;
+	sub_context_ty *scp = sub_context_new();
 	sub_errno_setx(scp, errno_old);
 	sub_var_set_string(scp, "File_Name", path);
 	fatal_intl(scp, i18n("chdir $filename: $errno"));
 	// NOTREACHED
     }
+}
+
+
+void
+os_chdir(string_ty *path)
+{
+    os_chdir(nstring(str_copy(path)));
 }

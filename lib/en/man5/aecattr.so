@@ -135,6 +135,7 @@ name = string;
 The name of the attribute.
 By convention, names which start with an upper-case letter will appear
 in listings, and lower-case will not.
+Attribute names are case-insensitive.
 .RE
 .TP 8n
 value = string;

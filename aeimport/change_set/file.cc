@@ -21,38 +21,37 @@
 //
 
 #include <change_set/file.h>
+#include <error.h> // assert
 
 
-void
-change_set_file_constructor(change_set_file_ty *csfp, string_ty *filename,
-    string_ty *edit, change_set_file_action_ty action, string_list_ty *tag)
+change_set_file_ty::change_set_file_ty(string_ty *arg1, string_ty *arg2,
+	change_set_file_action_ty arg3, string_list_ty *arg4) :
+    filename(str_copy(arg1)),
+    edit(str_copy(arg2)),
+    action(arg3),
+    tag(*arg4)
 {
-    csfp->filename = str_copy(filename);
-    csfp->edit = str_copy(edit);
-    csfp->action = action;
-    string_list_copy(&csfp->tag, tag);
 }
 
 
-void
-change_set_file_destructor(change_set_file_ty *csfp)
+change_set_file_ty::~change_set_file_ty()
 {
-    str_free(csfp->filename);
-    csfp->filename = 0;
-    str_free(csfp->edit);
-    csfp->edit = 0;
-    string_list_destructor(&csfp->tag);
+    str_free(filename);
+    filename = 0;
+    str_free(edit);
+    edit = 0;
 }
 
 
 #ifdef DEBUG
 
 void
-change_set_file_validate(change_set_file_ty *csfp)
+change_set_file_ty::validate()
+    const
 {
-    str_validate(csfp->filename);
-    str_validate(csfp->edit);
-    string_list_validate(&csfp->tag);
+    assert(str_validate(filename));
+    assert(str_validate(edit));
+    assert(tag.validate());
 }
 
 #endif
@@ -73,4 +72,14 @@ change_set_file_action_name(change_set_file_action_ty n)
 	return "remove";
     }
     return "unknown";
+}
+
+
+void
+change_set_file_ty::merge(const change_set_file_ty &arg)
+{
+    str_free(edit);
+    edit = str_copy(arg.edit);
+    action = arg.action;
+    tag.push_back_unique(arg.tag);
 }

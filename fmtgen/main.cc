@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1997, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1991-1995, 1997, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,7 @@
 #include <error.h>
 #include <lex.h>
 #include <parse.h>
+#include <quit.h>
 #include <progname.h>
 #include <trace.h>
 
@@ -44,7 +45,7 @@ usage(void)
 	progname
     );
     fprintf(stderr, "       %s -Help\n", progname);
-    exit(1);
+    quit(1);
 }
 
 
@@ -161,7 +162,7 @@ main(int argc, char **argv)
 	if (arglex() != arglex_token_eoln)
     	    usage();
 	help();
-	exit(0);
+	quit(0);
     }
 
     while (arglex_token != arglex_token_eoln)
@@ -207,6 +208,6 @@ main(int argc, char **argv)
     	    fatal_raw("too few file names specified");
 
     parse(filename[0], filename[1], filename[2]);
-    exit(0);
+    quit(0);
     return 0;
 }

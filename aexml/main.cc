@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -146,7 +146,7 @@ via_table(const char *listname, string_ty *project_name, long change_number,
     nhit = 0;
     for (tp = table; tp < ENDOF(table); ++tp)
     {
-	if (arglex_compare(tp->name, listname))
+	if (arglex_compare(tp->name, listname, 0))
 	    hit[nhit++] = tp;
     }
     switch (nhit)
@@ -163,13 +163,13 @@ via_table(const char *listname, string_ty *project_name, long change_number,
 	if (outfile && ends_with(outfile, ".gz"))
 	{
 	    op = output_file_binary_open(outfile);
-	    op = output_gzip(op);
+	    op = new output_gzip_ty(op, true);
 	}
 	else
 	    op = output_file_text_open(outfile);
 	os_become_undo();
 	hit[0]->func(project_name, change_number, op);
-	output_delete(op);
+	delete op;
 	break;
 
     default:
@@ -249,9 +249,9 @@ xml_list(void)
     //
     for (tp = table; tp < ENDOF(table); ++tp)
     {
-	output_fputs(name_col, tp->name);
+	name_col->fputs(tp->name);
 	if (desc_col)
-    	    output_fputs(desc_col, tp->description);
+    	    desc_col->fputs(tp->description);
 	col_eoln(colp);
     }
 
@@ -356,6 +356,6 @@ main(int argc, char **argv)
 	version();
 	break;
     }
-    exit(0);
+    quit(0);
     return 0;
 }

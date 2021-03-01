@@ -191,10 +191,10 @@ sub_plural_gram_lex(void)
 		static stracc_t sa;
 		string_ty	*s;
 
-		stracc_open(&sa);
+		sa.clear();
 		for (;;)
 		{
-		    stracc_char(&sa, c);
+		    sa.push_back(c);
 		    c = lex_getc();
 		    switch (c)
 		    {
@@ -223,7 +223,7 @@ sub_plural_gram_lex(void)
 		    }
 		    break;
 		}
-		s = stracc_close(&sa);
+		s = sa.mkstr();
 		if (0 == strcasecmp(s->str_text, "n"))
 		{
 		    str_free(s);

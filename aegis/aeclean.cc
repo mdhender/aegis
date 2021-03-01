@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998-2004 Peter Miller;
+//	Copyright (C) 1998-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -320,7 +320,6 @@ static void
 clean_main(void)
 {
     sub_context_ty  *scp;
-    string_ty	    *dd;
     cstate_ty       *cstate_data;
     size_t	    j;
     string_ty	    *project_name;
@@ -331,11 +330,6 @@ clean_main(void)
     user_ty	    *up;
     int		    mergeable_files;
     int		    diffable_files;
-    string_list_ty  wl_nf;
-    string_list_ty  wl_nt;
-    string_list_ty  wl_cp;
-    string_list_ty  wl_rm;
-    string_list_ty  wl_mt;
     fstate_src_ty   *p_src_data;
     fstate_src_ty   *c_src_data;
     clean_info_ty   info;
@@ -449,7 +443,6 @@ clean_main(void)
     if (!str_equal(change_developer_name(cp), user_name(up)))
 	change_fatal(cp, 0, i18n("not developer"));
 
-    dd = change_development_directory_get(cp, 0);
     os_throttle();
 
     //
@@ -686,11 +679,11 @@ clean_main(void)
     // if defined, as these usually manipulate information used by
     // the build tool.
     //
-    string_list_constructor(&wl_nf);
-    string_list_constructor(&wl_nt);
-    string_list_constructor(&wl_cp);
-    string_list_constructor(&wl_rm);
-    string_list_constructor(&wl_mt);
+    string_list_ty wl_nf;
+    string_list_ty wl_nt;
+    string_list_ty wl_cp;
+    string_list_ty wl_rm;
+    string_list_ty wl_mt;
     for (j = 0;; ++j)
     {
 	c_src_data = change_file_nth(cp, j, view_path_first);
@@ -703,28 +696,28 @@ clean_main(void)
 	    {
 	    case file_usage_test:
 	    case file_usage_manual_test:
-		string_list_append(&wl_nt, c_src_data->file_name);
+		wl_nt.push_back(c_src_data->file_name);
 		break;
 
 	    case file_usage_source:
 	    case file_usage_config:
 	    case file_usage_build:
-		string_list_append(&wl_nf, c_src_data->file_name);
+		wl_nf.push_back(c_src_data->file_name);
 		break;
 	    }
 	    break;
 
 	case file_action_modify:
 	case file_action_insulate:
-	    string_list_append(&wl_cp, c_src_data->file_name);
+	    wl_cp.push_back(c_src_data->file_name);
 	    break;
 
 	case file_action_transparent:
-	    string_list_append(&wl_mt, c_src_data->file_name);
+	    wl_mt.push_back(c_src_data->file_name);
 	    break;
 
 	case file_action_remove:
-	    string_list_append(&wl_rm, c_src_data->file_name);
+	    wl_rm.push_back(c_src_data->file_name);
 	    break;
 	}
     }
@@ -738,11 +731,6 @@ clean_main(void)
 	change_run_remove_file_command(cp, &wl_rm, up);
     if (wl_mt.nstrings)
 	change_run_make_transparent_command(cp, &wl_mt, up);
-    string_list_destructor(&wl_nf);
-    string_list_destructor(&wl_nt);
-    string_list_destructor(&wl_cp);
-    string_list_destructor(&wl_rm);
-    string_list_destructor(&wl_mt);
     cstate_data->project_file_command_sync = 0;
     change_run_project_file_command(cp, up);
 

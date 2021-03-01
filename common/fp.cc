@@ -49,7 +49,7 @@ fingerprint_delete(fingerprint_ty *fp)
 
 
 static int
-fingerprint_scan(fingerprint_ty *fp, char *fn)
+fingerprint_scan(fingerprint_ty *fp, const char *fn)
 {
     int		    fd;
     unsigned char   ibuf[1024];
@@ -88,7 +88,7 @@ fingerprint_scan(fingerprint_ty *fp, char *fn)
 
 
 int
-fingerprint_file_hash(fingerprint_ty *fp, char *fn, unsigned char *obuf)
+fingerprint_file_hash(fingerprint_ty *fp, const char *fn, unsigned char *obuf)
 {
     if (fingerprint_scan(fp, fn))
 	return -1;
@@ -97,7 +97,8 @@ fingerprint_file_hash(fingerprint_ty *fp, char *fn, unsigned char *obuf)
 
 
 int
-fingerprint_file_sum(fingerprint_ty *fp, char *fn, char *obuf, size_t obuf_len)
+fingerprint_file_sum(fingerprint_ty *fp, const char *fn, char *obuf,
+    size_t obuf_len)
 {
     if (fingerprint_scan(fp, fn))
 	return -1;

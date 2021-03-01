@@ -196,7 +196,7 @@ run(server_ty *sp, string_ty *client_side)
     if (server_root_required(sp, "Directory"))
 	return;
 
-    server_side = net_getline(sp->np);
+    server_side = sp->np->getline();
     if (!server_side)
     {
 	server_error(sp, "Directory: additional data required");
@@ -248,7 +248,7 @@ run(server_ty *sp, string_ty *client_side)
 	return;
     }
 
-    net_directory_set(sp->np, client_side, server_side);
+    sp->np->directory_set(client_side, server_side);
     str_free(server_side);
 }
 

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 2001, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -21,164 +21,118 @@
 //
 
 #include <output/prefix.h>
-#include <output/private.h>
-#include <str.h>
 
-struct output_prefix_ty
+
+output_prefix_ty::~output_prefix_ty()
 {
-	output_ty	inherited;
-	output_ty	*deeper;
-	int		delete_on_close;
-	string_ty	*prefix;
-	int		column;
-	long		pos;
-};
+    //
+    // Make sure all buffered data has been passed to our write_inner
+    // method.
+    //
+    flush();
 
-
-static void
-output_prefix_destructor(output_ty *fp)
-{
-	output_prefix_ty *opp;
-
-	opp = (output_prefix_ty *)fp;
-	if (opp->delete_on_close)
-		output_delete(opp->deeper);
-	str_free(opp->prefix);
-	opp->prefix = 0;
-	opp->deeper = 0;
+    if (close_on_close)
+	delete deeper;
+    deeper = 0;
 }
 
 
-static void
-output_prefix_write(output_ty *fp, const void *p, size_t len)
+output_prefix_ty::output_prefix_ty(output_ty *arg1, bool arg2,
+       	const char *arg3) :
+    deeper(arg1),
+    close_on_close(arg2),
+    prefix(arg3),
+    column(0),
+    pos(0)
 {
-	const unsigned char *data;
-	const unsigned char *begin;
-	output_prefix_ty *opp;
-	int		c;
-	size_t		nbytes;
+}
 
-	data = (unsigned char *)p;
-	opp = (output_prefix_ty *)fp;
-	begin = data;
-	while (len > 0)
+
+void
+output_prefix_ty::write_inner(const void *p, size_t len)
+{
+    const unsigned char *data = (unsigned char *)p;
+    const unsigned char *begin = data;
+    while (len > 0)
+    {
+	unsigned char c = *data++;
+	--len;
+
+	if (column == 0)
 	{
-		c = *data++;
-		--len;
-
-		if (opp->column == 0)
-		{
-			output_put_str(opp->deeper, opp->prefix);
-			opp->pos += opp->prefix->str_length;
-		}
-		if (c == '\n')
-		{
-			nbytes = data - begin;
-			output_write(opp->deeper, begin, nbytes);
-			opp->column = 0;
-			opp->pos += nbytes;
-			begin = data;
-		}
-		else
-			opp->column++;
+	    deeper->fputs(prefix);
+	    pos += prefix.length();
 	}
-	if (data > begin)
+	if (c == '\n')
 	{
-		nbytes = data - begin;
-		output_write(opp->deeper, begin, nbytes);
-		opp->pos += nbytes;
+	    size_t nbytes = data - begin;
+	    deeper->write(begin, nbytes);
+	    column = 0;
+	    pos += nbytes;
+	    begin = data;
 	}
+	else
+	    ++column;
+    }
+    if (data > begin)
+    {
+	size_t nbytes = data - begin;
+	deeper->write(begin, nbytes);
+	pos += nbytes;
+    }
 }
 
 
-static void
-output_prefix_flush(output_ty *fp)
+void
+output_prefix_ty::flush_inner()
 {
-	output_prefix_ty *opp;
-
-	opp = (output_prefix_ty *)fp;
-	output_flush(opp->deeper);
+    deeper->flush();
 }
 
 
-static string_ty *
-output_prefix_filename(output_ty *fp)
+string_ty *
+output_prefix_ty::filename()
+    const
 {
-	output_prefix_ty *opp;
-
-	opp = (output_prefix_ty *)fp;
-	return output_filename(opp->deeper);
+    return deeper->filename();
 }
 
 
-static long
-output_prefix_ftell(output_ty *fp)
+long
+output_prefix_ty::ftell_inner()
+    const
 {
-	output_prefix_ty *opp;
-
-	opp = (output_prefix_ty *)fp;
-	return opp->pos;
+    return pos;
 }
 
 
-static int
-output_prefix_page_width(output_ty *fp)
+int
+output_prefix_ty::page_width()
+    const
 {
-	output_prefix_ty *opp;
-
-	opp = (output_prefix_ty *)fp;
-	return output_page_width(opp->deeper);
+    return deeper->page_width();
 }
 
 
-static int
-output_prefix_page_length(output_ty *fp)
+int
+output_prefix_ty::page_length()
+    const
 {
-	output_prefix_ty *opp;
-
-	opp = (output_prefix_ty *)fp;
-	return output_page_length(opp->deeper);
+    return deeper->page_length();
 }
 
 
-static void
-output_prefix_eoln(output_ty *fp)
+void
+output_prefix_ty::end_of_line_inner()
 {
-	output_prefix_ty *opp;
-
-	opp = (output_prefix_ty *)fp;
-	if (opp->column != 0)
-		output_fputc(fp, '\n');
+    if (column != 0)
+	fputc('\n');
 }
 
 
-static output_vtbl_ty vtbl =
+const char *
+output_prefix_ty::type_name()
+    const
 {
-	sizeof(output_prefix_ty),
-	output_prefix_destructor,
-	output_prefix_filename,
-	output_prefix_ftell,
-	output_prefix_write,
-	output_prefix_flush,
-	output_prefix_page_width,
-	output_prefix_page_length,
-	output_prefix_eoln,
-	"prefix",
-};
-
-
-output_ty *
-output_prefix(output_ty *deeper, int delete_on_close, const char *prfx)
-{
-	output_ty	*result;
-	output_prefix_ty *opp;
-
-	result = output_new(&vtbl);
-	opp = (output_prefix_ty *)result;
-	opp->deeper = deeper;
-	opp->delete_on_close = !!delete_on_close;
-	opp->prefix = str_from_c(prfx);
-	opp->column = 0;
-	opp->pos = 0;
-	return result;
+    return "prefix";
 }

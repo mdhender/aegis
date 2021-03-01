@@ -23,7 +23,7 @@
 #include <sub.h>
 #include <sub/substr.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 wstring_ty *
@@ -36,18 +36,18 @@ sub_substr(sub_context_ty *scp, wstring_list_ty *arg)
     wstring_ty      *ws;
 
     trace(("sub_substr()\n{\n"));
-    if (arg->nitems != 4)
+    if (arg->size() != 4)
     {
         sub_context_error_set(scp, i18n("requires three arguments"));
         trace(("return NULL;\n"));
         trace(("}\n"));
         return 0;
     }
-    s = wstr_to_str(arg->item[2]);
+    s = wstr_to_str(arg->get(2));
     n1 = atol(s->str_text);
     str_free(s);
 
-    s = wstr_to_str(arg->item[3]);
+    s = wstr_to_str(arg->get(3));
     n2 = atol(s->str_text);
     str_free(s);
 
@@ -57,7 +57,7 @@ sub_substr(sub_context_ty *scp, wstring_list_ty *arg)
         n1 = 0;
     }
 
-    ws = arg->item[1];
+    ws = arg->get(1);
     if (n2 <= 0 || n1 >= (long)ws->wstr_length)
         result = wstr_from_c("");
     else if (n1 + n2 > (long)ws->wstr_length)

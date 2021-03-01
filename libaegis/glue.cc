@@ -42,7 +42,7 @@
 #include <ac/errno.h>
 #include <ac/signal.h>
 
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <ac/fcntl.h>
 #include <ac/unistd.h>
 #include <utime.h>
@@ -1105,7 +1105,7 @@ glue_chmod(char *path, int mode)
 
 
 int
-glue_rmdir(char *path)
+glue_rmdir(const char *path)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -1128,7 +1128,7 @@ glue_rmdir(char *path)
 
 
 int
-glue_rmdir_bg(char *path)
+glue_rmdir_bg(const char *path)
 {
 	proxy_ty	*pp;
 	int		result;
@@ -2253,7 +2253,7 @@ glue_pathconf(char *path, int cmd)
 
 
 int
-glue_rmdir_tree(char *path)
+glue_rmdir_tree(const char *path)
 {
 	proxy_ty	*pp;
 	int		result;

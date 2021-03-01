@@ -76,7 +76,6 @@ perform(complete_ty *cp, shell_ty *sh)
 	    if (str_leading_prefix(s, prefix))
 		shell_emit(sh, s);
 	}
-	string_list_destructor(&name);
     }
 }
 

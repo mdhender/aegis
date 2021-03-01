@@ -22,7 +22,7 @@
 
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <ael/change/by_state.h>

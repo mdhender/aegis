@@ -27,7 +27,9 @@
 #include <aer/value/string.h>
 #include <error.h>
 #include <mem.h>
+#include <regula_expre.h>
 #include <sub.h>
+#include <trace.h>
 
 
 static int
@@ -37,142 +39,113 @@ verify(rpt_expr_ty *ep)
 }
 
 
-static const char *error_value;
-
-
-static void
-error_callback(const char *s)
-{
-    error_value = s;
-}
-
-
 static rpt_value_ty *
 run(rpt_expr_ty	*ep, size_t argc, rpt_value_ty **argv)
 {
-    rpt_value_ty    *arg;
-    string_ty	    *lhs;
-    string_ty	    *rhs;
-    string_ty	    *input;
-    long	    count;
-    string_ty	    *s;
-    rpt_value_ty    *result;
-
+    trace(("rpt_func_substitute::run()\n{\n"));
     //
     // Get the match pattern.
     //
-    arg = argv[0];
-    assert(arg->method->type!=rpt_value_type_error);
+    rpt_value_ty *arg = argv[0];
+    assert(arg->method->type != rpt_value_type_error);
     arg = rpt_value_stringize(arg);
     if (arg->method->type != rpt_value_type_string)
     {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
+	sub_context_ty sc(__FILE__, __LINE__);
 	rpt_value_free(arg);
-	sub_var_set_charstar(scp, "Function", "subst");
-	sub_var_set_long(scp, "Number", 1);
-	sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-	s =
-	    subst_intl
+	sc.var_set_charstar("Function", "subst");
+	sc.var_set_long("Number", 1);
+	sc.var_set_charstar("Name", argv[0]->method->name);
+	string_ty *s =
+	    sc.subst_intl
 	    (
-		scp,
     i18n("$function: argument $number: string value required (was given $name)")
 	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(ep->pos, s);
+	rpt_value_ty *result = rpt_value_error(ep->pos, s);
 	str_free(s);
+	trace(("}\n"));
 	return result;
     }
-    lhs = str_copy(rpt_value_string_query(arg));
+    nstring lhs(str_copy(rpt_value_string_query(arg)));
     rpt_value_free(arg);
 
     //
     // Get the replacement pattern.
     //
     arg = argv[1];
-    assert(arg->method->type!=rpt_value_type_error);
+    assert(arg->method->type != rpt_value_type_error);
     arg = rpt_value_stringize(arg);
     if (arg->method->type != rpt_value_type_string)
     {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
+	sub_context_ty sc(__FILE__, __LINE__);
 	rpt_value_free(arg);
-	sub_var_set_charstar(scp, "Function", "subst");
-	sub_var_set_long(scp, "Number", 2);
-	sub_var_set_charstar(scp, "Name", argv[1]->method->name);
-	s =
-	    subst_intl
+	sc.var_set_charstar("Function", "subst");
+	sc.var_set_long("Number", 2);
+	sc.var_set_charstar("Name", argv[1]->method->name);
+	string_ty *s =
+	    sc.subst_intl
 	    (
-		scp,
     i18n("$function: argument $number: string value required (was given $name)")
 	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(ep->pos, s);
+	rpt_value_ty *result = rpt_value_error(ep->pos, s);
 	str_free(s);
+	trace(("}\n"));
 	return result;
     }
-    rhs = str_copy(rpt_value_string_query(arg));
+    nstring rhs(str_copy(rpt_value_string_query(arg)));
     rpt_value_free(arg);
 
     //
     // Get the string to be worked over.
     //
     arg = argv[2];
-    assert(arg->method->type!=rpt_value_type_error);
+    assert(arg->method->type != rpt_value_type_error);
     arg = rpt_value_stringize(arg);
     if (arg->method->type != rpt_value_type_string)
     {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
+	sub_context_ty sc(__FILE__, __LINE__);
 	rpt_value_free(arg);
-	sub_var_set_charstar(scp, "Function", "subst");
-	sub_var_set_long(scp, "Number", 3);
-	sub_var_set_charstar(scp, "Name", argv[2]->method->name);
-	s =
-	    subst_intl
+	sc.var_set_charstar("Function", "subst");
+	sc.var_set_long("Number", 3);
+	sc.var_set_charstar("Name", argv[2]->method->name);
+	string_ty *s =
+	    sc.subst_intl
 	    (
-		scp,
     i18n("$function: argument $number: string value required (was given $name)")
 	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(ep->pos, s);
+	rpt_value_ty *result = rpt_value_error(ep->pos, s);
 	str_free(s);
+	trace(("}\n"));
 	return result;
     }
-    input = str_copy(rpt_value_string_query(arg));
+    nstring input(str_copy(rpt_value_string_query(arg)));
     rpt_value_free(arg);
+    arg = 0;
 
     //
     // Get the count of how many times to match.
     //
-    if (argc < 4)
-	count = 0;
-    else
+    long count = 0;
+    if (argc >= 4)
     {
 	arg = argv[3];
-	assert(arg->method->type!=rpt_value_type_error);
+	assert(arg->method->type != rpt_value_type_error);
 	arg = rpt_value_integerize(arg);
 	if (arg->method->type != rpt_value_type_integer)
 	{
-	    sub_context_ty  *scp;
-
-	    scp = sub_context_new();
+	    sub_context_ty sc(__FILE__, __LINE__);
 	    rpt_value_free(arg);
-	    sub_var_set_charstar(scp, "Function", "subst");
-	    sub_var_set_long(scp, "Number", 2);
-	    sub_var_set_charstar(scp, "Name", argv[3]->method->name);
-	    s =
-		subst_intl
+	    sc.var_set_charstar("Function", "subst");
+	    sc.var_set_long("Number", 2);
+	    sc.var_set_charstar("Name", argv[3]->method->name);
+	    string_ty *s =
+		sc.subst_intl
 		(
-		    scp,
    i18n("$function: argument $number: integer value required (was given $name)")
 		);
-	    sub_context_delete(scp);
-	    result = rpt_value_error(ep->pos, s);
+	    rpt_value_ty *result = rpt_value_error(ep->pos, s);
 	    str_free(s);
+	    trace(("}\n"));
 	    return result;
 	}
 	count = rpt_value_integer_query(arg);
@@ -182,38 +155,35 @@ run(rpt_expr_ty	*ep, size_t argc, rpt_value_ty **argv)
     //
     // perform the substitution
     //
-    error_value = 0;
-    s = str_re_substitute(lhs, rhs, input, error_callback, count);
-    if (!s)
+    regular_expression re(lhs);
+    nstring output;
+    if (!re.match_and_substitute(rhs, input, count, output))
     {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
+	//
+        // Error... probably the LHS pattern was erroneous, but it could
+        // have been the RHS pattern.
+	//
+	// Return an error result.
+	//
+	sub_context_ty sc(__FILE__, __LINE__);
 	rpt_value_free(arg);
-	sub_var_set_charstar(scp, "Function", "subst");
-	sub_var_set_long(scp, "Number", 1);
-	sub_var_set_charstar
-	(
-	    scp,
-	    "Message",
-	    (error_value ? error_value : "unknown")
-	);
-	s = subst_intl(scp, i18n("$function: argument $number: $message"));
-	sub_context_delete(scp);
-	result = rpt_value_error(ep->pos, s);
+	sc.var_set_charstar("Function", "subst");
+	sc.var_set_long("Number", 1);
+	sc.var_set_charstar("Message", re.strerror());
+	string_ty *s =
+	    sc.subst_intl(i18n("$function: argument $number: $message"));
+	rpt_value_ty *result = rpt_value_error(ep->pos, s);
 	str_free(s);
+	trace(("}\n"));
 	return result;
     }
 
     //
     // build the result
     //
-    str_free(lhs);
-    str_free(rhs);
-    str_free(input);
-    result = rpt_value_string(s);
-    str_free(s);
-    return result;
+    trace_nstring(output);
+    trace(("}\n"));
+    return rpt_value_string(output.get_ref());
 }
 
 

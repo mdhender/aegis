@@ -278,19 +278,17 @@ input_base64_recognise(input_ty *ifp)
     stracc_t	    buffer;
 
     //
-    // There are only a few characters which ara acceptable to
+    // There are only a few characters which are acceptable to
     // the base64 filter.  Any others are conclusive evidence
     // of wrongness.
     //
     result = 1;
-    stracc_constructor(&buffer);
-    stracc_open(&buffer);
-    while (buffer.length < 8000)
+    while (buffer.size() < 8000)
     {
 	c = input_getc(ifp);
 	if (c < 0)
 	    break;
-	stracc_char(&buffer, c);
+	buffer.push_back(c);
 	switch (c)
 	{
 	case '\t':
@@ -370,7 +368,6 @@ input_base64_recognise(input_ty *ifp)
 	}
 	break;
     }
-    input_unread(ifp, buffer.buffer, buffer.length);
-    stracc_destructor(&buffer);
+    input_unread(ifp, buffer.get_data(), buffer.size());
     return result;
 }

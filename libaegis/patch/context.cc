@@ -20,65 +20,51 @@
 // MANIFEST: functions to manipulate contexts
 //
 
-#include <mem.h>
 #include <patch/context.h>
 
 
-patch_context_ty *
-patch_context_new(input_ty *ip)
+patch_context_ty::patch_context_ty(input_ty *ip) :
+    input(ip)
 {
-	patch_context_ty *this_thing;
-
-	this_thing = (patch_context_ty *)mem_alloc(sizeof(patch_context_ty));
-	this_thing->input = ip;
-	string_list_constructor(&this_thing->buffer);
-	return this_thing;
 }
 
 
-void
-patch_context_delete(patch_context_ty *this_thing)
+patch_context_ty::~patch_context_ty()
 {
-	string_list_destructor(&this_thing->buffer);
-	this_thing->input = 0; // don't delete it!
 }
 
 
 string_ty *
-patch_context_getline(patch_context_ty *this_thing, int n)
+patch_context_ty::getline(int n)
 {
-	string_ty	*s;
-
-	if (n < 0)
-		return 0;
-	while (n >= (int)this_thing->buffer.nstrings)
-	{
-		s = input_one_line(this_thing->input);
-		if (!s)
-			return 0;
-		string_list_append(&this_thing->buffer, s);
-		str_free(s);
-	}
-	return this_thing->buffer.string[n];
+    if (n < 0)
+	return 0;
+    while (n >= (int)buffer.nstrings)
+    {
+	string_ty *s = input_one_line(input);
+	if (!s)
+	    return 0;
+	buffer.push_back(s);
+	str_free(s);
+    }
+    return buffer.string[n];
 }
 
 
 void
-patch_context_discard(patch_context_ty *this_thing, int n)
+patch_context_ty::discard(int n)
 {
-	size_t		j;
-
-	if (n <= 0)
-		return;
-	for (j = 0; j < (size_t)n && j < this_thing->buffer.nstrings; ++j)
-		str_free(this_thing->buffer.string[j]);
-	if (n >= (int)this_thing->buffer.nstrings)
-		this_thing->buffer.nstrings = 0;
-	else
-	{
-		for (j = n; j < this_thing->buffer.nstrings; ++j)
-			this_thing->buffer.string[j - n] =
-                            this_thing->buffer.string[j];
-		this_thing->buffer.nstrings -= n;
-	}
+    if (n <= 0)
+	return;
+    for (size_t j = 0; j < (size_t)n && j < buffer.nstrings; ++j)
+	str_free(buffer.string[j]);
+    if (n >= (int)buffer.nstrings)
+	buffer.nstrings = 0;
+    else
+    {
+	for (size_t k = n; k < buffer.nstrings; ++k)
+    	    buffer.string[k - n] = buffer.string[k];
+	// memory leak?  it didn't str_free() the strings
+	buffer.nstrings -= n;
+    }
 }

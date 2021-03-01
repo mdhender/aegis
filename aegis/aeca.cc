@@ -33,6 +33,7 @@
 #include <change/attributes.h>
 #include <change/branch.h>
 #include <change/file.h>
+#include <change/identifier.h>
 #include <commit.h>
 #include <error.h>
 #include <file.h>
@@ -94,20 +95,14 @@ change_attributes_help(void)
 static void
 change_attributes_list(void)
 {
-    string_ty	    *project_name;
-    project_ty	    *pp;
     cattr_ty	    *cattr_data;
     cstate_ty	    *cstate_data;
-    long	    change_number;
-    change_ty	    *cp;
-    user_ty	    *up;
     int		    description_only;
 
     trace(("change_attributes_list()\n{\n"));
     arglex();
-    project_name = 0;
-    change_number = 0;
     description_only = 0;
+    change_identifier cid;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -117,21 +112,9 @@ change_attributes_list(void)
 	    continue;
 
 	case arglex_token_change:
-	    arglex();
-	    // fall through...
-
 	case arglex_token_number:
-	    arglex_parse_change
-	    (
-		&project_name,
-		&change_number,
-		change_attributes_usage
-	    );
-	    continue;
-
 	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, change_attributes_usage);
+	    cid.command_line_parse(change_attributes_usage);
 	    continue;
 
 	case arglex_token_description_only:
@@ -142,33 +125,12 @@ change_attributes_list(void)
 	}
 	arglex();
     }
-
-    //
-    // locate project data
-    //
-    if (!project_name)
-	project_name = user_default_project();
-    pp = project_alloc(project_name);
-    str_free(project_name);
-    project_bind_existing(pp);
-
-    //
-    // locate user data
-    //
-    up = user_executing(pp);
-
-    //
-    // locate change data
-    //
-    if (!change_number)
-	change_number = user_default_change(up);
-    cp = change_alloc(pp, change_number);
-    change_bind_existing(cp);
+    cid.command_line_check(change_attributes_usage);
 
     //
     // build the cattr data
     //
-    cstate_data = change_cstate_get(cp);
+    cstate_data = change_cstate_get(cid.get_cp());
     cattr_data = (cattr_ty *)cattr_type.alloc();
     change_attributes_copy(cattr_data, cstate_data);
 
@@ -195,38 +157,35 @@ change_attributes_list(void)
 	cattr_write_file((string_ty *)0, cattr_data, 0);
     language_C();
     cattr_type.free(cattr_data);
-    project_free(pp);
-    change_free(cp);
-    user_free(up);
     trace(("}\n"));
 }
 
 
 static void
-check_permissions(change_ty *cp, user_ty *up)
+check_permissions(change_identifier &cid)
 {
-    project_ty	    *pp;
-
-    pp = cp->pp;
-
     if
     (
-	!project_administrator_query(pp, user_name(up))
+	!project_administrator_query(cid.get_pp(), user_name(cid.get_up()))
     &&
 	(
-	    !change_is_being_developed(cp)
+	    !change_is_being_developed(cid.get_cp())
 	||
-	    !str_equal(change_developer_name(cp), user_name(up))
+	    !str_equal
+	    (
+		change_developer_name(cid.get_cp()),
+		user_name(cid.get_up())
+	    )
 	)
     )
     {
-	change_fatal(cp, 0, i18n("bad ca, not auth"));
+	change_fatal(cid.get_cp(), 0, i18n("bad ca, not auth"));
     }
 }
 
 
 static cattr_ty *
-cattr_fix_arch(change_ty *cp)
+cattr_fix_arch(change_identifier &cid)
 {
     cstate_ty	    *cstate_data;
     cattr_ty	    *cattr_data;
@@ -237,7 +196,7 @@ cattr_fix_arch(change_ty *cp)
     //
     // Extract current change attributes.
     //
-    cstate_data = change_cstate_get(cp);
+    cstate_data = change_cstate_get(cid.get_cp());
     cattr_data = (cattr_ty *)cattr_type.alloc();
     change_attributes_copy(cattr_data, cstate_data);
 
@@ -254,7 +213,7 @@ cattr_fix_arch(change_ty *cp)
     // ones, and any of the optional ones that match, to the architecture
     // list.
     //
-    pconf_data = change_pconf_get(cp, 0);
+    pconf_data = change_pconf_get(cid.get_cp(), 0);
     un = uname_variant_get();
     for (j = 0; j < pconf_data->architecture->length; ++j)
     {
@@ -325,21 +284,13 @@ cattr_fix_arch(change_ty *cp)
 static void
 change_attributes_uuid(void)
 {
-    sub_context_ty  *scp;
-    string_ty	    *project_name;
-    project_ty	    *pp;
     cstate_ty	    *cstate_data;
-    long	    change_number;
-    change_ty	    *cp;
-    change_ty	    *cp2;
-    user_ty	    *up;
     string_ty       *uuid;
     size_t          j;
 
     trace(("change_attributes_main()\n{\n"));
     arglex();
-    project_name = 0;
-    change_number = 0;
+    change_identifier cid;
     uuid = 0;
     while (arglex_token != arglex_token_eoln)
     {
@@ -364,41 +315,9 @@ change_attributes_uuid(void)
 	    break;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-	    {
-		option_needs_number
-		(
-		    arglex_token_change,
-		    change_attributes_usage
-		);
-	    }
-	    // fall through...
-
 	case arglex_token_number:
-	    if (change_number)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_change,
-		    change_attributes_usage
-		);
-	    }
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		// NOTREACHED
-		sub_context_delete(scp);
-	    }
-	    break;
-
 	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, change_attributes_usage);
+	    cid.command_line_parse(change_attributes_usage);
 	    continue;
 
 	case arglex_token_wait:
@@ -408,6 +327,7 @@ change_attributes_uuid(void)
 	}
 	arglex();
     }
+    cid.command_line_check(change_attributes_usage);
 
     //
     // As a special case, if no UUID string was given,
@@ -417,33 +337,11 @@ change_attributes_uuid(void)
 	uuid = universal_unique_identifier();
 
     //
-    // locate project data
-    //
-    if (!project_name)
-	project_name = user_default_project();
-    pp = project_alloc(project_name);
-    str_free(project_name);
-    project_bind_existing(pp);
-
-    //
-    // locate user data
-    //
-    up = user_executing(pp);
-
-    //
-    // locate change data
-    //
-    if (!change_number)
-	change_number = user_default_change(up);
-    cp = change_alloc(pp, change_number);
-    change_bind_existing(cp);
-
-    //
     // lock the change
     //
-    change_cstate_lock_prepare(cp);
+    change_cstate_lock_prepare(cid.get_cp());
     lock_take();
-    cstate_data = change_cstate_get(cp);
+    cstate_data = change_cstate_get(cid.get_cp());
 
     //
     // Unlike other change attributes, the UUID may *only* be edited by
@@ -453,12 +351,12 @@ change_attributes_uuid(void)
     //
     if
     (
-	!change_is_being_developed(cp)
+	!change_is_being_developed(cid.get_cp())
     ||
-	!str_equal(change_developer_name(cp), user_name(up))
+	!str_equal(change_developer_name(cid.get_cp()), user_name(cid.get_up()))
     )
     {
-	change_fatal(cp, 0, i18n("bad ca, not auth"));
+	change_fatal(cid.get_cp(), 0, i18n("bad ca, not auth"));
     }
 
     //
@@ -467,7 +365,7 @@ change_attributes_uuid(void)
     //
     if (cstate_data->uuid)
     {
-	change_fatal(cp, 0, i18n("bad ca, uuid already set"));
+	change_fatal(cid.get_cp(), 0, i18n("bad ca, uuid already set"));
     }
 
     //
@@ -476,13 +374,13 @@ change_attributes_uuid(void)
     // to do silly things at times, so this expensive check will be
     // necessary.
     //
-    cp2 = project_uuid_find(pp, uuid);
+    change_ty *cp2 = project_uuid_find(cid.get_pp(), uuid);
     if (cp2)
     {
-	scp = sub_context_new();
+	sub_context_ty *scp = sub_context_new();
 	sub_var_set_string(scp, "Other", change_version_get(cp2));
 	sub_var_optional(scp, "Other");
-	change_fatal(cp, scp, i18n("bad ca, uuid duplicate"));
+	change_fatal(cid.get_cp(), scp, i18n("bad ca, uuid duplicate"));
 	// NOTREACHED
     }
 
@@ -500,10 +398,10 @@ change_attributes_uuid(void)
     {
 	fstate_src_ty   *src;
 
-	src = change_file_nth(cp, j, view_path_first);
+	src = change_file_nth(cid.get_cp(), j, view_path_first);
 	if (!src)
 	    break;
-	change_file_fingerprint_check(cp, src);
+	change_file_fingerprint_check(cid.get_cp(), src);
     }
 
     //
@@ -520,13 +418,10 @@ change_attributes_uuid(void)
     //
     // Write the cstate state back out.
     //
-    change_cstate_write(cp);
+    change_cstate_write(cid.get_cp());
     commit();
     lock_release();
-    change_verbose(cp, 0, i18n("attributes changed"));
-    project_free(pp);
-    change_free(cp);
-    user_free(up);
+    change_verbose(cid.get_cp(), 0, i18n("attributes changed"));
     trace(("}\n"));
 }
 
@@ -535,14 +430,9 @@ static void
 change_attributes_main(void)
 {
     sub_context_ty  *scp;
-    string_ty	    *project_name;
-    project_ty	    *pp;
     cattr_ty	    *cattr_data;
     cstate_ty	    *cstate_data;
     pconf_ty        *pconf_data;
-    long	    change_number;
-    change_ty	    *cp;
-    user_ty	    *up;
     edit_ty	    edit;
     int		    description_only;
     string_ty	    *input;
@@ -550,8 +440,7 @@ change_attributes_main(void)
 
     trace(("change_attributes_main()\n{\n"));
     arglex();
-    project_name = 0;
-    change_number = 0;
+    change_identifier cid;
     edit = edit_not_set;
     description_only = 0;
     cattr_data = 0;
@@ -600,41 +489,9 @@ change_attributes_main(void)
 	    break;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-	    {
-		option_needs_number
-		(
-		    arglex_token_change,
-		    change_attributes_usage
-		);
-	    }
-	    // fall through...
-
 	case arglex_token_number:
-	    if (change_number)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_change,
-		    change_attributes_usage
-		);
-	    }
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		// NOTREACHED
-		sub_context_delete(scp);
-	    }
-	    break;
-
 	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, change_attributes_usage);
+	    cid.command_line_parse(change_attributes_usage);
 	    continue;
 
 	case arglex_token_edit:
@@ -680,6 +537,7 @@ change_attributes_main(void)
 	}
 	arglex();
     }
+    cid.command_line_check(change_attributes_usage);
     if (fix_architecture)
     {
 	if (edit == edit_foreground)
@@ -750,28 +608,6 @@ change_attributes_main(void)
 	cattr_data = (cattr_ty *)cattr_type.alloc();
 
     //
-    // locate project data
-    //
-    if (!project_name)
-	project_name = user_default_project();
-    pp = project_alloc(project_name);
-    str_free(project_name);
-    project_bind_existing(pp);
-
-    //
-    // locate user data
-    //
-    up = user_executing(pp);
-
-    //
-    // locate change data
-    //
-    if (!change_number)
-	change_number = user_default_change(up);
-    cp = change_alloc(pp, change_number);
-    change_bind_existing(cp);
-
-    //
     // edit the attributes
     //
     if (fix_architecture)
@@ -784,12 +620,12 @@ change_attributes_main(void)
 	// make sure they are allowed to,
 	// to avoid a wasted edit
 	//
-	check_permissions(cp, up);
+	check_permissions(cid);
 
 	//
 	// fill in any other fields
 	//
-	cstate_data = change_cstate_get(cp);
+	cstate_data = change_cstate_get(cid.get_cp());
 	change_attributes_copy(cattr_data, cstate_data);
 
 	//
@@ -808,8 +644,8 @@ change_attributes_main(void)
 	else
 	{
 	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Name", project_name_get(pp));
-	    sub_var_set_long(scp, "Number", magic_zero_decode(change_number));
+	    sub_var_set_string(scp, "Name", project_name_get(cid.get_pp()));
+	    sub_var_set_long(scp, "Number", cid.get_change_number());
 	    io_comment_append(scp, i18n("Project $name, Change $number"));
 	    sub_context_delete(scp);
 	    change_attributes_edit(&cattr_data, edit);
@@ -819,19 +655,19 @@ change_attributes_main(void)
     //
     // lock the change
     //
-    change_cstate_lock_prepare(cp);
+    change_cstate_lock_prepare(cid.get_cp());
     lock_take();
-    cstate_data = change_cstate_get(cp);
-    pconf_data = change_pconf_get(cp, 0);
+    cstate_data = change_cstate_get(cid.get_cp());
+    pconf_data = change_pconf_get(cid.get_cp(), 0);
 
     if (fix_architecture)
-	cattr_data = cattr_fix_arch(cp);
+	cattr_data = cattr_fix_arch(cid);
 
     //
     // make sure they are allowed to
     // (even if edited, could have changed during edit)
     //
-    check_permissions(cp, up);
+    check_permissions(cid);
 
     //
     // copy the attributes across
@@ -851,7 +687,7 @@ change_attributes_main(void)
     }
     if (cattr_data->mask & cattr_cause_mask)
 	cstate_data->cause = cattr_data->cause;
-    if (project_administrator_query(pp, user_name(up)))
+    if (project_administrator_query(cid.get_pp(), user_name(cid.get_up())))
     {
 	if (cattr_data->mask & cattr_test_exempt_mask)
 	{
@@ -898,7 +734,7 @@ change_attributes_main(void)
 	    )
 	)
 	{
-	    change_fatal(cp, 0, i18n("bad ca, no test exempt"));
+	    change_fatal(cid.get_cp(), 0, i18n("bad ca, no test exempt"));
 	}
 	else
 	{
@@ -927,61 +763,52 @@ change_attributes_main(void)
     //
     if (cattr_data->architecture && cattr_data->architecture->length)
     {
-	string_list_ty	caarch;
-	string_list_ty	pcarch;
-	size_t		j;
-
 	//
 	// make sure they did not name architectures
 	// we have never heard of
 	//
-	string_list_constructor(&caarch);
-	for (j = 0; j < cattr_data->architecture->length; ++j)
-	    string_list_append(&caarch, cattr_data->architecture->list[j]);
+	string_list_ty caarch;
+	for (size_t j = 0; j < cattr_data->architecture->length; ++j)
+	    caarch.push_back(cattr_data->architecture->list[j]);
 
-	string_list_constructor(&pcarch);
+	string_list_ty pcarch;
 	assert(pconf_data->architecture);
 	assert(pconf_data->architecture->length);
-	for (j = 0; j < pconf_data->architecture->length; ++j)
+	for (size_t k = 0; k < pconf_data->architecture->length; ++k)
 	{
-	    string_list_append
-	    (
-		&pcarch,
-		pconf_data->architecture->list[j]->name
-	    );
+	    pcarch.push_back(pconf_data->architecture->list[k]->name);
 	}
 
-	if (!string_list_subset(&caarch, &pcarch))
+	if (!caarch.subset(pcarch))
 	    fatal_intl(0, i18n("bad ca, unknown architecture"));
-	string_list_destructor(&pcarch);
 
 	//
 	// developers may remove architecture exemptions
 	// but may not grant them
 	//
-	if (!project_administrator_query(pp, user_name(up)))
+	if (!project_administrator_query(cid.get_pp(), user_name(cid.get_up())))
 	{
-	    string_list_ty  csarch;
-
-	    string_list_constructor(&csarch);
-	    for (j = 0; j < cstate_data->architecture->length; ++j)
+	    string_list_ty csarch;
+	    for (size_t m = 0; m < cstate_data->architecture->length; ++m)
 	    {
-		string_list_append(&csarch, cstate_data->architecture->list[j]);
+		csarch.push_back(cstate_data->architecture->list[m]);
 	    }
 
-	    if (!string_list_subset(&csarch, &caarch))
+	    if (!csarch.subset(caarch))
 		fatal_intl(0, i18n("bad ca, no arch exempt"));
-	    string_list_destructor(&csarch);
 	}
-	string_list_destructor(&caarch);
 
 	//
 	// copy the architecture names across
 	//
-	change_architecture_clear(cp);
-	for (j = 0; j < cattr_data->architecture->length; ++j)
+	change_architecture_clear(cid.get_cp());
+	for (size_t m = 0; m < cattr_data->architecture->length; ++m)
 	{
-	    change_architecture_add(cp, cattr_data->architecture->list[j]);
+	    change_architecture_add
+	    (
+		cid.get_cp(),
+		cattr_data->architecture->list[m]
+	    );
 	}
     }
 
@@ -1042,13 +869,10 @@ change_attributes_main(void)
     }
 
     cattr_type.free(cattr_data);
-    change_cstate_write(cp);
+    change_cstate_write(cid.get_cp());
     commit();
     lock_release();
-    change_verbose(cp, 0, i18n("attributes changed"));
-    project_free(pp);
-    change_free(cp);
-    user_free(up);
+    change_verbose(cid.get_cp(), 0, i18n("attributes changed"));
     trace(("}\n"));
 }
 

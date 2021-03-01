@@ -31,7 +31,7 @@
 #include <project.h>
 #include <project/history.h>
 #include <str_list.h>
-#include <symtab_iter.h>
+#include <symtab.h>
 #include <user.h>
 
 
@@ -108,11 +108,11 @@ staff_member_find(symtab_ty *stp, string_ty *key)
 {
     staff_member_ty *mp;
 
-    mp = (staff_member_ty *)symtab_query(stp, key);
+    mp = (staff_member_ty *)stp->query(key);
     if (!mp)
     {
 	mp = staff_member_new();
-	symtab_assign(stp, key, mp);
+	stp->assign(key, mp);
     }
     return mp;
 }
@@ -127,14 +127,10 @@ get_project_staff(project_ty *pp, string_ty *fn, string_list_ty *modifier)
     long            number_of_changes = 0;
     size_t          n;
     cstate_ty       *cstate_data;
-    symtab_ty       *stp;
     staff_member_ty total;
     staff_member_ty max;
     long            tmax;
-    string_list_ty  keys;
     string_ty       *key;
-    void            *dp;
-    symtab_iterator it;
     staff_member_ty *smp;
     size_t          j;
 
@@ -153,8 +149,8 @@ get_project_staff(project_ty *pp, string_ty *fn, string_list_ty *modifier)
     printf("each role.  Statistics are provided about how many\n");
     printf("times these roles have been exersized.\n");
 
-    stp = symtab_alloc(5);
-    stp->reap = reaper;
+    symtab_ty *stp = new symtab_ty(5);
+    stp->set_reap(reaper);
 
     //
     // Set the enabled flag for active staff members.
@@ -254,6 +250,9 @@ get_project_staff(project_ty *pp, string_ty *fn, string_list_ty *modifier)
 		case cstate_history_what_review_pass:
 		case cstate_history_what_review_pass_undo:
 		case cstate_history_what_review_fail:
+		case cstate_history_what_review_pass_2ar:
+		case cstate_history_what_review_pass_2br:
+		case cstate_history_what_review_pass_undo_2ar:
 		    smp->reviewer.count++;
 		    if (max.reviewer.count < smp->reviewer.count)
 			max.reviewer.count = smp->reviewer.count;
@@ -290,11 +289,9 @@ get_project_staff(project_ty *pp, string_ty *fn, string_list_ty *modifier)
     // Extract the names from the symbol table.
     // Sort them for predictable results.
     //
-    symtab_iterator_constructor(&it, stp);
-    string_list_constructor(&keys);
-    while (symtab_iterator_next(&it, &key, &dp))
-	string_list_append(&keys, key);
-    string_list_sort(&keys);
+    string_list_ty keys;
+    stp->keys(&keys);
+    keys.sort();
 
     //
     // Print statistics about staff.
@@ -311,7 +308,7 @@ get_project_staff(project_ty *pp, string_ty *fn, string_list_ty *modifier)
 	int             width;
 
 	key = keys.string[n];
-	smp = (staff_member_ty *)symtab_query(stp, key);
+	smp = (staff_member_ty *)stp->query(key);
 	assert(smp);
 	if (!smp)
 	    continue;
@@ -357,7 +354,7 @@ get_project_staff(project_ty *pp, string_ty *fn, string_list_ty *modifier)
     printf("<tr class=\"even-group\">\n");
     printf("<td colspan=13>Listed %ld staff.</td>\n", (long)keys.nstrings);
     printf("</tr></table></div>\n");
-    symtab_free(stp);
+    delete stp;
 
     printf("<hr>\n");
     printf("<div class=\"report-cmd\">\n");

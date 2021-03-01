@@ -41,3 +41,10 @@ nstring::vformat(const char *fmt, va_list ap)
 {
     return nstring(str_vformat(fmt, ap));
 }
+
+
+string_ty *
+nstring::get_empty_ref()
+{
+    return str_from_c("");
+}

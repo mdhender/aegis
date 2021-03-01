@@ -24,13 +24,10 @@
 
 
 void
-symtab_walk(symtab_ty *stp, void (*func)(symtab_ty *, string_ty *, void *,
-    void *), void *arg)
+symtab_ty::walk(callback_t func, void *arg)
+    const
 {
-    str_hash_ty     j;
-    symtab_row_ty   *rp;
-
-    for (j = 0; j < stp->hash_modulus; ++j)
-       	for (rp = stp->hash_table[j]; rp; rp = rp->overflow)
-	    func(stp, rp->key, rp->data, arg);
+    for (str_hash_ty j = 0; j < hash_modulus; ++j)
+       	for (row_t *rp = hash_table[j]; rp; rp = rp->overflow)
+	    func(this, rp->key, rp->data, arg);
 }

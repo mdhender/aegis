@@ -17,7 +17,7 @@
 .\"	along with this program; if not, write to the Free Software
 .\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 .\"
-.\" MANIFEST: User Guide,  The History Tool, Using RCS
+.\" MANIFEST: User Guide, The History Tool, Using RCS
 .\"
 .bp
 .nh 2 "Using RCS"
@@ -191,8 +191,8 @@ The entry in the
 file looks like this:
 .E(
 history_query_command =
-  "rlog -r $h,v | \e
-   awk '/^revision/ {print $$2}'";
+  "rlog -r $h,v | "
+  "awk '/^revision/ {print $$2}'";
 .E)
 .nh 3 "merge_command"
 .LP
@@ -226,19 +226,19 @@ The entry in the
 file looks like this:
 .E(
 merge_command =
-  "set +e; \e
-  merge -p -L baseline -L C$c \e
-  $mr $orig $in > $out; \e
-  test $? -le 1";
+  "set +e; "
+  "merge -p -L baseline -L C$c "
+  " $mr $orig $in > $out; "
+  "test $? -le 1";
 .E)
-.PP
+.LP
 The "\f(CWmerge -L\fP" options are used to specify
 labels for the baseline and the development directory,
 respectively,
 when conflict lines are inserted into the result.
 The "\f(CWmerge -p\fP" options is used to specify that
 the results are to be printed on the standard output.
-.PP
+.LP
 It is important that this command does not move its input and output
 files around, otherwise this contradicts the warnings Aegis may issue to
 the user.  (In previous versions of Aegis, this was necessary, however
@@ -271,6 +271,7 @@ recalculate the file's fingerprint after a checkin.
 The
 .I lib/config.example/rcs
 file in the Aegis distribution
+(installed as \fI\*(D)/config.example/rcs\fP by default)
 contains all of the above commands,
 so that you may readily insert them into your project
 configuration
@@ -291,15 +292,16 @@ will provide quite useful summaries.
 .LP
 RCS (version 5.6 and later) is able to cope with binary files.
 It does so by saving a whole copy of the file at each check-in.
-.PP
+.LP
 If you want Aegis
 to transparently encode all such files, simply leave the
 \fIhistory_\%content_\%limitation\fP field unset.
-.PP
+.LP
 If you want to check-in binary files, add the \f[CW]\-kb\fP option to
 each of the \f[CW]rcs -U\fP commands in the fields above, and also set
 .E(
-history_content_limitation = binary_capable;
+history_content_limitation =
+    binary_capable;
 .E)
 so that Aegis knows that no encoding is desired.
 .nh 3 "history_put_trashes_files"

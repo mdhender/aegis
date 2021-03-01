@@ -100,6 +100,7 @@ unset LANGUAGE
 # test the zlib decode functionality
 #
 cat > test.in.uue << 'fubar'
+
 begin 644 test.in
 M'XL("#:5TC8"`W@`39%1;L0@#$3_<XI<)4<AP=UXFX($;*7<OAZ/4?J1F0<V
 MC@U;:N>GKUMJM:S;GO:TVG=\0[\&M&2+A$N>I.4U\4?*6(([-KM0,PWQAR*#
@@ -127,7 +128,7 @@ abides abiding Abidjan Abigail Abilene abilities ability abject abjection
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-uudecode test.in.uue
+$bin/test_base64 -uu -i test.in.uue test.in
 if test $? -ne 0 ; then no_result; fi
 
 $bin/test_zlib --input test.in test.out

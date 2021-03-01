@@ -38,7 +38,7 @@ run(server_ty *sp, string_ty *arg)
     if (server_directory_required(sp, "Is-modified"))
 	return;
 
-    dp = sp->np->curdir;
+    dp = sp->np->get_curdir();
     server_side = os_path_cat(dp->server_side, arg);
     fip = server_file_info_find(sp, server_side, 1);
     fip->modified = 1;

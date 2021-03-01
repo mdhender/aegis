@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -88,9 +88,9 @@ list_reviewers(string_ty *project_name,
 		logname = project_reviewer_nth(pp, j);
 		if (!logname)
 			break;
-		output_put_str(login_col, logname);
+		login_col->fputs(logname);
 		if (!option_terse_get())
-			output_fputs(name_col, user_full_name(logname));
+			name_col->fputs(user_full_name(logname));
 		col_eoln(colp);
 	}
 

@@ -136,12 +136,12 @@ gram_lex(void)
 	    break;
 
 	case '0':
-	    stracc_open(&buffer);
-	    stracc_char(&buffer, '0');
+	    buffer.clear();
+	    buffer.push_back('0');
 	    c = input_getc(input);
 	    if (c == 'x' || c == 'X')
 	    {
-		stracc_char(&buffer, c);
+		buffer.push_back(c);
 		ndigits = 0;
 		for (;;)
 		{
@@ -171,7 +171,7 @@ gram_lex(void)
 		    case 'e':
 		    case 'f':
 			++ndigits;
-			stracc_char(&buffer, c);
+			buffer.push_back(c);
 			continue;
 
 		    default:
@@ -186,13 +186,14 @@ gram_lex(void)
 		    goto integer_return;
 		}
 		lex_getc_undo(c);
-		stracc_char(&buffer, ' ');
-		gram_lval.lv_integer = strtoul(buffer.buffer, (char **)0, 16);
+		buffer.push_back(' ');
+		gram_lval.lv_integer =
+		    strtoul(buffer.get_data(), (char **)0, 16);
 		goto integer_return;
 	    }
 	    if (c == '.')
 	    {
-		stracc_char(&buffer, c);
+		buffer.push_back(c);
 		goto fraction;
 	    }
 	    if (c == 'e' || c == 'E')
@@ -209,7 +210,7 @@ gram_lex(void)
 		case '5':
 		case '6':
 		case '7':
-		    stracc_char(&buffer, c);
+		    buffer.push_back(c);
 		    c = input_getc(input);
 		    continue;
 
@@ -219,8 +220,8 @@ gram_lex(void)
 		break;
 	    }
 	    lex_getc_undo(c);
-	    stracc_char(&buffer, ' ');
-	    gram_lval.lv_integer = strtoul(buffer.buffer, (char **)0, 8);
+	    buffer.push_back(' ');
+	    gram_lval.lv_integer = strtoul(buffer.get_data(), (char **)0, 8);
 	    goto integer_return;
 
 	case '1':
@@ -232,10 +233,10 @@ gram_lex(void)
 	case '7':
 	case '8':
 	case '9':
-	    stracc_open(&buffer);
+	    buffer.clear();
 	    for (;;)
 	    {
-		stracc_char(&buffer, c);
+		buffer.push_back(c);
 		c = input_getc(input);
 		if (c < 0)
 		    break;
@@ -244,14 +245,14 @@ gram_lex(void)
 	    }
 	    if (c == '.')
 	    {
-		stracc_char(&buffer, c);
+		buffer.push_back(c);
 		goto fraction;
 	    }
 	    if (c == 'e' || c == 'E')
 		goto exponent;
 	    lex_getc_undo(c);
-	    stracc_char(&buffer, ' ');
-	    gram_lval.lv_integer = strtoul(buffer.buffer, (char **)0, 10);
+	    buffer.push_back(' ');
+	    gram_lval.lv_integer = strtoul(buffer.get_data(), (char **)0, 10);
 	    assert(gram_lval.lv_integer >= 0);
 	    integer_return:
 	    trace(("%s: INTEGER %ld\n", input_name(input)->str_text,
@@ -265,26 +266,26 @@ gram_lex(void)
 		lex_getc_undo(c);
 		return '.';
 	    }
-	    stracc_open(&buffer);
-	    stracc_char(&buffer, '0');
-	    stracc_char(&buffer, '.');
-	    stracc_char(&buffer, c);
+	    buffer.clear();
+	    buffer.push_back('0');
+	    buffer.push_back('.');
+	    buffer.push_back(c);
 	    fraction:
 	    for (;;)
 	    {
 		c = input_getc(input);
 		if (c < 0 || !isdigit((unsigned char)c))
 		    break;
-		stracc_char(&buffer, c);
+		buffer.push_back(c);
 	    }
 	    if (c == 'e' || c == 'E')
 	    {
 		exponent:
-		stracc_char(&buffer, c);
+		buffer.push_back(c);
 		c = input_getc(input);
 		if (c == '+' || c == '-')
 		{
-		    stracc_char(&buffer, c);
+		    buffer.push_back(c);
 		    c = input_getc(input);
 		}
 		ndigits = 0;
@@ -294,7 +295,7 @@ gram_lex(void)
 		    if (c < 0 || !isdigit((unsigned char)c))
 			break;
 		    ++ndigits;
-		    stracc_char(&buffer, c);
+		    buffer.push_back(c);
 		}
 		if (!ndigits)
 		{
@@ -305,14 +306,14 @@ gram_lex(void)
 		}
 	    }
 	    lex_getc_undo(c);
-	    stracc_char(&buffer, 0);
-	    gram_lval.lv_real = atof(buffer.buffer);
+	    buffer.push_back('\0');
+	    gram_lval.lv_real = atof(buffer.get_data());
 	    trace(("%s: REAL %g\n", input_name(input)->str_text,
 		gram_lval.lv_real));
 	    return REAL;
 
 	case '"':
-	    stracc_open(&buffer);
+	    buffer.clear();
 	    for (;;)
 	    {
 		c = input_getc(input);
@@ -348,28 +349,28 @@ gram_lex(void)
 			goto str_eof;
 
 		    case 'b':
-			stracc_char(&buffer, '\b');
+			buffer.push_back('\b');
 			break;
 
 		    case 'n':
-			stracc_char(&buffer, '\n');
+			buffer.push_back('\n');
 			break;
 
 		    case 'r':
-			stracc_char(&buffer, '\r');
+			buffer.push_back('\r');
 			break;
 
 		    case 't':
-			stracc_char(&buffer, '\t');
+			buffer.push_back('\t');
 			break;
 
 		    case 'f':
-			stracc_char(&buffer, '\f');
+			buffer.push_back('\f');
 			break;
 
 		    case '"':
 		    case '\\':
-			stracc_char(&buffer, c);
+			buffer.push_back(c);
 			break;
 
 		    case '0':
@@ -407,21 +408,21 @@ gram_lex(void)
 				}
 				break;
 			    }
-			    stracc_char(&buffer, v);
+			    buffer.push_back(v);
 			}
 			break;
 		    }
 		}
 		else
-		    stracc_char(&buffer, c);
+		    buffer.push_back(c);
 	    }
-	    gram_lval.lv_string = stracc_close(&buffer);
+	    gram_lval.lv_string = buffer.mkstr();
 	    trace(("%s: STRING \"%s\"\n", input_name(input)->str_text,
 		gram_lval.lv_string->str_text));
 	    return STRING;
 
 	case '@':
-	    stracc_open(&buffer);
+	    buffer.clear();
 	    for (;;)
 	    {
 		c = input_getc(input);
@@ -442,12 +443,12 @@ gram_lex(void)
 		    // fall through...
 
 		default:
-		    stracc_char(&buffer, c);
+		    buffer.push_back(c);
 		    continue;
 		}
 		break;
 	    }
-	    gram_lval.lv_string = stracc_close(&buffer);
+	    gram_lval.lv_string = buffer.mkstr();
 	    trace(("%s: STRING \"%s\"\n", input_name(input)->str_text,
 		gram_lval.lv_string->str_text));
 	    return STRING;
@@ -505,10 +506,10 @@ gram_lex(void)
 	case 'x':
 	case 'y':
 	case 'z':
-	    stracc_open(&buffer);
+	    buffer.clear();
 	    for (;;)
 	    {
-		stracc_char(&buffer, c);
+		buffer.push_back(c);
 		c = input_getc(input);
 		switch (c)
 		{
@@ -583,12 +584,12 @@ gram_lex(void)
 		}
 		break;
 	    }
-	    if (buffer.length == 4 && !memcmp(buffer.buffer, "ZERO", 4))
+	    if (buffer.size() == 4 && !memcmp(buffer.get_data(), "ZERO", 4))
 	    {
 		gram_lval.lv_integer = MAGIC_ZERO;
 		goto integer_return;
 	    }
-	    gram_lval.lv_string = stracc_close(&buffer);
+	    gram_lval.lv_string = buffer.mkstr();
 	    trace(("%s: NAME \"%s\"\n", input_name(input)->str_text,
 		gram_lval.lv_string->str_text));
 	    return NAME;

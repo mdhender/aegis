@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1997-1999, 2001-2004 Peter Miller;
+ *	Copyright (C) 1991-1994, 1997-1999, 2001-2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -355,7 +355,8 @@ generate_code_file(const char *code_file, const char *include_file,
     indent_printf("void\n");
     indent_printf
     (
-	"%s_write_file(string_ty *filename, %s_ty *value, int compress)\n",
+	"%s_write_file(string_ty *filename, %s_ty *value, "
+        "int needs_compression)\n",
 	s->str_text,
 	s->str_text
     );
@@ -371,17 +372,17 @@ generate_code_file(const char *code_file, const char *include_file,
     indent_more();
     indent_printf("os_become_must_be_active();\n");
     indent_less();
-    indent_printf("if (compress)\n{\n");
+    indent_printf("if (needs_compression)\n{\n");
     indent_printf("fp = output_file_binary_open(filename);\n");
-    indent_printf("fp = output_gzip(fp);\n");
+    indent_printf("fp = new output_gzip_ty(fp, true);\n");
     indent_printf("}\nelse\n{\n");
     indent_printf("fp = output_file_text_open(filename);\n");
     indent_printf("}\n");
-    indent_printf("fp = output_indent(fp);\n");
+    indent_printf("fp = new output_indent_ty(fp, true);\n");
     indent_printf("io_comment_emit(fp);\n");
     indent_printf("%s_write(fp, value);\n", s->str_text);
     indent_printf("type_enum_option_clear();\n");
-    indent_printf("output_delete(fp);\n");
+    indent_printf("delete fp;\n");
     indent_printf("trace((\"}\\n\"));\n");
     indent_printf("}\n");
 
@@ -402,7 +403,7 @@ generate_code_file(const char *code_file, const char *include_file,
 void
 generate_code__init(const nstring &s)
 {
-    string_list_append(&initialize, s.get_ref());
+    initialize.push_back(s.get_ref());
 }
 
 

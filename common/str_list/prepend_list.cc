@@ -20,35 +20,39 @@
 // MANIFEST: functions to manipulate prepend_lists
 //
 
-#include <mem.h>
+#include <ac/string.h>
+
 #include <str_list.h>
 
 
 void
-string_list_prepend_list(string_list_ty *wlp, const string_list_ty  *arg)
+string_list_ty::push_front(const string_list_ty &arg)
 {
-    size_t          j;
-
-    if (wlp->nstrings + arg->nstrings > wlp->nstrings_max)
+    if (nstrings + arg.size() > nstrings_max)
     {
-	size_t          nbytes;
-
 	//
 	// always 8 less than a power of 2, which is
 	// most efficient for many memory allocators
 	//
+	size_t new_nstrings_max = nstrings_max;
 	for (;;)
 	{
-	    wlp->nstrings_max = wlp->nstrings_max * 2 + 8;
-	    if (wlp->nstrings + arg->nstrings <= wlp->nstrings_max)
+	    new_nstrings_max = new_nstrings_max * 2 + 8;
+	    if (nstrings + nstrings <= new_nstrings_max)
 		break;
 	}
-	nbytes = wlp->nstrings_max * sizeof(string_ty *);
-	wlp->string = (string_ty **)mem_change_size(wlp->string, nbytes);
+	string_ty **new_string = new string_ty * [new_nstrings_max];
+	memcpy(new_string + arg.size(), string, nstrings);
+	delete [] string;
+	string = new_string;
+	nstrings_max = new_nstrings_max;
     }
-    for (j = wlp->nstrings; j > 0; --j)
-	wlp->string[j + arg->nstrings - 1] = wlp->string[j - 1];
-    for (j = 0; j < arg->nstrings; ++j)
-	wlp->string[j] = str_copy(arg->string[j]);
-    wlp->nstrings += arg->nstrings;
+    else
+    {
+	for (size_t k = nstrings; k > 0; --k)
+	    string[k + nstrings - 1] = string[k - 1];
+    }
+    for (size_t j = 0; j < arg.size(); ++j)
+	string[j] = str_copy(arg[j]);
+    nstrings += arg.size();
 }

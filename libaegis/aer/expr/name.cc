@@ -68,8 +68,8 @@ init(void)
 
     if (stp)
 	return;
-    stp = symtab_alloc(100);
-    stp->reap = reap;
+    stp = new symtab_ty(100);
+    stp->set_reap(reap);
 
     //
     // initialize the names of the builtin functions
@@ -94,27 +94,27 @@ init(void)
     // some constants
     //
     name = str_from_c("true");
-    symtab_assign(stp, name, rpt_value_boolean(1));
+    stp->assign(name, rpt_value_boolean(1));
     str_free(name);
     name = str_from_c("false");
-    symtab_assign(stp, name, rpt_value_boolean(0));
+    stp->assign(name, rpt_value_boolean(0));
     str_free(name);
 
     //
     // This one is so you can get at .aegisrc files.
     //
     name = str_from_c("user");
-    symtab_assign(stp, name, rpt_value_uconf());
+    stp->assign(name, rpt_value_uconf());
     str_free(name);
 
     name = str_from_c("passwd");
-    symtab_assign(stp, name, rpt_value_passwd());
+    stp->assign(name, rpt_value_passwd());
     str_free(name);
     name = str_from_c("group");
-    symtab_assign(stp, name, rpt_value_group());
+    stp->assign(name, rpt_value_group());
     str_free(name);
     name = str_from_c("project");
-    symtab_assign(stp, name, rpt_value_gstate());
+    stp->assign(name, rpt_value_gstate());
     str_free(name);
 
     //
@@ -129,7 +129,7 @@ void
 rpt_expr_name__init(string_ty *name, rpt_value_ty *value)
 {
     assert(stp);
-    symtab_assign(stp, name, value);
+    stp->assign(name, value);
 }
 
 
@@ -142,10 +142,10 @@ rpt_expr_name(string_ty *name)
     if (!stp)
 	init();
 
-    data = (rpt_value_ty *)symtab_query(stp, name);
+    data = (rpt_value_ty *)stp->query(name);
     if (!data)
     {
-	name2 = symtab_query_fuzzy(stp, name);
+	name2 = stp->query_fuzzy(name);
 	if (!name2)
 	{
 	    sub_context_ty  *scp;
@@ -165,7 +165,7 @@ rpt_expr_name(string_ty *name)
 	    sub_var_set_string(scp, "Guess", name2);
 	    aer_lex_error(scp, 0, i18n("no \"$name\", guessing \"$guess\""));
 	    sub_context_delete(scp);
-	    data = (rpt_value_ty *)symtab_query(stp, name2);
+	    data = (rpt_value_ty *)stp->query(name2);
 	    assert(data);
 	}
     }
@@ -186,7 +186,7 @@ rpt_expr_name__declare(string_ty *name)
     //
     if (!stp)
 	init();
-    if (symtab_query(stp, name))
+    if (stp->query(name))
     {
 	sub_context_ty	*scp;
 
@@ -204,5 +204,5 @@ rpt_expr_name__declare(string_ty *name)
     v1 = rpt_value_nul();
     v2 = rpt_value_reference(v1);
     rpt_value_free(v1);
-    symtab_assign(stp, name, v2);
+    stp->assign(name, v2);
 }

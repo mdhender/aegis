@@ -26,15 +26,101 @@
 #include <input.h>
 #include <str_list.h>
 
-struct patch_context_ty
+/**
+  * The patch_context_ty class is used to represent a line buffered
+  * input stream, with the ability to fetch individual lines of input.
+  */
+class patch_context_ty
 {
-	input_ty	*input;
-	string_list_ty	buffer;
+public:
+    /**
+      * The destructor.
+      */
+    ~patch_context_ty();
+
+    /**
+      * The constructor.
+      *
+      * \param arg
+      *     The input stream to read and buffer.
+      */
+    patch_context_ty(input_ty *arg);
+
+    /**
+      * The getline method is used to grab the line with the given
+      * numkber (zero based).
+      *
+      * \param n
+      *     The line number to fatch (zero based), relative to the
+      *     current position.
+      */
+    string_ty *getline(int n);
+
+    /**
+      * The discard method is used to consume some lines of inout.
+      *
+      * \param n
+      *     The number of lines to discard from the front of the buffer.
+      */
+    void discard(int n);
+
+    /**
+      * The get_file_name method is used to get the name and line number
+      * of the input stream.  This is mostly used for debugging.
+      */
+    const char *get_file_name() const { return input_name(input)->str_text; }
+
+private:
+    /**
+      * The input instance variable is used to remember where to get
+      * more input lines from.
+      */
+    input_ty *input;
+
+    /**
+      * The buffer instance variable is used to remember lines which
+      * have already been read from the input.
+      */
+    string_list_ty buffer;
+
+    /**
+      * The default constructor.  Do not use.
+      */
+    patch_context_ty();
+
+    /**
+      * The copy constructor.  Do not use.
+      */
+    patch_context_ty(const patch_context_ty&);
+
+    /**
+      * The assignment operator.  Do not use.
+      */
+    patch_context_ty &operator=(const patch_context_ty&);
 };
 
-patch_context_ty *patch_context_new(input_ty *);
-void patch_context_delete(patch_context_ty *);
-string_ty *patch_context_getline(patch_context_ty *, int);
-void patch_context_discard(patch_context_ty *, int);
+inline patch_context_ty *
+patch_context_new(input_ty *ip)
+{
+    return new patch_context_ty(ip);
+}
+
+inline void
+patch_context_delete(patch_context_ty *pcp)
+{
+    delete pcp;
+}
+
+inline string_ty *
+patch_context_getline(patch_context_ty *pcp, int n)
+{
+    return pcp->getline(n);
+}
+
+inline void
+patch_context_discard(patch_context_ty *pcp, int n)
+{
+    pcp->discard(n);
+}
 
 #endif // LIBAEGIS_PATCH_CONTEXT_H

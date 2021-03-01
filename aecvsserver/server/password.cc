@@ -27,7 +27,7 @@
 #include <ac/shadow.h>
 #include <ac/string.h>
 #include <ac/unistd.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h> // for umask
 
 #include <env.h>

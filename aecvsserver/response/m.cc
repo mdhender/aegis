@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -70,11 +70,11 @@ write(response_ty *rp, output_ty *op)
 	ep = strchr(cp, '\n');
 	if (!ep)
 	    break;
-	output_fprintf(op, "M %.*s\n", (int)(ep - cp), cp);
+	op->fprintf("M %.*s\n", (int)(ep - cp), cp);
 	cp = ep + 1;
     }
     if (*cp)
-	output_fprintf(op, "M %s\n", cp);
+	op->fprintf("M %s\n", cp);
 }
 
 

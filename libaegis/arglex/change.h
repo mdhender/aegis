@@ -38,9 +38,13 @@ void arglex_parse_change(string_ty **project_name_p, long *change_number_p,
     void (*usage)(void));
 
 /**
-  * The arglex_parse_branch function is almost identical to  the
-  * arglex_parse_change() function, except that the error messages talk
-  * about branches.
+  * The arglex_parse_change function is used to parse a brancg number,
+  * once the -BRanch command line option has been seen.  It is expected
+  * that arglex() has been called, so that the currect command line
+  * token is the one following the -BRanch token.
+  *
+  * Does not return on error.  On a successful return, the current token
+  * has been advanced past the branch numnber.
   */
 void arglex_parse_branch(string_ty **project_name_p, long *change_number_p,
     void (*usage)(void));

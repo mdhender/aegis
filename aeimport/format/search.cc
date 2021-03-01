@@ -69,7 +69,7 @@ format_search_staff(format_search_ty *fsp, string_list_ty *slp)
     {
         // what about branches?
         assert(fvp->who);
-        string_list_append_unique(slp, fvp->who);
+        slp->push_back_unique(fvp->who);
     }
 }
 

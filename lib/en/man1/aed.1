@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1996, 1998, 1999, 2002, 2004 Peter Miller;
+.\"	Copyright (C) 1991-1996, 1998, 1999, 2002, 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -65,17 +65,21 @@ file (see
 .IR aepconf (5)
 for more information).
 .PP
+Please note that the \fIhistory_\%content_\%limitation\fP field
+of the project configuration file does \fBnot\fP apply to the
+\fIdiff_\%command\fP field.
+.PP
 If no files are named on the command line,
 all files in the change will be differenced.
 .PP
 You may name a directory on the command line,
 and all files in the change in that directory tree will be differenced.
 .so z_intuit.so
-.so z_bl_lock.so
 .SS Notification
 The actions of the command are controlled by the \fIdiff_\%command\fP
 and \fImerge_\%command\fP fields of the project \fIconfig\fP
 file.  See \fIaepconf\fP(5) for more information.
+.so z_bl_lock.so
 .SH CONFLICT RESOLUTION
 If the version of a file in the change is not the same
 as the version of the file in the baseline,
@@ -96,16 +100,19 @@ file (see
 .IR aepconf (5)
 for more information).
 .PP
+Please note that the \fIhistory_\%content_\%limitation\fP field
+of the project configuration file does \fBnot\fP apply to the
+\fImerge\%_command\fP field.
+.PP
 After the merge is performed
 the version of the file will be changed to be the current version,
 marking the file as up to date,
 and a new build will be required.
 .PP
-The difference output in the \fI,D\fP files
-contains the result of the merge.
-You should edit them,
-to make sure the automatic merge has produced sensible results,
-and then rename them to be the corresponding source file.
+The original file in your development directory is preserved with an
+"\f[CW],B\fP" suffix (B for backup).  The source file contains the
+result of the merge.  You should edit the source files, to make sure the
+automatic merge has produced sensible results.
 .PP
 This merge process works most of the time.
 Usually two changes to two logically separate areas of functionality
@@ -114,6 +121,9 @@ have in common.
 There are pathological cases where this merge process is spectacularly
 useless,
 but these are surprisingly rare in practice.
+.PP
+If you don't want the automatic merge results, simply use the
+\fImv\fP(1) command to restore the contents from the "\f[CW],B\fP" file.
 .PP
 If any merges are required no differences will be performed.
 An error message and a non-zero exit status will also result.
@@ -126,6 +136,7 @@ and
 .B -Only_Merge
 options, below,
 for exact control of when merging is performed.
+.so o_clone_merg.so
 .SH INTEGRATION
 During integration, it is also necessary to difference a change.
 This provides the difference between the branch and its parent, for

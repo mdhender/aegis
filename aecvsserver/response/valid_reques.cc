@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -62,7 +62,7 @@ write(response_ty *rp, output_ty *np)
     assert(rp);
     rvrp = (response_valid_requests_ty *)rp;
     assert(rvrp->message);
-    output_fprintf(np, "Valid-requests %s\n", rvrp->message->str_text);
+    np->fprintf("Valid-requests %s\n", rvrp->message->str_text);
 }
 
 
@@ -84,6 +84,6 @@ response_valid_requests_new(string_list_ty *slp)
 
     rp = response_new(&vtbl);
     rvrp = (response_valid_requests_ty *)rp;
-    rvrp->message = wl2str(slp, 0, slp->nstrings, " ");
+    rvrp->message = slp->unsplit();
     return rp;
 }

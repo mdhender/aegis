@@ -25,7 +25,7 @@
 #include <sub/expr_gram.h>
 #include <str.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 wstring_ty *
@@ -40,7 +40,7 @@ sub_expression(sub_context_ty *scp, wstring_list_ty *arg)
     // Check the number of arguments
     //
     trace(("sub_expression()\n{\n" ));
-    if (arg->nitems < 2)
+    if (arg->size() < 2)
     {
 	sub_context_error_set(scp, i18n("requires at least one argument"));
 	trace(("return NULL;\n"));
@@ -52,7 +52,7 @@ sub_expression(sub_context_ty *scp, wstring_list_ty *arg)
     // Fold all of the arguments into a single string,
     // and parse that string for an expression.
     //
-    ws = wstring_list_to_wstring(arg, 1, arg->nitems, " ");
+    ws = arg->unsplit(1, arg->size());
     s1 = wstr_to_str(ws);
     trace(("s1 = \"%s\";\n", s1->str_text));
     wstr_free(ws);

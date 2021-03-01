@@ -21,12 +21,6 @@
 .\"
 .nh 2 "The To-Do List"
 .\" ========================================================================
-.nh 3 "Web Interface"
-.IP \(bu 2n
-The \fIaeget\fP(1) web interface needs to have all of the
-\fIaegis.cgi\fP(1) functionality added, so that \fIaegis.cgi\fP(1) can
-be retired.
-Submitted: PMiller, 2-Jun-2004
 .IP \(bu 2n
 Add an additonal mode to \fIaedist\fP to query an \fIaeget\fP server for
 change set UUIDs and download and apply missing change sets.
@@ -282,20 +276,20 @@ And maybe another to produce HTML pages of the same thing.
 Submitted: 15-Jan-2000
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
-On the aegis.cgi web pages, link the file edit numbers to pages which
+On the \fIaeget\fP(1) web pages, link the file edit numbers to pages which
 will retrieve the historical version.
 Submitted: Anoop Kulkarni <anoop@sasi.com>, 22 Dec 1999
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 Add a user_change report (just like ``ael user_changes'')
 which takes a user name, so you can get a list of changes by user.
-Make aegis.cgi do this, too.
+Make \fIaeget\fP(1) do this, too.
 Submitted: Ralf Fassel <ralf@akutech.de>, 9 Dec 1999
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 Add a outstanding_changes report (just like ``ael outstanding_changes'')
 which takes a user name, so you can get a list of outstanding changes by user.
-Make aegis.cgi do this, too.
+Make \fIaeget\fP(1) do this, too.
 Submitted: Ralf Fassel <ralf@akutech.de>, 9 Dec 1999
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n

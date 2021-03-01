@@ -30,21 +30,25 @@
 
 
 void
-os_rmdir(string_ty *path)
+os_rmdir(const nstring &path)
 {
-    trace(("os_rmdir(path = \"%s\")\n{\n", path->str_text));
+    trace(("os_rmdir(path = \"%s\")\n{\n", path.c_str()));
     os_become_must_be_active();
-    if (glue_rmdir(path->str_text) && errno != ENOENT)
+    if (glue_rmdir(path.c_str()) && errno != ENOENT)
     {
-	sub_context_ty  *scp;
-	int             errno_old;
-
-	errno_old = errno;
-	scp = sub_context_new();
+	int errno_old = errno;
+	sub_context_ty *scp = sub_context_new();
 	sub_errno_setx(scp, errno_old);
 	sub_var_set_string(scp, "File_Name", path);
 	fatal_intl(scp, i18n("rmdir $filename: $errno"));
 	// NOTREACHED
     }
     trace(("}\n"));
+}
+
+
+void
+os_rmdir(string_ty *path)
+{
+    os_rmdir(nstring(str_copy(path)));
 }

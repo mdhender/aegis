@@ -25,11 +25,13 @@
 #include <ac/string.h>
 #include <ac/stddef.h>
 #include <ac/stdarg.h>
+#include <ac/time.h>
 
 #include <error.h>
 #include <mem.h>
 #include <progname.h>
 #include <str.h>
+#include <nstring.h>
 #include <trace.h>
 
 
@@ -229,6 +231,26 @@ trace_printf(const char *s, ...)
 }
 
 
+const char*
+trace_args()
+{
+    static nstring args;
+    if (args.empty())
+    {
+	for (known_ty *kp = known; kp; kp = kp->next)
+	{
+	    if (kp->flag != 3)
+		continue;
+	    if (args.empty())
+		args += " -Trace";
+	    args += " ";
+	    args += kp->filename->str_text;
+	}
+    }
+    return args.c_str();
+}
+
+
 void
 trace_enable(const char *file)
 {
@@ -262,6 +284,16 @@ trace_enable(const char *file)
 #ifdef DEBUG
     trace_pretest_result = 1;
 #endif
+}
+
+
+void
+trace_bool_real(const char *name, const bool &value)
+{
+    if (name && *name)
+	trace_printf("%s = ", name);
+    trace_printf("%s", (value ? "true" : "false"));
+    trace_printf(name && *name ? ";\n" : ",\n");
 }
 
 
@@ -332,7 +364,10 @@ trace_int_unsigned_real(const char *name, const unsigned int *vp)
 void
 trace_long_real(const char *name, const long *vp)
 {
-    trace_printf("%s = %ld;\n", name, *vp);
+    if (name && *name)
+	trace_printf("%s = ", name);
+    trace_printf("%ld", *vp);
+    trace_printf(name && *name ? ";\n" : ",\n");
 }
 
 
@@ -372,85 +407,96 @@ trace_short_unsigned_real(const char *name, const unsigned short *vp)
 
 
 void
+trace_string_real(const char *name, const string_ty *value)
+{
+    trace_string_real(name, (value ? value->str_text : 0));
+}
+
+
+void
 trace_string_real(const char *name, const char *vp)
 {
     const char	    *s;
     long	    count;
 
-    trace_printf("%s = ", name);
+    if (name && *name)
+	trace_printf("%s = ", name);
     if (!vp)
     {
-	trace_printf("NULL;\n");
-	return;
+	trace_printf("NULL");
     }
-    trace_printf("\"");
-    count = 0;
-    for (s = vp; *s; ++s)
-    {
-	switch (*s)
-	{
-	case '(':
-	case '[':
-	case '{':
-	    ++count;
-	    break;
-
-	case ')':
-	case ']':
-	case '}':
-	    --count;
-	    break;
-	}
-    }
-    if (count > 0)
-	count = -count;
     else
-	count = 0;
-    for (s = vp; *s; ++s)
     {
-	unsigned char c = *s;
-	if (!isprint(c))
+	trace_printf("\"");
+	count = 0;
+	for (s = vp; *s; ++s)
 	{
-	    const char      *cp;
-
-	    cp = strchr("\bb\ff\nn\rr\tt", c);
-	    if (cp)
-		trace_printf("\\%c", cp[1]);
-	    else
-	    {
-		escape:
-		trace_printf("\\%03o", c);
-	    }
-	}
-	else
-	{
-	    switch (c)
+	    switch (*s)
 	    {
 	    case '(':
 	    case '[':
 	    case '{':
 		++count;
-		if (count <= 0)
-	    	    goto escape;
 		break;
 
 	    case ')':
 	    case ']':
 	    case '}':
 		--count;
-		if (count < 0)
-	    	    goto escape;
-		break;
-
-	    case '\\':
-	    case '"':
-		trace_printf("\\");
 		break;
 	    }
-	    trace_printf("%c", c);
 	}
+	if (count > 0)
+	    count = -count;
+	else
+	    count = 0;
+	for (s = vp; *s; ++s)
+	{
+	    unsigned char c = *s;
+	    if (!isprint(c))
+	    {
+		const char      *cp;
+
+		cp = strchr("\bb\ff\nn\rr\tt", c);
+		if (cp)
+		    trace_printf("\\%c", cp[1]);
+		else
+		{
+		    escape:
+		    trace_printf("\\%03o", c);
+		}
+	    }
+	    else
+	    {
+		switch (c)
+		{
+		case '(':
+		case '[':
+		case '{':
+		    ++count;
+		    if (count <= 0)
+			goto escape;
+		    break;
+
+		case ')':
+		case ']':
+		case '}':
+		    --count;
+		    if (count < 0)
+			goto escape;
+		    break;
+
+		case '\\':
+		case '"':
+		    trace_printf("\\");
+		    break;
+		}
+		trace_printf("%c", c);
+	    }
+	}
+	trace_printf("\"");
     }
-    trace_printf("\";\n");
+    trace_printf(name && *name ? ";\n" : ",\n");
 }
 
 
@@ -543,4 +589,25 @@ unctrl(int c)
 	}
     }
     return buffer;
+}
+
+
+void
+trace_time_real(const char *name, long fake)
+{
+    if (name && *name)
+	trace_printf("%s = ", name);
+    time_t value = (time_t)fake;
+    trace_printf("%ld /* %.24s */", fake, ctime(&value));
+    trace_printf(name && *name ? ";\n" : ",\n");
+}
+
+
+void
+trace_double_real(const char *name, const double &value)
+{
+    if (name && *name)
+	trace_printf("%s = ", name);
+    trace_printf("%g", value);
+    trace_printf(name && *name ? ";\n" : ",\n");
 }

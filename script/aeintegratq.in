@@ -1,7 +1,9 @@
 #!@PERL@
 #
 #       aeintegratq - aegis integration manager
-#       Copyright (C) 1998 - 2002 Endocardial Solutions, Inc.
+#       Copyright (C) 2005 Peter Miller.
+#
+#       Copyright (C) 1998 - 2004 Endocardial Solutions, Inc.
 #       All rights reserved.
 #
 #       This program is free software; you can redistribute it and/or modify
@@ -66,7 +68,8 @@ $IntegrationHost = "_AEGIS_FILE_SERVER_";
 $ProgramName = "aeintegratq";
 
 require 5.004;
-use Getopt::Std;
+use Getopt::Long;
+Getopt::Long::Configure( "no_ignore_case_always", "auto_abbrev" );
 
 $ENV{'SHELL'} = "/bin/sh";
   # set signal handlers so lock file is cleaned up on kill
@@ -74,6 +77,9 @@ $SIG{'INT'}  = \&cleanup_and_quit;
 $SIG{'QUIT'} = \&cleanup_and_quit;
 $SIG{'TERM'} = \&cleanup_and_quit;
 
+my %Option = (
+	      Trace => 0,
+	     );
 sub usage
 {
     warn <<"EO_USAGE";
@@ -86,6 +92,7 @@ sub usage
   #  -n No action - just tell what would be done
   #  -k Keep the scripts and report files
   #  -K Keep the temp file even if integration passes
+  #  -l Loop to get more changes if available - stops when nothing done
   #  -M Minimum  -M 33,99   run given changes -minimum
   #  -P Precious -P 33,99   do not actually fail - just report
   #  -R Ready    -R 29,45   specify order/subset
@@ -100,30 +107,49 @@ EO_USAGE
     exit 1;
 }
 
-$opt_H = $opt_K = $opt_M = $opt_P = $opt_a = $opt_s = $opt_h = 0;
-getopts("hHasnkKM:p:P:R:S:c:") || die "\n";
+GetOptions( \%Option,
+    "help",
+    "Help",
+    "any",
+    "ssh",
+    "noaction",
+    "keep_scripts",
+    "Keep_temp",
+    "loop",
+    "Minimum=s",
+    "Precious=s",
+    "Ready=s",
+    "Stage=s",
+    "change=i",
+    "project=s",
+    "Trace=i",
+    "verbose",
+    );
+
   # if they asked for help - just do it
-if ( $opt_h )
+if ( defined($Option{help}) )
 {
     &usage;
 }
 
-if ( $opt_H )
+if ( defined($Option{Help}) )
 {
     system "sed -n -e 's/^  *#:#/  #/p' $0";
     &usage;
 }
 
-$RemoteCommand = $opt_s ? "ssh" : "rsh";
+$RemoteCommand = defined($Option{ssh}) ? "ssh" : "rsh";
 
   # Convert the -P and -M options to a hash for future reference
 %Precious = ();
 %Minimums = ();
+%Ready    = ();
 
-&hash_option("-P", $opt_P, \%Precious) if $opt_P;
-&hash_option("-M", $opt_M, \%Minimums) if $opt_M;
-  # Do the same with -R but only to validate it, anonymous hash is not used
-&hash_option("-R", $opt_R, {}) if $opt_R;
+hash_option("-P", $Option{Precious}, \%Precious) if defined($Option{Precious});
+hash_option("-M", $Option{Minimum},  \%Minimums) if defined($Option{Minimum});
+hash_option("-R", $Option{Ready},    \%Ready)    if defined($Option{Ready});
+ # allow -c <nn> to give a single change with familiar option
+hash_option("-c", $Option{change},   \%Ready)    if defined($Option{change});
 
   # define some locations for logging and such
 if ( -d "$ComDir/integrations" ) {
@@ -136,16 +162,18 @@ $Q_status = 0;                   # unless/until something goes wrong
 
   # figure out who and where we are
   #
-$User = (getpwuid($<))[0];
+$Integrator = (getpwuid($<))[0];
 
   # Verify running on the chosen file server host, unless none defined
 unless( $IntegrationHost =~ /AEGIS_FILE_SERVER/ )
 {
     chop($Host = `uname -n`);
       #
-      # enforce $IntegrationHost unless only looking or -a option given
+      # enforce $IntegrationHost unless only looking or -any option given
       #
-    if ( $Host ne "$IntegrationHost" && !($opt_a || $opt_n))
+    if ( ($Host ne "$IntegrationHost")
+      && !(defined($Option{any}) || defined($Option{noaction}))
+       )
     {
         die "Integrations must be run on $IntegrationHost\n";
     }
@@ -162,9 +190,9 @@ unless( $IntegrationHost =~ /AEGIS_FILE_SERVER/ )
   #:# as many times as the project name is given.
   #:# Note that any failure puts an end to the happy situation.
   #
-if ( $opt_p )
+if ( defined($Option{project}) )
 {
-    @Projects = ( $opt_p );
+    @Projects = ( $Option{project} );
 }
 else
 {
@@ -182,9 +210,9 @@ else
           );
 $StageStatus     = 0;
 
-if ( $opt_S )
+if ( defined($Option{Stage}) )
 {
-    if ( $opt_R || $opt_c )      # must provide -R n or -c n to specify
+    if ( scalar(keys %Ready) )  # must provide -R n or -c n to specify
     {                           # what change to run using -S stage
         my $start = '';
         $stat_bit = 1;
@@ -192,7 +220,7 @@ if ( $opt_S )
         my @names = sort {$Stages{$a} <=> $Stages{$b}} keys %Stages;
         foreach my $stage (@names)
         {
-            if ( $stage =~ /$opt_S/ )
+            if ( $stage =~ /$Option{Stage}/ )
             {
                 $start = $stage;
                 last;
@@ -208,7 +236,7 @@ if ( $opt_S )
         }
         else
         {
-            warn "Huh? illegal -S $opt_S given - no such stage\n";
+            warn "Huh? illegal -S $Option{Stage} given - no such stage\n";
             warn "Legal names: ", join(',', @names), "\n";
             exit 1;
         }
@@ -227,7 +255,7 @@ if ( $opt_S )
 $Tmp = "$TmpDir/intq.$$";
   # Set up some things needed for remote execution.
   # - a base script file name / increment
-$ScriptFile = "." . $User . ".sh." . $$;
+$ScriptFile = "." . $Integrator . ".sh." . $$;
 $ScriptIncr = "aaa";
 @ExecEnv    = ();
 
@@ -253,15 +281,25 @@ if ( scalar(@Projects) )
                );
 
     my( $project, $change );
+    my @projects  = @Projects;
+    my $q_size    = 0;
 
       # OK lets process the given project[s]
-    foreach $project (@Projects)
+    while(($Q_status == 0) && ($project = shift(@projects)) )
     {
         $project = &canonical_name($project);
         $Q_status = 0;  # want to integrate other projects after 1 fails
            # generate and store lock file name
 
         my @changes = &ready($project);
+	$q_size += scalar(@changes);
+
+	if( defined( $Option{verbose} ) )
+	{
+	    &write_log(sprintf("run %d changes in %s",
+			       scalar(@changes), $project));
+	}
+
         while(($Q_status == 0) && ($entry = shift(@changes)) )
         {
 	    my $flags;
@@ -299,10 +337,22 @@ if ( scalar(@Projects) )
 	    }
 
         }
+	  # if -loop was given and we are done with project list
+          #  - start over and run em again
+      if( ( defined($Option{loop}) )           # -loop was given
+         && ( $#projects < 0         )           # done with this list
+         && ( $q_size    > 0         )           # this queue did something
+         && ( $Q_status == 0         )           # successfully
+          )
+      {
+          push(@projects, @Projects);
+	    $q_size = 0;                         # reset for next loop
+	    &write_log("Loop again for " . join(" ", @Projects) );
+	}
     }
       # clean up our report generation program files
     unlink $info{"dev_report"}, $info{"test_report"}, $info{"arch_report"}
-        unless ($opt_k);
+        unless ($Option{keep_scripts});
 
       # Now call the end/fail run hook in case we need to schedule
       # another run, clean up stuff, page someone, or whatever.
@@ -333,7 +383,7 @@ sub integrate
     my($project, $change, $flags, $info) = @_;
     my($result, $intdir);
 
-    &preview($project, $change, $flags, $info) if $opt_n;
+    &preview($project, $change, $flags, $info) if defined($Option{noaction});
 
     if ( ($intdir = &integrate_begin($project, $change, $flags, $info))
      && ($intdir ne "_failed_ib_") )
@@ -354,7 +404,7 @@ sub integrate
     }
     else
     {
-        &write_log("$User FAILED integrate begin: $project $change");
+        &write_log("FAILED integrate begin: $project $change");
         $result = 1;
     }
 
@@ -364,9 +414,10 @@ sub integrate
 sub integrate_begin
 {
     my($project, $change, $flags, $info) = @_;
-    my $intdir = '';
+    my $intdir = undef;
     my $errors = 0;
     my $logf = $info->{"logfile"};
+    my $aecmd = "aegis -ib -p $project -c $change";
 
     if ( $StageStatus & $Stages{"begin"} ) # picking up an open integration
     {
@@ -374,11 +425,11 @@ sub integrate_begin
         chop($intdir = `aegis -cd -p $project -c $change -terse`);
         if ( $intdir =~ m=/delta\d+= )
         {
-            &write_log("$User pick up integration of $project $change");
+            &write_log("pick up integration of $project $change");
         }
         else
         {
-            warn "no aegis -ib for $project $change - cannot pick up\n";
+            &write_log("no $aecmd - cannot pick up");
             $errors++;
         }
     }
@@ -387,7 +438,7 @@ sub integrate_begin
           #
           # log entries
           #
-        &write_log("$User began integration of $project $change $flags");
+        &write_log("began integration of $project $change $flags");
           #
           # try the pre_ib hook
           #
@@ -398,12 +449,15 @@ sub integrate_begin
               #
               # run aegis -ib  send errs to $logf
               #
-            $errors = &system_cmd("aegis -ib -p $project -c $change $flags",
-                        $logf);
+            $errors = &system_cmd("$aecmd $flags", $logf);
               #
               # If the ib failed there is nothing we can do
               #
-            unless ( $errors )
+	    if( $errors )
+	    {
+		&write_log("Failed:$aecmd");
+	    }
+	    else
             {
                   #
                   # get the actual integration directory.
@@ -411,7 +465,7 @@ sub integrate_begin
                   # integration begin makes a new directory
                   # that we do not know about until now
                   #
-                if ( $opt_n ) {
+                if ( $Option{noaction}) {
                     $intdir = $ENV{'HOME'}; # to provide existing directory
                 }else{
                     chop($intdir = `aegis -cd -p $project -c $change -ter`);
@@ -429,7 +483,7 @@ sub integrate_begin
     else
     {
           # gripe
-        &write_log("$User Failed aeib $project $change No Space");
+        &write_log("Failed aeib $project $change No Space");
 	$errors++;
     }
 
@@ -447,18 +501,21 @@ sub difference
     my $errors = 0;
     my($arch, $log_message);
 
-    $log_message = "aed $project $change";
+    my $aecmd = "aegis -diff -p $project -c $change";
 
     $errors = &run_hooks($project, $change, "pre_d");
 
     unless ( $errors )
     {
-        &write_log($log_message);
-        $errors = &system_cmd(
-           "cd $chdir;aegis -diff -p $project -c $change -v -nolog",
-                              $info->{"logfile"});
+        &write_log($aecmd);
+        $errors = &system_cmd("cd $chdir && $aecmd -v -nolog",
+			      $info->{"logfile"});
 
-        unless ( $errors )
+        if ( $errors )
+	{
+	    &write_log("Failed $aecmd");
+	}
+	else
         {
             # on success run hooks if defined
             $errors = &run_hooks($project, $change, "d");
@@ -497,8 +554,9 @@ sub build
 
         if ( $build_host )       # found one
         {
+	    my $aecmd = "aegis -build -p $project -c $change";
             # log entries
-            my $log_message = "aeb $project $change ($arch $build_host)";
+            my $log_message = "$aecmd ($arch $build_host)";
 
             $errors = &run_hooks($project, $change, "pre_" . $arch . "b");
 
@@ -506,8 +564,7 @@ sub build
 
             unless ( $errors )
             {
-                $errors = &host_cmd("cd $chdir;"
-                        . "aegis -build -p $project -c $change -v -nolog",
+                $errors = &host_cmd("cd $chdir;$aecmd -v -nolog",
                                     $build_host, $logf);
             }
 
@@ -531,8 +588,7 @@ sub build
                     {
                           # log it then go ahead and run another build
                         &write_log("Oops retry $log_message $retry");
-                        $errors = &host_cmd("cd $chdir;"
-                          . "aegis -build -p $project -c $change -v -nolog",
+			$errors = &host_cmd("cd $chdir;$aecmd -v -nolog",
                             $build_host, $logf);
 
                         if ( $errors )       # still errors - too bad
@@ -650,16 +706,17 @@ sub test
                     }
                     else
                     {
-                        my $log_message = "aegis $test_args "
-                            . "$project $change "
-                            . "($arch $test_host)";
+			my $aecmd = "aegis $test_args -p $project -c $change";
+
+                        my $log_message = "$aecmd ($arch $test_host)";
                         &write_log($log_message);
+
                           # build up the command line to use.
-                        my $cmd = "cd $chdir;"
+                        my $cmd = "cd $chdir && "
                           # KLUGE: Signal to tests that this is not being
                           # KLUGE: run from a console
                         . "DISPLAY=INTEGRATE_SCRIPT "
-                        . "aegis $test_args -p $project -c $change";
+                        . "$aecmd";
                           # Ok now run it
                         $errors = &host_cmd($cmd, $test_host, $logf);
 
@@ -703,7 +760,8 @@ sub pass_integration
 
     my $ipass_log = $logf . ".ip";
 
-    my $log_message = "aegis -ipass -p $project -c $change";
+    my $aecmd = "aegis -ipass -p $project -c $change";
+    my $log_message = $aecmd;
 
     $errors = &run_hooks($project, $change, "pre_ip");
 
@@ -714,8 +772,7 @@ sub pass_integration
           #
           # run aegis -ipass
           #
-        $errors = &system_cmd("aegis -ipass -p $project -c $change",
-                              $ipass_log);
+        $errors = &system_cmd($aecmd, $ipass_log);
 
         unless ( $errors )
         {
@@ -726,15 +783,15 @@ sub pass_integration
     if ( $errors )
     {
         &write_log("Failed $log_message");
-        &mailFile($ipass_log, "ipass fail $project $change", $User);
+        &mailFile($ipass_log, "ipass fail $project $change", $Integrator);
         &sound_off("fail", $project, $change, $info->{"developer"});
     }
     else
     {
         my $xtras = $logf . ".*";
         &sound_off("pass", $project, $change, $info->{"developer"});
-        system_cmd("rm -f $logf $xtras", "") unless ($opt_K);
-        &write_log("$User completed integration of $project $change");
+        system_cmd("rm -f $logf $xtras", "") unless ($Option{Keep_temp});
+        &write_log("completed integration of $project $change");
     }
 
     $errors;
@@ -754,6 +811,8 @@ sub fail_integration
     my $failf = $logf . ".fail";
     my $resf  = $logf . ".res";
 
+    my $aecmd = "aegis -ifail -p $project -c $change";
+
       # better subset of results may have been gathered by build/test
       # and should be mailed if available
       # If not no failf exists, so get the default info
@@ -766,7 +825,7 @@ sub fail_integration
 
     if ( defined($Precious{$change}) || defined($Precious{"all"}) )
     {
-        $who_to = $User;        # who to notify
+        $who_to = $Integrator;        # who to notify
         $log_message = "aegis -ifail (precious) $project $change";
     }
     else
@@ -776,20 +835,18 @@ sub fail_integration
         &run_hooks($project, $change, "pre_if");   # to do what?
 
           # Now actually run aegis -ifail
-        $errors =
-            &system_cmd("cd /;aegis -ifail -p $project -c $change -f $failf",
-                  $resf);
+        $errors = &system_cmd("cd /;$aecmd -f $failf", $resf);
 
           # Now a failure. If we actually failed the change, it is only
           # a failure if the ifail fails....
         if ( $errors )
         {
-            $log_message = "Failed aegis -ifail $project $change";
-            &mailFile($resf, "ifail fail $project $change", $User);
+            $log_message = "Failed $aecmd";
+            &mailFile($resf, "ifail fail $project $change", $Integrator);
         }
         else
         {
-            $log_message = "aegis -ifail $project $change";
+            $log_message = "$aecmd";
         }
     }
 
@@ -806,7 +863,7 @@ sub fail_integration
 
     &run_hooks($project, $change, "if");     # to notify or whatever
       # clean up rest unless keep option given
-    unlink $failf unless ( $opt_k );
+    unlink $failf unless ( $Option{keep_temp} );
 
     $errors;
 }
@@ -912,15 +969,14 @@ sub ready
       #
     chomp(@i = `aegis -ib -list -p $project -terse`);
 
-    if ( $opt_R )
+    if( scalar( keys %Ready ) )	# a subset was requested
     {
-        @i = split(/,/, $opt_R);
+	@i = sort {
+	    $Ready{$a} cmp $Ready{$b}
+	} grep {
+	    defined($Ready{$_})
+	} @i;
     }
-    elsif ( $opt_c )
-    {
-        @i = ( $opt_c );
-    }
-
       #
       # this is where to check for requested -minimum integrations
       # and build the actual list - pushing mins to the end
@@ -942,7 +998,7 @@ sub mailFile
 {
     my($fname, $subj, $who) = @_;
 
-    if ( $opt_n )
+    if ( $Option{noaction} )
     {
         warn "mailing $fname -s $subj to $who\n";
     }
@@ -981,7 +1037,7 @@ sub write_log
 {
     my $msg = shift;
     chop(my $date = `date +"%d %b %T"`);
-    if ( $opt_n )
+    if ( $Option{noaction} )
     {
         warn "$date $msg\n";
     }
@@ -989,7 +1045,7 @@ sub write_log
     {
         if ( open(LOG, ">> $LogFile") )
         {
-            print LOG "$date $msg\n";
+            print LOG "$date $Integrator $msg\n";
             close(LOG);
         }
         else
@@ -1005,7 +1061,7 @@ sub system_cmd
     my $sysres;
     my $logfile = ($resfile =~ /\w+/) ? $resfile : "/dev/null";
 
-    if ( $opt_n )
+    if ( $Option{noaction} )
     {
         $sysres = 0;            # no action always succeeds
         warn " -sh- running:$cmdstring to:$logfile\n";
@@ -1041,7 +1097,7 @@ sub host_cmd
     {
         $sysres = &system_cmd($cmdstring, $logfile);
     }
-    elsif ( $opt_n )
+    elsif ( $Option{noaction} )
     {
         $sysres = 0;            # no action always succeeds
         my $info = $logfile ? "with $logfile" : "no-tmp";
@@ -1095,7 +1151,7 @@ sub host_cmd
               #
               # And clean up droppings
               #
-            unlink $script, $status unless ($opt_k);
+            unlink $script, $status unless ($Option{keep_temp});
         }
         else
         {
@@ -1115,6 +1171,7 @@ sub sift_user_env
 {
     my @env = ();
     my %uniq = ();
+    my %lang = ( "LANG" => "C", "LANGUAGE" => "en_US" ); # defaults
     my @path = ();
       # build a path that covers the system stuff on most system types
       # also deal with configuration directory which
@@ -1145,6 +1202,23 @@ sub sift_user_env
     push(@env, "SHELL=/bin/sh;export SHELL");
     push(@env, "TMPDIR=$TmpDir;export TMPDIR");
     push(@env, "TMP=$TmpDir;export TMP");
+
+    unless( defined( $ENV{'AEGIS_TEST_DIR'} ) )
+    {
+        # Now take minimal basic locale environment from user - skip LC_*
+        foreach my $ev (keys %ENV)
+        {
+            if( $ev =~ /^LANG/ )
+            {
+	        $lang{$ev} = $ENV{$ev};
+            }
+        }
+
+        foreach my $ev (keys %lang)
+        {
+            push(@env, sprintf("%s=%s;export %s", $ev, $lang{$ev}, $ev));
+        }
+    }
 
     @env;
 }
@@ -1320,7 +1394,7 @@ sub find_host
 
     my $typeres = `/bin/sh -c \"type arch_hosts 2>/dev/null\"`;
 
-    if ( $? == 0 )
+    if ( ( $? == 0 ) && !defined($ENV{'AEGIS_TEST_DIR'} ) )
     {
         my $arch_host_cmd = (split(/\s+/, $typeres))[2];
 
@@ -1441,8 +1515,21 @@ sub hash_option
 
     $val =~ tr/[A-Z]/[a-z]/;      # in case all is given mixed case
 
-      # Store values in hash
-    grep { $href->{$_}++ if /^all$|^\d+$/ } split(/,/, $val);
+    my @vals = split(/,/, $val);
+    my $index = "aa";		# ascii index for easy sort
+
+      # Store values in hash using $index to keep track of order
+    foreach my $v (@vals)
+    {
+	if( $v =~ /all/ )
+	{
+	    $href->{$v} = "a";
+	}
+	elsif( $v =~ /\d+/ )
+	{
+	    $href->{$v} = $index++;
+	}
+    }
 
       # Make sure the option had a legal argument given
     unless( scalar( keys %$href ) )

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -154,6 +154,12 @@ no_such_uuid(project_ty *pp, string_ty *uuid)
 }
 
 
+/**
+  * The arglex_parse_change_tok is used to parse a complete --change
+  * command line option and any cucceeding arguments.  When finished,
+  * the parse point will be placed at the begining of the next command
+  * line option.
+  */
 static void
 arglex_parse_change_tok(string_ty **project_name_p, long *change_number_p,
     int token, void (*usage)(void))
@@ -206,9 +212,9 @@ arglex_parse_change_tok(string_ty **project_name_p, long *change_number_p,
 		no_such_uuid(pp, s);
 		// NOTREACHED
 	    }
-	    if (!*project_name_p)
+            if (!*project_name_p)
 		*project_name_p = str_copy(project_name_get(cp->pp));
-	    else if (pp != cp->pp)
+	    else if (!str_equal(project_name, project_name_get(cp->pp)))
 		duplicate_option_by_name(arglex_token_project, usage);
 	    change_number = cp->number;
 	    if (change_number == 0)
@@ -282,7 +288,10 @@ arglex_parse_change_tok(string_ty **project_name_p, long *change_number_p,
 	option_needs_number(token, usage);
 	// NOTREACHED
     }
+
+    // advance past change number
     arglex();
+
     *change_number_p = change_number;
     *project_name_p = project_name;
 }
@@ -347,12 +356,11 @@ arglex_parse_change_with_branch(string_ty **project_name_p,
 	    fatal_intl(scp, i18n("change $number out of range"));
 	    // NOTREACHED
 	}
-	arglex();
 	break;
 
     case arglex_token_string:
 	s = str_from_c(arglex_value.alv_string);
-	if (extract_change_number(&s, &change_number))
+        if (extract_change_number(&s, &change_number))
 	{
 	    if (is_a_branch_number(s))
 	    {
@@ -420,6 +428,10 @@ arglex_parse_change_with_branch(string_ty **project_name_p,
 	option_needs_number(arglex_token_change, usage);
 	// NOTREACHED
     }
+
+    // advance past change number
+    arglex();
+
     *branch_p = branch;
     *change_number_p = change_number;
     *project_name_p = project_name;

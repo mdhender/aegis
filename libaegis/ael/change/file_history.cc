@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -41,11 +41,28 @@
 #define VERSION_WIDTH 10
 
 
+static bool
+is_a_rename_with_uuid(change_ty *cp, fstate_src_ty *src)
+{
+    if (src->action != file_action_create)
+	return false;
+    if (!src->move)
+	return false;
+    if (!src->uuid)
+	return false;
+    fstate_src_ty *other = change_file_find(cp, src->move, view_path_first);
+    if (!other)
+	return false;
+    if (!other->uuid)
+	return false;
+    return str_equal(src->uuid, other->uuid);
+}
+
+
 void
 list_change_file_history(string_ty *project_name, long change_number,
     string_list_ty *args)
 {
-    cstate_ty       *cstate_data;
     project_ty	    *pp;
     change_ty	    *cp;
     user_ty	    *up;
@@ -87,7 +104,6 @@ list_change_file_history(string_ty *project_name, long change_number,
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
-    cstate_data = change_cstate_get(cp);
     assert(change_file_nth(cp, 0, view_path_none));
 
     //
@@ -154,55 +170,58 @@ list_change_file_history(string_ty *project_name, long change_number,
 	assert(src_data->file_name);
 	col_need(colp, 4);
 
-	output_fputs(file_name_col, src_data->file_name->str_text);
-	col_eoln(colp);
-
+	string_ty *file_name_track = 0;
 	usage_track = -1;
 	action_track = -1;
 
-	felp = historian.get(src_data->file_name);
+	felp = historian.get(src_data);
 	if (felp)
 	{
 	    for (k = 0; k < felp->length; ++k)
 	    {
-		fstate_src_ty	*src2_data;
 		file_event_ty	*fep;
 		string_ty	*s;
 
 		fep = felp->item + k;
-		s = change_version_get(fep->cp);
-		output_fputs(delta_col, s->str_text);
-		str_free(s);
-		output_fprintf(change_col, "%4ld", fep->cp->number);
-		src2_data =
-		    change_file_find
-		    (
-			fep->cp,
-			src_data->file_name,
-			view_path_first
-		    );
-		assert(src2_data);
+		assert(fep->src);
 
-		if (usage_track != src2_data->usage)
+		//
+		// See if the file's name changed.
+		//
+		if (!str_equal(file_name_track, fep->src->file_name))
 		{
-		    output_fputs(usage_col, file_usage_ename(src2_data->usage));
-		    usage_track = src2_data->usage;
+		    file_name_col->fputs(fep->src->file_name->str_text);
+		    col_eoln(colp);
+		    file_name_track = fep->src->file_name;
 		}
-		if (action_track != src2_data->action)
+
+		s = change_version_get(fep->cp);
+		delta_col->fputs(s->str_text);
+		str_free(s);
+		change_col->fprintf("%4ld", fep->cp->number);
+
+		if (usage_track != fep->src->usage)
 		{
-		    output_fputs
-		    (
-			action_col,
-			file_action_ename(src2_data->action)
-		    );
-		    action_track = src2_data->action;
+		    usage_col->fputs(file_usage_ename(fep->src->usage));
+		    usage_track = fep->src->usage;
+		    action_track = -1;
 		}
-		assert(src2_data->edit);
-		assert(src2_data->edit->revision);
-		output_fputs(when_col, ctime(&fep->when));
-		output_fputs
+		if (action_track != fep->src->action)
+		{
+		    if (is_a_rename_with_uuid(fep->cp, fep->src))
+		    {
+			action_col->fputs("rename");
+			action_track = -1;
+		    }
+		    else
+		    {
+			action_col->fputs(file_action_ename(fep->src->action));
+			action_track = fep->src->action;
+		    }
+		}
+		when_col->fputs(ctime(&fep->when));
+		description_col->fputs
 		(
-		    description_col,
 		    change_brief_description_get(fep->cp)->str_text
 		);
 		col_eoln(colp);
@@ -215,21 +234,34 @@ list_change_file_history(string_ty *project_name, long change_number,
 	//
 	if (!change_is_completed(cp))
 	{
-	    output_fputs(delta_col, change_version_get(cp)->str_text);
-	    output_fprintf(change_col, "%4ld", cp->number);
+	    //
+	    // See if the file's name changed.
+	    //
+	    if (!str_equal(file_name_track, src_data->file_name))
+	    {
+		file_name_col->fputs(src_data->file_name->str_text);
+		col_eoln(colp);
+	    }
+
+	    delta_col->fputs(change_version_get(cp)->str_text);
+	    change_col->fprintf("%4ld", cp->number);
 	    if (usage_track != src_data->usage)
 	    {
-		output_fputs(usage_col, file_usage_ename(src_data->usage));
+		usage_col->fputs(file_usage_ename(src_data->usage));
+		action_track = -1;
 	    }
 	    if (action_track != src_data->action)
 	    {
-		output_fputs(action_col, file_action_ename(src_data->action));
+		if (is_a_rename_with_uuid(cp, src_data))
+		{
+		    action_col->fputs("rename");
+		}
+		else
+		{
+		    action_col->fputs(file_action_ename(src_data->action));
+		}
 	    }
-	    output_fputs
-	    (
-		description_col,
-		change_brief_description_get(cp)->str_text
-	    );
+	    description_col->fputs(change_brief_description_get(cp)->str_text);
 	    col_eoln(colp);
 	}
     }

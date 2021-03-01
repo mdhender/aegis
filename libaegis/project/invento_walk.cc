@@ -72,7 +72,6 @@ project_change_inventory_get(project_ty *pp, change_functor &result,
 	string_list_ty name;
 	if (!project_history_nth(pp, j, &cn, &dn, &name))
 	    break;
-	string_list_destructor(&name);
 
 	//
 	// Once a change is past the time limit, all later ones will be, too.
@@ -123,12 +122,15 @@ project_change_inventory_getr(project_ty *pp, change_functor &result,
 
 
 void
-project_inventory_walk(project_ty *pp, change_functor &result)
+project_inventory_walk(project_ty *pp, change_functor &result, time_t limit)
 {
-    trace(("project_inventory_walk(pp = %08lX)\n{\n", (long)pp));
+    trace(("project_inventory_walk(pp = %08lX, limit = %ld)\n{\n", (long)pp,
+	(long)limit));
     if (project_is_completed_branch(pp))
     {
 	time_t time_limit = project_completion_timestamp(pp);
+	if (time_limit > limit)
+	    time_limit = limit;
 	project_ty *ppp = pp;
 	while (ppp->parent)
 	{
@@ -141,7 +143,16 @@ project_inventory_walk(project_ty *pp, change_functor &result)
     }
     else
     {
-	project_change_inventory_getr(pp, result, now());
+	project_change_inventory_getr(pp, result, limit);
     }
+    trace(("}\n"));
+}
+
+
+void
+project_inventory_walk(project_ty *pp, change_functor &result)
+{
+    trace(("project_inventory_walk(pp = %08lX)\n{\n", (long)pp));
+    project_inventory_walk(pp, result, project_completion_timestamp(pp));
     trace(("}\n"));
 }

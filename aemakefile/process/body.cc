@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -284,7 +284,6 @@ process_body::per_file(const nstring &filename)
 	print << "$(RPM_BUILD_ROOT)$(NLSDIR)/" << stem << ".mo: lib/" << stem
 	    << ".mo " << dir << "/.mkdir.libdir\n";
 	print << "\t$(INSTALL_DATA) lib/" << stem << ".mo $@\n";
-	print << "\t-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@\n";
     }
     else if (file.gmatch("lib/*/man[1-9]/*.[1-9]"))
     {
@@ -303,7 +302,6 @@ process_body::per_file(const nstring &filename)
 	print << "\t$(SOELIM) -I" << dir << " -Ietc " << file
 	    << " | sed '/^\\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp\n";
 	print << "\t$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@\n";
-	print << "\t-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@\n";
 	print << "\t@rm -f $${TMPDIR-/tmp}/aegis.tmp\n";
 
 	if (file.field('/', 1) == "en")
@@ -314,7 +312,6 @@ process_body::per_file(const nstring &filename)
 	    print << "\t$(SOELIM) -I" << dir << " -Ietc " << file
 		<< " | sed '/^\\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp\n";
 	    print << "\t$(INSTALL_DATA) $${TMPDIR-/tmp}/aegis.tmp $@\n";
-	    print << "\t-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@\n";
 	    print << "\t@rm -f $${TMPDIR-/tmp}/aegis.tmp\n";
 	}
     }
@@ -393,7 +390,6 @@ process_body::per_file(const nstring &filename)
 	print << "$(RPM_BUILD_ROOT)$(datadir)/" << stem << ": " << file << " "
 	    << dir << "/.mkdir.datadir\n";
 	print << "\t$(INSTALL_DATA) " << file << " $@\n";
-	print << "\t-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@\n";
     }
     else if (file.ends_with(".def"))
     {

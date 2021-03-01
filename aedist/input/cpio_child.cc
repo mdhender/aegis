@@ -219,7 +219,7 @@ get_name(input_cpio_child_ty *this_thing, long namlen)
     //
     // Read the filename, checking each character.
     //
-    stracc_open(&buffer);
+    buffer.clear();
     for (j = 0; j < namlen; ++j)
     {
 	int c = input_getc(this_thing->deeper);
@@ -241,7 +241,7 @@ get_name(input_cpio_child_ty *this_thing, long namlen)
 		"cpio: invalid name (unprintable)"
 	    );
 	}
-	stracc_char(&buffer, c);
+	buffer.push_back(c);
     }
 
     //
@@ -253,7 +253,7 @@ get_name(input_cpio_child_ty *this_thing, long namlen)
     //
     // Build the result and return.
     //
-    return stracc_close(&buffer);
+    return buffer.mkstr();
 }
 
 

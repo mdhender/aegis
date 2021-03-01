@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2003, 2004 Peter Miller;
+#	Copyright (C) 2003-2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -204,10 +204,10 @@ history_put_command =
 	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
 history_query_command =
 	"rlog -r $h,v | awk '/^head:/ {print $$2}'";
-diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
+diff_command = "set +e; $diff $orig $i > $out; test $$? -le 1";
 diff3_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
 	echo '1,$$p' ) | ed - $mr > $out";
-patch_diff_command = "set +e; diff -C0 -L $index -L $index $orig $i > $out; \
+patch_diff_command = "set +e; $diff -C0 -L $index -L $index $orig $i > $out; \
 test $$? -le 1";
 end
 if test $? -ne 0 ; then no_result; fi

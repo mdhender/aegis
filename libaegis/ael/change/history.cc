@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2001, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -112,16 +112,12 @@ list_change_history(string_ty *project_name, long change_number,
 	time_t          t;
 
 	history_data = cstate_data->history->list[j];
-	output_fputs
-	(
-	    what_col,
-	    cstate_history_what_ename(history_data->what)
-	);
+	what_col->fputs(cstate_history_what_ename(history_data->what));
 	t = history_data->when;
-	output_fputs(when_col, ctime(&t));
-	output_fputs(who_col, history_data->who->str_text);
+	when_col->fputs(ctime(&t));
+	who_col->fputs(history_data->who->str_text);
 	if (history_data->why)
-	    output_fputs(why_col, history_data->why->str_text);
+	    why_col->fputs(history_data->why->str_text);
 	if (history_data->what != cstate_history_what_integrate_pass)
 	{
 	    time_t          finish;
@@ -132,10 +128,9 @@ list_change_history(string_ty *project_name, long change_number,
 		time(&finish);
 	    if (finish - t >= ELAPSED_TIME_THRESHOLD)
 	    {
-		output_end_of_line(why_col);
-		output_fprintf
+		why_col->end_of_line();
+		why_col->fprintf
 		(
-	    	    why_col,
 	    	    "Elapsed time: %5.3f days.\n",
 	    	    working_days(t, finish)
 		);

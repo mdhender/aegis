@@ -52,6 +52,15 @@ public:
 
 private:
     /**
+      * The print_one_line method is used by the functor operator to
+      * print a row of the table.  Not only is the change's UUID field
+      * printed, but also any original-uuid attributes - this allows
+      * supression of change sets you don't want because another change
+      * set has subsumed them.
+      */
+    void print_one_line(change_ty *, string_ty *);
+
+    /**
       * The pp instance variabel is used to remember the project being listed.
       */
     project_ty *pp;

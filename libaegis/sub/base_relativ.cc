@@ -31,7 +31,7 @@
 #include <sub/base_relativ.h>
 #include <str_list.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 //
@@ -59,31 +59,21 @@
 wstring_ty *
 sub_base_relative(sub_context_ty *scp, wstring_list_ty *arg)
 {
-    wstring_ty	    *result;
-    cstate_ty       *cstate_data;
-    change_ty	    *cp;
-    string_list_ty  search_path;
-    string_ty	    *s;
-    size_t	    j;
-    size_t	    k;
-    string_list_ty  results;
-
     //
     // Find the change.	 If there is no change, it is also valid in
     // the baseline context.
     //
     trace(("sub_base_relative()\n{\n"));
-    result = 0;
-    cp = sub_context_change_get(scp);
+    change_ty *cp = sub_context_change_get(scp);
     if (!cp)
     {
-	project_ty	*pp;
-
-	pp = sub_context_project_get(scp);
+	project_ty *pp = sub_context_project_get(scp);
 	if (!pp)
 	{
 	    sub_context_error_set(scp, i18n("not valid in current context"));
-	    goto done;
+	    trace(("return NULL;\n"));
+	    trace(("}\n"));
+	    return 0;
 	}
 	cp = project_change_get(pp);
     }
@@ -91,44 +81,44 @@ sub_base_relative(sub_context_ty *scp, wstring_list_ty *arg)
     //
     // make sure we like the arguments.
     //
-    if (arg->nitems < 2)
+    if (arg->size() < 2)
     {
 	sub_context_error_set(scp, i18n("requires one argument"));
-	goto done;
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
     }
 
     //
     // make sure we are in an appropriate state
     //
-    cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = change_cstate_get(cp);
     if (cstate_data->state == cstate_state_awaiting_development)
     {
 	sub_context_error_set(scp, i18n("not valid in current context"));
-	goto done;
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
     }
 
     //
     // Get the search path.
     //
+    string_list_ty search_path;
     if (cstate_data->state == cstate_state_completed)
-    {
-	string_list_constructor(&search_path);
 	project_search_path_get(cp->pp, &search_path, 0);
-    }
     else
 	change_search_path_get(cp, &search_path, 0);
 
     //
     // Turn the file name into an absolute path.
     //
-    string_list_constructor(&results);
-    for (k = 1; k < arg->nitems; ++k)
+    string_list_ty results;
+    for (size_t k = 1; k < arg->size(); ++k)
     {
-	string_ty	    *fn;
-
-	fn = wstr_to_str(arg->item[k]);
+	string_ty *fn = wstr_to_str(arg->get(k));
 	change_become(cp);
-	s = os_pathname(fn, 1);
+	string_ty *s = os_pathname(fn, 1);
 	change_become_undo();
 	str_free(fn);
 	fn = s;
@@ -137,7 +127,7 @@ sub_base_relative(sub_context_ty *scp, wstring_list_ty *arg)
 	// Hunt down the search list, to see if the file is in any of those
 	// directories.
 	//
-	for (j = 0; j < search_path.nstrings; ++j)
+	for (size_t j = 0; j < search_path.nstrings; ++j)
 	{
 	    s = os_below_dir(search_path.string[j], fn);
 	    if (s)
@@ -153,22 +143,20 @@ sub_base_relative(sub_context_ty *scp, wstring_list_ty *arg)
 		break;
 	    }
 	}
-	string_list_append(&results, fn);
+	results.push_back(fn);
 	str_free(fn);
     }
-    string_list_destructor(&search_path);
 
     //
     // build the result
     //
-    s = wl2str(&results, 0, results.nstrings, 0);
-    result = str_to_wstr(s);
+    string_ty *s = results.unsplit();
+    wstring_ty *result = str_to_wstr(s);
     str_free(s);
 
     //
     // here for all exits
     //
-    done:
     trace(("return %8.8lX;\n", (long)result));
     trace(("}\n"));
     return result;

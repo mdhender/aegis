@@ -51,7 +51,7 @@ change_signed_off_by(change_ty *cp, user_ty *up)
     cstate_ty *cstate_data = change_cstate_get(cp);
     string_ty *desc = trim_right(cstate_data->description);
     string_list_ty wl;
-    str2wl(&wl, desc, "\n", 1);
+    wl.split(desc, "\n", true);
     bool last_was_sob = false;
     for (size_t j = 0; j < wl.nstrings; ++j)
     {
@@ -65,7 +65,6 @@ change_signed_off_by(change_ty *cp, user_ty *up)
 	if (0 == strcasecmp(sp, email_address->str_text))
 	    return;
     }
-    string_list_destructor(&wl);
 
     //
     // Tack the email address onto the end of the description.

@@ -42,7 +42,7 @@ get_change_aedist(change_ty *cp, string_ty *fn, string_list_ty *modifier)
     //
     // See of they specified any options.
     //
-    for (j = 1; j < modifier->nstrings; ++j)
+    for (j = 0; j < modifier->nstrings; ++j)
     {
 	const char      *s;
 

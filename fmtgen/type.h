@@ -59,6 +59,20 @@ public:
 	int attributes) const;
     virtual void gen_code_call_xml(const nstring &form_name,
 	const nstring &member_name, int show) const;
+
+    /**
+      * The gen_code_copy method is used to generate deep-copy code for
+      * a specific instance variable.
+      */
+    virtual void gen_code_copy(const nstring &member_name) const = 0;
+
+    /**
+      * The gen_code_trace method is used to generate trace code for
+      * a specific instance variable.
+      */
+    virtual void gen_code_trace(const nstring &name, const nstring &value)
+	const = 0;
+
     virtual void gen_free_declarator(const nstring &name, bool is_a_list) const;
     virtual void member_add(const nstring &member_name, type_ty *member_type,
 	int attributes);

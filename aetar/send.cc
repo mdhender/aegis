@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -74,7 +74,6 @@ tar_send(void)
     int             grandparent;
     int             trunk;
     output_ty       *ofp;
-    output_ty       *tar_p;
     input_ty        *ifp;
     project_ty      *pp;
     change_ty       *cp;
@@ -84,11 +83,11 @@ tar_send(void)
     size_t          j;
     int             baseline;
     int             entire_source;
-    int             compress;
+    int             needs_compression;
+    int             include_build = -1;
     long            delta_number;
     time_t          delta_date;
     const char      *delta_name;
-    string_list_ty  wl;
 
     branch = 0;
     change_number = 0;
@@ -98,7 +97,7 @@ tar_send(void)
     output = 0;
     baseline = 0;
     entire_source = -1;
-    compress = -1;
+    needs_compression = -1;
     delta_date = NO_TIME_SET;
     delta_number = -1;
     delta_name = 0;
@@ -209,9 +208,9 @@ tar_send(void)
 	    break;
 
 	case arglex_token_compress:
-	    if (compress > 0)
+	    if (needs_compression > 0)
 		duplicate_option(usage);
-	    else if (compress >= 0)
+	    else if (needs_compression >= 0)
 	    {
 	        compress_yuck:
 		mutually_exclusive_options
@@ -221,15 +220,15 @@ tar_send(void)
 		    usage
 		);
 	    }
-	    compress = 1;
+	    needs_compression = 1;
 	    break;
 
 	case arglex_token_compress_not:
-	    if (compress == 0)
+	    if (needs_compression == 0)
 		duplicate_option(usage);
-	    else if (compress >= 0)
+	    else if (needs_compression >= 0)
 		goto compress_yuck;
-	    compress = 0;
+	    needs_compression = 0;
 	    break;
 
 	case arglex_token_delta:
@@ -284,8 +283,38 @@ tar_send(void)
 	    }
 	    path_prefix = arglex_value.alv_string;
 	    break;
-	}
-	arglex();
+
+        case arglex_token_include_build:
+            if (include_build > 0)
+                duplicate_option(usage);
+            if (include_build >= 0)
+            {
+                mutually_exclusive_options
+                (
+                    arglex_token_include_build,
+                    arglex_token_include_build_not,
+                    usage
+                );
+            }
+            include_build = 1;
+            break;
+
+        case arglex_token_include_build_not:
+            if (include_build == 0)
+                duplicate_option(usage);
+            if (include_build >= 0)
+            {
+                mutually_exclusive_options
+                (
+                    arglex_token_include_build,
+                    arglex_token_include_build_not,
+                    usage
+                );
+            }
+            include_build = 0;
+            break;
+        }
+        arglex();
     }
 
     //
@@ -436,7 +465,10 @@ tar_send(void)
     project_file_roll_forward historian;
     switch (cstate_data->state)
     {
+    case cstate_state_awaiting_development:
+#ifndef DEBUG
     default:
+#endif
 	change_fatal(cp, 0, i18n("bad send state"));
 
     case cstate_state_completed:
@@ -470,15 +502,15 @@ tar_send(void)
     //
     os_become_orig();
     ofp = output_file_binary_open(output);
-    if (compress)
-	ofp = output_gzip(ofp);
-    tar_p = output_tar(ofp);
+    if (needs_compression)
+	ofp = new output_gzip_ty(ofp, true);
+    output_tar_ty *tar_p = new output_tar_ty(ofp);
     os_become_undo();
 
     //
     // Scan for files to be added to the output.
     //
-    string_list_constructor(&wl);
+    string_list_ty wl;
     for (j = 0;; ++j)
     {
 	fstate_src_ty   *src_data;
@@ -506,11 +538,13 @@ tar_send(void)
 		break;
 
 	    case file_usage_build:
-		continue;
+                if (include_build <= 0)
+                    continue;
+                break;
 	    }
 	    break;
 	}
-	string_list_append(&wl, src_data->file_name);
+	wl.push_back(src_data->file_name);
     }
     if (entire_source)
     {
@@ -518,14 +552,73 @@ tar_send(void)
 	// Actually, this list needs to be at the time of the delta.
 	// (So, we keep almost all files, and toss them later.)
 	//
-	for (j = 0;; ++j)
+	if (historian.is_set())
 	{
-	    fstate_src_ty   *src_data;
+	    nstring_list file_name_list;
+	    historian.keys(file_name_list);
+	    for (j = 0; j < file_name_list.size(); ++j)
+	    {
+		nstring file_name = file_name_list[j];
+		assert(file_name);
+		file_event_ty *fep = historian.get_last(file_name);
+		assert(fep);
+		if (!fep)
+		    continue;
+		fstate_src_ty *src_data = fep->src;
+		assert(src_data);
+		if (!src_data)
+		    continue;
+		switch (src_data->usage)
+		{
+		case file_usage_build:
+		    switch (src_data->action)
+		    {
+		    case file_action_modify:
+		    case file_action_remove:
+			continue;
 
-	    src_data = project_file_nth(pp, j, view_path_extreme);
-	    if (!src_data)
-		break;
-	    string_list_append_unique(&wl, src_data->file_name);
+		    case file_action_create:
+		    case file_action_insulate:
+		    case file_action_transparent:
+			break;
+		    }
+		    // fall through...
+
+		case file_usage_source:
+		case file_usage_config:
+		case file_usage_test:
+		case file_usage_manual_test:
+		    switch (src_data->action)
+		    {
+		    case file_action_create:
+		    case file_action_modify:
+			break;
+
+		    case file_action_remove:
+			continue;
+
+		    case file_action_insulate:
+		    case file_action_transparent:
+			// can't happen
+			assert(0);
+			continue;
+		    }
+		    break;
+		}
+		wl.push_back_unique(src_data->file_name);
+	    }
+	}
+	else
+	{
+	    for (j = 0;; ++j)
+	    {
+		fstate_src_ty   *src_data;
+
+		src_data = project_file_nth(pp, j, view_path_extreme);
+		if (!src_data)
+		    break;
+		wl.push_back_unique(src_data->file_name);
+	    }
 	}
     }
     if (!wl.nstrings)
@@ -534,7 +627,7 @@ tar_send(void)
     //
     // sort the files by name
     //
-    string_list_sort(&wl);
+    wl.sort();
 
     //
     // add each of the relevant source files to the archive
@@ -585,7 +678,9 @@ tar_send(void)
 	    switch (csrc->usage)
 	    {
 	    case file_usage_build:
-		continue;
+                if (include_build <= 0)
+                    continue;
+                break;
 
 	    case file_usage_source:
 	    case file_usage_config:
@@ -620,7 +715,7 @@ tar_send(void)
 	    fep = historian.get_last(filename);
 	    if (!fep)
 		continue;
-	    csrc = change_file_find(fep->cp, filename, view_path_first);
+	    csrc = fep->src;
 	    assert(csrc);
 	    if (!csrc)
 		continue;
@@ -644,7 +739,9 @@ tar_send(void)
 		break;
 
 	    case file_usage_build:
-		continue;
+                if (include_build <= 0)
+                    continue;
+                break;
 	    }
 	    abs_filename =
 		project_file_version_path
@@ -675,17 +772,10 @@ tar_send(void)
 		assert(ifp);
 		len = input_length(ifp);
 		nstring tar_name = path_prefix + nstring(str_copy(filename));
-		ofp =
-		    output_tar_child
-		    (
-			tar_p,
-			tar_name.get_ref(),
-			len,
-			csrc->executable
-		    );
+		ofp = tar_p->child(tar_name.get_ref(), len, csrc->executable);
 		input_to_output(ifp, ofp);
 		input_delete(ifp);
-		output_delete(ofp);
+		delete ofp;
 		os_become_undo();
 	    }
 	    break;
@@ -702,13 +792,12 @@ tar_send(void)
 	}
 	str_free(abs_filename);
     }
-    string_list_destructor(&wl);
 
     //
     // finish writing the tar archive
     //
     os_become_orig();
-    output_delete(tar_p);
+    delete tar_p;
     os_become_undo();
 
     //

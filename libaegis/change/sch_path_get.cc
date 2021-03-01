@@ -35,7 +35,7 @@ change_search_path_get(change_ty *cp, string_list_ty *wlp, int resolve)
     project_ty      *ppp;
     string_ty       *s;
 
-    string_list_constructor(wlp);
+    wlp->clear();
     if (cp->bogus)
     {
 	ppp = cp->pp->parent;
@@ -46,9 +46,11 @@ change_search_path_get(change_ty *cp, string_list_ty *wlp, int resolve)
     cstate_data = change_cstate_get(cp);
     switch (cstate_data->state)
     {
+#ifndef DEBUG
     default:
 	this_is_a_bug();
 	break;
+#endif
 
     case cstate_state_completed:
     case cstate_state_awaiting_development:
@@ -60,12 +62,12 @@ change_search_path_get(change_ty *cp, string_list_ty *wlp, int resolve)
     case cstate_state_being_reviewed:
     case cstate_state_awaiting_integration:
 	s = change_development_directory_get(cp, resolve);
-	string_list_append(wlp, s);
+	wlp->push_back(s);
 	project_search_path_get(cp->pp, wlp, resolve);
 	break;
 
     case cstate_state_being_integrated:
-	string_list_append(wlp, change_integration_directory_get(cp, resolve));
+	wlp->push_back(change_integration_directory_get(cp, resolve));
 	ppp = cp->pp->parent;
 	if (ppp)
 	    project_search_path_get(ppp, wlp, resolve);

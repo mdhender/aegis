@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2004 Peter Miller;
+//	Copyright (C) 1991-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -165,7 +165,7 @@ walker(void *p, dir_walk_message_ty msg, string_ty *path, struct stat *st)
 	user_become_undo();
 	if
 	(
-	    !string_list_member(aux->slp, s)
+	    !aux->slp->member(s)
 	&&
 	    !change_file_find(aux->cp, s, view_path_first)
 	&&
@@ -175,7 +175,7 @@ walker(void *p, dir_walk_message_ty msg, string_ty *path, struct stat *st)
             check_msg = change_filename_check(aux->cp, s);
             if (!check_msg)
             {
-                string_list_append(aux->slp, s);
+                aux->slp->push_back(s);
                 aux->used++;
             }
             else
@@ -192,7 +192,6 @@ static void
 new_file_main(void)
 {
     string_ty	    *dd;
-    string_list_ty  wl;
     size_t	    j;
     size_t	    k;
     string_ty	    *s1;
@@ -207,10 +206,8 @@ new_file_main(void)
     int             auto_config_allowed;
     int		    nerrs;
     string_list_ty  search_path;
-    string_list_ty  wl2;
     int		    based;
     string_ty	    *base;
-    pconf_ty        *pconf_data;
     int		    use_template;
     string_ty       *uuid;
 
@@ -219,7 +216,7 @@ new_file_main(void)
     project_name = 0;
     change_number = 0;
     file_usage_value = file_usage_source;
-    string_list_constructor(&wl);
+    string_list_ty wl;
     log_style = log_style_append_default;
     nerrs = 0;
     use_template = -1;
@@ -240,7 +237,7 @@ new_file_main(void)
 
 	case arglex_token_string:
 	    s2 = str_from_c(arglex_value.alv_string);
-	    string_list_append(&wl, s2);
+	    wl.push_back(s2);
 	    str_free(s2);
 	    break;
 
@@ -442,7 +439,7 @@ new_file_main(void)
     // 3.   if the file is inside the baseline, ok
     // 4.   if neither, error
     //
-    string_list_constructor(&wl2);
+    string_list_ty wl2;
     for (j = 0; j < wl.nstrings; ++j)
     {
 	s1 = wl.string[j];
@@ -473,7 +470,7 @@ new_file_main(void)
 	    ++nerrs;
 	    continue;
 	}
-	if (string_list_member(&wl2, s2))
+	if (wl2.member(s2))
 	{
 	    sub_context_ty  *scp;
 
@@ -484,11 +481,9 @@ new_file_main(void)
 	    ++nerrs;
 	}
 	else
-	    string_list_append(&wl2, s2);
+	    wl2.push_back(s2);
 	str_free(s2);
     }
-    string_list_destructor(&search_path);
-    string_list_destructor(&wl);
     wl = wl2;
 
     //
@@ -496,9 +491,8 @@ new_file_main(void)
     //
     // If a directory is named, extract the files from beneath it.
     //
-    pconf_data = change_pconf_get(cp, 0);
     dd = change_development_directory_get(cp, 0);
-    string_list_constructor(&wl2);
+    wl2.clear();
     for (j = 0; j < wl.nstrings; ++j)
     {
 	string_ty	*fn;
@@ -548,36 +542,32 @@ new_file_main(void)
 	    str_free(ffn);
 	    continue;
 	}
-	if (os_isa_special_file(ffn))
+	else if (os_isa_symlink(ffn))
 	{
-	    if (pconf_data->create_symlinks_before_build)
-	    {
-		//
-		// In the case where we are using a
-		// symlink farm, this is probably a link
-		// into the baseline.  Just nuke it,
-		// and keep going.
-		//
-		os_unlink(ffn);
-	    }
-	    else
-	    {
-		//
-		// If the file exists, and isn't a normal file,
-		// and isn't a directory, you can't add it as
-		// a source file.
-		//
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", fn);
-		change_error(cp, scp, i18n("$filename bad nf type"));
-		sub_context_delete(scp);
-		++nerrs;
-		user_become_undo();
-		str_free(ffn);
-		continue;
-	    }
+	    //
+	    // In the case where we are using a
+	    // symlink farm, this is probably a link
+	    // into the baseline.  Just nuke it,
+	    // and keep going.
+	    //
+	    os_unlink(ffn);
+	}
+	else if (os_isa_special_file(ffn))
+	{
+	    //
+	    // If the file exists, and isn't a normal file,
+	    // and it isn't a symbolic link,
+	    // and isn't a directory, you can't add it as
+	    // a source file.
+	    //
+	    sub_context_ty *scp = sub_context_new();
+	    sub_var_set_string(scp, "File_Name", fn);
+	    change_error(cp, scp, i18n("$filename bad nf type"));
+	    sub_context_delete(scp);
+	    ++nerrs;
+	    user_become_undo();
+	    str_free(ffn);
+	    continue;
 	}
 	str_free(ffn);
 	user_become_undo();
@@ -603,7 +593,7 @@ new_file_main(void)
 	//
 	// Remember this one.
 	//
-	string_list_append(&wl2, fn);
+	wl2.push_back(fn);
     }
     if (nerrs)
     {
@@ -615,7 +605,6 @@ new_file_main(void)
 	change_fatal(cp, scp, i18n("no new files"));
 	sub_context_delete(scp);
     }
-    string_list_destructor(&wl);
     wl = wl2;
 
     //
@@ -825,7 +814,6 @@ new_file_main(void)
 	change_verbose(cp, scp, i18n("new file $filename completed"));
 	sub_context_delete(scp);
     }
-    string_list_destructor(&wl);
     change_free(cp);
     project_free(pp);
     user_free(up);

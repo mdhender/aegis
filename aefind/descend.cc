@@ -21,7 +21,7 @@
 //
 
 #include <ac/errno.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <cmdline.h>
@@ -113,7 +113,7 @@ readdir_stack(string_ty *path, string_list_ty *result)
     string_ty	    *s;
     string_ty	    *dir;
 
-    string_list_constructor(result);
+    result->clear();
     for (j = 0; ; ++j)
     {
 	dir = stack_nth(j);
@@ -145,7 +145,6 @@ readdir_stack(string_ty *path, string_list_ty *result)
 void
 descend(string_ty *path, int resolve, descend_callback_ty callback, void *arg)
 {
-    string_list_ty  wl;
     struct stat     st;
     size_t	    j;
     string_ty	    *s;
@@ -164,6 +163,7 @@ descend(string_ty *path, int resolve, descend_callback_ty callback, void *arg)
 	    (resolve ? resolved_path : path),
 	    &st
 	);
+	string_list_ty wl;
 	readdir_stack(path, &wl);
 	for (j = 0; j < wl.nstrings; ++j)
 	{
@@ -172,7 +172,6 @@ descend(string_ty *path, int resolve, descend_callback_ty callback, void *arg)
 		descend(s, resolve, callback, arg);
 	    str_free(s);
 	}
-	string_list_destructor(&wl);
 	callback
 	(
 	    arg,

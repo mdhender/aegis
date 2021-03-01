@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1995, 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -56,11 +56,11 @@ version_copyright()
     progname = progname_get();
     fp = output_pager_open();
     fp = output_wrap_open(fp, 1, -1);
-    output_fprintf(fp, "%s version %s\n", progname, version_stamp());
-    output_fprintf(fp, "Copyright (C) %s Peter Miller;\n", copyright_years());
+    fp->fprintf("%s version %s\n", progname, version_stamp());
+    fp->fprintf("Copyright (C) %s Peter Miller;\n", copyright_years());
     for (cpp = text; cpp < ENDOF(text); ++cpp)
-	output_fprintf(fp, *cpp, progname);
-    output_delete(fp);
+	fp->fprintf(*cpp, progname);
+    delete fp;
 }
 
 
@@ -139,7 +139,7 @@ version_main(void)
 	nhit = 0;
 	for (tp = table; tp < ENDOF(table); ++tp)
 	{
-	    if (arglex_compare(tp->name, name))
+	    if (arglex_compare(tp->name, name, 0))
 	       	hit[nhit++] = tp;
 	}
 	switch (nhit)

@@ -24,7 +24,7 @@
 #include <sub.h>
 #include <sub/downcase.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 //
@@ -55,7 +55,7 @@ sub_downcase(sub_context_ty *scp, wstring_list_ty *arg)
     wstring_ty	*result;
 
     trace(("sub_downcase()\n{\n"));
-    if (arg->nitems < 2)
+    if (arg->size() < 2)
     {
        	sub_context_error_set(scp, i18n("requires one argument"));
        	result = 0;
@@ -64,7 +64,7 @@ sub_downcase(sub_context_ty *scp, wstring_list_ty *arg)
     {
 	wstring_ty	*ws;
 
-	ws = wstring_list_to_wstring(arg, 1, arg->nitems, 0);
+	ws = arg->unsplit(1, arg->size());
        	result = wstr_to_lower(ws);
 	wstr_free(ws);
     }

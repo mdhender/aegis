@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -230,7 +230,7 @@ modified(module_ty *mp, server_ty *sp, string_ty *file_name, file_info_ty *fip,
     os_become_orig();
     op = output_file_binary_open(abs_file_name);
     input_to_output(contents, op);
-    output_delete(op);
+    delete op;
 
     //
     // And make sure it is in the specified mode.

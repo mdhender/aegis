@@ -20,36 +20,13 @@
 // MANIFEST: functions to manipulate destructors
 //
 
-#include <mem.h>
 #include <str_list.h>
 
 
-//
-// NAME
-//	string_list_destructor - free a word list
-//
-// SYNOPSIS
-//	void string_list_destructor(string_list_ty *wlp);
-//
-// DESCRIPTION
-//	Wl_free is used to free the contents of a word list
-//	when it is finished with.
-//
-// CAVEAT
-//	It is assumed that the contents of the word list were all
-//	created using strdup() or similar, and grown using string_list_append().
-//
-
-void
-string_list_destructor(string_list_ty *wlp)
+string_list_ty::~string_list_ty()
 {
-    size_t          j;
-
-    for (j = 0; j < wlp->nstrings; j++)
-	str_free(wlp->string[j]);
-    if (wlp->string)
-	mem_free(wlp->string);
-    wlp->nstrings = 0;
-    wlp->nstrings_max = 0;
-    wlp->string = 0;
+    clear();
+    delete [] string;
+    nstrings_max = 0;
+    string = 0;
 }

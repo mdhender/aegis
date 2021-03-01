@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2004 Peter Miller;
+//	Copyright (C) 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,8 @@
 #define AETAR_HEADER_H
 
 #include <str.h>
+
+class nstring; // forward
 
 #define TBLOCK 512
 #define NAMSIZ 100
@@ -72,6 +74,7 @@ struct header_ty
 
 string_ty *header_name_get(header_ty *);
 void header_name_set(header_ty *, string_ty *);
+void header_name_set(header_ty *, const nstring &);
 long header_mode_get(header_ty *);
 void header_mode_set(header_ty *, long);
 long header_uid_get(header_ty *);
@@ -88,10 +91,13 @@ int header_linkflag_get(header_ty *);
 void header_linkflag_set(header_ty *, int);
 string_ty *header_linkname_get(header_ty *);
 void header_linkname_set(header_ty *, string_ty *);
+void header_linkname_set(header_ty *, const nstring &);
 string_ty *header_uname_get(header_ty *);
 void header_uname_set(header_ty *, string_ty *);
+void header_uname_set(header_ty *, const nstring &);
 string_ty *header_gname_get(header_ty *);
 void header_gname_set(header_ty *, string_ty *);
+void header_gname_set(header_ty *, const nstring &);
 long header_devmajor_get(header_ty *);
 void header_devmajor_set(header_ty *, long);
 long header_devminor_get(header_ty *);

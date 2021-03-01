@@ -21,55 +21,45 @@
 //
 
 #include <change_set.h>
-#include <mem.h>
+#include <error.h> // for assert
 
 
-change_set_ty *
-change_set_new(void)
+change_set_ty::change_set_ty()
 {
-    change_set_ty   *csp;
-
-    csp = (change_set_ty *)mem_alloc(sizeof(change_set_ty));
-    csp->who = 0;
-    csp->when = 0;
-    csp->description = 0;
-    change_set_file_list_constructor(&csp->file);
-    string_list_constructor(&csp->tag);
-    return csp;
+    who = 0;
+    when = 0;
+    description = 0;
+    change_set_file_list_constructor(&file);
 }
 
 
-void
-change_set_delete(change_set_ty *csp)
+change_set_ty::~change_set_ty()
 {
-    if (csp->who)
+    if (who)
     {
-        str_free(csp->who);
-        csp->who = 0;
+        str_free(who);
+        who = 0;
     }
-    csp->when = 0;
-    if (csp->description)
+    when = 0;
+    if (description)
     {
-        str_free(csp->description);
-        csp->description = 0;
+        str_free(description);
+        description = 0;
     }
-    change_set_file_list_destructor(&csp->file);
-    string_list_destructor(&csp->tag);
-    mem_free(csp);
+    change_set_file_list_destructor(&file);
 }
 
 
 #ifdef DEBUG
 
 void
-change_set_validate(change_set_ty *csp)
+change_set_ty::validate()
+    const
 {
-    if (csp->who)
-        str_validate(csp->who);
-    if (csp->description)
-        str_validate(csp->description);
-    change_set_file_list_validate(&csp->file);
-    string_list_validate(&csp->tag);
+    assert(!who || str_validate(who));
+    assert(!description || str_validate(description));
+    file.validate();
+    assert(tag.validate());
 }
 
 #endif

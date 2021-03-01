@@ -23,26 +23,9 @@
 #include <str_list.h>
 
 
-int
-string_list_equal(const string_list_ty *a, const string_list_ty *b)
+bool
+string_list_ty::equal(const string_list_ty &arg)
+    const
 {
-    size_t          j, k;
-
-    for (j = 0; j < a->nstrings; ++j)
-    {
-	for (k = 0; k < b->nstrings; ++k)
-	    if (str_equal(a->string[j], b->string[k]))
-		break;
-	if (k >= b->nstrings)
-	    return 0;
-    }
-    for (j = 0; j < b->nstrings; ++j)
-    {
-	for (k = 0; k < a->nstrings; ++k)
-	    if (str_equal(b->string[j], a->string[k]))
-		break;
-	if (k >= a->nstrings)
-	    return 0;
-    }
-    return 1;
+    return (subset(arg) && arg.subset(*this));
 }

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -78,7 +78,6 @@ int
 main(int argc, char **argv)
 {
     server_ty       *serve;
-    net_ty          *np;
 
     r250_init();
     os_become_init_mortal();
@@ -90,11 +89,11 @@ main(int argc, char **argv)
     {
     case arglex_token_help:
 	main_help();
-	exit(0);
+	quit(0);
 
     case arglex_token_version:
 	version();
-	exit(0);
+	quit(0);
     }
 
     //
@@ -104,9 +103,9 @@ main(int argc, char **argv)
     // ways to connect."
     //
     serve = 0;
-    np = net_new();
+    net_ty *np = new net_ty();
 #if 1 // def DEBUG
-    net_log_by_env(np, "AELOG");
+    np->log_by_env("AELOG");
 #endif
     while (arglex_token != arglex_token_eoln)
     {
@@ -188,11 +187,11 @@ main(int argc, char **argv)
     //
     server_run(serve);
     server_delete(serve);
-    net_delete(np);
+    delete np;
 
     //
     // Report success.
     //
-    exit(0);
+    quit(0);
     return 0;
 }

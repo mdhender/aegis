@@ -25,7 +25,7 @@
 #include <sub.h>
 #include <sub/addpathsuffi.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 wstring_ty *
@@ -34,14 +34,13 @@ sub_add_path_suffix(sub_context_ty *scp, wstring_list_ty *arg)
     string_ty	    *s;
     wstring_ty	    *result;
     size_t	    j;
-    string_list_ty  sl;
     string_ty	    *suffix;
 
     //
     // Make sure we have sufficient arguments.
     //
     trace(("sub_add_path_suffix()\n{\n"));
-    if (arg->nitems < 2)
+    if (arg->size() < 2)
     {
 	sub_context_error_set(scp, i18n("requires at least one argument"));
 	trace(("return NULL;\n"));
@@ -52,26 +51,25 @@ sub_add_path_suffix(sub_context_ty *scp, wstring_list_ty *arg)
     //
     // add the suffix to each of the paths in each of the arguments
     //
-    suffix = wstr_to_str(arg->item[1]);
-    string_list_constructor(&sl);
-    for (j = 2; j < arg->nitems; ++j)
+    suffix = wstr_to_str(arg->get(1));
+    string_list_ty sl;
+    for (j = 2; j < arg->size(); ++j)
     {
 	size_t		k;
 	string_list_ty	tmp;
 
-	s = wstr_to_str(arg->item[j]);
-	str2wl(&tmp, s, ":", 0);
+	s = wstr_to_str(arg->get(j));
+	tmp.split(s, ":");
 	str_free(s);
 	for (k = 0; k < tmp.nstrings; ++k)
 	{
 	    s = os_path_cat(tmp.string[k], suffix);
-	    string_list_append(&sl, s);
+	    sl.push_back(s);
 	    str_free(s);
 	}
-	string_list_destructor(&tmp);
     }
     str_free(suffix);
-    s = wl2str(&sl, 0, sl.nstrings, ":");
+    s = sl.unsplit(":");
     result = str_to_wstr(s);
     str_free(s);
 

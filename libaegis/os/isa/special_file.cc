@@ -22,7 +22,7 @@
 
 #include <ac/errno.h>
 
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <glue.h>

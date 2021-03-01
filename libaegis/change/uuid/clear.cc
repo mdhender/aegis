@@ -21,7 +21,10 @@
 //
 
 #include <change.h>
-
+#include <change/attributes.h>
+#include <error.h>              // for assert
+#include <str.h>
+#include <uuidentifier.h>
 
 void
 change_uuid_clear(change_ty *cp)
@@ -31,7 +34,14 @@ change_uuid_clear(change_ty *cp)
     cstate_data = change_cstate_get(cp);
     if (cstate_data->uuid)
     {
-	str_free(cstate_data->uuid);
-	cstate_data->uuid = 0;
+        assert(universal_unique_identifier_valid(cstate_data->uuid));
+        change_attributes_append
+	(
+	    cstate_data,
+	    ORIGINAL_UUID,
+	    cstate_data->uuid->str_text
+	);
+        str_free(cstate_data->uuid);
+        cstate_data->uuid = 0;
     }
 }

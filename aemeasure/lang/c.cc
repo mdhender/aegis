@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -154,7 +154,7 @@ enum token_t
 {
     token_operator,
     token_operand,
-    token_end_of_file,
+    token_end_of_file
 };
 
 
@@ -174,9 +174,9 @@ tokenize(void)
 	if (token_value)
 	    str_free(token_value);
 	token_value = 0;
-	stracc_open(&buffer);
+	buffer.clear();
 	c = lex_getc2();
-	stracc_char(&buffer, c);
+	buffer.push_back(c);
 	switch (c)
 	{
 	case EOF:
@@ -233,13 +233,13 @@ tokenize(void)
 		continue;
 
 	    case '=':
-		stracc_char(&buffer, c);
+		buffer.push_back(c);
 		goto is_an_operator;
 
 	    default:
 		lex_getc2_undo(c);
 		is_an_operator:
-		token_value = stracc_close(&buffer);
+		token_value = buffer.mkstr();
 		return token_operator;
 	    }
 
@@ -248,16 +248,16 @@ tokenize(void)
 	    {
 		dp->line_has_code = 1;
 		c = lex_getc2();
-		stracc_char(&buffer, c);
+		buffer.push_back(c);
 		if (c == EOF || c == '"' || c == '\n')
 		    break;
 		if (c == '\\')
 		{
 		    c = lex_getc2();
-		    stracc_char(&buffer, c);
+		    buffer.push_back(c);
 		}
 	    }
-	    token_value = stracc_close(&buffer);
+	    token_value = buffer.mkstr();
 	    return token_operand;
 
 	case '\'':
@@ -265,16 +265,16 @@ tokenize(void)
 	    {
 		dp->line_has_code = 1;
 		c = lex_getc2();
-		stracc_char(&buffer, c);
+		buffer.push_back(c);
 		if (c == EOF || c == '\'' || c == '\n')
 		    break;
 		if (c == '\\')
 		{
 		    c = lex_getc2();
-		    stracc_char(&buffer, c);
+		    buffer.push_back(c);
 		}
 	    }
-	    token_value = stracc_close(&buffer);
+	    token_value = buffer.mkstr();
 	    return token_operand;
 
 	case '0':
@@ -282,7 +282,7 @@ tokenize(void)
 	    c = lex_getc2();
 	    if (c == 'x' || c == 'X')
 	    {
-		stracc_char(&buffer, c);
+		buffer.push_back(c);
 		for (;;)
 		{
 		    c = lex_getc2();
@@ -310,7 +310,7 @@ tokenize(void)
 		    case 'd':
 		    case 'e':
 		    case 'f':
-			stracc_char(&buffer, c);
+			buffer.push_back(c);
 			continue;
 
 		    default:
@@ -323,7 +323,7 @@ tokenize(void)
 	    }
 	    if (c == '.')
 	    {
-		stracc_char(&buffer, c);
+		buffer.push_back(c);
 		goto fraction;
 	    }
 	    if (c == 'e' || c == 'E')
@@ -340,7 +340,7 @@ tokenize(void)
 		case '5':
 		case '6':
 		case '7':
-		    stracc_char(&buffer, c);
+		    buffer.push_back(c);
 		    c = lex_getc2();
 		    continue;
 
@@ -364,7 +364,7 @@ tokenize(void)
 	    dp->line_has_code = 1;
 	    for (;;)
 	    {
-		stracc_char(&buffer, c);
+		buffer.push_back(c);
 		c = lex_getc2();
 		if (c < 0)
 		    break;
@@ -373,14 +373,14 @@ tokenize(void)
 	    }
 	    if (c == '.')
 	    {
-		stracc_char(&buffer, c);
+		buffer.push_back(c);
 		goto fraction;
 	    }
 	    if (c == 'e' || c == 'E')
 		goto exponent;
 	    lex_getc2_undo(c);
 	    integer_return:
-	    token_value = stracc_close(&buffer);
+	    token_value = buffer.mkstr();
 	    return token_operand;
 
 	case '.':
@@ -389,26 +389,26 @@ tokenize(void)
 	    if (c == EOF || !isdigit((unsigned char)c))
 	    {
 		lex_getc2_undo(c);
-		token_value = stracc_close(&buffer);
+		token_value = buffer.mkstr();
 		return token_operator;
 	    }
-	    stracc_char(&buffer, c);
+	    buffer.push_back(c);
 	    fraction:
 	    for (;;)
 	    {
 		c = lex_getc2();
 		if (c == EOF || !isdigit((unsigned char)c))
 		    break;
-		stracc_char(&buffer, c);
+		buffer.push_back(c);
 	    }
 	    if (c == 'e' || c == 'E')
 	    {
 		exponent:
-		stracc_char(&buffer, c);
+		buffer.push_back(c);
 		c = lex_getc2();
 		if (c == '+' || c == '-')
 		{
-		    stracc_char(&buffer, c);
+		    buffer.push_back(c);
 		    c = lex_getc2();
 		}
 		for (;;)
@@ -416,11 +416,11 @@ tokenize(void)
 		    c = lex_getc2();
 		    if (c == EOF || !isdigit((unsigned char)c))
 			break;
-		    stracc_char(&buffer, c);
+		    buffer.push_back(c);
 		}
 	    }
 	    lex_getc2_undo(c);
-	    token_value = stracc_close(&buffer);
+	    token_value = buffer.mkstr();
 	    return token_operand;
 
 	case 'A':
@@ -545,7 +545,7 @@ tokenize(void)
 		case 'y':
 		case 'z':
 		    dp->line_has_code = 1;
-		    stracc_char(&buffer, c);
+		    buffer.push_back(c);
 		    continue;
 
 		default:
@@ -554,7 +554,7 @@ tokenize(void)
 		}
 		break;
 	    }
-	    token_value = stracc_close(&buffer);
+	    token_value = buffer.mkstr();
 	    if (is_a_keyword(token_value))
 		return token_operator;
 	    return token_operand;
@@ -567,10 +567,10 @@ tokenize(void)
 	    dp->line_has_code = 1;
 	    c2 = lex_getc2();
 	    if (c2 == '=')
-		stracc_char(&buffer, c2);
+		buffer.push_back(c2);
 	    else
 		lex_getc2_undo(c2);
-	    token_value = stracc_close(&buffer);
+	    token_value = buffer.mkstr();
 	    return token_operator;
 
 	case '&':
@@ -582,19 +582,21 @@ tokenize(void)
 	    dp->line_has_code = 1;
 	    c2 = lex_getc2();
 	    if (c2 == '=' || c2 == c)
-		stracc_char(&buffer, c2);
+		buffer.push_back(c2);
 	    else
 		lex_getc2_undo(c2);
-	    token_value = stracc_close(&buffer);
+	    token_value = buffer.mkstr();
 	    return token_operator;
 
 	default:
 	    dp->line_has_code = 1;
-	    token_value = stracc_close(&buffer);
+	    token_value = buffer.mkstr();
 	    return token_operand;
 	}
 	break;
     }
+    // NOTREACHED
+    return token_end_of_file;
 }
 
 

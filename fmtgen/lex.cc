@@ -150,7 +150,7 @@ lex_open(const char *s)
 	f->file_name = mem_copy_string(s);
     }
     f->next = file;
-    string_list_append_unique(&ifiles, str_from_c(s));
+    ifiles.push_back_unique(str_from_c(s));
     f->line_number = 1;
     file = f;
 }
@@ -506,7 +506,9 @@ lex_in_include_file(void)
 void
 lex_include_path(const char *s)
 {
-    string_list_append_unique(&include_path, str_from_c(s));
+    string_ty *tmp = str_from_c(s);
+    include_path.push_back_unique(tmp);
+    str_free(tmp);
 }
 
 

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -69,7 +69,7 @@ xml_change_fstate(struct string_ty *project_name, long change_number,
     // is going to be broken up into one-file-per-file and this will no
     // longer exist.  So we synthesize it.
     //
-    output_fputs(op, "<fstate>\n<src>\n");
+    op->fputs("<fstate>\n<src>\n");
     for (j = 0; ; ++j)
     {
 	fstate_src_ty   *src;
@@ -79,7 +79,7 @@ xml_change_fstate(struct string_ty *project_name, long change_number,
 	    break;
 	fstate_src_write_xml(op, "fstate_src", src);
     }
-    output_fputs(op, "</src>\n</fstate>\n");
+    op->fputs("</src>\n</fstate>\n");
 
     change_free(cp);
     project_free(pp);

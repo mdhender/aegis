@@ -38,9 +38,9 @@ project_file_directory_query(project_ty *pp, string_ty *file_name,
     trace(("project_file_dir(pp = %8.8lX, file_name = \"%s\")\n{\n",
 	(long)pp, file_name->str_text));
     assert(result_in);
-    string_list_constructor(result_in);
+    result_in->clear();
     if (result_out)
-	string_list_constructor(result_out);
+	result_out->clear();
     for (j = 0;; ++j)
     {
 	fstate_src_ty   *src_data;
@@ -63,7 +63,7 @@ project_file_directory_query(project_ty *pp, string_ty *file_name,
 		{
 		case file_action_remove:
 		    if (result_out)
-			string_list_append(result_out, src_data->file_name);
+			result_out->push_back(src_data->file_name);
 		    break;
 
 		case file_action_create:
@@ -73,7 +73,7 @@ project_file_directory_query(project_ty *pp, string_ty *file_name,
 #ifndef DEBUG
 		default:
 #endif
-		    string_list_append(result_in, src_data->file_name);
+		    result_in->push_back(src_data->file_name);
 		    break;
 		}
 	    }

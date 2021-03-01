@@ -21,7 +21,7 @@
 //
 
 #include <ac/errno.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <dir_stack.h>
@@ -189,7 +189,7 @@ dir_stack_readdir(string_list_ty *stack, string_ty *path,
     string_ty       *dir;
 
     trace(("dir_stack_readdir(path = \"%s\")\n{\n", path->str_text));
-    string_list_constructor(result);
+    result->clear();
     for (j = 0; j < stack->nstrings; ++j)
     {
 	dir = stack->string[j];
@@ -226,9 +226,7 @@ void
 dir_stack_walk(string_list_ty *stack, string_ty *path,
     dir_stack_walk_callback_t callback, void *arg, int ignore_symlinks)
 {
-    string_list_ty  wl;
     struct stat     st;
-    int             j;
     string_ty       *s;
     int             depth;
 
@@ -240,24 +238,25 @@ dir_stack_walk(string_list_ty *stack, string_ty *path,
     switch (st.st_mode & S_IFMT)
     {
     case S_IFDIR:
-	callback(arg, dir_stack_walk_dir_before, path, &st, depth,
-	    ignore_symlinks);
-	string_list_constructor(&wl);
-	dir_stack_readdir(stack, path, &wl);
-	trace(("mark\n"));
-	for (j = 0; j < (int)wl.nstrings; ++j)
 	{
-	    s = path_cat(path, wl.string[j]);
-	    trace(("s = \"%s\";\n", s->str_text));
-	    dir_stack_walk(stack, s, callback, arg, ignore_symlinks);
-	    str_free(s);
+	    callback(arg, dir_stack_walk_dir_before, path, &st, depth,
+		ignore_symlinks);
+	    string_list_ty wl;
+	    dir_stack_readdir(stack, path, &wl);
+	    trace(("mark\n"));
+	    for (size_t j = 0; j < wl.nstrings; ++j)
+	    {
+		s = path_cat(path, wl.string[j]);
+		trace(("s = \"%s\";\n", s->str_text));
+		dir_stack_walk(stack, s, callback, arg, ignore_symlinks);
+		str_free(s);
+		trace(("mark\n"));
+	    }
+	    trace(("mark\n"));
+	    callback(arg, dir_stack_walk_dir_after, path, &st, depth,
+		ignore_symlinks);
 	    trace(("mark\n"));
 	}
-	string_list_destructor(&wl);
-	trace(("mark\n"));
-	callback(arg, dir_stack_walk_dir_after, path, &st, depth,
-	    ignore_symlinks);
-	trace(("mark\n"));
 	break;
 
     case S_IFREG:

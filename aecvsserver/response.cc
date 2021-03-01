@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -69,31 +69,31 @@ response_flushable(response_ty *rp)
 void
 output_mode_string(output_ty *op, int mode)
 {
-    output_fputc(op, 'u');
-    output_fputc(op, '=');
+    op->fputc('u');
+    op->fputc('=');
     if (mode & 0400)
-	output_fputc(op, 'r');
+	op->fputc('r');
     if (mode & 0200)
-	output_fputc(op, 'w');
+	op->fputc('w');
     if (mode & 0100)
-	output_fputc(op, 'x');
-    output_fputc(op, ',');
-    output_fputc(op, 'g');
-    output_fputc(op, '=');
+	op->fputc('x');
+    op->fputc(',');
+    op->fputc('g');
+    op->fputc('=');
     if (mode & 0040)
-	output_fputc(op, 'r');
+	op->fputc('r');
     if (mode & 0020)
-	output_fputc(op, 'w');
+	op->fputc('w');
     if (mode & 0010)
-	output_fputc(op, 'x');
-    output_fputc(op, ',');
-    output_fputc(op, 'o');
-    output_fputc(op, '=');
+	op->fputc('x');
+    op->fputc(',');
+    op->fputc('o');
+    op->fputc('=');
     if (mode & 0004)
-	output_fputc(op, 'r');
+	op->fputc('r');
     if (mode & 0002)
-	output_fputc(op, 'w');
+	op->fputc('w');
     if (mode & 0001)
-	output_fputc(op, 'x');
-    output_fputc(op, '\n');
+	op->fputc('x');
+    op->fputc('\n');
 }

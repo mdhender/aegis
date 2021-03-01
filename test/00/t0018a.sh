@@ -272,6 +272,11 @@ pass
 end
 
 #
+# make sure the time stamps are different
+#
+sleep 1
+
+#
 # build the change
 #
 activity="development build 252"
@@ -392,6 +397,11 @@ if test $? -ne 0 ; then cat test.out; no_result; fi
 cat >> $workchan/main.cc << 'end'
 /* almost nothing */
 end
+
+#
+# Make sure the time stamps are different.
+#
+sleep 1
 
 #
 # build the change

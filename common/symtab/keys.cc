@@ -20,17 +20,28 @@
 // MANIFEST: functions to manipulate keyss
 //
 
-#include <symtab/keys.h>
+#include <symtab.h>
+#include <str_list.h>
+#include <nstring/list.h>
 
 
 void
-symtab_keys(symtab_ty *stp, string_list_ty *keys)
+symtab_ty::keys(string_list_ty *result)
+    const
 {
-    size_t	    j;
-    symtab_row_ty   *p;
+    result->clear();
+    for (str_hash_ty j = 0; j < hash_modulus; ++j)
+       	for (row_t *p = hash_table[j]; p; p = p->overflow)
+	    result->push_back(p->key);
+}
 
-    string_list_constructor(keys);
-    for (j = 0; j < stp->hash_modulus; ++j)
-       	for (p = stp->hash_table[j]; p; p = p->overflow)
-	    string_list_append(keys, p->key);
+
+void
+symtab_ty::keys(nstring_list &result)
+    const
+{
+    result.clear();
+    for (str_hash_ty j = 0; j < hash_modulus; ++j)
+       	for (row_t *p = hash_table[j]; p; p = p->overflow)
+	    result.push_back(nstring(str_copy(p->key)));
 }

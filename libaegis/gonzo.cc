@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1997-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1995, 1997-1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -360,7 +360,6 @@ do_tail(void)
     string_ty	    *s1;
     string_ty	    *s2;
     char	    *cp;
-    string_list_ty  path;
     size_t	    j;
     size_t	    max;
 
@@ -396,7 +395,8 @@ do_tail(void)
     if (cp)
     {
 	s1 = str_from_c(cp);
-	str2wl(&path, s1, ":", 1);
+	string_list_ty path;
+	path.split(s1, ":", true);
 	str_free(s1);
 	for (j = 0; j < path.nstrings; ++j)
 	{
@@ -404,7 +404,6 @@ do_tail(void)
 	    if (!os_testing_mode() || is_temporary(s1))
 		gonzo_library_append(s1->str_text);
 	}
-	string_list_destructor(&path);
     }
 
 #ifndef SINGLE_USER
@@ -441,11 +440,10 @@ do_tail(void)
     //
     // build a new environment variable
     //
-    string_list_constructor(&path);
+    string_list_ty path;
     for (j = 0; j < max; ++j)
-	string_list_append(&path, gonzo[j]->dir);
-    s1 = wl2str(&path, 0, 32767, ":");
-    string_list_destructor(&path);
+	path.push_back(gonzo[j]->dir);
+    s1 = path.unsplit(":");
     env_set("AEGIS_PATH", s1->str_text);
     str_free(s1);
 
@@ -640,7 +638,7 @@ gonzo_project_list(string_list_ty *result)
     gstate_ty	    *gstate_data;
 
     trace(("gonzo_project_list(result = %08lX)\n{\n", (long)result));
-    string_list_constructor(result);
+    result->clear();
     for (n = 0;; ++n)
     {
 	gp = gonzo_nth(n);
@@ -663,7 +661,7 @@ gonzo_project_list(string_list_ty *result)
 	    addr = gstate_data->where->list[j];
 	    if (addr->alias_for)
 		continue;
-	    string_list_append_unique(result, addr->project_name);
+	    result->push_back_unique(addr->project_name);
 	}
     }
     trace(("}\n"));
@@ -679,7 +677,7 @@ gonzo_alias_list(string_list_ty *result)
     gstate_ty	    *gstate_data;
 
     trace(("gonzo_project_list(result = %08lX)\n{\n", (long)result));
-    string_list_constructor(result);
+    result->clear();
     for (n = 0;; ++n)
     {
 	gp = gonzo_nth(n);
@@ -702,7 +700,7 @@ gonzo_alias_list(string_list_ty *result)
 	    addr = gstate_data->where->list[j];
 	    if (!addr->alias_for)
 		continue;
-	    string_list_append_unique(result, addr->project_name);
+	    result->push_back_unique(addr->project_name);
 	}
     }
     trace(("}\n"));
@@ -717,7 +715,7 @@ gonzo_project_list_user(string_ty *uname, string_list_ty *result)
 
     trace(("gonzo_project_list_user(uname = \"%s\", result = %08lX)\n{\n",
 	uname->str_text, (long)result));
-    string_list_constructor(result);
+    result->clear();
     for (n = 0;; ++n)
     {
 	string_ty	*ustate_path;
@@ -755,11 +753,7 @@ gonzo_project_list_user(string_ty *uname, string_list_ty *result)
 	{
 	    trace(("remember \"%s\";\n",
 		ustate_data->own->list[j]->project_name->str_text));
-	    string_list_append_unique
-	    (
-		result,
-		ustate_data->own->list[j]->project_name
-	    );
+	    result->push_back_unique(ustate_data->own->list[j]->project_name);
 	}
 	ustate_type.free(ustate_data);
     }
@@ -892,7 +886,6 @@ gonzo_alias_delete_destination_sub(gonzo_ty *gp, string_ty *name)
 {
     gstate_ty	    *gstate_data;
     size_t	    j;
-    int		    result;
 
     //
     // find the project in the gstate
@@ -901,7 +894,6 @@ gonzo_alias_delete_destination_sub(gonzo_ty *gp, string_ty *name)
            (long)gp, name->str_text));
     gstate_data = gonzo_gstate_get(gp);
     assert(gstate_data->where);
-    result = 0;
     for (j = 0; j < gstate_data->where->length; ++j)
     {
 	gstate_where_ty *addr;
@@ -1176,17 +1168,17 @@ gonzo_report_path(string_list_ty *p)
     gonzo_ty	    *gp;
     string_ty	    *s;
 
-    string_list_constructor(p);
+    p->clear();
     for (j = 0;; ++j)
     {
 	gp = gonzo_nth(j);
 	if (!gp)
 	    break;
-	string_list_append_unique(p, gp->dir);
+	p->push_back_unique(gp->dir);
     }
 
     s = str_from_c(configured_datadir());
-    string_list_append_unique(p, s);
+    p->push_back_unique(s);
     str_free(s);
 }
 

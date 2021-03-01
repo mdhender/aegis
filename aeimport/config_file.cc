@@ -39,6 +39,7 @@
 #include <sub.h>
 #include <trace.h>
 #include <user.h>
+#include <uuidentifier.h>
 
 
 void
@@ -76,10 +77,11 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     // Create the file contents.
     //
     pconf_data = (pconf_ty *)pconf_type.alloc();
-    pconf_data->create_symlinks_before_build = true;
-    pconf_data->remove_symlinks_after_build = false;
-    pconf_data->create_symlinks_before_integration_build = true;
-    pconf_data->remove_symlinks_after_integration_build = false;
+    pconf_data->development_directory_style =
+	(work_area_style_ty *)work_area_style_type.alloc();
+    pconf_data->development_directory_style->source_file_link = true;
+    pconf_data->development_directory_style->source_file_symlink = true;
+    pconf_data->development_directory_style->source_file_copy = true;
     pconf_data->build_command = str_from_c("exit 0");
     pconf_data->history_put_command = format_history_put(format);
     pconf_data->history_create_command =
@@ -182,6 +184,7 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     history_data->when = when + 4;
 
     cstate_data->delta_number = project_next_delta_number(pp);
+    cstate_data->delta_uuid = universal_unique_identifier();
     change_integration_directory_set(cp, bl);
 
     //
@@ -229,6 +232,7 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     // add to history for integrate pass
     //
     cstate_data->state = cstate_state_completed;
+    cstate_data->uuid = universal_unique_identifier();
     history_data = change_history_new(cp, up);
     history_data->what = cstate_history_what_integrate_pass;
     history_data->when = when + 5;

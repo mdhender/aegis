@@ -76,12 +76,11 @@ static rpt_value_ty *
 evaluate(rpt_expr_ty *ep)
 {
     size_t	    j;
-    symtab_ty	    *stp;
     rpt_value_ty    *result;
     rpt_value_ty    *vp;
 
-    stp = symtab_alloc(ep->nchild);
-    stp->reap = reap;
+    symtab_ty *stp = new symtab_ty(ep->nchild);
+    stp->set_reap(reap);
     rpt_expr_struct__symtab_push(stp);
     result = 0;
     for (j = 0; j < ep->nchild; ++j)
@@ -90,7 +89,7 @@ evaluate(rpt_expr_ty *ep)
 	if (vp->method->type == rpt_value_type_error)
 	{
 	    result = vp;
-	    symtab_free(stp);
+	    delete stp;
 	    break;
 	}
 	rpt_value_free(vp);

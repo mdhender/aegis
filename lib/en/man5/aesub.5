@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993-1995, 1997-2003 Peter Miller;
+.\"	Copyright (C) 1993-1995, 1997-2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -193,6 +193,14 @@ Change
 .RS
 This substitution provides various information about the change,
 based on the argument it is given.
+.TP
+attribute
+.RS
+This substitution takes an additional argument, the name of a change
+attribute (see \fIaeca\fP(1) and \fIaecattr\fP(5) for more information).
+This returns the value listed in the change attributes, or the empty
+string if the change does not have the named attribute.
+.RE
 .TP 8n
 cause
 This returns the cause of the change.
@@ -203,6 +211,13 @@ See \fIDATE\fP section for additional arguments.
 .TP 8n
 delta
 This returns the delta number of the change.
+Only valid for completed changes.
+.TP 8n
+delta_uuid
+This returns the delta UUID of the change, assigned on integrate pass, a
+globally unique identifier for the state of the project when this change
+was integrated (different for all repositories).
+Only valid for \fIbeing_integrated\fP and \fIcompleted\fI changes.
 .TP 8n
 description
 This returns the brief description of the change.
@@ -229,8 +244,19 @@ This returns the name of the reviewer of the change.
 state
 This returns the state of the change.
 .TP 8n
+uuid
+This returns the UUID of the change.
+.TP 8n
 version
 This returns the version of the change.
+.RE
+.TP 8n
+Change_Attribute
+.RS
+This substitution takes exactly one argument.  This argument is a name
+of a change attribute (see \fIaeca\fP(1) and \fIaecattr\fP(5) for more
+information).  This returns the value listed in the change attributes,
+or the empty string if the change does not have the named attribute.
 .RE
 .TP 8n
 Change_Files
@@ -262,10 +288,25 @@ be returned.  For example \fI${change_files modify test}\fP will return
 only the names of automatic test files which are being modified.
 .RE
 .TP 8n
+Change_Developer_List
+.br
+Space separated list of all the change's developers.
+Note that this is different than the \f[CW]Developer_\%List\fP substitution.
+.TP 8n
+Change_Reviewer_List
+.br
+Space separated list of the change's reviewers since the last \fIdevelop
+end\fP.  Note that this is different than the \f[CW]Reviewer_\%List\fP
+substitution.  Bt using the \fIreview_policy_command\fP field of the
+project configuration file this value can have more than one reviewer,
+because this allows a project to require a change to need to be reviewed
+more than once before it can be integrated.
+.TP 8n
 COMment
 .br
 Inserts exactly nothing; any and all arguments are ignored.
-Another form of comment is ``$#'' which extends to the end of the current line.
+Another form of comment is ``\f[CW]$#\fP''
+which extends to the end of the current line.
 .TP 8n
 Copyright_Years
 .br
@@ -325,6 +366,8 @@ DEVeloper_List
 .br
 Space separated list of the project's developers.
 Takes an optional argument in the same form as the \fIuser\fP substitution.
+Note that this is different than the \f[CW]Change_\%Developer\%List\fP
+substitution.
 .TP 8n
 Development_Directory
 .br
@@ -334,6 +377,11 @@ Only available when the change is between the
 state and the
 .I "being integrated"
 state.
+.TP 8n
+DIFF
+.br
+The absolute path of the diff command, as discovered when Aegis was built.
+It tries to locate GNU Diff at build time to provide maximum functionality.
 .TP 8n
 Dirname
 .br
@@ -362,6 +410,24 @@ This substitution takes at least one argument.
 The value of the substitution will be the argument with
 any upper case letters mapped to lower case.
 .\" -------------------- E --------------------
+.TP 8n
+EMail_Address
+.RS
+This substitution takes one or more user names as arguments.
+It replaces them with email addresses.
+(It is an error if any user name is unknown.)
+.PP
+This substitution takes options.  You may specify one or more of them
+immediately after the substitution name.
+.TP 8n
+\fB\-Comma\fP
+This option may be used to specify that the email addresses are to be
+separated by commas.
+.TP 8n
+\fB\-Quote\fP
+This option may be used to specify that the email addresses are to be
+quoted to insulate shell special characters.
+.RE
 .TP 8n
 ENVironment
 .br
@@ -528,9 +594,9 @@ This returns the description of the trunk of the project.
 .TP 8n
 Project_Specific
 This substitution takes exactly one argument.  This argument is a name
-to be found in the project \fIconfig\fP file's \fIproject_\%specific\fP
+to be found in the project configuration file's \fIproject_\%specific\fP
 field (see \fIaepconf\fP(5) for more information).
-This returns the value listed in the project \fIconfig\fP file.
+This returns the value listed in the project configuration file.
 .\" -------------------- Q --------------------
 .TP 8n
 QUote
@@ -580,6 +646,8 @@ Reviewer_List
 .br
 Space separated list of the project's reviewers.
 Takes an optional argument in the same form as the \fIuser\fP substitution.
+Note that this is different than the \f[CW]Change_\%Reviewer_\%List\fP
+substitution.
 .TP 8n
 RIght
 This substitution
@@ -706,6 +774,7 @@ The home directory of the user.
 .TP 8n
 Version
 .br
+.RS
 The version of the change.
 If the change is in the
 .I "being integrated"
@@ -719,6 +788,11 @@ where "a" is the project's major version number,
 If the change is in any other state,
 the version will be of the form "\fIa\fB.\fIb\fB.C\fIccc\fR",
 where "ccc" is the change number.
+.TP 8n
+delta_uuid
+This variant gives the change's delta-UUID assigned at integrate pass.
+Only valid for \fIbeing_integrated\fP and \fIcompleted\fP changes.
+.RE
 .\" -------------------- W --------------------
 .\" -------------------- X --------------------
 .\" -------------------- Y --------------------

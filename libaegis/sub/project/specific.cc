@@ -20,6 +20,9 @@
 // MANIFEST: functions to manipulate specifics
 //
 
+#include <ac/string.h>
+
+#include <attribute.h>
 #include <change.h>
 #include <error.h>
 #include <pconf.h>
@@ -27,27 +30,20 @@
 #include <sub.h>
 #include <trace.h>
 #include <wstr.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 static string_ty *
 pconf_project_specific_find(pconf_ty *pconf_data, string_ty *name)
 {
-    size_t	    k;
-
+    assert(pconf_data);
     assert(name);
-    if (!pconf_data->project_specific)
-	return 0;
-    for (k = 0; k < pconf_data->project_specific->length; ++k)
+    attributes_ty *psp =
+	attributes_list_find(pconf_data->project_specific, name->str_text);
+    if (psp)
     {
-	attributes_ty   *psp;
-
-	psp = pconf_data->project_specific->list[k];
-	assert(psp);
-	assert(psp->name);
 	assert(psp->value);
-	if (psp->name && psp->value && str_equal(name, psp->name))
-	    return psp->value;
+	return psp->value;
     }
     return 0;
 }
@@ -91,14 +87,14 @@ sub_project_specific(sub_context_ty *scp, wstring_list_ty *arg)
 	result = 0;
 	goto done;
     }
-    if (arg->nitems != 2)
+    if (arg->size() != 2)
     {
 	sub_context_error_set(scp, i18n("requires one argument"));
 	result = 0;
 	goto done;
     }
 
-    name = wstr_to_str(arg->item[1]);
+    name = wstr_to_str(arg->get(1));
     pconf_data = change_pconf_get(cp, 0);
     value = pconf_project_specific_find(pconf_data, name);
     str_free(name);

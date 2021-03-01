@@ -24,7 +24,7 @@
 #include <sub.h>
 #include <sub/split.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 wstring_ty *
@@ -33,11 +33,10 @@ sub_split(sub_context_ty *scp, wstring_list_ty *arg)
     wstring_ty      *result;
     string_ty       *separators;
     string_ty       *s1;
-    string_list_ty  results;
     size_t	    j;
 
     trace(("sub_split()\n{\n"));
-    if (arg->nitems < 2)
+    if (arg->size() < 2)
     {
        	sub_context_error_set(scp, i18n("requires two arguments"));
 	trace(("return NULL;\n"));
@@ -45,21 +44,20 @@ sub_split(sub_context_ty *scp, wstring_list_ty *arg)
 	return 0;
     }
 
-    separators = wstr_to_str(arg->item[1]);
-    string_list_constructor(&results);
-    for (j = 2; j < arg->nitems; ++j)
+    separators = wstr_to_str(arg->get(1));
+    string_list_ty results;
+    for (j = 2; j < arg->size(); ++j)
     {
 	string_list_ty  wl;
 
-	s1 = wstr_to_str(arg->item[j]);
-	str2wl(&wl, s1, separators->str_text, 0);
+	s1 = wstr_to_str(arg->get(j));
+	wl.split(s1, separators->str_text);
 	str_free(s1);
-	string_list_append_list(&results, &wl);
-	string_list_destructor(&wl);
+	results.push_back(wl);
     }
     str_free(separators);
 
-    s1 = wl2str(&results, 0, results.nstrings, 0);
+    s1 = results.unsplit();
     result = str_to_wstr(s1);
     str_free(s1);
 

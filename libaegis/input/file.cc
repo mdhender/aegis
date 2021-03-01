@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1995, 1998, 1999, 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 1994, 1995, 1998, 1999, 2001, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 #include <ac/fcntl.h>
 #include <ac/unistd.h>
 
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/socket.h>
 
 #include <error.h>
@@ -37,6 +37,7 @@
 #include <os.h>
 #include <str.h>
 #include <sub.h>
+#include <url.h>
 
 struct input_file_ty
 {
@@ -81,7 +82,7 @@ input_file_read(input_ty *p, void *data, size_t len)
     long	    result;
 
     os_become_must_be_active();
-    if (len < 0)
+    if (len == 0)
 	return 0;
     this_thing = (input_file_ty *)p;
     result = glue_read(this_thing->fd, data, len);
@@ -210,24 +211,39 @@ input_file_open(string_ty *fn)
 
     os_become_must_be_active();
     fd = open_with_stale_nfs_retry(fn->str_text, O_RDONLY);
-#ifdef HAVE_LIBCURL
     if (fd < 0 && errno == ENOENT && input_curl_looks_likely(fn))
+    {
+        // Note: we use the input_curl_looks_likely function EVEN when
+        // -lcurl is not available, .
+#ifdef HAVE_LIBCURL
 	return input_curl_open(fn);
+#else
+	// This fragment should probably be moved into input_curl_open
+	// in the case when HAVE_LIBCURL is undefined.
+	url temp = nstring(str_copy(fn));
+	if (!temp.is_a_file())
+	{
+	    sub_context_ty sc(__FILE__, __LINE__);
+	    sc.var_set_string("File_Name", fn);
+	    sc.fatal_intl(i18n("open $filename: no curl library"));
+	    // NOTREACHED
+	}
+	str_free(fn);
+	fn = str_copy(temp.get_path().get_ref());
+	fd = open_with_stale_nfs_retry(fn->str_text, O_RDONLY);
 #endif
+    }
 
     result = input_new(&vtbl);
     this_thing = (input_file_ty *)result;
     this_thing->fd = fd;
     if (this_thing->fd < 0)
     {
-	sub_context_ty	*scp;
-	int             errno_old;
-
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name", fn);
-	fatal_intl(scp, i18n("open $filename: $errno"));
+	int errno_old = errno;
+	sub_context_ty sc(__FILE__, __LINE__);
+	sc.errno_setx(errno_old);
+	sc.var_set_string("File_Name", fn);
+	sc.fatal_intl(i18n("open $filename: $errno"));
 	// NOTREACHED
     }
     this_thing->fn = str_copy(fn);

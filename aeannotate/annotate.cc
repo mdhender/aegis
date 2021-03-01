@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -45,7 +45,7 @@
 #include <project/file/roll_forward.h>
 #include <str.h>
 #include <sub.h>
-#include <symtab/keys.h>
+#include <symtab.h>
 #include <trace.h>
 #include <undo.h>
 #include <usage.h>
@@ -98,7 +98,7 @@ column_list_append(column_list_t *clp, string_ty *formula, string_ty *heading,
     cp->heading = heading;
     cp->width = width;
     cp->fp = 0;
-    cp->stp = symtab_alloc(5);
+    cp->stp = new symtab_ty(5);
     cp->maximum = 1;
     cp->previous = 0;
     cp->newval = 0;
@@ -162,7 +162,6 @@ process(project_ty *pp, string_ty *filename, line_list_t *buffer)
     for (j = 0; j < felp->length; ++j)
     {
 	file_event_ty	*fep;
-	fstate_src_ty   *src_data;
 	string_ty	*ifn;
 	int		ifn_unlink;
 	input_ty	*ifp;
@@ -172,17 +171,14 @@ process(project_ty *pp, string_ty *filename, line_list_t *buffer)
 	// find the file within the change
 	//
 	fep = felp->item + j;
-	src_data = change_file_find(fep->cp, filename, view_path_first);
-	assert(src_data);
-	if (!src_data)
-	    continue;
+	assert(fep->src);
 
 	//
 	// What we do next depends on what the change did to the file.
 	//
 	ifn = 0;
 	ifn_unlink = 0;
-	switch (src_data->action)
+	switch (fep->src->action)
 	{
 	case file_action_create:
 	    //
@@ -190,7 +186,7 @@ process(project_ty *pp, string_ty *filename, line_list_t *buffer)
 	    //
 	    trace(("create %s\n", change_version_get(fep->cp)->str_text));
 	    line_list_clear(buffer);
-	    ifn = project_file_version_path(pp, src_data, &ifn_unlink);
+	    ifn = project_file_version_path(pp, fep->src, &ifn_unlink);
 	    os_become_orig();
 	    ifp = input_file_text_open(ifn);
 	    for (linum = 0;; ++linum)
@@ -220,7 +216,7 @@ process(project_ty *pp, string_ty *filename, line_list_t *buffer)
 	    //
 	    // generate the difference between the last edit and this edit.
 	    //
-	    ifn = project_file_version_path(pp, src_data, &ifn_unlink);
+	    ifn = project_file_version_path(pp, fep->src, &ifn_unlink);
 	    change_run_annotate_diff_command
 	    (
 		fep->cp,
@@ -387,7 +383,7 @@ incr(symtab_ty *stp, string_ty *key, long *maximum_p)
 {
     long	    *data;
 
-    data = (long int *)symtab_query(stp, key);
+    data = (long int *)stp->query(key);
     if (!data)
     {
 	static size_t   templen;
@@ -401,7 +397,7 @@ incr(symtab_ty *stp, string_ty *key, long *maximum_p)
 	data = temp++;
 	--templen;
 	*data = 0;
-	symtab_assign(stp, key, data);
+	stp->assign(key, data);
     }
     ++*data;
     if (maximum_p && *data > *maximum_p)
@@ -446,15 +442,15 @@ emit_range(output_ty *line_col, output_ty *source_col, line_t *line_array,
 		// all the columns when one column changes.  CVS annotate
 		// prints all of the columns.
 		//
-		output_put_str(cp->fp, cp->newval);
+		cp->fp->fputs(cp->newval);
 	    }
 	    if (cp->previous)
 		str_free(cp->previous);
 	    cp->previous = cp->newval;
 	    cp->newval = 0;
 	}
-	output_fprintf(line_col, "%5ld", *linum_p);
-	output_put_str(source_col, lp->text);
+	line_col->fprintf("%5ld", *linum_p);
+	source_col->fputs(lp->text);
 	col_eoln(ofp);
 
 	//
@@ -483,7 +479,6 @@ emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
     size_t	    j;
     long	    linum;
     int		    left;
-    string_list_ty  keys;
 
     trace(("buf line = %ld\n", (long)(buffer->length1 + buffer->length2)));
     ofp = col_open(outfilename);
@@ -503,7 +498,7 @@ emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
     }
     line_col = col_create(ofp, left, left + 6, "Line\n------");
     source_col = col_create(ofp, left + 7, 0, "Source\n---------");
-    file_stp = symtab_alloc(5);
+    file_stp = new symtab_ty(5);
 
     //
     // Emit the lines.
@@ -542,27 +537,28 @@ emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
 	size_t		k;
 
 	cp = columns.item + j;
-	symtab_keys(cp->stp, &keys);
+	string_list_ty keys;
+	cp->stp->keys(&keys);
 	col_need(ofp, keys.nstrings > 10 ? 10 : (int)keys.nstrings);
-	string_list_sort_version(&keys);
+	keys.sort_version();
 	for (k = 0; k < keys.nstrings; ++k)
 	{
 	    string_ty	    *key;
 	    long	    *data;
 
 	    key = keys.string[k];
-	    data = (long int *)symtab_query(cp->stp, key);
+	    data = (long int *)cp->stp->query(key);
 	    assert(key);
 	    if (!data)
 		continue;
-	    output_put_str(cp->fp, key);
-	    output_fprintf(line_col, "%5ld", *data);
-	    output_fprintf(source_col, "%6.2f%%", 100. * *data / linum);
+	    cp->fp->fputs(key);
+	    line_col->fprintf("%5ld", *data);
+	    source_col->fprintf("%6.2f%%", 100. * *data / linum);
 
 	    //
 	    // Histogram in trhe rest of the line.
 	    //
-	    left = output_page_width(source_col) - 8;
+	    left = source_col->page_width() - 8;
 	    if (left > 0)
 	    {
 		if (left > 50)
@@ -570,10 +566,10 @@ emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
 		left = (left * *data + cp->maximum / 2) / cp->maximum;
 		if (left > 0)
 		{
-		    output_fputc(source_col, ' ');
+		    source_col->fputc(' ');
 		    for (;;)
 		    {
-			output_fputc(source_col, '*');
+			source_col->fputc('*');
 			--left;
 			if (left <= 0)
 			    break;
@@ -582,7 +578,6 @@ emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
 	    }
 	    col_eoln(ofp);
 	}
-	string_list_destructor(&keys);
     }
 
     if (filestat > 0)
@@ -590,8 +585,9 @@ emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
 	//
 	// Emit the file statistics.
 	//
-	symtab_keys(file_stp, &keys);
-	string_list_sort(&keys);
+	string_list_ty keys;
+	file_stp->keys(&keys);
+	keys.sort();
 	col_need(ofp, keys.nstrings > 10 ? 10 : (int)keys.nstrings);
 	for (j = 0; j < keys.nstrings; ++j)
 	{
@@ -602,18 +598,17 @@ emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
 	    key = keys.string[j];
 	    if (str_equal(key, filename))
 		continue;
-	    data = (long int *)symtab_query(file_stp, key);
+	    data = (long int *)file_stp->query(key);
 	    assert(key);
 	    if (!data)
 		continue;
 	    src = project_file_find(pp, key, view_path_extreme);
 	    if (!src)
 		continue;
-	    output_fprintf(line_col, "%5ld", *data);
-	    output_put_str(source_col, key);
+	    line_col->fprintf("%5ld", *data);
+	    source_col->fputs(key);
 	    col_eoln(ofp);
 	}
-	string_list_destructor(&keys);
     }
     col_close(ofp);
 }

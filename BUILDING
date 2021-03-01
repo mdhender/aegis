@@ -3,12 +3,12 @@ Build(Aegis)							  Build(Aegis)
 NAME
 	aegis -	project	change supervisor
 	Copyright (C) 1991, 1992, 1993,	1994, 1995, 1996, 1997,	1998, 1999,
-	2000, 2001, 2002, 2003,	2004 Peter Miller; All rights reserved.
+	2000, 2001, 2002, 2003,	2004, 2005 Peter Miller; All rights reserved.
 
 	The aegis program is distributed under the terms of the	GNU General
 	Public License.	 See the LICENSE section, below, for more details.
 
-	aegis (ee.j.iz)	n., a protection, a defence.
+	aegis (ee.j.iz)	n., a protection, a defense.
 
 SPACE REQUIREMENTS
 	You will need up to 250MB to unpack and	build the aegis	package.
@@ -53,7 +53,7 @@ SITE CONFIGURATION
 	If your	system does not	have them, it is worth fetching	and installing
 	GNU zlib compression library before you	run the	configure script.
 	(See http://www.gzip.org/zlib/ for download.)  This is essential,
-	becaise	Aegis will not build.  without it.  (Note: this	is not the
+	because	Aegis will not build.  without it.  (Note: this	is not the
 	same thing as zlibc which does something completely different.)
 
 	The configure script checks for	the regular expression library and
@@ -92,6 +92,18 @@ SITE CONFIGURATION
 	following configuration
 		# systune ncargs 0x8000
 	to increase the	length of command lines.
+
+	For mips IRIX and IRIX64 using the MipsPro compiler up to at least
+	version	7.3 you	must specify the flag to allow -I for loop
+	initializations. You may give either of:
+		CXXFLAGS='LANG:ansi-for-init-scope=ON'
+		CXXFLAGS='LANG:std'
+	Also required is -lCio but configure will test for that. Even using
+	that library there remains a link failure due to:
+		Unresolved text	symbol
+		"std::_List_base<undo_item*,std::allocator<undo_item*> >::clear(void)"
+	on several of the binaries. A work around for this problem is not
+	known at this time.
 
 	By default, configure will arrange for the make	install	command	to
 	install	the aegis package's files in /usr/local/bin,
@@ -313,7 +325,7 @@ BUILDING AEGIS
    Upgrading
 	When upgrading from one	release	to a newer one,	it is important	that
 	all of the machines on your network are	running	the same release of
-	Aegis.	This minimises the possibility of database incompatibilities.
+	Aegis.	This minimizes the possibility of database incompatibilities.
 	In general, Aegis is backwards compatible with earlier releases, but
 	not forwards compatible	in the face of new capabilities.
 
@@ -433,6 +445,11 @@ TESTING	AEGIS
 	couple very slow, but it varies	greatly	depending on your CPU.
 
    Known Problems
+	In order to get	the long form of the error messages on Solaris,	it is
+	necessary to install GNU Gettext before	running	./configure, and once
+	./configure has	been run you need to edit the Makefile to statically
+	link the executables.
+
 	The tests assume that the RCS commands "ci", "co", "rlog" and "rcs"
 	are somewhere in the command search PATH.
 
@@ -575,22 +592,21 @@ USER CONFIGURATION
 
    Web Interface
 	If you have a Web server, you may like to install the Aegis web
-	interface.  You	do this	by copying the aegis.cgi script	from
-	/usr/local/bin/aegis.cgi into your web server's	cgi-bin	directory.
-	There is a aegis.cgi.i helper script, if you don't know	where your web
+	interface.  You	do this	by copying the aeget script from
+	/usr/local/bin/aeget into your web server's cgi-bin directory.	There
+	is a aeget.instal helper script, if you	don't know where your web
 	server's cgi-bin directory is.
 
 	You may	prefer to use a	symbolic link, as this will be more stable
 	across Aegis upgrades.	However, this requires a corresponding follow-
 	symlinks setting in your web server's configuration file.  (Use	the
-	aegis.cgi.i -s option.)
+	aeget.instal -s	option.)
 
-	Within the aegis.cgi script, can set the AEGIS_PATH environment
-	variable, if you want it to be able to see more	projects than just the
-	global projects.  You do this by creating a /usr/local/lib/-
-	aegis.cgi.conf file (there isn't one, by default) and setting the
-	AEGIS_PATH environment variable	in it.	This is	a fragment of Bourne
-	shell script, not just the name.
+	You may	need to	wrap aeget with	a script which sets the	AEGIS_PATH
+	environment variable, if you want it to	be able	to see more projects
+	than just the global projects.	You may	also need to set the PATH
+	environment variable, if you don't have	the Aegis install path in the
+	default	path.
 
 	(Note that these building instructions assume you are using the
 	default	/usr/local as the install prefix.  You will need to substitute

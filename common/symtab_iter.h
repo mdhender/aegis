@@ -25,22 +25,55 @@
 
 #include <symtab.h>
 
-struct symtab_iterator
+/**
+  * The symtab_iterator class is used to iterate across all rows in a
+  * symbols table.
+  */
+class symtab_iterator
 {
-	//
-	// These fields are for internal use only, and are not to be
-	// accessed or manipulated by clents of this interface.
-	//
-	symtab_ty	*stp;
-	symtab_row_ty	*rp;
-	size_t		pos;
+public:
+    ~symtab_iterator();
+    symtab_iterator(const symtab_ty *);
+
+    void reset(void);
+    bool next(string_ty **key, void **data);
+
+private:
+    //
+    // These fields are for internal use only, and are not to be
+    // accessed or manipulated by clents of this interface.
+    //
+    const symtab_ty *stp;
+    symtab_ty::row_t *rp;
+    str_hash_ty pos;
+
+    symtab_iterator();
+    symtab_iterator(const symtab_iterator &);
+    symtab_iterator &operator=(const symtab_iterator &);
 };
 
-void symtab_iterator_constructor(symtab_iterator *, symtab_ty *);
-symtab_iterator *symtab_iterator_new(symtab_ty *);
-void symtab_iterator_destructor(symtab_iterator *);
-void symtab_iterator_delete(symtab_iterator *);
-void symtab_iterator_reset(symtab_iterator *);
-int symtab_iterator_next(symtab_iterator *, string_ty **key, void **data);
+inline symtab_iterator *
+symtab_iterator_new(symtab_ty *arg)
+{
+    return new symtab_iterator(arg);
+}
+
+inline void
+symtab_iterator_delete(symtab_iterator *stip)
+{
+    delete stip;
+}
+
+inline void
+symtab_iterator_reset(symtab_iterator *stip)
+{
+    stip->reset();
+}
+
+inline int
+symtab_iterator_next(symtab_iterator *stip, string_ty **key_p, void **data_p)
+{
+    return stip->next(key_p, data_p);
+}
 
 #endif // COMMON_SYMTAB_ITER_H

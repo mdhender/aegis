@@ -22,7 +22,7 @@
 
 #include <ac/errno.h>
 #include <ac/stddef.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 #include <ac/unistd.h>
 
@@ -33,21 +33,14 @@
 
 
 void
-os_mkdir(string_ty *path, int mode)
+os_mkdir(const nstring &path, int mode)
 {
-    int             uid;
-    int             gid;
-    int             um;
-
-    trace(("os_mkdir(path = \"%s\", mode = 0%o)\n{\n", path->str_text, mode));
+    trace(("os_mkdir(path = \"%s\", mode = 0%o)\n{\n", path.c_str(), mode));
     os_become_must_be_active();
-    if (glue_mkdir(path->str_text, mode))
+    if (glue_mkdir(path.c_str(), mode))
     {
-	sub_context_ty  *scp;
-	int             errno_old;
-
-	errno_old = errno;
-	scp = sub_context_new();
+	int errno_old = errno;
+	sub_context_ty *scp = sub_context_new();
 	sub_errno_setx(scp, errno_old);
 	sub_var_set_string(scp, "File_Name", path);
 	sub_var_set_format(scp, "Argument", "%5.5o", mode);
@@ -60,14 +53,14 @@ os_mkdir(string_ty *path, int mode)
     // of the newly created directory, so make sure it is
     // the one intended (egid).
     //
+    int uid;
+    int gid;
+    int um;
     os_become_query(&uid, &gid, &um);
-    if (glue_chown(path->str_text, uid, gid))
+    if (glue_chown(path.c_str(), uid, gid))
     {
-	sub_context_ty *scp;
-	int             errno_old;
-
-	errno_old = errno;
-	scp = sub_context_new();
+	int errno_old = errno;
+	sub_context_ty *scp = sub_context_new();
 	sub_errno_setx(scp, errno_old);
 	sub_var_set_string(scp, "File_Name", path);
 	sub_var_set_long(scp, "Argument", gid);
@@ -81,13 +74,10 @@ os_mkdir(string_ty *path, int mode)
     // so set it explicitly.
     //
     mode &= ~um;
-    if (glue_chmod(path->str_text, mode))
+    if (glue_chmod(path.c_str(), mode))
     {
-	sub_context_ty *scp;
-	int             errno_old;
-
-	errno_old = errno;
-	scp = sub_context_new();
+	int errno_old = errno;
+	sub_context_ty *scp = sub_context_new();
 	sub_errno_setx(scp, errno_old);
 	sub_var_set_string(scp, "File_Name", path);
 	sub_var_set_format(scp, "Argument", "%5.5o", mode);
@@ -95,4 +85,11 @@ os_mkdir(string_ty *path, int mode)
 	// NOTREACHED
     }
     trace(("}\n"));
+}
+
+
+void
+os_mkdir(string_ty *path, int mode)
+{
+    os_mkdir(nstring(str_copy(path)), mode);
 }

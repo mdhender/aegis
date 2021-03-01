@@ -41,13 +41,13 @@ emit_project_name(project_ty *pp)
 	// the newline is so that the lines don't exceed 510 characters
 	printf(".<a\nhref=\"%s/", http_script_name());
 	html_escape_string(project_name_get(pp));
-	printf("/@@menu\">%ld</a>", magic_zero_decode(cp->number));
+	printf("/?menu\">%ld</a>", magic_zero_decode(cp->number));
     }
     else
     {
 	printf("<a href=\"%s/", http_script_name());
 	html_escape_string(project_name_get(pp));
-	printf("/@@menu\">");
+	printf("/?menu\">");
 	html_encode_string(project_name_get(pp));
 	printf("</a>");
     }
@@ -58,9 +58,9 @@ void
 emit_project(project_ty *pp)
 {
     printf("<a href=\"%s\">Project</a>\n", http_script_name());
-    printf("\"");
+    printf("&ldquo;");
     emit_project_name(pp);
-    printf("\"");
+    printf("&rdquo;");
 }
 
 
@@ -86,7 +86,7 @@ void
 emit_project_but1(project_ty *pp)
 {
     printf("<a href=\"%s\">Project</a>\n", http_script_name());
-    printf("\"");
+    printf("&ldquo;");
     emit_project_name_but1(pp);
-    printf("\"");
+    printf("&rdquo;");
 }

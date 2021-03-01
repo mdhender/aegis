@@ -26,6 +26,7 @@
 #pragma interface "symtab"
 
 #include <nstring.h>
+#include <nstring/list.h>
 #include <symtab.h>
 
 /** \addtogroup Symtab
@@ -55,7 +56,7 @@ public:
     {
 	if (stp)
 	{
-	    symtab_free(stp);
+	    delete stp;
 	    stp = 0;
 	}
     }
@@ -75,11 +76,46 @@ public:
       *     The symbol table entry to look for.
       */
     value_type_t *
-    query(const nstring &key)
+    query(string_ty *key)
+	const
     {
 	if (!stp)
 	    return 0;
-	return (value_type_t *)symtab_query(stp, key.get_ref());
+	return (value_type_t *)stp->query(key);
+    }
+
+    /**
+      * The query method is used to locate the given key in the symbol table.
+      *
+      * @param key
+      *     The symbol table entry to look for.
+      */
+    value_type_t *
+    query(const nstring &key)
+	const
+    {
+	if (!stp)
+	    return 0;
+	return (value_type_t *)stp->query(key.get_ref());
+    }
+
+    /**
+      * The assign method is used to associate a value with a key.
+      *
+      * @param key
+      *     The symbol table entry to set.
+      * @param value
+      *     The value to assign.  Note that it is always a pointer.
+      *     If you have called the set_reaper method, it will have
+      *     operator delete called on it (non array) when the symbol
+      *     table destructor is run.
+      */
+    void
+    assign(string_ty *key, value_type_t *value)
+    {
+	if (!stp)
+	    stp = new symtab_ty(5);
+	stp->assign(key, (void *)value);
     }
 
     /**
@@ -97,12 +133,12 @@ public:
     assign(const nstring &key, value_type_t *value)
     {
 	if (!stp)
-	    stp = symtab_alloc(5);
-	symtab_assign(stp, key.get_ref(), (void *)value);
+	    stp = new symtab_ty(5);
+	stp->assign(key.get_ref(), (void *)value);
     }
 
     /**
-      * The assign mentod is used to associate a value with a key.
+      * The assign method is used to associate a value with a key.
       *
       * @param key
       *     The symbol table entry to set.
@@ -132,7 +168,7 @@ public:
     remove(const nstring &key)
     {
 	if (stp)
-	    symtab_delete(stp, key.get_ref());
+	    stp->remove(key.get_ref());
     }
 
     /**
@@ -144,9 +180,10 @@ public:
       */
     void
     dump(const char *caption)
+	const
     {
 	if (stp)
-	    symtab_dump(stp, caption);
+	    stp->dump(caption);
     }
 
     /**
@@ -158,8 +195,53 @@ public:
     set_reaper()
     {
 	if (!stp)
-	    stp = symtab_alloc(5);
-	stp->reap = reaper;
+	    stp = new symtab_ty(5);
+	stp->set_reap(reaper);
+    }
+
+    /**
+      * The empty method may be used to determine if there symbol table
+      * is empty (i.e. there are no rows).
+      */
+    bool
+    empty()
+	const
+    {
+	return (!stp || stp->empty());
+    }
+
+    /**
+      * The size method may be used to determine how many rows there are
+      * in the symbol table.
+      */
+    size_t
+    size()
+	const
+    {
+	return (stp ? stp->size() : 0);
+    }
+
+    /**
+      * The keys method may be used to extract the list of row names
+      * from the symbol table.
+      *
+      * \param result
+      *     Where to put the row names.  It is cleared before any row
+      *     names are placed in it.  It is not sorted.
+      *
+      * \note
+      *     If you have used assign_push method, it is possible to have
+      *     duplicates in the list of keys.
+      * \note
+      *     This method has O(n) execution time.
+      */
+    void
+    keys(nstring_list &result)
+    {
+	if (stp)
+	    stp->keys(result);
+	else
+	    result.clear();
     }
 
 private:

@@ -29,7 +29,9 @@ struct project_ty; // forward
 
 /**
   * The project_inventory_walk function is used to walk the project's
-  * change set inventory, one chaneg at a time.
+  * change set inventory, one change at a time.  The time limit is
+  * calculated from the project itself, if it is completed, otherwise it
+  * is "now".
   *
   * \param pp
   *     Pointer to the project to walk the change set inventory of.
@@ -37,5 +39,18 @@ struct project_ty; // forward
   *     Change functor to call for each change.
   */
 void project_inventory_walk(project_ty *pp, change_functor &cf);
+
+/**
+  * The project_inventory_walk function is used to walk the project's
+  * change set inventory, one change at a time.
+  *
+  * \param pp
+  *     Pointer to the project to walk the change set inventory of.
+  * \param cf
+  *     Change functor to call for each change.
+  * \param limit
+  *     This is the time limit for changes to be included.
+  */
+void project_inventory_walk(project_ty *pp, change_functor &cf, time_t limit);
 
 #endif // LIBAEGIS_PROJECT_INVENTO_WALK_H

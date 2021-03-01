@@ -119,6 +119,29 @@ to be downloaded.
 The \fB\-Universal_Unique_IDentifier\fP option is used by the
 \fIaedist\fP(1) and \fIaepatch\fP(1) commands to set the UUID of a
 change set.  It should not be used by developers.
+.SS Using Change Attributes in Scripts
+There are several ways you can use the attributes of an Aegis change in
+a shell script:
+.TP 8n
+\fIaereport\fP(1)
+The report generator is able to access change attributes.
+You can then have the report generator print the necessary data.
+.TP 8n
+\fIaesub\fP(1)
+Many change atrributes can be accessed via the \fIaesub\fP(5) command
+substitutions, and printed using the \fIaesub\fP(1) command.
+.TP 8n
+aeca -l
+The list option of the \fIaeca\fP(1) command may be used to print the
+values of all editable change attributes.  It can be groped using
+\fIgrep\fP(1) or \fIawk\fP(1), or similar.
+.TP 8n
+\fIaexml\fP(1)
+It is possible to get a great deal of information in XML format,
+including change attributes.  This format can be parsed by a variety of
+packages.
+.PP
+Use the method best suited to your particular needs.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so
@@ -163,14 +186,17 @@ the current user is not an administrator of the specified project.
 .IR tkaeca (1)
 GUI interface to the \fIaeca\fP(1) command.
 .TP 8n
-.IR aepa (5)
-modify the attributes of a project
-.TP 8n
 .IR aecattr (5)
 change attributes file format
 .TP 8n
 .IR aecstate (5)
 change state file format
+.TP 8n
+.IR aepa (5)
+modify the attributes of a project
+.TP 8n
+.IR aesub (5)
+available command substitutions
 .TP 8n
 .IR aeuconf (5)
 user configuration file format

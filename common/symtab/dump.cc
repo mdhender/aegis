@@ -24,32 +24,14 @@
 #include <symtab.h>
 
 
-//
-// NAME
-//	symtab_dump - dump id table
-//
-// SYNOPSIS
-//	void symtab_dump(symtab_ty *stp, char *caption);
-//
-// DESCRIPTION
-//	The symtab_dump function is used to dump the contents of the
-//	symbol table.  The caption will be used to indicate why the
-//	symbol table was dumped.
-//
-// CAVEAT
-//	This function is only available when symbol DEBUG is defined.
-//
-
 void
-symtab_dump(symtab_ty *stp, const char *caption)
+symtab_ty::dump(const char *caption)
+    const
 {
-    str_hash_ty     j;
-    symtab_row_ty   *p;
-
     error_raw("symbol table %s = {", caption);
-    for (j = 0; j < stp->hash_modulus; ++j)
+    for (str_hash_ty j = 0; j < hash_modulus; ++j)
     {
-	for (p = stp->hash_table[j]; p; p = p->overflow)
+	for (row_t *p = hash_table[j]; p; p = p->overflow)
 	{
 	    error_raw
 	    (

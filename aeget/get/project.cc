@@ -29,10 +29,14 @@
 #include <get/change/inventory.h>
 #include <get/project.h>
 #include <get/project/aedist.h>
+#include <get/project/change_cause.h>
 #include <get/project/file.h>
 #include <get/project/file_invento.h>
 #include <get/project/files.h>
+#include <get/project/history.h>
+#include <get/project/integr_histo.h>
 #include <get/project/menu.h>
+#include <get/project/progress.h>
 #include <get/project/staff.h>
 #include <get/project/statistics.h>
 #include <http.h>
@@ -59,8 +63,8 @@ static const table_ty table[] =
 {
     //
     // To remove ambiguity at the root level, sometimes you have
-    // to say "@@file@history" to distinguish the request from
-    // "@@project@history"
+    // to say "?file+history" to distinguish the request from
+    // "?project+history"
     //
     { "file", get_project_file, 1 },
     { "change", change_handoff, 1 },
@@ -68,10 +72,14 @@ static const table_ty table[] =
 
     { "aedist", get_project_aedist },
     { "changes", get_change_list },
+    { "change-cause", get_project_change_cause },
+    { "history", get_project_history },
+    { "integration-histogram", get_project_integration_histogram },
     { "inventory", get_change_inventory },
     { "file-inventory", get_project_file_inventory },
     { "files", get_project_files },
     { "menu", get_project_menu },
+    { "progress", get_project_progress },
     { "staff", get_project_staff },
     { "statistics", get_project_statistics },
 };
@@ -100,9 +108,9 @@ whine(project_ty *pp, string_list_ty *modifier)
     printf("<ul>\n");
     for (const table_ty *tp = table; tp < ENDOF(table); ++tp)
     {
-	string_ty *s = str_format("project@%s", tp->name);
+	string_ty *s = str_format("project+%s", tp->name);
 	printf("<li>");
-	emit_project_href(pp, s->str_text);
+	emit_project_href(pp, "%s", s->str_text);
 	printf("%s</a>\n", tp->name);
 	str_free(s);
     }

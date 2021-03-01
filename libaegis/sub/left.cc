@@ -23,35 +23,32 @@
 #include <sub.h>
 #include <sub/left.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 wstring_ty *
 sub_left(sub_context_ty *scp, wstring_list_ty *arg)
 {
-	wstring_ty	*result;
-	string_ty	*s;
-	long		n;
-
-	trace(("sub_left()\n{\n"));
-	if (arg->nitems != 3)
-	{
-		sub_context_error_set(scp, i18n("requires two arguments"));
-		trace(("return NULL;\n"));
-		trace(("}\n"));
-		return 0;
-	}
-	s = wstr_to_str(arg->item[2]);
-	n = atol(s->str_text);
-	trace(("n = %ld\n", n));
-	str_free(s);
-	if (n <= 0)
-		result = wstr_from_c("");
-	else if (n > (long)arg->item[1]->wstr_length)
-		result = wstr_copy(arg->item[1]);
-	else
-		result = wstr_n_from_wc(arg->item[1]->wstr_text, (size_t)n);
-	trace(("return %8.8lX;\n", (long)result));
+    trace(("sub_left()\n{\n"));
+    if (arg->size() != 3)
+    {
+	sub_context_error_set(scp, i18n("requires two arguments"));
+	trace(("return NULL;\n"));
 	trace(("}\n"));
-	return result;
+	return 0;
+    }
+    string_ty *s = wstr_to_str(arg->get(2));
+    long n = atol(s->str_text);
+    trace(("n = %ld\n", n));
+    str_free(s);
+    wstring_ty *result = 0;
+    if (n <= 0)
+	result = wstr_from_c("");
+    else if ((size_t)n >= arg->get(1)->wstr_length)
+	result = wstr_copy(arg->get(1));
+    else
+	result = wstr_n_from_wc(arg->get(1)->wstr_text, (size_t)n);
+    trace(("return %8.8lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }

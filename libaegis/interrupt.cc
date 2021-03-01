@@ -29,7 +29,7 @@
 
 static int depth;
 
-#ifndef HAVE_SIGHOLD
+#if !defined (HAVE_SIGHOLD) || !defined (HAVE_SIGRELSE)
 #ifdef HAVE_SIGPROCMASK
 static sigset_t oldsigs;
 #endif
@@ -45,7 +45,7 @@ interrupt_disable()
     if (++depth > 1)
 	return;
 
-#ifdef HAVE_SIGHOLD
+#if defined (HAVE_SIGHOLD) && defined (HAVE_SIGRELSE)
     sighold(SIGHUP);
     sighold(SIGINT);
     sighold(SIGQUIT);
@@ -79,7 +79,7 @@ interrupt_enable()
     if (--depth > 0)
 	return;
 
-#ifdef HAVE_SIGHOLD
+#if defined (HAVE_SIGHOLD) && defined (HAVE_SIGRELSE)
     sigrelse(SIGHUP);
     sigrelse(SIGINT);
     sigrelse(SIGQUIT);

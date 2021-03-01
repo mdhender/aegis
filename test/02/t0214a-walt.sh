@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2004 Peter Miller;
+#	Copyright (C) 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -45,6 +45,9 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 export AEGIS_FLAGS
 AEGIS_THROTTLE=2
 export AEGIS_THROTTLE
+
+AEGIS_TEST_DIR=$work
+export AEGIS_TEST_DIR
 
 here=`pwd`
 if test $? -ne 0 ; then exit 2; fi
@@ -169,7 +172,7 @@ history_put_command =
 	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
 history_query_command =
 	"rlog -r $h,v | awk '/^head:/ {print $$2}'";
-diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
+diff_command = "set +e; $diff $orig $i > $out; test $$? -le 1";
 diff3_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
 	echo '1,$$p' ) | ed - $mr > $out";
 link_integration_directory = true;
@@ -198,13 +201,13 @@ all : a
 
 a : b c.lnk
 	rm -f $@
-	cp $< $@
+	cp b.lnk $@
 
 b : barney
 	rm -f $@
 	cp barney $@
 	rm -f $@.lnk
-	ln -s $< $@.lnk
+	ln -s barney $@.lnk
 
 c.lnk : FORCE
 	rm -f $@
@@ -219,7 +222,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 ulimit -c unlimited
 
 activity="build 221"
-$bin/aegis -b -trace symlinks -v > log 2>&1
+$bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="diff 225"
@@ -266,8 +269,8 @@ $bin/aegis -db 11 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="after aedb 268"
-test -e $work/test.C011/b.lnk && fail
-test -e $work/test.C011/c.lnk && fail
+test -h $work/test.C011/b.lnk && fail
+test -h $work/test.C011/c.lnk && fail
 
 #
 # we copy fred to make aeb work, we do *not* copy barney to test the
@@ -286,7 +289,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 # after this build it should be unchanged and removed.
 #
 activity="after aeb 288"
-test -e $work/test.C011/b.lnk && fail
+test -h $work/test.C011/b.lnk && fail
 activity="after aeb 290"
 test -h $work/test.C011/c.lnk || fail
 

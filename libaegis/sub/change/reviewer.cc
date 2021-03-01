@@ -26,7 +26,7 @@
 #include <sub/user.h>
 #include <trace.h>
 #include <user.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 //
@@ -70,7 +70,7 @@ sub_reviewer(sub_context_ty *scp, wstring_list_ty *arg)
 		);
 		result = 0;
 	}
-	else if (arg->nitems == 1)
+	else if (arg->size() == 1)
 	{
 		s = change_reviewer_name(cp);
 		if (!s)
@@ -78,9 +78,9 @@ sub_reviewer(sub_context_ty *scp, wstring_list_ty *arg)
 		result = str_to_wstr(s);
 		// do not free s
 	}
-	else if (arg->nitems == 2)
+	else if (arg->size() == 2)
 	{
-		s = wstr_to_str(arg->item[1]);
+		s = wstr_to_str(arg->get(1));
 		func = sub_user_func(s);
 		str_free(s);
 		if (!func)

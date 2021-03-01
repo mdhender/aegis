@@ -136,7 +136,8 @@ development_directory_style =
 .RE
 There are many more possible configurations of the
 \fIdevelopment_\%directory_\%style\fP, usually with helpful build
-side-effects.  See \fIaepconf\fP(1) and the User Guide's \fIDepenedency
-Maintenance Tool\fP chapter.
+side-effects.  See \fIaepconf\fP(1) and the \fIDepenedency
+Maintenance Tool\fP chapter of the User Guide for more information.
+.PP
 The symbolic link command line options and preferences apply equally
 to hard links and file copies (the names have historical origins).

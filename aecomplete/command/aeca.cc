@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -44,13 +44,11 @@ completion_get(command_ty *cmd)
     complete_ty    *result;
     string_ty      *project_name;
     project_ty     *pp;
-    int            incomplete_filename;
     int            incomplete_change_number;
 
     arglex2_retable(0);
     arglex();
     project_name = 0;
-    incomplete_filename = 0;
     incomplete_change_number = 0;
     while (arglex_token != arglex_token_eoln)
     {
@@ -110,7 +108,7 @@ completion_get(command_ty *cmd)
 	    break;
 
 	case arglex_token_string_incomplete:
-	    incomplete_filename = 1;
+	    // incomplete file name
 	    break;
 	}
 	arglex();

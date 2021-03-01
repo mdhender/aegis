@@ -28,17 +28,23 @@
 #include <str_list.h>
 #include <change_set/file_list.h>
 
-struct change_set_ty
+class change_set_ty
 {
+public:
+    ~change_set_ty();
+    change_set_ty();
+    void validate() const;
+
+// private:
     string_ty       *who;
     time_t	    when;
     string_ty       *description;
     change_set_file_list_ty file;
     string_list_ty  tag;
-};
 
-change_set_ty *change_set_new(void);
-void change_set_delete(change_set_ty *);
-void change_set_validate(change_set_ty *);
+private:
+    change_set_ty(const change_set_ty &);
+    change_set_ty &operator=(const change_set_ty &);
+};
 
 #endif // AEIMPORT_CHANGE_SET_H

@@ -67,6 +67,10 @@ CXXFLAGS = @CPPFLAGS@ @CXXFLAGS@
 #
 LDFLAGS = @LDFLAGS@
 
+# If you add -static to the above LDFLAGS macro
+# then you must also uncomment the next line:
+#STATIC_LIBS = @STATIC_LIBS@
+
 #
 # prefix for installation path
 #
@@ -139,7 +143,7 @@ YACC = @YACC@
 #
 # extra libraries required for your system
 #
-LIBS = @LIBS@
+LIBS = @LIBS@ $(STATIC_LIBS)
 
 #
 # The program used to compile the message catalogues.  Ideally, you

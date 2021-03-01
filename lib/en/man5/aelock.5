@@ -79,17 +79,19 @@ Note that theoretically some of the commands take too \fIfew\fP locks,
 but this has yet to prove to be a problem in practice.  Also, "project
 state file" and "change state file" are the same thing for branches,
 it just depends which way you are looking at them at the time.
+.\" do not warn "cannot adjust line"
+.warn (\n[.warn]-(((\n[.warn]/4)%2)*4))
 .TS
 tab(;);
-le le le le le le le.
+l cw(9n) cw(9n) cw(9n) cw(9n) cw(9n) cw(9n).
 Command;T{
 Global State File
 T};T{
 Project State File
 T};T{
-Project Baseline
+Project Base\%line
 T};T{
-Ancestor Baselines
+Ance\%stor Base\%lines
 T};T{
 Change State File
 T};T{

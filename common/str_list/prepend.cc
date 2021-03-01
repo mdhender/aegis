@@ -20,28 +20,32 @@
 // MANIFEST: functions to manipulate prepends
 //
 
-#include <mem.h>
+#include <ac/string.h>
+
 #include <str_list.h>
 
 
 void
-string_list_prepend(string_list_ty *wlp, string_ty *w)
+string_list_ty::push_front(string_ty *w)
 {
-    size_t          nbytes;
-    size_t          j;
-
-    if (wlp->nstrings >= wlp->nstrings_max)
+    if (nstrings >= nstrings_max)
     {
 	//
 	// always 8 less than a power of 2, which is
 	// most efficient for many memory allocators
 	//
-	wlp->nstrings_max = wlp->nstrings_max * 2 + 8;
-	nbytes = wlp->nstrings_max * sizeof(string_ty *);
-	wlp->string = (string_ty **)mem_change_size(wlp->string, nbytes);
+	size_t new_nstrings_max = nstrings_max * 2 + 8;
+	string_ty **new_string = new string_ty *[new_nstrings_max];
+	memcpy(new_string + 1, string, nstrings * sizeof(string[0]));
+	delete [] string;
+	string = new_string;
+	nstrings_max = new_nstrings_max;
     }
-    for (j = wlp->nstrings; j > 0; --j)
-	wlp->string[j] = wlp->string[j - 1];
-    wlp->nstrings++;
-    wlp->string[0] = str_copy(w);
+    else
+    {
+	for (size_t j = nstrings; j > 0; --j)
+	    string[j] = string[j - 1];
+    }
+    nstrings++;
+    string[0] = str_copy(w);
 }

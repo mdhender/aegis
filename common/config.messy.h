@@ -131,4 +131,6 @@
 # endif
 #endif
 
+#define NDEBUG 1
+
 #endif /* COMMON_CONFIG_MESSY_H */

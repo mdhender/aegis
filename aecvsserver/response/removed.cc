@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -74,9 +74,8 @@ write(response_ty *rp, output_ty *op)
     rcp = (response_removed_ty *)rp;
     short_dir_name = os_dirname_relative(rcp->client_side);
     short_file_name = os_entryname_relative(rcp->client_side);
-    output_fprintf
+    op->fprintf
     (
-	op,
 	"M file %s is no longer pertinent\n"
 	"Removed %s/\n"
 	ROOT_PATH "/%s\n",

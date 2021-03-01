@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -208,11 +208,11 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
     str_free(filename);
 
     op1 = output_file_text_open(ofn1);
-    op1x = output_quoted_printable(op1, 1, min_qp_enc);
+    op1x = new output_quoted_printable_ty(op1, true, min_qp_enc);
 
     op2 = output_file_text_open(ofn2);
-    op2x = output_base64(op2, 1);
-    op = output_tee(op1x, 1, op2x, 1);
+    op2x = new output_base64_ty(op2, true);
+    op = new output_tee_ty(op1x, true, op2x, true);
 
     last_was_newline = 1;
     ascii_yuck = 0;
@@ -228,7 +228,7 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
 	nbytes = input_read(ip, buffer, sizeof(buffer));
 	if (nbytes == 0)
 	    break;
-	output_write(op, buffer, nbytes);
+	op->write(buffer, nbytes);
 
 	pos = buffer;
 	end = buffer + nbytes;
@@ -266,7 +266,7 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
 	intl_yuck = 1;
     }
     input_delete(ip);
-    output_delete(op);
+    delete op;
     change_become_undo();
 
     trace(("mark\n"));

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -107,6 +107,8 @@
 //     at once.
 //
 
+#include <ac/string.h>
+
 #include <module.h>
 #include <os.h>
 #include <request/ci.h>
@@ -128,23 +130,23 @@ run(server_ty *sp, string_ty *fn)
     //
     // Skip the options.
     //
-    for (j = 0; j < sp->np->argument_list.nstrings; ++j)
+    for (j = 0; j < sp->np->argument_count(); ++j)
     {
-	string_ty       *arg;
-
-	arg = sp->np->argument_list.string[j];
-	if (arg->str_text[0] == '-')
-	{
-	    if (arg->str_text[1] == 'm')
-		++j;
-	}
-	else
+	string_ty *arg = sp->np->argument_nth(j);
+	if (arg->str_text[0] != '-')
 	    break;
+	if (0 == strcmp(arg->str_text, "--"))
+	{
+	    ++j;
+	    break;
+	}
+	if (arg->str_text[1] == 'm')
+	    ++j;
     }
 
     ok = 1;
-    dp = sp->np->curdir;
-    for (; j < sp->np->argument_list.nstrings; ++j)
+    dp = sp->np->get_curdir();
+    for (; j < sp->np->argument_count(); ++j)
     {
 	string_ty       *arg;
 	module_ty       *mp;
@@ -155,7 +157,7 @@ run(server_ty *sp, string_ty *fn)
 	// Build the (more complete) name of the file on both the client
 	// side and the server side.
 	//
-	arg = sp->np->argument_list.string[j];
+	arg = sp->np->argument_nth(j);
 	client_side = os_path_cat(dp->client_side, arg);
 	server_side = os_path_cat(dp->server_side, arg);
 

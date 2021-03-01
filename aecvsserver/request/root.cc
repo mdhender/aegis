@@ -50,7 +50,7 @@ run(server_ty *sp, string_ty *arg)
 {
     assert(sp);
     assert(sp->np);
-    if (sp->np->rooted)
+    if (sp->np->get_is_rooted())
     {
 	//
 	// The Root request must be sent only once, and it must be sent before
@@ -77,7 +77,7 @@ run(server_ty *sp, string_ty *arg)
     //
     // Remember that we have seen the Root request.
     //
-    sp->np->rooted = 1;
+    sp->np->set_is_rooted();
 }
 
 

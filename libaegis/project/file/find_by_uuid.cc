@@ -36,6 +36,20 @@ project_file_find_by_uuid(project_ty *pp, string_ty *uuid,
     //
     trace(("project_file_find_by_uuid(pp = %8.8lX, uuid = \"%s\")\n{\n",
 	(long)pp, uuid->str_text));
+
+    //
+    // Deep down in the call stack via project_file_nth, Aegis may
+    // sometimes need to invalidate the file_by_uuid cache, so we have
+    // to call it first, or we will segfault when it gets deleted out
+    // from under us.  The simpest method of doing this is via the
+    // project_change_get function.
+    //
+    // An alternative would be to expose the libaegis/project.cc::
+    // lock_sync() function for calling.  Maybe one day in the distant
+    // future, when project_ty is a class and not a struct.
+    //
+    project_change_get(pp);
+
     symtab_ty *stp = pp->file_by_uuid[as_view_path];
     if (!stp)
     {
@@ -49,7 +63,7 @@ project_file_find_by_uuid(project_ty *pp, string_ty *uuid,
 	assert(file_action_create < file_action_remove);
 	assert(file_action_modify < file_action_remove);
 
-	stp = symtab_alloc(5);
+	stp = new symtab_ty(5);
 	pp->file_by_uuid[as_view_path] = stp;
 	for (size_t j = 0; ; ++j)
 	{
@@ -59,16 +73,16 @@ project_file_find_by_uuid(project_ty *pp, string_ty *uuid,
 		break;
 	    if (!src->uuid)
 		continue;
-	    fstate_src_ty *prev = (fstate_src_ty *)symtab_query(stp, src->uuid);
+	    fstate_src_ty *prev = (fstate_src_ty *)stp->query(src->uuid);
 	    if (!prev || src->action < prev->action)
-		symtab_assign(stp, src->uuid, src);
+		stp->assign(src->uuid, src);
 	}
     }
 
     //
     // Look for the UUID in the symbol table.
     //
-    fstate_src_ty *result = (fstate_src_ty *)symtab_query(stp, uuid);
+    fstate_src_ty *result = (fstate_src_ty *)stp->query(uuid);
     trace(("%s %s \"%s\" %s %s\n", file_usage_ename(result->usage),
 	file_action_ename(result->action), result->file_name->str_text,
 	(result->edit_origin ? result->edit_origin->revision->str_text : ""),

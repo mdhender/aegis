@@ -275,6 +275,24 @@ string_ty *change_filename_check(change_ty *, string_ty *);
 
 void change_create_symlinks_to_baseline(change_ty *, struct user_ty *,
     const struct work_area_style_ty &);
+
+/**
+  * The change_maintain_symlinks_to_baseline is used to repair the
+  * symbolic links (etc) as dictated by the development_directory_style
+  * field of the project configuration file.
+  *
+  * The "symlink" in the name is an historical accident, it also
+  * maintains the hard links and copies as well.
+  *
+  * \note
+  *      This function is NOT to be called by aeb, because it needs
+  *      different logic.
+  * \note
+  *     This function may only be called when the change is in the
+  *     "being developed" state.
+  */
+void change_maintain_symlinks_to_baseline(change_ty *, struct user_ty *);
+
 void change_remove_symlinks_to_baseline(change_ty *, struct user_ty *,
     const struct work_area_style_ty &);
 
@@ -326,5 +344,31 @@ void change_uuid_set(change_ty *cp);
   * if it has been set in the past.
   */
 void change_uuid_clear(change_ty *cp);
+
+/**
+  * The change_reviewer_list function is used to get the list of
+  * reviewers since the last develop_end.  There can be more than one
+  * if the review_policy_command filed of the project configuration is
+  * being used.
+  *
+  * \param cp
+  *     The change to be consulted.
+  * \param result
+  *     where to put the answers.
+  */
+void change_reviewer_list(change_ty *cp, string_list_ty &result);
+
+/**
+  * The change_reviewer_already function is used to determine if a user
+  * has already reviewed a change, since the last develop end.
+  *
+  * \param cp
+  *     The change to be consulted.
+  * \param login
+  *     The login name of the user in question.
+  * \returns
+  *     bool; true if the user has reviewed already, false if not.
+  */
+bool change_reviewer_already(change_ty *cp, string_ty *login);
 
 #endif // LIBAEGIS_CHANGE_H

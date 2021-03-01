@@ -22,7 +22,6 @@
 
 #include <ac/stdlib.h>
 
-#include <input/crop.h>
 #include <input/gunzip.h>
 #include <server.h>
 #include <net.h>
@@ -57,7 +56,7 @@ server_file_contents_get(server_ty *sp)
 	    str_free(s);
 	length = 0;
     }
-    ip = input_crop_new(sp->np->in, 0, length);
+    ip = sp->np->in_crop(length);
     if (gunzip)
 	ip = input_gunzip(ip);
     return ip;

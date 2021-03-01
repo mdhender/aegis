@@ -21,8 +21,10 @@
 //
 
 #include <ac/stdio.h>
+#include <ac/string.h>
 
 #include <ael/attribu_list.h>
+#include <attribute.h>
 #include <change.h>
 #include <change/file.h>
 #include <emit/edit_number.h>
@@ -37,11 +39,8 @@
 void
 get_change_files(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 {
-    size_t          j, k;
     string_list_ty  attr_name;
-
-    string_list_constructor(&attr_name);
-    for (j = 0; ; ++j)
+    for (size_t j = 0; ; ++j)
     {
 	fstate_src_ty   *src;
 
@@ -53,17 +52,24 @@ get_change_files(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	    break;
 	if (src->attribute)
 	{
-	    for (k = 0; k < src->attribute->length; ++k)
+	    for (size_t k = 0; k < src->attribute->length; ++k)
 	    {
 		attributes_ty   *ap;
 
 		ap = src->attribute->list[k];
-		if (ael_attribute_listable(ap))
-		    string_list_append(&attr_name, ap->name);
+		if
+		(
+		    ael_attribute_listable(ap)
+		&&
+		    !attr_name.member_nocase(ap->name)
+		)
+		{
+		    attr_name.push_back(ap->name);
+		}
 	    }
 	}
     }
-    string_list_sort(&attr_name);
+    attr_name.sort_nocase();
 
     html_header(0, cp);
     printf("<title>Project\n");
@@ -81,55 +87,44 @@ get_change_files(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     printf("<table align=center>\n");
     printf("<tr class=\"even-group\"><th>Type</th><th>Action</th>");
     printf("<th>Edit</th>\n");
-    for (j = 0; j < attr_name.nstrings; ++j)
+    for (size_t j2 = 0; j2 < attr_name.nstrings; ++j2)
     {
 	printf("<th>");
-	html_encode_string(attr_name.string[j]);
+	html_encode_string(attr_name.string[j2]);
 	printf("</th>\n");
     }
     printf("<th>File Name</th></tr>\n");
 
-    for (j = 0; ; ++j)
+    size_t file_num;
+    for (file_num = 0; ; ++file_num)
     {
 	fstate_src_ty   *src;
 
 	if (cp->bogus)
-	    src = project_file_nth(cp->pp, j, view_path_simple);
+	    src = project_file_nth(cp->pp, file_num, view_path_simple);
 	else
-	    src = change_file_nth(cp, j, view_path_first);
+	    src = change_file_nth(cp, file_num, view_path_first);
 	if (!src)
 	    break;
 
-	printf("<tr class=\"%s-group\">\n", (j % 6 < 3 ? "odd" : "even"));
+	printf
+	(
+	    "<tr class=\"%s-group\">\n",
+	    (file_num % 6 < 3 ? "odd" : "even")
+	);
 
 	printf("<td valign=top>%s</td>\n", file_usage_ename(src->usage));
 	printf("<td valign=top>%s</td>\n", file_action_ename(src->action));
 	printf("<td valign=top align=right>\n");
 	emit_edit_number(cp, src);
 	printf("</td>\n");
-	for (k = 0; k < attr_name.nstrings; ++k)
+	for (size_t k = 0; k < attr_name.nstrings; ++k)
 	{
+	    const char *aname = attr_name.string[k]->str_text;
 	    printf("<td valign=top>");
-	    if (src->attribute)
-	    {
-		size_t          m;
-
-		for (m = 0; m < src->attribute->length; ++m)
-		{
-		    attributes_ty   *ap;
-
-		    ap = src->attribute->list[m];
-		    if
-		    (
-			str_equal(attr_name.string[k], ap->name)
-		    &&
-			ap->value
-		    )
-		    {
-			html_encode_string(ap->value);
-		    }
-		}
-	    }
+	    attributes_ty *ap = attributes_list_find(src->attribute, aname);
+	    if (ap)
+		html_encode_string(ap->value);
 	    printf("</td>\n");
 	}
 	printf("<td valign=top>\n");
@@ -190,9 +185,8 @@ get_change_files(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	}
 	printf("</td></tr>\n");
     }
-    string_list_destructor(&attr_name);
     printf("<tr class=\"even-group\"><td colspan=4>\n");
-    printf("Listed %ld files.\n", (long)j);
+    printf("Listed %ld files.\n", (long)file_num);
     printf("</td></tr>\n");
     printf("</table>\n");
     printf("</div>\n");

@@ -23,31 +23,10 @@
 #include <str_list.h>
 
 
-//
-// NAME
-//	string_list_copy - copy a word list
-//
-// SYNOPSIS
-//	void string_list_copy(string_list_ty *to, string_list_ty *from);
-//
-// DESCRIPTION
-//	Wl_copy is used to copy word lists.
-//
-// RETURNS
-//	A copy of the 'to' word list is placed in 'from'.
-//
-// CAVEAT
-//	It is the responsibility of the caller to ensure that the
-//	new word list is freed when finished with, by a call to
-//	string_list_destructor().
-//
-
-void
-string_list_copy(string_list_ty *to, const string_list_ty *from)
+string_list_ty::string_list_ty(const string_list_ty &from) :
+    nstrings(0),
+    nstrings_max(0),
+    string(0)
 {
-    size_t          j;
-
-    string_list_constructor(to);
-    for (j = 0; j < from->nstrings; j++)
-	string_list_append(to, str_copy(from->string[j]));
+    push_back(from);
 }

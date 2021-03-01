@@ -25,7 +25,7 @@
 #include <ac/string.h>
 #include <ac/time.h>
 #include <ac/unistd.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <aeib.h>
@@ -54,6 +54,7 @@
 #include <trace.h>
 #include <undo.h>
 #include <user.h>
+#include <uuidentifier.h>
 
 
 static void
@@ -890,6 +891,7 @@ integrate_begin_main(void)
     // and advance the project's delta counter
     //
     cstate_data->delta_number = project_next_delta_number(pp);
+    cstate_data->delta_uuid = universal_unique_identifier();
 
     //
     // include the current year in the copyright_years field

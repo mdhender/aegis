@@ -39,7 +39,7 @@
 #endif
 
 #if HAVE_UNISTD_H
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <unistd.h>
 #endif
 

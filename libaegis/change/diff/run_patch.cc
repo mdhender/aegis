@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -36,7 +36,6 @@ change_run_patch_diff_command(change_ty *cp, user_ty  *up, string_ty *original,
 {
     sub_context_ty  *scp;
     pconf_ty        *pconf_data;
-    string_ty	    *dd;
     string_ty	    *the_command;
 
     //
@@ -75,6 +74,7 @@ change_run_patch_diff_command(change_ty *cp, user_ty  *up, string_ty *original,
 	output->str_text));
     assert(cp->reference_count >= 1);
     pconf_data = change_pconf_get(cp, 1);
+    string_ty *dd = 0;
     switch (change_cstate_get(cp)->state)
     {
     case cstate_state_being_developed:
@@ -88,7 +88,11 @@ change_run_patch_diff_command(change_ty *cp, user_ty  *up, string_ty *original,
 	dd = change_integration_directory_get(cp, 0);
 	break;
 
+    case cstate_state_awaiting_development:
+    case cstate_state_completed:
+#ifndef DEBUG
     default:
+#endif
 	dd = os_tmpdir();
 	break;
     }
@@ -110,13 +114,13 @@ change_run_patch_diff_command(change_ty *cp, user_ty  *up, string_ty *original,
 	    str_from_c
 	    (
 		"set +e; "
-		"diff -c "
+		"$diff -c "
 #ifdef HAVE_GNU_DIFF
 		    "--text "
 		    "-L ${quote $index} -L ${quote $index} "
 #endif
 		    "${quote $original} ${quote $input} > ${quote $output}; "
-		"test $? -le 1"
+		"test $$? -le 1"
 	    );
     }
     the_command = substitute(scp, cp, the_command);

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@
 static void
 write(response_ty *rp, output_ty *op)
 {
-    output_fprintf(op, "I HATE YOU\n");
+    op->fputs("I HATE YOU\n");
 }
 
 

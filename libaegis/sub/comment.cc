@@ -22,7 +22,7 @@
 
 #include <sub/comment.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 //

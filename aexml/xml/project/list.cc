@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -55,13 +55,13 @@ xml_project_list(struct string_ty *project_name, long change_number,
     //
     // list each project
     //
-    output_fprintf(op, "<gstate>\n<where>\n");
+    op->fputs("<gstate>\n<where>\n");
     for (j = 0; j < name.nstrings; ++j)
     {
 	project_ty	*pp;
 	int		err;
 
-	output_fprintf(op, "<gstate_where>\n");
+	op->fputs("<gstate_where>\n");
 	pp = project_alloc(name.string[j]);
 	project_bind_existing(pp);
 	string_write_xml(op, "name", project_name_get(pp));
@@ -70,7 +70,7 @@ xml_project_list(struct string_ty *project_name, long change_number,
 
 	if (err)
 	{
-	    output_fprintf(op, "<error>%s</error>\n", strerror(err));
+	    op->fprintf("<error>%s</error>\n", strerror(err));
 	}
 	else
 	{
@@ -86,8 +86,8 @@ xml_project_list(struct string_ty *project_name, long change_number,
 	    string_write_xml(op, "directory", top);
 	}
 	project_free(pp);
-	output_fprintf(op, "</gstate_where>\n");
+	op->fputs("</gstate_where>\n");
     }
-    output_fprintf(op, "</where>\n</gstate>\n");
+    op->fputs("</where>\n</gstate>\n");
     trace(("}\n"));
 }

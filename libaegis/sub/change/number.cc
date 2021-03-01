@@ -23,8 +23,10 @@
 #include <ac/ctype.h>
 #include <ac/time.h>
 
+#include <change/attributes.h>
 #include <change/branch.h>
 #include <cstate.h>
+#include <error.h> // for assert
 #include <language.h>
 #include <str.h>
 #include <sub.h>
@@ -32,7 +34,7 @@
 #include <symtab.h>
 #include <trace.h>
 #include <wstr.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 #define ONE_OR_MORE (-1)
@@ -51,6 +53,17 @@ static string_ty *
 change_number_get(change_ty *cp, wstring_list_ty *arg)
 {
     return str_format("%ld", magic_zero_decode(cp->number));
+}
+
+
+static string_ty *
+change_attribute_get(change_ty *cp, wstring_list_ty *arg)
+{
+    assert(arg->size() >= 3);
+    string_ty *name = wstr_to_str(arg->get(2));
+    string_ty *value = change_attributes_find(cp, name);
+    str_free(name);
+    return (value ? str_copy(value) : str_from_c(""));
 }
 
 
@@ -94,6 +107,29 @@ get_delta(change_ty *cp, wstring_list_ty *arg)
 	break;
     }
     return str_format("%ld", cstate_data->delta_number);
+}
+
+
+static string_ty *
+get_delta_uuid(change_ty *cp, wstring_list_ty *arg)
+{
+    cstate_ty *cstate_data = change_cstate_get(cp);
+    switch (cstate_data->state)
+    {
+    case cstate_state_completed:
+	if (!cstate_data->delta_uuid)
+	    return 0;
+	return str_copy(cstate_data->delta_uuid);
+
+    case cstate_state_awaiting_development:
+    case cstate_state_being_developed:
+    case cstate_state_awaiting_review:
+    case cstate_state_being_reviewed:
+    case cstate_state_awaiting_integration:
+    case cstate_state_being_integrated:
+	break;
+    }
+    return 0;
 }
 
 
@@ -165,7 +201,7 @@ calc_date_string(time_t when, wstring_list_ty *arg)
     string_ty	    *fmt;
     string_ty	    *result;
 
-    wfmt = wstring_list_to_wstring(arg, 2, 32767, (char *)0);
+    wfmt = arg->unsplit(2, arg->size());
     fmt = wstr_to_str(wfmt);
     wstr_free(wfmt);
     the_time = localtime(&when);
@@ -265,6 +301,16 @@ get_cause(change_ty *cp, wstring_list_ty *arg)
 
 
 static string_ty *
+get_uuid(change_ty *cp, wstring_list_ty *arg)
+{
+    cstate_ty *cstate_data = change_cstate_get(cp);
+    if (!cstate_data->uuid)
+	return 0;
+    return str_copy(cstate_data->uuid);
+}
+
+
+static string_ty *
 get_version(change_ty *cp, wstring_list_ty *arg)
 {
     return str_copy(change_version_get(cp));
@@ -273,11 +319,13 @@ get_version(change_ty *cp, wstring_list_ty *arg)
 
 static table_ty table[] =
 {
+    {"attribute", change_attribute_get, 1 },
     {"brief_description", change_description_get, },
     {"cause", get_cause, },
     {"completion_date", get_integrate_pass_date, ONE_OR_MORE, },
     {"date", get_integrate_pass_date, ONE_OR_MORE, },
     {"delta", get_delta, },
+    {"delta_uuid", get_delta_uuid, },
     {"description", change_description_get, },
     {"developer", get_developer, },
     {"development_directory", get_development_directory, },
@@ -287,6 +335,7 @@ static table_ty table[] =
     {"number", change_number_get, },
     {"reviewer", get_reviewer, },
     {"state", get_state, },
+    {"uuid", get_uuid, },
     {"version", get_version, },
 };
 
@@ -331,6 +380,42 @@ find_func(string_ty *name)
 }
 
 
+static const char *
+requires_at_least_n_arguments(int n)
+{
+    switch (n)
+    {
+    case 1:
+	return i18n("requires at least one argument");
+
+    case 2:
+	return i18n("requires two or more arguments");
+    }
+    return i18n("invalid function arguments");
+}
+
+
+static const char *
+requires_exactly_n_arguments(int n)
+{
+    switch (n)
+    {
+    case 0:
+	return i18n("requires zero arguments");
+
+    case 1:
+	return i18n("requires one argument");
+
+    case 2:
+	return i18n("requires two arguments");
+
+    case 3:
+	return i18n("requires three arguments");
+    }
+    return i18n("invalid function arguments");
+}
+
+
 //
 // NAME
 //	sub_change - the change substitution
@@ -353,64 +438,73 @@ find_func(string_ty *name)
 wstring_ty *
 sub_change_number(sub_context_ty *scp, wstring_list_ty *arg)
 {
-    change_ty	    *cp;
-    wstring_ty	    *result;
     string_ty	    *s;
     table_ty	    *tp;
 
     trace(("sub_change()\n{\n"));
-    cp = sub_context_change_get(scp);
-    result = 0;
+    change_ty *cp = sub_context_change_get(scp);
     if (!cp || cp->bogus)
     {
 	sub_context_error_set(scp, i18n("not valid in current context"));
-	goto done;
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
     }
-    if (arg->nitems <= 1)
+    if (arg->size() <= 1)
     {
 	s = change_number_get(cp, arg);
-	result = str_to_wstr(s);
+	wstring_ty *result = str_to_wstr(s);
 	str_free(s);
-	goto done;
+	trace(("return %8.8lX;\n", (long)result));
+	trace(("}\n"));
+	return result;
     }
 
-    s = wstr_to_str(arg->item[1]);
+    s = wstr_to_str(arg->get(1));
     tp = find_func(s);
     str_free(s);
     if (!tp)
     {
 	sub_context_error_set(scp, i18n("unknown substitution variant"));
-	goto done;
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
     }
 
-    if (tp->num_args == ONE_OR_MORE)
+    int num_args = tp->num_args;
+    bool at_least = false;
+    if (num_args < 0)
     {
-	if (arg->nitems == 2)
-	{
-	    sub_context_error_set(scp, i18n("requires two arguments"));
-	    goto done;
-	}
+	num_args = -num_args;
+	at_least = true;
     }
-    else
+
+    if (at_least && (arg->size() < (size_t)num_args + 2))
     {
-	if (arg->nitems != 2)
-	{
-	    sub_context_error_set(scp, i18n("requires one argument"));
-	    goto done;
-	}
+	sub_context_error_set(scp, requires_at_least_n_arguments(num_args));
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
+    }
+    else if (!at_least && (arg->size() != (size_t)num_args + 2))
+    {
+	sub_context_error_set(scp, requires_exactly_n_arguments(num_args));
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
     }
 
     s = tp->func(cp, arg);
     if (!s)
     {
 	sub_context_error_set(scp, i18n("not valid in current context"));
-	goto done;
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
     }
 
-    result = str_to_wstr(s);
+    wstring_ty *result = str_to_wstr(s);
     str_free(s);
-
-    done:
     trace(("return %8.8lX;\n", (long)result));
     trace(("}\n"));
     return result;

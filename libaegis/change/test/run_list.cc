@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000, 2002-2004 Peter Miller;
+//	Copyright (C) 2000, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@
 
 batch_result_list_ty *
 project_test_run_list(project_ty *pp, string_list_ty *wlp, user_ty *up,
-    int progress_flag)
+    bool progress_flag, time_t time_limit)
 {
     change_ty	    *cp;
     batch_result_list_ty *result;
@@ -45,8 +45,8 @@ project_test_run_list(project_ty *pp, string_list_ty *wlp, user_ty *up,
     // for the test
     //
     trace(("project_run_test_list(pp = %08lX, wlp = %08lX, up = %08lX, "
-	"progress_flag = %d)\n{\n",(long)pp, (long)wlp, (long)up,
-	progress_flag));
+	"progress_flag = %d, time_limit = %ld)\n{\n",(long)pp, (long)wlp,
+	(long)up, progress_flag, (long)time_limit));
     cp = change_alloc(pp, project_next_change_number(pp, 1));
     change_bind_new(cp);
     change_architecture_from_pconf(cp);
@@ -61,8 +61,9 @@ project_test_run_list(project_ty *pp, string_list_ty *wlp, user_ty *up,
 	    cp,
 	    wlp,
 	    up,
-	    0, // not baseline, positive!
-	    progress_flag
+	    false, // not baseline, positive!
+	    progress_flag,
+	    time_limit
 	);
     change_free(cp);
     trace(("return %08lX;\n", (long)result));
@@ -73,14 +74,15 @@ project_test_run_list(project_ty *pp, string_list_ty *wlp, user_ty *up,
 
 static batch_result_list_ty *
 change_test_run_list_inner(change_ty *cp, string_list_ty *wlp, user_ty *up,
-    int bl, int current, int total)
+    bool baseline_flag, int current, int total, time_t time_limit)
 {
     pconf_ty        *pconf_data;
     batch_result_list_ty *result;
 
     trace(("change_test_run_list_inner(cp = %08lX, wlp = %08lX, up = %08lX, "
-	"bl = %d, current = %d, total = %d)\n{\n", (long)cp, (long)wlp,
-	(long)up, bl, current, total));
+	"baseline_flag = %d, current = %d, total = %d, time_limit = %ld)\n{\n",
+	(long)cp, (long)wlp, (long)up, baseline_flag, current, total,
+	(long)time_limit));
     pconf_data = change_pconf_get(cp, 1);
     if (wlp->nstrings == 0)
     {
@@ -90,12 +92,31 @@ change_test_run_list_inner(change_ty *cp, string_list_ty *wlp, user_ty *up,
     else if (pconf_data->batch_test_command)
     {
 	trace(("mark\n"));
-	result = change_test_batch(cp, wlp, up, bl, current, total);
+	result =
+	    change_test_batch
+	    (
+		cp,
+		wlp,
+		up,
+		baseline_flag,
+		current,
+		total
+	    );
     }
     else
     {
 	trace(("mark\n"));
-	result = change_test_batch_fake(cp, wlp, up, bl, current, total);
+	result =
+	    change_test_batch_fake
+	    (
+		cp,
+		wlp,
+		up,
+		baseline_flag,
+		current,
+		total,
+		time_limit
+	    );
     }
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
@@ -109,15 +130,31 @@ change_test_run_list_inner(change_ty *cp, string_list_ty *wlp, user_ty *up,
 //
 
 batch_result_list_ty *
-change_test_run_list(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
-    int progress_flag)
+change_test_run_list(change_ty *cp, string_list_ty *wlp, user_ty *up,
+    bool baseline_flag, bool progress_flag, time_t time_limit)
 {
     batch_result_list_ty *result;
     size_t	    multiple;
     size_t	    j;
     int		    persevere;
 
+    //
+    // We limit ourselves to commands with at most 100 tests, because
+    // some Unix implementations have very short sommand lines and can't
+    // cope with more.
+    //
     multiple = 100;
+    if (time_limit)
+    {
+	//
+        // The batch_test_command is expected to run tests in parallel.
+        // Even if it doesn't, we don't have the ability to tell it to
+        // stop.  So, when we have a time limit, reduce the number of
+        // tests run between checks to see if we have run out of time.
+	//
+	multiple = 12;
+    }
+
     if (wlp->nstrings <= multiple)
     {
 	return
@@ -126,48 +163,61 @@ change_test_run_list(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
 		cp,
 		wlp,
 		up,
-		bl,
-		0,
-		progress_flag ? wlp->nstrings : 0
+		baseline_flag,
+		0, // start
+		(progress_flag ? wlp->nstrings : 0),
+		time_limit
 	    );
     }
     trace(("change_test_run_list(cp = %08lX, wlp = %08lX, up = %08lX, "
-	"bl = %d, progress_flag = %d)\n{\n", (long)cp, (long)wlp, (long)up, bl,
-	progress_flag));
+	"baseline_flag = %d, progress_flag = %d, time_limit = %ld)\n{\n",
+	(long)cp, (long)wlp, (long)up, baseline_flag, progress_flag,
+	(long)time_limit));
     result = batch_result_list_new();
     persevere = user_persevere_preference(up, 1);
     for (j = 0; j < wlp->nstrings; j += multiple)
     {
 	size_t		end;
-	string_list_ty	wl2;
 	size_t		k;
 	batch_result_list_ty *result2;
 
 	end = j + multiple;
 	if (end > wlp->nstrings)
 	    end = wlp->nstrings;
-	string_list_constructor(&wl2);
+	string_list_ty wl2;
 	for (k = j; k < end; ++k)
-	    string_list_append(&wl2, wlp->string[k]);
+	    wl2.push_back(wlp->string[k]);
 	result2 =
 	    change_test_run_list_inner
 	    (
 		cp,
 		&wl2,
 		up,
-		bl,
+		baseline_flag,
 		j,
-		progress_flag ? wlp->nstrings : 0
+		(progress_flag ? wlp->nstrings : 0),
+		time_limit
 	    );
-	string_list_destructor(&wl2);
 	batch_result_list_append_list(result, result2);
 	batch_result_list_delete(result2);
 
 	//
 	// Don't keep going if the user asked us not to.
 	//
-	if (!persevere && result->fail_count)
+	if (!persevere && (result->fail_count || result->no_result_count))
 	    break;
+
+	//
+	// If we have been given a time limit, and that time has passed,
+	// do not continue testing.
+	//
+	if (time_limit)
+	{
+	    time_t now;
+	    time(&now);
+	    if (now >= time_limit)
+		break;
+	}
     }
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));

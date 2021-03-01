@@ -496,20 +496,18 @@ input_uudecode_recognise(input_ty *ifp)
     static char	    magic[] = "begin ";
     int		    result;
     int		    c;
-    stracc_t	    buffer;
     int		    state;
 
     trace(("input_uudecode_recognise(ifp = %08lX)\n{\n", (long)ifp));
     result = 0;
-    stracc_constructor(&buffer);
-    stracc_open(&buffer);
+    stracc_t buffer;
     state = 0;
-    while (buffer.length < 8000)
+    while (buffer.size() < 8000)
     {
 	c = input_getc(ifp);
 	if (c < 0)
 	    break;
-	stracc_char(&buffer, c);
+	buffer.push_back(c);
 	if (c == '\n')
 	    state = 0;
 	else if ((size_t)state < sizeof(magic) && c == magic[state])
@@ -524,8 +522,7 @@ input_uudecode_recognise(input_ty *ifp)
 	else
 	    state = 666;
     }
-    input_unread(ifp, buffer.buffer, buffer.length);
-    stracc_destructor(&buffer);
+    input_unread(ifp, buffer.get_data(), buffer.size());
     trace(("return %d\n", result));
     trace(("}\n"));
     return result;

@@ -78,10 +78,10 @@ module_find(string_ty *name)
     //
     if (!stp)
     {
-	stp = symtab_alloc(5);
-	stp->reap = reaper;
+	stp = new symtab_ty(5);
+	stp->set_reap(reaper);
     }
-    mp = (module_ty *)symtab_query(stp, name);
+    mp = (module_ty *)stp->query(name);
     if (mp)
     {
 	mp->reference_count++;
@@ -115,7 +115,7 @@ module_find(string_ty *name)
     // (or net), so it can be cleaned up when the server goes away.
     //
     mp->reference_count++;
-    symtab_assign(stp, name, mp);
+    stp->assign(name, mp);
 
     //
     // Report success.

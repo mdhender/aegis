@@ -30,19 +30,19 @@ input_one_line(input_ty *fp)
     int             c;
     static stracc_t buffer;
 
-    stracc_open(&buffer);
+    buffer.clear();
     for (;;)
     {
 	c = input_getc(fp);
 	if (c < 0)
 	{
-	    if (buffer.length == 0)
+	    if (buffer.empty())
 	       	return 0;
 	    break;
 	}
 	if (c == '\n')
 	    break;
-	stracc_char(&buffer, c);
+	buffer.push_back(c);
     }
-    return stracc_close(&buffer);
+    return buffer.mkstr();
 }

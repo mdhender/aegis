@@ -27,6 +27,7 @@
 #include <change/file.h>
 #include <change/list.h>
 #include <cstate.h>
+#include <emit/brief_descri.h>
 #include <emit/edit_number.h>
 #include <emit/project.h>
 #include <error.h> // for assert
@@ -36,7 +37,6 @@
 #include <project/history.h>
 #include <str_list.h>
 #include <symtab.h>
-#include <symtab/keys.h>
 
 
 void
@@ -46,7 +46,6 @@ get_file_activity(change_ty *master_cp, string_ty *filename,
     size_t          j;
     size_t          num;
     project_ty      *pp;
-    symtab_ty       *stp;
     string_list_ty  key;
     int             conflict;
     int             all;
@@ -79,13 +78,13 @@ get_file_activity(change_ty *master_cp, string_ty *filename,
     // Create a symbol table, indexed by filename,
     // each row is a list of changes involving that file.
     //
-    stp = symtab_alloc(100);
+    symtab_ty *stp = new symtab_ty(100);
     if (!all)
     {
 	change_list_ty  *clp;
 
 	clp = new change_list_ty();
-	symtab_assign(stp, filename, clp);
+	stp->assign(filename, clp);
     }
 
     //
@@ -158,11 +157,11 @@ get_file_activity(change_ty *master_cp, string_ty *filename,
 		//
 		// We have a table of changes indexed by filename.
 		//
-		clp = (change_list_ty *)symtab_query(stp, src->file_name);
+		clp = (change_list_ty *)stp->query(src->file_name);
 		if (!clp)
 		{
 		    clp = new change_list_ty();
-		    symtab_assign(stp, src->file_name, clp);
+		    stp->assign(src->file_name, clp);
 		}
 		clp->append(cp);
 	    }
@@ -181,8 +180,8 @@ get_file_activity(change_ty *master_cp, string_ty *filename,
     // For each file in the symbol table,
     // list the changes working on it at the moment.
     //
-    symtab_keys(stp, &key);
-    string_list_sort(&key);
+    stp->keys(&key);
+    key.sort();
     printf("<div class=\"information\"><table align=\"center\">\n");
     num_files = 0;
     for (j = 0; j < key.nstrings; ++j)
@@ -192,7 +191,7 @@ get_file_activity(change_ty *master_cp, string_ty *filename,
 	string_ty       *the_file_name;
 
 	the_file_name = key.string[j];
-	clp = (change_list_ty *)symtab_query(stp, the_file_name);
+	clp = (change_list_ty *)stp->query(the_file_name);
 	assert(clp);
 	if (!clp)
 	    continue;
@@ -250,8 +249,7 @@ get_file_activity(change_ty *master_cp, string_ty *filename,
 		printf("</i>");
 	    }
 	    printf("</td>\n<td valign=\"top\">\n");
-	    if (cstate_data->brief_description)
-		html_encode_string(cstate_data->brief_description);
+	    emit_change_brief_description(cp);
 	    printf("</td>\n<td valign=top>\n");
 	    emit_change_href(cp, "download");
 	    printf("Download</a>\n");

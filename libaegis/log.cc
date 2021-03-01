@@ -25,7 +25,7 @@
 #include <ac/string.h>
 #include <ac/signal.h>
 
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>	// for umask prototype!
 #include <ac/unistd.h>
 #include <ac/fcntl.h>

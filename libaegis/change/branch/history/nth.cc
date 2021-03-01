@@ -49,18 +49,14 @@ change_branch_history_nth(change_ty *cp, long n, long *cnp, long *dnp,
 	result = 0;
     else
     {
-	cstate_branch_history_ty * hp;
-
-	hp = lp->list[n];
+	cstate_branch_history_ty *hp = lp->list[n];
 	*cnp = hp->change_number;
 	*dnp = hp->delta_number;
-	string_list_constructor(name);
+	name->clear();
 	if (hp->name)
 	{
-	    size_t          j;
-
-	    for (j = 0; j < hp->name->length; ++j)
-	       	string_list_append(name, hp->name->list[j]);
+	    for (size_t j = 0; j < hp->name->length; ++j)
+	       	name->push_back(hp->name->list[j]);
 	}
 	result = 1;
     }

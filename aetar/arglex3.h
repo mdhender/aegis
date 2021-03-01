@@ -31,6 +31,8 @@ enum
     arglex_token_compress_not,
     arglex_token_entire_source,
     arglex_token_entire_source_not,
+    arglex_token_include_build,
+    arglex_token_include_build_not,
     arglex_token_path_prefix_add,
     arglex_token_path_prefix_remove,
     arglex_token_receive,

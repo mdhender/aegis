@@ -70,7 +70,6 @@ int
 main(int argc, char **argv)
 {
     string_ty	    *minus;
-    string_list_ty  file;
     size_t	    j;
     fingerprint_methods_ty *method;
     string_ty	    *s;
@@ -79,7 +78,7 @@ main(int argc, char **argv)
     arglex();
 
     method = 0;
-    string_list_constructor(&file);
+    string_list_ty file;
     minus = str_from_c("-");
     while (arglex_token != arglex_token_eoln)
     {
@@ -123,17 +122,17 @@ main(int argc, char **argv)
 
 	case arglex_token_string:
 	    s = str_from_c(arglex_value.alv_string);
-	    string_list_append(&file, s);
+	    file.push_back(s);
 	    str_free(s);
 	    break;
 
 	case arglex_token_stdio:
-	    if (string_list_member(&file, minus))
+	    if (file.member(minus))
 	    {
 		error_raw("may only name stdin once");
 		usage();
 	    }
-	    string_list_append(&file, minus);
+	    file.push_back(minus);
 	    break;
 	}
 	arglex();
@@ -143,7 +142,7 @@ main(int argc, char **argv)
     // if no files named, read stdin
     //
     if (!file.nstrings)
-	string_list_append(&file, minus);
+	file.push_back(minus);
 
     //
     // by default, use the fp_combined class

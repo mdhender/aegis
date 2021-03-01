@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -26,73 +26,92 @@
 #include <header.h>
 #include <now.h>
 #include <output/tar_child.h>
-#include <output/private.h>
-#include <str.h>
 #include <sub.h>
 
 
-struct output_tar_child_ty
+output_tar_child_ty::~output_tar_child_ty()
 {
-    output_ty	    inherited;
-    output_ty	    *deeper;
-    output_ty	    *this_thing;
-    string_ty	    *name;
-    long	    length;
-    long	    pos;
-    int		    bol;
-};
+    //
+    // Make sure all buffered data has ben passed to our write_inner
+    // method.
+    //
+    flush();
 
+    //
+    // It is a bug if the size changed.
+    //
+    if (pos != length)
+    {
+	changed_size();
+    }
 
-static void
-changed_size(output_tar_child_ty *this_thing)
-{
-    sub_context_ty  *scp;
+    //
+    // Pad the data so that we are a multiple of 512 bytes.
+    //
+    padding();
 
-    scp = sub_context_new();
-    sub_var_set_format
-    (
-	scp,
-	"File_Name",
-	"%s(%s)",
-	output_filename(this_thing->deeper)->str_text,
-	this_thing->name->str_text
-    );
-    fatal_intl(scp, i18n("archive member $filename changed size"));
+    //
+    // DO NOT delete deeper;
+    // this is output_tar::destructor's job.
+    //
 }
 
 
-static void
-padding(output_tar_child_ty *this_thing)
+output_tar_child_ty::output_tar_child_ty(output_ty *arg1, const nstring &arg2,
+	long arg3, bool arg4) :
+    deeper(arg1),
+    name(arg2),
+    length(arg3),
+    executable(arg4),
+    pos(0),
+    bol(true)
 {
-    int		    n;
+    // assert(length >= 0);
+    header();
+}
 
-    n = output_ftell(this_thing->deeper) % TBLOCK;
+
+void
+output_tar_child_ty::changed_size()
+{
+    sub_context_ty sc;
+    sc.var_set_format
+    (
+	"File_Name",
+	"%s(%s)",
+	deeper->filename()->str_text,
+	name.c_str()
+    );
+    sc.fatal_intl(i18n("archive member $filename changed size"));
+}
+
+
+void
+output_tar_child_ty::padding()
+{
+    int n = deeper->ftell() % TBLOCK;
     if (n == 0)
 	return;
     while (n++ < TBLOCK)
-	output_fputc(this_thing->deeper, '\n');
+	deeper->fputc('\n');
 }
 
 
-static void
-header(output_tar_child_ty *this_thing, int executable)
+void
+output_tar_child_ty::header()
 {
-    char	    buffer[TBLOCK];
-    header_ty	    *hp;
-    static string_ty *root;
-
-    if (!root)
-	root = str_from_c("root");
+    char tblock[TBLOCK];
+    header_ty *hp = (header_ty *)tblock;
+    nstring root("root");
 
     //
     // Long names get special treatment.
     //
-    if (this_thing->name->str_length >= sizeof(hp->name))
+    if (name.length() >= sizeof(hp->name))
     {
-	memset(buffer, 0, sizeof(buffer));
-	hp = (header_ty *)buffer;
+	memset(tblock, 0, sizeof(tblock));
 	strlcpy(hp->name, "././@LongLink", sizeof(hp->name));
-	header_size_set(hp, this_thing->name->str_length + 1);
+	header_size_set(hp, name.length() + 1);
 	header_mode_set(hp, 0);
 	header_uid_set(hp, 0);
 	header_uname_set(hp, root);
@@ -101,25 +120,19 @@ header(output_tar_child_ty *this_thing, int executable)
 	header_mtime_set(hp, 0);
 	header_linkflag_set(hp, LF_LONGNAME);
 	header_checksum_set(hp, header_checksum_calculate(hp));
-	output_write(this_thing->deeper, buffer, TBLOCK);
+	deeper->write(tblock, TBLOCK);
 
 	//
 	// This write, and the leangth in the header, include the
 	// terminating NUL on the end of the file name.
        	//
-	output_write
-	(
-	    this_thing->deeper,
-	    this_thing->name->str_text,
-	    this_thing->name->str_length + 1
-	);
-	padding(this_thing);
+	deeper->write(name.c_str(), name.length() + 1);
+	padding();
     }
 
-    memset(buffer, 0, sizeof(buffer));
-    hp = (header_ty *)buffer;
-    header_name_set(hp, this_thing->name);
-    header_size_set(hp, this_thing->length);
+    memset(tblock, 0, sizeof(tblock));
+    header_name_set(hp, name);
+    header_size_set(hp, length);
     header_mode_set(hp, 0100644 | (executable ? 0111 : 0));
     header_uid_set(hp, 0);
     header_uname_set(hp, root);
@@ -128,103 +141,47 @@ header(output_tar_child_ty *this_thing, int executable)
     header_mtime_set(hp, now());
     header_linkflag_set(hp, LF_NORMAL);
     header_checksum_set(hp, header_checksum_calculate(hp));
-    output_write(this_thing->deeper, buffer, TBLOCK);
+    deeper->write(tblock, TBLOCK);
 }
 
 
-static void
-output_tar_child_destructor(output_ty *fp)
+string_ty *
+output_tar_child_ty::filename()
+    const
 {
-    output_tar_child_ty *this_thing;
-
-    this_thing = (output_tar_child_ty *)fp;
-    if (this_thing->pos != this_thing->length)
-    {
-	changed_size(this_thing);
-    }
-    padding(this_thing);
-    str_free(this_thing->name);
-    //
-    // DO NOT output_delete(this_thing->deeper);
-    // this is output_tar::destructor's job.
-    //
+    return deeper->filename();
 }
 
 
-static string_ty *
-output_tar_child_filename(output_ty *fp)
+long
+output_tar_child_ty::ftell_inner()
+    const
 {
-    output_tar_child_ty *this_thing;
-
-    this_thing = (output_tar_child_ty *)fp;
-    return output_filename(this_thing->deeper);
+    return pos;
 }
 
 
-static long
-output_tar_child_ftell(output_ty *fp)
+void
+output_tar_child_ty::write_inner(const void *data, size_t len)
 {
-    output_tar_child_ty *this_thing;
-
-    this_thing = (output_tar_child_ty *)fp;
-    return this_thing->pos;
-}
-
-
-static void
-output_tar_child_write(output_ty *fp, const void *data, size_t len)
-{
-    output_tar_child_ty *this_thing;
-
-    this_thing = (output_tar_child_ty *)fp;
-    output_write(this_thing->deeper, data, len);
-    this_thing->pos += len;
+    deeper->write(data, len);
+    pos += len;
     if (len > 0)
-	this_thing->bol = (((const char *)data)[len - 1] == '\n');
+	bol = (((const char *)data)[len - 1] == '\n');
 }
 
 
-static void
-output_tar_child_eoln(output_ty *fp)
+void
+output_tar_child_ty::end_of_line_inner()
 {
-    output_tar_child_ty *this_thing;
-
-    this_thing = (output_tar_child_ty *)fp;
-    if (!this_thing->bol)
-	output_fputc(fp, '\n');
+    if (!bol)
+	fputc('\n');
 }
 
 
-static output_vtbl_ty vtbl =
+const char *
+output_tar_child_ty::type_name()
+    const
 {
-    sizeof(output_tar_child_ty),
-    output_tar_child_destructor,
-    output_tar_child_filename,
-    output_tar_child_ftell,
-    output_tar_child_write,
-    output_generic_flush,
-    output_generic_page_width,
-    output_generic_page_length,
-    output_tar_child_eoln,
-    "tar child",
-};
-
-
-output_ty *
-output_tar_child_open(output_ty *deeper, string_ty *name, long length,
-    int executable)
-{
-    output_ty       *result;
-    output_tar_child_ty *this_thing;
-
-    // assert(length >= 0);
-    result = output_new(&vtbl);
-    this_thing = (output_tar_child_ty *)result;
-    this_thing->deeper = deeper;
-    this_thing->name = str_copy(name);
-    this_thing->length = length;
-    this_thing->pos = 0;
-    this_thing->bol = 1;
-    header(this_thing, executable);
-    return result;
+    return "tar child";
 }

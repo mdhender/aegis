@@ -26,7 +26,7 @@
 #pragma interface "process"
 
 #include <printer.h>
-#include <nstring_list.h>
+#include <nstring/list.h>
 
 /**
   * The process class is used to represent

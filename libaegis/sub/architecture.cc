@@ -26,7 +26,7 @@
 #include <sub.h>
 #include <trace.h>
 #include <wstr.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 //
@@ -56,7 +56,7 @@ sub_architecture(sub_context_ty *scp, wstring_list_ty *arg)
     wstring_ty	    *result;
 
     trace(("sub_architecture()\n{\n"));
-    if (arg->nitems > 1)
+    if (arg->size() > 1)
     {
 	sub_context_error_set(scp, i18n("requires zero arguments"));
 	result = 0;

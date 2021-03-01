@@ -56,12 +56,12 @@ project_file_version_path(project_ty *pp, fstate_src_ty *src, int *unlink_p)
     for (ppp = pp; ppp; ppp = ppp->parent)
     {
 	cp = project_change_get(ppp);
-	if (change_is_completed(cp))
+        if (change_is_completed(cp))
 	    continue;
 	old_src = change_file_find(cp, src->file_name, view_path_first);
 	if (!old_src)
 	    continue;
-	switch (old_src->action)
+        switch (old_src->action)
 	{
 	case file_action_remove:
 	case file_action_transparent:
@@ -94,7 +94,17 @@ project_file_version_path(project_ty *pp, fstate_src_ty *src, int *unlink_p)
 	if (str_equal(old_src->edit->revision, ed->revision))
 	{
 	    filename = change_file_path(cp, src->file_name);
-	    trace(("return \"%s\";\n", filename->str_text));
+            //
+            // The following check is needed to make aegis work even
+            // when filename does'not exists.
+            //
+            os_become_orig();
+            int file_exists = os_exists(filename);
+            os_become_undo();
+            assert(file_exists);
+            if (!file_exists)
+                break;
+            trace(("return \"%s\";\n", filename->str_text));
 	    trace(("}\n"));
 	    return filename;
 	}

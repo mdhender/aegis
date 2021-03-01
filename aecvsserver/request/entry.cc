@@ -70,7 +70,7 @@ run(server_ty *sp, string_ty *arg)
 	//
 	// Build the name of the file on the server side.
 	//
-	dp = sp->np->curdir;
+	dp = sp->np->get_curdir();
 	server_side = os_path_cat(dp->server_side, filename);
 
 	//

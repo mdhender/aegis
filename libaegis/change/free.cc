@@ -71,7 +71,7 @@ change_free(change_ty *cp)
 	{
 	    if (cp->file_list[j])
 	    {
-		string_list_delete(cp->file_list[j]);
+		delete cp->file_list[j];
 		cp->file_list[j] = 0;
 	    }
 	}

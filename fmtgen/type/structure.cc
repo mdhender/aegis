@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1998, 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1994, 1998, 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -91,7 +91,7 @@ type_structure_ty::gen_include()
 	ep->type->gen_include_declarator(ep->name, false);
     }
     indent_printf("};\n");
-    indent_printf("#endif /* %s_DEF */\n", def_name().c_str());
+    indent_printf("#endif // %s_DEF\n", def_name().c_str());
 
     indent_putchar('\n');
     indent_printf("extern type_ty %s_type;\n", def_name().c_str());
@@ -134,6 +134,30 @@ type_structure_ty::gen_include()
 	def_name().c_str(),
 	def_name().c_str()
     );
+    indent_printf
+    (
+	"%s_ty *%s_clone(%s_ty *);\n",
+	def_name().c_str(),
+	def_name().c_str(),
+	def_name().c_str()
+    );
+    indent_printf("#ifdef DEBUG\n");
+    indent_printf
+    (
+	"void %s_trace_real(const char *name, const %s_ty *value);\n",
+	def_name().c_str(),
+	def_name().c_str()
+    );
+    indent_printf
+    (
+	"#define %s_trace(x) ((void)(trace_pretest_ && (trace_where_, "
+	    "%s_trace_real(trace_stringize(x), x), 0)))\n",
+	def_name().c_str(),
+	def_name().c_str()
+    );
+    indent_printf("#else\n");
+    indent_printf("#define %s_trace(x)\n", def_name().c_str());
+    indent_printf("#endif\n");
 }
 
 
@@ -214,10 +238,10 @@ type_structure_ty::gen_code()
     {
 	indent_printf("if (name)\n");
 	indent_printf("{\n");
-	indent_printf("output_fputs(fp, name);\n");
-	indent_printf("output_fputs(fp, \" =\\n\");\n");
+	indent_printf("fp->fputs(name);\n");
+	indent_printf("fp->fputs(\" =\\n\");\n");
 	indent_printf("}\n");
-	indent_printf("output_fputs(fp, \"{\\n\");\n");
+	indent_printf("fp->fputs(\"{\\n\");\n");
     }
     for (j = 0; j < nelements; ++j)
     {
@@ -226,10 +250,10 @@ type_structure_ty::gen_code()
     }
     if (!toplevel_flag)
     {
-	indent_printf("output_fputs(fp, \"}\");\n");
+	indent_printf("fp->fputs(\"}\");\n");
 	indent_printf("if (name)\n");
 	indent_more();
-	indent_printf("output_fputs(fp, \";\\n\");\n");
+	indent_printf("fp->fputs(\";\\n\");\n");
 	indent_less();
     }
     indent_printf("trace((\"}\\n\"));\n");
@@ -292,12 +316,12 @@ type_structure_ty::gen_code()
     if (!toplevel_flag)
     {
 	indent_printf("assert(name);\n");
-	indent_printf("output_fputc(fp, '<');\n");
-	indent_printf("output_fputs(fp, name);\n");
-	indent_printf("output_fputs(fp, \">\\n\");\n");
+	indent_printf("fp->fputc('<');\n");
+	indent_printf("fp->fputs(name);\n");
+	indent_printf("fp->fputs(\">\\n\");\n");
     }
     else
-	indent_printf("output_fputs(fp, \"<%s>\\n\");\n",
+	indent_printf("fp->fputs(\"<%s>\\n\");\n",
                       def_name().c_str());
     for (j = 0; j < nelements; ++j)
     {
@@ -306,15 +330,15 @@ type_structure_ty::gen_code()
     }
     if (!toplevel_flag)
     {
-	indent_printf("output_fputs(fp, \"</\");\n");
-	indent_printf("output_fputs(fp, name);\n");
-	indent_printf("output_fputs(fp, \">\\n\");\n");
+	indent_printf("fp->fputs(\"</\");\n");
+	indent_printf("fp->fputs(name);\n");
+	indent_printf("fp->fputs(\">\\n\");\n");
     }
     else
     {
 	indent_printf
 	(
-	    "output_fputs(fp, \"</%s>\\n\");\n",
+	    "fp->fputs(\"</%s>\\n\");\n",
 	    def_name().c_str()
 	);
     }
@@ -387,6 +411,74 @@ type_structure_ty::gen_code()
     indent_printf("}\n");
 
     indent_putchar('\n');
+    indent_printf("%s_ty *\n", def_name().c_str());
+    indent_printf
+    (
+	"%s_clone(%s_ty *this_thing)\n",
+	def_name().c_str(),
+	def_name().c_str()
+    );
+    indent_printf("{\n");
+    indent_printf("if (!this_thing)\n");
+    indent_more();
+    indent_printf("return 0;\n");
+    indent_less();
+    indent_printf
+    (
+	"trace((\"%s_clone()\\n{\\n\"));\n",
+	def_name().c_str()
+    );
+    indent_printf
+    (
+	"%s_ty *result = (%s_ty *)%s_alloc();\n",
+	def_name().c_str(),
+	def_name().c_str(),
+	def_name().c_str()
+    );
+
+    for (j = 0; j < nelements; ++j)
+    {
+	element_ty *ep = &element[j];
+	ep->type->gen_code_copy(ep->name);
+    }
+
+    indent_printf("trace((\"return %%08lX;\\n\", (long)result));\n");
+    indent_printf("trace((\"}\\n\"));\n");
+    indent_printf("return result;\n");
+    indent_printf("}\n");
+
+    indent_printf("\n#ifdef DEBUG\n\n");
+    indent_printf("void\n");
+    indent_printf
+    (
+	"%s_trace_real(const char *name, const %s_ty *value)\n",
+	def_name().c_str(),
+	def_name().c_str()
+    );
+    indent_printf("{\n");
+    indent_printf("if (name && *name)\n");
+    indent_printf("{\n");
+    indent_printf("trace_printf(\"%%s = \", name);\n");
+    indent_printf("}\n");
+    indent_printf("if (!value)\n");
+    indent_printf("{\n");
+    indent_printf("trace_printf(\"NULL\");\n");
+    indent_printf("}\n");
+    indent_printf("else\n");
+    indent_printf("{\n");
+    indent_printf("trace_printf(\"{\\n\");\n");
+    for (j = 0; j < nelements; ++j)
+    {
+	element_ty *ep = &element[j];
+	ep->type->gen_code_trace(ep->name, "value->" + ep->name);
+    }
+    indent_printf("trace_printf(\"}\");\n");
+    indent_printf("}\n");
+    indent_printf("trace_printf((name && *name) ? \";\\n\" : \",\\n\");\n");
+    indent_printf("}\n");
+    indent_printf("\n#endif // DEBUG\n");
+
+    indent_putchar('\n');
     indent_printf("static void\n");
     indent_printf("%s_free(void *that)\n", def_name().c_str());
     indent_printf("{\n");
@@ -451,7 +543,7 @@ type_structure_ty::gen_code()
 	int redef = !!(ep->attributes & ATTRIBUTE_REDEFINITION_OK);
 	indent_printf
 	(
-	    "%d, /* redefinition %s ok */\n",
+	    "%d, // redefinition %s ok\n",
 	    redef,
 	    (redef ? "is" : "not")
 	);
@@ -564,8 +656,8 @@ type_structure_ty::gen_code()
     indent_printf("\"%s\",\n", def_name().c_str());
     indent_printf("%s_alloc,\n", def_name().c_str());
     indent_printf("%s_free,\n", def_name().c_str());
-    indent_printf("0, /* enum_parse */\n");
-    indent_printf("0, /* list_parse */\n");
+    indent_printf("0, // enum_parse\n");
+    indent_printf("0, // list_parse\n");
     indent_printf("%s_parse,\n", def_name().c_str());
     indent_printf("%s_fuzzy,\n", def_name().c_str());
     indent_printf("%s_convert,\n", def_name().c_str());
@@ -596,6 +688,20 @@ type_structure_ty::gen_code_call_xml(const nstring &form_name,
 	"%s_write_xml(fp, \"%s\", this_thing->%s);\n",
 	def_name().c_str(),
 	form_name.c_str(),
+	member_name.c_str()
+    );
+}
+
+
+void
+type_structure_ty::gen_code_copy(const nstring &member_name)
+    const
+{
+    indent_printf
+    (
+	"result->%s = %s_clone(this_thing->%s);\n",
+	member_name.c_str(),
+	def_name().c_str(),
 	member_name.c_str()
     );
 }
@@ -678,4 +784,18 @@ void
 type_structure_ty::toplevel()
 {
     toplevel_flag = true;
+}
+
+
+void
+type_structure_ty::gen_code_trace(const nstring &vname, const nstring &value)
+    const
+{
+    indent_printf
+    (
+	"%s_trace_real(\"%s\", %s);\n",
+	def_name().c_str(),
+	vname.c_str(),
+	value.c_str()
+    );
 }

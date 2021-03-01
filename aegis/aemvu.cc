@@ -130,8 +130,6 @@ static void
 move_file_undo_main(void)
 {
     sub_context_ty  *scp;
-    string_list_ty  wl;
-    string_list_ty  wl2;
     size_t	    j;
     size_t	    k;
     string_ty	    *s1;
@@ -145,16 +143,11 @@ move_file_undo_main(void)
     int		    config_seen;
     int		    number_of_errors;
     string_list_ty  search_path;
-    int		    mend_symlinks;
-    pconf_ty        *pconf_data;
     int		    based;
     string_ty	    *base;
-    string_list_ty  wl_nfu;
-    string_list_ty  wl_ntu;
-    string_list_ty  wl_rmu;
 
     trace(("move_file_undo_main()\n{\n"));
-    string_list_constructor(&wl);
+    string_list_ty wl;
     project_name = 0;
     change_number = 0;
     log_style = log_style_append_default;
@@ -179,7 +172,7 @@ move_file_undo_main(void)
 	case arglex_token_string:
 	    get_file_names:
 	    s2 = str_from_c(arglex_value.alv_string);
-	    string_list_append(&wl, s2);
+	    wl.push_back(s2);
 	    str_free(s2);
 	    break;
 
@@ -221,6 +214,11 @@ move_file_undo_main(void)
 	case arglex_token_base_relative:
 	case arglex_token_current_relative:
 	    user_relative_filename_preference_argument(move_file_undo_usage);
+	    break;
+
+	case arglex_token_symbolic_links:
+	case arglex_token_symbolic_links_not:
+	    user_symlink_pref_argument(move_file_undo_usage);
 	    break;
 	}
 	arglex();
@@ -305,7 +303,7 @@ move_file_undo_main(void)
 	os_become_undo();
     }
 
-    string_list_constructor(&wl2);
+    string_list_ty wl2;
     number_of_errors = 0;
     for (j = 0; j < wl.nstrings; ++j)
     {
@@ -359,7 +357,7 @@ move_file_undo_main(void)
 		assert(src_data);
 		if (src_data && src_data->move)
 		{
-		    if (string_list_member(&wl2, s3))
+		    if (wl2.member(s3))
 		    {
 			scp = sub_context_new();
 			sub_var_set_string(scp, "File_Name", s3);
@@ -368,7 +366,7 @@ move_file_undo_main(void)
 			++number_of_errors;
 		    }
 		    else
-			string_list_append(&wl2, s3);
+			wl2.push_back(s3);
 		    if (change_file_is_config(cp, s3))
 			++config_seen;
 		    ++used;
@@ -395,7 +393,7 @@ move_file_undo_main(void)
 	}
 	else
 	{
-	    if (string_list_member(&wl2, s2))
+	    if (wl2.member(s2))
 	    {
 		scp = sub_context_new();
 		sub_var_set_string(scp, "File_Name", s2);
@@ -404,16 +402,13 @@ move_file_undo_main(void)
 		++number_of_errors;
 	    }
 	    else
-		string_list_append(&wl2, s2);
+		wl2.push_back(s2);
 	    if (change_file_is_config(cp, s2))
 		++config_seen;
 	}
-	string_list_destructor(&wl_in);
 	str_free(s2);
     }
-    string_list_destructor(&wl);
     wl = wl2;
-    string_list_destructor(&search_path);
 
     //
     // ensure that each file
@@ -448,7 +443,7 @@ move_file_undo_main(void)
 	    // Add the other half of the move,
 	    // if it isn't there already.
 	    //
-	    string_list_append_unique(&wl, src_data->move);
+	    wl.push_back_unique(src_data->move);
 	}
 	else
 	{
@@ -480,17 +475,6 @@ move_file_undo_main(void)
     }
 
     //
-    // Figure out if we need to mend symlinks as we go.
-    //
-    pconf_data = change_pconf_get(cp, 0);
-    mend_symlinks =
-	(
-	    pconf_data->create_symlinks_before_build
-	&&
-	    !pconf_data->remove_symlinks_after_build
-	);
-
-    //
     // Remove each file from the development directory,
     // if it still exists.
     // Remove the difference file, too.
@@ -512,40 +496,21 @@ move_file_undo_main(void)
 	//
 	if (exists && user_delete_file_query(up, s1, 0))
 	{
-	    fstate_src_ty   *psrc_data;
-
-	    if (mend_symlinks)
-		psrc_data = project_file_find(pp, s1, view_path_extreme);
-	    else
-		psrc_data = 0;
-
-	    if (psrc_data)
-	    {
-		string_ty	*blf;
-
-		//
-		// This is not as robust in the face of
-		// errors as using commit.  Its merit
-		// is its simplicity.
-		//
-		// Also, the rename-and-delete shenanigans
-		// take a long time over NFS, and users
-		// expect this to be fast.
-		//
-		blf = project_file_path(pp, s1);
-		assert(blf);
-		user_become(up);
-		os_unlink(s2);
-		os_symlink(blf, s2);
-		user_become_undo();
-		str_free(blf);
-	    }
-	    else
-	    {
-		user_become(up);
-		commit_unlink_errok(s2);
-		user_become_undo();
-	    }
+	    //
+	    // This is not as robust in the face of
+	    // errors as using commit.  Its merit
+	    // is its simplicity.
+	    //
+	    // It plays nice with the change_maintain_symlinks_to_baseline
+	    // call below.
+	    //
+	    // Also, the rename-and-delete shenanigans
+	    // take a long time over NFS, and users
+	    // expect this to be fast.
+	    //
+	    user_become(up);
+	    os_unlink(s2);
+	    user_become_undo();
 	}
 
 	//
@@ -573,9 +538,9 @@ move_file_undo_main(void)
     // Remove each file from the change file,
     // and write it back out.
     //
-    string_list_constructor(&wl_nfu);
-    string_list_constructor(&wl_ntu);
-    string_list_constructor(&wl_rmu);
+    string_list_ty wl_nfu;
+    string_list_ty wl_ntu;
+    string_list_ty wl_rmu;
     for (j = 0; j < wl.nstrings; ++j)
     {
 	string_ty	*s;
@@ -593,13 +558,13 @@ move_file_undo_main(void)
 	    {
 	    case file_usage_test:
 	    case file_usage_manual_test:
-		string_list_append(&wl_ntu, s);
+		wl_ntu.push_back(s);
 		break;
 
 	    case file_usage_source:
 	    case file_usage_config:
 	    case file_usage_build:
-		string_list_append(&wl_nfu, s);
+		wl_nfu.push_back(s);
 		break;
 	    }
 	    break;
@@ -611,7 +576,7 @@ move_file_undo_main(void)
 #ifndef DEBUG
 	default:
 #endif
-	    string_list_append(&wl_rmu, s);
+	    wl_rmu.push_back(s);
 	    break;
 	}
 	change_file_remove(cp, s);
@@ -632,6 +597,11 @@ move_file_undo_main(void)
     change_uuid_clear(cp);
 
     //
+    // Maintain the symlinks (etc) to the baseline.
+    //
+    change_maintain_symlinks_to_baseline(cp, up);
+
+    //
     // run the change file command
     // and the project file command if necessary
     //
@@ -642,9 +612,6 @@ move_file_undo_main(void)
     if (wl_rmu.nstrings)
 	change_run_remove_file_undo_command(cp, &wl_rmu, up);
     change_run_project_file_command(cp, up);
-    string_list_destructor(&wl_nfu);
-    string_list_destructor(&wl_ntu);
-    string_list_destructor(&wl_rmu);
 
     //
     // release the locks
@@ -664,7 +631,6 @@ move_file_undo_main(void)
 	sub_context_delete(scp);
     }
 
-    string_list_destructor(&wl);
     project_free(pp);
     change_free(cp);
     user_free(up);

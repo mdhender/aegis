@@ -48,22 +48,36 @@
 string_ty *
 os_dirname(string_ty *path)
 {
-	string_ty	*s;
-	char		*cp;
+    trace(("os_dirname(path = %08lX)\n{\n", (long)path));
+    trace_string(path->str_text);
+    string_ty *s = os_pathname(path, 1);
+    const char *cp = strrchr(s->str_text, '/');
+    assert(cp);
+    if (cp > s->str_text)
+    {
+	path = str_n_from_c(s->str_text, cp - s->str_text);
+	str_free(s);
+    }
+    else
+	path = s;
+    trace_string(path->str_text);
+    trace(("}\n"));
+    return path;
+}
 
-	trace(("os_dirname(path = %08lX)\n{\n", (long)path));
-	trace_string(path->str_text);
-	s = os_pathname(path, 1);
-	cp = strrchr(s->str_text, '/');
-	assert(cp);
-	if (cp > s->str_text)
-	{
-		path = str_n_from_c(s->str_text, cp - s->str_text);
-		str_free(s);
-	}
-	else
-		path = s;
-	trace_string(path->str_text);
-	trace(("}\n"));
-	return path;
+
+nstring
+os_dirname(const nstring &path)
+{
+    trace(("os_dirname(path = \"%s\")\n{\n", path.c_str()));
+    nstring s = os_pathname(path, true);
+    const char *cp = strrchr(s.c_str(), '/');
+    assert(cp);
+    if (cp && cp > s.c_str())
+    {
+	s = nstring(s.c_str(), cp - s.c_str());
+    }
+    trace(("return \"%s\";\n", s.c_str()));
+    trace(("}\n"));
+    return s;
 }

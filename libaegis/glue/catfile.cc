@@ -50,7 +50,7 @@
 //
 
 int
-catfile(char *path)
+catfile(const char *path)
 {
 	int	fd;
 	char	*buffer;

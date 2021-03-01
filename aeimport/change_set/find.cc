@@ -49,21 +49,21 @@ find_user(string_ty *name)
 
     if (!stp)
     {
-        stp = symtab_alloc(5);
-        stp->reap = reaper;
+        stp = new symtab_ty(5);
+        stp->set_reap(reaper);
     }
-    fvlp = (format_version_list_ty *)symtab_query(stp, name);
+    fvlp = (format_version_list_ty *)stp->query(name);
     if (!fvlp)
     {
         fvlp = format_version_list_new();
-        symtab_assign(stp, name, fvlp);
+        stp->assign(name, fvlp);
     }
     return fvlp;
 }
 
 
 static void
-walker(symtab_ty *stpx, string_ty *key, void *data, void *aux)
+walker(const symtab_ty *stpx, string_ty *key, void *data, void *aux)
 {
     format_version_list_ty *fvlp =  (format_version_list_ty *)data;
     change_set_list_ty *cslp =      (change_set_list_ty *)aux;
@@ -83,7 +83,6 @@ walker(symtab_ty *stpx, string_ty *key, void *data, void *aux)
     for (j = 0; j < fvlp->length;)
     {
         size_t          k;
-        string_list_ty  sl;
         change_set_ty   *csp;
 
         //
@@ -105,8 +104,8 @@ walker(symtab_ty *stpx, string_ty *key, void *data, void *aux)
         //
         // Turn the clump into a change set.
         //
-        string_list_constructor(&sl);
-        csp = change_set_new();
+        string_list_ty sl;
+        csp = new change_set_ty();
         csp->who = str_copy(fvlp->item[j]->who);
         csp->when = fvlp->item[k - 1]->when;
         trace(("when = %ld\n", (long)csp->when));
@@ -118,7 +117,7 @@ walker(symtab_ty *stpx, string_ty *key, void *data, void *aux)
 
             fvp = fvlp->item[j];
             if (fvp->description && fvp->description->str_length)
-                string_list_append_unique(&sl, fvp->description);
+                sl.push_back_unique(fvp->description);
 
             //
             // Figure out what the file action is.
@@ -147,8 +146,7 @@ walker(symtab_ty *stpx, string_ty *key, void *data, void *aux)
                 &fvp->tag
             );
         }
-        csp->description = wl2str(&sl, 0, sl.nstrings, "\n");
-        string_list_destructor(&sl);
+        csp->description = sl.unsplit("\n");
 
         //
         // Append the change set to the list.
@@ -164,7 +162,6 @@ change_set_find(format_search_list_ty *fslp)
 {
     size_t          j;
     change_set_list_ty *result;
-    string_list_ty  occupied;
 
     //
     // Sort the file versions into separate buckets for each user.
@@ -195,9 +192,9 @@ change_set_find(format_search_list_ty *fslp)
     //
     trace(("mark\n"));
     result = change_set_list_new();
-    symtab_walk(stp, walker, result);
+    stp->walk(walker, result);
     change_set_list_sort_by_date(result);
-    symtab_free(stp);
+    delete stp;
     stp = 0;
 
     //
@@ -217,33 +214,27 @@ change_set_find(format_search_list_ty *fslp)
     // Tags are used for other things too.  This is simply a guess,
     // but it's a fairly reasonable one.
     //
-    string_list_constructor(&occupied);
+    string_list_ty occupied;
     for (j = result->length; j > 0; --j)
     {
-        change_set_ty   *csp;
-        size_t          k;
-
-        csp = result->item[j - 1];
-        for (k = 0; k < csp->file.length; ++k)
+        change_set_ty *csp = result->item[j - 1];
+        for (size_t k = 0; k < csp->file.size(); ++k)
         {
-            change_set_file_ty *csfp;
             size_t          m;
 
-            csfp = csp->file.item + k;
+            change_set_file_ty *csfp = csp->file[k];
             for (m = 0; m < csfp->tag.nstrings; ++m)
             {
                 string_ty       *tag;
 
                 tag = csfp->tag.string[m];
-                if (string_list_member(&occupied, tag))
+                if (occupied.member(tag))
                     continue;
-                string_list_append_unique(&csp->tag, tag);
-                string_list_append(&occupied, tag);
+                csp->tag.push_back_unique(tag);
+                occupied.push_back(tag);
             }
         }
     }
-    string_list_destructor(&occupied);
-
     trace(("}\n"));
     return result;
 }

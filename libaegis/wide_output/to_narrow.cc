@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2004 Peter Miller;
+//	Copyright (C) 1999-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -66,13 +66,13 @@ wide_output_to_narrow_destructor(wide_output_ty *fp)
     if (n > 0 && buf[n - 1] == 0)
 	--n;
     if (n > 0)
-	output_write(this_thing->deeper, buf, n);
+	this_thing->deeper->write(buf, n);
 
     //
     // Delete the deeper output on close if we were asked to.
     //
     if (this_thing->delete_on_close)
-	output_delete(this_thing->deeper);
+	delete this_thing->deeper;
     this_thing->deeper = 0;
     trace(("}\n"));
 }
@@ -84,7 +84,7 @@ wide_output_to_narrow_filename(wide_output_ty *fp)
     wide_output_to_narrow_ty *this_thing;
 
     this_thing = (wide_output_to_narrow_ty *)fp;
-    return output_filename(this_thing->deeper);
+    return this_thing->deeper->filename();
 }
 
 
@@ -120,9 +120,9 @@ wide_output_to_narrow_write(wide_output_ty *fp, const wchar_t *data, size_t len)
 	    {
 		this_thing->state = sequester;
 		language_C();
-		output_write(this_thing->deeper, buf, buf_pos);
+		this_thing->deeper->write(buf, buf_pos);
 		buf_pos = 0;
-		output_fprintf(this_thing->deeper, "\\x%lX", (unsigned long)wc);
+		this_thing->deeper->fprintf("\\x%lX", (unsigned long)wc);
 		language_human();
 	    }
 	    else
@@ -130,7 +130,7 @@ wide_output_to_narrow_write(wide_output_ty *fp, const wchar_t *data, size_t len)
 	    this_thing->prev_was_newline = (wc == '\n');
 	}
 	language_C();
-	output_write(this_thing->deeper, buf, buf_pos);
+	this_thing->deeper->write(buf, buf_pos);
 	buf_pos = 0;
     }
     trace(("}\n"));
@@ -143,7 +143,7 @@ wide_output_to_narrow_flush(wide_output_ty *fp)
     wide_output_to_narrow_ty *this_thing;
 
     this_thing = (wide_output_to_narrow_ty *)fp;
-    output_flush(this_thing->deeper);
+    this_thing->deeper->flush();
 }
 
 
@@ -153,7 +153,7 @@ wide_output_to_narrow_page_width(wide_output_ty *fp)
     wide_output_to_narrow_ty *this_thing;
 
     this_thing = (wide_output_to_narrow_ty *)fp;
-    return output_page_width(this_thing->deeper);
+    return this_thing->deeper->page_width();
 }
 
 
@@ -163,7 +163,7 @@ wide_output_to_narrow_page_length(wide_output_ty *fp)
     wide_output_to_narrow_ty *this_thing;
 
     this_thing = (wide_output_to_narrow_ty *)fp;
-    return output_page_length(this_thing->deeper);
+    return this_thing->deeper->page_length();
 }
 
 

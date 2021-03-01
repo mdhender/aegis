@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -31,8 +31,10 @@
 
 #include <change.h>
 #include <emit/project.h>
+#include <error.h>
 #include <http.h>
 #include <now.h>
+#include <nstring.h>
 #include <project.h>
 #include <progname.h>
 #include <str.h>
@@ -68,36 +70,20 @@ http_getenv(const char *name)
 }
 
 
+static const char *
+http_getenv(const char *name, const char *dflt)
+{
+    char *result = getenv(name);
+    if (!result)
+	return dflt;
+    return result;
+}
+
+
 void
 html_escape_charstar(const char *s)
 {
-    for (;;)
-    {
-	unsigned char c = *s++;
-	switch (c)
-	{
-	case 0:
-	    return;
-
-	case '%':
-	case '?':
-	case '#':
-	case ':':
-	case '"':
-	case ' ':
-	case '~':
-	    printf("%%%02X", c);
-	    break;
-
-	default:
-	    // C locale
-	    if (isprint(c))
-		putchar(c);
-	    else
-		printf("%%%02X", c);
-	    break;
-	}
-    }
+    html_escape_string(nstring(s));
 }
 
 
@@ -108,101 +94,17 @@ html_escape_string(string_ty *s)
 }
 
 
-static int
-ends_soon(const char *s)
+void
+html_escape_string(const nstring &s)
 {
-    for (;;)
-    {
-	if (!*s)
-	    return 1;
-	if (!isspace(*s))
-	    return 0;
-	++s;
-    }
+    fputs(s.url_quote().c_str(), stdout);
 }
 
 
 void
 html_encode_charstar(const char *s)
 {
-    int             column;
-
-    column = 0;
-    for (;;)
-    {
-	unsigned char   c;
-
-	c = *s++;
-	switch (c)
-	{
-	case 0:
-	    return;
-
-	case '&':
-	    printf("&amp;");
-	    column += 5;
-	    break;
-
-	case '<':
-	    printf("&lt;");
-	    column += 4;
-	    break;
-
-	case '>':
-	    printf("&gt;");
-	    column += 4;
-	    break;
-
-	case '\n':
-	    if (ends_soon(s))
-		return;
-	    if (*s == '\n')
-	    {
-		++s;
-		printf("\n<p>\n");
-	    }
-	    else
-		printf("<br>\n");
-	    column = 0;
-	    while (*s && isspace((unsigned char)*s))
-		++s;
-	    break;
-
-	case ' ':
-	case '\t':
-	    //
-	    // HTTP only allows lines of up to 510 characters,
-	    // so break the line once it gets too wide.
-	    //
-	    if (column > 70)
-	    {
-		while (*s && isspace((unsigned char)*s))
-		    ++s;
-		putchar('\n');
-		column = 0;
-	    }
-	    else
-	    {
-		putchar(c);
-		++column;
-	    }
-	    break;
-
-	default:
-	    // C locale
-	    if (isprint(c))
-	    {
-		putchar(c);
-		++column;
-	    }
-	    else
-	    {
-		printf("&#%d;", c);
-		column += 5;
-	    }
-	    break;
-	}
-    }
+    html_encode_string(nstring(s));
 }
 
 
@@ -210,6 +112,13 @@ void
 html_encode_string(string_ty *s)
 {
     html_encode_charstar(s->str_text);
+}
+
+
+void
+html_encode_string(const nstring &s)
+{
+    fputs(s.html_quote(true).c_str(), stdout);
 }
 
 
@@ -232,9 +141,8 @@ http_content_type_header(string_ty *filename)
 	    magic_error(cookie)
 	);
     }
-    printf("Content-Type: %s\n\n", content_type);
+    printf("Content-Type: %s\n", content_type);
     magic_close(cookie);
-    fflush(stdout);
 }
 
 
@@ -254,7 +162,14 @@ emit_project_attribute(project_ty *pp, change_ty *cp, const char *cname)
     for (size_t j = 0; j < pconf_data->project_specific->length; ++j)
     {
 	attributes_ty *ap = pconf_data->project_specific->list[j];
-	if (str_equal(name, ap->name) && ap->value)
+	if
+	(
+	    ap->name
+	&&
+	    ap->value
+	&&
+	    0 == strcasecmp(name->str_text, ap->name->str_text)
+	)
 	{
 	    printf("%s\n", ap->value->str_text);
 	}
@@ -319,12 +234,19 @@ html_header(project_ty *pp, change_ty *cp)
 {
     if (cp && !pp)
 	pp = cp->pp;
+
+    //
+    // Request the script name here, so if there is an error,
+    // it will not be intermixed with the header text.
+    //
+    const char *scriptname = http_script_name();
+
     printf("Content-Type: text/html\n\n");
     printf("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\""
 	"\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n");
     printf("<html><head>\n");
     printf("<meta name=\"ROBOTS\" content=\"NOINDEX, NOFOLLOW\">\n");
-    printf("<meta name=\"GENERATOR\" content=\"%s\">\n", http_script_name());
+    printf("<meta name=\"GENERATOR\" content=\"%s\">\n", scriptname);
     printf("<meta http-equiv=\"Content-Type\" "
 	"content=\"text/html; charset=ISO-8859-1\">\n");
     emit_project_stylesheet(pp);
@@ -343,7 +265,7 @@ emit_change(change_ty *cp)
     printf(",<br>\nChange <a href=\"%s/", http_script_name());
     html_escape_string(project_name_get(cp->pp));
     n = magic_zero_decode(cp->number);
-    printf(".C%ld/@@menu\">%ld</a>", n, n);
+    printf(".C%ld/?menu\">%ld</a>", n, n);
 }
 
 
@@ -363,22 +285,103 @@ emit_change_but1(change_ty *cp)
 const char *
 http_script_name(void)
 {
-    static const char *result;
+    //
+    // We cache the results, so this fairly expensive operation is only
+    // done once.
+    //
+    static nstring result;
+    if (result.empty())
+    {
+	//
+	// Get the script name.  It must exist.
+	//
+	nstring script_name = http_getenv("SCRIPT_NAME");
 
-    if (!result)
-	result = http_getenv("SCRIPT_NAME");
-    return result;
+	//
+	// Get the server name.  Default it if it doesn't exist.
+	//
+	nstring server_name = http_getenv("SERVER_NAME", "localhost");
+
+	//
+	// Get the server port.  Default it if it doesn't exist.
+	// Make sure that it is a number and is in range.
+	//
+	nstring server_port = http_getenv("SERVER_PORT", "80");
+	int port = atoi(server_port.c_str());
+	if (port <= 0 || port >= 0x10000)
+	{
+	    http_fatal("SERVER_PORT of \"%s\" not known", server_port.c_str());
+	}
+
+	//
+        // Get the server protocol.  Default it if it does not exist.
+        // We only grok HTTP, so barf if it's anything alse.
+	//
+	nstring server_protocol = http_getenv("SERVER_PROTOCOL", "HTTP/1.1");
+	if (!server_protocol.upcase().starts_with("HTTP"))
+	{
+	    http_fatal
+	    (
+		"SERVER_PROTOCOL of \"%s\" not known",
+		server_protocol.c_str()
+	    );
+	}
+
+        //
+        // Get the request scheme.  Default to http://.
+        //
+        const char *script_uri = getenv("SCRIPT_URI");
+	if (!script_uri)
+	    script_uri = "";
+        nstring request_scheme = "http";
+        const char *colon = strchr(script_uri, ':');
+        if (colon)
+            request_scheme = nstring(script_uri, colon - script_uri);
+
+        //
+        // Assemble the script name from the various components to
+        // include the protocol, host and port sections as well as the
+        // script itself.
+	//
+	result =
+	    (
+		request_scheme + "://"
+	    +
+		server_name
+	    +
+		(port == 80 ? "" : nstring::format(":%d", port))
+	    +
+		script_name
+	    );
+    }
+    return result.c_str();
 }
 
 
 void
-emit_project_href(project_ty *pp, const char *modifier)
+emit_project_href(project_ty *pp)
 {
     printf("<a href=\"%s/", http_script_name());
     html_escape_string(project_name_get(pp));
+    printf("/\">");
+}
+
+
+void
+emit_project_href(project_ty *pp, const char *modifier, ...)
+{
+    assert(modifier);
+    va_list ap;
+    va_start(ap, modifier);
+    char buffer[1000];
+    vsnprintf(buffer, sizeof(buffer), modifier, ap);
+    va_end(ap);
+
+    printf("<a href=\"%s/", http_script_name());
+    html_escape_string(project_name_get(pp));
     printf("/");
-    if (modifier && *modifier)
-	printf("@@%s", modifier);
+    if (buffer[0])
+	printf("?%s", buffer);
     printf("\">");
 }
 
@@ -390,7 +393,7 @@ emit_change_href_n(project_ty *pp, long n, const char *modifier)
     html_escape_string(project_name_get(pp));
     printf(".C%ld/", n);
     if (modifier && *modifier)
-	printf("@@%s", modifier);
+	printf("?%s", modifier);
     printf("\">");
 }
 
@@ -406,7 +409,7 @@ emit_change_href(change_ty *cp, const char *modifier)
 
 
 void
-emit_file_href(change_ty *cp, string_ty *filename, const char *modifier)
+emit_file_href(change_ty *cp, const nstring &filename, const char *modifier)
 {
     printf("<a href=\"%s/", http_script_name());
     html_escape_string(project_name_get(cp->pp));
@@ -415,25 +418,76 @@ emit_file_href(change_ty *cp, string_ty *filename, const char *modifier)
     printf("/");
     html_escape_string(filename);
     if (modifier && *modifier)
-	printf("@@%s", modifier);
+	printf("?%s", modifier);
     printf("\">");
 }
 
 
 void
-emit_rect_image(int width, int height, const char *label)
+emit_file_href(change_ty *cp, string_ty *filename, const char *modifier)
+{
+    emit_file_href(cp, nstring(str_copy(filename)), modifier);
+}
+
+
+void
+emit_rect_image(int width, int height, const char *label, int hspace)
 {
     if (width < 3)
 	width = 3;
     if (height < 3)
 	height = 3;
-    printf("<img src=\"%s/@@rect@%d@%d", http_script_name(), width, height);
+    printf
+    (
+	"<img src=\"%s/?rect+width=%d+height=%d",
+	http_script_name(),
+	width,
+	height
+    );
     if (label && *label)
     {
-	printf("@");
+	printf("+label=");
 	html_escape_charstar(label);
     }
-    printf("\" width=%d height=%d>\n", width, height);
+    printf("\" width=%d height=%d", width, height);
+    if (hspace >= 0)
+    {
+#ifndef USE_STYLES
+	printf(" hspace=%d", hspace);
+#else
+	printf(" style=\"left:%d;right:%d;\"", hspace, hspace);
+#endif
+    }
+    printf(">");
+}
+
+
+void
+emit_rect_image_rgb(int width, int height, const char *color, int hspace)
+{
+    if (width < 3)
+	width = 3;
+    if (height < 3)
+	height = 3;
+    printf
+    (
+	"<img\nsrc=\"%s/?rect+width=%d+height=%d",
+	http_script_name(),
+	width,
+	height
+    );
+    if (color && *color)
+	printf("+color=%s", color);
+    printf("\" width=%d height=%d", width, height);
+    if (hspace >= 0)
+    {
+#ifndef USE_STYLES
+	printf(" hspace=%d", hspace);
+#else
+	printf(" style=\"left:%d;right:%d;\"", hspace, hspace);
+#endif
+    }
+    printf(">");
 }
 
 
@@ -458,7 +512,7 @@ modifier_test_and_clear(string_list_ty *modifiers, const char *name)
     {
 	if (0 == strcasecmp(modifiers->string[j]->str_text, name))
 	{
-	    string_list_remove(modifiers, modifiers->string[j]);
+	    modifiers->remove(modifiers->string[j]);
 	    return true;
 	}
     }

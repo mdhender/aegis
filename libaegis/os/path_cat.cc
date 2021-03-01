@@ -106,10 +106,81 @@ os_path_cat(string_ty *s1, string_ty *s2)
 }
 
 
+static nstring
+stripdot(const nstring &s, bool strip_left_slash)
+{
+    const char *cp = s.c_str();
+    size_t len = s.size();
+    for (;;)
+    {
+	if (len > 1 && cp[len - 1] == '/')
+	{
+	    --len;
+	    continue;
+	}
+	if (len >= 2 && cp[len - 2] == '/' && cp[len - 1] == '.')
+	{
+	    --len;
+	    continue;
+	}
+	if (len > 2 && cp[0] == '.' && cp[1] == '/')
+	{
+	    cp += 2;
+	    len -= 2;
+	    while (*cp == '/')
+	    {
+		++cp;
+		--len;
+	    }
+	}
+	if (strip_left_slash && len >= 1 && cp[0] == '/')
+	{
+	    ++cp;
+	    --len;
+	}
+	break;
+    }
+    if (len == 0)
+	return ".";
+    return nstring(cp, len);
+}
+
+
+nstring
+os_path_cat(const nstring &s1, const nstring &s2)
+{
+    nstring dot(".");
+    nstring ss1(stripdot((s1.empty() ? dot : s1), false));
+    nstring ss2(stripdot((s2.empty() ? dot : s2), true));
+    if (ss1 == dot)
+    {
+	return ss2;
+    }
+    if (ss2 == dot)
+    {
+	return ss1;
+    }
+
+    nstring slash("/");
+    if (ss1 == slash)
+	return (ss1 + ss2);
+    return (ss1 + slash + ss2);
+}
+
+
 string_ty *
 os_path_rel2abs(string_ty *root, string_ty *path)
 {
-	if (path->str_text[0] == '/')
-		return str_copy(path);
-	return os_path_cat(root, path);
+    if (path->str_text[0] == '/')
+       	return str_copy(path);
+    return os_path_cat(root, path);
+}
+
+
+nstring
+os_path_rel2abs(const nstring &root, const nstring &path)
+{
+    if (path[0] == '/')
+	return path;
+    return os_path_cat(root, path);
 }

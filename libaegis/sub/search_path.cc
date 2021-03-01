@@ -28,7 +28,7 @@
 #include <sub.h>
 #include <sub/search_path.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 //
@@ -66,7 +66,7 @@ sub_search_path(sub_context_ty *scp, wstring_list_ty *arg)
 
 	trace(("sub_search_path()\n{\n"));
 	result = 0;
-	if (arg->nitems != 1)
+	if (arg->size() != 1)
 	{
 		sub_context_error_set(scp, i18n("requires zero arguments"));
 		goto done;
@@ -86,14 +86,12 @@ sub_search_path(sub_context_ty *scp, wstring_list_ty *arg)
 			goto done;
 		}
 
-		string_list_constructor(&tmp);
 		project_search_path_get(pp, &tmp, 0);
 	}
 	else
 		change_search_path_get(cp, &tmp, 0);
 
-	s = wl2str(&tmp, 0, tmp.nstrings, ":");
-	string_list_destructor(&tmp);
+	s = tmp.unsplit(":");
 	result = str_to_wstr(s);
 	str_free(s);
 done:

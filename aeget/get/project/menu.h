@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2003 Peter Miller;
+ *	Copyright (C) 2003, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ struct string_list_ty; /* forward */
 
 /**
   * The get_project_menu is used to respond to a
-  *	GET /cgi-bin/aeget/<project-name>/@@menu
+  *	GET /cgi-bin/aeget/<project-name>/?menu
   * request.  It describes and links to all other available pages.
   */
 void get_project_menu(struct project_ty *pp, struct string_ty *filename,

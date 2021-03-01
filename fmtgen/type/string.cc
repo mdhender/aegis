@@ -74,6 +74,19 @@ type_string_ty::gen_code_call_xml(const nstring &form_name,
 
 
 void
+type_string_ty::gen_code_copy(const nstring &member_name)
+    const
+{
+    indent_printf
+    (
+	"result->%s = str_copy(this_thing->%s);\n",
+	member_name.c_str(),
+	member_name.c_str()
+    );
+}
+
+
+void
 type_string_ty::gen_free_declarator(const nstring &variable_name,
     bool is_a_list) const
 {
@@ -94,4 +107,17 @@ type_string_ty::has_a_mask()
     const
 {
     return false;
+}
+
+
+void
+type_string_ty::gen_code_trace(const nstring &vname, const nstring &value)
+    const
+{
+    indent_printf
+    (
+	"trace_string_real(\"%s\", %s);\n",
+	vname.c_str(),
+	value.c_str()
+    );
 }

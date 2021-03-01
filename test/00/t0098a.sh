@@ -111,7 +111,8 @@ unset LANGUAGE
 
 activity="binary, no headers, line 112"
 
-cat > test.uue << 'fubar'
+cat > test.ae.uue << 'fubar'
+
 begin 644 test.ae
 M'XL(`````````Y52P6K#,`SM-?X*M^>EC9M!!Z6''788[%1Z&R,HKI)ZI$ZP
 ME6TP]N^SU[0TIH/$&(2D)_D]2\DJ626"G\Z??1!PW_E)8$7@Y__@`BLN=4AR
@@ -126,7 +127,7 @@ end
 fubar
 test "$?" -eq 0 || no_result
 
-uudecode test.uue
+$bin/test_base64 -uu -i test.ae.uue test.ae
 test "$?" -eq 0 || no_result
 
 $bin/aedist -l -f test.ae -o test.out

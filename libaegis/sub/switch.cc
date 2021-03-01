@@ -25,41 +25,34 @@
 #include <sub/switch.h>
 #include <os.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 wstring_ty *
 sub_switch(sub_context_ty *scp, wstring_list_ty *arg)
 {
-        string_ty       *s;
-        wstring_ty      *result;
-        long            n;
+    trace(("sub_switch()\n{\n"));
+    if (arg->size() < 2)
+    {
+	sub_context_error_set(scp, i18n("requires two or more arguments"));
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
+    }
 
-        trace(("sub_switch()\n{\n"));
-        if (arg->nitems < 2)
-        {
-                sub_context_error_set
-                (
-                        scp,
-                        i18n("requires two or more arguments")
-                );
-                result = 0;
-        }
-        else
-        {
-                s = wstr_to_str(arg->item[1]);
-                n = atol(s->str_text) + 2;
-                str_free(s);
-                if (n >= (long)arg->nitems || n < 2)
-                {
-                        result = wstr_copy(arg->item[arg->nitems - 1]);
-                }
-                else
-                {
-                        result = wstr_copy(arg->item[n]);
-                }
-        }
-        trace(("return %8.8lX;\n", (long)result));
-        trace(("}\n"));
-        return result;
+    string_ty *s = wstr_to_str(arg->get(1));
+    long n = atol(s->str_text) + 2;
+    str_free(s);
+    wstring_ty *result = 0;
+    if (n < 2 || (size_t)n >= arg->size())
+    {
+	result = wstr_copy(arg->get(arg->size() - 1));
+    }
+    else
+    {
+	result = wstr_copy(arg->get(n));
+    }
+    trace(("return %8.8lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }

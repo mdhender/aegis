@@ -177,17 +177,11 @@ remove_reviewer_inner(project_ty *pp, string_list_ty *wlp, int strict)
 static void
 remove_reviewer_main(void)
 {
-    string_list_ty  wl;
-    string_ty	    *s1;
-    string_ty	    *project_name;
-    project_ty	    *pp;
-    int             recursive;
-
     trace(("remove_reviewer_main()\n{\n"));
     arglex();
-    project_name = 0;
-    recursive = 0;
-    string_list_constructor(&wl);
+    string_ty *project_name = 0;
+    int recursive = 0;
+    string_list_ty wl;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -206,19 +200,19 @@ remove_reviewer_main(void)
 	    // fall through...
 
 	case arglex_token_string:
-	    s1 = str_from_c(arglex_value.alv_string);
-	    if (string_list_member(&wl, s1))
 	    {
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set_string(scp, "Name", s1);
-		fatal_intl(scp, i18n("too many user $name"));
-		// NOTREACHED
-		sub_context_delete(scp);
+		string_ty *s1 = str_from_c(arglex_value.alv_string);
+		if (wl.member(s1))
+		{
+		    sub_context_ty *scp = sub_context_new();
+		    sub_var_set_string(scp, "Name", s1);
+		    fatal_intl(scp, i18n("too many user $name"));
+		    // NOTREACHED
+		    sub_context_delete(scp);
+		}
+		wl.push_back(s1);
+		str_free(s1);
 	    }
-	    string_list_append(&wl, s1);
-	    str_free(s1);
 	    break;
 
 	case arglex_token_project:
@@ -244,18 +238,15 @@ remove_reviewer_main(void)
     //
     if (!project_name)
 	project_name = user_default_project();
-    pp = project_alloc(project_name);
+    project_ty *pp = project_alloc(project_name);
     str_free(project_name);
     project_bind_existing(pp);
 
     if (recursive)
     {
-	string_list_ty  pl;
-	size_t          j;
-
-	string_list_constructor(&pl);
+	string_list_ty pl;
 	project_list_inner(&pl,pp);
-	for (j = 0; j < pl.nstrings; ++j)
+	for (size_t j = 0; j < pl.nstrings; ++j)
 	{
 	    project_ty      *branch;
 
@@ -264,7 +255,6 @@ remove_reviewer_main(void)
 	    remove_reviewer_inner(branch, &wl, 0);
 	    project_free(branch);
 	}
-	string_list_destructor(&pl);
     }
     else
     {

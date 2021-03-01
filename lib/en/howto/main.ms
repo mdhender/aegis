@@ -370,6 +370,8 @@
 \&.
 .bp
 .\}
+.\" do not warn "numeric expression expected"
+.warn (\n[.warn]-(((\n[.warn]/2)%2)*2))
 .nr % 1 i
 .if t .1C
 .\" At this point we are at the top of the page.  The .TC macro will not

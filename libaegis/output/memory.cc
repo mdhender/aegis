@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,140 +23,101 @@
 #include <ac/string.h>
 
 #include <error.h>
-#include <mem.h>
 #include <output/memory.h>
-#include <output/private.h>
 #include <str.h>
 #include <trace.h>
 
 
-struct output_memory_ty
+output_memory_ty::~output_memory_ty()
 {
-    output_ty       inherited;
-    unsigned char   *buffer;
-    size_t          size;
-    size_t          maximum;
-};
-
-
-static void
-output_memory_destructor(output_ty *fp)
-{
-    output_memory_ty *this_thing;
-
-    trace(("output_memory_destructor(fp = %08lX)\n{\n", (long)fp));
-    this_thing = (output_memory_ty *)fp;
-    if (this_thing->buffer)
-	mem_free(this_thing->buffer);
+    trace(("output_memory_destructor(this = %08lX)\n{\n", (long)this));
+    flush();
+    delete [] buffer;
+    buffer = 0;
     trace(("}\n"));
 }
 
 
-static string_ty *
-output_memory_filename(output_ty *fp)
+output_memory_ty::output_memory_ty() :
+    buffer(0),
+    size(0),
+    maximum(0)
+{
+    trace(("output_memory_ty()\n"));
+}
+
+
+string_ty *
+output_memory_ty::filename()
+    const
 {
     static string_ty *s;
-
     if (!s)
 	s = str_from_c("memory");
     return s;
 }
 
 
-static long
-output_memory_ftell(output_ty *fp)
+long
+output_memory_ty::ftell_inner()
+    const
 {
-    output_memory_ty *this_thing;
-
-    this_thing = (output_memory_ty *)fp;
-    return this_thing->size;
-}
-
-
-static void
-output_memory_write(output_ty *fp, const void *data, size_t len)
-{
-    output_memory_ty *this_thing;
-
-    trace(("output_memory_write(fp = %08lX, data = %08lX, len = %ld)\n{\n",
-	(long)fp, (long)data, (long)len));
-    this_thing = (output_memory_ty *)fp;
-    while (this_thing->size + len > this_thing->maximum)
-    {
-	this_thing->maximum = 2 * this_thing->maximum + 32;
-	this_thing->buffer = (unsigned char *)mem_change_size(
-            this_thing->buffer, this_thing->maximum);
-    }
-    memcpy(this_thing->buffer + this_thing->size, data, len);
-    this_thing->size += len;
-    trace(("}\n"));
-}
-
-
-static void
-output_memory_eoln(output_ty *fp)
-{
-    output_memory_ty *this_thing;
-
-    trace(("output_memory_eol(fp = %08lX)\n{\n", (long)fp));
-    this_thing = (output_memory_ty *)fp;
-    if (this_thing->size && this_thing->buffer[this_thing->size - 1] != '\n')
-	output_fputc(fp, '\n');
-    trace(("}\n"));
-}
-
-
-static output_vtbl_ty vtbl =
-{
-    sizeof(output_memory_ty),
-    output_memory_destructor,
-    output_memory_filename,
-    output_memory_ftell,
-    output_memory_write,
-    output_generic_flush,
-    output_generic_page_width,
-    output_generic_page_length,
-    output_memory_eoln,
-    "memory",
-};
-
-
-output_ty *
-output_memory_open(void)
-{
-    output_ty       *result;
-    output_memory_ty *this_thing;
-
-    trace(("output_memory_open()\n{\n"));
-    result = output_new(&vtbl);
-    this_thing = (output_memory_ty *)result;
-    this_thing->buffer = 0;
-    this_thing->size = 0;
-    this_thing->maximum = 0;
-    trace(("return %08lX\n", (long)this_thing));
-    trace(("}\n"));
-    return result;
+    return size;
 }
 
 
 void
-output_memory_forward(output_ty *fp, output_ty *deeper)
+output_memory_ty::write_inner(const void *data, size_t len)
 {
-    output_memory_ty *this_thing;
-
-    trace(("output_memory_forward(fp = %08lX, deeper = %08lX)\n{\n",
-	(long)fp, (long)deeper));
-    output_flush(fp);
-    assert(fp->vptr == &vtbl);
-    if (fp->vptr == &vtbl)
+    trace(("output_memory_write(this = %08lX, data = %08lX, len = %ld)\n{\n",
+	(long)this, (long)data, (long)len));
+    if (size + len > maximum)
     {
-	this_thing = (output_memory_ty *)fp;
-	if (this_thing->size)
-	    output_write(deeper, this_thing->buffer, this_thing->size);
-#ifdef DEBUG
-	else
-	    error_raw("%s: %d: nothing to forward", __FILE__, __LINE__);
-#endif
+	size_t new_maximum = 2 * maximum + 32;
+	while (size + len > new_maximum)
+	    new_maximum = 2 * new_maximum + 32;
+	unsigned char *new_buffer = new unsigned char [new_maximum];
+	if (size)
+	    memcpy(new_buffer, buffer, size);
+	delete [] buffer;
+	buffer = new_buffer;
+	maximum = new_maximum;
     }
+    memcpy(buffer + size, data, len);
+    size += len;
+    trace(("}\n"));
+}
+
+
+void
+output_memory_ty::end_of_line_inner()
+{
+    trace(("output_memory_eol(this = %08lX)\n{\n", (long)this));
+    if (size && buffer[size - 1] != '\n')
+	fputc('\n');
+    trace(("}\n"));
+}
+
+
+const char *
+output_memory_ty::type_name()
+    const
+{
+    return "memory";
+}
+
+
+void
+output_memory_ty::forward(output_ty *deeper)
+{
+    trace(("output_memory_forward(this = %08lX, deeper = %08lX)\n{\n",
+	(long)this, (long)deeper));
+    flush();
+    if (size)
+	deeper->write(buffer, size);
+#ifdef DEBUG
+    else
+	error_raw("%s: %d: nothing to forward", __FILE__, __LINE__);
+#endif
     trace(("}\n"));
 }

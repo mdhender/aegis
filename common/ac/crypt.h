@@ -32,10 +32,12 @@
 #include <crypt.h>
 #endif
 
+#include <throws_not.h>
+
 #if HAVE_CRYPT
 #if !HAVE_DECL_CRYPT
 extern "C" {
-char *crypt(const char *, const char *);
+char *crypt(const char *, const char *) __THROW;
 }
 #endif
 #endif

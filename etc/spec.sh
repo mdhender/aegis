@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997, 1999-2004 Peter Miller;
+#	Copyright (C) 1997, 1999-2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -292,8 +292,7 @@ echo '# and the names for low-numbered uids and gids are essentially'
 echo '# random across the various Unix implementations.  Sigh.'
 echo '#'
 echo '%post'
-echo "chown -R 3 $prefix/com/aegis $prefix/lib/aegis $prefix/share/aegis"
-echo "chgrp -R 3 $prefix/com/aegis $prefix/lib/aegis $prefix/share/aegis"
+echo "chown -R 3 $prefix/com/aegis && chgrp -R 3 $prefix/com/aegis"
 
 echo ''
 echo '%clean'

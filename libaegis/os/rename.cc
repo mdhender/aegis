@@ -29,19 +29,14 @@
 
 
 void
-os_rename(string_ty *a, string_ty *b)
+os_rename(const nstring &a, const nstring &b)
 {
-    trace(("os_rename(a = %08lX, b = %08lX)\n{\n", (long)a, (long)b));
+    trace(("os_rename(a = \"%s\", b = \"%s\")\n{\n", a.c_str(), b.c_str()));
     os_become_must_be_active();
-    trace_string(a->str_text);
-    trace_string(b->str_text);
-    if (glue_rename(a->str_text, b->str_text))
+    if (glue_rename(a.c_str(), b.c_str()))
     {
-	sub_context_ty  *scp;
-	int             errno_old;
-
-	errno_old = errno;
-	scp = sub_context_new();
+	int errno_old = errno;
+	sub_context_ty *scp = sub_context_new();
 	sub_errno_setx(scp, errno_old);
 	sub_var_set_string(scp, "File_Name1", a);
 	sub_var_set_string(scp, "File_Name2", b);
@@ -49,4 +44,11 @@ os_rename(string_ty *a, string_ty *b)
 	// NOTREACHED
     }
     trace(("}\n"));
+}
+
+
+void
+os_rename(string_ty *a, string_ty *b)
+{
+    os_rename(nstring(str_copy(a)), nstring(str_copy(b)));
 }

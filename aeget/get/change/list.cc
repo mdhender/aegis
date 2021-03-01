@@ -21,11 +21,14 @@
 //
 
 #include <ac/stdio.h>
+#include <ac/string.h>
 
 #include <ael/attribu_list.h>
+#include <attribute.h>
 #include <change.h>
 #include <cstate.h>
 #include <get/change/list.h>
+#include <emit/brief_descri.h>
 #include <emit/project.h>
 #include <http.h>
 #include <project.h>
@@ -48,7 +51,7 @@ calculate_state_mask(string_list_ty *modifier)
     state_mask = 0;
     not_string = str_from_c("not");
     invert = 0;
-    for (j = 1; j < modifier->nstrings; ++j)
+    for (j = 0; j < modifier->nstrings; ++j)
     {
 	cstate_state_ty bit;
 	if (cstate_state_type.enum_parse(modifier->string[j], &bit))
@@ -109,7 +112,6 @@ get_change_list(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     size_t          j, k;
     size_t          num;
     int             link_to_state_page;
-    string_list_ty  attr_name;
 
     //
     // The modifiers select the states we want to view.
@@ -143,7 +145,7 @@ get_change_list(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     //
     // Find the attributes.
     //
-    string_list_constructor(&attr_name);
+    string_list_ty attr_name;
     for (j = 0; ; ++j)
     {
 	cstate_ty       *cstate_data;
@@ -167,13 +169,20 @@ get_change_list(project_ty *pp, string_ty *filename, string_list_ty *modifier)
 		attributes_ty   *ap;
 
 		ap = cstate_data->attribute->list[k];
-		if (ael_attribute_listable(ap))
-		    string_list_append_unique(&attr_name, ap->name);
+		if
+		(
+		    ael_attribute_listable(ap)
+		&&
+		    !attr_name.member_nocase(ap->name)
+		)
+		{
+		    attr_name.push_back(ap->name);
+		}
 	    }
 	}
 	change_free(cp);
     }
-    string_list_sort(&attr_name);
+    attr_name.sort_nocase();
 
     //
     // list the project's changes
@@ -212,9 +221,12 @@ get_change_list(project_ty *pp, string_ty *filename, string_list_ty *modifier)
 	printf("</td>\n<td valign=\"top\">\n");
 	if (link_to_state_page)
 	{
-	    printf("<a href=\"%s/", http_script_name());
-	    html_escape_string(project_name_get(cp->pp));
-	    printf("/@@changes@%s\">", cstate_state_ename(cstate_data->state));
+	    emit_project_href
+	    (
+		cp->pp,
+		"changes+%s",
+		cstate_state_ename(cstate_data->state)
+	    );
 	}
 	html_encode_charstar(cstate_state_ename(cstate_data->state));
 	if (link_to_state_page)
@@ -234,37 +246,22 @@ get_change_list(project_ty *pp, string_ty *filename, string_list_ty *modifier)
 	printf("</td>\n");
 	for (k = 0; k < attr_name.nstrings; ++k)
 	{
+	    const char *aname = attr_name.string[k]->str_text;
 	    printf("<td>");
-	    if (cstate_data->attribute)
-	    {
-		size_t          m;
-
-		for (m = 0; m < cstate_data->attribute->length; ++m)
-		{
-		    attributes_ty   *ap;
-
-		    ap = cstate_data->attribute->list[m];
-		    if
-		    (
-			str_equal(attr_name.string[k], ap->name)
-		    &&
-		        ap->value
-		    )
-			html_encode_string(ap->value);
-		}
-	    }
+	    attributes_ty *ap =
+		attributes_list_find(cstate_data->attribute, aname);
+	    if (ap)
+		html_encode_string(ap->value);
 	    printf("</td>\n");
 	}
 	printf("<td valign=\"top\">\n");
-	if (cstate_data->brief_description)
-	    html_encode_string(cstate_data->brief_description);
+	emit_change_brief_description(cp);
 	printf("</td>\n<td valign=top>\n");
 	emit_change_href(cp, "download");
 	printf("Download</a>\n");
 	printf("</td>\n</tr>\n");
 	change_free(cp);
     }
-    string_list_destructor(&attr_name);
     printf("<tr class=\"even-group\"><td colspan=4>\n");
     printf("Listed %lu changes.</td></tr>\n", (unsigned long)num);
     printf("</table></div>\n");

@@ -1,6 +1,6 @@
 //
 //	cook - file construction tool
-//	Copyright (C) 1994, 1995, 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1994, 1995, 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -401,12 +401,10 @@ md5_hash(fingerprint_ty *p, unsigned char *digest)
 static void
 md5_sum(fingerprint_ty *p, char *obuf, size_t obuf_len)
 {
-    md5_ty	    *context;
     unsigned char   h[MD5_HASH_LEN];
     char	    *cp;
     int		    i;
 
-    context = (md5_ty *)p;
     md5_hash(p, h);
     cp = obuf;
     for (i = 0; i < MD5_HASH_LEN; ++i)

@@ -30,7 +30,6 @@
 string_ty *
 change_logfile_get(change_ty *cp)
 {
-    string_ty	*s1;
     cstate_ty       *cstate_data;
 
     trace(("change_logfile_get(cp = %08lX)\n{\n", (long)cp));
@@ -38,9 +37,17 @@ change_logfile_get(change_ty *cp)
     if (!cp->logfile)
     {
 	cstate_data = change_cstate_get(cp);
+	string_ty *s1 = 0;
 	switch (cstate_data->state)
 	{
+	case cstate_state_awaiting_development:
+	case cstate_state_awaiting_review:
+	case cstate_state_being_reviewed:
+	case cstate_state_awaiting_integration:
+	case cstate_state_completed:
+#ifndef DEBUG
 	default:
+#endif
 	    change_fatal(cp, 0, i18n("no log file"));
 
 	case cstate_state_being_integrated:
@@ -51,8 +58,9 @@ change_logfile_get(change_ty *cp)
 	    s1 = change_development_directory_get(cp, 0);
 	    break;
 	}
-
+	assert(s1);
 	cp->logfile = os_path_cat(s1, change_logfile_basename());
+	// do NOT str_free(s1);
     }
     trace(("return \"%s\";\n", cp->logfile->str_text));
     trace(("}\n"));

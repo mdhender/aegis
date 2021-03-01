@@ -26,7 +26,7 @@
 #include <sub/read_file.h>
 #include <trace.h>
 #include <wstr.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 //
@@ -52,35 +52,30 @@
 wstring_ty *
 sub_read_file(sub_context_ty *scp, wstring_list_ty *arg)
 {
-    wstring_ty	    *result;
-
     trace(("sub_read_file()\n{\n"));
-    if (arg->nitems != 2)
+    if (arg->size() != 2)
     {
 	sub_context_error_set(scp, i18n("requires one argument"));
-	result = 0;
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
     }
-    else
-    {
-	if (arg->item[1]->wstr_text[0] != '/')
-	{
-	    sub_context_error_set(scp, i18n("absolute path required"));
-	    result = 0;
-	}
-	else
-	{
-	    string_ty	    *s1;
-	    string_ty	    *s2;
 
-	    s1 = wstr_to_str(arg->item[1]);
-	    os_become_orig();
-	    s2 = read_whole_file(s1);
-	    os_become_undo();
-	    str_free(s1);
-	    result = str_to_wstr(s2);
-	    str_free(s2);
-	}
+    if (arg->get(1)->wstr_text[0] != '/')
+    {
+	sub_context_error_set(scp, i18n("absolute path required"));
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
     }
+
+    string_ty *s1 = wstr_to_str(arg->get(1));
+    os_become_orig();
+    string_ty *s2 = read_whole_file(s1);
+    os_become_undo();
+    str_free(s1);
+    wstring_ty *result = str_to_wstr(s2);
+    str_free(s2);
     trace(("return %8.8lX;\n", (long)result));
     trace(("}\n"));
     return result;

@@ -97,26 +97,26 @@ getch(void)
 {
     int             c;
 
-    if (getch_line_pos >= getch_line_buffer.length)
+    if (getch_line_pos >= getch_line_buffer.size())
     {
-	getch_line_buffer.length = 0;
+	getch_line_buffer.clear();
 	getch_line_pos = 0;
 	for (;;)
 	{
 	    c = input_getc(ip);
 	    if (c < 0)
 	    {
-		if (getch_line_buffer.length == 0)
+		if (getch_line_buffer.empty())
 	    	    return -1;
 		break;
 	    }
-	    stracc_char(&getch_line_buffer, c);
+	    getch_line_buffer.push_back(c);
 	    if (c == '\n')
 		break;
 	}
     }
     start_of_line = !getch_line_pos;
-    c = getch_line_buffer.buffer[getch_line_pos++];
+    c = getch_line_buffer[getch_line_pos++];
     return c;
 }
 
@@ -128,7 +128,7 @@ ungetch(int c)
 	return;
     assert(getch_line_pos > 0);
     --getch_line_pos;
-    assert(c == getch_line_buffer.buffer[getch_line_pos]);
+    assert(c == getch_line_buffer[getch_line_pos]);
 }
 
 
@@ -151,17 +151,17 @@ format_sccs_gram_lex(void)
 	{
 	    if (c != '\1')
 	    {
-		stracc_open(&buffer);
+		buffer.clear();
 		for (;;)
 		{
 		    if (c == '\n')
 			break;
-		    stracc_char(&buffer, c);
+		    buffer.push_back(c);
 		    c = getch();
 		    if (c == EOF)
 			break;
 		}
-		yylval.lv_string = stracc_close(&buffer);
+		yylval.lv_string = buffer.mkstr();
 		return TEXTLINE;
 	    }
 
@@ -172,10 +172,10 @@ format_sccs_gram_lex(void)
 	    switch (c)
 	    {
 	    case 'c':
-		stracc_open(&buffer);
+		buffer.clear();
 		c = getch();
 		if (c != ' ')
-		    stracc_char(&buffer, c);
+		    buffer.push_back(c);
 		for (;;)
 		{
 		    c = getch();
@@ -186,9 +186,9 @@ format_sccs_gram_lex(void)
 			ungetch(c);
 			break;
 		    }
-		    stracc_char(&buffer, c);
+		    buffer.push_back(c);
 		}
-		yylval.lv_string = stracc_close(&buffer);
+		yylval.lv_string = buffer.mkstr();
 		return COMMENT;
 
 	    case 'd':
@@ -251,10 +251,10 @@ format_sccs_gram_lex(void)
 	//
 	// "normal" processing
 	//
-	stracc_open(&buffer);
+	buffer.clear();
 	for (;;)
 	{
-	    stracc_char(&buffer, c);
+	    buffer.push_back(c);
 	    c = getch();
 	    if (c == EOF)
 		break;
@@ -264,7 +264,7 @@ format_sccs_gram_lex(void)
 		break;
 	    }
 	}
-	yylval.lv_string = stracc_close(&buffer);
+	yylval.lv_string = buffer.mkstr();
 	return STRING;
     }
 }

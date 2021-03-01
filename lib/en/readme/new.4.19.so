@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2004 Peter Miller;
+.\"	Copyright (C) 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -19,15 +19,346 @@
 .\"
 .\" MANIFEST: document describing new 4.19 features
 .\"
-.\" you can create the initial cut of this file using the
-.\"	aereport -f bl/bl/lib/report/chan_so.rpt -p aegis.4 -c 19 -unf
-.\" command, and then editing it to be more appropriate.
-.\"
-.\" ------------------------------------------------------------------------
-.\" .PP
-.\" .if n *
-.\" .if t \(bu
-.\" .\" Change NN
+.PP
+\fBPlease Note:\fP Users are advised to check the history command
+settings in their project configuration files.  With the advent of
+file UUIDs, the history mechanism now decouples source file names from
+history file names.  In particular, the assumption that the history file
+basename is the same as the source file basename is no longer true.
+Correct settings may be found in the \fIlib/config.example/\fP directory
+of the source distribution.
+.PP
+.if n *
+.if t \(bu
+.\" Change 275
+The defaulting rules for the change number (if none was specified
+on the command line) have been altered. the current directory now
+takes precedence over the "only one" rule.  This seems to meet user
+expectations better.
+.\" ---------- Bugs --------------------------------------------------------
+.PP
+.if n *
+.if t \(bu
+.\" Change 266
+A bug has been fixed in the \fIaecvsserver\fP(1) command which caused to
+to fail when accessed by some clients.
+.PP
+.if n *
+.if t \(bu
+.\" Change 222
+A bug has been fixed which caused many of the programs
+to leave temporary files behind.
+.PP
+.if n *
+.if t \(bu
+.\" Change 215
+A bug has been fixed in the \fIaedist \-send \-entire-source\fP command
+where it would hang for some cases.  (Actually, it would dump core after
+using up all available swap space on an infinite recursion).
+.PP
+.if n *
+.if t \(bu
+.\" Change 174
+A bug has been fixed in the \fIaedist\fP command (and other places)
+where the open of the project configuration file could fail, due to not
+properly reconstructing in historical circumstances.
+.PP
+.if n *
+.if t \(bu
+.\" Change 161
+A bug has been fixed in the integration build which was removing files
+it should not, for \fIduring_build_only = true\fP work area styles.
+.PP
+.if n *
+.if t \(bu
+.\" Change 167
+The \fIaeb\fP command now complains \fImuch\fP less about "directory not
+empty" when using the link farm.
+.PP
+.if n *
+.if t \(bu
+.\" Change 157
+A bug has been fixed in the \fIaetar -send \-entire-source\fP command
+where some files were missing when asking for a complete set of
+historical sources.
+.PP
+.if n *
+.if t \(bu
+.\" Change 156
+A bug has been fixed in the \fIaedist \-send \-entire-source\fP where
+some files were zero length when asking for a complete set of historical
+sources.
+.PP
+.if n *
+.if t \(bu
+.\" Change 14
+A bug in \fIaedist\fP(1) has been fixed, it was forcing regression
+test on the receiving side even if the change set does not require it
+and \fIdefault_test_exemption\fP was set to true.  It was annoying
+especially if the test suite take a long time to run completely.
+.PP
+.if n *
+.if t \(bu
+.\" Change 105, 101
+Some bugs have been fixed in \fIaediff\fP(1) which caused it to
+mis-parse the command line in some cases, and it was also barfing on the
+expected exit status 1 when an actual difference was found.
+.PP
+.if n *
+.if t \(bu
+.\" Change 79
+A bug has been fixed in the \fIaecpu\fP(1), \fIaemtu\fP(1),
+\fIaemvu\fP(1), \fIaenfu\fP(1), \fIaentu\fP(1) and \fIaermu\fP(1)
+commands. They were not repairing the symlinks (\fIetc\fP) required by
+the \fIdevelopment_\%directory_\%style\fP settings.
+.PP
+.if n *
+.if t \(bu
+.\" Change 27
+A bug has been fixed in the \fIChange_Files\fP listing;
+it was not showing the locked-by information.
+.PP
+.if n *
+.if t \(bu
+.\" Change 19
+A bug has been fixed in the code which updates the development
+directory symlinks.  It was failing to make all the directories
+required.
+.PP
+.if n *
+.if t \(bu
+.\" Change 88
+A bug has been fixed in the \fIaedist \-send \-entrie-source\fP command,
+where it would segfault in some cases.
+.PP
+.if n *
+.if t \(bu
+.\" Change 89
+A bug has been fixed in reading plain \fIdiff\fP(1) format patches.
+This was particularly obvious because \fIaeannotate\fP(1) uses this form
+of diff by default.
+.PP
+.if n *
+.if t \(bu
+.\" Change 86
+A bug has been fixed in \fIaeget\fP(1) where it was showing removed
+source files as available for download.
+.PP
+.if n *
+.if t \(bu
+.\" Change 83
+A bug has been fixed in \fIaeget\fP(1) where it produced invalid
+output if the SCRIPT_NAME environment was not set.
+.PP
+.if n *
+.if t \(bu
+.\" Change 87
+A bug has been fixed in \fIaeget\fP(1) where it would sometimes ignore
+modifiers.  This was particularly noticable in the download pages.
+.PP
+.if n *
+.if t \(bu
+.\" Change 81
+A bug has been fixed in the \fIaeimport\fP(1) command.  It was using the
+old work area style configuration file parameters, instead of the new
+\fIdevelopment_\%directory_\%style\fP settings.
+.PP
+.if n *
+.if t \(bu
+.\" Change 59
+A memory leak has been fixed in the symbol table code.
+.PP
+.if n *
+.if t \(bu
+.\" Change 58
+A bug has been fixed in the project_file_find_by_uuid function.
+In some cases it would SEGFAULT, particularly once the
+memory leak in the symbol table code was fixed.
+.PP
+.if n *
+.if t \(bu
+.\" Changes 511, 506, 270, 267, 265, 263, 262, 261, 253, 252, 251, 240, 239,
+.\" 213, 211, 208, 207, 201, 200, 199, 57, 50, 28, 25, 18, 17, 16
+Several build problems have been fixed.
+.\" ---------- Enhancements ------------------------------------------------
+.PP
+.if n *
+.if t \(bu
+.\" Change 273, 272
+The \fIaeintegratq\fP(1) command has a new \-loop\fP options, which
+causes it to keep processing changes that become available while it is
+running.
+.PP
+.if n *
+.if t \(bu
+.\" Change 228
+The \fIaet\fP(1) command has a new \-sugest-limit option which runs as
+many regression tests as possible (from most relevant to least relevant)
+but stops after the given number of minutes.  This is a way for running
+the most relevant tests in a limited time.  For example, this option
+could be used if a project has so many integrations in a day that it can
+only afford 20 minutes of integration testing for each one.
+.PP
+.if n *
+.if t \(bu
+.\" Change 183
+The \fIaed\fP(1) man page has been updated to better describe the
+behaviour around the merge command.
+.PP
+.if n *
+.if t \(bu
+.\" Change 180
+The \fIaetar -send\fP command now accepts an \-include-build option that
+also add build files, registered with \fIaegis \-new-file \-build\fP, to
+the ouput archive.  A \-not-include-build option is also accepted.
+.PP
+.if n *
+.if t \(bu
+.\" Change 176
+The \fIaetar -receive\fP command now avoids copying build files from the
+baseline because this operation is forbidden and the error stops the
+processing.
+.PP
+.if n *
+.if t \(bu
+.\" Change 173
+There is a new \fI${Change_Attribute}\fP substitution, which is
+replaced by the values of the change attributes named.
+.PP
+.if n *
+.if t \(bu
+.\" Change 155
+The history recapitulation code (project_file_roll_forward) now indexes
+by UUID rather than by file name (with backwards compatibility for
+UUID-less repositories).  The user visable result is that file history
+reports and listings now accurately track renames.
+.PP
+.if n *
+.if t \(bu
+.\" aegis.4.19.D121
+.\" Change 163
+The \fIaet -nopersevere\fP option now also stops for \fIno result\fP as
+well as \fIfail\fP.
+.PP
+.if n *
+.if t \(bu
+.\" Change 503, 216, 182
+The \fPaedist --receive\fP command now understands file UUIDs.  This
+means that it will operate on the correct file even when one or the
+other repository has renamed the file.
+.PP
+.if n *
+.if t \(bu
+.\" Change 150
+The \fIaedist -receive\fP command has been enhanced to perform file
+merges if necessary.
+.PP
+.if n *
+.if t \(bu
+.\" Change 238, 237, 226, 221, 218, 202, 195, 188, 154, 125, 13
+There is a new \fIaedist \-replay\fP option.  When used in with an
+\fIaeget\fP(1) server, it can be used to synchronize two repositories.
+The \fIaedist \-missing\fP option may be used to show what would be
+downloaded.
+.PP
+.if n *
+.if t \(bu
+.\" Change 115
+The \fIaefa\fP(1) command, with the \-edit option, now shows you the
+content type, rather than adding it silently.
+.PP
+.if n *
+.if t \(bu
+.\" Change 276
+There is a new \fIaediff --command\fP option, allowing you to specify
+the command you want to use to display the difference.  For example,
+you could use \fItkdiff\fP(1) or \fImgdiff\fP(1) to display the change
+graphically.
+.PP
+.if n *
+.if t \(bu
+.\" Change 108
+The \fIaediff\fP(1) command now adds labels when it is producing a
+context or unified diff output.
+.PP
+.if n *
+.if t \(bu
+.\" Change 73, 71, 69, 68, 55, 22
+There is a new optional \fIreview_policy_command\fP field in the project
+confioguration file.  This allows for customised review policies for
+each project, including multiple reviewers and specific reviewers for
+portions of the sources.
+.PP
+.if n *
+.if t \(bu
+.\" Change 70, 67, 62
+There is a new ${Change_Reviewer_List} substitution, which is
+replaced by a space separated list of reviewers of the current
+change, since the last develop end. This is of particular use to the
+\fIreview_\%policy_\%command\fP field of the project configuartion file.
+.PP
+.if n *
+.if t \(bu
+.\" Change 63
+There is a new ${Change_Developer_List} substitution, which is
+replaced by a space separated list of all the developers of the
+current change.
+.PP
+.if n *
+.if t \(bu
+.\" Change 30, 29
+There is a new ${quoted_email_address} substitution, which
+replaces it arguments with the email addresses of the names users.
+See \fIaesub\fP(5) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" Change 32
+The notification scripts have been updated to use the new
+${quoted-email-address} substitution.
+.PP
+.if n *
+.if t \(bu
+.\" Changes 512, 253, 198, 197, 192, 177, 126, 121, 120, 118, 117, 113,
+.\" 110, 109, 100, 99, 98, 97, 93, 92, 91, 85
+The remaining \fIaegis.cgi\fP(1) functions have been reproduced in
+\fIaeget\fP(1).  The \fIaegis.cgi\fP(1) script is now deprecated.
+.PP
+.if n *
+.if t \(bu
+.\" Change 51, 39, 38
+When the UUID of a change is cleared it (because some operation on
+the change set invalidates it) is saved in a change attribute named
+\fIoriginal-UUID\fP.
+.PP
+.if n *
+.if t \(bu
+.\" Change 82
+The \fIaedist -receive\fP command is now able to use the original-UUID
+attribute of the incoming change set to select the delta to merge with.
+.PP
+.if n *
+.if t \(bu
+.\" Change 80
+The "path unrelated" error message has been updated to make it
+more informative.
+.PP
+.if n *
+.if t \(bu
+.\" Change 52
+All attribute names (project, change and file) are now
+case-insensitive.
+.PP
+.if n *
+.if t \(bu
+.\" Change 45
+The \fIaedist -receive\fP command has been enhanced to allow you to
+select the branch of the delta to merge with.
+.PP
+.if n *
+.if t \(bu
+.\" Change 78, 77, 76, 75, 72, 60, 56, 37, 36, 35, 33, 31, 26, 24, 23, 12, 11
+Several classes within the source have been refactored.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
 .SS Version 4.19 (30-Sep-2004)

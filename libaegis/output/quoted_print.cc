@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -176,86 +176,69 @@
 #include <ac/ctype.h>
 
 #include <output/quoted_print.h>
-#include <output/private.h>
 #include <str.h>
 
-//
-// As per RFC 1521
-//
-#define MAX_LINE_LEN 76
 
-static char   hex[16] = {
-    '0', '1', '2', '3', '4', '5', '6', '7',
-    '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
-};
-
-struct glyph_t
+static inline char
+map_hex(int x)
 {
-    char	    text;
-    char	    quote_it;
-    int		    width;
-    int		    cumulative;
-};
-
-struct output_quoted_printable_ty
-{
-    output_ty	    inherited;
-    output_ty	    *deeper;
-    int		    delete_on_close;
-    int		    allow_international_characters;
-
-    glyph_t	    glyph[MAX_LINE_LEN + 1];
-    int		    pos;
-};
-
-
-static void
-end_of_line(output_quoted_printable_ty *this_thing, int soft)
-{
-    glyph_t	    *cp;
-    glyph_t	    *end;
-    int		    c;
-
-    cp = this_thing->glyph;
-    end = cp + this_thing->pos;
-    for (; cp < end; ++cp)
+    static char hex[16] =
     {
-	c = (unsigned char)cp->text;
-	if (cp->quote_it)
-	{
-	    output_fputc(this_thing->deeper, '=');
-	    output_fputc(this_thing->deeper, hex[(c >> 4) & 15]);
-	    output_fputc(this_thing->deeper, hex[c & 15]);
-	}
-	else
-	    output_fputc(this_thing->deeper, c);
-    }
-    if (soft)
-	output_fputc(this_thing->deeper, '=');
-    output_fputc(this_thing->deeper, '\n');
-    this_thing->pos = 0;
+	'0', '1', '2', '3', '4', '5', '6', '7',
+	'8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+    };
+    return hex[x & 15];
 }
 
 
-static void
-end_of_line_partial(output_quoted_printable_ty *this_thing)
+void
+output_quoted_printable_ty::eoln(bool soft)
 {
-    int		    oldpos;
-    int		    newpos;
-    int		    newpos_max;
-    int		    j;
+    glyph_t *cp = glyph;
+    glyph_t *end = cp + pos;
+    for (; cp < end; ++cp)
+    {
+	unsigned char c = cp->text;
+	if (cp->quote_it)
+	{
+	    deeper->fputc('=');
+	    deeper->fputc(map_hex(c >> 4));
+	    deeper->fputc(map_hex(c));
+	}
+	else
+	    deeper->fputc(c);
+    }
+    if (soft)
+	deeper->fputc('=');
+    deeper->fputc('\n');
+    pos = 0;
+}
 
+
+output_quoted_printable_ty::output_quoted_printable_ty(output_ty *arg1,
+	bool arg2, bool arg3) :
+    deeper(arg1),
+    close_on_close(arg2),
+    allow_international_characters(arg3),
+    pos(0)
+{
+}
+
+
+void
+output_quoted_printable_ty::eoln_partial()
+{
     //
     // The line is loo long.  We need to back up a few
     // characters.  We must allow one column for the '='
     // soft line break
     // (which is why we wsay >=MAX_LINE_LEN instead of >MAX_LINE_LEN).
     //
-    oldpos = this_thing->pos;
-    newpos = this_thing->pos;
-    while (newpos > 0 && this_thing->glyph[newpos].cumulative >= MAX_LINE_LEN)
+    long oldpos = pos;
+    long newpos = pos;
+    while (newpos > 0 && glyph[newpos].cumulative >= MAX_LINE_LEN)
 	--newpos;
-    newpos_max = newpos;
+    long newpos_max = newpos;
 
     //
     // It's worth hunting for a white space character, it looks nicer.
@@ -264,9 +247,9 @@ end_of_line_partial(output_quoted_printable_ty *this_thing)
     (
 	newpos > 0
     &&
-	this_thing->glyph[newpos - 1].text != ' '
+	glyph[newpos - 1].text != ' '
     &&
-	this_thing->glyph[newpos - 1].text != '\t'
+	glyph[newpos - 1].text != '\t'
     )
 	--newpos;
     if (newpos == 0)
@@ -275,35 +258,33 @@ end_of_line_partial(output_quoted_printable_ty *this_thing)
     //
     // re-write the line length, and emit the partial line.
     //
-    this_thing->pos = newpos;
-    end_of_line(this_thing, 1);
+    pos = newpos;
+    eoln(true);
 
     //
     // Move everything down.
     //
-    for (j = 0; j + newpos < oldpos; ++j)
+    for (int j = 0; j + newpos < oldpos; ++j)
     {
-	glyph_t		*gp;
-
-	gp = this_thing->glyph + j;
-	*gp = this_thing->glyph[newpos + j];
+	glyph_t *gp = glyph + j;
+	*gp = glyph[newpos + j];
 	gp->cumulative = (j ? gp[-1].cumulative : 0) + gp->width;
     }
-    this_thing->pos = oldpos - newpos;
+    pos = oldpos - newpos;
 }
 
 
-static void
-end_of_line_hard(output_quoted_printable_ty *this_thing)
+void
+output_quoted_printable_ty::eoln_hard()
 {
     //
     // We are required to quote trailing spaces or tabs.
     //
-    if (this_thing->pos)
+    if (pos)
     {
 	glyph_t		*gp;
 
-	gp = this_thing->glyph + this_thing->pos - 1;
+	gp = glyph + pos - 1;
 	if (gp->text == ' ' || gp->text == '\t')
 	{
 	    gp->quote_it = 1;
@@ -316,179 +297,140 @@ end_of_line_hard(output_quoted_printable_ty *this_thing)
 	    // partial line first.
 	    //
 	    if (gp->cumulative > MAX_LINE_LEN)
-		end_of_line_partial(this_thing);
+		eoln_partial();
 	}
     }
 
     //
     // now emit the whole lot.
     //
-    end_of_line(this_thing, 0);
+    eoln(false);
 }
 
 
-static void
-output_quoted_printable_destructor(output_ty *fp)
+output_quoted_printable_ty::~output_quoted_printable_ty()
 {
-    output_quoted_printable_ty *this_thing;
+    //
+    // Make sure all buffered data has been passed to our write_inner
+    // method.
+    //
+    flush();
 
-    this_thing = (output_quoted_printable_ty *)fp;
-    while (this_thing->pos)
-	end_of_line_partial(this_thing);
-    if (this_thing->delete_on_close)
-	output_delete(this_thing->deeper);
+    while (pos)
+	eoln_partial();
+    if (close_on_close)
+	delete deeper;
+    deeper = 0;
 }
 
 
-static void
-output_quoted_printable_write(output_ty *fp, const void *p, size_t len)
+void
+output_quoted_printable_ty::write_inner(const void *p, size_t len)
 {
-    output_quoted_printable_ty *this_thing;
-    glyph_t	    *gp;
-    int		    col1;
-    int 	    col2;
-    const unsigned char *data;
-
-    this_thing = (output_quoted_printable_ty *)fp;
-    data = (unsigned char *)p;
+    const unsigned char *data = (const unsigned char *)p;
     while (len > 0)
     {
-	unsigned char	c;
-
-	c = *data++;
+	unsigned char c = *data++;
 	--len;
 	if (c == '\n')
 	{
-	    end_of_line_hard(this_thing);
+	    eoln_hard();
 	    continue;
 	}
 
-	gp = this_thing->glyph + this_thing->pos;
+	glyph_t *gp = glyph + pos;
 	gp->text = c;
 	gp->width = 1;
-	gp->quote_it = 0;
+	gp->quote_it = false;
 	gp->cumulative = 0;
 	switch (c)
 	{
 	case '=':
 	    gp->width = 3;
-	    gp->quote_it = 1;
+	    gp->quote_it = true;
 	    break;
 
 	case '\t':
-	    col1 = (this_thing->pos ? gp[-1].cumulative : 0);
-	    col2 = (col1 + 8) & ~7;
-	    gp->width = col2 - col1;
+	    {
+		int col1 = (pos ? gp[-1].cumulative : 0);
+		int col2 = (col1 + 8) & ~7;
+		gp->width = col2 - col1;
+	    }
 	    break;
 
 	default:
 	    // C locale
 	    if
 	    (
-		(this_thing->allow_international_characters ?
-                 c < ' ' : !isprint(c))
+		(allow_international_characters ?  c < ' ' : !isprint(c))
 	    &&
 		!isspace(c)
 	    )
 	    {
 		gp->width = 3;
-		gp->quote_it = 1;
+		gp->quote_it = true;
 	    }
 	    break;
 	}
-	gp->cumulative = (this_thing->pos ? gp[-1].cumulative : 0) + gp->width;
-	this_thing->pos++;
+	gp->cumulative = (pos ? gp[-1].cumulative : 0) + gp->width;
+	pos++;
 
 	if (gp->cumulative > MAX_LINE_LEN)
-	    end_of_line_partial(this_thing);
+	    eoln_partial();
     }
 }
 
 
-static void
-output_quoted_printable_flush(output_ty *fp)
+void
+output_quoted_printable_ty::flush_inner()
 {
-    output_quoted_printable_ty *this_thing;
-
-    this_thing = (output_quoted_printable_ty *)fp;
-    output_flush(this_thing->deeper);
+    deeper->flush();
 }
 
 
-static string_ty *
-output_quoted_printable_filename(output_ty *fp)
+string_ty *
+output_quoted_printable_ty::filename()
+    const
 {
-    output_quoted_printable_ty *this_thing;
-
-    this_thing = (output_quoted_printable_ty *)fp;
-    return output_filename(this_thing->deeper);
+    return deeper->filename();
 }
 
 
-static long
-output_quoted_printable_ftell(output_ty *fp)
+long
+output_quoted_printable_ty::ftell_inner()
+    const
 {
-    output_quoted_printable_ty *this_thing;
-
-    this_thing = (output_quoted_printable_ty *)fp;
-    return output_ftell(this_thing->deeper);
+    return deeper->ftell();
 }
 
 
-static int
-output_quoted_printable_page_width(output_ty *fp)
+int
+output_quoted_printable_ty::page_width()
+    const
 {
     return MAX_LINE_LEN;
 }
 
 
-static int
-output_quoted_printable_page_length(output_ty *fp)
+int
+output_quoted_printable_ty::page_length()
+    const
 {
-    output_quoted_printable_ty *this_thing;
-
-    this_thing = (output_quoted_printable_ty *)fp;
-    return output_page_length(this_thing->deeper);
+    return deeper->page_length();
 }
 
 
-static void
-output_quoted_printable_eoln(output_ty *fp)
+void
+output_quoted_printable_ty::end_of_line_inner()
 {
-    output_quoted_printable_ty *this_thing;
-
-    this_thing = (output_quoted_printable_ty *)fp;
-    if (this_thing->pos)
-	end_of_line_hard(this_thing);
+    if (pos)
+	eoln_hard();
 }
 
 
-static output_vtbl_ty vtbl =
+const char *
+output_quoted_printable_ty::type_name()
+    const
 {
-    sizeof(output_quoted_printable_ty),
-    output_quoted_printable_destructor,
-    output_quoted_printable_filename,
-    output_quoted_printable_ftell,
-    output_quoted_printable_write,
-    output_quoted_printable_flush,
-    output_quoted_printable_page_width,
-    output_quoted_printable_page_length,
-    output_quoted_printable_eoln,
-    "quoted_printable",
+    return "quoted_printable";
 };
-
-
-output_ty *
-output_quoted_printable(output_ty *deeper, int delete_on_close, int minimum)
-{
-    output_ty	    *result;
-    output_quoted_printable_ty *this_thing;
-
-    result = output_new(&vtbl);
-    this_thing = (output_quoted_printable_ty *)result;
-    this_thing->deeper = deeper;
-    this_thing->delete_on_close = !!delete_on_close;
-    this_thing->pos = 0;
-    this_thing->allow_international_characters = !!minimum;
-    return result;
-}

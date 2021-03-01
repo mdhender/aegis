@@ -124,7 +124,7 @@ checkout_modules_inner(string_list_ty *modules, project_ty *pp)
 	    desc_len,
 	    desc->str_text
 	);
-    string_list_append(modules, s);
+    modules->push_back(s);
     str_free(s);
 
     //
@@ -175,7 +175,7 @@ checkout_modules_inner(string_list_ty *modules, project_ty *pp)
 			desc->str_text
 		    );
 		str_free(s);
-		string_list_append(modules, s2);
+		modules->push_back(s2);
 		str_free(s2);
 	    }
 	    change_free(cp2);
@@ -189,7 +189,6 @@ checkout_modules_inner(string_list_ty *modules, project_ty *pp)
 static void
 checkout_modules(module_ty *mp, server_ty *sp)
 {
-    string_list_ty  modules;
     string_list_ty  toplevel;
     size_t          j;
     string_ty       *server_side;
@@ -411,7 +410,7 @@ checkout_modules(module_ty *mp, server_ty *sp)
     //
     // Put the CVSROOT module in the list.
     //
-    string_list_constructor(&modules);
+    string_list_ty modules;
     s =
 	str_from_c
 	(
@@ -421,7 +420,7 @@ checkout_modules(module_ty *mp, server_ty *sp)
 	    "#\n"
 	    "CVSROOT         CVSROOT\n"
 	);
-    string_list_append(&modules, s);
+    modules.push_back(s);
     str_free(s);
 
     //
@@ -451,10 +450,10 @@ checkout_modules(module_ty *mp, server_ty *sp)
 	if (!err)
 	    checkout_modules_inner(&modules, pp);
 	else
-	    string_list_append(&modules, project_name_get(pp));
+	    modules.push_back(project_name_get(pp));
 	project_free(pp);
     }
-    string_list_destructor(&toplevel);
+    toplevel.clear();
 
     //
     // Also extract the project aliases.
@@ -471,10 +470,9 @@ checkout_modules(module_ty *mp, server_ty *sp)
 	if (!other)
 	    continue;
 	s = str_format("%-12s -a %s\n", alias_name->str_text, other->str_text);
-	string_list_append(&modules, s);
+	modules.push_back(s);
 	str_free(s);
     }
-    string_list_destructor(&toplevel);
 
     //
     // sort the list of names
@@ -483,13 +481,12 @@ checkout_modules(module_ty *mp, server_ty *sp)
     // Project names look a lot like versions strings (indeed,
     // the tail ends *are* version strings) so sort them as such.
     //
-    string_list_sort_version(&modules);
+    modules.sort_version();
 
     //
     // Now build a string based on the list of module names.
     //
-    s = wl2str(&modules, 0, modules.nstrings, "");
-    string_list_destructor(&modules);
+    s = modules.unsplit("");
 
     //
     // Now queue it all to be sent to the client.

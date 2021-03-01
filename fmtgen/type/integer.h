@@ -58,6 +58,12 @@ public:
 	int attributes) const;
 
     // See base class for documentation.
+    void gen_code_copy(const nstring &member_name) const;
+
+    // See base class for documentation.
+    void gen_code_trace(const nstring &name, const nstring &value) const;
+
+    // See base class for documentation.
     void gen_free_declarator(const nstring &variable_name, bool is_a_list)
 	const;
 

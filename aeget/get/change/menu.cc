@@ -79,7 +79,7 @@ get_change_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     {
 	printf("<dt><a href=\"%s/", http_script_name());
 	html_escape_string(project_name_get(cp->pp));
-	printf(".%ld/@@menu\">Branch</a><dd>\n", magic_zero_decode(cp->number));
+	printf(".%ld/?menu\">Branch</a><dd>\n", magic_zero_decode(cp->number));
 	printf("This change is a branch of the &ldquo;");
 	html_encode_string(project_name_get(cp->pp));
 	printf("&rdquo; project.\n");
@@ -133,7 +133,7 @@ get_change_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	printf("<p>\n");
         printf("If you wish to download the sources using\n");
 	printf("&ldquo;wget -r&rdquo; or similar, use the\n<i>");
-	emit_change_href(cp, "file@contents@noindex@nolinks@noderived");
+	emit_change_href(cp, "file+contents+noindex+nolinks+noderived");
         printf("no navigation links</a></i> variant.\n");
 	printf("<p>\n");
     }
@@ -157,7 +157,7 @@ get_change_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	cstate_data->state <= cstate_state_being_integrated
     )
     {
-	printf("<dt>\n");
+	printf("<dt>");
 	emit_change_href(cp, "activity");
 	printf("File Activity</a><dd>\n");
         printf("This item will provide you with a listing of files which\n");
@@ -166,7 +166,7 @@ get_change_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
         printf("the changes, and a brief description of each change.\n");
 	printf("<p>\n");
 
-	printf("<dt>\n");
+	printf("<dt>");
 	emit_change_href(cp, "conflict");
 	printf("File Conflict</a><dd>\n");
         printf("This item will provide you with a list of changes which\n");
@@ -178,28 +178,22 @@ get_change_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 
     if (cstate_data->state >= cstate_state_being_developed)
     {
-	printf("<dt>\n");
-	emit_change_href(cp, "file@history");
+	printf("<dt>");
+	emit_change_href(cp, "file+history");
 	printf("File History</a><dd>\n");
 	printf("This item will provide you with a listing of all completed\n");
 	printf("changes which affected the files in this change.  The\n");
-	emit_change_href(cp, "file@history@deatiled");
+	emit_change_href(cp, "file+history+deatiled");
 	printf("detailed version</a> can take a long time to generate.\n");
 	printf("<p>\n");
     }
 
-#if 0
-    printf("<dt>\n");
-    href = script_name ## "?file@chan_hstry+project@" ## quote_url(pn) ##
-	"+change@" ## cn;
-    printf("<a href=\"" ## href ## "\">\n");
-    printf("History\n");
-    printf("</a><dd>\n");
+    printf("<dt>");
+    emit_change_href(cp, "change+history");
+    printf("History</a><dd>\n");
     printf("This item will provide you with a listing of the state\n");
-    printf("transitions of this change, when they were performed, and\n");
-    printf("who performed them.\n");
-    printf("<p>\n");
-#endif
+    printf("transitions of this change, when they were performed,\n");
+    printf("and who performed them.\n");
 
     printf("</dl></div>\n");
 

@@ -402,64 +402,6 @@ int str_equal(string_ty *str1, string_ty *str2);
 
 /**
   * \brief
-  *	regular expression match
-  *
-  * The str_re_match function is used to test for a regular expression
-  * match.
-  *
-  * \param pattern
-  *	The regular expression pattern to be matched against (excluding
-  *	the slashes).  Will not be modified.
-  * \param candidate
-  *	The string to be tested, to see if it matches the \a pattern.
-  *	Will not be modified.
-  * \param callback
-  *	A pointer to an error message function to be called if there is
-  *	something wrong with the pattern.  If this pointer is NULL,
-  *	it will not be called.
-  *
-  * \return
-  *	Positive if there is a match, zero if there is not,
-  *	negative if an error occurred (usually, a broken \a pattern string).
-  */
-int str_re_match(string_ty *pattern, string_ty *candidate,
-    void (*callback)(const char *));
-
-/**
-  * \brief
-  *	regular expression substitute
-  *
-  * The str_re_substitute function is used to performa a regular
-  * expression match of the \a actual string against the \a lhs (the
-  * pattern) and then substitute into the \a rhs string.
-  *
-  * \param lhs
-  *	The left hand side (the regular expression).
-  *	Will not be modified.
-  * \param rhs
-  *	The right hand side (the replacement).
-  *	Will not be modified.
-  * \param actual
-  *	The string to be matched and replaced.	Will not be modified
-  *	(the operation is <b>not</b> performed <i>in situ</i>).
-  * \param callback
-  *	A pointer to an error message function to be called if there is
-  *	something wrong with the pattern.  If this pointer is NULL,
-  *	it will not be called.
-  * \param count_
-  *	The maximum number of times to match the expression agains the
-  *	string (zero means infinite).
-  *
-  * \return
-  *	a pointer to a string in dynamic memory.  Use str_free() when
-  *	finished with.	The contents of the structure pointed to <b>shall
-  *	not</b> be altered.  Returns NULL if there was an error.
-  */
-string_ty *str_re_substitute(string_ty *lhs, string_ty *rhs, string_ty *actual,
-    void (*callback)(const char *), int count_);
-
-/**
-  * \brief
   *	quote shell meta-characters
   *
   * The str_quote_shell function is used to create a new string which

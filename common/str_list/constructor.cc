@@ -20,13 +20,14 @@
 // MANIFEST: functions to manipulate constructors
 //
 
+#pragma implementation "string_list_ty"
+
 #include <str_list.h>
 
 
-void
-string_list_constructor(string_list_ty *wlp)
+string_list_ty::string_list_ty() :
+    nstrings(0),
+    nstrings_max(0),
+    string(0)
 {
-    wlp->nstrings = 0;
-    wlp->nstrings_max = 0;
-    wlp->string = 0;
 }

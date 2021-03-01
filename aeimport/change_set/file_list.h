@@ -25,17 +25,113 @@
 
 #include <change_set/file.h>
 
-struct change_set_file_list_ty
+/**
+  * The change_set_file_list_ty class is used to represent the list of
+  * files involved in a single change set.
+  */
+class change_set_file_list_ty
 {
-    size_t          length;
-    size_t	    maximum;
-    change_set_file_ty *item;
+public:
+    /**
+      * The destructor.
+      * DO NOT subclass me, I'm not virtual.
+      */
+    ~change_set_file_list_ty();
+
+    /**
+      * The default constructor.
+      */
+    change_set_file_list_ty();
+
+    /**
+      * The size method is used to obtain the number of items in the list.
+      */
+    size_t size() const { return length; }
+
+    /**
+      * The [] operator is used to obtain the nth element of the array.
+      * This has O(1) performance.
+      *
+      * \note
+      *     No bounds checking is performed.
+      */
+    change_set_file_ty *operator[](size_t n) const { return item[n]; }
+
+    /**
+      * The clear method may be used to discard all of the items in the
+      * list.
+      */
+    void clear();
+
+    /**
+      * The push_back method is used to append an item to the end of the
+      * list.  This has O(1) behaviour.
+      */
+    void push_back(change_set_file_ty *csfp);
+
+    /**
+      * The validate method is used at debug to to check that this list
+      * is still valid.
+      */
+    void validate() const;
+
+private:
+    /**
+      * The length instance variable is used to remember how many items
+      * exist in the list.
+      */
+    size_t length;
+
+    /**
+      * The maximum instance variable is used to remember how many items
+      * have been allocated in the item array.
+      *
+      * \assert (length <= maximum)
+      */
+    size_t maximum;
+
+    /**
+      * The item instance variable is used to remember pointers to the
+      * items in the list.
+      *
+      * \assert (!item == !maximum)
+      */
+    change_set_file_ty **item;
+
+    /**
+      * The copy constructor.  Do not use.
+      */
+    change_set_file_list_ty(const change_set_file_list_ty &);
+
+    /**
+      * The assignment operator.  Do not use.
+      */
+    change_set_file_list_ty &operator=(const change_set_file_list_ty &);
 };
 
-void change_set_file_list_constructor(change_set_file_list_ty *);
-void change_set_file_list_destructor(change_set_file_list_ty *);
-void change_set_file_list_append(change_set_file_list_ty *, string_ty *,
-    string_ty *, change_set_file_action_ty, string_list_ty *);
-void change_set_file_list_validate(change_set_file_list_ty *);
+inline void
+change_set_file_list_constructor(change_set_file_list_ty *csflp)
+{
+    csflp->clear();
+}
+
+inline void
+change_set_file_list_destructor(change_set_file_list_ty *csflp)
+{
+    csflp->clear();
+}
+
+inline void
+change_set_file_list_append(change_set_file_list_ty *csflp, string_ty *arg2,
+    string_ty *arg3, change_set_file_action_ty arg4, string_list_ty *arg5)
+{
+    csflp->push_back(new change_set_file_ty(arg2, arg3, arg4, arg5));
+}
+
+inline void
+change_set_file_list_validate(change_set_file_list_ty *csflp)
+{
+    csflp->validate();
+}
 
 #endif // AEIMPORT_CHANGE_SET_FILE_LIST_H

@@ -51,7 +51,7 @@ cgi(void)
     request_method = http_getenv("REQUEST_METHOD");
     for (tp = table; tp < ENDOF(table); ++tp)
     {
-	if (0 == strcmp(request_method, tp->name))
+	if (0 == strcasecmp(request_method, tp->name))
 	{
 	    tp->action();
 	    return;

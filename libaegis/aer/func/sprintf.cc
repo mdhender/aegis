@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1994-1996, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -308,7 +308,6 @@ run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
     int		    prec_set;
     int		    c;
     string_ty	    *s;
-    int		    qualifier;
     int		    flag;
     char	    fake[QUANTUM - 1];
     rpt_value_ty    *result;
@@ -576,13 +575,11 @@ run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 	switch (c)
 	{
 	default:
-	    qualifier = 0;
 	    break;
 
 	case 'l':
 	case 'h':
 	case 'L':
-	    qualifier = c;
 	    c = *fmt++;
 	    break;
 	}

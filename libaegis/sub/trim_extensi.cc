@@ -24,47 +24,42 @@
 #include <sub.h>
 #include <sub/trim_extensi.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 wstring_ty *
 sub_trim_extension(sub_context_ty *scp, wstring_list_ty *arg)
 {
-	wchar_t		*wcp;
-	wstring_ty	*fn;
-	wstring_ty	*result;
+    wchar_t		*wcp;
+    wstring_ty	*fn;
+    wstring_ty	*result;
 
-	trace(("sub_trim_extension()\n{\n"));
-	if (arg->nitems != 2)
-	{
-		sub_context_error_set(scp, i18n("requires one argument"));
-		trace(("return NULL;\n"));
-		trace(("}\n"));
-		return 0;
-	}
-	fn = arg->item[1];
-
-	wcp = fn->wstr_text + fn->wstr_length;
-	while (wcp > fn->wstr_text && wcp[-1] != '/')
-	{
-		--wcp;
-		if (*wcp == '.')
-		{
-			if (wcp <= fn->wstr_text || wcp[-1] == '/')
-				break;
-			result =
-				wstr_n_from_wc
-				(
-					fn->wstr_text,
-					wcp - fn->wstr_text
-				);
-			trace(("return %8.8lX;\n", (long)result));
-			trace(("}\n"));
-			return result;
-		}
-	}
-	result = wstr_copy(fn);
-	trace(("return %8.8lX;\n", (long)result));
+    trace(("sub_trim_extension()\n{\n"));
+    if (arg->size() != 2)
+    {
+	sub_context_error_set(scp, i18n("requires one argument"));
+	trace(("return NULL;\n"));
 	trace(("}\n"));
-	return result;
+	return 0;
+    }
+    fn = arg->get(1);
+
+    wcp = fn->wstr_text + fn->wstr_length;
+    while (wcp > fn->wstr_text && wcp[-1] != '/')
+    {
+	--wcp;
+	if (*wcp == '.')
+	{
+	    if (wcp <= fn->wstr_text || wcp[-1] == '/')
+		break;
+	    result = wstr_n_from_wc(fn->wstr_text, wcp - fn->wstr_text);
+	    trace(("return %8.8lX;\n", (long)result));
+	    trace(("}\n"));
+	    return result;
+	}
+    }
+    result = wstr_copy(fn);
+    trace(("return %8.8lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }

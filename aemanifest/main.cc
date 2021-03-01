@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@
 #include <help.h>
 #include <language.h>
 #include <os.h>
+#include <quit.h>
 #include <progname.h>
 #include <r250.h>
 #include <str_list.h>
@@ -44,7 +45,7 @@ usage(void)
 
     prog = progname_get();
     fprintf(stderr, "usage: %s [ -dir=<path> ][ -o <file> ] <file>...\n", prog);
-    exit(1);
+    quit(1);
 }
 
 
@@ -111,8 +112,6 @@ int
 main(int argc, char **argv)
 {
     size_t	    j;
-    string_list_ty  search_path;
-    string_list_ty  filename;
     string_ty       *s;
     const char      *ofn;
     FILE            *ofp;
@@ -124,8 +123,8 @@ main(int argc, char **argv)
     language_init();
 
     arglex();
-    string_list_constructor(&search_path);
-    string_list_constructor(&filename);
+    string_list_ty search_path;
+    string_list_ty filename;
     ofn = 0;
     while (arglex_token != arglex_token_eoln)
     {
@@ -139,13 +138,13 @@ main(int argc, char **argv)
 	    if (arglex() != arglex_token_string)
 		option_needs_dir(arglex_token_directory, usage);
 	    s = str_from_c(arglex_value.alv_string);
-	    string_list_append(&search_path, s);
+	    search_path.push_back(s);
 	    str_free(s);
 	    break;
 
 	case arglex_token_string:
 	    s = str_from_c(arglex_value.alv_string);
-	    string_list_append(&filename, s);
+	    filename.push_back(s);
     	    str_free(s);
 	    break;
 
@@ -158,7 +157,7 @@ main(int argc, char **argv)
 	arglex();
     }
     if (!search_path.nstrings)
-	string_list_append(&search_path, str_from_c("."));
+	search_path.push_back(str_from_c("."));
     if (ofn)
     {
 	ofp = fopen(ofn, "w");
@@ -215,6 +214,6 @@ main(int argc, char **argv)
     //
     // report success
     //
-    exit(0);
+    quit(0);
     return 0;
 }

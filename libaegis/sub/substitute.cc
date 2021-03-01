@@ -20,72 +20,55 @@
 // MANIFEST: functions to manipulate substitutes
 //
 
+#include <nstring.h>
+#include <regula_expre.h>
 #include <sub.h>
 #include <sub/substitute.h>
 #include <trace.h>
-#include <wstr_list.h>
-
-
-static string_ty *gerr;
-static sub_context_ty *gscp;
-
-
-static void
-err(const char *message)
-{
-    if (gerr)
-	str_free(gerr);
-    gerr = str_from_c(message);
-    sub_context_error_set(gscp, gerr->str_text);
-}
+#include <wstr/list.h>
+#include <wstring.h>
 
 
 wstring_ty *
 sub_substitute(sub_context_ty *scp, wstring_list_ty *arg)
 {
-    string_ty	    *s;
-    string_ty	    *lhs;
-    string_ty	    *rhs;
-    string_ty	    *rs;
-    wstring_ty	    *ws;
-    wstring_ty	    *result;
-
     //
     // make sure there are enough arguments
     //
     trace(("sub_substitute()\n{\n"));
-    if (arg->nitems < 3)
+    if (arg->size() < 3)
     {
 	sub_context_error_set(scp, i18n("requires two or more arguments"));
 	trace(("return NULL;\n"));
 	trace(("}\n"));
 	return 0;
     }
-    lhs = wstr_to_str(arg->item[1]);
-    rhs = wstr_to_str(arg->item[2]);
+    nstring lhs = wstr_to_str(arg->get(1));
+    nstring rhs = wstr_to_str(arg->get(2));
 
     //
     // turn it into one big string to be substituted within
     //
-    ws = wstring_list_to_wstring(arg, (size_t)3, arg->nitems, (char *)0);
-    s = wstr_to_str(ws);
-    wstr_free(ws);
+    wstring ws = arg->unsplit(3, arg->size());
+    nstring s = wstr_to_str(ws.get_ref());
 
     //
     // do the substitution
     //
-    gscp = scp;
-    rs = str_re_substitute(lhs, rhs, s, err, 32767);
-    gscp = 0;
-    result = rs ? str_to_wstr(rs) : 0;
+    regular_expression re(lhs);
+    nstring output;
+    if (!re.match_and_substitute(rhs, s, 0, output))
+    {
+	sub_context_error_set(scp, re.strerror());
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
+    }
 
     //
     // clean up and return
     //
-    str_free(lhs);
-    str_free(rhs);
-    str_free(s);
-    str_free(rs);
+    wstring_ty *result = str_to_wstr(output.get_ref());
     trace(("return %8.8lX;\n", (long)result));
     trace(("}\n"));
     return result;

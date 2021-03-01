@@ -27,34 +27,35 @@
 
 
 void
+os_mkdir_between(const nstring &top, const nstring &extn, int mode)
+{
+    trace(("os_mkdir_between(top = %08lX, extn = %08lX, mode = 0%o)\n{\n",
+	(long)&top, (long)&extn, mode));
+    trace_string(top.c_str());
+    trace_string(extn.c_str());
+    assert(top[0] == '/');
+    assert(extn[0] != '/');
+    assert(extn[extn.size() - 1] != '/');
+    assert(!extn.empty());
+    for (const char *cp = extn.c_str(); *cp; ++cp)
+    {
+	if (*cp != '/')
+	    continue;
+	nstring s1(extn.c_str(), cp - extn.c_str());
+	nstring s2(os_path_cat(top, s1));
+	trace(("mkdir %s\n", s2.c_str()));
+	if (!os_exists(s2))
+	{
+	    os_mkdir(s2, mode);
+	    undo_rmdir_errok(s2);
+	}
+    }
+    trace(("}\n"));
+}
+
+
+void
 os_mkdir_between(string_ty *top, string_ty *extn, int mode)
 {
-	char		*cp;
-	string_ty	*s1;
-	string_ty	*s2;
-
-	trace(("os_mkdir_between(top = %08lX, extn = %08lX, "
-	    "mode = 0%o)\n{\n", (long)top, (long)extn, mode));
-	trace_string(top->str_text);
-	trace_string(extn->str_text);
-	assert(top->str_text[0] == '/');
-	assert(extn->str_text[0] != '/');
-	assert(extn->str_text[extn->str_length - 1] != '/');
-	assert(extn->str_length);
-	for (cp = extn->str_text; *cp; ++cp)
-	{
-		if (*cp != '/')
-			continue;
-		s1 = str_n_from_c(extn->str_text, cp - extn->str_text);
-		s2 = os_path_cat(top, s1);
-		trace(("mkdir %s\n", s2->str_text));
-		if (!os_exists(s2))
-		{
-			os_mkdir(s2, mode);
-			undo_rmdir_errok(s2);
-		}
-		str_free(s1);
-		str_free(s2);
-	}
-	trace(("}\n"));
+    os_mkdir_between(nstring(str_copy(top)), nstring(str_copy(extn)), mode);
 }

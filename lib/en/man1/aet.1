@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1996-2000, 2002, 2004 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1996-2000, 2002, 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -233,7 +233,12 @@ This option implies the
 .B -REGression
 option.
 .TP 8n
-\fB-SUGgest_Noise \fInumber\fP
+\fB\SUGgest_Limit\fP \fIminutes\fP
+.br
+This option may be used to limit the number of tests to a certain number
+of minutes.  They will be run from most relevant to least relevant.
+.TP 8n
+\fB-SUGgest_Noise\fP \fInumber\fP
 .br
 This option may be used to control the amount of noise injected into the
 test selection performed by the \fB-SUGgest\fP option.

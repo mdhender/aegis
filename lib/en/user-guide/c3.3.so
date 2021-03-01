@@ -60,8 +60,8 @@ The entry in the
 file looks like this:
 .E(
 history_create_command =
-  "fhist ${b $i} -create -cu -i $i \e
-   -p ${d $h} -r";
+  "fhist ${b $h} -create -cu "
+  "-i $i -p ${d $h} -r";
 .E)
 Note that the source file is left in the baseline.
 .nh 3 "history_get_command"
@@ -82,8 +82,8 @@ The entry in the
 file looks like this:
 .E(
 history_get_command =
-  "fhist ${b $h} -e '$e' -o $o \e
-   -p ${d $h}";
+  "fhist ${b $h} -e '$e' -o $o "
+  "-p ${d $h}";
 .E)
 .LP
 Note that the destination filename will
@@ -107,8 +107,8 @@ The entry in the
 file looks like this:
 .E(
 history_put_command =
-  "fhist ${b $i} -create -cu -i $i \e
-   -p ${d $h} -r";
+  "fhist ${b $h} -create -cu "
+  "-i $i -p ${d $h} -r";
 .E)
 .LP
 Note that the source file is left in the baseline.
@@ -135,14 +135,15 @@ The entry in the
 file looks like this:
 .E(
 history_query_command =
-  "fhist ${b $h} -l 0 \e
-   -p ${d $h} -q";
+  "fhist ${b $h} -l 0 "
+  "-p ${d $h} -q";
 .E)
 .nh 3 "Templates"
 .LP
 The
 .I lib/config.example/fhist
 file in the Aegis distribution
+(installed as \fI\*(D)/config.example/fhist\fP by default)
 contains all of the above commands,
 so that you may readily insert them into your project
 configuration
@@ -154,10 +155,11 @@ files, however this is the only limitation.  By default, Aegis expects
 that history tools are only able to cope with printable ASCII text.
 To tell it ontherwise, set
 .E(
-history_content_limitation = international_text;
+history_content_limitation =
+    international_text;
 .E)
 in the project \fIconfig\fP file.
-.PP
+.LP
 Aegis will transparently encode binary files (files which contain NUL
 characters) on entry and exit from the history tool.  This means that
 you may have binary files in your project without configuring anything
@@ -170,16 +172,17 @@ that it may contain NUL characters.  It is essential that you have
 consistent presence or absence of the \-binary option for each file
 when combined with the \-CReate, \-Update, \-Conditional_\%Update and
 \-Extract options.  Failure to do so will produce inconsistent results.
-.PP
+.LP
 This means that you have to \fIalways\fP use the \-binary option in the
 \fIhistory_create_command\fP and \fIhistory_put_command\fP fields.  You
 have to decide right at the very beginning if your project \fIhistory\fP
 will ever have binary files, or will never have binary files.  You can't
 change your mind later.  If you choose to use the \-binary option, set
 .E(
-history_content_limitation = binary_capable;
+history_content_limitation =
+    binary_capable;
 .E)
-.PP
+.LP
 However, Aegis
 would transparently encode all such files, if you leave the
 \fIhistory_\%content_\%limitation\fP field set for international text.

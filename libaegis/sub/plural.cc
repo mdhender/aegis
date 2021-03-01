@@ -24,7 +24,7 @@
 #include <sub/plural.h>
 #include <trace.h>
 #include <wstr.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 wstring_ty *
@@ -35,7 +35,7 @@ sub_plural(sub_context_ty *scp, wstring_list_ty *arg)
     long	    n;
 
     trace(("sub_plural()\n{\n"));
-    switch (arg->nitems)
+    switch (arg->size())
     {
     default:
 	sub_context_error_set(scp, i18n("requires two or three arguments"));
@@ -43,17 +43,17 @@ sub_plural(sub_context_ty *scp, wstring_list_ty *arg)
 	break;
 
     case 3:
-	wstring_list_append(arg, wstr_from_c(""));
+	arg->push_back(wstr_from_c(""));
 	// fall through...
 
     case 4:
-	s = wstr_to_str(arg->item[1]);
+	s = wstr_to_str(arg->get(1));
 	n = atol(s->str_text);
 	str_free(s);
 	if (n != 1)
-	    result = wstr_copy(arg->item[2]);
+	    result = wstr_copy(arg->get(2));
 	else
-	    result = wstr_copy(arg->item[3]);
+	    result = wstr_copy(arg->get(3));
 	break;
     }
     trace(("return %8.8lX;\n", (long)result));

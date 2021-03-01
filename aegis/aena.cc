@@ -196,7 +196,6 @@ new_administrator_inner(project_ty *pp, string_list_ty *wlp, int strict)
 static void
 new_administrator_main(void)
 {
-    string_list_ty  wl;
     string_ty	    *s1;
     string_ty	    *project_name;
     project_ty	    *pp;
@@ -204,7 +203,7 @@ new_administrator_main(void)
 
     trace(("new_administrator_main()\n{\n"));
     arglex();
-    string_list_constructor(&wl);
+    string_list_ty wl;
     project_name = 0;
     recursive = 0;
     while (arglex_token != arglex_token_eoln)
@@ -226,7 +225,7 @@ new_administrator_main(void)
 
 	case arglex_token_string:
 	    s1 = str_from_c(arglex_value.alv_string);
-	    if (string_list_member(&wl, s1))
+	    if (wl.member(s1))
 	    {
 		sub_context_ty	*scp;
 
@@ -236,7 +235,7 @@ new_administrator_main(void)
 		sub_context_delete(scp);
 		new_administrator_usage();
 	    }
-	    string_list_append(&wl, s1);
+	    wl.push_back(s1);
 	    str_free(s1);
 	    break;
 
@@ -269,12 +268,9 @@ new_administrator_main(void)
 
     if (recursive)
     {
-	string_list_ty  pl;
-	size_t          j;
-
-	string_list_constructor(&pl);
+	string_list_ty pl;
 	project_list_inner(&pl, pp);
-	for (j = 0; j < pl.nstrings; ++j)
+	for (size_t j = 0; j < pl.nstrings; ++j)
 	{
 	    project_ty      *branch;
 
@@ -283,7 +279,6 @@ new_administrator_main(void)
 	    new_administrator_inner(branch, &wl, 0);
 	    project_free(branch);
 	}
-	string_list_destructor(&pl);
     }
     else
     {

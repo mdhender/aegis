@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -33,19 +33,12 @@
 #include <project/file/roll_forward.h>
 #include <str_list.h>
 #include <sub.h>
-#include <symtab.h>
-#include <symtab/keys.h>
 #include <trace.h>
 #include <zero.h>
 
 
 project_file_roll_forward::~project_file_roll_forward()
 {
-    if (stp)
-    {
-	symtab_free(stp);
-	stp = 0;
-    }
 }
 
 
@@ -66,7 +59,8 @@ file_event_list_new(void)
 
 
 static void
-file_event_list_append(file_event_list_ty *felp, time_t when, change_ty	*cp)
+file_event_list_append(file_event_list_ty *felp, time_t when, change_ty	*cp,
+    fstate_src_ty *src)
 {
     file_event_ty	*fep;
 
@@ -93,6 +87,7 @@ file_event_list_append(file_event_list_ty *felp, time_t when, change_ty	*cp)
     fep = felp->item + felp->length++;
     fep->when = when;
     fep->cp = cp;
+    fep->src = src;
     trace(("}\n"));
 }
 
@@ -317,7 +312,7 @@ playback_constructor(playback_ty *pbp, time_t limit, project_ty *pp)
     pbp->clp = change_list_get(pp, limit);
     pbp->position = 0;
     pbp->pushed = 0;
-    pbp->files = symtab_alloc(5);
+    pbp->files = new symtab_ty(5);
     trace(("}\n"));
 }
 
@@ -329,7 +324,7 @@ playback_destructor(playback_ty *pbp)
     if (pbp->clp)
 	delete pbp->clp;
     if (pbp->files)
-	symtab_free(pbp->files);
+	delete pbp->files;
     pbp->pp = 0;
     pbp->clp = 0;
     pbp->position = 0;
@@ -614,6 +609,15 @@ branch_finish_time(project_ty *pp)
 }
 
 
+static string_ty *
+uuid_or_filename(fstate_src_ty *src)
+{
+    assert(src);
+    assert(src->file_name);
+    return (src->uuid ? src->uuid : src->file_name);
+}
+
+
 time_t
 project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
     int detailed)
@@ -622,7 +626,6 @@ project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
     size_t	    j;
     time_t	    result;
     change_list_ty  *clp;
-    size_t          orig_depth;
     time_t          other_time;
 
     trace(("recapitulate(pp = %08lX, limit = %ld, detailed = %d)\n{\n",
@@ -630,7 +633,6 @@ project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
     result = 0;
     playback_list_constructor(&stack);
     playback_list_recinit(&stack, limit, pp);
-    orig_depth = stack.length;
 
     //
     // Check that the time requested makes sense.
@@ -759,6 +761,7 @@ project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
 	trace(("project \"%s\", change %ld, delta %ld\n",
 	    project_name_get(cp->pp)->str_text,
 	    magic_zero_decode(cp->number), change_delta_number_get(cp)));
+	last_change = cp;
 
 	//
 	// For each file in the change, look down the view path and see
@@ -784,7 +787,6 @@ project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
 		change_ty       *vp_cp;
 		fstate_src_ty   *vp_src;
 		size_t          vp_idx;
-		file_event_list_ty *felp;
 
 		trace(("j = %d\n", (int)j));
 		src = change_file_nth(cp, j, view_path_first);
@@ -796,7 +798,7 @@ project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
 		// Add the file to the branch's state.  This is important
 		// so that "looking down the view path" means something.
 		//
-		symtab_assign(pbp->files, src->file_name, src);
+		pbp->files->assign(src->file_name, src);
 
 		//
 		// Now look for the file along the view path.
@@ -815,8 +817,7 @@ project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
 			continue;
 		    vp_cp = vp_pbp->clp->item[vp_pbp->position];
 		    vp_src =
-			(fstate_src_ty *)
-                        symtab_query(vp_pbp->files, src->file_name);
+			(fstate_src_ty *)vp_pbp->files->query(src->file_name);
 
 		    //
 		    // This logic MUST be the same as used by
@@ -896,12 +897,33 @@ project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
 		    break;
 		}
 
-		felp =
-                    (file_event_list_ty *)symtab_query(stp, vp_src->file_name);
+		//
+                // Locate the file events we are tracking for this file.
+                // Create one if we haven't seen it before.
+		//
+		string_ty *uuid = uuid_or_filename(vp_src);
+		file_event_list_ty *felp = uuid_to_felp.query(uuid);
 		if (!felp)
 		{
 		    felp = file_event_list_new();
-		    symtab_assign(stp, vp_src->file_name, felp);
+		    uuid_to_felp.assign(uuid, felp);
+		    uuid_to_felp.set_reaper();
+		}
+
+		//
+		// Update the mapping from file name to file UUID.
+		// (Watch out for the remove half of a rename.)
+		//
+		if
+		(
+		    !vp_src->uuid
+		||
+		    vp_src->action != file_action_remove
+		||
+		    !vp_src->move
+		)
+		{
+		    filename_to_uuid.assign(vp_src->file_name, uuid);
 		}
 
 		//
@@ -916,7 +938,54 @@ project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
 		    vp_src->file_name->str_text,
 		    (vp_src->edit && vp_src->edit->revision ?
 		    vp_src->edit->revision->str_text : "")));
-		file_event_list_append(felp, playback_when(pbp), vp_cp);
+		if
+		(
+		    vp_src->move
+		&&
+		    vp_src->uuid
+		&&
+		    change_file_find(vp_cp, vp_src->move, view_path_first)
+		)
+		{
+		    //
+                    // Note that moved files need special handling,
+                    // because they are modeled as a remove and a
+                    // create.  They could come in either order, but
+                    // they will both be in the same change.  Ignore the
+                    // remove, but keep the create.
+		    //
+		    switch (vp_src->action)
+		    {
+		    case file_action_remove:
+			break;
+
+#ifndef DEBUG
+		    default:
+#endif
+		    case file_action_create:
+		    case file_action_modify:
+		    case file_action_transparent:
+		    case file_action_insulate:
+			file_event_list_append
+			(
+			    felp,
+			    playback_when(pbp),
+			    vp_cp,
+			    vp_src
+			);
+			break;
+		    }
+		}
+		else
+		{
+		    file_event_list_append
+		    (
+			felp,
+			playback_when(pbp),
+			vp_cp,
+			vp_src
+		    );
+		}
 	    }
 	}
 
@@ -945,16 +1014,16 @@ project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
 
 
 project_file_roll_forward::project_file_roll_forward() :
-    stp(0),
-    stp_time(0)
+    stp_time(0),
+    last_change(0)
 {
 }
 
 
 project_file_roll_forward::project_file_roll_forward(project_ty *pp,
 	time_t limit, int detailed) :
-    stp(0),
-    stp_time(0)
+    stp_time(0),
+    last_change(0)
 {
     set(pp, limit, detailed);
 }
@@ -965,36 +1034,69 @@ project_file_roll_forward::set(project_ty *pp, time_t limit, int detailed)
 {
     trace(("project_file_roll_forward(pp = %08lX, limit = %ld \"%.24s\", "
 	"detailed = %d)\n{\n", (long)pp, (long)limit, ctime(&limit), detailed));
-    assert(!stp);
+    assert(filename_to_uuid.empty());
+    assert(uuid_to_felp.empty());
     walk_these_branches.clear();
-    stp = symtab_alloc(1000);
     stp_time = recapitulate(pp, limit, !!detailed);
     trace(("}\n"));
 }
 
 
 file_event_list_ty *
-project_file_roll_forward::get(string_ty *filename)
+project_file_roll_forward::get(const nstring &filename)
 {
-    assert(stp);
-    if (!stp)
+    trace(("project_file_roll_forward_get(\"%s\")\n{\n", filename.c_str()));
+    assert(!filename_to_uuid.empty());
+    string_ty *uuid = filename_to_uuid.query(filename);
+    if (!uuid)
+    {
+	trace(("return NULL;\n"));
+	trace(("}\n"));
 	return 0;
-    file_event_list_ty *result;
-
-    trace(("project_file_roll_forward_get(%s)\n{\n", filename->str_text));
-    result = (file_event_list_ty *)symtab_query(stp, filename);
+    }
+    assert(!uuid_to_felp.empty());
+    file_event_list_ty *result = uuid_to_felp.query(uuid);
 #ifdef DEBUG
     if (result)
     {
-	size_t          j;
-
-	for (j = 0; j < result->length; ++j)
+	for (size_t j = 0; j < result->length; ++j)
 	{
-	    file_event_ty   *fep;
-	    change_ty       *cp;
+	    file_event_ty *fep = &result->item[j];
+	    change_ty *cp = fep->cp;
+	    trace(("%s, %ld, %.24s\n", project_name_get(cp->pp)->str_text,
+		cp->number, ctime(&fep->when)));
+	}
+    }
+#endif
+    trace(("return %08lX\n", (long)result));
+    trace(("}\n"));
+    return result;
+}
 
-	    fep = &result->item[j];
-	    cp = fep->cp;
+
+file_event_list_ty *
+project_file_roll_forward::get(string_ty *filename)
+{
+    return get(nstring(str_copy(filename)));
+}
+
+
+file_event_list_ty *
+project_file_roll_forward::get(fstate_src_ty *src)
+{
+    trace(("project_file_roll_forward::get(%08lX)\n{\n", (long)src));
+    trace(("src->file_name = \"%s\";\n", src->file_name->str_text));
+    string_ty *uuid = uuid_or_filename(src);
+    trace(("uuid = \"%s\";\n", uuid->str_text));
+    assert(!uuid_to_felp.empty());
+    file_event_list_ty *result = uuid_to_felp.query(uuid);
+#ifdef DEBUG
+    if (result)
+    {
+	for (size_t j = 0; j < result->length; ++j)
+	{
+	    file_event_ty *fep = &result->item[j];
+	    change_ty *cp = fep->cp;
 	    trace(("%s, %ld, %.24s\n", project_name_get(cp->pp)->str_text,
 		cp->number, ctime(&fep->when)));
 	}
@@ -1007,19 +1109,75 @@ project_file_roll_forward::get(string_ty *filename)
 
 
 file_event_ty *
+project_file_roll_forward::get_last(const nstring &filename)
+{
+    trace(("project_file_roll_forward_get_last(%s)\n{\n", filename.c_str()));
+    string_ty *uuid = filename_to_uuid.query(filename);
+    if (uuid == 0)
+    {
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
+    }
+    file_event_list_ty *felp = uuid_to_felp.query(uuid);
+    if (!felp || !felp->length)
+    {
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
+    }
+
+    file_event_ty *result = &felp->item[felp->length - 1];
+    trace(("return %08lX\n", (long)result));
+    trace(("}\n"));
+    return result;
+}
+
+
+file_event_ty *
 project_file_roll_forward::get_last(string_ty *filename)
 {
-    assert(stp);
-    if (!stp)
-	return 0;
-    file_event_list_ty *felp;
-    file_event_ty   *result;
+    return get_last(nstring(str_copy(filename)));
+}
 
-    trace(("project_file_roll_forward_get_last(%s)\n{\n", filename->str_text));
-    result = 0;
-    felp = (file_event_list_ty *)symtab_query(stp, filename);
-    if (felp && felp->length)
-	result = &felp->item[felp->length - 1];
+
+file_event_ty *
+project_file_roll_forward::get_older(const nstring &filename)
+{
+    trace(("project_file_roll_forward_get_older(%s)\n{\n", filename.c_str()));
+    assert(!filename_to_uuid.empty());
+    string_ty *uuid = filename_to_uuid.query(filename);
+    if (!uuid)
+    {
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
+    }
+    file_event_list_ty *felp = uuid_to_felp.query(uuid);
+    if (!felp || !felp->length)
+    {
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
+    }
+    file_event_ty *result = 0;
+    for (size_t j = felp->length; j > 0; --j)
+    {
+	//
+	// We don't simply want the second last entry, we want the
+	// last entry before the time of the last change.  This is
+	// because we want the previous delta, not the previous
+	// file version.  For some files this will be the last entry,
+	// and other files this will be the second last entry.
+	//
+	file_event_ty *fep = &felp->item[j - 1];
+	time_t when = change_completion_timestamp(fep->cp);
+	if (when < stp_time)
+	{
+	    result = fep;
+	    break;
+	}
+    }
     trace(("return %08lX\n", (long)result));
     trace(("}\n"));
     return result;
@@ -1029,52 +1187,23 @@ project_file_roll_forward::get_last(string_ty *filename)
 file_event_ty *
 project_file_roll_forward::get_older(string_ty *filename)
 {
-    assert(stp);
-    if (!stp)
-	return 0;
-    file_event_list_ty *felp;
-    file_event_ty   *result;
-
-    trace(("project_file_roll_forward_get_older(%s)\n{\n", filename->str_text));
-    result = 0;
-    felp = (file_event_list_ty *)symtab_query(stp, filename);
-    if (felp)
-    {
-	size_t		j;
-
-	for (j = felp->length; j > 0; --j)
-	{
-	    file_event_ty   *fep;
-	    time_t	    when;
-
-	    //
-	    // We don't simply want the second last entry, we want the
-	    // last entry before the time of the last change.  This is
-	    // because we want the previous delta, not the previous
-	    // file version.  For some files this will be the last entry,
-	    // and other files this will be the second last entry.
-	    //
-	    fep = &felp->item[j - 1];
-	    when = change_completion_timestamp(fep->cp);
-	    if (when < stp_time)
-	    {
-		result = fep;
-		break;
-	    }
-	}
-    }
-    trace(("return %08lX\n", (long)result));
-    trace(("}\n"));
-    return result;
+    return get_older(nstring(str_copy(filename)));
 }
 
 
 void
-project_file_roll_forward::keys(string_list_ty *result)
+project_file_roll_forward::keys(nstring_list &result)
 {
-    assert(stp);
-    if (!stp)
-	return;
-    symtab_keys(stp, result);
-    string_list_sort(result);
+    assert(!filename_to_uuid.empty());
+    filename_to_uuid.keys(result);
+    result.sort();
+}
+
+
+change_ty *
+project_file_roll_forward::get_last_change()
+    const
+{
+    assert(last_change);
+    return last_change;
 }

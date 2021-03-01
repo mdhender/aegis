@@ -160,8 +160,6 @@ aenfu_candidate(fstate_src_ty *src)
 static void
 new_file_undo_main(void)
 {
-    string_list_ty  wl;
-    string_list_ty  wl2;
     size_t	    j;
     size_t	    k;
     string_ty	    *s1;
@@ -181,7 +179,7 @@ new_file_undo_main(void)
     arglex();
     project_name = 0;
     change_number = 0;
-    string_list_constructor(&wl);
+    string_list_ty wl;
     log_style = log_style_append_default;
     while (arglex_token != arglex_token_eoln)
     {
@@ -199,7 +197,7 @@ new_file_undo_main(void)
 
 	case arglex_token_string:
 	    s2 = str_from_c(arglex_value.alv_string);
-	    string_list_append(&wl, s2);
+	    wl.push_back(s2);
 	    str_free(s2);
 	    break;
 
@@ -241,6 +239,11 @@ new_file_undo_main(void)
 	case arglex_token_base_relative:
 	case arglex_token_current_relative:
 	    user_relative_filename_preference_argument(new_file_undo_usage);
+	    break;
+
+	case arglex_token_symbolic_links:
+	case arglex_token_symbolic_links_not:
+	    user_symlink_pref_argument(new_file_undo_usage);
 	    break;
 	}
 	arglex();
@@ -331,7 +334,7 @@ new_file_undo_main(void)
     // 4.   if neither, error
     //
     number_of_errors = 0;
-    string_list_constructor(&wl2);
+    string_list_ty wl2;
     for (j = 0; j < wl.nstrings; ++j)
     {
 	string_list_ty	wl_in;
@@ -385,7 +388,7 @@ new_file_undo_main(void)
 		assert(src_data);
 		if (src_data && aenfu_candidate(src_data))
 		{
-		    if (string_list_member(&wl2, s3))
+		    if (wl2.member(s3))
 		    {
 			sub_context_ty	*scp;
 
@@ -396,7 +399,7 @@ new_file_undo_main(void)
 			++number_of_errors;
 		    }
 		    else
-			string_list_append(&wl2, s3);
+			wl2.push_back(s3);
 		    ++used;
 		}
 	    }
@@ -423,7 +426,7 @@ new_file_undo_main(void)
 	}
 	else
 	{
-	    if (string_list_member(&wl2, s2))
+	    if (wl2.member(s2))
 	    {
 		sub_context_ty	*scp;
 
@@ -434,14 +437,11 @@ new_file_undo_main(void)
 		++number_of_errors;
 	    }
 	    else
-		string_list_append(&wl2, s2);
+		wl2.push_back(s2);
 	}
-	string_list_destructor(&wl_in);
 	str_free(s2);
     }
-    string_list_destructor(&wl);
     wl = wl2;
-    string_list_destructor(&search_path);
 
     //
     // ensure that each file
@@ -516,11 +516,24 @@ new_file_undo_main(void)
 	user_become_undo();
 	if (exists && user_delete_file_query(up, s1, 0))
 	{
+	    //
+            // This is not as robust in the face of errors as using
+            // commit.  Its merit is its simplicity.
+            //
+            // It plays nice with the
+            // change_maintain_symlinks_to_basline call, below.
+            //
+            // Also, the rename-and-delete shenanigans take a long time
+            // over NFS, and users expect this to be fast.
+	    //
 	    user_become(up);
-	    commit_unlink_errok(s2);
+	    os_unlink_errok(s2);
 	    user_become_undo();
 	}
 
+	//
+	// Always unlink the difference file.
+	//
 	s1 = str_format("%s,D", s2->str_text);
 	str_free(s2);
 	s2 = s1;
@@ -553,6 +566,11 @@ new_file_undo_main(void)
     change_uuid_clear(cp);
 
     //
+    // Maintain the symlinks (etc) to the baseline.
+    //
+    change_maintain_symlinks_to_baseline(cp, up);
+
+    //
     // run the change file command
     // and the project file command if necessary
     //
@@ -578,7 +596,6 @@ new_file_undo_main(void)
 	change_verbose(cp, scp, i18n("new file undo $filename complete"));
 	sub_context_delete(scp);
     }
-    string_list_destructor(&wl);
     project_free(pp);
     change_free(cp);
     user_free(up);

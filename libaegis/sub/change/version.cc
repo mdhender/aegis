@@ -25,7 +25,7 @@
 #include <sub.h>
 #include <trace.h>
 #include <wstr.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 //
@@ -60,31 +60,54 @@
 wstring_ty *
 sub_version(sub_context_ty *scp, wstring_list_ty *arg)
 {
-    wstring_ty	    *result;
-
     trace(("sub_version()\n{\n"));
-    result = 0;
-    if (arg->nitems != 1)
-	sub_context_error_set(scp, i18n("requires zero arguments"));
-    else
+    bool uuid = false;
+    for (size_t j = 1; j < arg->size(); ++j)
     {
-	change_ty	*cp;
-
-	cp = sub_context_change_get(scp);
-	if (!cp || cp->bogus)
-	{
-	    sub_context_error_set(scp, i18n("not valid in current context"));
-	    result = 0;
-	}
+	string_ty *s = wstr_to_str(arg->get(j));
+	static string_ty *uuid_name;
+	if (!uuid_name)
+	    uuid_name = str_from_c("delta_uuid");
+	if (str_equal(uuid_name, s))
+	    uuid = true;
 	else
 	{
-	    string_ty	    *s2;
-
-	    s2 = change_version_get(cp);
-	    result = str_to_wstr(s2);
-	    str_free(s2);
+	    sub_context_error_set(scp, i18n("requires zero arguments"));
+    	    trace(("return NULL;\n"));
+    	    trace(("}\n"));
+    	    return 0;
 	}
     }
+
+    change_ty *cp = sub_context_change_get(scp);
+    if (!cp || cp->bogus)
+    {
+	sub_context_error_set(scp, i18n("not valid in current context"));
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
+    }
+
+    wstring_ty *result = 0;
+    if (uuid)
+    {
+	cstate_ty *cstate_data = change_cstate_get(cp);
+	if (!cstate_data->delta_uuid)
+	{
+	    sub_context_error_set(scp, i18n("not valid in current context"));
+	    trace(("return NULL;\n"));
+	    trace(("}\n"));
+	    return 0;
+	}
+	result = str_to_wstr(cstate_data->delta_uuid);
+    }
+    else
+    {
+	string_ty *s2 = change_version_get(cp);
+	result = str_to_wstr(s2);
+	str_free(s2);
+    }
+
     trace(("return %8.8lX;\n", (long)result));
     trace(("}\n"));
     return result;

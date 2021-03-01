@@ -30,7 +30,7 @@
 #include <sub/plural_gram.h>
 #include <trace.h>
 #include <wstr.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 static char *header_begin;
@@ -61,7 +61,7 @@ header_get_line(void)
 {
     static stracc_t sa;
 
-    stracc_open(&sa);
+    sa.clear();
     for (;;)
     {
 	int             c;
@@ -69,7 +69,7 @@ header_get_line(void)
 	c = header_getc();
 	if (!c)
 	{
-	    if (!sa.length)
+	    if (sa.empty())
 		return 0;
 	    break;
 	}
@@ -82,9 +82,9 @@ header_get_line(void)
 		break;
 	    }
 	}
-	stracc_char(&sa, c);
+	sa.push_back(c);
     }
-    return stracc_close(&sa);
+    return sa.mkstr();
 }
 
 
@@ -137,28 +137,25 @@ static string_ty *plural_forms;
 wstring_ty *
 sub_plural_forms(sub_context_ty *scp, wstring_list_ty *arg)
 {
-    wstring_ty	    *result;
-    int             argpos;
-    string_ty       *s;
-    unsigned        n;
-
     trace(("sub_plural()\n{\n"));
-    argpos = 1;
-
-    //
-    // Thsi is undocumented: if the first argument starts with '@'
-    // then use it instead of the Plural-Forms: header in the po/mo file.
-    //
-    if (argpos >= (int)arg->nitems)
+    if (arg->size() < 2)
     {
 	oh_dear:
 	sub_context_error_set(scp, i18n("requires two or three arguments"));
-	result = 0;
-	goto done;
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
     }
-    if (arg->item[argpos]->wstr_text[0] == '@')
+
+    //
+    // This is undocumented: if the first argument starts with '@'
+    // then use it instead of the Plural-Forms: header in the po/mo file.
+    // It is used for testing via aesub(1).
+    //
+    size_t argpos = 1;
+    if (arg->get(argpos)->wstr_text[0] == '@')
     {
-	s = wstr_to_str(arg->item[1]);
+	string_ty *s = wstr_to_str(arg->get(1));
 	if (plural_forms)
 	    str_free(plural_forms);
 	plural_forms = str_n_from_c(s->str_text + 1, s->str_length - 1);
@@ -174,10 +171,10 @@ sub_plural_forms(sub_context_ty *scp, wstring_list_ty *arg)
     //
     // Get the number of items that the plural form is for.
     //
-    if (argpos >= (int)arg->nitems)
+    if (argpos >= arg->size())
 	goto oh_dear;
-    s = wstr_to_str(arg->item[argpos++]);
-    n = atoi(s->str_text);
+    string_ty *s = wstr_to_str(arg->get(argpos++));
+    unsigned n = atoi(s->str_text);
     str_free(s);
 
     //
@@ -190,13 +187,12 @@ sub_plural_forms(sub_context_ty *scp, wstring_list_ty *arg)
     // If the appropriately numbered argument is not present,
     // return the singular form.
     //
-    if (argpos >= (int)arg->nitems)
+    if (argpos >= arg->size())
 	goto oh_dear;
-    if (argpos + n > arg->nitems)
+    if (argpos + n > arg->size())
 	n = 0;
-    result = wstr_copy(arg->item[argpos + n]);
+    wstring_ty *result = wstr_copy(arg->get(argpos + n));
 
-    done:
     trace(("return %8.8lX;\n", (long)result));
     trace(("}\n"));
     return result;

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -97,7 +97,7 @@
 
 
 static void
-run(server_ty *sp, string_ty *arg)
+run(server_ty *sp, string_ty *fn)
 {
     module_ty       *mp;
     size_t          j;
@@ -106,12 +106,18 @@ run(server_ty *sp, string_ty *arg)
 	return;
     if (server_directory_required(sp, "co"))
 	return;
-    for (j = 0; j < sp->np->argument_list.nstrings; ++j)
+    for (j = 0; j < sp->np->argument_count(); ++j)
     {
-	if (sp->np->argument_list.string[j]->str_text[0] != '-')
+	string_ty *arg = sp->np->argument_nth(j);
+	if (arg->str_text[0] != '-')
 	    break;
+	if (0 == strcmp(arg->str_text, "--"))
+	{
+	    ++j;
+	    break;
+	}
 	//
-	// St the moment, we ignore all options
+	// At the moment, we ignore all options
 	//
 	// -A
 	// -c
@@ -138,13 +144,13 @@ run(server_ty *sp, string_ty *arg)
 	//     option within the modules file.
 	//
     }
-    if (j != sp->np->argument_list.nstrings - 1)
+    if (j != sp->np->argument_count() - 1)
     {
 	server_error(sp, "co: no module name specified");
 	return;
     }
 
-    mp = module_find(sp->np->argument_list.string[j]);
+    mp = module_find(sp->np->argument_nth(j));
     module_checkout(mp, sp);
     module_delete(mp);
 }

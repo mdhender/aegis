@@ -20,49 +20,27 @@
 // MANIFEST: functions to manipulate deletes
 //
 
-#include <mem.h>
 #include <symtab.h>
 
 
-//
-// NAME
-//	symtab_delete - delete a variable
-//
-// SYNOPSIS
-//	void symtab_delete(string_ty *name, symtab_class_ty class);
-//
-// DESCRIPTION
-//	The symtab_delete function is used to delete variables.
-//
-// CAVEAT
-//	The name is freed, the data is reaped.
-//	(By default, reap does nothing.)
-//
-
 void
-symtab_delete(symtab_ty *stp, string_ty *key)
+symtab_ty::remove(string_ty *key)
 {
-    str_hash_ty     index;
-    symtab_row_ty   **pp;
-
-    index = key->str_hash & stp->hash_mask;
-
-    pp = &stp->hash_table[index];
+    str_hash_ty index = key->str_hash & hash_mask;
+    row_t **pp = &hash_table[index];
     for (;;)
     {
-	symtab_row_ty	*p;
-
-	p = *pp;
+	row_t *p = *pp;
 	if (!p)
 	    break;
 	if (str_equal(key, p->key))
 	{
-	    if (stp->reap)
-	       	stp->reap(p->data);
+	    if (reap)
+	       	reap(p->data);
 	    str_free(p->key);
 	    *pp = p->overflow;
-	    mem_free(p);
-	    stp->hash_load--;
+	    delete p;
+	    hash_load--;
 	    break;
 	}
 	pp = &p->overflow;

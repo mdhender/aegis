@@ -31,7 +31,7 @@
 # -------------------------------------------------------------------------
 #
 msgid	""
-msgstr	"PO-Revision-Date: 2004-07-16\n"
+msgstr	"PO-Revision-Date: 2004-10-20\n"
 	"Last-Translator: Laurentiu Buzdugan <buzdugan@voyager.net>\n"
 	"Language-Team: Romanian <translation-team-ro@lists.sourceforge."
 	"net>\n"
@@ -293,7 +293,32 @@ msgstr	"test \"$filename\" passed"
 #
 #, fuzzy
 msgid	"$filename unrelated"
-msgstr	"path \"$filename\" unrelated"
+msgstr	"path \"$filename\" is not within any change or project directory "
+	"tree; maybe the -base-relative option will help"
+
+# TRANSLATION REQUIRED
+#
+# This fatal error message is issued by the aefa -uuid command if the
+# file already has a UUID set.
+#
+#	$File_Name	the offending filename
+#
+#, fuzzy
+msgid	"$filename uuid already set"
+msgstr	"the \"$filename\" file alreday has a UUID"
+
+# TRANSLATION REQUIRED
+#
+# This fatal error message is issued by the aefa -uuid command if the
+# file already has a UUID set.
+#
+#	$File_Name	the offending filename
+#	$Other		the other filename using the UUID (optional)
+#
+#, fuzzy
+msgid	"$filename uuid duplicate"
+msgstr	"the UUID specified for the \"$filename\" file is already in use "
+        "by the \"$other\" file"
 
 #
 # TRANSLATION REQUIRED
@@ -351,7 +376,7 @@ msgstr	"$filename: $linenumber: in substitution \"$message\" variable "
 # important that THIS substitution not fail, otherwise there will be an
 # infinite loop - it is caught, but does not yield a particularly
 # helpful message, nor will it impress the users.)
-# This +++ message works with the other messages marked +++ above.
+# This +++ message works with the other messages marked "See (+++)".
 #
 # 	$File_Name	The filename containg the message
 # 	$Line_Number	The line number of the message
@@ -365,7 +390,7 @@ msgstr	"$filename: $linenumber: substitution $${$name} failed: $message"
 #
 # TRANSLATION REQUIRED
 # This error message is issued when a substitution function is formed
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 # 	$File_Name	The filename containg the message
 # 	$Line_Number	The line number of the message
@@ -377,7 +402,7 @@ msgstr	"$filename: $linenumber: unterminated $${} \\ sequence"
 #
 # TRANSLATION REQUIRED
 # This error message is issued when a substitution function is formed
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 # 	$File_Name	The filename containg the message
 # 	$Line_Number	The line number of the message
@@ -389,7 +414,7 @@ msgstr	"$filename: $linenumber: unterminated $${} quotes"
 #
 # TRANSLATION REQUIRED
 # This error message is issued when a substitution function is formed
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 #, fuzzy
 msgid	"$filename: $linenumber: unterminated $${} substitution"
@@ -1018,7 +1043,7 @@ msgstr	"Project \"$name\", Change $number, File \"$filename\""
 #
 # TRANSLATION REQUIRED
 # This error message is issued when the ${read_file} substitution is
-# called incorrectly.  See (+++) below.
+# called incorrectly.  See (+++) above.
 #
 #, fuzzy
 msgid	"absolute path required"
@@ -1076,7 +1101,7 @@ msgstr	"it appears that all test numbers have been consumed"
 #
 # TRANSLATION REQUIRED
 # This error message is issued when an unknown substitution is
-# referenced.  See (+++) below.
+# referenced.  See (+++) above.
 #
 #, fuzzy
 msgid	"ambiguous substitution name"
@@ -2702,6 +2727,16 @@ msgstr	"duplicate $name option, you may only give one"
 
 #
 # TRANSLATION REQUIRED
+# This error message is issued when the aerpass command detects that a
+# user has already reviewed this change once since the last develop end.
+# (This can occur when the review_policy_command is being used.)
+#
+#, fuzzy
+msgid	"duplicate review"
+msgstr	"you may not review the same change twice"
+
+#
+# TRANSLATION REQUIRED
 # This error message is issued when an unterminated comment is seen.
 # Comments may not span input files.
 #
@@ -3076,7 +3111,7 @@ msgstr	"file name \"$filename\" not suitable for Windows "
 #
 # TRANSLATION REQUIRED
 # This error message is issued when a file qualifier in a substitution
-# is an unknown name.  See (+++) below.
+# is an unknown name.  See (+++) above.
 #
 #, fuzzy
 msgid	"file qualifier unknown"
@@ -4933,7 +4968,7 @@ msgstr	"user \"$user\" is not the reviewer, only user \"$reviewer\" may "
 #
 # TRANSLATION REQUIRED
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 #, fuzzy
 msgid	"not valid in current context"
@@ -4946,6 +4981,21 @@ msgstr	"not valid in current context"
 #
 msgid	"open $filename: $errno"
 msgstr	"open \"$filename\": $errno"
+
+#
+# TRANSLATION REQUIRED
+# This error message is issued when a file open fails because there was
+# no curl library available when ./configure was run.
+#
+# 	$File_Name	The name of the offending file.
+#
+#, fuzzy
+msgid	"open $filename: no curl library"
+msgstr	"unable to open \"$filename\" because there was no -lcurl library "
+	"available when Aegis was built.  The curl library is used to "
+	"read many different style of URL.  If you are using a package "
+	"manager, it may usually be found in the curl-devel package.  You "
+	"will need to reconfigure and rebuild Aegis once it is installed."
 
 #
 # TRANSLATION REQUIRED
@@ -5409,7 +5459,7 @@ msgstr	"report aborted"
 #
 # TRANSLATION REQUIRED
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 #, fuzzy
 msgid	"requires at least one argument"
@@ -5417,49 +5467,49 @@ msgstr	"requires at least one argument"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 msgid	"requires one argument"
 msgstr	"necesitã un argument"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 msgid	"requires one or two arguments"
 msgstr	"necesitã unul sau douã argumente"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 msgid	"requires three arguments"
 msgstr	"requires three arguments"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 msgid	"requires two arguments"
 msgstr	"necesitã douã argumente"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 msgid	"requires two or more arguments"
 msgstr	"necesitã douã sau mai multe argumente"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 msgid	"requires two or three arguments"
 msgstr	"necesitã douã sau trei argumente"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 msgid	"requires zero arguments"
 msgstr	"nu cere nici un argument"
@@ -5547,7 +5597,7 @@ msgstr	"rmdir \"$filename\": $errno"
 #
 # TRANSLATION REQUIRED
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 #, fuzzy
 msgid	"second argument must be \"Absolute\" or \"Relative\""
@@ -5607,7 +5657,7 @@ msgstr	"sort requires exactly 1 argument (was given $number)"
 #
 # TRANSLATION REQUIRED
 # This error message is issued when the ${source} substitution is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 #, fuzzy
 msgid	"source file unknown"
@@ -6089,7 +6139,7 @@ msgstr	"unable to determine the shell which has requested the completion"
 #
 # TRANSLATION REQUIRED
 # This error message is issued when an unknown substitution is
-# referenced.  See (+++) below.
+# referenced.  See (+++) above.
 #
 #, fuzzy
 msgid	"unknown substitution name"
@@ -6098,7 +6148,7 @@ msgstr	"unknown substitution name"
 #
 # TRANSLATION REQUIRED
 # This error message is issued when an unknown substitution variant
-# is referenced.  See (+++) below.
+# is referenced.  See (+++) above.
 #
 #, fuzzy
 msgid	"unknown substitution variant"

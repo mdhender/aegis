@@ -92,17 +92,17 @@ run(server_ty *sp, string_ty *arg)
     // There should be exactly one argument, and exactly one directory.
     // We actually ignore the directory.
     //
-    if (sp->np->argument_list.nstrings < 1)
+    if (sp->np->argument_count() < 1)
     {
 	server_error(sp, "expand-modules: at least one Argument required");
 	return;
     }
-    for (j = 0; j < sp->np->argument_list.nstrings; ++j)
+    for (j = 0; j < sp->np->argument_count(); ++j)
     {
 	string_ty       *name;
 	module_ty       *mp;
 
-	name = sp->np->argument_list.string[j];
+	name = sp->np->argument_nth(j);
 	mp = module_find(name);
 	if (module_bogus(mp))
 	{

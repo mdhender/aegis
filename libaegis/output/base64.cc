@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -21,182 +21,134 @@
 //
 
 #include <output/base64.h>
-#include <output/private.h>
 #include <str.h>
 
 static char base64[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-#ifdef __GNUC__
-static __inline int map64(int n) { return base64[n & 0x3F]; }
-#else
-#define map64(n) (base64[(n) & 0x3F])
-#endif
-
-
-struct output_base64_ty
+static inline int
+map64(int n)
 {
-    output_ty	    inherited;
-    output_ty	    *deeper;
-    int		    delete_on_close;
-    unsigned int    residual_value;
-    int		    residual_bits;
-    int		    output_column;
-    long	    pos;
-    int		    bol;
-};
+    return base64[n & 0x3F];
+}
 
 
-static void
-output_base64_destructor(output_ty *fp)
+output_base64_ty::~output_base64_ty()
 {
-    output_base64_ty *this_thing;
+    //
+    // Make sure all buffered data has been passed to our write_inner
+    // method.
+    //
+    flush();
 
-    this_thing = (output_base64_ty *)fp;
-    switch (this_thing->residual_bits)
+    switch (residual_bits)
     {
     case 4:
-	output_fputc(this_thing->deeper,
-                     map64(this_thing->residual_value << 2));
-	output_fputc(this_thing->deeper, '=');
-	this_thing->output_column += 2;
+	deeper->fputc(map64(residual_value << 2));
+	deeper->fputc('=');
+	output_column += 2;
 	break;
 
     case 2:
-	output_fputc(this_thing->deeper,
-                     map64(this_thing->residual_value << 4));
-	output_fputc(this_thing->deeper, '=');
-	output_fputc(this_thing->deeper, '=');
-	this_thing->output_column += 3;
+	deeper->fputc(map64(residual_value << 4));
+	deeper->fputc('=');
+	deeper->fputc('=');
+	output_column += 3;
 	break;
     }
-    if (this_thing->output_column)
-	output_fputc(this_thing->deeper, '\n');
-    if (this_thing->delete_on_close)
-	output_delete(this_thing->deeper);
+    if (output_column)
+	deeper->fputc('\n');
+    if (delete_deeper)
+	delete deeper;
+    deeper = 0;
 }
 
 
-static void
-output_base64_write(output_ty *fp, const void *p, size_t len)
+output_base64_ty::output_base64_ty(output_ty *arg1, bool arg2) :
+    deeper(arg1),
+    delete_deeper(arg2),
+    residual_value(0),
+    residual_bits(0),
+    output_column(0),
+    pos(0),
+    bol(true)
 {
-    const unsigned char *data;
-    output_base64_ty *this_thing;
+}
 
-    data = (unsigned char *)p;
-    this_thing = (output_base64_ty *)fp;
+
+void
+output_base64_ty::write_inner(const void *p, size_t len)
+{
+    const unsigned char *data = (const unsigned char *)p;
     while (len > 0)
     {
-	unsigned c = *data++;
+	unsigned char c = *data++;
 	--len;
 
-	this_thing->residual_value =
-            (this_thing->residual_value << 8) | (c & 0xFF);
-	this_thing->residual_bits += 8;
+	residual_value = (residual_value << 8) | c;
+	residual_bits += 8;
 	for (;;)
 	{
-	    this_thing->residual_bits -= 6;
-	    output_fputc
-	    (
-		this_thing->deeper,
-		map64(this_thing->residual_value >> this_thing->residual_bits)
-	    );
-	    this_thing->output_column++;
-	    if (this_thing->residual_bits == 0 &&
-                this_thing->output_column > 70)
+	    residual_bits -= 6;
+	    deeper->fputc(map64(residual_value >> residual_bits));
+	    ++output_column;
+	    if (residual_bits == 0 && output_column > 70)
 	    {
-		output_fputc(this_thing->deeper, '\n');
-		this_thing->output_column = 0;
+		deeper->fputc('\n');
+		output_column = 0;
 	    }
-	    if (this_thing->residual_bits < 6)
+	    if (residual_bits < 6)
 		break;
 	}
-	this_thing->pos++;
-	this_thing->bol = (c == '\n');
+	++pos;
+	bol = (c == '\n');
     }
 }
 
 
-static string_ty *
-output_base64_filename(output_ty *fp)
+string_ty *
+output_base64_ty::filename()
+    const
 {
-    output_base64_ty *this_thing;
-
-    this_thing = (output_base64_ty *)fp;
-    return output_filename(this_thing->deeper);
+    return deeper->filename();
 }
 
 
-static long
-output_base64_ftell(output_ty *fp)
+long
+output_base64_ty::ftell_inner()
+    const
 {
-    output_base64_ty *this_thing;
-
-    this_thing = (output_base64_ty *)fp;
-    return this_thing->pos;
+    return pos;
 }
 
 
-static int
-output_base64_page_width(output_ty *fp)
+int
+output_base64_ty::page_width()
+    const
 {
-    output_base64_ty *this_thing;
-
-    this_thing = (output_base64_ty *)fp;
-    return output_page_width(this_thing->deeper);
+    return deeper->page_width();
 }
 
 
-static int
-output_base64_page_length(output_ty *fp)
+int
+output_base64_ty::page_length()
+    const
 {
-    output_base64_ty *this_thing;
-
-    this_thing = (output_base64_ty *)fp;
-    return output_page_length(this_thing->deeper);
+    return deeper->page_length();
 }
 
 
-static void
-output_base64_eoln(output_ty *fp)
+void
+output_base64_ty::end_of_line_inner()
 {
-    output_base64_ty *this_thing;
-
-    this_thing = (output_base64_ty *)fp;
-    if (!this_thing->bol)
-	output_fputc(fp, '\n');
+    if (!bol)
+	write_inner("\n", 1);
 }
 
 
-static output_vtbl_ty vtbl =
+const char *
+output_base64_ty::type_name()
+    const
 {
-    sizeof(output_base64_ty),
-    output_base64_destructor,
-    output_base64_filename,
-    output_base64_ftell,
-    output_base64_write,
-    output_generic_flush,
-    output_base64_page_width,
-    output_base64_page_length,
-    output_base64_eoln,
-    "base64",
-};
-
-
-output_ty *
-output_base64(output_ty *deeper, int delete_on_close)
-{
-    output_ty	    *result;
-    output_base64_ty *this_thing;
-
-    result = output_new(&vtbl);
-    this_thing = (output_base64_ty *)result;
-    this_thing->deeper = deeper;
-    this_thing->delete_on_close = !!delete_on_close;
-    this_thing->residual_value = 0;
-    this_thing->residual_bits = 0;
-    this_thing->output_column = 0;
-    this_thing->pos = 0;
-    this_thing->bol = 1;
-    return result;
+    return "base64";
 }

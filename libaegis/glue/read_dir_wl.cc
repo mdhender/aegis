@@ -39,7 +39,7 @@ read_whole_dir__wla(const char *path, string_list_ty *result)
 
 	s = str_from_c(cp);
 	cp += s->str_length + 1;
-	string_list_append_unique(result, s);
+	result->push_back_unique(s);
 	str_free(s);
     }
     // do NOT free what data is pointing to
@@ -56,14 +56,14 @@ read_whole_dir__wl(const char *path, string_list_ty *result)
 
     if (glue_read_whole_dir(path, &data, &data_len))
 	return -1;
-    string_list_constructor(result);
+    result->clear();
     for (cp = data; cp < data + data_len; )
     {
 	string_ty       *s;
 
 	s = str_from_c(cp);
 	cp += s->str_length + 1;
-	string_list_append(result, s);
+	result->push_back(s);
 	str_free(s);
     }
     // do NOT free what data is pointing to

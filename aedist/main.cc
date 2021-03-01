@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,6 @@
 // MANIFEST: functions to manipulate mains
 //
 
-#include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/signal.h>
 
@@ -29,83 +28,57 @@
 #include <help.h>
 #include <language.h>
 #include <list.h>
+#include <missing.h>
 #include <os.h>
-#include <progname.h>
+#include <quit.h>
 #include <receive.h>
+#include <replay.h>
 #include <send.h>
+#include <usage.h>
 #include <version.h>
 
 
 static void
-usage(void)
+aedist_help()
 {
-	const char      *progname;
-
-	progname = progname_get();
-	fprintf(stderr, "Usage: %s --send [ <option>... ]\n", progname);
-	fprintf(stderr, "       %s --receive [ <option>... ]\n", progname);
-	fprintf(stderr, "       %s --help\n", progname);
-	fprintf(stderr, "       %s --list\n", progname);
-	exit(1);
+    help(0, usage);
 }
 
 
 int
 main(int argc, char **argv)
 {
-	//
-	// Some versions of cron(8) set SIGCHLD to SIG_IGN.  This is
-	// kinda dumb, because it breaks assumptions made in libc (like
-	// pclose, for instance).  It also blows away most of Cook's
-	// process handling.  We explicitly set the SIGCHLD signal
-	// handling to SIG_DFL to make sure this signal does what we
-	// expect no matter how we are invoked.
-	//
+    //
+    // Some versions of cron(8) set SIGCHLD to SIG_IGN.  This is
+    // kinda dumb, because it breaks assumptions made in libc (like
+    // pclose, for instance).  It also blows away most of Cook's
+    // process handling.  We explicitly set the SIGCHLD signal
+    // handling to SIG_DFL to make sure this signal does what we
+    // expect no matter how we are invoked.
+    //
 #ifdef SIGCHLD
-	signal(SIGCHLD, SIG_DFL);
+    signal(SIGCHLD, SIG_DFL);
 #else
-	signal(SIGCLD, SIG_DFL);
+    signal(SIGCLD, SIG_DFL);
 #endif
 
-	arglex3_init(argc, argv);
-	env_initialize();
-	language_init();
-	os_become_init_mortal();
-	arglex();
-	for (;;)
-	{
-		switch (arglex_token)
-		{
-		default:
-			generic_argument(usage);
-			continue;
+    arglex3_init(argc, argv);
+    env_initialize();
+    language_init();
+    os_become_init_mortal();
 
-		case arglex_token_help:
-			help(0, usage);
-			break;
+    static arglex_dispatch_ty dispatch[] =
+    {
+        { arglex_token_send, send_main },
+        { arglex_token_receive, receive_main },
+        { arglex_token_missing, missing_main },
+        { arglex_token_replay, replay_main },
+        { arglex_token_version, version },
+        { arglex_token_help, aedist_help },
+        { arglex_token_list, list_main },
+    };
+    arglex_dispatch(dispatch, SIZEOF(dispatch), usage);
 
-		case arglex_token_send:
-			arglex();
-			send_main(usage);
-			break;
-
-		case arglex_token_list:
-			arglex();
-			list_main(usage);
-			break;
-
-		case arglex_token_receive:
-			arglex();
-			receive_main(usage);
-			break;
-
-		case arglex_token_version:
-			arglex();
-			version();
-			break;
-		}
-		break;
-	}
-	exit(0);
-	return 0;
+    quit(0);
+    return 0;
 }

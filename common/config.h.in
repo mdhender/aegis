@@ -2,7 +2,7 @@
 
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2004 Peter Miller;
+ *	Copyright (C) 1991-2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,9 @@
 #ifndef COMMON_CONFIG_H
 #define COMMON_CONFIG_H
 
+
+/* Set this to be the absolute path of the GNU diff command. */
+#undef CONF_DIFF
 
 /* Set this to be the absolute path of a Perl interpreter. */
 #undef CONF_PERL
@@ -60,6 +63,10 @@
 
 /* Define to 1 if you have the <dce/uuid.h> header file. */
 #undef HAVE_DCE_UUID_H
+
+/* Define to 1 if you have the declaration of `crypt', and to 0 if you don't.
+   */
+#undef HAVE_DECL_CRYPT
 
 /* Define to 1 if you have the declaration of `mbrtowc', and to 0 if you
    don't. */
@@ -238,6 +245,9 @@
 
 /* Define to 1 if you have the `sigprocmask' function. */
 #undef HAVE_SIGPROCMASK
+
+/* Define to 1 if you have the `sigrelse' function. */
+#undef HAVE_SIGRELSE
 
 /* Define to 1 if you have the `snprintf' function. */
 #undef HAVE_SNPRINTF

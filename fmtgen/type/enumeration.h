@@ -26,7 +26,7 @@
 #pragma interface "type_enumeration_ty"
 
 #include <type.h>
-#include <nstring_list.h>
+#include <nstring/list.h>
 
 /**
   * The type_enumeration_ty class is used to represent the type of a
@@ -63,6 +63,12 @@ public:
     // See base class for documentation.
     void gen_code_call_xml(const nstring &form_name, const nstring &member_name,
 	int attributes) const;
+
+    // See base class for documentation.
+    void gen_code_copy(const nstring &member_name) const;
+
+    // See base class for documentation.
+    void gen_code_trace(const nstring &name, const nstring &value) const;
 
     // See base class for documentation.
     void gen_free_declarator(const nstring &variable_name, bool is_a_list)

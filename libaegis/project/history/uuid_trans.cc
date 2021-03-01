@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -46,9 +46,9 @@ safe_tolower(int c)
     // files, or things will rapidly become unglued.
     //
     uc = c;
-    if (isupper(c))
-	return tolower(c);
-    return c;
+    if (isupper(uc))
+	return tolower(uc);
+    return uc;
 }
 
 

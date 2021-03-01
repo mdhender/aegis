@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -101,11 +101,11 @@ list_project_file_inventory(string_ty *project_name, long change_number,
 	    break;
 	if (cp && change_file_find(cp, src_data->file_name, view_path_first))
 	    continue;
-	output_put_str(file_name_col, src_data->file_name);
+	file_name_col->fputs(src_data->file_name);
 	if (src_data->uuid)
-	    output_put_str(uuid_col, src_data->uuid);
+	    uuid_col->fputs(src_data->uuid);
 	else
-	    output_put_str(uuid_col, src_data->file_name);
+	    uuid_col->fputs(src_data->file_name);
 	col_eoln(colp);
     }
 

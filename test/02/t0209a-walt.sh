@@ -1,6 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
+#	Copyright (C) 2005 Peter Miller
 #	Copyright (C) 2004 Walter Franzini;
 #	All rights reserved.
 #
@@ -75,7 +76,6 @@ fail()
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
-        echo $work
 	exit 1
 }
 no_result()
@@ -89,7 +89,7 @@ no_result()
 }
 trap \"no_result\" 1 2 3 15
 
-activity="create test directory 92"
+activity="create test directory 91"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -145,21 +145,22 @@ AEGIS_PROJECT=example ; export AEGIS_PROJECT
 #
 # make a new project
 #
-activity="new project 148"
+activity="new project 147"
 $bin/aegis -npr $AEGIS_PROJECT -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 155"
-cat > tmp << 'end'
+activity="project attributes 154"
+cat > tmp << end
 description = "A bogus project created to test the aedist/aemv "
     "functionality.";
 developer_may_review = true;
 developer_may_integrate = true;
 reviewer_may_integrate = true;
 default_test_exemption = true;
+default_development_directory = "$work";
 end
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f tmp > log 2>&1
@@ -239,10 +240,10 @@ history_put_command =
 	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
 history_query_command =
 	"rlog -r $h,v | awk '/^head:/ {print $$2}'";
-diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
+diff_command = "set +e; $diff $orig $i > $out; test $$? -le 1";
 merge_command = "(diff3 -e $i $orig $mr | sed -e '/^w$$/d' -e '/^q$$/d'; \
 	echo '1,$$p' ) | ed - $i > $out";
-patch_diff_command = "set +e; diff -C0 -L $index -L $index $orig $i > $out; \
+patch_diff_command = "set +e; $diff -C0 -L $index -L $index $orig $i > $out; \
 test $$? -le 1";
 test_command = "sh -x $filename $search_path $search_path_exec";
 end
@@ -251,77 +252,77 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 247"
+activity="build 254"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 254"
+activity="diff 261"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the change
 #
-activity="test 261"
+activity="test 268"
 $bin/aegis -test -ter -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 271"
+activity="develop end 275"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 278"
+activity="review pass 282"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 285"
+activity="integrate begin 289"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 292"
+activity="build 296"
 $bin/aegis -b 1 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # diff the change
 #
-activity="diff 299"
+activity="diff 303"
 $bin/aegis -diff 1 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the change
 #
-activity="test 306"
+activity="test 310"
 $bin/aegis -test -ter -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 313"
+activity="integrate pass 317"
 $bin/aegis -intpass  1 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # create a new change
 #
-activity="new change 320"
+activity="new change 324"
 cat > tmp << 'end'
 brief_description = "The second change";
 cause = internal_enhancement;
@@ -336,21 +337,21 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 332"
+activity="develop begin 339"
 $bin/aegis -db 2 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # Use the second change to modify test/test1.sh
 #
-activity="copy test 339"
+activity="copy test 346"
 $bin/aegis -c 2 -cp $workchan/test/test1.sh > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # Modify test1.sh
 #
-activity="modify test1.sh 346"
+activity="modify test1.sh 353"
 cat >> $workchan/test/test1.sh <<EOF
 # we simply add a comment
 EOF
@@ -359,29 +360,29 @@ if test $? -ne 0 ; then no_result; fi
 #
 # difference the change
 #
-activity="aed 355"
+activity="aed 362"
 $bin/aegis --diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # build the change
 #
-activity="build 362"
+activity="build 369"
 $bin/aegis -build 2 -nl -verb > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the change
 #
-activity="test 369"
+activity="test 376"
 $bin/aegis -test -ter -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="end the change 373"
+activity="end the change 380"
 $bin/aegis -de 2 -verb > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="send the outstanding change 377"
+activity="send the outstanding change 384"
 $bin/aedist -send -c 2 -ndh -out $work/c02dev.ae > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result; fi
 
@@ -400,7 +401,7 @@ if test $? -ne 0 ; then cat log ; no_result; fi
 # tests so it fails
 #
 
-activity="receive the change 381"
+activity="receive the change 403"
 $bin/aedist -r -c 3 -f $work/c02dev.ae -no_troj > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 

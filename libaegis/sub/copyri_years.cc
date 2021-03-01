@@ -28,7 +28,7 @@
 #include <sub.h>
 #include <trace.h>
 #include <wstr.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 static int
@@ -73,34 +73,31 @@ icmp(const void *va, const void *vb)
 wstring_ty *
 sub_copyright_years(sub_context_ty *scp, wstring_list_ty *arg)
 {
-    wstring_ty	    *result;
-    int		    ary[100]; // a century should be enough  :-)
-    int		    ary_len;
-    int		    ary_len2;
-    string_list_ty  wl;
-    int 	    j;
-    string_ty	    *s;
-    change_ty	    *cp;
-
     trace(("sub_copyright_years()\n{\n"));
-    result = 0;
-    if (arg->nitems != 1)
+    if (arg->size() != 1)
     {
 	sub_context_error_set(scp, i18n("requires zero arguments"));
-	goto done;
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
     }
-    cp = sub_context_change_get(scp);
+    change_ty *cp = sub_context_change_get(scp);
     if (!cp || cp->bogus)
     {
 	sub_context_error_set(scp, i18n("not valid in current context"));
-	goto done;
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
     }
 
     //
     // Extract the copyright years from the project
     // and the change.	Don't worry about duplicates.
     //
+    int ary[100]; // a century should be enough  :-)
+    int	ary_len;
     project_copyright_years_get(cp->pp, ary, SIZEOF(ary), &ary_len);
+    int ary_len2;
     change_copyright_years_get
     (
 	cp,
@@ -119,24 +116,22 @@ sub_copyright_years(sub_context_ty *scp, wstring_list_ty *arg)
     // build the text string for the result
     // this is where duplicates are removed
     //
-    string_list_constructor(&wl);
-    for (j = 0; j < ary_len; ++j)
+    string_list_ty wl;
+    for (int j = 0; j < ary_len; ++j)
     {
 	if (j && ary[j - 1] == ary[j])
 	    continue;
-	s = str_format("%d", ary[j]);
-	string_list_append(&wl, s);
+	string_ty *s = str_format("%d", ary[j]);
+	wl.push_back(s);
 	str_free(s);
     }
-    s = wl2str(&wl, 0, (int)wl.nstrings, ", ");
-    string_list_destructor(&wl);
-    result = str_to_wstr(s);
+    string_ty *s = wl.unsplit(", ");
+    wstring_ty *result = str_to_wstr(s);
     str_free(s);
 
     //
     // here for all exits
     //
-    done:
     trace(("return %8.8lX;\n", (long)result));
     trace(("}\n"));
     return result;

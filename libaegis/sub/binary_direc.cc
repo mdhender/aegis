@@ -23,7 +23,7 @@
 #include <libdir.h>
 #include <sub.h>
 #include <sub/binary_direc.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 #include <trace.h>
 
 
@@ -53,7 +53,7 @@ sub_binary_directory(sub_context_ty *scp, wstring_list_ty *arg)
 	wstring_ty	*result;
 
 	trace(("sub_library()\n{\n"));
-	if (arg->nitems != 1)
+	if (arg->size() != 1)
 	{
 		sub_context_error_set(scp, i18n("requires zero arguments"));
 		result = 0;

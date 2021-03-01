@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2004 Peter Miller;
+//	Copyright (C) 1991-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,8 @@
 // MANIFEST: functions to perform command substitutions
 //
 
+#pragma implementation "sub_context_ty"
+
 #include <ac/errno.h>
 #include <ac/stdio.h>
 #include <ac/stddef.h>
@@ -36,6 +38,7 @@
 #include <change.h>
 #include <change/branch.h>
 #include <change/file.h>
+#include <collect.h>
 #include <error.h>
 #include <file.h>
 #include <gonzo.h>
@@ -57,14 +60,17 @@
 #include <sub/basename.h>
 #include <sub/binary_direc.h>
 #include <sub/capitalize.h>
+#include <sub/change/attribute.h>
 #include <sub/change/delta.h>
 #include <sub/change/develo_direc.h>
 #include <sub/change/developer.h>
+#include <sub/change/develop_list.h>
 #include <sub/change/files.h>
 #include <sub/change/integr_direc.h>
 #include <sub/change/integrator.h>
 #include <sub/change/number.h>
 #include <sub/change/reviewer.h>
+#include <sub/change/reviewr_list.h>
 #include <sub/change/state.h>
 #include <sub/change/version.h>
 #include <sub/comment.h>
@@ -72,10 +78,12 @@
 #include <sub/copyri_years.h>
 #include <sub/data_directo.h>
 #include <sub/date.h>
+#include <sub/diff.h>
 #include <sub/dirname.h>
 #include <sub/dirname_rel.h>
 #include <sub/dollar.h>
 #include <sub/downcase.h>
+#include <sub/email_addres.h>
 #include <sub/expr.h>
 #include <sub/getenv.h>
 #include <sub/histo_direc.h>
@@ -111,32 +119,13 @@
 #include <sub/user.h>
 #include <sub/zero_pad.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
-
-#define RESUB_DOLLARS 2
-#define RESUB_PERCENT 1
-#define RESUB_BOTH (RESUB_DOLLARS | RESUB_PERCENT)
 
 enum getc_type
 {
     getc_type_control,
     getc_type_data
-};
-
-
-struct sub_context_ty
-{
-    struct sub_diversion_ty *diversion;
-    struct sub_table_ty *sub_var_list;
-    size_t	    sub_var_size;
-    size_t	    sub_var_pos;
-    struct change_ty *cp;
-    struct project_ty *pp;
-    const char	    *suberr;
-    int		    errno_sequester;
-    const char	    *file_name;
-    int		    line_number;
 };
 
 
@@ -146,105 +135,53 @@ struct sub_table_ty
 {
     const char	    *name;
     fp		    func;
-    int		    resubstitute;
+    bool	    resubstitute;
+    bool	    must_be_used;
+    bool	    append_if_unused;
+    bool	    override;
     wstring_ty	    *value;
-    int		    must_be_used:   1;
-    int		    append_if_unused: 1;
-    int		    override:	    1;
 };
 
 
-struct sub_diversion_ty
+sub_context_ty::sub_context_ty(const char *arg1, int arg2) :
+    var_list(0),
+    var_size(0),
+    var_pos(0),
+    cp(0),
+    pp(0),
+    suberr(0),
+    errno_sequester(errno),
+    file_name(arg1 ? arg1 : __FILE__),
+    line_number(arg1 ? (arg2 > 0 ? arg2 : 1) : __LINE__)
 {
-    long	    pos;
-    wstring_ty	    *text;
-    sub_diversion_ty *prev;
-    int		    resubstitute;
-};
-
-
-struct collect_ty
-{
-    size_t	    pos;
-    size_t	    size;
-    wchar_t	    *buf;
-};
-
-
-static void
-collect_constructor(collect_ty *cp)
-{
-    cp->buf = 0;
-    cp->size = 0;
-    cp->pos = 0;
 }
 
 
-static void
-collect_destructor(collect_ty *cp)
+sub_context_ty::~sub_context_ty()
 {
-    if (cp->buf)
-	mem_free(cp->buf);
-    cp->buf = 0;
-    cp->size = 0;
-    cp->pos = 0;
-}
-
-
-sub_context_ty *
-sub_context_New(const char *file_name, int line_number)
-{
-    sub_context_ty  *p;
-    int		    hold;
-
-    hold = errno; // must preserve!
-    p = (sub_context_ty *)mem_alloc(sizeof(sub_context_ty));
-    p->file_name = file_name;
-    p->line_number = line_number;
-    p->diversion = 0;
-    p->sub_var_list = 0;
-    p->sub_var_size = 0;
-    p->sub_var_pos = 0;
-    p->cp = 0;
-    p->pp = 0;
-    p->suberr = 0;
-    p->errno_sequester = 0;
-    errno = hold; // must preserve!
-    return p;
+    clear();
+    delete [] var_list;
 }
 
 
 void
-sub_context_delete(sub_context_ty *p)
+sub_context_ty::error_set(const char *s)
 {
-    size_t	    j;
-
-    for (j = 0; j < p->sub_var_pos; ++j)
-	wstr_free(p->sub_var_list[j].value);
-    if (p->sub_var_list)
-	mem_free(p->sub_var_list);
-    mem_free(p);
-}
-
-
-void
-sub_context_error_set(sub_context_ty *scp, const char *s)
-{
-    scp->suberr = s;
+    suberr = s;
 }
 
 
 project_ty *
-sub_context_project_get(sub_context_ty *scp)
+sub_context_ty::project_get()
 {
-    return scp->pp;
+    return pp;
 }
 
 
 change_ty *
-sub_context_change_get(sub_context_ty *scp)
+sub_context_ty::change_get()
 {
-    return scp->cp;
+    return cp;
 }
 
 
@@ -276,55 +213,51 @@ sub_context_change_get(sub_context_ty *scp)
 static wstring_ty *
 sub_errno(sub_context_ty *scp, wstring_list_ty *arg)
 {
-    wstring_ty	    *result;
-
     trace(("sub_errno()\n{\n"));
-    if (arg->nitems != 1)
+    if (arg->size() != 1)
     {
-	scp->suberr = i18n("requires zero arguments");
-	result = 0;
+	scp->error_set(i18n("requires zero arguments"));
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
     }
-    else
+
+    int err = scp->errno_sequester_get();
+    if (err == EPERM || err == EACCES)
     {
-	if (scp->errno_sequester == 0)
-	    scp->errno_sequester = errno;
-	if (scp->errno_sequester == EPERM || scp->errno_sequester == EACCES)
-	{
-	    int		    uid;
-	    struct passwd   *pw;
-	    char	    uidn[20];
-	    int		    gid;
-	    struct group    *gr;
-	    char	    gidn[20];
-	    string_ty	    *s;
-
-	    os_become_query(&uid, &gid, (int *)0);
-	    pw = getpwuid(uid);
-	    if (pw)
-		snprintf(uidn, sizeof(uidn), "user \"%.8s\"", pw->pw_name);
-	    else
-		snprintf(uidn, sizeof(uidn), "uid %d", uid);
-
-	    gr = getgrgid(gid);
-	    if (gr)
-		snprintf(gidn, sizeof(gidn), "group \"%.8s\"", gr->gr_name);
-	    else
-		snprintf(gidn, sizeof(gidn), "gid %d", gid);
-
-	    s =
-		str_format
-		(
-		    "%s [%s, %s]",
-		    strerror(scp->errno_sequester),
-		    uidn,
-		    gidn
-		);
-	    result = str_to_wstr(s);
-	    str_free(s);
-	}
+	int uid;
+	int gid;
+	os_become_query(&uid, &gid, (int *)0);
+	struct passwd *pw = getpwuid(uid);
+	char uidn[20];
+	if (pw)
+	    snprintf(uidn, sizeof(uidn), "user \"%.8s\"", pw->pw_name);
 	else
-	    result = wstr_from_c(strerror(scp->errno_sequester));
+	    snprintf(uidn, sizeof(uidn), "uid %d", uid);
+
+	struct group *gr = getgrgid(gid);
+	char gidn[20];
+	if (gr)
+	    snprintf(gidn, sizeof(gidn), "group \"%.8s\"", gr->gr_name);
+	else
+	    snprintf(gidn, sizeof(gidn), "gid %d", gid);
+
+	string_ty *s =
+	    str_format
+	    (
+		"%s [%s, %s]",
+		strerror(err),
+		uidn,
+		gidn
+	    );
+	wstring_ty *result = str_to_wstr(s);
+	str_free(s);
+	trace(("return %8.8lX;\n", (long)result));
+	trace(("}\n"));
+	return result;
     }
+
+    wstring_ty *result = wstr_from_c(strerror(err));
     trace(("return %8.8lX;\n", (long)result));
     trace(("}\n"));
     return result;
@@ -344,7 +277,10 @@ static sub_table_ty table[] =
     {"BINary_DIRectory", sub_binary_directory, },
     {"CAPitalize", sub_capitalize, },
     {"Change", sub_change_number, },
+    {"Change_Attribute", sub_change_attribute, },
+    {"Change_Developer_List", sub_change_developer_list, },
     {"Change_Files", sub_change_files, },
+    {"Change_Reviewer_List", sub_change_reviewer_list, },
     {"Copyright_Years", sub_copyright_years, },
     {"COMment", sub_comment, },
     {"COMmon_DIRectory", sub_common_directory, },
@@ -355,11 +291,13 @@ static sub_table_ty table[] =
     {"DEVeloper_List", sub_developer_list, },
     // Default_Development_Directory
     {"Development_Directory", sub_development_directory, },
+    {"DIFference", sub_diff, },
     {"Dirname", sub_dirname, },
     {"Dirname_RELative", sub_dirname_relative, },
     {"DownCase", sub_downcase, },
     {"DOLlar", sub_dollar, },
     // Edit
+    {"EMail_Address", sub_email_address, },
     {"ENVironment", sub_getenv, },
     {"ERrno", sub_errno, },
     {"EXpression", sub_expression, },
@@ -392,7 +330,7 @@ static sub_table_ty table[] =
     {"Project", sub_project, },
     {"Project_Specific", sub_project_specific, },
     {"QUote", sub_quote, },
-    {"Read_File", sub_read_file, RESUB_DOLLARS, },
+    {"Read_File", sub_read_file, true, },
     {"Read_File_Simple", sub_read_file, },
     {"Reviewer", sub_reviewer, },
     {"Reviewer_List", sub_reviewer_list, },
@@ -417,125 +355,41 @@ static sub_table_ty table[] =
 };
 
 
-//
-// NAME
-//	sub_diversion
-//
-// SYNOPSIS
-//	void sub_diversion(sub_context_ty *, wstring_ty *s, int resub);
-//
-// DESCRIPTION
-//	The sub_diversion function is used to divert input
-//	to a string, until that string is exhausted.
-//	When the string is exhausted, input will resume
-//	from the previous string.
-//
-// ARGUMENTS
-//	s - string to take as input
-//
-
-static void
-sub_diversion(sub_context_ty *scp, wstring_ty *s, int resubstitute)
+void
+sub_context_ty::execute(const wstring_list_ty &arg)
 {
-    sub_diversion_ty *dp;
-
-    trace(("sub_diversion(s = %8.8lX, resub = %d)\n{\n", (long)s,
-        resubstitute));
-    dp = (sub_diversion_ty *)mem_alloc(sizeof(sub_diversion_ty));
-    dp->text = wstr_copy(s);
-    dp->pos = 0;
-    dp->resubstitute = resubstitute;
-    dp->prev = scp->diversion;
-    scp->diversion = dp;
-    trace(("}\n"));
-}
-
-
-//
-// NAME
-//	sub_diversion_close
-//
-// SYNOPSIS
-//	void sub_diversion_close(sub_context_ty *);
-//
-// DESCRIPTION
-//	The sub_diversion_close function is used to
-//	release a diversion when it has been exhausted.
-//
-
-static void
-sub_diversion_close(sub_context_ty *scp)
-{
-    sub_diversion_ty *dp;
-
-    trace(("sub_diversion_close()\n{\n"));
-    assert(scp->diversion);
-    dp = scp->diversion;
-    scp->diversion = dp->prev;
-    wstr_free(dp->text);
-    mem_free(dp);
-    trace(("}\n"));
-}
-
-
-//
-// NAME
-//	execute
-//
-// SYNOPSIS
-//	void execute(wstring_list_ty *args);
-//
-// DESCRIPTION
-//	The execute function is used to perform the substitution
-//	described by the argument list.
-//
-// ARGUMENTS
-//	args - the name and arguments of the substitution
-//
-
-static void
-execute(sub_context_ty *scp, wstring_list_ty *arg)
-{
-    string_ty	    *cmd;
-    wstring_ty	    *s;
-    sub_table_ty    *hit[20];
-    int		    nhits;
-    sub_table_ty    *tp;
-    size_t	    j;
-
     trace(("execute()\n{\n"));
-    if (arg->nitems == 0)
+    if (arg.size() == 0)
     {
-	sub_context_ty	*inner;
-
-	inner = sub_context_new();
-	sub_var_set_charstar(inner, "File_Name", scp->file_name);
-	sub_var_set_long(inner, "Line_Number", scp->line_number);
-	fatal_intl
+	sub_context_ty inner;
+	inner.var_set_charstar("File_Name", file_name);
+	inner.var_set_long("Line_Number", line_number);
+	inner.fatal_intl
 	(
-	    inner,
 	    i18n("$filename: $linenumber: empty $${} substitution")
 	);
 	// NOTREACHED
-	sub_context_delete(inner);
     }
 
     //
     // scan the variables
     //
-    nhits = 0;
-    cmd = wstr_to_str(arg->item[0]);
-    for (j = 0; j < scp->sub_var_pos; ++j)
+    wstring_ty *s = 0;
+    sub_table_ty *tp = 0;
+    size_t nhits = 0;
+    sub_table_ty *hit[20];
+    string_ty *cmd = wstr_to_str(arg[0]);
+    for (size_t j = 0; j < var_pos; ++j)
     {
-	tp = &scp->sub_var_list[j];
-	if (arglex_compare(tp->name, cmd->str_text))
+	tp = &var_list[j];
+	if (arglex_compare(tp->name, cmd->str_text, 0))
 	{
 	    if (tp->override)
 	    {
 		str_free(cmd);
 		goto override;
 	    }
-	    if ((size_t)nhits < SIZEOF(hit))
+	    if (nhits < SIZEOF(hit))
 		hit[nhits++] = tp;
 	}
     }
@@ -545,7 +399,7 @@ execute(sub_context_ty *scp, wstring_list_ty *arg)
     //
     for (tp = table; tp < ENDOF(table); ++tp)
     {
-	if (arglex_compare(tp->name, cmd->str_text))
+	if (arglex_compare(tp->name, cmd->str_text, 0))
 	{
 	    if (tp->override)
 	    {
@@ -564,8 +418,7 @@ execute(sub_context_ty *scp, wstring_list_ty *arg)
     switch (nhits)
     {
     case 0:
-	scp->suberr = i18n("unknown substitution name");
-	s = 0;
+	suberr = i18n("unknown substitution name");
 	break;
 
     case 1:
@@ -576,20 +429,23 @@ execute(sub_context_ty *scp, wstring_list_ty *arg)
 	    //
 	    // flag that the variable has been used
 	    //
-	    tp->must_be_used = 0;
+	    tp->must_be_used = false;
 	    s = wstr_copy(tp->value);
 	}
 	else
 	{
-	    wstr_free(arg->item[0]);
-	    arg->item[0] = wstr_from_c(tp->name);
-	    s = tp->func(scp, arg);
+	    wstring_ty *name = wstr_from_c(tp->name);
+	    wstring_list_ty tmp;
+	    tmp.push_back(name);
+	    wstr_free(name);
+	    for (size_t k = 1; k < arg.size(); ++k)
+		tmp.push_back(arg[k]);
+	    s = tp->func(this, &tmp);
 	}
 	break;
 
     default:
-	scp->suberr = i18n("ambiguous substitution name");
-	s = 0;
+	suberr = i18n("ambiguous substitution name");
 	break;
     }
 
@@ -598,83 +454,51 @@ execute(sub_context_ty *scp, wstring_list_ty *arg)
     //
     if (s)
     {
-	sub_diversion(scp, s, tp->resubstitute);
+	diversion_stack.push_back(s, tp->resubstitute);
 	wstr_free(s);
     }
     else
     {
-	wstring_ty	*s2;
-	string_ty	*s3;
-	sub_context_ty	*inner;
-	const char	*the_error;
-
-	assert(scp->suberr);
-	s2 = wstring_list_to_wstring(arg, 0, arg->nitems, (char *)0);
-	s3 = wstr_to_str(s2);
+	assert(suberr);
+	wstring_ty *s2 = arg.unsplit();
+	string_ty *s3 = wstr_to_str(s2);
 	wstr_free(s2);
-	the_error = scp->suberr ? scp->suberr : "this is a bug";
-	inner = sub_context_new();
-	sub_var_set_charstar(inner, "File_Name", scp->file_name);
-	sub_var_set_long(inner, "Line_Number", scp->line_number);
-	sub_var_set_string(inner, "Name", s3);
-	sub_var_set_charstar(inner, "MeSsaGe", gettext(the_error));
-	fatal_intl
+	const char *the_error = suberr ? suberr : "this is a bug";
+	sub_context_ty inner(__FILE__, __LINE__);
+	inner.var_set_charstar("File_Name", file_name);
+	inner.var_set_long("Line_Number", line_number);
+	inner.var_set_string("Name", s3);
+	inner.var_set_charstar("MeSsaGe", gettext(the_error));
+	inner.fatal_intl
 	(
-	    inner,
 	 i18n("$filename: $linenumber: substitution $${$name} failed: $message")
 	);
 	// NOTREACHED
-	sub_context_delete(inner);
 	str_free(s3);
     }
     trace(("}\n"));
 }
 
 
-//
-// NAME
-//	sub_getc_meta
-//
-// SYNOPSIS
-//	wchar_t sub_getc_meta(sub_context_ty *, getc_type *);
-//
-// DESCRIPTION
-//	The sub_getc_meta function is used to get a character from
-//	the current input string.  When the current string is exhaused,
-//	the previous string is resumed.
-//
-// RETURNS
-//	int - the chacater, or NUL to indicate end of input
-//
-
-static wchar_t
-sub_getc_meta(sub_context_ty *scp, getc_type *tp)
+wchar_t
+sub_context_ty::getc_meta(getc_type &tr)
 {
-    wchar_t	    result;
-    sub_diversion_ty *dp;
-
     trace(("sub_getc_meta()\n{\n"));
-    dp = scp->diversion;
-    if (dp && (dp->resubstitute & RESUB_BOTH))
-	*tp = getc_type_control;
+    if (diversion_stack.resub_both())
+	tr = getc_type_control;
     else
-	*tp = getc_type_data;
-    if (!dp)
-	result = 0;
-    else if (dp->pos >= (int)dp->text->wstr_length)
-	result = 0;
-    else
-	result = dp->text->wstr_text[dp->pos++];
+	tr = getc_type_data;
+    wchar_t result = diversion_stack.getch();
 #ifdef DEBUG
     if (iswprint(result) && result >= CHAR_MIN && result <= CHAR_MAX)
     {
         trace(("return '%c' %s;\n", (char)result,
-	    (*tp == getc_type_control ? "control" : "data")));
+	    (tr == getc_type_control ? "control" : "data")));
     }
     else
     {
         trace(("return %4.4lX %s;\n", (long)result,
-	    (*tp == getc_type_control ? "control" : "data")));
+	    (tr == getc_type_control ? "control" : "data")));
     }
 #endif
     trace(("}\n"));
@@ -682,156 +506,28 @@ sub_getc_meta(sub_context_ty *scp, getc_type *tp)
 }
 
 
-//
-// NAME
-//	sub_getc_meta_undo
-//
-// SYNOPSIS
-//	void sub_getc_meta_undo(sub_context_ty *, wchar_t c);
-//
-// DESCRIPTION
-//	The sub_getc_meta_undo function is used to give back
-//	a character output by sub_getc_meta.
-//
-// ARGUMENTS
-//	c - character being given back
-//
-// CAVEAT
-//	Only push back what was read.
-//
-
-static void
-sub_getc_meta_undo(sub_context_ty *scp, wchar_t c)
+void
+sub_context_ty::getc_meta_undo(wchar_t c)
 {
-    sub_diversion_ty *dp;
-
     trace(("sub_getc_meta_undo(%ld)\n{\n", (long)c));
 #ifdef DEBUG
     if (iswprint(c) && c >= CHAR_MIN && c <= CHAR_MAX)
         trace(("c = '%c'\n", (char)c));
 #endif
-    dp = scp->diversion;
-    assert(dp);
-    if (!c)
-    {
-	assert(dp->pos == (int)dp->text->wstr_length);
-    }
-    else
-    {
-	assert(dp->pos >= 1);
-	dp->pos--;
-	assert(c == dp->text->wstr_text[dp->pos]);
-    }
+    diversion_stack.ungetch(c);
     trace(("}\n"));
 }
 
 
-//
-// NAME
-//	collect
-//
-// SYNOPSIS
-//	void collect(collect_ty *, int c);
-//
-// DESCRIPTION
-//	The collect function is used to accumulate a string
-//	one character at a time.  No size limit.
-//
-// ARGUMENTS
-//	c - the character being collected
-//
-
-static void
-collect(collect_ty *cp, wchar_t c)
+wchar_t
+sub_context_ty::dollar()
 {
-    if (cp->pos >= cp->size)
-    {
-	size_t		nbytes;
-
-	cp->size += (1L << 10);
-	nbytes = cp->size * sizeof(wchar_t);
-	cp->buf = (wchar_t *)mem_change_size(cp->buf, nbytes);
-    }
-    cp->buf[cp->pos++] = c;
-}
-
-
-static void
-collect_n(collect_ty *cp, wchar_t *s, size_t n)
-{
-    while (n > 0)
-    {
-	collect(cp, *s++);
-	--n;
-    }
-}
-
-
-//
-// NAME
-//	collect_end
-//
-// SYNOPSIS
-//	wstring_ty *collect_end(collect_ty *);
-//
-// DESCRIPTION
-//	The collect_end function is used to fetch the string
-//	accumulated with the collect function.
-//	The bufferer for the collect function is cleared.
-//
-// RETURNS
-//	wstring_ty *; pointer to the string in dynamic memory.
-//
-
-static wstring_ty *
-collect_end(collect_ty *cp)
-{
-    wstring_ty	    *result;
-
-    result = wstr_n_from_wc(cp->buf, cp->pos);
-    cp->pos = 0;
-    return result;
-}
-
-
-static wchar_t sub_getc(sub_context_ty *, getc_type *); // forward
-
-
-//
-// NAME
-//	dollar
-//
-// SYNOPSIS
-//	wchar_t dollar(sub_context_ty *);
-//
-// DESCRIPTION
-//	The dollar function is used to perform dollar ($) substitutions.
-//	On entry, the $ is expected to have been consumed.
-//
-//	The substitution is usually achieved as a side-effect,
-//	by using the sub_diversion function.
-//
-// RETURNS
-//	wchar_t a character to deliver as output,
-//		or NUL if none.
-//
-
-static wchar_t
-dollar(sub_context_ty *scp)
-{
-    wstring_list_ty arg;
-    int		    result;
-    wchar_t	    c;
-    wstring_ty	    *s;
-    wchar_t	    quoted;
-    collect_ty	    tmp;
-    getc_type	    ct;
-
     trace(("dollar()\n{\n"));
-    collect_constructor(&tmp);
-    wstring_list_constructor(&arg);
-    result = 0;
-    c = sub_getc_meta(scp, &ct);
+    collect tmp;
+    wstring_list_ty arg;
+    int result = 0;
+    getc_type ct;
+    wchar_t c = getc_meta(ct);
     if (ct != getc_type_control)
 	goto normal;
     switch (c)
@@ -846,36 +542,37 @@ dollar(sub_context_ty *scp)
     case '7':
     case '8':
     case '9':
-	for (;;)
 	{
-	    collect(&tmp, c);
-	    c = sub_getc_meta(scp, &ct);
-	    switch (c)
+	    for (;;)
 	    {
-	    case '0':
-	    case '1':
-	    case '2':
-	    case '3':
-	    case '4':
-	    case '5':
-	    case '6':
-	    case '7':
-	    case '8':
-	    case '9':
-		continue;
+		tmp.append(c);
+		c = getc_meta(ct);
+		switch (c)
+		{
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+		    continue;
 
-	    default:
-		sub_getc_meta_undo(scp, c);
+		default:
+		    getc_meta_undo(c);
+		    break;
+		}
 		break;
 	    }
-	    break;
+	    wstring_ty *s = tmp.end();
+	    trace(("push arg\n"));
+	    arg.push_back(s);
+	    wstr_free(s);
+	    execute(arg);
 	}
-	s = collect_end(&tmp);
-	trace(("push arg\n"));
-	wstring_list_append(&arg, s);
-	wstr_free(s);
-	execute(scp, &arg);
-	wstring_list_destructor(&arg);
 	break;
 
     case 'a':
@@ -930,94 +627,95 @@ dollar(sub_context_ty *scp)
     case 'X':
     case 'Y':
     case 'Z':
-	for (;;)
 	{
-	    collect(&tmp, c);
-	    c = sub_getc_meta(scp, &ct);
-	    switch (c)
+	    for (;;)
 	    {
-	    case 'a':
-	    case 'b':
-	    case 'c':
-	    case 'd':
-	    case 'e':
-	    case 'f':
-	    case 'g':
-	    case 'h':
-	    case 'i':
-	    case 'j':
-	    case 'k':
-	    case 'l':
-	    case 'm':
-	    case 'n':
-	    case 'o':
-	    case 'p':
-	    case 'q':
-	    case 'r':
-	    case 's':
-	    case 't':
-	    case 'u':
-	    case 'v':
-	    case 'w':
-	    case 'x':
-	    case 'y':
-	    case 'z':
-	    case 'A':
-	    case 'B':
-	    case 'C':
-	    case 'D':
-	    case 'E':
-	    case 'F':
-	    case 'G':
-	    case 'H':
-	    case 'I':
-	    case 'J':
-	    case 'K':
-	    case 'L':
-	    case 'M':
-	    case 'N':
-	    case 'O':
-	    case 'P':
-	    case 'Q':
-	    case 'R':
-	    case 'S':
-	    case 'T':
-	    case 'U':
-	    case 'V':
-	    case 'W':
-	    case 'X':
-	    case 'Y':
-	    case 'Z':
-	    case '0':
-	    case '1':
-	    case '2':
-	    case '3':
-	    case '4':
-	    case '5':
-	    case '6':
-	    case '7':
-	    case '8':
-	    case '9':
-	    case '_':
-	    case '-':
-		continue;
+		tmp.append(c);
+		c = getc_meta(ct);
+		switch (c)
+		{
+		case 'a':
+		case 'b':
+		case 'c':
+		case 'd':
+		case 'e':
+		case 'f':
+		case 'g':
+		case 'h':
+		case 'i':
+		case 'j':
+		case 'k':
+		case 'l':
+		case 'm':
+		case 'n':
+		case 'o':
+		case 'p':
+		case 'q':
+		case 'r':
+		case 's':
+		case 't':
+		case 'u':
+		case 'v':
+		case 'w':
+		case 'x':
+		case 'y':
+		case 'z':
+		case 'A':
+		case 'B':
+		case 'C':
+		case 'D':
+		case 'E':
+		case 'F':
+		case 'G':
+		case 'H':
+		case 'I':
+		case 'J':
+		case 'K':
+		case 'L':
+		case 'M':
+		case 'N':
+		case 'O':
+		case 'P':
+		case 'Q':
+		case 'R':
+		case 'S':
+		case 'T':
+		case 'U':
+		case 'V':
+		case 'W':
+		case 'X':
+		case 'Y':
+		case 'Z':
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+		case '_':
+		case '-':
+		    continue;
 
-	    default:
-		sub_getc_meta_undo(scp, c);
+		default:
+		    getc_meta_undo(c);
+		    break;
+		}
 		break;
 	    }
-	    break;
+	    wstring_ty *s = tmp.end();
+	    trace(("push arg\n"));
+	    arg.push_back(s);
+	    wstr_free(s);
+	    execute(arg);
 	}
-	s = collect_end(&tmp);
-	trace(("push arg\n"));
-	wstring_list_append(&arg, s);
-	wstr_free(s);
-	execute(scp, &arg);
-	wstring_list_destructor(&arg);
 	break;
 
     case '{':
-	c = sub_getc(scp, &ct);
+	c = getch(ct);
 	for (;;)
 	{
 	    //
@@ -1031,18 +729,16 @@ dollar(sub_context_ty *scp)
 	    //
 	    if (!c)
 	    {
-		sub_context_ty	*inner;
-
-		inner = sub_context_new();
-		sub_var_set_charstar(inner, "File_Name", scp->file_name);
-		sub_var_set_long(inner, "Line_Number", scp->line_number);
-		fatal_intl
+		sub_context_ty inner(__FILE__, __LINE__);
+		assert(file_name);
+		inner.var_set_charstar("File_Name", file_name);
+		assert(line_number);
+		inner.var_set_long("Line_Number", line_number);
+		inner.fatal_intl
 		(
-		    inner,
 		  i18n("$filename: $linenumber: unterminated $${} substitution")
 		);
 		// NOTREACHED
-		sub_context_delete(inner);
 		break;
 	    }
 
@@ -1051,7 +747,7 @@ dollar(sub_context_ty *scp)
 	    //
 	    if (iswspace(c))
 	    {
-		c = sub_getc(scp, &ct);
+		c = getch(ct);
 		continue;
 	    }
 
@@ -1059,35 +755,23 @@ dollar(sub_context_ty *scp)
 	    // collect the argument
 	    //	    any run of non-white-space characters
 	    //
-	    quoted = 0;
+	    wchar_t quoted = 0;
 	    for (;;)
 	    {
 		if (!c)
 		{
 		    if (quoted)
 		    {
-			sub_context_ty	*inner;
-
-			inner = sub_context_new();
-			sub_var_set_charstar
+			sub_context_ty inner(__FILE__, __LINE__);
+			assert(file_name);
+			inner.var_set_charstar("File_Name", file_name);
+			assert(line_number);
+			inner.var_set_long("Line_Number", line_number);
+			inner.fatal_intl
 			(
-			    inner,
-			    "File_Name",
-			    scp->file_name
-			);
-			sub_var_set_long
-			(
-			    inner,
-			    "Line_Number",
-			    scp->line_number
-			);
-			fatal_intl
-			(
-			    inner,
 			i18n("$filename: $linenumber: unterminated $${} quotes")
 			);
 			// NOTREACHED
-			sub_context_delete(inner);
 		    }
 		    break;
 		}
@@ -1114,45 +798,32 @@ dollar(sub_context_ty *scp)
 		}
 		else if (c == '\\' && ct == getc_type_control)
 		{
-		    c = sub_getc(scp, &ct);
+		    c = getch(ct);
 		    if (!c)
 		    {
-			sub_context_ty	*inner;
-
-			inner = sub_context_new();
-			sub_var_set_charstar
+			sub_context_ty inner(__FILE__, __LINE__);
+			assert(file_name);
+			inner.var_set_charstar("File_Name", file_name);
+			assert(line_number);
+			inner.var_set_long("Line_Number", line_number);
+			inner.fatal_intl
 			(
-			    inner,
-			    "File_Name",
-			    scp->file_name
-			);
-			sub_var_set_long
-			(
-			    inner,
-			    "Line_Number",
-			    scp->line_number
-			);
-			fatal_intl
-			(
-			    inner,
 		   i18n("$filename: $linenumber: unterminated $${} \\ sequence")
 			);
 			// NOTREACHED
-			sub_context_delete(inner);
 		    }
-		    collect(&tmp, c);
+		    tmp.append(c);
 		}
 		else
-		    collect(&tmp, c);
-		c = sub_getc(scp, &ct);
+		    tmp.append(c);
+		c = getch(ct);
 	    }
-	    s = collect_end(&tmp);
+	    wstring_ty *s = tmp.end();
 	    trace(("push arg\n"));
-	    wstring_list_append(&arg, s);
+	    arg.push_back(s);
 	    wstr_free(s);
 	}
-	execute(scp, &arg);
-	wstring_list_destructor(&arg);
+	execute(arg);
 	break;
 
     case '$':
@@ -1162,7 +833,7 @@ dollar(sub_context_ty *scp)
     case '#':
 	for (;;)
 	{
-	    c = sub_getc_meta(scp, &ct);
+	    c = getc_meta(ct);
 	    if (!c || (c == '\n' && ct == getc_type_control))
 		break;
 	}
@@ -1171,11 +842,10 @@ dollar(sub_context_ty *scp)
 
     default:
 	normal:
-	sub_getc_meta_undo(scp, c);
+	getc_meta_undo(c);
 	result = '$';
 	break;
     }
-    collect_destructor(&tmp);
 #ifdef DEBUG
     if (iswprint(result) && result >= CHAR_MIN && result <= CHAR_MAX)
         trace(("return '%c';\n", (char)result));
@@ -1187,33 +857,15 @@ dollar(sub_context_ty *scp)
 }
 
 
-//
-// NAME
-//	sub_getc
-//
-// SYNOPSIS
-//	wchar_t sub_getc(sub_context_ty *);
-//
-// DESCRIPTION
-//	The sub_getc function is used to get a character from
-//	the substitution stream.  This is used both for the final output
-//	and for fetching arguments to dollar ($) substitutions.
-//
-// RETURNS
-//	wchar_t a character from the stream,
-//		or NUL to indicate end of input.
-//
-
-static wchar_t
-sub_getc(sub_context_ty *scp, getc_type	*tp)
+wchar_t
+sub_context_ty::getch(getc_type &tr)
 {
-    wchar_t	    c;
-
     trace(("sub_getc()\n{\n"));
+    wchar_t c = 0;
     for (;;)
     {
-	c = sub_getc_meta(scp, tp);
-	if (c && *tp != getc_type_control)
+	c = getc_meta(tr);
+	if (c && tr != getc_type_control)
 	    break;
 	switch (c)
 	{
@@ -1221,18 +873,18 @@ sub_getc(sub_context_ty *scp, getc_type	*tp)
 	    break;
 
 	case 0:
-	    if (!scp->diversion)
+	    if (diversion_stack.empty())
 		break;
-	    sub_diversion_close(scp);
+	    diversion_stack.pop_back();
 	    continue;
 
 	case '$':
-	    if (!(scp->diversion->resubstitute & RESUB_DOLLARS))
+	    if (!diversion_stack.resub_both())
 		break;
-	    c = dollar(scp);
+	    c = dollar();
 	    if (!c)
 		continue;
-	    *tp = getc_type_data;
+	    tr = getc_type_data;
 	    break;
 	}
 	break;
@@ -1241,12 +893,12 @@ sub_getc(sub_context_ty *scp, getc_type	*tp)
     if (iswprint(c) && c >= CHAR_MIN && c <= CHAR_MAX)
     {
         trace(("return '%c' %s;\n", (char)c,
-	    (*tp == getc_type_control ? "control" : "data")));
+	    (tr == getc_type_control ? "control" : "data")));
     }
     else
     {
         trace(("return 0x%lX; /* %s */\n", (long)c,
-	    (*tp == getc_type_control ? "control" : "data")));
+	    (tr == getc_type_control ? "control" : "data")));
     }
 #endif
     trace(("}\n"));
@@ -1255,32 +907,31 @@ sub_getc(sub_context_ty *scp, getc_type	*tp)
 
 
 void
-subst_intl_project(sub_context_ty *scp, project_ty *a)
+sub_context_ty::subst_intl_project(project_ty *a)
 {
-    if (a != scp->pp)
+    if (a != pp)
     {
-	assert(!scp->pp);
-	assert(!scp->cp);
-	scp->pp = a;
-	scp->cp = 0;
+	assert(!pp);
+	assert(!cp);
+	pp = a;
+	cp = 0;
     }
 }
 
 
 void
-subst_intl_change(sub_context_ty *scp, change_ty *a)
+sub_context_ty::subst_intl_change(change_ty *a)
 {
-    assert(!scp->pp);
-    assert(!scp->cp);
-    scp->pp = a->pp;
-    scp->cp = a;
+    assert(!pp);
+    assert(!cp);
+    pp = a->pp;
+    cp = a;
 }
 
 
-static wstring_ty *
-subst(sub_context_ty *scp, wstring_ty *s)
+wstring_ty *
+sub_context_ty::subst(wstring_ty *s)
 {
-    collect_ty	    buf;
     wchar_t	    c;
     wstring_ty	    *result;
     sub_table_ty    *tp;
@@ -1289,28 +940,28 @@ subst(sub_context_ty *scp, wstring_ty *s)
     getc_type	    ct;
 
     trace(("subst(s = %8.8lX)\n{\n", (long)s));
-    collect_constructor(&buf);
-    sub_diversion(scp, s, RESUB_BOTH);
+    collect buf;
+    diversion_stack.push_back(s, true);
     for (;;)
     {
 	//
 	// get the next character
 	//
-	c = sub_getc(scp, &ct);
+	c = getch(ct);
 	if (!c)
 	    break;
 
 	//
 	// save the character
 	//
-	collect(&buf, c);
+	buf.append(c);
     }
 
     //
     // find any unused variables marked "append if unused"
     //
-    the_end = scp->sub_var_list + scp->sub_var_pos;
-    for (tp = scp->sub_var_list; tp < the_end; ++tp)
+    the_end = var_list + var_pos;
+    for (tp = var_list; tp < the_end; ++tp)
     {
 	if (!tp->append_if_unused)
 	    continue;
@@ -1321,15 +972,15 @@ subst(sub_context_ty *scp, wstring_ty *s)
 	//
 	// flag that the variable has been used
 	//
-	tp->must_be_used = 0;
+	tp->must_be_used = false;
 	if (!tp->value->wstr_length)
 	    continue;
 
 	//
 	// append to the buffer, separated by a space
 	//
-	collect(&buf, (wchar_t)' ');
-	collect_n(&buf, tp->value->wstr_text, tp->value->wstr_length);
+	buf.append(L' ');
+	buf.append(tp->value->wstr_text, tp->value->wstr_length);
     }
 
     //
@@ -1337,9 +988,8 @@ subst(sub_context_ty *scp, wstring_ty *s)
     // and complain about them
     //
     error_count = 0;
-    for (tp = scp->sub_var_list; tp < the_end; ++tp)
+    for (tp = var_list; tp < the_end; ++tp)
     {
-	sub_context_ty	*inner;
 	string_ty	*tmp;
 
 	if (!tp->must_be_used)
@@ -1350,27 +1000,26 @@ subst(sub_context_ty *scp, wstring_ty *s)
 	// to avoid infinite loops if there is a mistake in the
 	// translation string.
 	//
-	inner = sub_context_new();
-	sub_var_set_charstar(inner, "File_Name", scp->file_name);
-	sub_var_set_long(inner, "Line_Number", scp->line_number);
+	sub_context_ty inner(__FILE__, __LINE__);
+	assert(file_name);
+	inner.var_set_charstar("File_Name", file_name);
+	assert(line_number);
+	inner.var_set_long("Line_Number", line_number);
 	tmp = wstr_to_str(s);
-	sub_var_set_string(inner, "Message", tmp);
-	sub_var_optional(inner, "Message");
-	sub_var_set_format(inner, "Name", "$%s", tp->name);
-	sub_var_optional(inner, "Name");
-	error_intl
+	inner.var_set_string("Message", tmp);
+	inner.var_optional("Message");
+	inner.var_set_format("Name", "$%s", tp->name);
+	inner.var_optional("Name");
+	inner.error_intl
 	(
-	    inner,
 i18n("$filename: $linenumber: \
 in substitution \"$message\" variable \"$name\" unused")
 	);
-	sub_context_delete(inner);
 	str_free(tmp);
 	++error_count;
     }
     if (error_count > 0)
     {
-	sub_context_ty	*inner;
 	string_ty	*tmp;
 
 	//
@@ -1378,47 +1027,42 @@ in substitution \"$message\" variable \"$name\" unused")
 	// to avoid infinite loops if there is a mistake in the
 	// translation string.
 	//
-	inner = sub_context_new();
-	sub_var_set_charstar(inner, "File_Name", scp->file_name);
-	sub_var_set_long(inner, "Line_Number", scp->line_number);
+	sub_context_ty inner(__FILE__, __LINE__);
+	assert(file_name);
+	inner.var_set_charstar("File_Name", file_name);
+	assert(line_number);
+	inner.var_set_long("Line_Number", line_number);
 	tmp = wstr_to_str(s);
-	sub_var_set_string(inner, "Message", tmp);
-	sub_var_optional(inner, "Message");
-	sub_var_set_long(inner, "Number", error_count);
-	sub_var_optional(inner, "Number");
-	fatal_intl
+	inner.var_set_string("Message", tmp);
+	inner.var_optional("Message");
+	inner.var_set_long("Number", error_count);
+	inner.var_optional("Number");
+	inner.fatal_intl
 	(
-	    inner,
 i18n("$filename: $linenumber: \
 in substitution \"$message\" found unused variables")
 	);
 	// NOTREACHED
-	sub_context_delete(inner);
 	str_free(tmp);
     }
 
     //
     // clear the slate, ready for the next run
     //
-    sub_var_clear(scp);
-    result = collect_end(&buf);
-    collect_destructor(&buf);
+    clear();
+    result = buf.end();
     trace(("return %8.8lX;\n", (long)result));
     trace(("}\n"));
     return result;
 }
 
 
-static wstring_ty *
-subst_intl_wide(sub_context_ty *scp, const char *msg)
+wstring_ty *
+sub_context_ty::subst_intl_wide(const char *msg)
 {
-    char	    *tmp;
-    wstring_ty	    *s;
-    wstring_ty	    *result;
-
     trace(("subst_intl_wide(msg = \"%s\")\n{\n", msg));
     language_human();
-    tmp = gettext(msg);
+    const char *tmp = gettext(msg);
     language_C();
 #if 0
 #ifdef HAVE_GETTEXT
@@ -1427,15 +1071,15 @@ subst_intl_wide(sub_context_ty *scp, const char *msg)
 	error_raw
 	(
 	    "%s: %d: warning: message \"%s\" has no translation",
-	    scp->file_name,
-	    scp->line_number,
+	    file_name,
+	    line_number,
 	    msg
 	);
     }
 #endif // HAVE_GETTEXT
 #endif // DEBUG
-    s = wstr_from_c(tmp);
-    result = subst(scp, s);
+    wstring_ty *s = wstr_from_c(tmp);
+    wstring_ty *result = subst(s);
     wstr_free(s);
     trace(("return %8.8lX;\n", (long)result));
     trace(("}\n"));
@@ -1444,14 +1088,11 @@ subst_intl_wide(sub_context_ty *scp, const char *msg)
 
 
 string_ty *
-subst_intl(sub_context_ty *scp, const char *s)
+sub_context_ty::subst_intl(const char *s)
 {
-    wstring_ty	    *result_wide;
-    string_ty	    *result;
-
     trace(("subst_intl(s = \"%s\")\n{\n", s));
-    result_wide = subst_intl_wide(scp, s);
-    result = wstr_to_str(result_wide);
+    wstring_ty *result_wide = subst_intl_wide(s);
+    string_ty *result = wstr_to_str(result_wide);
     wstr_free(result_wide);
     trace(("return \"%s\";\n", result->str_text));
     trace(("}\n"));
@@ -1459,54 +1100,17 @@ subst_intl(sub_context_ty *scp, const char *s)
 }
 
 
-//
-// NAME
-//	substitute
-//
-// SYNOPSIS
-//	string_ty *substitute(change_ty *cp, string_ty *s);
-//
-// DESCRIPTION
-//	The substitute function is used to perform substitutions on
-//	strings.  Usually command strings, but not always.
-//
-//	The format of substitutions, and the commonly available
-//	substitutions, are described in aesub(5).
-//
-// ARGUMENTS
-//	cp	- the aegis change involved with the command
-//		  This may never be NULL.
-//	s	- the string to be substituted.
-//
-// RETURNS
-//	string_ty *; pointer to string in dynamic memory
-//
-
 string_ty *
-substitute(sub_context_ty *scp, change_ty *acp, string_ty *s)
+sub_context_ty::substitute(change_ty *acp, string_ty *s)
 {
-    wstring_ty	    *ws;
-    wstring_ty	    *result_wide;
-    string_ty	    *result;
-    int		    need_to_delete;
-
     trace(("substitute(acp = %08lX, s = \"%s\")\n{\n", (long)acp, s->str_text));
-    if (!scp)
-    {
-	scp = sub_context_new();
-	need_to_delete = 1;
-    }
-    else
-	need_to_delete = 0;
     assert(acp);
-    subst_intl_change(scp, acp);
-    ws = str_to_wstr(s);
-    result_wide = subst(scp, ws);
+    subst_intl_change(acp);
+    wstring_ty *ws = str_to_wstr(s);
+    wstring_ty *result_wide = subst(ws);
     wstr_free(ws);
-    result = wstr_to_str(result_wide);
+    string_ty *result = wstr_to_str(result_wide);
     wstr_free(result_wide);
-    if (need_to_delete)
-	sub_context_delete(scp);
     trace(("return \"%s\";\n", result->str_text));
     trace(("}\n"));
     return result;
@@ -1514,193 +1118,160 @@ substitute(sub_context_ty *scp, change_ty *acp, string_ty *s)
 
 
 string_ty *
-substitute_p(sub_context_ty *scp, project_ty *app, string_ty *s)
+sub_context_ty::substitute_p(project_ty *app, string_ty *s)
 {
-    wstring_ty	    *ws;
-    wstring_ty	    *result_wide;
-    string_ty	    *result;
-    int		    need_to_delete;
-
-    trace(("substitute(scp = %08lX, s = \"%s\")\n{\n", (long)scp, s->str_text));
-    if (!scp)
-    {
-	scp = sub_context_new();
-	need_to_delete = 1;
-    }
-    else
-	need_to_delete = 0;
+    trace(("substitute(pp = %08lX, s = \"%s\")\n{\n", (long)app, s->str_text));
     assert(app);
-    subst_intl_project(scp, app);
-    ws = str_to_wstr(s);
-    result_wide = subst(scp, ws);
+    subst_intl_project(app);
+    wstring_ty *ws = str_to_wstr(s);
+    wstring_ty *result_wide = subst(ws);
     wstr_free(ws);
-    result = wstr_to_str(result_wide);
+    string_ty *result = wstr_to_str(result_wide);
     wstr_free(result_wide);
-    if (need_to_delete)
-	sub_context_delete(scp);
     trace(("return \"%s\";\n", result->str_text));
     trace(("}\n"));
     return result;
 }
 
 
-//
-// NAME
-//	sub_var_clear
-//
-// SYNOPSIS
-//	void sub_var_clear(void);
-//
-// DESCRIPTION
-//	The sub_var_clear function is used to clear all of
-//	the substitution variables.  Not usually needed manually,
-//	as this is done automatically at the end of every substitute().
-//
-
 void
-sub_var_clear(sub_context_ty *scp)
+sub_context_ty::clear()
 {
-    size_t	    j;
-
-    for (j = 0; j < scp->sub_var_pos; ++j)
-	wstr_free(scp->sub_var_list[j].value);
-    scp->sub_var_pos = 0;
-    scp->cp = 0;
-    scp->pp = 0;
-    scp->errno_sequester = 0;
+    for (size_t j = 0; j < var_pos; ++j)
+	wstr_free(var_list[j].value);
+    var_pos = 0;
+    cp = 0;
+    pp = 0;
+    errno_sequester = 0;
 }
 
 
-//
-// NAME
-//	sub_var_set
-//
-// SYNOPSIS
-//	void sub_var_set(char *name, char *fmt, ...);
-//
-// DESCRIPTION
-//	The sub_var_set function is used to set the value of a
-//	substitution variable.	These variables are command specific,
-//	as opposed to the functions which are always present.
-//	The user documentation does NOT make this distinction by
-//	using the names "variable" and "function", they are always referred
-//	to as "substitutions".
-//
-// ARGUMENTS
-//	name	- the name of the variable
-//	fmt,... - a format string and arguments to construct the value.
-//		  Handed to str_vformat to make a (string_ty *) out of it.
-//
-// CAVEAT
-//	remains in scope until the next invokation of sub_var_clear,
-//	or until the end of the next invokation of substitute.
-//
-
 void
-sub_var_set_format(sub_context_ty *scp, const char *name, const char *fmt, ...)
+sub_context_ty::var_set_vformat(const char *name, const char *fmt, va_list ap)
 {
-    va_list	    ap;
-    string_ty	    *s;
-
-    va_start(ap, fmt);
-    s = str_vformat(fmt, ap);
-    va_end(ap);
-    sub_var_set_string(scp, name, s);
+    string_ty *s = str_vformat(fmt, ap);
+    var_set_string(name, s);
     str_free(s);
 }
 
 
 void
-sub_var_set_string(sub_context_ty *scp, const char *name, string_ty *value)
+sub_context_ty::var_set_format(const char *name, const char *fmt, ...)
 {
-    sub_table_ty    *svp;
+    va_list ap;
+    va_start(ap, fmt);
+    var_set_vformat(name, fmt, ap);
+    va_end(ap);
+}
 
-    if (scp->sub_var_pos >= scp->sub_var_size)
+
+void
+sub_context_ty::var_set_string(const char *name, const nstring &value)
+{
+    if (var_pos >= var_size)
     {
-	size_t		nbytes;
-
-	scp->sub_var_size += 10;
-	nbytes = scp->sub_var_size * sizeof(sub_table_ty);
-	scp->sub_var_list =
-            (sub_table_ty *)mem_change_size(scp->sub_var_list, nbytes);
+	size_t new_var_size = var_size * 2 + 8;
+	sub_table_ty *new_var_list = new sub_table_ty[new_var_size];
+	for (size_t j = 0; j < var_pos; ++j)
+	    new_var_list[j] = var_list[j];
+	delete [] var_list;
+	var_list = new_var_list;
+	var_size = new_var_size;
     }
-    svp = &scp->sub_var_list[scp->sub_var_pos++];
+    sub_table_ty *svp = &var_list[var_pos++];
     svp->name = name;
-    svp->value = str_to_wstr(value);
-    svp->must_be_used = 1;
-    svp->append_if_unused = 0;
-    svp->override = 0;
+    svp->value = wstr_n_from_c(value.c_str(), value.size());
+    svp->must_be_used = true;
+    svp->append_if_unused = false;
+    svp->override = false;
     svp->resubstitute = !svp->must_be_used;
 }
 
 
 void
-sub_var_resubstitute(sub_context_ty *scp, const char *name)
+sub_context_ty::var_set_string(const char *name, string_ty *value)
 {
-    sub_table_ty    *the_end;
-    sub_table_ty    *svp;
-
-    the_end = scp->sub_var_list + scp->sub_var_pos;
-    for (svp = scp->sub_var_list; svp < the_end; ++svp)
-	if (!strcmp(svp->name, name))
-	    break;
-    if (svp >= the_end)
-	this_is_a_bug();
-    else
-	svp->resubstitute = 1;
+    var_set_string(name, nstring(str_copy(value)));
 }
 
 
 void
-sub_var_override(sub_context_ty *scp, const char *name)
+sub_context_ty::var_resubstitute(const char *name)
 {
-    sub_table_ty    *the_end;
-    sub_table_ty    *svp;
-
-    the_end = scp->sub_var_list + scp->sub_var_pos;
-    for (svp = scp->sub_var_list; svp < the_end; ++svp)
-	if (!strcmp(svp->name, name))
-	    break;
-    if (svp >= the_end)
-	this_is_a_bug();
-    else
-	svp->override = 1;
-}
-
-
-void
-sub_var_optional(sub_context_ty *scp, const char *name)
-{
-    sub_table_ty    *the_end;
-    sub_table_ty    *svp;
-
-    the_end = scp->sub_var_list + scp->sub_var_pos;
-    for (svp = scp->sub_var_list; svp < the_end; ++svp)
-	if (!strcmp(svp->name, name))
-	    break;
-    if (svp >= the_end)
-	this_is_a_bug();
-    else
-	svp->must_be_used = 0;
-}
-
-
-void
-sub_var_append_if_unused(sub_context_ty *scp, const char *name)
-{
-    sub_table_ty    *the_end;
-    sub_table_ty    *svp;
-
-    the_end = scp->sub_var_list + scp->sub_var_pos;
-    for (svp = scp->sub_var_list; svp < the_end; ++svp)
-	if (!strcmp(svp->name, name))
-	    break;
-    if (svp >= the_end)
-	this_is_a_bug();
-    else
+    sub_table_ty *the_end = var_list + var_pos;
+    for (sub_table_ty *svp = var_list; ; ++svp)
     {
-	svp->must_be_used = 1;
-	svp->append_if_unused = 1;
+	if (svp >= the_end)
+	{
+	    this_is_a_bug();
+	    return;
+	}
+	if (!strcmp(svp->name, name))
+	{
+	    svp->resubstitute = true;
+	    return;
+	}
+    }
+}
+
+
+void
+sub_context_ty::var_override(const char *name)
+{
+    sub_table_ty *the_end = var_list + var_pos;
+    for (sub_table_ty *svp = var_list; ; ++svp)
+    {
+	if (svp >= the_end)
+	{
+	    this_is_a_bug();
+	    return;
+	}
+	if (!strcmp(svp->name, name))
+	{
+	    svp->override = true;
+	    return;
+	}
+    }
+}
+
+
+void
+sub_context_ty::var_optional(const char *name)
+{
+    sub_table_ty *the_end = var_list + var_pos;
+    for (sub_table_ty *svp = var_list; ; ++svp)
+    {
+	if (svp >= the_end)
+	{
+	    this_is_a_bug();
+	    return;
+	}
+	if (!strcmp(svp->name, name))
+	{
+	    svp->must_be_used = false;
+	    return;
+	}
+    }
+}
+
+
+void
+sub_context_ty::var_append_if_unused(const char *name)
+{
+    sub_table_ty *the_end = var_list + var_pos;
+    for (sub_table_ty *svp = var_list; ; ++svp)
+    {
+	if (svp >= the_end)
+	{
+	    this_is_a_bug();
+	    return;
+	}
+	if (!strcmp(svp->name, name))
+	{
+	    svp->must_be_used = true;
+	    svp->append_if_unused = true;
+	    return;
+	}
     }
 }
 
@@ -2004,52 +1575,28 @@ wrap(const wchar_t *s)
 
 
 void
-error_intl(sub_context_ty *scp, const char *s)
+sub_context_ty::error_intl(const char *s)
 {
-    wstring_ty	    *message;
-    int		    need_to_delete;
-
     if (!os_testing_mode())
 	language_check_translations();
-    if (!scp)
-    {
-	scp = sub_context_new();
-	need_to_delete = 1;
-    }
-    else
-	need_to_delete = 0;
-
-    message = subst_intl_wide(scp, s);
+    wstring_ty *message = subst_intl_wide(s);
     wrap(message->wstr_text);
     wstr_free(message);
-
-    if (need_to_delete)
-	sub_context_delete(scp);
 }
 
 
 void
-fatal_intl(sub_context_ty *scp, const char *s)
+sub_context_ty::fatal_intl(const char *s)
 {
-    wstring_ty	    *message;
-    static const char *double_jeopardy;
-    int		    need_to_delete;
-
     if (!os_testing_mode())
 	language_check_translations();
-    if (!scp)
-    {
-	scp = sub_context_new();
-	need_to_delete = 1;
-    }
-    else
-	need_to_delete = 0;
 
     //
     // Make sure that there isn't an infinite loop,
     // if there is a problem with a substitution
     // in an error message.
     //
+    static const char *double_jeopardy;
     if (double_jeopardy)
     {
 	//
@@ -2057,59 +1604,48 @@ fatal_intl(sub_context_ty *scp, const char *s)
 	//
 	fatal_raw
 	(
-"a fatal_intl error (\"%s\") happened while \
-attempting to report an earlier fatal_intl error (\"%s\").  \
-This is a probably bug.",
+            "a fatal_intl error (\"%s\") happened while attempting "
+		"to report an earlier fatal_intl error (\"%s\").  "
+		"This is probably a bug.",
 	    s,
 	    double_jeopardy
 	);
     }
     double_jeopardy = s;
 
-    message = subst_intl_wide(scp, s);
+    wstring_ty *message = subst_intl_wide(s);
     wrap(message->wstr_text);
     double_jeopardy = 0;
     quit(1);
     // NOTREACHED
-
-    if (need_to_delete)
-	sub_context_delete(scp);
 }
 
 
 void
-verbose_intl(sub_context_ty *scp, const char *s)
+sub_context_ty::verbose_intl(const char *s)
 {
     if (option_verbose_get())
     {
-	wstring_ty	    *message;
-	int		    need_to_delete;
-
 	if (!os_testing_mode())
 	    language_check_translations();
-
-	if (!scp)
-	{
-	    scp = sub_context_new();
-	    need_to_delete = 1;
-	}
-	else
-	    need_to_delete = 0;
-
-	message = subst_intl_wide(scp, s);
+	wstring_ty *message = subst_intl_wide(s);
 	wrap(message->wstr_text);
 	wstr_free(message);
-
-	if (need_to_delete)
-	    sub_context_delete(scp);
     }
-    else if (scp)
-	sub_var_clear(scp);
+    clear();
 }
 
 
 void
-sub_errno_setx(sub_context_ty *scp, int x)
+sub_context_ty::errno_setx(int x)
 {
-    scp->errno_sequester = x;
+    errno_sequester = x;
+}
+
+
+int
+sub_context_ty::errno_sequester_get()
+    const
+{
+    return errno_sequester;
 }

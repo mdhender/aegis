@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,6 @@
 #include <error.h>
 #include <patch.h>
 #include <patch/context.h>
-#include <patch/file.h>
 #include <patch/format/diff.h>
 #include <trace.h>
 
@@ -159,7 +158,7 @@ diff_header(patch_context_ty *context)
     if (starts_with(line, "Index:"))
     {
 	s = second_word(line);
-	string_list_append(&result->name, s);
+	result->name.push_back(s);
 	str_free(s);
 	idx++;
     }
@@ -176,14 +175,21 @@ diff_header(patch_context_ty *context)
 	string_list_ty	wl;
 	size_t		j;
 
-	str2wl(&wl, line, 0, 1);
+	wl.split(line, 0, true);
 	for (j = 1; j < wl.nstrings; ++j)
 	    if (wl.string[j]->str_text[0] != '-')
 		break;
 	if (j + 2 == wl.nstrings)
 	{
-	    string_list_append(&result->name, wl.string[j]);
-	    string_list_append(&result->name, wl.string[j + 1]);
+	    static string_ty *dev_null;
+	    if (!dev_null)
+		dev_null = str_from_c("/dev/null");
+	    s = wl.string[j];
+	    if (!str_equal(s, dev_null))
+		result->name.push_back(s);
+	    s = wl.string[j + 1];
+	    if (!str_equal(s, dev_null))
+		result->name.push_back(s);
 
 	    //
 	    // Get next line, we've used this one.
@@ -193,10 +199,22 @@ diff_header(patch_context_ty *context)
 	    if (!line)
 		goto oops;
 	}
-	string_list_destructor(&wl);
     }
-    if (result->name.nstrings == 0)
-	goto oops;
+
+    //
+    // Unlike "diff -u" or "diff -c", it is possible with this format to
+    // have zero filenames.  This happens to aeannotate in particular.
+    //
+    // So you can't say
+    //     if (result->name.nstrings == 0) goto oops;
+    // at this point, HOWEVER other code needs at least one filename.
+    //
+    if (result->name.empty())
+    {
+	string_ty *nsf = str_from_c("(no file name present)");
+	result->name.push_back(nsf);
+	str_free(nsf);
+    }
 
     //
     // Look for a line which contains one of our commands

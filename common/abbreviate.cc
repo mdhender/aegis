@@ -32,9 +32,7 @@
 static string_ty *
 abbreviate(string_ty *s, size_t max, int keep_last_dot)
 {
-    string_list_ty  word;
     size_t          word_total;
-    string_list_ty  punct;
     size_t          punct_total;
     size_t          total;
     char            *cp;
@@ -56,8 +54,8 @@ abbreviate(string_ty *s, size_t max, int keep_last_dot)
     // Break it all up into punctuation and words.
     // The punctuation *preceeds* the word.
     //
-    string_list_constructor(&word);
-    string_list_constructor(&punct);
+    string_list_ty word;
+    string_list_ty punct;
     punct_total = 0;
     word_total = 0;
     cp = s->str_text;
@@ -70,7 +68,7 @@ abbreviate(string_ty *s, size_t max, int keep_last_dot)
 	while (*cp && !isalnum((unsigned char)*cp))
 	    ++cp;
 	s1 = str_n_from_c(start, cp - start);
-	string_list_append(&punct, s1);
+	punct.push_back(s1);
 	punct_total += s1->str_length;
 	str_free(s1);
 
@@ -93,7 +91,7 @@ abbreviate(string_ty *s, size_t max, int keep_last_dot)
 	    }
 	}
 	s1 = str_n_from_c(start, cp - start);
-	string_list_append(&word, s1);
+	word.push_back(s1);
 	word_total += s1->str_length;
 	str_free(s1);
     }
@@ -301,13 +299,13 @@ contains_moronic_ms_restrictions(string_ty *fn)
 	for (cpp = moronic; cpp < ENDOF(moronic); ++cpp)
 	{
 	    fn2 = str_from_c(*cpp);
-	    string_list_append(&wl, fn2);
+	    wl.push_back(fn2);
 	    str_free(fn2);
 	}
     }
 
     fn2 = str_downcase(fn);
-    result = string_list_member(&wl, fn2);
+    result = wl.member(fn2);
     str_free(fn2);
     return result;
 }

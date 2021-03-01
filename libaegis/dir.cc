@@ -21,7 +21,7 @@
 //
 
 #include <ac/errno.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <dir.h>
@@ -36,7 +36,6 @@
 void
 dir_walk(string_ty *path, dir_walk_callback_ty callback, void *arg)
 {
-    string_list_ty  wl;
     struct stat     st;
     size_t          j;
     string_ty       *s;
@@ -76,28 +75,30 @@ dir_walk(string_ty *path, dir_walk_callback_ty callback, void *arg)
     switch (st.st_mode & S_IFMT)
     {
     case S_IFDIR:
-	callback(arg, dir_walk_dir_before, path, &st);
-	if (read_whole_dir__wl(path->str_text, &wl))
 	{
-	    sub_context_ty  *scp;
-	    int             errno_old;
+	    callback(arg, dir_walk_dir_before, path, &st);
+	    string_list_ty wl;
+	    if (read_whole_dir__wl(path->str_text, &wl))
+	    {
+		sub_context_ty  *scp;
+		int             errno_old;
 
-	    errno_old = errno;
-	    scp = sub_context_new();
-	    sub_errno_setx(scp, errno_old);
-	    sub_var_set_string(scp, "File_Name", path);
-	    fatal_intl(scp, i18n("read $filename: $errno"));
-	    // NOTREACHED
-	}
+		errno_old = errno;
+		scp = sub_context_new();
+		sub_errno_setx(scp, errno_old);
+		sub_var_set_string(scp, "File_Name", path);
+		fatal_intl(scp, i18n("read $filename: $errno"));
+		// NOTREACHED
+	    }
 
-	for (j = 0; j < wl.nstrings; ++j)
-	{
-	    s = os_path_join(path, wl.string[j]);
-	    dir_walk(s, callback, arg);
-	    str_free(s);
+	    for (j = 0; j < wl.nstrings; ++j)
+	    {
+		s = os_path_join(path, wl.string[j]);
+		dir_walk(s, callback, arg);
+		str_free(s);
+	    }
+	    callback(arg, dir_walk_dir_after, path, &st);
 	}
-	string_list_destructor(&wl);
-	callback(arg, dir_walk_dir_after, path, &st);
 	break;
 
     case S_IFREG:

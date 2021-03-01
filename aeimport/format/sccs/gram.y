@@ -240,10 +240,10 @@ date_and_time
              * Convert from the emminently sensable YY/MM/DD
              * into the hideous american MM/DD/YY
              */
-            str2wl(&sl, $1, "/", 0);
+            sl.split($1, "/");
             str_free($1);
             while (sl.nstrings < 3)
-                string_list_append(&sl, str_from_c(""));
+                sl.push_back(str_from_c(""));
             s =
                 str_format
                 (
@@ -253,7 +253,6 @@ date_and_time
                     sl.string[0]->str_text,
                     $2->str_text
                 );
-            string_list_destructor(&sl);
             str_free($2);
             t = date_scan(s->str_text);
             if (t == (time_t)-1)

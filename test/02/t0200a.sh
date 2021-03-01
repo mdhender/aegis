@@ -205,30 +205,34 @@ activity="diff 204"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 208"
+activity="uuid set 208"
+$bin/aegis -ca -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddd000 -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="develop end 212"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 212"
+activity="integrate begin 216"
 $bin/aegis -ib 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 216"
+activity="integrate build 220"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 220"
+activity="integrate diff 224"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 224"
+activity="integrate pass 228"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # second change
 #
-activity="new change 231"
+activity="new change 235"
 cat > caf << 'fubar'
 brief_description = "the second change";
 cause = internal_enhancement;
@@ -237,39 +241,39 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 2 -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 240"
+activity="develop begin 244"
 $bin/aegis -db 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="copy file 244"
+activity="copy file 248"
 $bin/aegis -cp $work/test.C002/barney -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 echo second > $work/test.C002/barney
 if test $? -ne 0 ; then no_result; fi
 
-activity="copy file 251"
+activity="copy file 255"
 $bin/aegis -cp $work/test.C002/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 echo third > $work/test.C002/fred
 if test $? -ne 0 ; then no_result; fi
 
-$bin/aegis -ca -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccdddddead -c 2 > LOG 2>&1
-if test $? -ne 0 ; then cat LOG; no_result; fi
+$bin/aegis -ca -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccdddddead -c 2 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build aedist chage set 261"
-$bin/aedist -send -o $work/c2.ae -c 2 -ndh > LOG 2>&1
-if test $? -ne 0 ; then cat LOG; no_result; fi
+activity="build aedist chage set 265"
+$bin/aedist -send -o $work/c2.ae -c 2 -ndh > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # Nuke the uuid
 #
-activity="uncopy file 268"
+activity="uncopy file 272"
 $bin/aegis -cpu $work/test.C002/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="copy file 272"
+activity="copy file 276"
 $bin/aegis -cp $work/test.C002/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -278,39 +282,45 @@ if test $? -ne 0 ; then cat log; no_result; fi
 echo second > $work/test.C002/fred
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 281"
+activity="build 285"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="diff 285"
+activity="diff 289"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 289"
+activity="uuid set 293"
+$bin/aegis -ca -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccdddddeac -c 2 > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="develop end 297"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 293"
+activity="integrate begin 301"
 $bin/aegis -ib 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 297"
+activity="integrate build 305"
 $bin/aegis -b 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 301"
+activity="integrate diff 309"
 $bin/aegis -diff -c 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 305"
+activity="integrate pass 313"
 $bin/aegis -ipass -c 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="aedist -receive 309"
+ulimit -c unlimited
+
+activity="aedist -receive 319"
 $bin/aedist -rec -f $work/c2.ae -c 3 -p $AEGIS_PROJECT -v -trojan > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="verify change state 313"
+activity="verify change state 323"
 cat > ok << 'fubar'
 brief_description = "the second change";
 description = "the second change";
@@ -325,6 +335,13 @@ architecture =
 copyright_years =
 [
 	YYYY,
+];
+attribute =
+[
+	{
+		name = "original-UUID";
+		value = "aaaaaaaa-bbbb-4bbb-8ccc-ccccdddddead";
+	},
 ];
 state = being_developed;
 given_test_exemption = true;
@@ -349,7 +366,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 
 check_it ok $work/proj.dir/info/change/0/003
 
-activity="verify change file state 352"
+activity="verify change file state 369"
 cat > ok << 'fubar'
 src =
 [
@@ -379,8 +396,162 @@ src =
 ];
 fubar
 if test $? -ne 0 ; then cat log; no_result; fi
-
 check_it ok $work/proj.dir/info/change/0/003.fs
+
+activity="send the change 401"
+$bin/aedist -send 10 -ndh -o $work/c1.ae > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+#
+# Create a second project: test2
+#
+activity="new project 408"
+$bin/aegis -npr test2 -version - -v -dir $work/test2.dir \
+	-lib $AEGIS_PATH > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+AEGIS_PROJECT=test2
+export AEGIS_PROJECT
+
+activity="project attributes 416"
+cat > paf << fubar
+developer_may_review = true;
+developer_may_integrate = true;
+reviewer_may_integrate = true;
+default_test_exemption = true;
+develop_end_action = goto_awaiting_integration;
+default_development_directory = "$work";
+fubar
+if test $? -ne 0 ; then no_result; fi
+$bin/aegis -pa -f paf -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="staff 429"
+$bin/aegis -nd $USER -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+$bin/aegis -nrv $USER -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+$bin/aegis -ni $USER -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="receive the change 437"
+$bin/aedist -rec -p test2 -c 1 -f $work/c1.ae > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="edit fred 441"
+echo 'test2: first' >> $work/test2.C001/fred
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="build 445"
+$bin/aegis -build 1 -v -nl > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="difference 449"
+$bin/aegis -diff 1 -v -nl > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="develop end 453"
+$bin/aegis -dev_end 1 -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="check 457"
+cat > ok <<EOF
+brief_description = "one";
+description = "one";
+cause = internal_enhancement;
+test_exempt = true;
+test_baseline_exempt = true;
+regression_test_exempt = true;
+architecture =
+[
+	"unspecified",
+];
+copyright_years =
+[
+	YYYY,
+];
+attribute =
+[
+	{
+		name = "original-UUID";
+		value = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddd000";
+	},
+];
+state = awaiting_integration;
+given_test_exemption = true;
+given_regression_test_exemption = true;
+build_time = TIME;
+architecture_times =
+[
+	{
+		variant = "unspecified";
+		node = "NODE";
+		build_time = TIME;
+	},
+];
+development_directory = ".../test2.C001";
+history =
+[
+	{
+		when = TIME;
+		what = new_change;
+		who = "USER";
+	},
+	{
+		when = TIME;
+		what = develop_begin;
+		who = "USER";
+	},
+	{
+		when = TIME;
+		what = develop_end_2ai;
+		who = "USER";
+	},
+];
+EOF
+check_it ok $work/test2.dir/info/change/0/001
+
+activity="archive send 514"
+$bin/aedist -send -p test2 1 -ndh -o $work/test2c1.ae > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+#
+# Switch back to test
+#
+
+activity="archive receive 522"
+$bin/aedist -rec -p test -c 4 -f $work/test2c1.ae > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="check fstate 526"
+cat > $work/ok <<EOF
+src =
+[
+	{
+		file_name = "barney";
+		uuid = "UUID";
+		action = modify;
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		usage = source;
+	},
+	{
+		file_name = "fred";
+		uuid = "UUID";
+		action = modify;
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		usage = source;
+	},
+];
+EOF
+check_it $work/ok $work/proj.dir/info/change/0/004.fs
 
 #
 # Only definite negatives are possible.

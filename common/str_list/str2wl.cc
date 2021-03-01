@@ -26,48 +26,19 @@
 #include <str_list.h>
 
 
-//
-// NAME
-//	str2wl - string to word list
-//
-// SYNOPSIS
-//	void str2wl(string_list_ty *wlp, string_ty *s, char *sep, int ewhite);
-//
-// DESCRIPTION
-//	Str2wl is used to form a word list from a string.
-//	wlp	- where to put the word list
-//	s	- string to break
-//	sep	- separators, default to " " if 0 given
-//	ewhite	- supress extra white space around separators
-//
-// RETURNS
-//	The string is broken on spaces into words,
-//	using strndup() and string_list_append().
-//
-// CAVEAT
-//	Quoting is not understood.
-//
-
 void
-str2wl(string_list_ty *slp, string_ty *s, const char *sep, int ewhite)
+string_list_ty::split(string_ty *s, const char *sep, bool ewhite)
 {
-    char            *cp;
-    int             more;
-
     if (!sep)
     {
 	sep = " \t\n\f\r";
-	ewhite = 1;
+	ewhite = true;
     }
-    string_list_constructor(slp);
-    cp = s->str_text;
-    more = 0;
+    clear();
+    const char *cp = s->str_text;
+    bool more = true;
     while (*cp || more)
     {
-	string_ty       *w;
-	char            *cp1;
-	char            *cp2;
-
 	if (ewhite)
 	{
 	    while (isspace((unsigned char)*cp))
@@ -75,22 +46,21 @@ str2wl(string_list_ty *slp, string_ty *s, const char *sep, int ewhite)
 	}
 	if (!*cp && !more)
 	    break;
-	more = 0;
-	cp1 = cp;
+	more = false;
+	const char *cp1 = cp;
 	while (*cp && !strchr(sep, *cp))
 	    cp++;
+	const char *cp2 = cp;
 	if (*cp)
 	{
 	    cp2 = cp + 1;
-	    more = 1;
+	    more = true;
 	}
-	else
-	    cp2 = cp;
 	if (ewhite)
 	    while (cp > cp1 && isspace((unsigned char)cp[-1]))
 		cp--;
-	w = str_n_from_c(cp1, cp - cp1);
-	string_list_append(slp, w);
+	string_ty *w = str_n_from_c(cp1, cp - cp1);
+	push_back(w);
 	str_free(w);
 	cp = cp2;
     }

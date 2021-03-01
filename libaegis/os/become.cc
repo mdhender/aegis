@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2004 Peter Miller;
+//	Copyright (C) 1991-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 
 #include <ac/errno.h>
 #include <ac/stddef.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 #include <ac/unistd.h>
 #include <ac/sys/prctl.h>
@@ -36,7 +36,9 @@
 static int      become_orig_uid;
 static int      become_orig_gid;
 static int      become_orig_umask;
+#ifdef DEBUG
 static int      become_inited;
+#endif
 static int      become_testing;
 static int      become_active;
 static int      become_active_uid;
@@ -231,7 +233,9 @@ os_become_init(void)
 #endif
     }
 #endif
+#ifdef DEBUG
     become_inited = 1;
+#endif
 }
 
 
@@ -246,7 +250,9 @@ os_become_init_mortal(void)
     become_testing = -1;
     become_active_uid = become_orig_uid;
     become_active_gid = become_orig_gid;
+#ifdef DEBUG
     become_inited = 1;
+#endif
 }
 
 
@@ -261,7 +267,9 @@ os_become_reinit_mortal(void)
     become_testing = -1;
     become_active_uid = become_orig_uid;
     become_active_gid = become_orig_gid;
+#ifdef DEBUG
     become_inited = 1;
+#endif
 }
 
 

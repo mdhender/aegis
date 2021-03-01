@@ -22,7 +22,7 @@
 
 #include <ac/errno.h>
 #include <ac/stdio.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <ac/unistd.h>

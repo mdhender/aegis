@@ -22,7 +22,7 @@
 
 #include <ac/errno.h>
 #include <ac/stddef.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <glue.h>
@@ -30,34 +30,35 @@
 #include <sub.h>
 
 
-int
-os_exists(string_ty *path)
+bool
+os_exists(const nstring &path)
 {
-    struct stat     st;
-    int             oret;
-
     os_become_must_be_active();
+    struct stat st;
 #ifdef S_IFLNK
-    oret = glue_lstat(path->str_text, &st);
+    int oret = glue_lstat(path.c_str(), &st);
 #else
-    oret = glue_stat(path->str_text, &st);
+    int oret = glue_stat(path.c_str(), &st);
 #endif
     if (oret)
     {
-	int             errno_old;
-
-	errno_old = errno;
+	int errno_old = errno;
 	if (errno_old != ENOENT && errno_old != ENOTDIR)
 	{
-	    sub_context_ty *scp;
-
-	    scp = sub_context_new();
+	    sub_context_ty *scp = sub_context_new();
 	    sub_errno_setx(scp, errno_old);
 	    sub_var_set_string(scp, "File_Name", path);
 	    fatal_intl(scp, i18n("stat $filename: $errno"));
 	    // NOTREACHED
 	}
-	return 0;
+	return false;
     }
-    return 1;
+    return true;
+}
+
+
+int
+os_exists(string_ty *path)
+{
+    return os_exists(nstring(str_copy(path)));
 }

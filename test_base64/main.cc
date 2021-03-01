@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,7 @@
 #include <output/quoted_print.h>
 #include <output/uuencode.h>
 #include <progname.h>
+#include <quit.h>
 
 
 enum
@@ -71,7 +72,7 @@ usage(void)
 	"Usage: %s [ -i | -o ][ <infile> [ <outfile> ]]\n",
 	progname
     );
-    exit(1);
+    quit(1);
 }
 
 
@@ -109,7 +110,7 @@ test_input_base64(string_ty *ifn, string_ty *ofn)
     ifp = input_base64(ifp, 1);
     input_to_output(ifp, ofp);
     input_delete(ifp);
-    output_delete(ofp);
+    delete ofp;
 }
 
 
@@ -144,7 +145,7 @@ test_input_qp(string_ty *ifn, string_ty *ofn)
     ifp = input_quoted_printable(ifp, 1);
     input_to_output(ifp, ofp);
     input_delete(ifp);
-    output_delete(ofp);
+    delete ofp;
 }
 
 
@@ -179,7 +180,7 @@ test_input_uu(string_ty *ifn, string_ty *ofn)
     ifp = input_uudecode(ifp, 1);
     input_to_output(ifp, ofp);
     input_delete(ifp);
-    output_delete(ofp);
+    delete ofp;
 }
 
 
@@ -192,13 +193,13 @@ test_output_base64(string_ty *ifn, string_ty *ofn)
     ifp = input_file_open(ifn);
     ifp = input_crlf(ifp, 1);
     ofp = output_file_text_open(ofn);
-    output_fprintf(ofp, "Content-Type: application/x-aegis-test\n");
-    output_fprintf(ofp, "Content-Transfer-Encoding: base64\n");
-    output_fprintf(ofp, "\n");
-    ofp = output_base64(ofp, 1);
+    ofp->fputs("Content-Type: application/x-aegis-test\n");
+    ofp->fputs("Content-Transfer-Encoding: base64\n");
+    ofp->fputs("\n");
+    ofp = new output_base64_ty(ofp, true);
     input_to_output(ifp, ofp);
     input_delete(ifp);
-    output_delete(ofp);
+    delete ofp;
 }
 
 
@@ -211,13 +212,13 @@ test_output_qp(string_ty *ifn, string_ty *ofn)
     ifp = input_file_open(ifn);
     ifp = input_crlf(ifp, 1);
     ofp = output_file_text_open(ofn);
-    output_fprintf(ofp, "Content-Type: application/x-aegis-test\n");
-    output_fprintf(ofp, "Content-Transfer-Encoding: quoted-printable\n");
-    output_fprintf(ofp, "\n");
-    ofp = output_quoted_printable(ofp, 1, 0);
+    ofp->fputs("Content-Type: application/x-aegis-test\n");
+    ofp->fputs("Content-Transfer-Encoding: quoted-printable\n");
+    ofp->fputs("\n");
+    ofp = new output_quoted_printable_ty(ofp, true, false);
     input_to_output(ifp, ofp);
     input_delete(ifp);
-    output_delete(ofp);
+    delete ofp;
 }
 
 
@@ -230,13 +231,13 @@ test_output_uu(string_ty *ifn, string_ty *ofn)
     ifp = input_file_open(ifn);
     ifp = input_crlf(ifp, 1);
     ofp = output_file_text_open(ofn);
-    output_fprintf(ofp, "Content-Type: application/x-aegis-test\n");
-    output_fprintf(ofp, "Content-Transfer-Encoding: uuencode\n");
-    output_fprintf(ofp, "\n");
-    ofp = output_uuencode(ofp, 1);
+    ofp->fputs("Content-Type: application/x-aegis-test\n");
+    ofp->fputs("Content-Transfer-Encoding: uuencode\n");
+    ofp->fputs("\n");
+    ofp = new output_uuencode_ty(ofp, true);
     input_to_output(ifp, ofp);
     input_delete(ifp);
-    output_delete(ofp);
+    delete ofp;
 }
 
 
@@ -323,6 +324,6 @@ main(int argc, char **argv)
 
     os_become_orig();
     func(ifn, ofn);
-    exit(0);
+    quit(0);
     return 0;
 }

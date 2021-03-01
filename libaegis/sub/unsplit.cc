@@ -24,7 +24,7 @@
 #include <sub.h>
 #include <sub/unsplit.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 wstring_ty *
@@ -33,11 +33,10 @@ sub_unsplit(sub_context_ty *scp, wstring_list_ty *arg)
     wstring_ty      *result;
     string_ty       *separators;
     string_ty       *s1;
-    string_list_ty  results;
     size_t	    j;
 
-    trace(("sub_split()\n{\n"));
-    if (arg->nitems < 2)
+    trace(("sub_unsplit()\n{\n"));
+    if (arg->size() < 2)
     {
        	sub_context_error_set(scp, i18n("requires two arguments"));
 	trace(("return NULL;\n"));
@@ -45,16 +44,16 @@ sub_unsplit(sub_context_ty *scp, wstring_list_ty *arg)
 	return 0;
     }
 
-    string_list_constructor(&results);
-    for (j = 2; j < arg->nitems; ++j)
+    string_list_ty results;
+    for (j = 2; j < arg->size(); ++j)
     {
-	s1 = wstr_to_str(arg->item[j]);
-	string_list_append(&results, s1);
+	s1 = wstr_to_str(arg->get(j));
+	results.push_back(s1);
 	str_free(s1);
     }
 
-    separators = wstr_to_str(arg->item[1]);
-    s1 = wl2str(&results, 0, results.nstrings, separators->str_text);
+    separators = wstr_to_str(arg->get(1));
+    s1 = results.unsplit(0, results.size(), separators->str_text);
     str_free(separators);
     result = str_to_wstr(s1);
     str_free(s1);

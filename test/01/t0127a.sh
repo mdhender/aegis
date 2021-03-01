@@ -88,6 +88,8 @@ check_it()
 		-e 's/20[0-9][0-9]/YYYY/' \
 		-e 's/node = ".*"/node = "NODE"/' \
 		-e 's/crypto = ".*"/crypto = "GUNK"/' \
+                -e 's/uuid = ".*"/uuid = "UUID"/' \
+                -e 's/delta_uuid = ".*"/delta_uuid = "UUID"/' \
 		< $2 > $work/sed.out
 	if test $? -ne 0; then no_result; fi
 	diff $1 $work/sed.out
@@ -106,7 +108,7 @@ pass()
 fail()
 {
 	set +x
-	echo 'FAILED test of the aeimport sccs functionality' 1>&2
+	echo "FAILED test of the aeimport sccs functionality ($activity)" 1>&2
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
@@ -115,7 +117,8 @@ fail()
 no_result()
 {
 	set +x
-	echo 'NO RESULT when testing the aeimport sccs functionality' 1>&2
+	echo "NO RESULT when testing the aeimport sccs functionality " \
+            "($activity)" 1>&2
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
@@ -150,6 +153,7 @@ unset LANGUAGE
 mkdir src src/sub
 if test $? -ne 0 ; then no_result; fi
 
+activity="create sccs file 156"
 cat > src/s.file1 << 'fubar'
 h10874
 s 00001/00000/00001
@@ -174,6 +178,7 @@ This is file 1.
 fubar
 if test $? -ne 0 ; then no_result; fi
 
+activity="create sccs file 181"
 cat > src/sub/s.file2 << 'fubar'
 h11284
 s 00001/00000/00001
@@ -201,12 +206,14 @@ if test $? -ne 0 ; then no_result; fi
 #
 # now that all the RCS files exist, read it all in and fake the changes
 #
+activity="import 209"
 $bin/aeimport --format=sccs src -p example -dir $workproj -lib $worklib -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; fail; fi
 
 #
 # Make sure the various state files are correct.
 #
+activity="check the state file 216"
 cat > ok << 'fubar'
 next_test_number = 1;
 fubar
@@ -214,6 +221,7 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/state
 
+activity="check cstate 224"
 cat > ok << 'fubar'
 brief_description = "The \"example\" program, branch 1.0.";
 description = "The \"example\" program, branch 1.0.";
@@ -311,6 +319,7 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/change/0/001.branch/0/000
 
+activity="check fstate 322"
 cat > ok << 'fubar'
 src =
 [
@@ -401,6 +410,7 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/change/0/001.branch/0/000.fs
 
+activity="check cstate 413"
 cat > ok << 'fubar'
 brief_description = "aegis.conf file";
 description = "Initial project `aegis.conf' file.";
@@ -418,6 +428,7 @@ copyright_years =
 ];
 state = completed;
 delta_number = 1;
+delta_uuid = "UUID";
 history =
 [
 	{
@@ -451,11 +462,13 @@ history =
 		who = "USER";
 	},
 ];
+uuid = "UUID";
 fubar
 if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/change/0/001.branch/0/000.branch/0/010
 
+activity="check fstate 471"
 cat > ok << 'fubar'
 src =
 [
@@ -475,6 +488,7 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/change/0/001.branch/0/000.branch/0/010.fs
 
+activity="check cstate 491"
 cat > ok << 'fubar'
 brief_description = "first";
 description = "first";
@@ -492,6 +506,7 @@ copyright_years =
 ];
 state = completed;
 delta_number = 2;
+delta_uuid = "UUID";
 history =
 [
 	{
@@ -525,11 +540,13 @@ history =
 		who = "bogus1";
 	},
 ];
+uuid = "UUID";
 fubar
 if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/change/0/001.branch/0/000.branch/0/011
 
+activity="check fstate 549"
 cat > ok << 'fubar'
 src =
 [
@@ -549,6 +566,7 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/change/0/001.branch/0/000.branch/0/011.fs
 
+activity="check cstate 569"
 cat > ok << 'fubar'
 brief_description = "second";
 description = "second";
@@ -566,6 +584,7 @@ copyright_years =
 ];
 state = completed;
 delta_number = 3;
+delta_uuid = "UUID";
 history =
 [
 	{
@@ -599,11 +618,13 @@ history =
 		who = "bogus2";
 	},
 ];
+uuid = "UUID";
 fubar
 if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/change/0/001.branch/0/000.branch/0/012
 
+activity="check fstate 627"
 cat > ok << 'fubar'
 src =
 [
@@ -633,6 +654,7 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/change/0/001.branch/0/000.branch/0/012.fs
 
+activity="check cstate 657"
 cat > ok << 'fubar'
 brief_description = "third";
 description = "third";
@@ -650,6 +672,7 @@ copyright_years =
 ];
 state = completed;
 delta_number = 4;
+delta_uuid = "UUID";
 history =
 [
 	{
@@ -683,11 +706,13 @@ history =
 		who = "bogus1";
 	},
 ];
+uuid = "UUID";
 fubar
 if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/change/0/001.branch/0/000.branch/0/013
 
+activity="check fstate 715"
 cat > ok << 'fubar'
 src =
 [
@@ -707,6 +732,7 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it ok $workproj/info/change/0/001.branch/0/000.branch/0/013.fs
 
+activity="check file 735"
 cat > ok << 'fubar'
 blah
 This is file 1.
@@ -716,6 +742,7 @@ if test $? -ne 0 ; then no_result; fi
 diff ok $workproj/branch.1/branch.0/baseline/file1
 if test $? -ne 0 ; then fail; fi
 
+activity="check file 745"
 cat > ok << 'fubar'
 blah blah
 This is file 2.

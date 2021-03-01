@@ -27,133 +27,91 @@
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
+#include <undo/item/chmod_errok.h>
+#include <undo/item/chmod.h>
+#include <undo/item/message.h>
+#include <undo/item/rename.h>
+#include <undo/item/rmdir_bg.h>
+#include <undo/item/rmdir_errok.h>
+#include <undo/item/unlink_errok.h>
 
 
 quit_action_undo undo_quitter;
 
-
-enum what_ty
-{
-    what_rename,
-    what_chmod,
-    what_chmod_errok,
-    what_unlink_errok,
-    what_rmdir_bg,
-    what_rmdir_errok,
-    what_message
-};
-
-struct action_ty
-{
-    what_ty         what;
-    string_ty       *path1;
-    string_ty       *path2;
-    int             arg1;
-    int             arg2;
-    action_ty       *next;
-    int             uid;
-    int             gid;
-    int             umask;
-};
-
-static action_ty *head;
-
-
-static action_ty *
-newlink(what_ty what)
-{
-    action_ty       *new_thing;
-
-    trace(("undo::newlink(what = %d)\n{\n", what));
-    new_thing = (action_ty *)mem_alloc(sizeof(action_ty));
-    new_thing->what = what;
-    new_thing->next = head;
-    new_thing->path1 = 0;
-    new_thing->path2 = 0;
-    new_thing->arg1 = 0;
-    new_thing->arg2 = 0;
-    os_become_query(&new_thing->uid, &new_thing->gid, &new_thing->umask);
-    head = new_thing;
-    trace(("return %08lX;\n", (long)new_thing));
-    trace(("}\n"));
-    return new_thing;
-}
+#include <list>
+typedef std::list<undo_item *> jobs_t;
+static jobs_t jobs;
 
 
 void
 undo_rename(string_ty *from, string_ty *to)
 {
-    action_ty       *new_thing;
-
     trace(("undo_rename(from = %08lX, to = %08lX)\n{\n", (long)from, (long)to));
-    trace_string(from->str_text);
-    trace_string(to->str_text);
-    new_thing = newlink(what_rename);
-    new_thing->path1 = str_copy(from);
-    new_thing->path2 = str_copy(to);
+    undo_rename(nstring(str_copy(from)), nstring(str_copy(to)));
+    trace(("}\n"));
+}
+
+
+void
+undo_rename(const nstring &from, const nstring &to)
+{
+    trace(("undo_rename(from = \"%s\", to = \"%s\")\n{\n",
+	from.c_str(), to.c_str()));
+    undo_item *ip = new undo_item_rename(from, to);
+    jobs.push_back(ip);
     os_interrupt_cope();
     trace(("}\n"));
 }
 
+
 void
 undo_rename_cancel(string_ty *from, string_ty *to)
 {
-    action_ty       *ap = head;
-    action_ty       *ap1 = NULL;
+    undo_rename_cancel(nstring(str_copy(from)), nstring(str_copy(to)));
+}
 
+
+void
+undo_rename_cancel(const nstring &from, const nstring &to)
+{
     trace(("undo_rename_cancel(\"%s\", \"%s\")\n{\n",
-          from->str_text, to->str_text));
-    while (ap)
+	from.c_str(), to.c_str()));
+    undo_item_rename dummy(from, to);
+    for (jobs_t::iterator it = jobs.begin(); it != jobs.end(); ++it)
     {
-        if (ap->what == what_rename
-            && str_equal(ap->path1, from)
-            && str_equal(ap->path2, to))
-            break;
-        else
-        {
-            ap1 = ap;
-            ap = ap->next;
-        }
+	undo_item *ip = *it;
+	// downcast and check
+	undo_item_rename *irp = dynamic_cast<undo_item_rename *>(ip);
+	if (irp && *irp == dummy)
+	{
+	    jobs.erase(it);
+	    trace(("}\n"));
+	    return;
+	}
     }
 
     //
-    // It is an bug if we try to cancel a rename never requested.
+    // It is a bug if we try to cancel a rename never requested.
     //
-    if (NULL == ap)
-        this_is_a_bug();
-
-    if (ap == head)
-    {
-        assert(ap1 == NULL);
-        head = ap->next;
-    }
-    else
-    {
-        assert(ap1 != NULL);
-        ap1->next = ap->next;
-    }
-
-    //
-    // Free the list element.
-    //
-    str_free(ap->path1);
-    if (ap->path2)
-        str_free(ap->path2);
-    mem_free((char *)ap);
+    this_is_a_bug();
     trace(("}\n"));
 }
+
 
 void
 undo_chmod(string_ty *path, int mode)
 {
-    action_ty       *new_thing;
+    undo_chmod(nstring(str_copy(path)), mode);
+}
 
+
+void
+undo_chmod(const nstring &path, int mode)
+{
     mode &= 07777;
-    trace(("undo_chmod(path = %08lX, mode = %05o)\n{\n", (long)path, mode));
-    trace_string(path->str_text);
-    new_thing = newlink(what_chmod);
-    new_thing->path1 = str_copy(path);
-    new_thing->arg1 = mode;
+    trace(("undo_chmod(path = \"%s\", mode = %05o)\n{\n", path.c_str(), mode));
+    undo_item *ip = new undo_item_chmod(path, mode);
+    jobs.push_back(ip);
     os_interrupt_cope();
     trace(("}\n"));
 }
@@ -162,15 +120,18 @@ undo_chmod(string_ty *path, int mode)
 void
 undo_chmod_errok(string_ty *path, int mode)
 {
-    action_ty       *new_thing;
+    undo_chmod_errok(nstring(str_copy(path)), mode);
+}
 
+
+void
+undo_chmod_errok(const nstring &path, int mode)
+{
     mode &= 07777;
-    trace(("undo_chmod_errok(path = %08lX, mode = %05o)\n{\n", (long)path,
+    trace(("undo_chmod_errok(path = \"%s\", mode = %05o)\n{\n", path.c_str(),
         mode));
-    trace_string(path->str_text);
-    new_thing = newlink(what_chmod_errok);
-    new_thing->path1 = str_copy(path);
-    new_thing->arg1 = mode;
+    undo_item *ip = new undo_item_chmod_errok(path, mode);
+    jobs.push_back(ip);
     os_interrupt_cope();
     trace(("}\n"));
 }
@@ -179,12 +140,16 @@ undo_chmod_errok(string_ty *path, int mode)
 void
 undo_unlink_errok(string_ty *path)
 {
-    action_ty       *new_thing;
+    undo_unlink_errok(nstring(str_copy(path)));
+}
 
-    trace(("undo_unlink_errok(path = %08lX)\n{\n", (long)path));
-    trace_string(path->str_text);
-    new_thing = newlink(what_unlink_errok);
-    new_thing->path1 = str_copy(path);
+
+void
+undo_unlink_errok(const nstring &path)
+{
+    trace(("undo_unlink_errok(path = \"%s\")\n{\n", path.c_str()));
+    undo_item *ip = new undo_item_unlink_errok(path);
+    jobs.push_back(ip);
     os_interrupt_cope();
     trace(("}\n"));
 }
@@ -193,12 +158,16 @@ undo_unlink_errok(string_ty *path)
 void
 undo_message(string_ty *path)
 {
-    action_ty       *new_thing;
+    undo_message(nstring(str_copy(path)));
+}
 
-    trace(("undo_message(path = %08lX)\n{\n", (long)path));
-    trace_string(path->str_text);
-    new_thing = newlink(what_message);
-    new_thing->path1 = str_copy(path);
+
+void
+undo_message(const nstring &msg)
+{
+    trace(("undo_message(msg = \"%s\")\n{\n", msg.c_str()));
+    undo_item *ip = new undo_item_message(msg);
+    jobs.push_back(ip);
     trace(("}\n"));
 }
 
@@ -206,12 +175,16 @@ undo_message(string_ty *path)
 void
 undo_rmdir_bg(string_ty *path)
 {
-    action_ty       *new_thing;
+    undo_rmdir_bg(nstring(str_copy(path)));
+}
 
-    trace(("undo_rmdir_bg(path = %08lX)\n{\n", (long)path));
-    trace_string(path->str_text);
-    new_thing = newlink(what_rmdir_bg);
-    new_thing->path1 = str_copy(path);
+
+void
+undo_rmdir_bg(const nstring &path)
+{
+    trace(("undo_rmdir_bg(path = \"%s\")\n{\n", path.c_str()));
+    undo_item *ip = new undo_item_rmdir_bg(path);
+    jobs.push_back(ip);
     os_interrupt_cope();
     trace(("}\n"));
 }
@@ -220,12 +193,16 @@ undo_rmdir_bg(string_ty *path)
 void
 undo_rmdir_errok(string_ty *path)
 {
-    action_ty       *new_thing;
+    undo_rmdir_errok(nstring(str_copy(path)));
+}
 
-    trace(("undo_rmdir_errok(path = %08lX)\n{\n", (long)path));
-    trace_string(path->str_text);
-    new_thing = newlink(what_rmdir_errok);
-    new_thing->path1 = str_copy(path);
+
+void
+undo_rmdir_errok(const nstring &path)
+{
+    trace(("undo_rmdir_errok(path = \"%s\")\n{\n", path.c_str()));
+    undo_item *ip = new undo_item_rmdir_errok(path);
+    jobs.push_back(ip);
     os_interrupt_cope();
     trace(("}\n"));
 }
@@ -234,133 +211,37 @@ undo_rmdir_errok(string_ty *path)
 void
 undo()
 {
-    sub_context_ty  *scp;
-    static int      count;
-    action_ty       *ap;
-
     trace(("undo()\n{\n"));
+    static int count;
     ++count;
     switch (count)
     {
     case 1:
         while (os_become_active())
             os_become_undo();
-        while (head)
+        while (!jobs.empty())
         {
-            //
-            // Take the first item off the list.
-            //
-            ap = head;
-            head = ap->next;
-
-            //
-            // Do the action
-            //
-            trace(("ap = %08lX;\n", (long)ap));
-            os_become(ap->uid, ap->gid, ap->umask);
-            switch (ap->what)
-            {
-            case what_rename:
-                os_rename(ap->path1, ap->path2);
-                break;
-
-            case what_chmod:
-                os_chmod(ap->path1, ap->arg1);
-                break;
-
-            case what_chmod_errok:
-                os_chmod_errok(ap->path1, ap->arg1);
-                break;
-
-            case what_unlink_errok:
-                os_unlink_errok(ap->path1);
-                break;
-
-            case what_rmdir_bg:
-                os_rmdir_bg(ap->path1);
-                break;
-
-            case what_rmdir_errok:
-                os_rmdir_errok(ap->path1);
-                break;
-
-            case what_message:
-                scp = sub_context_new();
-                sub_var_set_string(scp, "Message", ap->path1);
-                error_intl(scp, i18n("$message"));
-                sub_context_delete(scp);
-                break;
-            }
-            os_become_undo();
-
-            //
-            // Free the list element.
-            //
-            str_free(ap->path1);
-            if (ap->path2)
-                str_free(ap->path2);
-            mem_free((char *)ap);
+	    undo_item *ip = jobs.back();
+	    jobs.pop_back();
+            trace(("ip = %08lX;\n", (long)ip));
+	    ip->act();
+	    delete ip;
         }
         break;
 
     case 2:
-        scp = sub_context_new();
-        error_intl(scp, i18n("fatal error during fatal error recovery"));
-        sub_context_delete(scp);
-        while (head)
-        {
-            ap = head;
-            head = ap->next;
-            switch (ap->what)
-            {
-            case what_rename:
-                scp = sub_context_new();
-                sub_var_set_string(scp, "File_Name1", ap->path1);
-                sub_var_set_string(scp, "File_Name2", ap->path2);
-                error_intl(scp, i18n("unfinished: mv $filename1 $filename2"));
-                sub_context_delete(scp);
-                break;
-
-            case what_chmod:
-            case what_chmod_errok:
-                scp = sub_context_new();
-                sub_var_set_format(scp, "Argument", "%05o", ap->arg1);
-                sub_var_set_string(scp, "File_Name", ap->path1);
-                error_intl(scp, i18n("unfinished: chmod $arg $filename"));
-                sub_context_delete(scp);
-                break;
-
-            case what_unlink_errok:
-                scp = sub_context_new();
-                sub_var_set_string(scp, "File_Name", ap->path1);
-                error_intl(scp, i18n("unfinished: rm $filename"));
-                sub_context_delete(scp);
-                break;
-
-            case what_rmdir_bg:
-            case what_rmdir_errok:
-                scp = sub_context_new();
-                sub_var_set_string(scp, "File_Name", ap->path1);
-                error_intl(scp, i18n("unfinished: rmdir $filename"));
-                sub_context_delete(scp);
-                break;
-
-            case what_message:
-                scp = sub_context_new();
-                sub_var_set_string(scp, "Message", ap->path1);
-                error_intl(scp, i18n("$message"));
-                sub_context_delete(scp);
-                break;
-            }
-
-            //
-            // Free the list element.
-            //
-            str_free(ap->path1);
-            if (ap->path2)
-                str_free(ap->path2);
-            mem_free((char *)ap);
-        }
+	{
+	    sub_context_ty *scp = sub_context_new();
+	    error_intl(scp, i18n("fatal error during fatal error recovery"));
+	    sub_context_delete(scp);
+	    while (!jobs.empty())
+	    {
+		undo_item *ip = jobs.back();
+		jobs.pop_back();
+		ip->unfinished();
+		delete ip;
+	    }
+	}
         break;
 
     default:
@@ -375,24 +256,12 @@ undo()
 void
 undo_cancel()
 {
-    action_ty       *ap;
-
     trace(("undo_cancel()\n{\n"));
-    while (head)
+    while (!jobs.empty())
     {
-        //
-        // Take the first item off the list.
-        //
-        ap = head;
-        head = ap->next;
-
-        //
-        // Free the list element.
-        //
-        str_free(ap->path1);
-        if (ap->path2)
-            str_free(ap->path2);
-        mem_free((char *)ap);
+	undo_item *ip = jobs.back();
+	jobs.pop_back();
+	delete ip;
     }
     trace(("}\n"));
 }

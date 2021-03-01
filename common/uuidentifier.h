@@ -31,6 +31,9 @@
   * @{
   */
 
+#define ORIGINAL_UUID "original-UUID"
+#define EDIT_ORIGIN_UUID "edit-origin-UUID"
+
 /**
   * \brief Returns a string containing a new UUID.
   */

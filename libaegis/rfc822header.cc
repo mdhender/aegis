@@ -48,15 +48,13 @@ reap(void *p)
 static int
 has_a_header(input_ty *ifp)
 {
-    stracc_t	    buffer;
     int		    result;
     int		    state;
     size_t	    length_of_garbage = 0;
 
     trace(("has_a_header(ifp = %08lX)\n{\n", (long)ifp));
     result = 0;
-    stracc_constructor(&buffer);
-    stracc_open(&buffer);
+    stracc_t buffer;
 
     //
     // MH (a mail handler) has a tendancy to add a line if the form
@@ -76,32 +74,32 @@ has_a_header(input_ty *ifp)
 	c = input_getc(ifp);
 	if (c < 0)
 	    break;
-	stracc_char(&buffer, c);
+	buffer.push_back(c);
 	if (c == '\n')
 	    break;
     }
     if
     (
-	buffer.length >= 14
+	buffer.size() >= 14
     &&
-	0 == memcmp("(Message ", buffer.buffer, 9)
+	0 == memcmp("(Message ", buffer.get_data(), 9)
     &&
-	buffer.buffer[buffer.length - 2] == ')'
+	buffer[buffer.size() - 2] == ')'
     )
     {
 	// it's a garbage MH line, toss it
-	length_of_garbage = buffer.length;
+	length_of_garbage = buffer.size();
     }
-    else if (buffer.length >= 6 && 0 == memcmp("From ", buffer.buffer, 5))
+    else if (buffer.size() >= 6 && 0 == memcmp("From ", buffer.get_data(), 5))
     {
 	// it's a garbage From line, toss it
-	length_of_garbage = buffer.length;
+	length_of_garbage = buffer.size();
     }
     else
     {
 	// give the line back
-	input_unread(ifp, buffer.buffer, buffer.length);
-	buffer.length = 0;
+	input_unread(ifp, buffer.get_data(), buffer.size());
+	buffer.clear();
     }
 
     //
@@ -113,13 +111,13 @@ has_a_header(input_ty *ifp)
     // State 3: finished (see "result")
     //
     state = 0;
-    while (state < 3 && buffer.length < 80)
+    while (state < 3 && buffer.size() < 80)
     {
 	int		c;
 
 	c = input_getc(ifp);
 	if (c >= 0)
-	    stracc_char(&buffer, c);
+	    buffer.push_back(c);
 	if (c < 0)
 	{
 	    state = 3;
@@ -230,10 +228,9 @@ has_a_header(input_ty *ifp)
     input_unread
     (
 	ifp,
-	buffer.buffer + length_of_garbage,
-	buffer.length - length_of_garbage
+	buffer.get_data() + length_of_garbage,
+	buffer.size() - length_of_garbage
     );
-    stracc_destructor(&buffer);
     trace(("return %d\n", result));
     trace(("}\n"));
     return result;
@@ -245,7 +242,6 @@ is_binary(input_ty *ifp)
 {
     int		    result;
     int		    c;
-    stracc_t	    buffer;
 
     //
     // We are looking for NULs, because gzipped files have
@@ -254,22 +250,20 @@ is_binary(input_ty *ifp)
     // no header to tell us.
     //
     result = 0;
-    stracc_constructor(&buffer);
-    stracc_open(&buffer);
-    while (buffer.length < 800)
+    stracc_t buffer;
+    while (buffer.size() < 800)
     {
 	c = input_getc(ifp);
 	if (c < 0)
 	    break;
-	stracc_char(&buffer, c);
+	buffer.push_back(c);
 	if (c == 0)
 	{
 	    result = 1;
 	    break;
 	}
     }
-    input_unread(ifp, buffer.buffer, buffer.length);
-    stracc_destructor(&buffer);
+    input_unread(ifp, buffer.get_data(), buffer.size());
     return result;
 }
 
@@ -278,15 +272,14 @@ rfc822_header_ty *
 rfc822_header_read(input_ty *ifp)
 {
     rfc822_header_ty *hp;
-    stracc_t	    buffer;
 
     //
     // Allocate a symbol table to hold everything.
     //
     trace(("rfc822_header_read(ifp = %08lX)\n{\n", (long)ifp));
     hp = (rfc822_header_ty *)mem_alloc(sizeof(rfc822_header_ty));
-    hp->stp = symtab_alloc(1);
-    hp->stp->reap = reap;
+    hp->stp = new symtab_ty(1);
+    hp->stp->set_reap(reap);
 
     //
     // If there is no 822 header, return an empty symbol table.
@@ -304,7 +297,7 @@ rfc822_header_read(input_ty *ifp)
 	    trace(("looks like base64\n"));
 	    name = str_from_c("content-transfer-encoding");
 	    value = str_from_c("base64");
-	    symtab_assign(hp->stp, name, value);
+	    hp->stp->assign(name, value);
 	    str_free(name);
 	}
 	else if (input_uudecode_recognise(ifp))
@@ -315,7 +308,7 @@ rfc822_header_read(input_ty *ifp)
 	    trace(("looks like uuencode\n"));
 	    name = str_from_c("content-transfer-encoding");
 	    value = str_from_c("uuencode");
-	    symtab_assign(hp->stp, name, value);
+	    hp->stp->assign(name, value);
 	    str_free(name);
 	}
 	trace(("return %08lX\n", (long)hp));
@@ -328,7 +321,7 @@ rfc822_header_read(input_ty *ifp)
     //
     ifp = input_crlf(ifp, 0);
     ifp = input_822wrap(ifp, 1);
-    stracc_constructor(&buffer);
+    stracc_t buffer;
 
     //
     // MH (a mail handler) has a tendancy to add a line if the form
@@ -344,17 +337,17 @@ rfc822_header_read(input_ty *ifp)
 	c = input_getc(ifp);
 	if (c < 0)
 	    break;
-	stracc_char(&buffer, c);
+	buffer.push_back(c);
 	if (c == '\n')
 	    break;
     }
     if
     (
-	buffer.length >= 14
+	buffer.size() >= 14
     &&
-	0 == memcmp("(Message ", buffer.buffer, 9)
+	0 == memcmp("(Message ", buffer.get_data(), 9)
     &&
-	buffer.buffer[buffer.length - 2] == ')'
+	buffer[buffer.size() - 2] == ')'
     )
     {
 	// it's a garbage MH line, toss it
@@ -362,9 +355,9 @@ rfc822_header_read(input_ty *ifp)
     else
     {
 	// give the line back
-	input_unread(ifp, buffer.buffer, buffer.length);
+	input_unread(ifp, buffer.get_data(), buffer.size());
     }
-    buffer.length = 0;
+    buffer.clear();
 
     //
     // Read header lines until we find a blank line.
@@ -388,7 +381,7 @@ rfc822_header_read(input_ty *ifp)
 	// Read the name.
 	// Complain if we don't like the characters.
 	//
-	stracc_open(&buffer);
+	buffer.clear();
 	for (;;)
 	{
 	    if (c == ':')
@@ -397,10 +390,10 @@ rfc822_header_read(input_ty *ifp)
 		input_fatal_error(ifp, "malformed RFC822 header");
 	    if (isupper((unsigned char)c))
 		c = tolower((unsigned char)c);
-	    stracc_char(&buffer, c);
+	    buffer.push_back(c);
 	    c = input_getc(ifp);
 	}
-	name = stracc_close(&buffer);
+	name = buffer.mkstr();
 	if (name->str_length < 1)
 	    input_fatal_error(ifp, "malformed RFC822 header (no name)");
 
@@ -418,23 +411,22 @@ rfc822_header_read(input_ty *ifp)
 	// Read the value.
 	// We aren't so picky this time.
 	//
-	stracc_open(&buffer);
+	buffer.clear();
 	for (;;)
 	{
 	    if (c < 0 || c == '\n')
 		break;
-	    stracc_char(&buffer, c);
+	    buffer.push_back(c);
 	    c = input_getc(ifp);
 	}
-	value = stracc_close(&buffer);
+	value = buffer.mkstr();
 
 	//
 	// assign the value
 	//
-	symtab_assign(hp->stp, name, value);
+	hp->stp->assign(name, value);
 	str_free(name);
     }
-    stracc_destructor(&buffer);
     input_delete(ifp);
     trace(("}\n"));
     trace(("return %08lX\n", (long)hp));
@@ -445,7 +437,8 @@ rfc822_header_read(input_ty *ifp)
 void
 rfc822_header_delete(rfc822_header_ty *hp)
 {
-    symtab_free(hp->stp);
+    delete hp->stp;
+    hp->stp = 0;
     mem_free(hp);
 }
 
@@ -460,7 +453,7 @@ rfc822_header_query(rfc822_header_ty *hp, const char *name)
     Name = str_from_c(name);
     Name2 = str_downcase(Name);
     str_free(Name);
-    result = (string_ty *)symtab_query(hp->stp, Name2);
+    result = (string_ty *)hp->stp->query(Name2);
     str_free(Name2);
     return result;
 }

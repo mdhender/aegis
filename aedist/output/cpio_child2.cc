@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,120 +23,90 @@
 #include <output/cpio_child.h>
 #include <output/cpio_child2.h>
 #include <output/memory.h>
-#include <output/private.h>
-#include <str.h>
 
 
-struct output_cpio_child2_ty
+output_cpio_child2_ty::~output_cpio_child2_ty()
 {
-	output_ty	inheroted;
-	output_ty	*deeper;
-	string_ty	*name;
-	output_ty	*buffer;
-};
+    //
+    // Make sure all buffered data has been passed to our write_inner
+    // method.
+    //
+    flush();
 
+    //
+    // Create a cpio archive member, now that the length is known.
+    //
+    output_ty *tmp = new output_cpio_child_ty(deeper, name, buffer->ftell());
 
-static void
-output_cpio_child2_destructor(output_ty *fp)
-{
-	output_cpio_child2_ty *this_thing;
-	output_ty	*tmp;
+    //
+    // Forward the stashed data to the cpio archive member.
+    //
+    buffer->forward(tmp);
 
-	this_thing = (output_cpio_child2_ty *)fp;
-	tmp =
-		output_cpio_child_open
-		(
-			this_thing->deeper,
-			this_thing->name,
-			output_ftell(this_thing->buffer)
-		);
-	output_memory_forward(this_thing->buffer, tmp);
-	output_delete(tmp);
-	output_delete(this_thing->buffer);
-	str_free(this_thing->name);
-	//
-	// DO NOT output_delete(this_thing->deeper);
-	// this is output_cpio::destructor's job.
-	//
+    //
+    // Get rid all the machinery necessary to pull this off, now that
+    // we've done it.
+    //
+    delete tmp;
+    delete buffer;
+    buffer = 0;
+
+    //
+    // DO NOT delete deeper;
+    // this is output_cpio::destructor's job.
+    //
 }
 
 
-static string_ty *
-output_cpio_child2_filename(output_ty *fp)
+output_cpio_child2_ty::output_cpio_child2_ty(output_ty *arg1,
+	const nstring &arg2) :
+    deeper(arg1),
+    name(arg2),
+    buffer(new output_memory_ty())
 {
-	output_cpio_child2_ty *this_thing;
-
-	this_thing = (output_cpio_child2_ty *)fp;
-	return output_filename(this_thing->deeper);
 }
 
 
-static long
-output_cpio_child2_ftell(output_ty *fp)
+string_ty *
+output_cpio_child2_ty::filename()
+    const
 {
-	output_cpio_child2_ty *this_thing;
-
-	this_thing = (output_cpio_child2_ty *)fp;
-	return output_ftell(this_thing->buffer);
+    return deeper->filename();
 }
 
 
-static void
-output_cpio_child2_write(output_ty *fp, const void *data, size_t len)
+long
+output_cpio_child2_ty::ftell_inner()
+    const
 {
-	output_cpio_child2_ty *this_thing;
-
-	this_thing = (output_cpio_child2_ty *)fp;
-	output_write(this_thing->buffer, data, len);
+    return buffer->ftell();
 }
 
 
-static void
-output_cpio_child2_flush(output_ty *fp)
+void
+output_cpio_child2_ty::write_inner(const void *data, size_t len)
 {
-	output_cpio_child2_ty *this_thing;
-
-	this_thing = (output_cpio_child2_ty *)fp;
-	output_flush(this_thing->buffer);
+    buffer->write(data, len);
 }
 
 
-static void
-output_cpio_child2_eoln(output_ty *fp)
+void
+output_cpio_child2_ty::flush_inner()
 {
-	output_cpio_child2_ty *this_thing;
-
-	this_thing = (output_cpio_child2_ty *)fp;
-	output_end_of_line(this_thing->buffer);
+    buffer->flush();
 }
 
 
-
-static output_vtbl_ty vtbl =
+void
+output_cpio_child2_ty::end_of_line_inner()
 {
-	sizeof(output_cpio_child2_ty),
-	output_cpio_child2_destructor,
-	output_cpio_child2_filename,
-	output_cpio_child2_ftell,
-	output_cpio_child2_write,
-	output_cpio_child2_flush,
-	output_generic_page_width,
-	output_generic_page_length,
-	output_cpio_child2_eoln,
-	"cpio buffered child",
-};
+    buffer->end_of_line();
+}
 
 
-output_ty *
-output_cpio_child2_open(output_ty *deeper, string_ty *name)
+const char *
+output_cpio_child2_ty::type_name()
+    const
 {
-	output_ty	*result;
-	output_cpio_child2_ty *this_thing;
-
-	result = output_new(&vtbl);
-	this_thing = (output_cpio_child2_ty *)result;
-	this_thing->deeper = deeper;
-	this_thing->name = str_copy(name);
-	this_thing->buffer = output_memory_open();
-	return result;
+    return "cpio buffered child";
 }

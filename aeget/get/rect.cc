@@ -21,45 +21,84 @@
 //
 
 #include <ac/stdlib.h>
+#include <ac/string.h>
 
+#include <error.h> // for assert
 #include <get/rect.h>
 #include <rect.h>
 #include <str_list.h>
 
 
 static long
-string_to_integer(string_ty *s, long dflt)
+string_to_integer(const char *s, long dflt)
 {
-    long            result;
-    char            *end;
-
-    result = strtol(s->str_text, &end, 0);
-    if (end == s->str_text || *end)
+    char *end = 0;
+    long result = strtol(s, &end, 0);
+    assert(end);
+    if (end == s || *end)
 	return dflt;
     return result;
 }
 
 
-void
-get_rect(string_list_ty *modifier)
+static bool
+string_to_integer3(const char *s, long *result)
 {
-    long            width = 0;
-    long            height = 0;
-    const char      *label = 0;
+    char *end = 0;
+    long n = strtol(s, &end, 0);
+    assert(end);
+    if (end == s || *end != ',')
+	return false;
+    *result++ = n;
+    s = end + 1;
 
-    if (modifier->nstrings >= 2)
-	width = string_to_integer(modifier->string[1], 10);
-    else
-	width = 10;
+    end = 0;
+    n = strtol(s, &end, 0);
+    assert(end);
+    if (end == s || *end != ',')
+	return false;
+    *result++ = n;
+    s = end + 1;
 
-    if (modifier->nstrings >= 3)
-	height = string_to_integer(modifier->string[2], 10);
-    else
-	height = 10;
+    end = 0;
+    n = strtol(s, &end, 0);
+    assert(end);
+    if (end == s || *end)
+	return false;
+    *result++ = n;
+    return true;
+}
 
-    if (modifier->nstrings >= 4)
-	label = modifier->string[3]->str_text;
 
+void
+get_rect(string_list_ty *modifier_p)
+{
+    string_list_ty &modifier = *modifier_p;
+    long width = 10;
+    long height = 10;
+    const char *label = 0;
+    for (size_t j = 0; j < modifier.size(); ++j)
+    {
+	string_ty *s = modifier[j];
+	if (0 == strncasecmp(s->str_text, "width=", 6))
+	{
+	    width = string_to_integer(s->str_text + 6, 10);
+	}
+	if (0 == strncasecmp(s->str_text, "height=", 7))
+	{
+	    height = string_to_integer(s->str_text + 7, 10);
+	}
+	if (0 == strncasecmp(s->str_text, "label=", 6))
+	{
+	    label = s->str_text + 6;
+	}
+	if (0 == strncasecmp(s->str_text, "color=", 6))
+	{
+	    long clr[3];
+	    if (string_to_integer3(s->str_text + 6, clr))
+		rect_color(clr[0], clr[1], clr[2]);
+	}
+    }
     rect_mime(1);
     rect(0, width, height, label);
 }

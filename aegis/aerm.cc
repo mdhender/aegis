@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -199,9 +199,6 @@ count_config_files(change_ty *cp)
 static void
 remove_file_main(void)
 {
-    string_list_ty  wl;
-    string_list_ty  wl2;
-    string_list_ty  wl_in;
     string_ty	    *s1;
     string_ty	    *s2;
     fstate_src_ty   *c_src_data;
@@ -214,7 +211,6 @@ remove_file_main(void)
     change_ty	    *cp;
     log_style_ty    log_style;
     user_ty	    *up;
-    string_ty	    *dd;
     int		    number_of_errors;
     string_list_ty  search_path;
     int		    config_seen;
@@ -226,7 +222,7 @@ remove_file_main(void)
     arglex();
     project_name = 0;
     change_number = 0;
-    string_list_constructor(&wl);
+    string_list_ty wl;
     log_style = log_style_append_default;
     while (arglex_token != arglex_token_eoln)
     {
@@ -244,7 +240,7 @@ remove_file_main(void)
 
 	case arglex_token_string:
 	    s2 = str_from_c(arglex_value.alv_string);
-	    string_list_append(&wl, s2);
+	    wl.push_back(s2);
 	    str_free(s2);
 	    break;
 
@@ -375,7 +371,7 @@ remove_file_main(void)
     // 4.   if neither, error
     //
     number_of_errors = 0;
-    string_list_constructor(&wl2);
+    string_list_ty wl2;
     config_seen = 0;
     configuration_filename = 0;
     for (j = 0; j < wl.nstrings; ++j)
@@ -408,6 +404,7 @@ remove_file_main(void)
 	    ++number_of_errors;
 	    continue;
 	}
+	string_list_ty wl_in;
 	project_file_directory_query(pp, s2, &wl_in, 0, view_path_simple);
 	if (wl_in.nstrings)
 	{
@@ -426,7 +423,7 @@ remove_file_main(void)
 		s3 = wl_in.string[k];
 		if (!change_file_find(cp, s3, view_path_first))
 		{
-		    if (string_list_member(&wl2, s3))
+		    if (wl2.member(s3))
 		    {
 			sub_context_ty	*scp;
 
@@ -437,7 +434,7 @@ remove_file_main(void)
 			++number_of_errors;
 		    }
 		    else
-			string_list_append(&wl2, s3);
+			wl2.push_back(s3);
 		    if (change_file_is_config(cp, s3))
 		    {
 			++config_seen;
@@ -476,7 +473,7 @@ remove_file_main(void)
        		if (!configuration_filename)
 		    configuration_filename = str_copy(s2);
 	    }
-	    if (string_list_member(&wl2, s2))
+	    if (wl2.member(s2))
 	    {
 		sub_context_ty	*scp;
 
@@ -487,14 +484,11 @@ remove_file_main(void)
 		++number_of_errors;
 	    }
 	    else
-		string_list_append(&wl2, s2);
+		wl2.push_back(s2);
 	}
-	string_list_destructor(&wl_in);
 	str_free(s2);
     }
-    string_list_destructor(&wl);
     wl = wl2;
-    string_list_destructor(&search_path);
 
     //
     // You may not delete the last project configuration file.
@@ -601,7 +595,6 @@ remove_file_main(void)
     // and make it be gibberish, to generate syntax errors if it is used.
     // Create any necessary directories along the way.
     //
-    dd = change_development_directory_get(cp, 0);
     for (j = 0; j < wl.nstrings; ++j)
     {
 	//
@@ -656,7 +649,6 @@ remove_file_main(void)
 	change_verbose(cp, scp, i18n("remove file $filename complete"));
 	sub_context_delete(scp);
     }
-    string_list_destructor(&wl);
     change_free(cp);
     project_free(pp);
     user_free(up);

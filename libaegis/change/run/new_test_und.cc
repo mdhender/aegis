@@ -54,7 +54,7 @@ change_run_new_test_undo_command(change_ty *cp, string_list_ty *wlp,
 	goto ret;
 
     scp = sub_context_new();
-    the_files = wl2str(wlp, 0, 32767, (char *)0);
+    the_files = wlp->unsplit();
     sub_var_set_string(scp, "File_List", the_files);
     sub_var_optional(scp, "File_List");
     str_free(the_files);

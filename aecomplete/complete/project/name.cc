@@ -44,15 +44,13 @@ perform(complete_ty *cp, shell_ty *sh)
 
     project_list_get(&list);
     gonzo_alias_list(&list2);
-    string_list_append_list_unique(&list, &list2);
-    string_list_destructor(&list2);
+    list.push_back_unique(list2);
     prefix = shell_prefix_get(sh);
     for (j = 0; j < list.nstrings; ++j)
     {
 	if (str_leading_prefix(list.string[j], prefix))
 	    shell_emit(sh, list.string[j]);
     }
-    string_list_destructor(&list);
 }
 
 

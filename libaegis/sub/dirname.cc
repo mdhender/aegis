@@ -26,7 +26,7 @@
 #include <sub.h>
 #include <sub/dirname.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 //
@@ -52,34 +52,26 @@
 wstring_ty *
 sub_dirname(sub_context_ty *scp, wstring_list_ty *arg)
 {
-    wstring_ty	*result;
-
     trace(("sub_dirname()\n{\n"));
-    if (arg->nitems < 2)
+    wstring_ty *result = 0;
+    if (arg->size() < 2)
     {
        	sub_context_error_set(scp, i18n("requires one argument"));
-       	result = 0;
     }
     else
     {
-	string_list_ty	results;
-	size_t		j;
-       	string_ty	*s1;
-
 	os_become_orig();
-	string_list_constructor(&results);
-	for (j = 1; j < arg->nitems; ++j)
+	string_list_ty results;
+	for (size_t j = 1; j < arg->size(); ++j)
 	{
-	    string_ty	    *s2;
-
-	    s1 = wstr_to_str(arg->item[j]);
-	    s2 = os_dirname(s1);
+	    string_ty *s1 = wstr_to_str(arg->get(j));
+	    string_ty *s2 = os_dirname(s1);
 	    str_free(s1);
-	    string_list_append(&results, s2);
+	    results.push_back(s2);
 	    str_free(s2);
 	}
 	os_become_undo();
-	s1 = wl2str(&results, 0, results.nstrings, 0);
+	string_ty *s1 = results.unsplit();
 	result = str_to_wstr(s1);
 	str_free(s1);
     }

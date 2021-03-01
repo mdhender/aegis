@@ -1,0 +1,59 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2005 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing lib/en/man1/o_clone_mergs
+.\"
+.SH Cloning and Merging
+When you use \fIaeclone\fP(1) to clone a change set, and then integrate
+one of the two change sets, you will observe that Aegis says that the
+files of the un-integrated change are now out-of-date.
+.PP
+If you run \fIaem\fP(1) to bring the out-of-date files back up-to-date,
+\fIfmerge\fP(1) and some (but not) all other merging tools, it signals
+just about everything as a conflict, even though both alternatives are
+identical.
+.LP
+The problem is that two changes making identical edits to the same place
+in the same file are a logical conflict, even if not an actual conflict,
+and it takes a human to figure out the difference.  Think of a shopping
+list: the ensuite needs more soap, and so does the main bathroom.  The
+second "soap" on the merge of the two shopping lists isn't a duplicate,
+you really do need two boxes of soap.  Sometimes edits of source files
+are the same: sometimes the logical conflict is resolved by applying
+both identical edits, not just one.
+.LP
+This is just the \fIfmerge\fP(1) command being more conservative than
+RCS's \fImerge\fP(1) command.
+.LP
+The easiest way to deal with this common situation it to run an
+.RS
+.ft CW
+aecpu -unchanged
+.ft P
+.RE
+command \fIbefore\fP you run the \fIaem\fP(1) merge command, and you
+will have less grief.  It's also worth remembering that Aegis stashes
+the original file with a \f[CW],B\fP suffix (B for backup) so you can
+simply
+.RS
+.ft CW
+mv \fIfubar\fP,B \fIfubar\fP
+.ft R
+.RE
+if you know that all of the conflicts are logical conflicts.

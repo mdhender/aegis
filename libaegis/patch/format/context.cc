@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 2001, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,6 @@
 #include <error.h>
 #include <patch.h>
 #include <patch/context.h>
-#include <patch/file.h>
 #include <patch/format/context.h>
 #include <trace.h>
 
@@ -93,7 +92,7 @@ context_diff_header(patch_context_ty *context)
     if (starts_with(line, "Index:", 6))
     {
 	s = second_word(line);
-	string_list_append(&result->name, s);
+	result->name.push_back(s);
 	str_free(s);
 	idx++;
     }
@@ -104,10 +103,14 @@ context_diff_header(patch_context_ty *context)
     line = patch_context_getline(context, idx);
     if (!line)
 	goto oops;
+    static string_ty *dev_null;
+    if (!dev_null)
+	dev_null = str_from_c("/dev/null");
     if (starts_with(line, "***", 3))
     {
 	s = second_word(line);
-	string_list_append(&result->name, s);
+	if (!str_equal(s, dev_null))
+	    result->name.push_back(s);
 	str_free(s);
 	idx++;
     }
@@ -121,7 +124,8 @@ context_diff_header(patch_context_ty *context)
     if (starts_with(line, "---", 3))
     {
 	s = second_word(line);
-	string_list_append(&result->name, s);
+	if (!str_equal(s, dev_null))
+	    result->name.push_back(s);
 	str_free(s);
 	idx++;
     }
@@ -326,7 +330,6 @@ context_diff_hunk(patch_context_ty *context)
     int		    lino;
     patch_hunk_ty   *php;
     int		    idx;
-    int		    n;
     size_t	    j;
     patch_line_ty   *plp;
 
@@ -369,7 +372,6 @@ context_diff_hunk(patch_context_ty *context)
     if (before_list)
     {
 	trace(("mark\n"));
-	n = before2 - before1 + 1;
 	// collect a bunch of lines
 	for (lino = before1; lino <= before2; ++lino)
 	{
@@ -414,7 +416,6 @@ context_diff_hunk(patch_context_ty *context)
     if (after_list)
     {
 	trace(("mark\n"));
-	n = after2 - after1 + 1;
 	// collect a bunch of lines
 	for (lino = after1; lino <= after2; ++lino)
 	{

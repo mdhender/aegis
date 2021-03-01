@@ -52,7 +52,7 @@ project_search_path_get(project_ty *pp, string_list_ty *wlp, int resolve)
 	case cstate_state_being_reviewed:
 	case cstate_state_awaiting_integration:
 	case cstate_state_being_integrated:
-	    string_list_append(wlp, project_baseline_path_get(ppp, resolve));
+	    wlp->push_back(project_baseline_path_get(ppp, resolve));
 	    break;
 	}
     }

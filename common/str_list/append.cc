@@ -20,38 +20,26 @@
 // MANIFEST: functions to manipulate appends
 //
 
+#include <ac/string.h>
+
 #include <str_list.h>
-#include <mem.h>
 
-
-//
-// NAME
-//	string_list_append - append to a word list
-//
-// SYNOPSIS
-//	void string_list_append(string_list_ty *wlp, string_ty *wp);
-//
-// DESCRIPTION
-//	Wl_append is used to append to a word list.
-//
-// CAVEAT
-//	The word being appended IS copied.
-//
 
 void
-string_list_append(string_list_ty *wlp, string_ty *w)
+string_list_ty::push_back(string_ty *w)
 {
-    size_t          nbytes;
-
-    if (wlp->nstrings >= wlp->nstrings_max)
+    if (nstrings >= nstrings_max)
     {
 	//
 	// always 8 less than a power of 2, which is
 	// most efficient for many memory allocators
 	//
-	wlp->nstrings_max = wlp->nstrings_max * 2 + 8;
-	nbytes = wlp->nstrings_max * sizeof(string_ty *);
-	wlp->string = (string_ty **)mem_change_size(wlp->string, nbytes);
+	size_t new_nstrings_max = nstrings_max * 2 + 8;
+	string_ty **new_string = new string_ty *[new_nstrings_max];
+	memcpy(new_string, string, nstrings * sizeof(string[0]));
+	delete [] string;
+	string = new_string;
+	nstrings_max = new_nstrings_max;
     }
-    wlp->string[wlp->nstrings++] = str_copy(w);
+    string[nstrings++] = str_copy(w);
 }

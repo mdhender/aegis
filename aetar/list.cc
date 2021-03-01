@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -135,11 +135,11 @@ list(void)
 	ip = input_tar_child(ifp, &archive_name);
 	if (!ip)
 	    break;
-	output_put_str(ofp, archive_name);
-	output_fputc(ofp, '\n');
+	ofp->fputs(archive_name);
+	ofp->fputc('\n');
 	input_delete(ip);
     }
-    output_delete(ofp);
+    delete ofp;
     input_delete(ifp);
     os_become_undo();
 }

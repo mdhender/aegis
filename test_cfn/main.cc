@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,7 @@
 #include <os.h>
 #include <progname.h>
 #include <project.h>
+#include <quit.h>
 #include <r250.h>
 #include <user.h>
 
@@ -63,7 +64,7 @@ usage(void)
 
     prog = progname_get();
     fprintf(stderr, "usage: %s [ -p <name> ][ -c <number> ][ <type> ]\n", prog);
-    exit(1);
+    quit(1);
 }
 
 
@@ -84,6 +85,8 @@ view_path_find(const char *s)
 	    return (view_path_ty)j;
     }
     fatal_raw("view path type \"%s\" unknown", s);
+    // NOTREACHED
+    return view_path_simple;
 }
 
 
@@ -104,6 +107,8 @@ file_action_find(const char *s)
 	    return j;
     }
     fatal_raw("file action \"%s\" unknown", s);
+    // NOTREACHED
+    return file_action_modify;
 }
 
 
@@ -124,6 +129,8 @@ file_usage_find(const char *s)
 	    return j;
     }
     fatal_raw("file usage \"%s\" unknown", s);
+    // NOTREACHED
+    return file_usage_source;
 }
 
 
@@ -134,7 +141,6 @@ main(int argc, char **argv)
     string_ty	    *project_name;
     project_ty	    *pp;
     change_ty	    *cp;
-    int		    baseline;
     user_ty	    *up;
     size_t	    j;
     view_path_ty    vp;
@@ -154,7 +160,6 @@ main(int argc, char **argv)
 
     project_name = 0;
     change_number = 0;
-    baseline = 0;
     vp = view_path_extreme;
     usage_mask = 0;
     usage_column = 1;
@@ -253,6 +258,6 @@ main(int argc, char **argv)
     //
     // report success
     //
-    exit(0);
+    quit(0);
     return 0;
 }

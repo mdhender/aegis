@@ -20,18 +20,21 @@
 // MANIFEST: functions to list and modify file attributes
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
 #include <ac/libintl.h>
 #include <ac/magic.h>
+#include <ac/stdio.h>
+#include <ac/stdlib.h>
+#include <ac/string.h>
 
 #include <aefa.h>
 #include <arglex2.h>
 #include <arglex/change.h>
 #include <arglex/project.h>
+#include <attribute.h>
 #include <attrlistveri.h>
 #include <change.h>
 #include <change/file.h>
+#include <change/identifier.h>
 #include <commit.h>
 #include <error.h>
 #include <fattr.h>
@@ -49,14 +52,13 @@
 #include <trace.h>
 #include <undo.h>
 #include <user.h>
+#include <uuidentifier.h>
 
 
 static void
 file_attributes_usage(void)
 {
-    const char      *progname;
-
-    progname = progname_get();
+    const char *progname = progname_get();
     fprintf
     (
 	stderr,
@@ -67,15 +69,19 @@ file_attributes_usage(void)
     fprintf
     (
 	stderr,
-	"       %s -File_ATtributes -Edit [ <option>... ] "
-	    "<filename>\n",
+	"       %s -File_ATtributes -Edit [ <option>... ] <filename>\n",
 	progname
     );
     fprintf
     (
 	stderr,
-	"       %s -File_ATtributes -List [ <option>... ] "
-	    "<filename>\n",
+	"       %s -File_ATtributes -List [ <option>... ] <filename>\n",
+	progname
+    );
+    fprintf
+    (
+	stderr,
+	"       %s -File_ATtributes -UUID <number> -File <filename>\n",
 	progname
     );
     fprintf(stderr, "       %s -File_ATtributes -Help\n", progname);
@@ -93,24 +99,20 @@ file_attributes_help(void)
 static void
 change_fatal_unknown_file(change_ty *cp, string_ty *filename)
 {
-    sub_context_ty  *scp;
-    fstate_src_ty   *src;
-
-    scp = sub_context_new();
-    sub_var_set_string(scp, "File_Name", filename);
-    src = change_file_find_fuzzy(cp, filename);
+    sub_context_ty sc(__FILE__, __LINE__);
+    sc.var_set_string("File_Name", filename);
+    fstate_src_ty *src = change_file_find_fuzzy(cp, filename);
     if (src)
     {
-	sub_var_set_string(scp, "Guess", src->file_name);
-	change_fatal(cp, scp, i18n("no $filename, closest is $guess"));
+	sc.var_set_string("Guess", src->file_name);
+	change_fatal(cp, &sc, i18n("no $filename, closest is $guess"));
 	// NOTREACHED
     }
     else
     {
-	change_fatal(cp, scp, i18n("no $filename"));
+	change_fatal(cp, &sc, i18n("no $filename"));
 	// NOTREACHED
     }
-    sub_context_delete(scp);
 }
 
 
@@ -118,46 +120,19 @@ static void
 fattr_assign(fattr_ty *fattr_data, const nstring &name, const nstring &value)
 {
     attributes_list_ty *alp = fattr_data->attribute;
-    for (size_t j = 0; j < alp->length; ++j)
+    if (!alp)
     {
-	attributes_ty *ap = alp->list[j];
-	if (ap->name && nstring(ap->name) == name)
-	{
-	    if (ap->value)
-		str_free(ap->value);
-	    ap->value = str_copy(value.get_ref());
-	    return;
-	}
+	alp = (attributes_list_ty *)attributes_list_type.alloc();
+	fattr_data->attribute = alp;
     }
-
-    type_ty *type_p = 0;
-    attributes_ty **app =
-	(attributes_ty **)attributes_list_type.list_parse(alp, &type_p);
-    assert(type_p == &attributes_type);
-    attributes_ty *ap = (attributes_ty *)attributes_type.alloc();
-    *app = ap;
-    ap->name = str_copy(name.get_ref());
-    ap->value = str_copy(value.get_ref());
+    attributes_list_insert(alp, name.c_str(), value.c_str());
 }
 
 
 static bool
 fattr_exists(fattr_ty *fattr_data, const nstring &name)
 {
-    attributes_list_ty *alp = fattr_data->attribute;
-    if (!alp)
-	return 0;
-    for (size_t j = 0; j < alp->length; ++j)
-    {
-	attributes_ty   *ap;
-
-	ap = alp->list[j];
-	if (!ap->name)
-	    continue;
-	if (nstring(ap->name) == name)
-	    return true;
-    }
-    return false;
+    return !!attributes_list_find(fattr_data->attribute, name.c_str());
 }
 
 
@@ -186,13 +161,7 @@ file_attributes_list(void)
     change_ty	    *cp;
     user_ty	    *up;
     string_ty       *filename;
-    string_ty       *s1;
-    string_ty       *s2;
     fstate_src_ty   *src;
-    int             based;
-    string_ty       *base;
-    size_t          k;
-    string_list_ty  search_path;
 
     trace(("file_attributes_list()\n{\n"));
     arglex();
@@ -267,60 +236,7 @@ file_attributes_list(void)
     //
     // Resolve the file name.
     //
-    change_search_path_get(cp, &search_path, 1);
-
-    based =
-        (
-            search_path.nstrings >= 1
-        &&
-            (
-                user_relative_filename_preference
-                (
-                    up,
-                    uconf_relative_filename_preference_current
-                )
-            ==
-                uconf_relative_filename_preference_base
-            )
-        );
-    if (based)
-        base = search_path.string[0];
-    else
-    {
-        os_become_orig();
-        base = os_curdir();
-        os_become_undo();
-    }
-
-    s1 = filename;
-    if (s1->str_text[0] == '/')
-	s2 = str_copy(s1);
-    else
-	s2 = os_path_join(base, s1);
-    user_become(up);
-    s1 = os_pathname(s2, 1);
-    user_become_undo();
-    str_free(s2);
-    s2 = 0;
-    for (k = 0; k < search_path.nstrings; ++k)
-    {
-	s2 = os_below_dir(search_path.string[k], s1);
-	if (s2)
-	    break;
-    }
-    str_free(s1);
-    if (!s2)
-    {
-	sub_context_ty  *scp;
-
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", filename);
-	change_fatal(cp, scp, i18n("$filename unrelated"));
-	// NOTREACHED
-	sub_context_delete(scp);
-    }
-    str_free(filename);
-    filename = s2;
+    filename = change_file_resolve_name(cp, up, filename);
 
     //
     // build the fattr data
@@ -429,23 +345,7 @@ file_attributes_edit(fattr_ty **dp, edit_ty et)
 static attributes_ty *
 fattr_extract(fattr_ty *fattr_data, const nstring &name)
 {
-    attributes_list_ty *alp = fattr_data->attribute;
-    if (!alp)
-	return 0;
-    for (size_t j = 0; j < alp->length; ++j)
-    {
-	attributes_ty *ap = alp->list[j];
-	if (!ap->name)
-	    continue;
-	if (nstring(ap->name) == name)
-	{
-	    alp->length--;
-	    if (j < alp->length)
-		alp->list[j] = alp->list[alp->length];
-	    return ap;
-	}
-    }
-    return 0;
+    return attributes_list_extract(fattr_data->attribute, name.c_str());
 }
 
 
@@ -462,13 +362,7 @@ file_attributes_main(void)
     edit_ty	    edit;
     string_ty	    *input;
     string_ty	    *filename;
-    string_ty	    *s1;
-    string_ty	    *s2;
-    int             based;
-    string_ty       *base;
-    size_t          k;
     fstate_src_ty   *src;
-    string_list_ty  search_path;
 
     trace(("file_attributes_main()\n{\n"));
     arglex();
@@ -628,58 +522,7 @@ file_attributes_main(void)
     //
     // Resolve the file name.
     //
-    change_search_path_get(cp, &search_path, 1);
-
-    based =
-        (
-            search_path.nstrings >= 1
-        &&
-            (
-                user_relative_filename_preference
-                (
-                    up,
-                    uconf_relative_filename_preference_current
-                )
-            ==
-                uconf_relative_filename_preference_base
-            )
-        );
-    if (based)
-        base = search_path.string[0];
-    else
-    {
-        os_become_orig();
-        base = os_curdir();
-        os_become_undo();
-    }
-
-    s1 = filename;
-    if (s1->str_text[0] == '/')
-	s2 = str_copy(s1);
-    else
-	s2 = os_path_join(base, s1);
-    user_become(up);
-    s1 = os_pathname(s2, 1);
-    user_become_undo();
-    str_free(s2);
-    s2 = 0;
-    for (k = 0; k < search_path.nstrings; ++k)
-    {
-	s2 = os_below_dir(search_path.string[k], s1);
-	if (s2)
-	    break;
-    }
-    str_free(s1);
-    if (!s2)
-    {
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", filename);
-	change_fatal(cp, scp, i18n("$filename unrelated"));
-	// NOTREACHED
-	sub_context_delete(scp);
-    }
-    str_free(filename);
-    filename = s2;
+    filename = change_file_resolve_name(cp, up, filename);
 
     //
     // edit the attributes
@@ -699,6 +542,24 @@ file_attributes_main(void)
 	if (!src)
 	    change_fatal_unknown_file(cp, filename);
 	fattr_data = fattr_construct(src);
+
+	//
+	// For changes which are still being developed, we also add the
+	// "Content-Type" attribute.
+	//
+	if
+	(
+	    change_is_being_developed(cp)
+	&&
+	    !fattr_exists(fattr_data, "Content-Type")
+	)
+	{
+	    magic_t cookie = magic_open(MAGIC_MIME);
+	    nstring path = change_file_path(cp, filename);
+	    const char *content_type = magic_file(cookie, path.c_str());
+	    fattr_assign(fattr_data, "Content-Type", content_type);
+	    magic_close(cookie);
+	}
 
 	//
 	// edit the attributes
@@ -741,13 +602,11 @@ file_attributes_main(void)
     }
     if (fattr_data->attribute)
     {
-	attributes_ty   *ap;
-
 	//
 	// We need to extract the "usage" pseudo-attribute,
 	// and assign it to the file's usage if it is legal.
 	//
-	ap = fattr_extract(fattr_data, "usage");
+	attributes_ty *ap = fattr_extract(fattr_data, "usage");
 	if (ap)
 	{
 	    if (ap->value)
@@ -782,6 +641,186 @@ file_attributes_main(void)
 }
 
 
+static void
+file_attributes_uuid(void)
+{
+    trace(("file_attributes_uuid()\n{\n"));
+    arglex();
+    change_identifier cid;
+    string_ty *uuid = 0;
+    string_ty *filename = 0;
+    while (arglex_token != arglex_token_eoln)
+    {
+	switch (arglex_token)
+	{
+	default:
+	    generic_argument(file_attributes_usage);
+	    continue;
+
+	case arglex_token_string:
+	    if (!uuid)
+	    {
+		uuid = str_from_c(arglex_value.alv_string);
+		if (!universal_unique_identifier_valid(uuid))
+		    option_needs_uuid(arglex_token_uuid, file_attributes_usage);
+	    }
+	    else if (!filename)
+	    {
+		filename = str_from_c(arglex_value.alv_string);
+	    }
+	    else
+	    {
+		duplicate_option_by_name
+		(
+		    arglex_token_uuid,
+		    file_attributes_usage
+		);
+	    }
+	    break;
+
+	case arglex_token_file:
+	    if (arglex() != arglex_token_string)
+		option_needs_file(arglex_token_file, file_attributes_usage);
+	    if (!filename)
+	    {
+		filename = str_from_c(arglex_value.alv_string);
+	    }
+	    else
+	    {
+		duplicate_option_by_name
+		(
+		    arglex_token_file,
+		    file_attributes_usage
+		);
+	    }
+	    break;
+
+	case arglex_token_change:
+	case arglex_token_number:
+	case arglex_token_project:
+	    cid.command_line_parse(file_attributes_usage);
+	    continue;
+
+	case arglex_token_wait:
+	case arglex_token_wait_not:
+	    user_lock_wait_argument(file_attributes_usage);
+	    break;
+
+	case arglex_token_base_relative:
+	case arglex_token_current_relative:
+    	    user_relative_filename_preference_argument(file_attributes_usage);
+	    break;
+	}
+	arglex();
+    }
+    if (!filename)
+    {
+	error_intl(0, i18n("no file names"));
+	file_attributes_usage();
+    }
+    cid.command_line_check(file_attributes_usage);
+
+    //
+    // As a special case, if no UUID string was given,
+    // make one up on the spot.
+    //
+    if (!uuid)
+	uuid = universal_unique_identifier();
+
+    //
+    // lock the change
+    //
+    change_cstate_lock_prepare(cid.get_cp());
+    lock_take();
+
+    //
+    // Resolve the file name.
+    //
+    filename = change_file_resolve_name(cid.get_cp(), cid.get_up(), filename);
+
+    //
+    // Unlike other change attributes, the UUID may *only* be edited by
+    // the developer when the change is in the "being developed" state.
+    // This is because it should only ever be done by aepatch or aedist,
+    // immediately after the files have been unpacked.
+    //
+    if
+    (
+	!change_is_being_developed(cid.get_cp())
+    ||
+	!str_equal(change_developer_name(cid.get_cp()), user_name(cid.get_up()))
+    )
+    {
+	change_fatal(cid.get_cp(), 0, i18n("bad fa, not auth"));
+    }
+
+    //
+    // If the file already has a UUID, this command obviously isn't
+    // being used by aepatch or aedist, so tell the human to take a hike.
+    //
+    fstate_src_ty *src =
+	change_file_find(cid.get_cp(), filename, view_path_first);
+    if (!src)
+	change_fatal_unknown_file(cid.get_cp(), filename);
+    if (src->uuid)
+    {
+	sub_context_ty *scp = sub_context_new();
+	sub_var_set_string(scp, "File_Name", filename);
+	change_fatal(cid.get_cp(), scp, i18n("$filename uuid already set"));
+	// NOTREACHED
+    }
+
+    //
+    // You can't set the UUID of a file that is not being created in
+    // this change set.  Doing so would be too confusing for humans
+    // looking at edit numbers, or looking at file histories, because it
+    // would cause discontinuities in the lineages.
+    //
+    if (src->action != file_action_create)
+    {
+	change_fatal(cid.get_cp(), 0, i18n("bad fa, not auth"));
+    }
+
+    //
+    // Make sure this file UUID has not been used before, anywhere in
+    // the project.  For a genuine UUID this is unlikely, but humans
+    // tend to do silly things at times, so this check is necessary.
+    //
+    fstate_src_ty *src2 =
+	change_file_find(cid.get_cp(), uuid, view_path_simple);
+    if (src2)
+    {
+	sub_context_ty *scp = sub_context_new();
+	sub_var_set_string(scp, "Other", src2->file_name);
+	sub_var_optional(scp, "Other");
+	change_fatal(cid.get_cp(), scp, i18n("$filename uuid duplicate"));
+	// NOTREACHED
+    }
+
+    //
+    // Assign the UUID.  Can't do this before the has-it-been-used test,
+    // or the UUID would show as a duplicate.
+    //
+    // Make sure it is in lower case.
+    //
+    src->uuid = str_downcase(uuid);
+    str_free(uuid);
+    uuid = 0;
+
+    //
+    // Write the cstate state back out.
+    //
+    change_cstate_write(cid.get_cp());
+    commit();
+    lock_release();
+    sub_context_ty *scp = sub_context_new();
+    sub_var_set_string(scp, "File_Name", filename);
+    change_verbose(cid.get_cp(), scp, i18n("$filename attributes changed"));
+    sub_context_delete(scp);
+    trace(("}\n"));
+}
+
+
 void
 file_attributes(void)
 {
@@ -789,6 +828,7 @@ file_attributes(void)
     {
 	{arglex_token_help, file_attributes_help, },
 	{arglex_token_list, file_attributes_list, },
+	{arglex_token_uuid, file_attributes_uuid, },
     };
 
     trace(("file_attributes()\n{\n"));

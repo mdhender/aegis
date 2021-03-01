@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1993-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1993-1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -128,7 +128,6 @@ move_file_innards(user_ty *up, change_ty *cp, string_ty *old_name,
     string_ty	    *from;
     string_ty	    *to;
     string_ty	    *dd;
-    int		    mode;
 
     pp = cp->pp;
 
@@ -242,18 +241,18 @@ move_file_innards(user_ty *up, change_ty *cp, string_ty *old_name,
     //
     // Add the file to the appropriate notification lists.
     //
-    string_list_append(wl_rm, old_name);
+    wl_rm->push_back(old_name);
     switch (c_src_data->usage)
     {
     case file_usage_test:
     case file_usage_manual_test:
-	string_list_append(wl_nt, new_name);
+	wl_nt->push_back(new_name);
 	break;
 
     case file_usage_source:
     case file_usage_config:
     case file_usage_build:
-	string_list_append(wl_nf, new_name);
+	wl_nf->push_back(new_name);
 	break;
     }
 
@@ -281,7 +280,6 @@ move_file_innards(user_ty *up, change_ty *cp, string_ty *old_name,
     to = change_file_path(cp, new_name);
     assert(to);
     dd = change_development_directory_get(cp, 0);
-    mode = 0644 & ~change_umask(cp);
 
     //
     // Copy the file.
@@ -320,11 +318,6 @@ move_file_main(void)
     user_ty	    *up;
     size_t	    k;
     string_list_ty  search_path;
-    string_list_ty  wl_in;
-    string_list_ty  wl_nf;
-    string_list_ty  wl_nt;
-    string_list_ty  wl_rm;
-    string_list_ty  wl_args;
     move_list_ty    ml;
     int		    based;
     string_ty	    *base;
@@ -336,7 +329,7 @@ move_file_main(void)
     project_name = 0;
     change_number = 0;
     log_style = log_style_append_default;
-    string_list_constructor(&wl_args);
+    string_list_ty wl_args;
     move_list_constructor(&ml);
     while (arglex_token != arglex_token_eoln)
     {
@@ -348,7 +341,7 @@ move_file_main(void)
 
 	case arglex_token_string:
 	    s1 = str_from_c(arglex_value.alv_string);
-            string_list_append(&wl_args, s1);
+            wl_args.push_back(s1);
             str_free(s1);
             break;
 
@@ -576,7 +569,7 @@ move_file_main(void)
         // directory, just move it.	 All checks to see if the action is
         // valid are done in the inner function.
         //
-        string_list_constructor(&wl_in);
+	string_list_ty wl_in;
         project_file_directory_query(pp, old_name, &wl_in, 0, view_path_simple);
         if (wl_in.nstrings)
         {
@@ -619,16 +612,13 @@ move_file_main(void)
         {
             move_list_append_create(&ml, old_name, new_name);
         }
-        string_list_destructor(&wl_in);
         str_free(old_name);
         str_free(new_name);
     }
 
-    string_list_destructor(&search_path);
-
-    string_list_constructor(&wl_nf);
-    string_list_constructor(&wl_nt);
-    string_list_constructor(&wl_rm);
+    string_list_ty wl_nf;
+    string_list_ty wl_nt;
+    string_list_ty wl_rm;
     if (ml.length)
     {
         for (j = 0; j < ml.length; ++j)
@@ -695,9 +685,6 @@ move_file_main(void)
 	change_run_new_file_command(cp, &wl_nt, up);
     if (wl_rm.nstrings)
 	change_run_remove_file_command(cp, &wl_rm, up);
-    string_list_destructor(&wl_nf);
-    string_list_destructor(&wl_nt);
-    string_list_destructor(&wl_rm);
     change_run_project_file_command(cp, up);
     project_free(pp);
     change_free(cp);

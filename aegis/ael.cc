@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -311,23 +311,19 @@ static void
 list_main(void)
 {
     sub_context_ty  *scp;
-    const char      *listname;
     table_ty	    *tp;
     int		    j;
     table_ty	    *hit[SIZEOF(table)];
     int		    nhit;
     string_ty	    *s1;
     string_ty	    *s2;
-    string_ty	    *project_name;
-    long	    change_number;
-    string_list_ty  args_list;
 
     trace(("list_main()\n{\n"));
     arglex();
-    listname = 0;
-    project_name = 0;
-    change_number = 0;
-    string_list_constructor(&args_list);
+    const char *listname = 0;
+    string_ty *project_name = 0;
+    long change_number = 0;
+    string_list_ty args_list;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -342,7 +338,7 @@ list_main(void)
 		string_ty       *s;
 
 		s = str_from_c(arglex_value.alv_string);
-		string_list_append(&args_list, s);
+		args_list.push_back(s);
 		str_free(s);
 
                 if (args_list.nstrings > (size_t)max_num_table_args())
@@ -377,7 +373,7 @@ list_main(void)
     nhit = 0;
     for (tp = table; tp < ENDOF(table); ++tp)
     {
-	if (arglex_compare(tp->name, listname))
+	if (arglex_compare(tp->name, listname, 0))
 	    hit[nhit++] = tp;
     }
     switch (nhit)
@@ -413,7 +409,6 @@ list_main(void)
     }
     if (project_name)
 	str_free(project_name);
-    string_list_destructor(&args_list);
     trace(("}\n"));
 }
 
@@ -464,9 +459,9 @@ list_list_list(string_ty *project_name, long change_number,
     //
     for (tp = table; tp < ENDOF(table); ++tp)
     {
-	output_fputs(name_col, tp->name);
+	name_col->fputs(tp->name);
 	if (desc_col)
-	    output_fputs(desc_col, tp->description);
+	    desc_col->fputs(tp->description);
 	col_eoln(colp);
     }
 

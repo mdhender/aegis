@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -200,23 +200,22 @@ list_locks_callback(lock_walk_found *found)
     //
     // print it all out
     //
-    output_fputs(list_locks_name_col, name_str);
-    output_fputs(list_locks_type_col, type_str);
+    list_locks_name_col->fputs(name_str);
+    list_locks_type_col->fputs(type_str);
     if (project_str)
-	output_fputs(list_locks_project_col, project_str);
+	list_locks_project_col->fputs(project_str);
     if (change_number)
     {
-	output_fprintf
+	list_locks_change_col->fprintf
 	(
-	    list_locks_change_col,
 	    "%4ld",
 	    magic_zero_decode(change_number)
 	);
     }
-    output_fprintf(list_locks_address_col, "%8.8lX", found->address);
-    output_fprintf(list_locks_process_col, "%5d", found->pid);
+    list_locks_address_col->fprintf("%8.8lX", found->address);
+    list_locks_process_col->fprintf("%5d", found->pid);
     if (!found->pid_is_local)
-	output_fputs(list_locks_process_col, " remote");
+	list_locks_process_col->fputs(" remote");
     col_eoln(colp);
 }
 
@@ -255,13 +254,12 @@ list_locks(string_ty *project_name, long change_number, string_list_ty *args)
     // list the locks found
     //
     lock_walk(list_locks_callback);
-    string_list_destructor(&list_locks_pnames);
     if (list_locks_count == 0)
     {
 	output_ty	*info;
 
 	info = col_create(colp, 4, 0, (const char *)0);
-	output_fputs(info, "No locks found.");
+	info->fputs("No locks found.");
 	col_eoln(colp);
     }
     col_close(colp);

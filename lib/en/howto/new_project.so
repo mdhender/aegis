@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001, 2002 Peter Miller;
+.\"	Copyright (C) 1999, 2001, 2002, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -198,22 +198,19 @@ using the ``\fIaenpr\fP'' command, or use the ``\f[CW]--library\fP
 .nh 3 "Web Visibility"
 .LP
 If you have a Web server, you make like to install the Aegis web interface.
-You do this by copying the \fIaegis.cgi\fP script from
-\fI\*(B)/aegis.cgi\fP into your web server's \fIcgi-bin\fP directory.
-There is a \fIaegis.cgi.i\fP helper script,
+You do this by copying the \fIaeget\fP program from
+\fI\*(B)/aeget\fP into your web server's \fIcgi-bin\fP directory.
+There is a \fIaeget.instal\fP helper script,
 if you don't know where your web server's \fIcgi-bin\fP directory is.
 .LP
 You may prefer to use a symbolic link, as this will be more stable
 across Aegis upgrades.  However, this requires a corresponding
 \fIfollow-symlinks\fP setting in your web server's configuration file.
-(Use the \fIaegis.cgi.i \-s\fP option.)
+(Use the \fIaeget.instal \-s\fP option.)
 .LP
-If you have a Web server, and the \f(CWaegis.cgi\fP was installed, you
-can set its \fIAEGIS_PATH\fP environment variable, if you want it to be
-able to see more projects than just the global projects.  You do this by
-creating a \fI\*(L)/\%aegis.cgi.conf\fP file (there isn't one,
-by default) and setting the \fIAEGIS_PATH\fP environment variable in it.
-This is a fragment of Bourne shell script, not just the name.
+If you have a Web server, and \f(CWaeget\fP was installed, you can use a
+wrapper script to set the \fIAEGIS_PATH\fP environment variable, if you
+want it to be able to see more projects than just the global projects.
 .nh 2 "Changing The Project Owner"
 .LP
 Typically, when folks try Aegis for the first time, they don't worry about

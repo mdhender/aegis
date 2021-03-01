@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2004 Peter Miller;
+//	Copyright (C) 1991-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -39,13 +39,13 @@
 #include <libdir.h>
 #include <mem.h>
 #include <os.h>
+#include <os/domain_name.h>
 #include <project.h>
 #include <project/history.h>
 #include <stracc.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>
-#include <uname.h>
 #include <undo.h>
 #include <str_list.h>
 #include <zero.h>
@@ -1656,33 +1656,6 @@ user_default_change(user_ty *up)
     }
 
     //
-    // If the user is only working on one change within the given
-    // project, then that is the change.
-    //
-    if (!change_number)
-    {
-	ustate_ty	*ustate_data;
-	size_t		j;
-
-	ustate_data = user_ustate_get(up);
-	assert(ustate_data->own);
-	for (j = 0; j < ustate_data->own->length; ++j)
-	{
-	    ustate_own_ty   *own_data;
-	    string_ty	    *project_name;
-
-	    own_data = ustate_data->own->list[j];
-	    project_name = project_name_get(up->pp);
-	    if (str_equal(own_data->project_name, project_name))
-	    {
-		if (own_data->changes->length == 1)
-		    change_number = own_data->changes->list[0];
-		break;
-	    }
-	}
-    }
-
-    //
     // examine the pathname of the current directory
     // to see if we can extract the change number
     //
@@ -1707,7 +1680,7 @@ user_default_change(user_ty *up)
 	//
 	// break it into file names
 	//
-	str2wl(&part, cwd, "/", 0);
+	part.split(cwd, "/");
 	str_free(cwd);
 
 	//
@@ -1720,7 +1693,6 @@ user_default_change(user_ty *up)
 	    if (change_number)
 		break;
 	}
-	string_list_destructor(&part);
     }
 
     //
@@ -1782,6 +1754,33 @@ user_default_change(user_ty *up)
 		break;
 	}
 	str_free(cwd);
+    }
+
+    //
+    // If the user is only working on one change within the given
+    // project, then that is the change.
+    //
+    if (!change_number)
+    {
+	ustate_ty	*ustate_data;
+	size_t		j;
+
+	ustate_data = user_ustate_get(up);
+	assert(ustate_data->own);
+	for (j = 0; j < ustate_data->own->length; ++j)
+	{
+	    ustate_own_ty   *own_data;
+	    string_ty	    *project_name;
+
+	    own_data = ustate_data->own->list[j];
+	    project_name = project_name_get(up->pp);
+	    if (str_equal(own_data->project_name, project_name))
+	    {
+		if (own_data->changes->length == 1)
+		    change_number = own_data->changes->list[0];
+		break;
+	    }
+	}
     }
 
     //
@@ -1874,7 +1873,7 @@ user_default_project_by_user(user_ty *up)
 	    //
 	    // break into pieces
 	    //
-	    str2wl(&part, cwd, "/", 0);
+	    part.split(cwd, "/");
 	    str_free(cwd);
 
 	    //
@@ -1892,7 +1891,6 @@ user_default_project_by_user(user_ty *up)
 		    }
 		}
 	    }
-	    string_list_destructor(&part);
 	}
 
 	//
@@ -1982,7 +1980,6 @@ user_default_project_by_user(user_ty *up)
 	    }
 	    str_free(cwd);
 	}
-	string_list_destructor(&name);
     }
 
     //
@@ -2360,7 +2357,7 @@ ask(string_ty *filename, int isdir)
 
 	for (tp = table; tp < ENDOF(table); ++tp)
 	{
-	    if (arglex_compare(tp->name, buffer))
+	    if (arglex_compare(tp->name, buffer, 0))
 	    {
 		if (tp->set != del_pref_unset)
 		    cmd_line_pref = tp->set;
@@ -2745,8 +2742,6 @@ clean_up(string_ty *s)
     string_ty	    *result;
     unsigned char   prev;
 
-    stracc_constructor(&buf);
-    stracc_open(&buf);
     prev = ' ';
     for (cp = s->str_text; *cp; ++cp)
     {
@@ -2756,13 +2751,12 @@ clean_up(string_ty *s)
 	if (isspace(c) || strchr("@,<>()[]{}'\"", c) || !isprint(c))
 	    c = ' ';
 	if (c != ' ' || prev != ' ')
-	    stracc_char(&buf, c);
+	    buf.push_back(c);
 	prev = c;
     }
-    while (buf.length > 0 && buf.buffer[buf.length - 1] == ' ')
-	buf.length--;
-    result = stracc_close(&buf);
-    stracc_destructor(&buf);
+    while (buf.size() > 0 && buf[buf.size() - 1] == ' ')
+	buf.pop_back();
+    result = buf.mkstr();
     return result;
 }
 
@@ -2791,35 +2785,23 @@ user_email_address(user_ty *up)
     uconf_data = user_uconf_get(up);
     if (!uconf_data->email_address)
     {
-	static string_ty *mailname;
-	string_ty	*dom;
-	string_ty	*full_name;
-
 	//
 	// Look for the domain name to go on the right hand side of the @ sign.
 	//
-	if (!mailname)
-	    mailname = str_from_c("/etc/mailname");
-	os_become_orig();
-	if (os_exists(mailname))
-	    dom = read_whole_file(mailname);
-	else
-	    dom = str_copy(uname_node_get());
-	os_become_undo();
+	nstring domain = os_domain_name();
 
 	//
 	// Construct the email address.
 	//
-	full_name = clean_up(user_name2(up));
+	string_ty *full_name = clean_up(user_name2(up));
 	uconf_data->email_address =
 	    str_format
 	    (
 		"%s <%s@%s>",
 		full_name->str_text,
 		user_name(up)->str_text,
-		dom->str_text
+		domain.c_str()
 	    );
-	str_free(dom);
 	str_free(full_name);
     }
     return uconf_data->email_address;

@@ -87,203 +87,6 @@ arglex_init(int ac, char **av, arglex_table_ty *tp)
 
 //
 // NAME
-//	arglex_compare
-//
-// SYNOPSIS
-//	int arglex_compare(char *formal, char *actual);
-//
-// DESCRIPTION
-//	The arglex_compare function is used to compare
-//	a command line string with a formal spec of the option,
-//	to see if they compare equal.
-//
-//	The actual is case-insensitive.  Uppercase in the formal
-//	means a mandatory character, while lower case means optional.
-//	Any number of consecutive optional characters may be supplied
-//	by actual, but none may be skipped, unless all are skipped to
-//	the next non-lower-case letter.
-//
-//	The underscore (_) is like a lower-case minus,
-//	it matches "", "-" and "_".
-//
-//	The "*" in a pattern matches everything to the end of the line,
-//	anything after the "*" is ignored.  The rest of the line is pointed
-//	to by the "partial" variable as a side-effect (else it will be 0).
-//	This rather ugly feature is to support "-I./dir" type options.
-//
-//	A backslash in a pattern nominates an exact match required,
-//	case must matche excatly here.
-//	This rather ugly feature is to support "-I./dir" type options.
-//
-//	For example: "-project" and "-P' both match "-Project",
-//	as does "-proJ", but "-prj" does not.
-//
-//	For example: "-devDir" and "-d_d' both match "-Development_Directory",
-//	but "-dvlpmnt_drctry" does not.
-//
-//	For example: to match include path specifications, use a pattern
-//	such as "-\\I*", and the partial global variable will have the
-//	path in it on return.
-//
-// ARGUMENTS
-//	formal	- the "pattern" for the option
-//	actual	- what the user supplied
-//
-// RETURNS
-//	int;	zero if no match,
-//		non-zero if they do match.
-//
-
-int
-arglex_compare(const char *formal, const char *actual)
-{
-    unsigned char   fc;
-    unsigned char   ac;
-    int             result;
-
-    trace(("arglex_compare(formal = \"%s\", actual = \"%s\")\n{\n",
-	    formal, actual));
-    for (;;)
-    {
-	trace_string(formal);
-	trace_string(actual);
-	ac = *actual++;
-	if (isupper((unsigned char)ac))
-	    ac = tolower(ac);
-	fc = *formal++;
-	switch (fc)
-	{
-	case 0:
-	    result = !ac;
-	    goto done;
-
-	case '_':
-	    if (ac == '-')
-		break;
-	    // fall through...
-
-	case 'a':
-	case 'b':
-	case 'c':
-	case 'd':
-	case 'e':
-	case 'f':
-	case 'g':
-	case 'h':
-	case 'i':
-	case 'j':
-	case 'k':
-	case 'l':
-	case 'm':
-	case 'n':
-	case 'o':
-	case 'p':
-	case 'q':
-	case 'r':
-	case 's':
-	case 't':
-	case 'u':
-	case 'v':
-	case 'w':
-	case 'x':
-	case 'y':
-	case 'z':
-	    //
-	    // optional characters
-	    //
-	    if (ac == fc && arglex_compare(formal, actual))
-	    {
-		result = 1;
-		goto done;
-	    }
-
-	    //
-	    // skip forward to next
-	    // mandatory character, or after '_'
-	    //
-	    while (islower((unsigned char)*formal))
-		++formal;
-	    if (*formal == '_')
-	    {
-		++formal;
-		if (ac == '_' || ac == '-')
-		    ++actual;
-	    }
-	    --actual;
-	    break;
-
-	case '*':
-	    //
-	    // This is a hack, it should really
-	    // check for a match match the stuff after
-	    // the '*', too, a la glob.
-	    //
-	    if (!ac)
-	    {
-		result = 0;
-		goto done;
-	    }
-	    partial = actual - 1;
-	    result = 1;
-	    goto done;
-
-	case '\\':
-	    if (actual[-1] != *formal++)
-	    {
-		result = 0;
-		goto done;
-	    }
-	    break;
-
-	case 'A':
-	case 'B':
-	case 'C':
-	case 'D':
-	case 'E':
-	case 'F':
-	case 'G':
-	case 'H':
-	case 'I':
-	case 'J':
-	case 'K':
-	case 'L':
-	case 'M':
-	case 'N':
-	case 'O':
-	case 'P':
-	case 'Q':
-	case 'R':
-	case 'S':
-	case 'T':
-	case 'U':
-	case 'V':
-	case 'W':
-	case 'X':
-	case 'Y':
-	case 'Z':
-	    fc = tolower(fc);
-	    // fall through...
-
-	default:
-	    //
-	    // mandatory characters
-	    //
-	    if (fc != ac)
-	    {
-		result = 0;
-		goto done;
-	    }
-	    break;
-	}
-    }
-  done:
-    trace(("return %d;\n}\n", result));
-    return result;
-}
-
-
-//
-// NAME
 //	is_a_number
 //
 // SYNOPSIS
@@ -575,14 +378,14 @@ arglex(void)
     {
 	for (tp = table; tp < ENDOF(table); tp++)
 	{
-	    if (arglex_compare(tp->t_name, arg))
+	    if (arglex_compare(tp->t_name, arg, &partial))
 		hit[nhit++] = tp;
 	}
 	if (utable)
 	{
 	    for (tp = utable; tp->t_name; tp++)
 	    {
-		if (arglex_compare(tp->t_name, arg))
+		if (arglex_compare(tp->t_name, arg, &partial))
 		    hit[nhit++] = tp;
 	    }
 	}
@@ -749,7 +552,7 @@ arglex_prefetch(int *list, int list_len)
 
 	    token = list[k];
 	    formal = arglex_token_name(token);
-	    if (arglex_compare(formal, actual))
+	    if (arglex_compare(formal, actual, &partial))
 	    {
 		int             m;
 

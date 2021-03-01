@@ -31,7 +31,7 @@
 #include <sub/source.h>
 #include <str_list.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 //
@@ -63,136 +63,120 @@
 wstring_ty *
 sub_source(sub_context_ty *scp, wstring_list_ty *arg)
 {
-	wstring_ty	*result;
-	cstate_ty       *cstate_data;
-	int		absolute;
-	string_ty	*fn;
-	string_ty	*s;
-	change_ty	*cp;
+    wstring_ty      *result;
+    cstate_ty       *cstate_data;
+    int             absolute;
+    string_ty       *fn;
+    string_ty       *s;
+    change_ty       *cp;
 
-	//
-	// Find the change.  If there is no change, it is also valid in
-	// the baseline context.
-	//
-	trace(("sub_source()\n{\n"));
-	absolute = 0;
-	result = 0;
-	cp = sub_context_change_get(scp);
-	if (!cp)
+    //
+    // Find the change.  If there is no change, it is also valid in
+    // the baseline context.
+    //
+    trace(("sub_source()\n{\n"));
+    absolute = 0;
+    result = 0;
+    cp = sub_context_change_get(scp);
+    if (!cp)
+    {
+	project_ty *pp = sub_context_project_get(scp);
+	if (!pp)
 	{
-		project_ty	*pp;
-
-		pp = sub_context_project_get(scp);
-		if (!pp)
-		{
-			sub_context_error_set
-			(
-				scp,
-				i18n("not valid in current context")
-			);
-			goto done;
-		}
-		cp = project_change_get(pp);
+	    sub_context_error_set(scp, i18n("not valid in current context"));
+	    goto done;
 	}
+	cp = project_change_get(pp);
+    }
 
-	//
-	// make sure we like the arguments.
-	//
-	switch (arg->nitems)
+    //
+    // make sure we like the arguments.
+    //
+    switch (arg->size())
+    {
+    default:
+	sub_context_error_set(scp, i18n("requires one argument"));
+	goto done;
+
+    case 2:
+	break;
+
+    case 3:
+	s = wstr_to_str(arg->get(2));
+	if (arglex_compare("Relative", s->str_text, 0))
 	{
-	default:
-		sub_context_error_set(scp, i18n("requires one argument"));
-		goto done;
-
-	case 2:
-		break;
-
-	case 3:
-		s = wstr_to_str(arg->item[2]);
-		if (arglex_compare("Relative", s->str_text))
-		{
-			str_free(s);
-			break;
-		}
-		if (arglex_compare("Absolute", s->str_text))
-		{
-			str_free(s);
-			absolute = 1;
-			break;
-		}
-		str_free(s);
-		sub_context_error_set
-		(
-			scp,
-		    i18n("second argument must be \"Absolute\" or \"Relative\"")
-		);
-		goto done;
+	    str_free(s);
+	    break;
 	}
-
-	//
-	// make sure we are in an appropriate state
-	//
-	cstate_data = change_cstate_get(cp);
-	if (cstate_data->state == cstate_state_awaiting_development)
+	if (arglex_compare("Absolute", s->str_text, 0))
 	{
-		sub_context_error_set
-		(
-			scp,
-			i18n("not valid in current context")
-		);
-		goto done;
+	    str_free(s);
+	    absolute = 1;
+	    break;
 	}
-
-	//
-	// find the file's path
-	//
-	fn = wstr_to_str(arg->item[1]);
-	s = change_file_source(cp, fn);
-	if (!s)
-	{
-		str_free(fn);
-		sub_context_error_set(scp, i18n("source file unknown"));
-		goto done;
-	}
-
-	//
-	// To turn absolute paths into relative ones, we need to see if
-	// the file is in the first element of the search path.
-	//
-	if (!absolute)
-	{
-		string_list_ty	search_path;
-		string_ty	*s2;
-
-		if (cstate_data->state == cstate_state_completed)
-		{
-			string_list_constructor(&search_path);
-			project_search_path_get(cp->pp, &search_path, 0);
-		}
-		else
-			change_search_path_get(cp, &search_path, 0);
-		s2 = os_below_dir(search_path.string[0], s);
-		if (s2)
-		{
-			str_free(s2);
-			str_free(s);
-			s = str_copy(fn);
-		}
-		string_list_destructor(&search_path);
-	}
-
-	//
-	// build the result
-	//
-	result = str_to_wstr(s);
-	str_free(fn);
 	str_free(s);
+	sub_context_error_set
+	(
+	    scp,
+	    i18n("second argument must be \"Absolute\" or \"Relative\"")
+	);
+	goto done;
+    }
 
-	//
-	// here for all exits
-	//
-	done:
-	trace(("return %8.8lX;\n", (long)result));
-	trace(("}\n"));
-	return result;
+    //
+    // make sure we are in an appropriate state
+    //
+    cstate_data = change_cstate_get(cp);
+    if (cstate_data->state == cstate_state_awaiting_development)
+    {
+	sub_context_error_set(scp, i18n("not valid in current context"));
+	goto done;
+    }
+
+    //
+    // find the file's path
+    //
+    fn = wstr_to_str(arg->get(1));
+    s = change_file_source(cp, fn);
+    if (!s)
+    {
+	str_free(fn);
+	sub_context_error_set(scp, i18n("source file unknown"));
+	goto done;
+    }
+
+    //
+    // To turn absolute paths into relative ones, we need to see if
+    // the file is in the first element of the search path.
+    //
+    if (!absolute)
+    {
+	string_list_ty search_path;
+	if (cstate_data->state == cstate_state_completed)
+	    project_search_path_get(cp->pp, &search_path, 0);
+	else
+	    change_search_path_get(cp, &search_path, 0);
+	string_ty *s2 = os_below_dir(search_path.string[0], s);
+	if (s2)
+	{
+	    str_free(s2);
+	    str_free(s);
+	    s = str_copy(fn);
+	}
+    }
+
+    //
+    // build the result
+    //
+    result = str_to_wstr(s);
+    str_free(fn);
+    str_free(s);
+
+    //
+    // here for all exits
+    //
+    done:
+    trace(("return %8.8lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }

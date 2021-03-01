@@ -41,3 +41,20 @@ os_below_dir(string_ty *higher, string_ty *lower)
 	return 0;
     return str_from_c(s2 + 1);
 }
+
+
+nstring
+os_below_dir(const nstring &higher, const nstring &lower)
+{
+    const char *hi = higher.c_str();
+    const char *lo = lower.c_str();
+    while (*hi == *lo && *hi)
+	hi++, lo++;
+    if (*hi)
+	return "";
+    if (!*lo)
+	return ".";
+    if (*lo != '/')
+	return "";
+    return nstring(lo + 1);
+}

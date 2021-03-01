@@ -23,7 +23,7 @@
 #include <ac/errno.h>
 #include <ac/stddef.h>
 #include <ac/stdlib.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <aer/expr.h>

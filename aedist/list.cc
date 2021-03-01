@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -34,19 +34,20 @@
 #include <str.h>
 #include <str_list.h>
 #include <sub.h>
+#include <usage.h>
 
 
 void
-list_main(void (*usage)(void))
+list_main(void)
 {
-    string_ty       *ifn;
+    string_ty       *ifn = 0;
     input_ty        *ifp;
     input_ty        *cpio_p;
     string_ty       *archive_name;
     string_ty       *s;
     cstate_ty       *change_set;
     size_t          j;
-    string_ty       *ofn;
+    string_ty       *ofn = 0;
     output_ty       *head_col;
     output_ty       *body_col;
     int             left;
@@ -54,9 +55,7 @@ list_main(void (*usage)(void))
     output_ty       *action_col;
     output_ty       *file_name_col;
     col_ty          *colp;
-
-    ifn = 0;
-    ofn = 0;
+    arglex();
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -144,9 +143,9 @@ list_main(void (*usage)(void))
     input_delete(ifp);
     os_become_undo();
 
-    output_fputs(head_col, "PROJECT");
+    head_col->fputs("PROJECT");
     col_eoln(colp);
-    output_put_str(body_col, s);
+    body_col->fputs(s);
     str_free(s);
 
     //
@@ -168,8 +167,8 @@ list_main(void (*usage)(void))
 	os_become_undo();
 	str_free(archive_name);
 
-	output_fputs(body_col, ", change ");
-	output_put_str(body_col, s);
+	body_col->fputs(", change ");
+	body_col->fputs(s);
 	str_free(s);
 
 	os_become_orig();
@@ -226,26 +225,25 @@ list_main(void (*usage)(void))
     }
 
     col_need(colp, 3);
-    output_fputs(head_col, "SUMMARY");
+    head_col->fputs("SUMMARY");
     col_eoln(colp);
-    output_put_str(body_col, change_set->brief_description);
+    body_col->fputs(change_set->brief_description);
     col_eoln(colp);
 
     col_need(colp, 5);
-    output_fputs(head_col, "DESCRIPTION");
+    head_col->fputs("DESCRIPTION");
     col_eoln(colp);
-    output_put_str(body_col, change_set->description);
+    body_col->fputs(change_set->description);
     col_eoln(colp);
 
     //
     // cause
     //
     col_need(colp, 5);
-    output_fputs(head_col, "CAUSE");
+    head_col->fputs("CAUSE");
     col_eoln(colp);
-    output_fprintf
+    body_col->fprintf
     (
-	body_col,
 	"This change was caused by %s.",
 	change_cause_ename(change_set->cause)
     );
@@ -255,7 +253,7 @@ list_main(void (*usage)(void))
     // files
     //
     col_need(colp, 5);
-    output_fputs(head_col, "FILES");
+    head_col->fputs("FILES");
     col_eoln(colp);
 
     left = INDENT_WIDTH;
@@ -274,21 +272,21 @@ list_main(void (*usage)(void))
 
 	src_data = change_set->src->list[j];
 	assert(src_data->file_name);
-	output_fputs(usage_col, file_usage_ename(src_data->usage));
-	output_fputs(action_col, file_action_ename(src_data->action));
-	output_put_str(file_name_col, src_data->file_name);
+	usage_col->fputs(file_usage_ename(src_data->usage));
+	action_col->fputs(file_action_ename(src_data->action));
+	file_name_col->fputs(src_data->file_name);
 	if (src_data->move)
 	{
 	    switch (src_data->action)
 	    {
 	    case file_action_create:
-		output_fputs(file_name_col, "\nMoved from ");
-		output_put_str(file_name_col, src_data->move);
+		file_name_col->fputs("\nMoved from ");
+		file_name_col->fputs(src_data->move);
 		break;
 
 	    case file_action_remove:
-		output_fputs(file_name_col, "\nMoved to ");
-		output_put_str(file_name_col, src_data->move);
+		file_name_col->fputs("\nMoved to ");
+		file_name_col->fputs(src_data->move);
 		break;
 
 	    case file_action_modify:

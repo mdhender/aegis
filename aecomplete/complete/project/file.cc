@@ -55,7 +55,6 @@ perform(complete_ty *cp, shell_ty *sh)
     complete_project_file_ty *this_thing;
     string_ty       *prefix;
     size_t          j;
-    string_list_ty  candidate;
     string_ty       *base = 0;
 
     //
@@ -106,7 +105,7 @@ perform(complete_ty *cp, shell_ty *sh)
     //
     // Troll the complete list of project files.
     //
-    string_list_constructor(&candidate);
+    string_list_ty candidate;
     prefix = str_catenate(base, shell_prefix_get(sh));
     for (j = 0; ; ++j)
     {
@@ -171,7 +170,7 @@ perform(complete_ty *cp, shell_ty *sh)
 	       	src->file_name->str_text + base->str_length,
 	       	src->file_name->str_length - base->str_length
 	    );
-        string_list_append(&candidate, relfn);
+        candidate.push_back(relfn);
 	str_free(relfn);
     }
 
@@ -179,7 +178,6 @@ perform(complete_ty *cp, shell_ty *sh)
     // Emit the list of files.
     //
     shell_emit_file_list(sh, &candidate);
-    string_list_destructor(&candidate);
 }
 
 

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004 Peter Miller;
+//	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -58,6 +58,6 @@ main(int argc, char **argv)
 	quit_register(undo_quitter);
 	os_interrupt_register();
 	import();
-	exit(0);
+	quit(0);
 	return 0;
 }

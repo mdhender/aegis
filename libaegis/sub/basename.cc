@@ -27,7 +27,7 @@
 #include <sub/basename.h>
 #include <os.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 //
@@ -59,7 +59,7 @@ sub_basename(sub_context_ty *scp, wstring_list_ty *arg)
     string_ty	    *s2;
 
     trace(("sub_basename()\n{\n"));
-    switch (arg->nitems)
+    switch (arg->size())
     {
     default:
 	sub_context_error_set(scp, i18n("requires one or two arguments"));
@@ -67,7 +67,7 @@ sub_basename(sub_context_ty *scp, wstring_list_ty *arg)
 	break;
 
     case 2:
-	s1 = wstr_to_str(arg->item[1]);
+	s1 = wstr_to_str(arg->get(1));
 	s2 = os_basename(s1);
 	str_free(s1);
 	result = str_to_wstr(s2);
@@ -75,8 +75,8 @@ sub_basename(sub_context_ty *scp, wstring_list_ty *arg)
 	break;
 
     case 3:
-	s1 = wstr_to_str(arg->item[1]);
-        suffix = wstr_to_str(arg->item[2]);
+	s1 = wstr_to_str(arg->get(1));
+        suffix = wstr_to_str(arg->get(2));
         s2 = os_basename(s1, suffix);
         result = str_to_wstr(s2);
         str_free(s1);

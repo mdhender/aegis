@@ -24,6 +24,7 @@
 # review_pass_notify_command = "$datadir/rp.inews.sh $p $c a.local.newsgroup";
 #
 aegis=aegis
+aesub=aesub
 case $# in
 3)
 	project=$1
@@ -45,6 +46,19 @@ quit()
 	exit 1
 }
 
+state=`$aesub '$state' -c $change -p $project`
+case $state in
+awaiting_integration)
+    coda="It is now awaiting integration."
+    ;;
+awaiting_review | being_reviewed)
+    coda="It is still awaiting further review."
+    ;;
+*)
+    coda="It is now $state"
+    ;;
+esac
+
 #
 # build the notice
 #
@@ -53,7 +67,7 @@ Subject: project $project, change $change, review pass
 Newsgroups: $newsgroups
 
 The change described below has passed review.
-It is now awaiting integration.
+$coda
 
 TheEnd
 if [ $? -ne 0 ]; then quit; fi

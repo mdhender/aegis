@@ -31,7 +31,6 @@
 #include <libdir.h>
 #include <mem.h>
 
-
 #ifdef DEBUG
 
 enum state_ty
@@ -45,7 +44,7 @@ static state_ty state;
 
 #endif // DEBUG
 
-static int      setlocale_is_working;
+static bool     setlocale_is_working;
 static int      message_catalog_set;
 
 //
@@ -80,17 +79,22 @@ static const char *const trial_locales[] =
 //	cases, too.
 //
 
-static int
+static bool
 setlocale_wrapper(void)
 {
-    const char      *cp;
-
-    cp = setlocale(LC_ALL, "");
+    //
+    // At this time (Oct-2004) Cygwin only partially implements
+    // localisation.  Returning a hard coded "yes" here at least results
+    // in long error messages for now.
+    //
+#ifndef __CYGWIN__
+    const char *cp = setlocale(LC_ALL, "");
     if (!cp)
-	return 0;
+	return false;
     if (0 == strcmp("C", cp) || 0 == strcmp("POSIX", cp))
-	return 0;
-    return 1;
+	return false;
+#endif // !defined(__CYGWIN__)
+    return true;
 }
 #endif
 
@@ -133,7 +137,7 @@ language_init(void)
     else
         message_catalog_set = 1;
 
-    setlocale_is_working = 0;
+    setlocale_is_working = false;
 #ifdef HAVE_SETLOCALE
 #ifdef HAVE_GETTEXT
     setlocale_is_working = setlocale_wrapper();

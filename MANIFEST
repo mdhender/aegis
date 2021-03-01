@@ -306,15 +306,13 @@ aecvsserver/server/simple.cc	functions to manipulate simples
 aecvsserver/server/simple.h	interface definition for ae-cvs-server/server/simple.c
 aediff/arglex3.cc	implementation of the arglex3 class
 aediff/arglex3.h	interface of the arglex3 class
-aediff/change_id.cc	implementation of the change_id class
-aediff/change_id.h	interface of the change_id class
 aediff/diff.cc	implementation of the diff class
 aediff/diff.h	interface of the diff class
-aediff/file_version.cc	implementation of the file_version class
-aediff/file_version.h	interface of the file_version class
 aediff/main.cc	functions to manipulate mains
 aedist/arglex3.cc	functions to manipulate arglex3s
 aedist/arglex3.h	interface definition for aedist/arglex3.c
+aedist/change/functor/invent_build.cc	implementation of the change_functor_invent_build class
+aedist/change/functor/invent_build.h	interface of the change_functor_invent_build class
 aedist/input/cpio.cc	functions to manipulate cpios
 aedist/input/cpio.h	interface definition for aedist/input/cpio.c
 aedist/input/cpio_child.cc	functions to manipulate cpio_childs
@@ -322,6 +320,8 @@ aedist/input/cpio_child.h	interface definition for aedist/input/cpio_child.c
 aedist/list.cc	functions to manipulate lists
 aedist/list.h	interface definition for aedist/list.c
 aedist/main.cc	functions to manipulate mains
+aedist/missing.cc	implementation of the missing class
+aedist/missing.h	interface of the missing class
 aedist/open.cc	functions to manipulate opens
 aedist/open.h	interface definition for aedist/open.c
 aedist/output/cpio.cc	functions to output to cpio archivess
@@ -332,8 +332,14 @@ aedist/output/cpio_child2.cc	functions to manipulate cpio_child2s
 aedist/output/cpio_child2.h	interface definition for aedist/output/cpio_child2.c
 aedist/receive.cc	functions to receive change sets
 aedist/receive.h	interface definition for aedist/receive.c
+aedist/replay.cc	implementation of the replay class
+aedist/replay.h	interface of the replay class
+aedist/replay/line.cc	implementation of the replay_line class
+aedist/replay/line.h	interface of the replay_line class
 aedist/send.cc	functions to manipulate sends
 aedist/send.h	interface definition for aedist/send.c
+aedist/usage.cc	implementation of the usage class
+aedist/usage.h	interface of the usage class
 aefind/cmdline.h	interface definition for aefind/cmdline.y
 aefind/cmdline.y	functions to parse the command line
 aefind/descend.cc	functions to walk parallel directory trees
@@ -392,6 +398,8 @@ aeget/cgi.cc	functions to manipulate cgis
 aeget/cgi.h	interface definition for aeget/cgi.c
 aeget/change/functor/inventory.cc	implementation of the change_functor_inventory class
 aeget/change/functor/inventory.h	interface of the change_functor_inventory class
+aeget/emit/brief_descri.cc	implementation of the emit_brief_descri class
+aeget/emit/brief_descri.h	interface of the emit_brief_descri class
 aeget/emit/edit_number.cc	functions to manipulate edit_numbers
 aeget/emit/edit_number.h	interface definition for aeget/emit/edit_number.c
 aeget/emit/project.cc	functions to manipulate projects
@@ -416,6 +424,8 @@ aeget/get/change/file_invento.cc	implementation of the get_change_file_invento c
 aeget/get/change/file_invento.h	interface of the get_change_file_invento class
 aeget/get/change/files.cc	functions to manipulate filess
 aeget/get/change/files.h	interface definition for aeget/get/change/files.c
+aeget/get/change/history.cc	implementation of the get_change_history class
+aeget/get/change/history.h	interface of the get_change_history class
 aeget/get/change/inventory.cc	implementation of the get_change_inventory class
 aeget/get/change/inventory.h	interface of the get_change_inventory class
 aeget/get/change/list.cc	functions to manipulate lists
@@ -428,8 +438,12 @@ aeget/get/file.cc	functions to manipulate files
 aeget/get/file.h	interface definition for aeget/get/file.c
 aeget/get/file/activity.cc	functions to manipulate activitys
 aeget/get/file/activity.h	interface definition for aeget/get/file/activity.c
+aeget/get/file/cause_densit.cc	implementation of the get_file_cause_densit class
+aeget/get/file/cause_densit.h	interface of the get_file_cause_densit class
 aeget/get/file/contents.cc	functions to manipulate contentss
 aeget/get/file/contents.h	interface definition for aeget/get/file/contents.c
+aeget/get/file/diff.cc	implementation of the get_file_diff class
+aeget/get/file/diff.h	interface of the get_file_diff class
 aeget/get/file/history.cc	functions to manipulate historys
 aeget/get/file/history.h	interface definition for aeget/get/file/history.c
 aeget/get/file/menu.cc	functions to manipulate menus
@@ -440,16 +454,24 @@ aeget/get/project.cc	functions to manipulate projects
 aeget/get/project.h	interface definition for aeget/get/project.c
 aeget/get/project/aedist.cc	functions to manipulate aedists
 aeget/get/project/aedist.h	interface definition for aeget/get/project/aedist.c
+aeget/get/project/change_cause.cc	implementation of the get_project_change_cause class
+aeget/get/project/change_cause.h	interface of the get_project_change_cause class
 aeget/get/project/file.cc	functions to manipulate files
 aeget/get/project/file.h	interface definition for aeget/get/project/file.c
 aeget/get/project/file_invento.cc	implementation of the get_project_file_invento class
 aeget/get/project/file_invento.h	interface of the get_project_file_invento class
 aeget/get/project/files.cc	functions to manipulate filess
 aeget/get/project/files.h	interface definition for aeget/get/project/files.c
+aeget/get/project/history.cc	implementation of the get_project_history class
+aeget/get/project/history.h	interface of the get_project_history class
+aeget/get/project/integr_histo.cc	implementation of the get_project_integr_histo class
+aeget/get/project/integr_histo.h	interface of the get_project_integr_histo class
 aeget/get/project/list.cc	functions to manipulate lists
 aeget/get/project/list.h	interface definition for aeget/get/project/list.c
 aeget/get/project/menu.cc	functions to manipulate menus
 aeget/get/project/menu.h	interface definition for aeget/get/project/menu.c
+aeget/get/project/progress.cc	implementation of the get_project_progress class
+aeget/get/project/progress.h	interface of the get_project_progress class
 aeget/get/project/staff.cc	functions to manipulate staffs
 aeget/get/project/staff.h	interface definition for aeget/get/project/staff.c
 aeget/get/project/statistics.cc	functions to manipulate statisticss
@@ -737,7 +759,8 @@ common/ac/math.h	inclulate against <math.h> vagueries
 common/ac/mntent.cc	functions to implement mntent stubs
 common/ac/mntent.h	interface definition for common/ac/mntent.c
 common/ac/pwd.h	insulate against <pwd.h> vagueries
-common/ac/regex.h	interface definition for common/ac/regex.c
+common/ac/regex.cc	implementation of the ac_regex class
+common/ac/regex.h	insulation for regex.h presence or absence
 common/ac/shadow.h	interface definition for common/ac/shadow.c
 common/ac/signal.h	interface definition for common/ac/signal.c
 common/ac/stdarg.h	insulate against <varargs.h> vs <stdarg.h> differences
@@ -752,6 +775,7 @@ common/ac/sys/clu.cc	functions to manipulate clus
 common/ac/sys/clu.h	interface definition for common/ac/sys/clu.c
 common/ac/sys/ioctl.h	interface definition for common/ac/sys/ioctl.c
 common/ac/sys/prctl.h	interface definition for common/ac/sys/prctl.c
+common/ac/sys/types.h	insulate sys/types.h peculiarities
 common/ac/termios.h	insulate against <sys/ioctl.h> vs <termios.h> differences
 common/ac/time.cc	impliment missing functions from <time.h>
 common/ac/time.h	insulate against <time.h> vs <sys/time.h> differences
@@ -766,6 +790,7 @@ common/ac/zlib.cc	functions to manipulate zlibs
 common/ac/zlib.h	interface definition for common/ac/zlib.c
 common/arglex.cc	lexical analysis of command line arguments
 common/arglex.h	interface definition for common/arglex.c
+common/arglex/compare.cc	implementation of the arglex_compare class
 common/config.h.in	template common/config.h file
 common/config.messy.h	interface definition for config.messy.c
 common/env.cc	functions to manipulate environment variables
@@ -812,9 +837,37 @@ common/now.cc	functions to manipulate nows
 common/now.h	interface definition for common/now.c
 common/nstring.cc	implementation of the nstring class
 common/nstring.h	interface of the nstring class
+common/nstring/accumulator.cc	implementation of the nstring_accumulator class
+common/nstring/accumulator.h	interface of the nstring_accumulator class
+common/nstring/bool.cc	implementation of the nstring::bool operator
+common/nstring/capitalize.cc	implementation of the nstring::capitalize method
+common/nstring/cat_three.cc	implementation of the nstring::cat_three method
+common/nstring/clear.cc	implementation of the nstring class
+common/nstring/downcase.cc	implementation of the nstring::downcase method
+common/nstring/ends_with.cc	implementation of the nstring::ends_with method
+common/nstring/field.cc	implementation of the nstring::field method
 common/nstring/gmatch.cc	implementation of the nstring_gmatch class
-common/nstring_list.cc	implementation of the nstring_list class
-common/nstring_list.h	interface of the nstring_list class
+common/nstring/html_quote.cc	implementation of the html_text_quote class
+common/nstring/html_unquote.cc	implementation of the html_text_unquote class
+common/nstring/identifier.cc	implementation of the nstring::identifier method
+common/nstring/list.cc	implementation of the nstring_list class
+common/nstring/list.h	interface of the nstring_list class
+common/nstring/list/clear.cc	implementation of the nstring_list::clear method
+common/nstring/list/get.cc	implementation of the nstring_list::get method
+common/nstring/list/gmatch_candi.cc	implementation of the nstring_list::gmatch_candidate method
+common/nstring/list/gmatch_patte.cc	implementation of the nstring_list::gmatch_pattern method
+common/nstring/list/member.cc	implementation of the nstring_list::member method
+common/nstring/list/sort.cc	implementation of the nstring_list::sort method
+common/nstring/list/split.cc	implementation of the nstring_list::split method
+common/nstring/list/unsplit.cc	implementation of the nstring_list::unsplit method
+common/nstring/not.cc	implementation of the nstring::not operator
+common/nstring/quote_shell.cc	implementation of the nstring::quote_shell method
+common/nstring/replace.cc	implementation of the nstring::replace method
+common/nstring/starts_with.cc	implementation of the nstring::starts_with method
+common/nstring/trim.cc	implementation of the nstring::trim method
+common/nstring/upcase.cc	implementation of the nstring::upcase method
+common/nstring/url_quote.cc	implementation of the html_url_quote class
+common/nstring/url_unquote.cc	implementation of the html_url_unquote class
 common/page.cc	functions to manipulate pages
 common/page.h	interface definition for common/page.c
 common/patchlevel.h	The patch level of this distribution.
@@ -826,6 +879,8 @@ common/quit/action.cc	implementation of the quit_action class
 common/quit/action.h	interface of the quit_action class
 common/r250.cc	good fast random number generator
 common/r250.h	interface definition for common/r250.c
+common/regula_expre.cc	implementation of the regular_expression class
+common/regula_expre.h	interface of the regular_expression class
 common/skip_unlucky.cc	functions to skip unlucky numbers
 common/skip_unlucky.h	interface definition for common/skip_unlucky.c
 common/str.cc	string manipulation functions
@@ -841,7 +896,6 @@ common/str/format.cc	functions to manipulate formats
 common/str/identifier.cc	functions to manipulate identifiers
 common/str/lead_prefix.cc	functions to manipulate lead_prefixs
 common/str/quote.cc	functions to manipulate quotes
-common/str/re.cc	functions to manipulate strings with regular expressions
 common/str/replace.cc	implementation of the str_replace class
 common/str/traili_suffi.cc	implementation of the str_traili_suffi class
 common/str/trim.cc	functions to manipulate trims
@@ -851,36 +905,48 @@ common/str_list/appelistuniq.cc	functions to manipulate appelistuniqs
 common/str_list/append.cc	functions to manipulate appends
 common/str_list/append_list.cc	functions to manipulate append_lists
 common/str_list/append_uniqu.cc	functions to manipulate append_uniqus
+common/str_list/assign_op.cc	implementation of the str_list_assign_op class
+common/str_list/clear.cc	implementation of the str_list_clear class
 common/str_list/constructor.cc	functions to manipulate constructors
 common/str_list/copy.cc	functions to manipulate copys
-common/str_list/delete.cc	functions to manipulate deletes
 common/str_list/destructor.cc	functions to manipulate destructors
 common/str_list/equal.cc	functions to manipulate equals
+common/str_list/intersection.cc	implementation of the str_list_intersection class
 common/str_list/member.cc	functions to manipulate members
-common/str_list/new.cc	functions to manipulate news
+common/str_list/member_nocas.cc	implementation of the str_list_member_nocas class
+common/str_list/pop_back.cc	implementation of the str_list_pop_back class
+common/str_list/pop_front.cc	implementation of the str_list_pop_front class
 common/str_list/prepend.cc	functions to manipulate prepends
 common/str_list/prepend_list.cc	functions to manipulate prepend_lists
 common/str_list/quote.cc	functions to manipulate quotes
 common/str_list/remove.cc	functions to manipulate removes
 common/str_list/remove_list.cc	functions to manipulate remove_lists
 common/str_list/sort.cc	functions to manipulate sorts
+common/str_list/sort_nocase.cc	implementation of the str_list_sort_nocase class
 common/str_list/sort_vers.cc	functions to manipulate sorts
 common/str_list/str2wl.cc	functions to manipulate str2wls
 common/str_list/subset.cc	functions to manipulate subsets
 common/str_list/validate.cc	functions to manipulate validates
-common/str_list/wl2str.cc	functions to manipulate wl2strs
+common/str_list/wl2str.cc	method to unsplit string lists
 common/stracc.cc	functions to accumulate strings
 common/stracc.h	interface definition for common/stracc.c
 common/symtab.cc	functions to manipulate symbol tables
 common/symtab.h	interface definition for common/symtab.c
+common/symtab/assign.cc	implementation of the symtab_assign class
+common/symtab/assign_push.cc	implementation of the symtab_assign_push class
+common/symtab/clear.cc	implementation of the symtab_clear class
 common/symtab/delete.cc	functions to manipulate deletes
 common/symtab/dump.cc	functions to manipulate dumps
 common/symtab/keys.cc	functions to manipulate keyss
-common/symtab/keys.h	interface definition for common/symtab/keys.c
+common/symtab/query.cc	implementation of the symtab_query class
+common/symtab/query_fuzzy.cc	implementation of the symtab_query_fuzzy class
+common/symtab/split.cc	implementation of the symtab_split class
 common/symtab/template.h	interface of the symtab_template class
+common/symtab/valid.cc	implementation of the symtab_valid class
 common/symtab/walk.cc	functions to manipulate walks
 common/symtab_iter.cc	functions to manipulate symtab_iters
 common/symtab_iter.h	interface definition for common/symtab_iter.c
+common/throws_not.h	interface of the throws_not class
 common/trace.cc	functions for execution trace
 common/trace.h	interface definition for common/trace.c
 common/uuidentifier.cc	functions to manipulate UUIDs
@@ -890,9 +956,15 @@ common/version_stmp.h	interface definition for common/version_stmp.c
 common/wstr.cc	wide string manipulation functions
 common/wstr.h	interface definition for common/wstr.c
 common/wstr/column_width.cc	functions to calculate printable column width
+common/wstr/list.cc	functions to manipulate lists of wide strings
+common/wstr/list.h	interface definition for common/wstr_list.c
 common/wstr/quote.cc	functions to manipulate quotes
-common/wstr_list.cc	functions to manipulate lists of wide strings
-common/wstr_list.h	interface definition for common/wstr_list.c
+common/wstring.cc	implementation of the wstring class
+common/wstring.h	interface of the wstring class
+common/wstring/list.cc	implementation of the wstring_list class
+common/wstring/list.h	interface of the wstring_list class
+common/yyyymmdd_wk.cc	implementation of the yyyymmdd_wk class
+common/yyyymmdd_wk.h	interface of the yyyymmdd_wk class
 configure	Shell script to automagically configure
 etc/CHANGES.1.0	Change history of the project
 etc/CHANGES.1.1	Change history of the project
@@ -915,14 +987,12 @@ etc/cfmt.cook	cfmt.cook
 etc/chan_files.awk	chan_files.awk
 etc/compat.2.3.in	compat.2.3.in
 etc/configure.ac	how to configure aegis, input to the GNU autoconf program
-etc/diversity.html	input for archive/diversity.html
 etc/documents.cook	instructions to cook(1), how to build documents
 etc/documents.html	input for archive/aegis.html
 etc/download.html	input for archive/download.html
 etc/doxygen.cfg	instructions to Doxygen
 etc/doxygen.cook	functions to manipulate foos
 etc/faq.toc.awk	awk script to extract the table of contents from the faq
-etc/features.html	input for archive/features.html
 etc/flint/assert.h	no manifest specified
 etc/flint/ctype.h	no manifest specified
 etc/flint/errno.h	no manifest specified
@@ -950,6 +1020,13 @@ etc/page-list.awk	page-list.awk
 etc/patch.fil.sh	shell script to generate the patch for a file
 etc/patches.sh	shell script to generate the patch file
 etc/proj_files.awk	proj_files.awk
+etc/propaganda/crossroads.html	index.html
+etc/propaganda/diversity.html	input for archive/diversity.html
+etc/propaganda/features.html	input for archive/features.html
+etc/propaganda/index.html	index.html
+etc/propaganda/security.html	propaganda/security.html
+etc/propaganda/sites.html	sites.html
+etc/propaganda/startup.html	no manifest specified
 etc/ptx.ignore	ptx.ignore
 etc/ptx.sh	shell script to manipulate ptxs
 etc/ptx1.awk	ptx1.awk
@@ -957,7 +1034,6 @@ etc/ptx2.awk	ptx2.awk
 etc/rpm-build.sh	shell script to rpm-build
 etc/rsrvd_syms.sh	shell script to manipulate rsrvd_symss
 etc/set-uid-root	set-uid-root
-etc/sites.html	sites.html
 etc/so.sh	shell script to generate include lists
 etc/spec.sh	shell script to generate RedHat spec file
 etc/ssp.awk	awk script to supress multiple blank lines
@@ -1239,6 +1315,7 @@ lib/en/man1/o_baselin.so	description of -BaseLine command line option
 lib/en/man1/o_baserel.so	document describing o_baserel.so
 lib/en/man1/o_branch.so	description of the -BRanch command line option
 lib/en/man1/o_change.so	description of -Change command line option
+lib/en/man1/o_clone_merg.so	document describing lib/en/man1/o_clone_mergs
 lib/en/man1/o_cte.so	document describing lib/en/man1/o_ctes
 lib/en/man1/o_delta.so	document describing lib/en/man1/o_deltas
 lib/en/man1/o_devdir.so	description of -Development_Directory command line option
@@ -1266,6 +1343,7 @@ lib/en/man1/o_recurse.so	document describing the recursive option to commands
 lib/en/man1/o_regress.so	description of -REGression command line option
 lib/en/man1/o_sob.so	document describing lib/en/man1/o_sobs
 lib/en/man1/o_symlnk.so	document describing symlink farms
+lib/en/man1/o_symlnk_vfy.so	document describing symbolic link verification options
 lib/en/man1/o_template.so	document describing template options
 lib/en/man1/o_terse.so	description of -TERse command line option
 lib/en/man1/o_trojan.so	document describing lib/en/man1/o_trojans
@@ -1361,6 +1439,7 @@ lib/en/readme/new.4.17.so	document describing new 4.17 features
 lib/en/readme/new.4.18.so	document describing new 4.18 features
 lib/en/readme/new.4.19.so	document describing new 4.19 features
 lib/en/readme/new.4.2.so	document describing new 4.2 features
+lib/en/readme/new.4.20.so	document describing new 4.19 features
 lib/en/readme/new.4.3.so	document describing new 4.3 features
 lib/en/readme/new.4.4.so	document describing new 4.4 features
 lib/en/readme/new.4.5.so	document describing new 4.5 features
@@ -1399,7 +1478,7 @@ lib/en/user-guide/c2.5.so	User Guide, The Change Development Cycle, What to do N
 lib/en/user-guide/c2.6.so	User Guide, The Change Development Cycle, Common Questions
 lib/en/user-guide/c3.0.so	User Guide, The History Tool
 lib/en/user-guide/c3.1.so	User Guide, The History Tool, Using SCCS
-lib/en/user-guide/c3.2.so	User Guide,  The History Tool, Using RCS
+lib/en/user-guide/c3.2.so	User Guide, The History Tool, Using RCS
 lib/en/user-guide/c3.3.so	User Guide, The History Tool, Using fhist
 lib/en/user-guide/c3.4.so	document describing lib/en/user-guide/c3.4s
 lib/en/user-guide/c4.0.so	User Guide, The Dependency Maintenance Tool
@@ -1743,6 +1822,8 @@ libaegis/arglex/project.cc	functions to manipulate projects
 libaegis/arglex/project.h	interface definition for libaegis/arglex/project.c
 libaegis/arglex2.cc	functions to manipulate command line arguments
 libaegis/arglex2.h	definitions of command line tokens
+libaegis/attribute.cc	implementation of the attribute class
+libaegis/attribute.h	interface of the attribute class
 libaegis/attrlistveri.cc	functions to manipulate attrlistveris
 libaegis/attrlistveri.h	interface definition for libaegis/attrlistveri.c
 libaegis/cattr.def	change state file contents definition
@@ -1758,9 +1839,11 @@ libaegis/change/architecture/name.cc	functions to manipulate names
 libaegis/change/architecture/run_disc_cmd.cc	functions to manipulate run_disc_cmds
 libaegis/change/architecture/times_find.cc	functions to manipulate times_finds
 libaegis/change/attributes.h	interface definition for libaegis/change/attributes.c
+libaegis/change/attributes/append.cc	implementation of the change_attributes_append class
 libaegis/change/attributes/copy.cc	functions to manipulate copys
 libaegis/change/attributes/default.cc	functions to manipulate defaults
 libaegis/change/attributes/edit.cc	functions to manipulate edits
+libaegis/change/attributes/find.cc	implementation of the change_attributes_find class
 libaegis/change/attributes/verify.cc	functions to manipulate verifys
 libaegis/change/become.cc	functions to manipulate becomes
 libaegis/change/bind/existing.cc	functions to manipulate existings
@@ -1849,6 +1932,7 @@ libaegis/change/build/run_dev_com.cc	functions to manipulate run_dev_coms
 libaegis/change/build/run_int_com.cc	functions to manipulate run_int_coms
 libaegis/change/build/run_time_com.cc	functions to run the build_time_adjust_notify_command
 libaegis/change/build/symlinks.cc	functions to manipulate symlinks
+libaegis/change/build/symlnk_maint.cc	implementation of the change_build_symlnk_maint class
 libaegis/change/build/time_set.cc	functions to manipulate time_sets
 libaegis/change/build/times_clear.cc	functions to manipulate times_clears
 libaegis/change/complet_time.cc	functions to manipulate complet_times
@@ -1894,6 +1978,7 @@ libaegis/change/file/cpy_bas_attr.cc	functions to manipulate cpy_bas_attrs
 libaegis/change/file/directory/conflict.cc	functions to manipulate conflicts
 libaegis/change/file/directory/query.cc	functions to manipulate querys
 libaegis/change/file/find.cc	functions to manipulate finds
+libaegis/change/file/find2.cc	implementation of the change_file_find2 class
 libaegis/change/file/find_fuzzy.cc	functions to manipulate find_fuzzys
 libaegis/change/file/fingerprint/check.cc	functions to manipulate checks
 libaegis/change/file/fingerprint/same.cc	functions to manipulate sames
@@ -1909,6 +1994,7 @@ libaegis/change/file/nth.cc	functions to manipulate nths
 libaegis/change/file/path.cc	functions to manipulate paths
 libaegis/change/file/remove.cc	functions to manipulate removes
 libaegis/change/file/remove_all.cc	functions to manipulate remove_alls
+libaegis/change/file/resolve_name.cc	implementation of the change_file_resolve_name class
 libaegis/change/file/source.cc	functions to manipulate sources
 libaegis/change/file/template.cc	functions to manipulate templates
 libaegis/change/file/test_bl_time/clear.cc	functions to manipulate clears
@@ -1926,6 +2012,8 @@ libaegis/change/free.cc	functions to manipulate frees
 libaegis/change/fstate/filename_get.cc	functions to manipulate filename_gets
 libaegis/change/functor.cc	implementation of the change_functor class
 libaegis/change/functor.h	interface of the change_functor class
+libaegis/change/functor/attribu_list.cc	implementation of the change_functor_attribute_list class
+libaegis/change/functor/attribu_list.h	interface of the change_functor_attribu_list class
 libaegis/change/functor/invento_list.cc	implementation of the change_functor_inventory_list class
 libaegis/change/functor/invento_list.h	interface of the change_functor_inventory_list class
 libaegis/change/history/create_comma.cc	functions to manipulate create_commas
@@ -1951,6 +2039,20 @@ libaegis/change/history/tran_abt_com.cc	implementation of the change_history_tra
 libaegis/change/history/tran_beg_com.cc	implementation of the change_history_tran_beg_com class
 libaegis/change/history/tran_end_com.cc	implementation of the change_history_tran_end_com class
 libaegis/change/history/trash.cc	functions to manipulate trashs
+libaegis/change/identifi_sub.cc	implementation of the change_identifi_sub class
+libaegis/change/identifi_sub.h	interface of the change_identifi_sub class
+libaegis/change/identifi_sub/change_versi.cc	implementation of the change_id_change_versi class
+libaegis/change/identifi_sub/cmd_lin_che.cc	implementation of the change_id_cmd_lin_che class
+libaegis/change/identifi_sub/cmd_lin_par.cc	implementation of the change_id_cmd_lin_par class
+libaegis/change/identifi_sub/erro_no_chan.cc	implementation of the change_identifi_sub_erro_no_chan class
+libaegis/change/identifi_sub/file_revisio.cc	implementation of the change_id_file_revision class
+libaegis/change/identifi_sub/get_chan_num.cc	implementation of the change_id_get_chan_num class
+libaegis/change/identifi_sub/get_cp.cc	implementation of the change_id_get_cp class
+libaegis/change/identifi_sub/get_devdir.cc	implementation of the change_identifi_sub_get_devdir class
+libaegis/change/identifi_sub/set.cc	implementation of the change_id_set class
+libaegis/change/identifi_sub/set_change.cc	implementation of the change_id_set_change class
+libaegis/change/identifier.cc	implementation of the change_identifier class
+libaegis/change/identifier.h	interface of the change_identifier class
 libaegis/change/integra_direct/clear.cc	functions to manipulate clears
 libaegis/change/integra_direct/get.cc	functions to manipulate gets
 libaegis/change/integra_direct/set.cc	functions to manipulate sets
@@ -1967,7 +2069,9 @@ libaegis/change/metrics/file_pat_get.cc	functions to manipulate file_pat_gets
 libaegis/change/outstanding.cc	functions to manipulate outstandings
 libaegis/change/pathconf.cc	functions to manipulate pathconfs
 libaegis/change/pconf/get.cc	functions to manipulate gets
-libaegis/change/reviewe_name.cc	functions to manipulate reviewe_names
+libaegis/change/reviewer/already.cc	implementation of the change_reviewer_already class
+libaegis/change/reviewer/list.cc	implementation of the change_reviewer_list class
+libaegis/change/reviewer/name.cc	functions to manipulate reviewe_names
 libaegis/change/run/cop_file.cc	functions to manipulate cop_files
 libaegis/change/run/cop_file_und.cc	functions to manipulate cop_files
 libaegis/change/run/dev_beg_undo.cc	functions to manipulate dev_beg_undos
@@ -1993,6 +2097,8 @@ libaegis/change/run/revibegiundo.cc	functions to manipulate revibegiundos
 libaegis/change/run/review_begin.cc	functions to manipulate review_begins
 libaegis/change/run/review_fail.cc	functions to manipulate review_fails
 libaegis/change/run/review_pass.cc	functions to manipulate review_passs
+libaegis/change/run/review_polic.cc	implementation of the change_run_review_polic class
+libaegis/change/run/review_polic.h	interface of the change_run_review_polic class
 libaegis/change/run/revipassundo.cc	functions to manipulate revipassundos
 libaegis/change/sch_path_get.cc	functions to manipulate sch_path_gets
 libaegis/change/signedoffby.cc	implementation of the change_signedoffby class
@@ -2032,6 +2138,8 @@ libaegis/col/private.cc	functions to manipulate privates
 libaegis/col/private.h	interface definition for libaegis/col/private.c
 libaegis/col/unformatted.cc	functions to manipulate unformatteds
 libaegis/col/unformatted.h	interface definition for libaegis/col/unformatted.c
+libaegis/collect.cc	implementation of the collect class
+libaegis/collect.h	interface of the collect class
 libaegis/commit.cc	functions to store and enact file manipulations for commit
 libaegis/commit.h	interface definition for aegis/commit.c
 libaegis/common.def	enumerations common to many aegis file contents
@@ -2045,6 +2153,8 @@ libaegis/file.cc	functions for pushing files around
 libaegis/file.h	interface definition for aegis/file.c
 libaegis/file/cat_string.cc	functions to manipulate cat_strings
 libaegis/file/from_string.cc	functions to manipulate from_strings
+libaegis/file_revisio.cc	implementation of the file_revision class
+libaegis/file_revision.h	interface of the file_revision class
 libaegis/fopen_nfs.cc	functions to insulate fopen from stale NFS file handles
 libaegis/fopen_nfs.h	interface definition for libaegis/fopen_nfs.c
 libaegis/fstate.def	file state file contents definition
@@ -2160,6 +2270,8 @@ libaegis/os/chmod/errok.cc	wrappers around operating system functions
 libaegis/os/chmod/query.cc	wrappers around operating system functions
 libaegis/os/dirname.cc	functions to manipulate dirnames
 libaegis/os/dirname_rel.cc	functions to manipulate dirnames
+libaegis/os/domain_name.cc	implementation of the os_domain_name class
+libaegis/os/domain_name.h	interface of the os_domain_name class
 libaegis/os/edit.cc	functions to manipulate edits
 libaegis/os/edit/filename.cc	functions to manipulate filenames
 libaegis/os/edit/new.cc	functions to manipulate news
@@ -2178,6 +2290,7 @@ libaegis/os/isa/directory.cc	functions to manipulate directorys
 libaegis/os/isa/path_prefix.cc	functions to manipulate path_prefixs
 libaegis/os/isa/path_prefix.h	interface definition for libaegis/os/isa/path_prefix.c
 libaegis/os/isa/special_file.cc	functions to manipulate special_files
+libaegis/os/isa/symlink.cc	implementation of the os_isa_symlink class
 libaegis/os/link.cc	wrappers around operating system functions
 libaegis/os/mkdir.cc	wrappers around operating system functions
 libaegis/os/mkdir_betwen.cc	functions to manipulate mkdir_betwens
@@ -2230,8 +2343,6 @@ libaegis/output/pager.cc	functions to pipe output through paginator
 libaegis/output/pager.h	interface definition for aegis/output/pager.c
 libaegis/output/prefix.cc	functions to manipulate prefixs
 libaegis/output/prefix.h	interface definition for libaegis/output/prefix.c
-libaegis/output/private.cc	functions to perform common output functions
-libaegis/output/private.h	interface definition for libaegis/output/private.c
 libaegis/output/quoted_print.cc	functions to manipulate quoted_prints
 libaegis/output/quoted_print.h	interface definition for libaegis/output/quoted_print.c
 libaegis/output/stdout.cc	functions to deliver output to stdout
@@ -2244,12 +2355,11 @@ libaegis/output/uuencode.cc	functions to manipulate uuencodes
 libaegis/output/uuencode.h	interface definition for libaegis/output/uuencode.c
 libaegis/output/wrap.cc	functions to manipulate wraps
 libaegis/output/wrap.h	interface definition for libaegis/output/wrap.c
+libaegis/patch.cc	functions to manipulate files
 libaegis/patch.h	interface definition for libaegis/patch/
 libaegis/patch/apply.cc	functions to manipulate applys
 libaegis/patch/context.cc	functions to manipulate contexts
 libaegis/patch/context.h	interface definition for libaegis/patch/context.c
-libaegis/patch/file.cc	functions to manipulate files
-libaegis/patch/file.h	interface definition for libaegis/patch/file.c
 libaegis/patch/format.h	interface definition for libaegis/patch/format.c
 libaegis/patch/format/context.cc	functions to manipulate contexts
 libaegis/patch/format/context.h	interface definition for libaegis/patch/format/context.c
@@ -2311,6 +2421,12 @@ libaegis/project/history/filename_get.cc	functions to manipulate filename_gets
 libaegis/project/history/path_get.cc	functions to manipulate path_gets
 libaegis/project/history/uuid_trans.cc	functions to manipulate uuid_transs
 libaegis/project/history/uuid_trans.h	interface definition for libaegis/project/history/uuid_trans.c
+libaegis/project/identifi_sub.cc	implementation of the project_identifier_subset class
+libaegis/project/identifi_sub.h	interface of the project_identifier_subset class
+libaegis/project/identifi_sub/branch.cc	implementation of the project_identifier_subset_branch class
+libaegis/project/identifi_sub/branch.h	interface of the project_identifier_subset_branch class
+libaegis/project/identifi_sub/plain.cc	implementation of the project_identifier_subset_plain class
+libaegis/project/identifi_sub/plain.h	interface of the project_identifi_sub_plain class
 libaegis/project/invento_walk.cc	implementation of the project_invento_walk class
 libaegis/project/invento_walk.h	interface of the project_invento_walk class
 libaegis/project/list.cc	functions to manipulate lists
@@ -2346,6 +2462,8 @@ libaegis/quit/action/pager.cc	implementation of the quit_action_pager class
 libaegis/quit/action/pager.h	interface of the quit_action_pager class
 libaegis/quit/action/undo.cc	implementation of the quit_action_undo class
 libaegis/quit/action/undo.h	interface of the quit_action_undo class
+libaegis/quit/action/unlink.cc	implementation of the quit_action_unlink class
+libaegis/quit/action/unlink.h	interface of the quit_action_unlink class
 libaegis/rfc822header.cc	functions to manipulate headers
 libaegis/rfc822header.h	interface definition for aedist/rfc822header.c
 libaegis/rptidx.def	report index file format definition
@@ -2363,10 +2481,14 @@ libaegis/sub/binary_direc.cc	functions to manipulate binary_direcs
 libaegis/sub/binary_direc.h	interface definition for libaegis/sub/binary_direc.c
 libaegis/sub/capitalize.cc	functions to manipulate capitalizes
 libaegis/sub/capitalize.h	interface definition for libaegis/sub/capitalize.c
+libaegis/sub/change/attribute.cc	implementation of the sub_change_attribute class
+libaegis/sub/change/attribute.h	interface of the sub_change_attribute class
 libaegis/sub/change/delta.cc	functions to manipulate deltas
 libaegis/sub/change/delta.h	interface definition for libaegis/sub/delta.c
 libaegis/sub/change/develo_direc.cc	functions to manipulate develo_direcs
 libaegis/sub/change/develo_direc.h	interface definition for libaegis/sub/change/develo_direc.c
+libaegis/sub/change/develop_list.cc	implementation of the sub_change_develop_list class
+libaegis/sub/change/develop_list.h	interface of the sub_change_develop_list class
 libaegis/sub/change/developer.cc	functions to manipulate developers
 libaegis/sub/change/developer.h	interface definition for libaegis/sub/change/developer.c
 libaegis/sub/change/files.cc	functions to manipulate filess
@@ -2379,6 +2501,8 @@ libaegis/sub/change/number.cc	functions to manipulate changes
 libaegis/sub/change/number.h	interface definition for libaegis/sub/change.c
 libaegis/sub/change/reviewer.cc	functions to manipulate reviewers
 libaegis/sub/change/reviewer.h	interface definition for libaegis/sub/change/reviewer.c
+libaegis/sub/change/reviewr_list.cc	implementation of the sub_change_reviewr_list class
+libaegis/sub/change/reviewr_list.h	interface of the sub_change_reviewr_list class
 libaegis/sub/change/state.cc	functions to manipulate states
 libaegis/sub/change/state.h	interface definition for libaegis/sub/change/state.c
 libaegis/sub/change/version.cc	functions to manipulate versions
@@ -2393,14 +2517,22 @@ libaegis/sub/data_directo.cc	functions to manipulate data_directos
 libaegis/sub/data_directo.h	interface definition for libaegis/sub/data_directo.c
 libaegis/sub/date.cc	functions to manipulate dates
 libaegis/sub/date.h	interface definition for libaegis/sub/date.c
+libaegis/sub/diff.cc	implementation of the sub_diff class
+libaegis/sub/diff.h	interface of the sub_diff class
 libaegis/sub/dirname.cc	functions to manipulate dirnames
 libaegis/sub/dirname.h	interface definition for libaegis/sub/dirname.c
 libaegis/sub/dirname_rel.cc	functions to manipulate dirnames
 libaegis/sub/dirname_rel.h	interface definition for libaegis/sub/dirname_rel.c
+libaegis/sub/diversion.cc	implementation of the sub_diversion class
+libaegis/sub/diversion.h	interface of the sub_diversion class
+libaegis/sub/diversion/stack.cc	implementation of the sub_diversion_stack class
+libaegis/sub/diversion/stack.h	interface of the sub_diversion_stack class
 libaegis/sub/dollar.cc	functions to manipulate dollars
 libaegis/sub/dollar.h	interface definition for aegis/sub/dollar.c
 libaegis/sub/downcase.cc	functions to manipulate downcases
 libaegis/sub/downcase.h	interface definition for libaegis/sub/downcase.c
+libaegis/sub/email_addres.cc	implementation of the sub_email_addres class
+libaegis/sub/email_addres.h	interface of the sub_email_addres class
 libaegis/sub/expr.cc	functions to manipulate exprs
 libaegis/sub/expr.h	interface definition for aegis/sub/expr.c
 libaegis/sub/expr_gram.h	interface definition for aegis/sub/expr_gram.y
@@ -2486,6 +2618,24 @@ libaegis/uname.cc	functions to manipulate unames
 libaegis/uname.h	interface definition for uname.c
 libaegis/undo.cc	functions to store and enact file operations on transaction abort
 libaegis/undo.h	interface definition for aegis/undo.c
+libaegis/undo/item.cc	implementation of the undo_item class
+libaegis/undo/item.h	interface of the undo_item class
+libaegis/undo/item/chmod.cc	implementation of the undo_item_chmod class
+libaegis/undo/item/chmod.h	interface of the undo_item_chmod class
+libaegis/undo/item/chmod_errok.cc	implementation of the undo_item_chmod_errok class
+libaegis/undo/item/chmod_errok.h	interface of the undo_item_chmod_errok class
+libaegis/undo/item/message.cc	implementation of the undo_item_message class
+libaegis/undo/item/message.h	interface of the undo_item_message class
+libaegis/undo/item/rename.cc	implementation of the undo_item_rename class
+libaegis/undo/item/rename.h	interface of the undo_item_rename class
+libaegis/undo/item/rmdir_bg.cc	implementation of the undo_item_rmdir_bg class
+libaegis/undo/item/rmdir_bg.h	interface of the undo_item_rmdir_bg class
+libaegis/undo/item/rmdir_errok.cc	implementation of the undo_item_rmdir_errok class
+libaegis/undo/item/rmdir_errok.h	interface of the undo_item_rmdir_errok class
+libaegis/undo/item/unlink_errok.cc	implementation of the undo_item_unlink_errok class
+libaegis/undo/item/unlink_errok.h	interface of the undo_item_unlink_errok class
+libaegis/url.cc	implementation of the url class
+libaegis/url.h	interface of the url class
 libaegis/user.cc	functions to manage information about users
 libaegis/user.h	interface definition for aegis/user.c
 libaegis/ustate.def	user state file contents definition
@@ -2522,6 +2672,7 @@ script/ae_diff2htm.in	insulate against diff2html present or absence
 script/aebuffy.in	aebuffy.in
 script/aecomp.in	tcl-tk change set comparison program contributed by Scott Finneran.
 script/aeedit.in	PlasticFS front-end script for emacs contributed by Scott Finneran.
+script/aeget.instal.in	script to install aeget in web server's cgi-bin directory
 script/aegis.cgi.i.in	script to install aegis.cgi in web server's cgi-bin directory
 script/aegis.cgi.in	aegis.cgi.in
 script/aegis.synpic	synpic program to generate aegis icon
@@ -2673,6 +2824,7 @@ test/01/t0138a.sh	Test patch -send functionality
 test/01/t0139a.sh	Test patch -send functionality
 test/01/t0140a.sh	Test the test exemption (aecpu) functionality
 test/01/t0141a.sh	Test aenf functionality
+test/01/t0142a.sh	Test the review policy functionality
 test/01/t0143a.sh	Test aedist functionality
 test/01/t0144a.sh	Test the email address  functionality
 test/01/t0145a.sh	Test the -Descend_Project_Tree option
@@ -2728,6 +2880,8 @@ test/01/t0197a.sh	Test the aemeasure functionality
 test/01/t0198a.sh	Test the dev dir style functionality
 test/01/t0199a.sh	Test the protect dev dir functionality
 test/02/t0200a.sh	Test the aedist functionality
+test/02/t0201a.sh	Test the symlink farm against derived symlinks (maintain)
+test/02/t0202a.sh	Test the ${change attribute} functionality
 test/02/t0203a-walt.sh	Test the aedist (aemv) functionality
 test/02/t0204a-walt.sh	Test the aedist (aemv) functionality
 test/02/t0205a-walt.sh	Test the basename substituition
@@ -2737,6 +2891,9 @@ test/02/t0210a-walt.sh	Test aed functionality
 test/02/t0211a-walt.sh	Test the aed functionality
 test/02/t0213a-walt.sh	Test the symlink farm against derived symlinks (maintain)
 test/02/t0214a-walt.sh	Test the symlink farm against derived symlinks (unmantain)
+test/02/t0217a-walt.sh	Test the aedist -replay functionality
+test/02/t0220a-walt.sh	Test the integration dir style functionality
+test/02/t0221a-walt.sh	Test the change_pconf_get functionality
 test/activity.awk	Renumber activity lines in tests
 test/activity.sh	shell script to manipulate activitys
 test_base64/main.cc	functions to manipulate mains

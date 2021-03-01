@@ -24,7 +24,7 @@
 #include <sub.h>
 #include <sub/librar_direc.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 //
@@ -50,17 +50,16 @@
 wstring_ty *
 sub_library_directory(sub_context_ty *scp, wstring_list_ty *arg)
 {
-	wstring_ty	*result;
-
-	trace(("sub_library_directory()\n{\n"));
-	if (arg->nitems != 1)
-	{
-		sub_context_error_set(scp, i18n("requires zero arguments"));
-		result = 0;
-	}
-	else
-		result = wstr_from_c(configured_libdir());
-	trace(("return %8.8lX;\n", (long)result));
+    trace(("sub_library_directory()\n{\n"));
+    if (arg->size() != 1)
+    {
+	sub_context_error_set(scp, i18n("requires zero arguments"));
+	trace(("return NULL\n"));
 	trace(("}\n"));
-	return result;
+	return 0;
+    }
+    wstring_ty *result = wstr_from_c(configured_libdir());
+    trace(("return %8.8lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }

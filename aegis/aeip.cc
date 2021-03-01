@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2004 Peter Miller;
+//	Copyright (C) 1991-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 #include <ac/unistd.h>
 
@@ -315,7 +315,6 @@ commit_unlink_symlinks(string_ty *path)
 	    commit_unlink_errok(s);
 	str_free(s);
     }
-    string_list_destructor(&wl);
     trace(("}\n"));
 #endif
 }
@@ -326,20 +325,16 @@ integrate_pass_main(void)
 {
     time_t	    mtime;
     time_t	    youngest;
-    string_ty	    *hp;
     string_ty	    *id;
     string_ty	    *cwd;
     cstate_ty	    *cstate_data;
     string_ty	    *old_baseline;
     string_ty	    *new_baseline;
     string_ty	    *dev_dir;
-    string_ty	    *int_name;
-    string_ty	    *rev_name;
     string_ty	    *dev_name;
     cstate_history_ty *history_data;
     size_t	    j;
     size_t	    k;
-    int		    ncmds;
     string_ty	    *project_name;
     project_ty	    *pp;
     long	    change_number;
@@ -354,7 +349,6 @@ integrate_pass_main(void)
     cstate_ty	    *p_cstate_data;
     time_map_list_ty tml;
     time_t	    time_final;
-    string_list_ty  trashed;
     pconf_ty        *pconf_data;
 
     trace(("integrate_pass_main()\n{\n"));
@@ -1313,9 +1307,7 @@ integrate_pass_main(void)
     // Unlock each file.
     //
     log_open(change_logfile_get(cp), pup, log_style);
-    ncmds = 0;
-    hp = project_history_path_get(pp);
-    string_list_constructor(&trashed);
+    string_list_ty trashed;
     change_run_history_transaction_begin_command(cp);
     quit_action_history_transaction_abort aborter(cp);
     quit_register(aborter);
@@ -1493,7 +1485,7 @@ integrate_pass_main(void)
 		assert(p_src_data->file_fp->oldest>=0);
 		if (!change_fingerprint_same(p_src_data->file_fp, absfn, 1))
 		{
-		    string_list_append(&trashed, c_src_data->file_name);
+		    trashed.push_back(c_src_data->file_name);
 		}
 		assert(p_src_data->file_fp->youngest>0);
 		assert(p_src_data->file_fp->oldest>0);
@@ -1598,7 +1590,7 @@ integrate_pass_main(void)
 	    {
 		if (!change_fingerprint_same(p_src_data->file_fp, absfn, 1))
 		{
-		    string_list_append(&trashed, c_src_data->file_name);
+		    trashed.push_back(c_src_data->file_name);
 		}
 		assert(p_src_data->file_fp->youngest>0);
 		assert(p_src_data->file_fp->oldest>0);
@@ -1762,7 +1754,6 @@ integrate_pass_main(void)
     // the project config file.
     //
     change_history_trashed_fingerprints(cp, &trashed);
-    string_list_destructor(&trashed);
 
     //
     // Advance the change to the 'completed' state.
@@ -1777,8 +1768,6 @@ integrate_pass_main(void)
     new_baseline = str_copy(change_integration_directory_get(cp, 1));
     id = str_copy(id);
     change_integration_directory_clear(cp);
-    int_name = change_integrator_name(cp);
-    rev_name = change_reviewer_name(cp);
     dev_name = change_developer_name(cp);
 
     //

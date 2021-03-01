@@ -23,6 +23,7 @@
 #include <change/cstate/improve.h>
 #include <error.h> // for assert
 #include <trace.h>
+#include <uuidentifier.h>
 
 
 void
@@ -74,6 +75,31 @@ change_cstate_improve(cstate_ty *d)
 	    d->branch->reuse_change_numbers = true;
 	    d->branch->mask |= cstate_branch_reuse_change_numbers_mask;
 	}
+    }
+    switch (d->state)
+    {
+    case cstate_state_awaiting_development:
+    case cstate_state_being_developed:
+    case cstate_state_awaiting_review:
+    case cstate_state_being_reviewed:
+    case cstate_state_awaiting_integration:
+	break;
+
+    case cstate_state_being_integrated:
+    case cstate_state_completed:
+	if (!d->delta_uuid)
+	{
+	    //
+            // This is for backwards compatibility.  If anything causes
+            // the change set to be written out, this will stick.  On
+            // the other hand, if the change set isn't written back, the
+            // change will have a different delta_uuid every time.  In
+            // some cases users may notice this randomness, but they
+            // probably will not.
+	    //
+	    d->delta_uuid = universal_unique_identifier();
+	}
+	break;
     }
     trace(("}\n"));
 }

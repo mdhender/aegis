@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 
 #include <ac/errno.h>
 #include <ac/stddef.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <change/file.h>
@@ -183,7 +183,7 @@ readdir_stack(string_ty *path, string_list_ty *result)
     string_ty	    *s;
     string_ty	    *dir;
 
-    string_list_constructor(result);
+    result->clear();
     for (j = 0;; ++j)
     {
 	dir = stack_nth(j);
@@ -219,106 +219,106 @@ print_mode_column(struct stat *st)
     // First the type indicator
     //
     if (S_ISDIR(st->st_mode))
-	output_fputc(mode_col, 'd');
+	mode_col->fputc('d');
     else if (S_ISCHR(st->st_mode))
-	output_fputc(mode_col, 'c');
+	mode_col->fputc('c');
     else if (S_ISBLK(st->st_mode))
-	output_fputc(mode_col, 'b');
+	mode_col->fputc('b');
 #ifdef S_ISFIFO
     else if (S_ISFIFO(st->st_mode))
-	output_fputc(mode_col, 'p');
+	mode_col->fputc('p');
 #endif
 #ifdef S_ISLNK
     else if (S_ISLNK(st->st_mode))
-	output_fputc(mode_col, 'l');
+	mode_col->fputc('l');
 #endif
 #ifdef S_ISSOCK
     else if (S_ISSOCK(st->st_mode))
-	output_fputc(mode_col, 's');
+	mode_col->fputc('s');
 #endif
     else
-	output_fputc(mode_col, '-');
+	mode_col->fputc('-');
 
     //
     // Now the user bits
     //
     if (st->st_mode & S_IRUSR)
-	output_fputc(mode_col, 'r');
+	mode_col->fputc('r');
     else
-	output_fputc(mode_col, '-');
+	mode_col->fputc('-');
     if (st->st_mode & S_IWUSR)
-	output_fputc(mode_col, 'w');
+	mode_col->fputc('w');
     else
-	output_fputc(mode_col, '-');
+	mode_col->fputc('-');
     if (st->st_mode & S_IXUSR)
     {
 	if (st->st_mode & S_ISUID)
-	    output_fputc(mode_col, 's');
+	    mode_col->fputc('s');
 	else
-	    output_fputc(mode_col, 'x');
+	    mode_col->fputc('x');
     }
     else
     {
 	if (st->st_mode & S_ISUID)
-	    output_fputc(mode_col, 'S');
+	    mode_col->fputc('S');
 	else
-	    output_fputc(mode_col, '-');
+	    mode_col->fputc('-');
     }
 
     //
     // Now the group bits
     //
     if (st->st_mode & S_IRGRP)
-	output_fputc(mode_col, 'r');
+	mode_col->fputc('r');
     else
-	output_fputc(mode_col, '-');
+	mode_col->fputc('-');
     if (st->st_mode & S_IWGRP)
-	output_fputc(mode_col, 'w');
+	mode_col->fputc('w');
     else
-	output_fputc(mode_col, '-');
+	mode_col->fputc('-');
     if (st->st_mode & S_IXGRP)
     {
 	if (st->st_mode & S_ISGID)
-	    output_fputc(mode_col, 's');
+	    mode_col->fputc('s');
 	else
-	    output_fputc(mode_col, 'x');
+	    mode_col->fputc('x');
     }
     else
     {
 	if (st->st_mode & S_ISGID)
-	    output_fputc(mode_col, 'S');
+	    mode_col->fputc('S');
 	else
-	    output_fputc(mode_col, '-');
+	    mode_col->fputc('-');
     }
 
     //
     // Now the other bits
     //
     if (st->st_mode & S_IROTH)
-	output_fputc(mode_col, 'r');
+	mode_col->fputc('r');
     else
-	output_fputc(mode_col, '-');
+	mode_col->fputc('-');
     if (st->st_mode & S_IWOTH)
-	output_fputc(mode_col, 'w');
+	mode_col->fputc('w');
     else
-	output_fputc(mode_col, '-');
+	mode_col->fputc('-');
     if (st->st_mode & S_IXOTH)
     {
 #ifdef S_ISVTX
 	if (st->st_mode & S_ISVTX)
-	    output_fputc(mode_col, 't');
+	    mode_col->fputc('t');
 	else
 #endif
-	    output_fputc(mode_col, 'x');
+	    mode_col->fputc('x');
     }
     else
     {
 #ifdef S_ISVTX
 	if (st->st_mode & S_ISVTX)
-	    output_fputc(mode_col, 'T');
+	    mode_col->fputc('T');
 	else
 #endif
-	    output_fputc(mode_col, '-');
+	    mode_col->fputc('-');
     }
 }
 
@@ -353,7 +353,9 @@ list_file(string_ty *long_name, string_ty *short_name, struct stat *st,
 	{
 	case file_action_remove:
 	    if (show_removed_files <= 0)
+	    {
 		return;
+	    }
 	    break;
 
 	case file_action_create:
@@ -368,7 +370,9 @@ list_file(string_ty *long_name, string_ty *short_name, struct stat *st,
 	    if (c_src->deleted_by)
 	    {
 		if (show_removed_files <= 0)
+		{
 		    return;
+		}
 	    }
 	    break;
 	}
@@ -382,7 +386,9 @@ list_file(string_ty *long_name, string_ty *short_name, struct stat *st,
 	{
 	case file_action_remove:
 	    if (show_removed_files <= 0)
+	    {
 		return;
+	    }
 	    break;
 
 	case file_action_create:
@@ -397,7 +403,9 @@ list_file(string_ty *long_name, string_ty *short_name, struct stat *st,
 	    if (p_src->deleted_by)
 	    {
 		if (show_removed_files <= 0)
+		{
 		    return;
+		}
 	    }
 	    break;
 	}
@@ -449,20 +457,16 @@ list_file(string_ty *long_name, string_ty *short_name, struct stat *st,
 
     if (attr_col)
     {
-	fstate_src_ty   *src;
-
 	if (c_src)
-	    output_fputc(attr_col, 'C');
+	    attr_col->fputc('C');
 	else if (p_src)
-	    output_fputc(attr_col, 'P');
+	    attr_col->fputc('P');
 	else
-	    output_fputc(attr_col, '-');
+	    attr_col->fputc('-');
 
 	if (c_src)
 	{
-	    char            action_indicator;
-
-	    action_indicator = '?';
+	    char action_indicator = '?';
 	    switch (c_src->action)
 	    {
 	    case file_action_create:
@@ -485,17 +489,17 @@ list_file(string_ty *long_name, string_ty *short_name, struct stat *st,
 		action_indicator = 't';
 		break;
 	    }
-	    output_fputc(attr_col, action_indicator);
+	    attr_col->fputc(action_indicator);
 	}
 	else
-	    output_fputc(attr_col, '-');
+	{
+	    attr_col->fputc('-');
+	}
 
-	src = c_src ? c_src : p_src;
+	fstate_src_ty *src = c_src ? c_src : p_src;
 	if (src)
 	{
-	    char            usage_indicator;
-
-	    usage_indicator = '?';
+	    char usage_indicator = '?';
 	    switch (src->usage)
 	    {
 	    case file_usage_source:
@@ -522,10 +526,12 @@ list_file(string_ty *long_name, string_ty *short_name, struct stat *st,
 		usage_indicator = 'T';
 		break;
 	    }
-	    output_fputc(attr_col, usage_indicator);
+	    attr_col->fputc(usage_indicator);
 	}
 	else
-	    output_fputc(attr_col, '-');
+	{
+	    attr_col->fputc('-');
+	}
     }
     if (user_col)
     {
@@ -533,9 +539,9 @@ list_file(string_ty *long_name, string_ty *short_name, struct stat *st,
 
 	pw = getpwuid_cached(st->st_uid);
 	if (pw)
-	    output_fputs(user_col, pw->pw_name);
+	    user_col->fputs(pw->pw_name);
 	else
-	    output_fprintf(user_col, "%d", (int)st->st_uid);
+	    user_col->fprintf("%d", (int)st->st_uid);
     }
     if (group_col)
     {
@@ -543,13 +549,13 @@ list_file(string_ty *long_name, string_ty *short_name, struct stat *st,
 
 	gr = getgrgid_cached(st->st_uid);
 	if (gr)
-	    output_fputs(group_col, gr->gr_name);
+	    group_col->fputs(gr->gr_name);
 	else
-	    output_fprintf(group_col, "%d", (int)st->st_gid);
+	    group_col->fprintf("%d", (int)st->st_gid);
     }
     if (size_col)
     {
-	output_fprintf(size_col, "%8ld", (long)st->st_size);
+	size_col->fprintf("%8ld", (long)st->st_size);
     }
     if (when_col)
     {
@@ -559,19 +565,19 @@ list_file(string_ty *long_name, string_ty *short_name, struct stat *st,
 	    strftime(buffer, sizeof(buffer), "%b %d  %Y", the_time);
 	else
 	    strftime(buffer, sizeof(buffer), "%b %d %H:%M", the_time);
-	output_fputs(when_col, buffer);
+	when_col->fputs(buffer);
     }
 
     //
     // output the name
     //
-    output_put_str(name_col, short_name);
+    name_col->fputs(short_name);
     if (link)
     {
 	if (long_flag)
 	{
-	    output_fputs(name_col, " -> ");
-	    output_put_str(name_col, link);
+	    name_col->fputs(" -> ");
+	    name_col->fputs(link);
 	}
 	str_free(link);
     }
@@ -596,13 +602,12 @@ list_dir(string_ty *dirname)
 {
     string_list_ty  wl;
     size_t	    j;
-    string_list_ty  more_dirs;
 
     os_become_orig();
     readdir_stack(dirname, &wl);
     os_become_undo();
-    string_list_sort(&wl);
-    string_list_constructor(&more_dirs);
+    wl.sort();
+    string_list_ty more_dirs;
     for (j = 0; j < wl.nstrings; ++j)
     {
 	string_ty	*s;
@@ -616,14 +621,12 @@ list_dir(string_ty *dirname)
 	resolved_path = stat_stack(s, &st);
 	os_become_undo();
 	if (recursive_flag && (st.st_mode & S_IFMT) == S_IFDIR)
-	    string_list_append(&more_dirs, s);
+	    more_dirs.push_back(s);
 	list_file(s, wl.string[j], &st, resolved_path);
 	str_free(resolved_path);
 	str_free(s);
     }
-    string_list_destructor(&wl);
-    string_list_prepend_list(&dirs, &more_dirs);
-    string_list_destructor(&more_dirs);
+    dirs.push_front(more_dirs);
 }
 
 
@@ -726,7 +729,7 @@ list(string_list_ty *paths, project_ty *a_pp, change_ty *a_cp)
 	resolved_path = stat_stack(path, &st);
 	os_become_undo();
 	if ((st.st_mode & S_IFMT) == S_IFDIR)
-	    string_list_append(&dirs, path);
+	    dirs.push_back(path);
 	else
 	{
 	    need_eject = 1;
@@ -742,7 +745,7 @@ list(string_list_ty *paths, project_ty *a_pp, change_ty *a_cp)
 	if (need_eject)
 	    col_eject(col_ptr);
 	path = str_copy(dirs.string[0]);
-	string_list_remove(&dirs, path);
+	dirs.remove(path);
 	col_title(col_ptr, "Annotated Directory Listing", path->str_text);
 	list_dir(path);
 	need_eject = 1;

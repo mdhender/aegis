@@ -27,7 +27,7 @@
 #include <symtab.h>
 #include <trace.h>
 #include <wstr.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 typedef string_ty *(*func_ptr)(project_ty *);
 struct table_ty
@@ -136,11 +136,11 @@ sub_project(sub_context_ty *scp, wstring_list_ty *arg)
 	sub_context_error_set(scp, i18n("not valid in current context"));
 	result = 0;
     }
-    else if (arg->nitems == 1)
+    else if (arg->size() == 1)
 	result = str_to_wstr(project_name_get(pp));
-    else if (arg->nitems == 2)
+    else if (arg->size() == 2)
     {
-	s = wstr_to_str(arg->item[1]);
+	s = wstr_to_str(arg->get(1));
 	func = find_func(s);
 	str_free(s);
 	if (!func)

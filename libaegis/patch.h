@@ -23,32 +23,72 @@
 #ifndef LIBAEGIS_PATCH_H
 #define LIBAEGIS_PATCH_H
 
+#pragma interface "patch_ty"
+
 #include <common.h>
 #include <patch/hunk_list.h>
 #include <str_list.h>
 
-struct patch_ty
+/**
+  * The patch_ty class is used to represent a diff between one file
+  * version and the next.  This is only for the one file.
+  */
+class patch_ty
 {
+public:
+    /**
+      * The destructor.
+      */
+    ~patch_ty();
+
+    /**
+      * The default constructor.
+      */
+    patch_ty();
+
+    /**
+      * The append method is used to add another hunk to the end of the
+      * patch for this file.
+      */
+    void append(patch_hunk_ty *php);
+
+// private:
     string_list_ty  name;
     file_action_ty  action;
     file_usage_ty   usage;
     patch_hunk_list_ty actions;
-};
 
-struct patch_list_ty
-{
-    string_ty       *project_name;
-    long            change_number;
-    string_ty       *brief_description;
-    string_ty       *description;
+private:
+    /**
+      * The copy constructor.  Do not use.
+      */
+    patch_ty(const patch_ty &);
 
-    size_t          length;
-    size_t          maximum;
-    patch_ty        **item;
+    /**
+      * The assignment.  Do not use.
+      */
+    patch_ty &operator=(const patch_ty &);
 };
 
 struct input_ty; // forward
-patch_list_ty *patch_read(struct input_ty *, int);
 int patch_apply(patch_ty *, string_ty *, string_ty *);
+
+inline patch_ty *
+patch_new(void)
+{
+    return new patch_ty();
+}
+
+inline void
+patch_delete(patch_ty *pp)
+{
+    delete pp;
+}
+
+inline void
+patch_append(patch_ty *pp, patch_hunk_ty *php)
+{
+    pp->append(php);
+}
 
 #endif // LIBAEGIS_PATCH_H

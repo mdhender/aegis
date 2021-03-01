@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -58,19 +58,17 @@ patch_apply(patch_ty *pp, string_ty *ifn, string_ty *ofn)
 	    pllp = &php->after;
 	    for (m = 0; m < pllp->length; ++m)
 	    {
-		output_put_str(ofp, pllp->item[m].value);
-		output_fputc(ofp, '\n');
+		ofp->fputs(pllp->item[m].value);
+		ofp->fputc('\n');
 	    }
 	}
     }
     else
     {
-	string_list_ty  buffer;
-
 	//
 	// Read  the file into an array.
 	//
-	string_list_constructor(&buffer);
+	string_list_ty buffer;
 	ifp = input_file_text_open(ifn);
 	for (;;)
 	{
@@ -79,7 +77,7 @@ patch_apply(patch_ty *pp, string_ty *ifn, string_ty *ofn)
 	    s = input_one_line(ifp);
 	    if (!s)
 		break;
-	    string_list_append(&buffer, s);
+	    buffer.push_back(s);
 	}
 	input_delete(ifp);
 	ifp = 0;
@@ -182,8 +180,8 @@ patch_apply(patch_ty *pp, string_ty *ifn, string_ty *ofn)
 		curline <= (int)buffer.nstrings
 	    )
 	    {
-		output_put_str(ofp, buffer.string[curline - 1]);
-		output_fputc(ofp, '\n');
+		ofp->fputs(buffer.string[curline - 1]);
+		ofp->fputc('\n');
 		++curline;
 	    }
 	    curline += php->before.length;
@@ -194,8 +192,8 @@ patch_apply(patch_ty *pp, string_ty *ifn, string_ty *ofn)
 	    //
 	    for (k = 0; k < php->after.length; ++k)
 	    {
-		output_put_str(ofp, php->after.item[k].value);
-		output_fputc(ofp, '\n');
+		ofp->fputs(php->after.item[k].value);
+		ofp->fputc('\n');
 	    }
 	}
 
@@ -204,12 +202,12 @@ patch_apply(patch_ty *pp, string_ty *ifn, string_ty *ofn)
 	//
 	while (curline <= (int)buffer.nstrings)
 	{
-	    output_put_str(ofp, buffer.string[curline - 1]);
-	    output_fputc(ofp, '\n');
+	    ofp->fputs(buffer.string[curline - 1]);
+	    ofp->fputc('\n');
 	    ++curline;
 	}
     }
-    output_delete(ofp);
+    delete ofp;
     trace(("return %d\n", ok));
     trace(("}\n"));
     return ok;

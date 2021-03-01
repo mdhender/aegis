@@ -36,6 +36,16 @@ change_file_find_uuid(change_ty *cp, string_ty *uuid, view_path_ty view_path)
 	if (!src)
 	    return 0;
 	if (src->uuid && str_equal(uuid, src->uuid))
-	    return src;
+	{
+            //
+            // When a file is renamed, it appears in the change's file
+            // list twice: once for the remove and again for the create.
+            // Both entires have the same UUID.  Most of the time the
+            // user is expecting the create side (with the new name) not
+            // the remove side.
+	    //
+	    if (src->action != file_action_remove || !src->move)
+		return src;
+	}
     }
 }

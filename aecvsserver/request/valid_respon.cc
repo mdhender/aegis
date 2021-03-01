@@ -100,7 +100,7 @@ run(server_ty *sp, string_ty *arg)
     string_list_ty  wl;
     size_t          j;
 
-    str2wl(&wl, arg, 0, 0);
+    wl.split(arg);
     for (j = 0; j < wl.nstrings; ++j)
     {
 	int             code;
@@ -109,9 +109,8 @@ run(server_ty *sp, string_ty *arg)
 	name = wl.string[j]->str_text;
 	code = find_response_code(name);
 	if (code >= 0)
-	    sp->np->response_valid[code] = 1;
+	    sp->np->set_response_valid(code);
     }
-    string_list_destructor(&wl);
 }
 
 

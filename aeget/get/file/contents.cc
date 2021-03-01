@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -22,9 +22,10 @@
 
 #include <ac/stdio.h>
 #include <ac/string.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
+#include <attribute.h>
 #include <change.h>
 #include <change/branch.h>
 #include <change/file.h>
@@ -49,20 +50,32 @@ no_such_file(string_ty *filename)
 
 
 static void
-emit_path(string_ty *filename, string_ty *from)
+emit_path(fstate_src_ty *src, string_ty *from)
 {
-    string_ty       *to;
-
     //
     // Print the output header.
     //
     // We use the "from" name (even though it could be an uninformative
-    // name in /tmp) so that the file can be opened and stanned.
+    // name in /tmp) so that the file can be opened and scanned.
     //
     // No need for a Content-Length header, because fork_and_watch will
     // add it automagically.
     //
-    http_content_type_header(from);
+    attributes_ty *ap = 0;
+    if (src)
+	ap = attributes_list_find(src->attribute, "Content-Type");
+    if (ap)
+	printf("Content-Type: %s\n", ap->value->str_text);
+    else
+	http_content_type_header(from);
+    printf("\n");
+
+    //
+    // It is very important to flush the standard output at this point,
+    // because copy_whole_file is going to write on file descriptor
+    // zero, completely bypassing the stdio buffering.
+    //
+    fflush(stdout);
 
     //
     // Now copy the file contents to stdout.
@@ -70,35 +83,9 @@ emit_path(string_ty *filename, string_ty *from)
     // FIXME: what about modifiers for line numbering, syntax
     // highlighting, etc?
     //
-    to = str_from_c("");
+    string_ty *to = str_from_c("");
     os_become_orig();
     copy_whole_file(from, to, 0);
-    os_become_undo();
-    str_free(to);
-}
-
-
-static void
-emit_file(string_ty *filename, struct stat *st)
-{
-    string_ty       *to;
-
-    //
-    // Print the output header.
-    //
-    if (st)
-	printf("Content-Length: %ld\n", (long)st->st_size);
-    http_content_type_header(filename);
-
-    //
-    // Now copy the file contents to stdout.
-    //
-    // FIXME: what about modifiers for line numbering, syntax
-    // highlighting, etc?
-    //
-    to = str_from_c("");
-    os_become_orig();
-    copy_whole_file(filename, to, 0);
     os_become_undo();
     str_free(to);
 }
@@ -121,19 +108,10 @@ hunt(string_list_ty *gizzards, const char *name)
 
 
 static string_ty *
-cat4(const char *s1, string_ty *s2, string_ty *s3, string_ty *s4)
+path_cat_3(string_ty *s2, string_ty *s3, string_ty *s4)
 {
-    string_ty       *temp1;
-    string_ty       *temp2;
-    string_ty       *temp3;
-    string_ty       *result;
-
-    temp1 = str_from_c(s1);
-    temp2 = os_path_cat(temp1, s2);
-    temp3 = os_path_cat(temp2, s3);
-    result = os_path_cat(temp3, s4);
-    str_free(temp1);
-    str_free(temp2);
+    string_ty *temp3 = os_path_cat(s2, s3);
+    string_ty *result = os_path_cat(temp3, s4);
     str_free(temp3);
     return result;
 }
@@ -221,7 +199,7 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
     os_become_orig();
     dir_stack_readdir(search_path, filename, &gizzards);
     os_become_undo();
-    string_list_sort(&gizzards);
+    gizzards.sort();
 
     //
     // Look for an index file.
@@ -252,14 +230,7 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 	{
 	    if (cp->bogus)
 	    {
-		idx =
-		    cat4
-		    (
-			http_script_name(),
-			project_name_get(cp->pp),
-			filename,
-			idx
-		    );
+		idx = path_cat_3(project_name_get(cp->pp), filename, idx);
 	    }
 	    else
 	    {
@@ -272,15 +243,13 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 			project_name_get(cp->pp)->str_text,
 			magic_zero_decode(cp->number)
 		    );
-		idx = cat4(http_script_name(), s, filename, idx);
+		idx = path_cat_3(s, filename, idx);
 		str_free(s);
 	    }
-	    printf("Location: ");
+	    printf("Location: %s/", http_script_name());
 	    html_escape_string(idx);
 	    str_free(idx);
 	    printf("\n\n");
-
-	    string_list_destructor(&gizzards);
 	    return;
 	}
     }
@@ -295,7 +264,7 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
     (
 	modbuf,
 	sizeof(modbuf),
-	"file@contents@%s@%s@%s",
+	"file+contents+%s+%s+%s",
 	(long_flag ? "long" : "nolong"),
 	(links_flag ? "links" : "nolinks"),
 	(derived_flag ? "derived" : "noderived")
@@ -323,10 +292,28 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
        	if (!cp->bogus)
 	    printf(",\nChange %ld", magic_zero_decode(cp->number));
     }
-    printf(",<br>\nDirectory \"");
-    // FIXME: link each part, too.
-    html_encode_string(filename);
-    printf("\"\n</h1>\n");
+    printf(",<br>\nDirectory &ldquo;");
+    string_list_ty dirs;
+    dirs.split(filename, "/");
+    size_t dirs_max = dirs.size();
+    while (dirs_max > 0 && dirs[dirs_max - 1]->str_length == 0)
+	--dirs_max;
+    for (size_t dn = 0; dn + 1 < dirs_max; ++dn)
+    {
+	string_ty *s = dirs[dn];
+	if (s->str_length)
+	{
+	    string_ty *s2 = dirs.unsplit(0, dn, "/");
+	    emit_file_href(cp, s2, 0);
+	    str_free(s2);
+	    html_encode_string(s);
+	    printf("</a\n>");
+	}
+	printf("/");
+    }
+    if (dirs_max)
+	html_encode_string(dirs[dirs_max - 1]);
+    printf("&rdquo;</h1>\n");
 
     printf("<table>\n");
     printf("<tr class=\"even-group\">");
@@ -365,20 +352,29 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 	is_a_change_file = 0;
 	is_a_project_file = 0;
 	is_a_directory = 0;
+	bool is_a_file = false;
 	s = os_path_cat(filename, gizzards.string[j]);
-	if (!cp->bogus && change_file_find(cp, s, view_path_first))
+	fstate_src_ty *src = 0;
+	if (!cp->bogus && 0 != (src = change_file_find(cp, s, view_path_first)))
 	{
 	    is_a_change_file = 1;
+	    is_a_file = true;
 	}
-	else if (project_file_find(cp->pp, s, view_path_simple))
+	else if (0 != (src = project_file_find(cp->pp, s, view_path_simple)))
 	{
 	    is_a_project_file = 1;
+	    is_a_file = true;
 	}
 	else if ((st.st_mode & S_IFMT) == S_IFDIR)
 	{
 	    is_a_directory = 1;
 	}
+	else if ((st.st_mode & S_IFMT) == S_IFREG)
+	{
+	    is_a_file = true;
+	}
 	str_free(s);
+	bool has_been_removed = (src && src->action == file_action_remove);
 
 	//
 	// We may have been asked to omit non-source files.
@@ -387,11 +383,17 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 	(
 	    !derived_flag
 	&&
-	    !is_a_change_file
-	&&
-	    !is_a_project_file
-	&&
-	    !is_a_directory
+	    (
+		(
+		    !is_a_change_file
+		&&
+		    !is_a_project_file
+		&&
+		    !is_a_directory
+		)
+	    ||
+		has_been_removed
+	    )
 	)
 	    continue;
 
@@ -405,59 +407,68 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 
 	if (long_flag)
 	{
-	    printf("<td valign=top><tt>");
-	    html_encode_charstar(mode_string(st.st_mode));
-	    printf("</tt></td>\n");
-
 	    printf("<td valign=top>");
-	    struct tm *the_time = localtime(&st.st_mtime);
-	    char buffer[100];
-	    strftime(buffer, sizeof(buffer), "%b %e", the_time);
-	    html_encode_charstar(buffer);
-	    printf("</td><td valign=top>");
-	    if (st.st_mtime < time_split)
-		strftime(buffer, sizeof(buffer), "%Y", the_time);
+	    if (!has_been_removed)
+	    {
+		printf("<tt>");
+		html_encode_charstar(mode_string(st.st_mode));
+		printf("</tt>");
+		printf("</td>\n<td valign=top>");
+		struct tm *the_time = localtime(&st.st_mtime);
+		char buffer[100];
+		strftime(buffer, sizeof(buffer), "%b %e", the_time);
+		html_encode_charstar(buffer);
+		printf("</td>\n<td valign=top>");
+		if (st.st_mtime < time_split)
+		    strftime(buffer, sizeof(buffer), "%Y", the_time);
+		else
+		    strftime(buffer, sizeof(buffer), "%H:%M", the_time);
+		html_encode_charstar(buffer);
+		printf("</td>\n<td valign=\"top\" align=\"right\">");
+		printf("%ld", (long)st.st_size);
+	    }
 	    else
-		strftime(buffer, sizeof(buffer), "%H:%M", the_time);
-	    html_encode_charstar(buffer);
-	    printf("</td>\n");
-
-	    printf("<td valign=\"top\" align=\"right\">");
-	    printf("%ld", (long)st.st_size);
+	    {
+		printf("</td>\n<td></td>\n<td></td>\n<td>");
+	    }
 	    printf("</td>\n");
 	}
 
-	printf("<td valign=\"top\">\n<a href=\"");
-	if (cp->bogus)
+	printf("<td valign=\"top\">\n");
+	if (is_a_directory || is_a_file)
 	{
-	    ref =
-		cat4
-		(
-		    http_script_name(),
-		    project_name_get(cp->pp),
-		    filename,
-		    gizzards.string[j]
-		);
+	    printf("<a href=\"%s/", http_script_name());
+	    if (cp->bogus)
+	    {
+		ref =
+		    path_cat_3
+		    (
+			project_name_get(cp->pp),
+			filename,
+			gizzards.string[j]
+		    );
+	    }
+	    else
+	    {
+		s =
+		    str_format
+		    (
+			"%s.C%ld",
+			project_name_get(cp->pp)->str_text,
+			magic_zero_decode(cp->number)
+		    );
+		ref = path_cat_3(s, filename, gizzards.string[j]);
+		str_free(s);
+	    }
+	    html_escape_string(ref);
+	    str_free(ref);
+	    if (is_a_directory)
+		printf("/?%s", modbuf);
+	    printf("\">\n");
 	}
-	else
-	{
-	    s =
-		str_format
-		(
-		    "%s.C%ld",
-		    project_name_get(cp->pp)->str_text,
-		    magic_zero_decode(cp->number)
-		);
-	    ref = cat4(http_script_name(), s, filename, gizzards.string[j]);
-	    str_free(s);
-	}
-	html_escape_string(ref);
-	str_free(ref);
-	if (is_a_directory)
-	    printf("/@@%s", modbuf);
-	printf("\">\n");
 	html_encode_string(gizzards.string[j]);
-	printf("</a>");
+	if (is_a_directory || is_a_file)
+	    printf("</a>");
 	if (is_a_directory)
 	    printf("/");
 	printf("</td>\n");
@@ -468,7 +479,7 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 	    {
 		s = os_path_cat(filename, gizzards.string[j]);
 		printf("<td valign=\"top\">(");
-		emit_file_href(cp, s, "file@menu");
+		emit_file_href(cp, s, "file+menu");
 		printf("Menu</a>)</td>\n");
 		str_free(s);
 	    }
@@ -480,13 +491,13 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 		hold_bogus = cp->bogus;
 		cp->bogus = 1;
 		printf("<td valign=\"top\">(");
-		emit_file_href(cp, s, "file@menu");
+		emit_file_href(cp, s, "file+menu");
 		printf("Menu</a>)</td>\n");
 		cp->bogus = hold_bogus;
 		str_free(s);
 	    }
 	    else
-		printf("<td>&nbsp</td>");
+		printf("<td>&nbsp;</td>");
 	}
 	printf("</tr>\n");
     }
@@ -498,7 +509,6 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
     printf("Listed %lu files.</td></tr>\n", nfiles);
 
     printf("</table>\n");
-    string_list_destructor(&gizzards);
 
     if (links_flag)
     {
@@ -532,7 +542,7 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 	(
 	    modbuf,
 	    sizeof(modbuf),
-	    "file@contents@%s@%s@%s",
+	    "file+contents+%s+%s+%s",
 	    (long_flag ? "nolong" : "long"),
 	    (links_flag ? "links" : "nolinks"),
 	    (derived_flag ? "derived" : "noderived")
@@ -543,7 +553,7 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 	(
 	    modbuf,
 	    sizeof(modbuf),
-	    "file@contents@%s@%s@%s",
+	    "file+contents+%s+%s+%s",
 	    (long_flag ? "long" : "nolong"),
 	    (links_flag ? "nolinks" : "links"),
 	    (derived_flag ? "derived" : "noderived")
@@ -554,7 +564,7 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 	(
 	    modbuf,
 	    sizeof(modbuf),
-	    "file@contents@%s@%s@%s",
+	    "file+contents+%s+%s+%s",
 	    (long_flag ? "long" : "nolong"),
 	    (links_flag ? "links" : "nolinks"),
 	    (derived_flag ? "noderived" : "derived")
@@ -571,10 +581,9 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 void
 get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 {
-    string_list_ty  search_path;
     string_ty       *absolute_path;
     struct stat     st;
-    fstate_src_ty   *src;
+    fstate_src_ty   *src = 0;
 
     //
     // Make sure if the file actually exists in the given change
@@ -616,7 +625,7 @@ get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 			no_such_file(filename);
 			return;
 		    }
-		    emit_path(filename, s);
+		    emit_path(src, s);
 		    if (delete_me)
 		    {
 			os_become_orig();
@@ -633,7 +642,7 @@ get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 		    // We can use the version in the development directory.
 		    //
 		    s = change_file_path(cp, filename);
-		    emit_path(filename, s);
+		    emit_path(src, s);
 		    str_free(s);
 		}
 		break;
@@ -669,17 +678,16 @@ get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 		no_such_file(filename);
 		return;
 	    }
-	    src = change_file_find(fep->cp, filename, view_path_first);
-	    assert(src);
+	    assert(fep->src);
 
-	    s = project_file_version_path(cp->pp, src, &delete_me);
+	    s = project_file_version_path(cp->pp, fep->src, &delete_me);
 	    assert(s);
 	    if (!s)
 	    {
 		no_such_file(filename);
 		return;
 	    }
-	    emit_path(filename, s);
+	    emit_path(fep->src, s);
 	    if (delete_me)
 	    {
 		os_become_orig();
@@ -712,7 +720,7 @@ get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 
 		s = project_file_version_path(cp->pp, src, &delete_me);
 		assert(s);
-		emit_path(filename, s);
+		emit_path(src, s);
 		if (delete_me)
 		{
 		    os_become_orig();
@@ -729,9 +737,9 @@ get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     //
     // Build the search path.
     //
+    string_list_ty search_path;
     if (cp->bogus)
     {
-	string_list_constructor(&search_path);
 	project_search_path_get(cp->pp, &search_path, 0);
     }
     else
@@ -751,12 +759,11 @@ get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	break;
 
     case S_IFREG:
-	emit_file(absolute_path, &st);
+	emit_path(0, absolute_path);
 	break;
 
     default:
 	http_fatal("Not an appropriate file.");
     }
     str_free(absolute_path);
-    string_list_destructor(&search_path);
 }

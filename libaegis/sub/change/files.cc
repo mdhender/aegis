@@ -30,7 +30,7 @@
 #include <sub/change/files.h>
 #include <trace.h>
 #include <wstr.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 //
@@ -62,10 +62,8 @@ sub_change_files(sub_context_ty *scp, wstring_list_ty *arg)
     unsigned        usage_mask = 0;
     bool            not_var = false;
     bool            quote = false;
-    string_list_ty  sl;
     string_ty       *s;
     wstring_ty	    *result;
-    size_t          n;
 
     trace(("sub_change_files()\n{\n"));
     cp = sub_context_change_get(scp);
@@ -79,10 +77,10 @@ sub_change_files(sub_context_ty *scp, wstring_list_ty *arg)
     //
     // See if we recognize any of these words.
     //
-    for (n = 1; n < arg->nitems; ++n)
+    for (size_t n = 1; n < arg->size(); ++n)
     {
 	bool ok = false;
-	s = wstr_to_str(arg->item[n]);
+	s = wstr_to_str(arg->get(n));
 	for (unsigned k = 0; k < file_action_max; ++k)
 	{
 	    if (0 == strcmp(s->str_text, file_action_ename((file_action_ty)k)))
@@ -91,11 +89,11 @@ sub_change_files(sub_context_ty *scp, wstring_list_ty *arg)
 		ok = true;
 	    }
 	}
-	for (unsigned k = 0; k < file_usage_max; ++k)
+	for (size_t j = 0; j < file_usage_max; ++j)
 	{
-	    if (0 == strcmp(s->str_text, file_usage_ename((file_usage_ty)k)))
+	    if (0 == strcmp(s->str_text, file_usage_ename((file_usage_ty)j)))
 	    {
-		usage_mask |= 1 << k;
+		usage_mask |= 1 << j;
 		ok = true;
 	    }
 	}
@@ -134,12 +132,10 @@ sub_change_files(sub_context_ty *scp, wstring_list_ty *arg)
     //
     // Look for files matching what they asked for.
     //
-    string_list_constructor(&sl);
-    for (n = 0; ; ++n)
+    string_list_ty sl;
+    for (size_t m = 0; ; ++m)
     {
-	fstate_src_ty   *src;
-
-	src = change_file_nth(cp, n, view_path_first);
+	fstate_src_ty *src = change_file_nth(cp, m, view_path_first);
 	if (!src)
 	    break;
 	if
@@ -152,19 +148,18 @@ sub_change_files(sub_context_ty *scp, wstring_list_ty *arg)
 	    if (quote)
 	    {
 		s = str_quote_shell(src->file_name);
-		string_list_append(&sl, s);
+		sl.push_back(s);
 		str_free(s);
 	    }
 	    else
-		string_list_append(&sl, src->file_name);
+		sl.push_back(src->file_name);
 	}
     }
 
     //
     // Turn it into a space-separated string.
     //
-    s = wl2str(&sl, 0, sl.nstrings, 0);
-    string_list_destructor(&sl);
+    s = sl.unsplit();
     result = str_to_wstr(s);
     str_free(s);
     trace(("return %8.8lX;\n", (long)result));

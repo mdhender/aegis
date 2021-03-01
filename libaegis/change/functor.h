@@ -27,8 +27,6 @@
 
 #include <change.h>
 
-struct change_ty; // forward
-
 /**
   * The change_functor class is used to represent an abstract bas class
   * used to present object which <i>look like</i> callable functions

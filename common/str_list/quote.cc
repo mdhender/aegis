@@ -23,17 +23,16 @@
 #include <str_list.h>
 
 
-void
-string_list_quote_shell(string_list_ty *to, const string_list_ty *from)
+string_list_ty
+string_list_ty::quote_shell()
+    const
 {
-    size_t		j;
-    string_ty	*s;
-
-    string_list_constructor(to);
-    for (j = 0; j < from->nstrings; ++j)
+    string_list_ty result;
+    for (size_t j = 0; j < nstrings; ++j)
     {
-	s = str_quote_shell(from->string[j]);
-	string_list_append(to, s);
+	string_ty *s = str_quote_shell(string[j]);
+	result.push_back(s);
 	str_free(s);
     }
+    return result;
 }

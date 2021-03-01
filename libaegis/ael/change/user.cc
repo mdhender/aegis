@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -160,20 +160,14 @@ list_user_changes(struct string_ty *project_name, long change_number,
 	    //
 	    // emit the info
 	    //
-	    output_fputs(project_col, project_name_get(pp)->str_text);
-	    output_fprintf
-	    (
-		change_col,
-		"%4ld",
-		magic_zero_decode(change_number)
-	    );
+	    project_col->fputs(project_name_get(pp)->str_text);
+	    change_col->fprintf("%4ld", magic_zero_decode(change_number));
 	    cstate_data = change_cstate_get(cp);
-	    output_fputs(state_col, cstate_state_ename(cstate_data->state));
+	    state_col->fputs(cstate_state_ename(cstate_data->state));
 	    if (cstate_data->brief_description)
 	    {
-		output_fputs
+		description_col->fputs
 		(
-		    description_col,
 		    cstate_data->brief_description->str_text
 		);
 	    }

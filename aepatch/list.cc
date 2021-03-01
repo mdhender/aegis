@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -120,8 +120,8 @@ list(void)
 	assert(plp->item[j]);
 	assert(plp->item[j]->name.nstrings);
 	assert(plp->item[j]->name.string[0]);
-	output_put_str(ofp, plp->item[j]->name.string[0]);
-	output_fputc(ofp, '\n');
+	ofp->fputs(plp->item[j]->name.string[0]);
+	ofp->fputc('\n');
     }
-    output_delete(ofp);
+    delete ofp;
 }

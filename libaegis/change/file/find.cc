@@ -23,20 +23,22 @@
 #include <change/branch.h>
 #include <change/file.h>
 #include <error.h> // for assert
+#include <nstring.h>
 #include <project.h>
 #include <symtab.h>
 #include <trace.h>
 
 
 fstate_src_ty *
-change_file_find(change_ty *cp, string_ty *file_name, view_path_ty as_view_path)
+change_file_find(change_ty *cp, const nstring &file_name,
+    view_path_ty as_view_path)
 {
     fstate_src_ty   *result;
     int             xpar;
     int             top_level;
 
     trace(("change_file_find(cp = %8.8lX, file_name = \"%s\", "
-	"as_view_path = %s)\n{\n", (long)cp, file_name->str_text,
+	"as_view_path = %s)\n{\n", (long)cp, file_name.c_str(),
 	view_path_ename(as_view_path)));
     result = 0;
     xpar = 0;
@@ -51,7 +53,8 @@ change_file_find(change_ty *cp, string_ty *file_name, view_path_ty as_view_path)
 	    goto next;
 	change_fstate_get(cp);
 	assert(cp->fstate_stp);
-       	fsp = (fstate_src_ty *)symtab_query(cp->fstate_stp, file_name);
+       	fsp =
+	    (fstate_src_ty *)symtab_query(cp->fstate_stp, file_name.get_ref());
 	if (fsp)
 	{
 	    trace(("%s \"%s\" %s\n", file_action_ename(fsp->action),
@@ -160,4 +163,11 @@ change_file_find(change_ty *cp, string_ty *file_name, view_path_ty as_view_path)
     trace(("return %8.8lX;\n", (long)result));
     trace(("}\n"));
     return result;
+}
+
+
+fstate_src_ty *
+change_file_find(change_ty *cp, string_ty *file_name, view_path_ty as_view_path)
+{
+    return change_file_find(cp, nstring(str_copy(file_name)), as_view_path);
 }

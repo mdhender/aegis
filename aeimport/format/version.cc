@@ -26,94 +26,85 @@
 #include <mem.h>
 
 
-format_version_ty *
-format_version_new(void)
+format_version_ty::format_version_ty() :
+    filename_physical(0),
+    filename_logical(0),
+    edit(0),
+    when(0),
+    who(0),
+    description(0),
+    before(0),
+    after(0),
+    after_branch(0),
+    dead(0)
 {
-    format_version_ty *fvp;
-
-    fvp = (format_version_ty *)mem_alloc(sizeof(format_version_ty));
-    fvp->filename_physical = 0;
-    fvp->filename_logical = 0;
-    fvp->edit = 0;
-    fvp->when = 0;
-    fvp->who = 0;
-    fvp->description = 0;
-    fvp->before = 0;
-    string_list_constructor(&fvp->tag);
-    fvp->after = 0;
-    fvp->after_branch = 0;
-    fvp->dead = 0;
-    return fvp;
 }
 
 
-void
-format_version_delete(format_version_ty *fvp)
+format_version_ty::~format_version_ty()
 {
-    if (fvp->filename_physical)
+    if (filename_physical)
     {
-        str_free(fvp->filename_physical);
-        fvp->filename_physical = 0;
+        str_free(filename_physical);
+        filename_physical = 0;
     }
-    if (fvp->filename_logical)
+    if (filename_logical)
     {
-        str_free(fvp->filename_logical);
-        fvp->filename_logical = 0;
+        str_free(filename_logical);
+        filename_logical = 0;
     }
-    if (fvp->edit)
+    if (edit)
     {
-        str_free(fvp->edit);
-        fvp->edit = 0;
+        str_free(edit);
+        edit = 0;
     }
-    fvp->when = 0;
-    if (fvp->who)
+    when = 0;
+    if (who)
     {
-        str_free(fvp->who);
-        fvp->who = 0;
+        str_free(who);
+        who = 0;
     }
-    if (fvp->description)
+    if (description)
     {
-        str_free(fvp->description);
-        fvp->description = 0;
+        str_free(description);
+        description = 0;
     }
-    string_list_destructor(&fvp->tag);
-    fvp->before = 0;
-    if (fvp->after)
+    before = 0;
+    if (after)
     {
-        format_version_delete(fvp->after);
-        fvp->after = 0;
+        format_version_delete(after);
+        after = 0;
     }
-    if (fvp->after_branch)
+    if (after_branch)
     {
-        format_version_list_delete(fvp->after_branch, 1);
-        fvp->after_branch = 0;
+        format_version_list_delete(after_branch, 1);
+        after_branch = 0;
     }
-    fvp->dead = 0;
-    mem_free(fvp);
+    dead = 0;
 }
 
 
 #ifdef DEBUG
 
 void
-format_version_validate(format_version_ty *fvp)
+format_version_ty::validate()
+    const
 {
-    assert(fvp);
-    if (fvp->filename_physical)
-        assert(str_validate(fvp->filename_physical));
-    if (fvp->filename_logical)
-        assert(str_validate(fvp->filename_logical));
-    if (fvp->edit)
-        assert(str_validate(fvp->edit));
-    if (fvp->who)
-        assert(str_validate(fvp->who));
-    if (fvp->description)
-        assert(str_validate(fvp->description));
-    assert(string_list_validate(&fvp->tag));
-    if (fvp->after)
-        format_version_validate(fvp->after);
-    if (fvp->after_branch)
-        format_version_list_validate(fvp->after_branch);
+    if (filename_physical)
+        assert(str_validate(filename_physical));
+    if (filename_logical)
+        assert(str_validate(filename_logical));
+    if (edit)
+        assert(str_validate(edit));
+    if (who)
+        assert(str_validate(who));
+    if (description)
+        assert(str_validate(description));
+    assert(tag.validate());
+    if (after)
+        format_version_validate(after);
+    if (after_branch)
+        format_version_list_validate(after_branch);
 }
 
 #endif

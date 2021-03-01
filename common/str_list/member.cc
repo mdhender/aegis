@@ -23,29 +23,12 @@
 #include <str_list.h>
 
 
-//
-// NAME
-//	string_list_member - word list membership
-//
-// SYNOPSIS
-//	int string_list_member(string_list_ty *wlp, string_ty *wp);
-//
-// DESCRIPTION
-//	Wl_member is used to determine if the given word is
-//	contained in the given word list.
-//
-// RETURNS
-//	A zero if the word is not in the list,
-//	and a non-zero if it is.
-//
-
-int
-string_list_member(const string_list_ty *wlp, string_ty *w)
+bool
+string_list_ty::member(string_ty *w)
+    const
 {
-    size_t          j;
-
-    for (j = 0; j < wlp->nstrings; j++)
-	if (str_equal(wlp->string[j], w))
-	    return 1;
-    return 0;
+    for (size_t j = 0; j < nstrings; j++)
+	if (str_equal(string[j], w))
+	    return true;
+    return false;
 }

@@ -38,9 +38,9 @@ change_file_directory_query(change_ty *cp, string_ty *file_name,
     trace(("change_file_dir(cp = %08lX, file_name = \"%s\")\n{\n",
 	(long)cp, file_name->str_text));
     assert(result_in);
-    string_list_constructor(result_in);
+    result_in->clear();
     if (result_out)
-	string_list_constructor(result_out);
+	result_out->clear();
     fstate_data = change_fstate_get(cp);
     assert(fstate_data->src);
     for (j = 0; j < fstate_data->src->length; ++j)
@@ -62,9 +62,9 @@ change_file_directory_query(change_ty *cp, string_ty *file_name,
 	if (os_isa_path_prefix(file_name, src_data->file_name))
 	{
 	    if (!src_data->deleted_by)
-		string_list_append(result_in, src_data->file_name);
+		result_in->push_back(src_data->file_name);
 	    else if (result_out)
-		string_list_append(result_out, src_data->file_name);
+		result_out->push_back(src_data->file_name);
 	}
     }
     trace(("}\n"));

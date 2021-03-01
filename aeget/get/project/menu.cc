@@ -82,24 +82,24 @@ get_project_menu(project_ty *pp, string_ty *filename, string_list_ty *modifier)
 	cstate_data->branch->sub_branch->length
     )
     {
-	size_t          j;
-
 	printf("<dt>Branches<dd>");
-	for (j = 0; j < cstate_data->branch->sub_branch->length; ++j)
+	cstate_branch_sub_branch_list_ty *bp = cstate_data->branch->sub_branch;
+	for (size_t j = 0; j < bp->length; ++j)
 	{
 	    if (j)
 		printf(",\n");
 	    printf("<a href=\"%s/", http_script_name());
 	    html_escape_string(project_name_get(pp));
-	    printf(".%ld/@@menu\">", cstate_data->branch->sub_branch->list[j]);
+	    long n = magic_zero_decode(bp->list[j]);
+	    printf(".%ld/?menu\">", n);
 	    html_encode_string(project_name_get(pp));
-	    printf(".%ld</a>", cstate_data->branch->sub_branch->list[j]);
+	    printf(".%ld</a>", n);
 	}
 	printf("\n<p>\n");
     }
 
     printf("<dt>");
-    emit_project_href(pp, 0);
+    emit_project_href(pp);
     printf("Baseline</a><dd>\n");
     printf("This item will provide you with access to the files in\n");
     printf("the project baseline.\n");
@@ -111,7 +111,7 @@ get_project_menu(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     printf("<p>\n");
     printf("If you wish to download the sources using\n");
     printf("&ldquo;wget -r&rdquo; or similar, use the\n<i>");
-    emit_project_href(pp, "file@contents@noindex@nolinks@noderived");
+    emit_project_href(pp, "file+contents+noindex+nolinks+noderived");
     printf("no navigation links</a></i> variant.\n");
     printf("<p>\n");
 
@@ -143,28 +143,28 @@ get_project_menu(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     printf("Change lists are also available broken down by change state:\n");
     printf("<ul>\n");
     printf("<li>");
-    emit_project_href(pp, "changes@awaiting_development");
+    emit_project_href(pp, "changes+awaiting_development");
     printf("awaiting development</a>\n");
     printf("<li>");
-    emit_project_href(pp, "changes@being_developed");
+    emit_project_href(pp, "changes+being_developed");
     printf("being developed</a>\n");
     printf("<li>");
-    emit_project_href(pp, "changes@awaiting_review");
+    emit_project_href(pp, "changes+awaiting_review");
     printf("awaiting review</a>\n");
     printf("<li>");
-    emit_project_href(pp, "changes@being_reviewed");
+    emit_project_href(pp, "changes+being_reviewed");
     printf("being reviewed</a>\n");
     printf("<li>");
-    emit_project_href(pp, "changes@awaiting_integration");
+    emit_project_href(pp, "changes+awaiting_integration");
     printf("awaiting integration</a>\n");
     printf("<li>");
-    emit_project_href(pp, "changes@being_integrated");
+    emit_project_href(pp, "changes+being_integrated");
     printf("being integrated</a>\n");
     printf("<li>");
-    emit_project_href(pp, "changes@completed");
+    emit_project_href(pp, "changes+completed");
     printf("completed</a>\n");
     printf("<li>");
-    emit_project_href(pp, "changes@not@completed");
+    emit_project_href(pp, "changes+not+completed");
     printf("not completed</a>\n");
     printf("</ul>\n");
     printf("<p>\n");
@@ -176,17 +176,6 @@ get_project_menu(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     printf("change sets and their corresponding UUIDs.  This may be\n");
     printf("used to automate downloading of change sets not yet in\n");
     printf("your repository.<p>\n");
-
-#if 0
-    href = http_script_name() ## "?file@proj_staff+project@" ## quote_url(pn);
-    printf("<dt><a href=\"" ## href ## "\">");
-    printf("Staff");
-    printf("</a><dd>");
-    printf("This item will provide you with a list of staff involved in");
-    printf("the project, both past and present.  The list includes some");
-    printf("statistics about the activities performed by the staff.");
-    printf("<p>\n");
-#endif
 
     printf("<dt>");
     emit_project_href(pp, "staff");
@@ -222,86 +211,77 @@ get_project_menu(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     printf("<p>\n");
 
     printf("<dt>\n");
-    emit_project_href(pp, "file@metrics");
-    printf("File Metrics</a><dd>");
+    emit_project_href(pp, "file+metrics");
+    printf("File Metrics</a><dd>\n");
     printf("This item will provide you with a listing of the files\n");
     printf("with file metrics.  There are no default metrics; each\n");
     printf("project defines its own metrics.  Links are provided\n");
     printf("to individual file information.<p>\n");
 
     printf("<dt>\n");
-    emit_project_href(pp, "file@activity");
-    printf("File Activity</a><dd>");
-    printf("This item will provide you with a listing of files which are");
-    printf("actively being modified.  The list includes who is working on");
-    printf("the changes, and a brief description of each change.  Where a");
-    printf("file is common to more than one change, all changes are listed");
-    printf("against the file.");
+    emit_project_href(pp, "file+activity");
+    printf("File Activity</a><dd>\n");
+    printf("This item will provide you with a listing of files\n");
+    printf("which are actively being modified.  The list includes\n");
+    printf("who is working on the changes, and a brief description\n");
+    printf("of each change.  Where a file is common to more than\n");
+    printf("one change, all changes are listed against the file.\n");
     printf("<p>\n");
 
     printf("<dt>");
-    emit_project_href(pp, "file@conflict");
-    printf("File Conflict</a><dd>");
+    emit_project_href(pp, "file+conflict");
+    printf("File Conflict</a><dd>\n");
     printf("This item will provide you with a listing of changes which\n");
     printf("are actively modifying files <strong>if</strong> more than\n");
-    printf("<em>one</em> change is modifying the file at the same time.");
+    printf("<em>one</em> change is modifying the file at the same time.\n");
     printf("<p>\n");
 
     printf("<dt>");
-    emit_project_href(pp, "file@history");
-    printf("File History</a><dd>");
-    printf("This item will provide you with a listing of files and the order");
-    printf("in which all completed changes affected them.  The\n");
-    emit_project_href(pp, "history@detailed");
-    printf("detailed version</a> can take a long time to generate.");
-    printf("<p>\n");
-
-#if 0
-    printf("<dt>");
-    href = http_script_name() ## "?file@proj_hstry+project@" ## quote_url(pn);
-    printf("<dt><a href=\"" ## href ## "\">");
-    printf("History");
-    printf("</a><dd>");
-    printf("This item will provide you with a listing of completed changes");
-    printf("in the order in which they were completed.");
+    emit_project_href(pp, "file+history");
+    printf("File History</a><dd>\n");
+    printf("This item will provide you with a listing of files and\n");
+    printf("the order in which all completed changes affected them.\n");
+    printf("The ");
+    emit_project_href(pp, "history+detailed");
+    printf("detailed version</a> can take a long time to generate.\n");
     printf("<p>\n");
 
     printf("<dt>");
-    href = http_script_name() ## "?file@proj_hstgm+project@" ## quote_url(pn);
-    printf("<dt><a href=\"" ## href ## "\">");
-    printf("Integration Histogram");
-    printf("</a><dd>");
-    printf("This item will provide you with a histogram of changes completed");
-    printf("over time.");
+    emit_project_href(pp, "project+history");
+    printf("History</a><dd>\n");
+    printf("This item will provide you with a listing of completed\n");
+    printf("changes in the order in which they were completed.\n");
     printf("<p>\n");
 
     printf("<dt>");
-    href = http_script_name() ## "?file@proj_prgr1+project@" ## quote_url(pn);
-    printf("<dt><a href=\"" ## href ## "\">");
-    printf("Progress Histogram");
-    printf("</a><dd>");
-    printf("This item will provide you with a histogram of change state");
-    printf("transitions over time.  This shows you work progressing through");
-    printf("the process and contributing towards project progress.");
+    emit_project_href(pp, "project+integration-histogram");
+    printf("Integration Histogram</a><dd>\n");
+    printf("This item will provide you with a histogram of changes\n");
+    printf("completed over time.\n");
     printf("<p>\n");
 
     printf("<dt>");
-    href = http_script_name() ## "?file@proj_cch1+project@" ## quote_url(pn);
-    printf("<dt><a href=\"" ## href ## "\">");
-    printf("Change Cause Histogram");
-    printf("</a><dd>");
-    printf("This item will provide you with a histogram of change causes");
-    printf("over time.  Only completed changes are shown.");
+    emit_project_href(pp, "project+progress");
+    printf("Progress Histogram</a><dd>\n");
+    printf("This item will provide you with a histogram of change\n");
+    printf("state transitions over time.  This shows you work\n");
+    printf("progressing through the process and contributing\n");
+    printf("towards project progress.\n");
     printf("<p>\n");
 
     printf("<dt>");
-    href = http_script_name() ## "?file@file_densi+project@" ## quote_url(pn);
-    printf("<dt><a href=\"" ## href ## "\">");
-    printf("Change Cause by File");
-    printf("</a><dd>");
-    printf("This item will provide you with a histogram of change causes");
-    printf("against the files changed.  Only completed changes are shown.");
-#endif
+    emit_project_href(pp, "project+change-cause");
+    printf("Change Cause Histogram</a><dd>\n");
+    printf("This item will provide you with a histogram of change\n");
+    printf("causes over time.  Only completed changes are shown.\n");
+    printf("<p>\n");
+
+    printf("<dt>");
+    emit_project_href(pp, "file+cause-density");
+    printf("Change Cause by File</a><dd>\n");
+    printf("This item will provide you with a histogram of change\n");
+    printf("causes against the files changed.  Only completed\n");
+    printf("changes are shown.\n");
     printf("</dl>\n");
     printf("</div>\n");
 

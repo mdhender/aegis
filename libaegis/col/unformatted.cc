@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -77,7 +77,10 @@ destructor(col_ty *fp)
 	// The delcb() will do all the work.
 	cp = &this_thing->column[j];
 	if (cp->content_filter)
-	    output_delete(cp->content_filter);
+	{
+	    delete cp->content_filter;
+	    cp->content_filter = 0;
+	}
     }
     if (this_thing->column)
 	mem_free(this_thing->column);
@@ -154,7 +157,7 @@ delcb(output_ty *fp, void *arg)
 //
 // RETURNS
 //	output_ty *; a pointer to an output stream.
-//	Use output_delete when you are done with it.
+//	Use the delete operator when you are done with it.
 //
 
 static output_ty *
@@ -213,8 +216,8 @@ create(col_ty *fp, int left, int right, const char *title)
     //
     trace(("mark\n"));
     fp4 = wide_output_expand_open(cp->content, 1);
-    cp->content_filter = output_to_wide_open(fp4, 1);
-    output_delete_callback(cp->content_filter, delcb, this_thing);
+    cp->content_filter = new output_to_wide_ty(fp4, true);
+    cp->content_filter->delete_callback(delcb, this_thing);
     trace(("return %08lX;\n", (long)cp->content_filter));
     trace(("}\n"));
     return cp->content_filter;
@@ -273,8 +276,8 @@ eoln(col_ty *fp)
 	trace(("cp = %08lX;\n", (long)cp));
 	if (!cp->content_filter)
 	    continue;
-	output_end_of_line(cp->content_filter);
-	output_flush(cp->content_filter);
+	cp->content_filter->end_of_line();
+	cp->content_filter->flush();
 
 	//
 	// Find the text for this column.

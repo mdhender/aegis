@@ -55,7 +55,6 @@ project_file_list_get(project_ty *pp, view_path_ty as_view_path)
 	long		j;
 	fstate_src_ty   *fsp;
 	string_list_ty	*wlp;
-	symtab_ty	*tmp;
 	symtab_iterator	*tmpi;
 	string_ty	*key;
 	void		*data;
@@ -69,13 +68,17 @@ project_file_list_get(project_ty *pp, view_path_ty as_view_path)
 	// It is essential that this function does exactly what the
 	// project_file_find function does.
 	//
-	tmp = symtab_alloc(100);
+	symtab_ty *tmp = new symtab_ty(100);
+	trace(("tmp = %08lX\n", (long)tmp));
+	assert(tmp->valid());
 	for (ppp = pp; ppp; ppp = ppp->parent)
 	{
 	    trace(("project \"%s\"\n", project_name_get(ppp)->str_text));
 	    cp = project_change_get(ppp);
+	    trace(("mark\n"));
 	    for (j = 0; ; ++j)
 	    {
+		trace(("mark\n"));
 		fsp = change_file_nth(cp, j, view_path_first);
 		if (!fsp)
 	    	    break;
@@ -89,7 +92,8 @@ project_file_list_get(project_ty *pp, view_path_ty as_view_path)
 		//
 		// This has O(1) query times.
 		//
-		if (symtab_query(tmp, fsp->file_name))
+		trace(("tmp = %08lX\n", (long)tmp));
+		if (tmp->query(fsp->file_name))
 		    continue;
 
 		switch (as_view_path)
@@ -148,7 +152,8 @@ project_file_list_get(project_ty *pp, view_path_ty as_view_path)
 		    }
 		    break;
 		}
-		symtab_assign(tmp, fsp->file_name, fsp);
+		trace(("tmp = %08lX\n", (long)tmp));
+		tmp->assign(fsp->file_name, fsp);
 	    }
 	    if (as_view_path == view_path_first)
 	    {
@@ -164,8 +169,10 @@ project_file_list_get(project_ty *pp, view_path_ty as_view_path)
 	// Walk the symbol table to build the file name list.
 	// This has O(1) query times.
 	//
+	trace(("tmp = %08lX\n", (long)tmp));
+	assert(tmp->valid());
 	tmpi = symtab_iterator_new(tmp);
-	wlp = string_list_new();
+	wlp = new string_list_ty();
 	while (symtab_iterator_next(tmpi, &key, &data))
 	{
 	    switch (as_view_path)
@@ -181,7 +188,8 @@ project_file_list_get(project_ty *pp, view_path_ty as_view_path)
 		// underlying file is shown), but removed files are
 		// omitted from the result.
 		//
-		fsp = (fstate_src_ty *)symtab_query(tmp, key);
+		trace(("tmp = %08lX\n", (long)tmp));
+		fsp = (fstate_src_ty *)tmp->query(key);
 		assert(fsp);
 		if (!fsp)
 		    break;
@@ -205,10 +213,12 @@ project_file_list_get(project_ty *pp, view_path_ty as_view_path)
 		}
 		break;
 	    }
-	    string_list_append(wlp, key);
+	    wlp->push_back(key);
 	}
 	symtab_iterator_delete(tmpi);
-	symtab_free(tmp);
+	trace(("tmp = %08lX\n", (long)tmp));
+	assert(tmp->valid());
+	delete tmp;
 
 	//
 	// Ensure that the file name list is in lexicographical
@@ -220,7 +230,7 @@ project_file_list_get(project_ty *pp, view_path_ty as_view_path)
 	// plus O(n log n) for the qsort, where n is the number
 	// of files.
 	//
-	string_list_sort(wlp);
+	wlp->sort();
 	pp->file_list[as_view_path] = wlp;
     }
     trace(("return %8.8lX;\n", (long)pp->file_list[as_view_path]));

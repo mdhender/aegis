@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1993, 1995, 1998, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1991-1993, 1995, 1998, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -21,62 +21,56 @@
 //
 
 #include <output/indent.h>
-#include <output/private.h>
 #include <str.h>
 #include <trace.h>
 
 
-//
-// This defines the width of a tab on output.
-//
-#define INDENT 8
-
-
-struct output_indent_ty
+output_indent_ty::~output_indent_ty()
 {
-    output_ty	    inherited;
-    output_ty	    *deeper;
-    int		    depth;
-    int		    in_col;
-    int		    out_col;
-    int		    continuation_line;
-    long	    pos;
-};
-
-
-static void
-output_indent_destructor(output_ty *fp)
-{
-    output_indent_ty *this_thing;
-
     trace(("output_indent::destructor()\n{\n"));
-    this_thing = (output_indent_ty *)fp;
-    trace_pointer(this_thing->deeper);
-    if (this_thing->out_col)
-	output_fputc(this_thing->deeper, '\n');
-    output_delete(this_thing->deeper);
-    this_thing->deeper = 0;
+
+    //
+    // Make sure all buffered data has been passed to our write_inner
+    // method.
+    //
+    flush();
+
+    trace_pointer(deeper);
+    if (out_col)
+	deeper->fputc('\n');
+    if (close_on_close)
+	delete deeper;
+    deeper = 0;
     trace(("}\n"));
 }
 
 
-static string_ty *
-output_indent_filename(output_ty *fp)
+output_indent_ty::output_indent_ty(output_ty *arg1, bool arg2) :
+    deeper(arg1),
+    close_on_close(arg2),
+    depth(0),
+    in_col(0),
+    out_col(0),
+    continuation_line(0),
+    pos(0)
 {
-    output_indent_ty *this_thing;
-
-    this_thing = (output_indent_ty *)fp;
-    return output_filename(this_thing->deeper);
+    trace(("output_indent_ty(deeper = %08lX)\n", (long)deeper));
 }
 
 
-static long
-output_indent_ftell(output_ty *fp)
+string_ty *
+output_indent_ty::filename()
+    const
 {
-    output_indent_ty *this_thing;
+    return deeper->filename();
+}
 
-    this_thing = (output_indent_ty *)fp;
-    return this_thing->pos;
+
+long
+output_indent_ty::ftell_inner()
+    const
+{
+    return pos;
 }
 
 
@@ -100,63 +94,56 @@ output_indent_ftell(output_ty *fp)
 //	'c' the character to emit.
 //
 
-static void
-output_indent_write(output_ty *fp, const void *p, size_t len)
+void
+output_indent_ty::write_inner(const void *p, size_t len)
 {
-    const unsigned char *data;
-    output_indent_ty *this_thing;
-
-    data = (unsigned char *)p;
-    this_thing = (output_indent_ty *)fp;
+    const unsigned char *data = (unsigned char *)p;
     while (len > 0)
     {
-	int		c;
-
-	c = *data++;
+	unsigned char c = *data++;
 	--len;
-	this_thing->pos++;
+	++pos;
 	switch (c)
 	{
 	case '\n':
-	    output_fputc(this_thing->deeper, '\n');
-	    this_thing->in_col = 0;
-	    this_thing->out_col = 0;
-	    if (this_thing->continuation_line == 1)
-		this_thing->continuation_line = 2;
+	    deeper->fputc('\n');
+	    in_col = 0;
+	    out_col = 0;
+	    if (continuation_line == 1)
+		continuation_line = 2;
 	    else
-		this_thing->continuation_line = 0;
+		continuation_line = 0;
 	    break;
 
 	case ' ':
-	    if (this_thing->out_col)
-		this_thing->in_col++;
+	    if (out_col)
+		++in_col;
 	    break;
 
 	case '\t':
-	    if (this_thing->out_col)
-		this_thing->in_col = (this_thing->in_col / INDENT + 1) * INDENT;
+	    if (out_col)
+		in_col = (in_col / INDENT + 1) * INDENT;
 	    break;
 
 	case '\1':
-	    if (!this_thing->out_col)
+	    if (!out_col)
 		break;
-	    if (this_thing->in_col >= INDENT * (this_thing->depth + 2))
-		this_thing->in_col++;
+	    if (in_col >= INDENT * (depth + 2))
+		in_col++;
 	    else
-		this_thing->in_col = INDENT * (this_thing->depth + 2);
+		in_col = INDENT * (depth + 2);
 	    break;
 
 	case '}':
 	case ')':
 	case ']':
-	    this_thing->depth--;
+	    --depth;
 	    // fall through
 
 	default:
-	    if (!this_thing->out_col && c != '#' &&
-                this_thing->continuation_line != 2)
-		this_thing->in_col += INDENT * this_thing->depth;
-	    if (!this_thing->out_col)
+	    if (!out_col && c != '#' && continuation_line != 2)
+		in_col += INDENT * depth;
+	    if (!out_col)
 	    {
 		//
 		// Only emit tabs into the output if we are at
@@ -164,162 +151,74 @@ output_indent_write(output_ty *fp, const void *p, size_t len)
 		//
 		for (;;)
 		{
-		    int		    x;
-
-		    if (this_thing->out_col + 1 >= this_thing->in_col)
+		    if (out_col + 1 >= in_col)
 			break;
-		    x = ((this_thing->out_col / INDENT) + 1) * INDENT;
-		    if (x > this_thing->in_col)
+		    int x = ((out_col / INDENT) + 1) * INDENT;
+		    if (x > in_col)
 			break;
-		    output_fputc(this_thing->deeper, '\t');
-		    this_thing->out_col = x;
+		    deeper->fputc('\t');
+		    out_col = x;
 		}
 	    }
-	    while (this_thing->out_col < this_thing->in_col)
+	    while (out_col < in_col)
 	    {
-		output_fputc(this_thing->deeper, ' ');
-		this_thing->out_col++;
+		deeper->fputc(' ');
+		++out_col;
 	    }
 	    if (c == '{' || c == '(' || c == '[')
-		this_thing->depth++;
-	    output_fputc(this_thing->deeper, c);
-	    this_thing->in_col++;
-	    this_thing->out_col = this_thing->in_col;
-	    this_thing->continuation_line = (c == '\\');
+		++depth;
+	    deeper->fputc(c);
+	    ++in_col;
+	    out_col = in_col;
+	    continuation_line = (c == '\\');
 	    break;
 	}
     }
 }
 
 
-static int
-output_indent_page_width(output_ty *fp)
+int
+output_indent_ty::page_width()
+    const
 {
-    output_indent_ty *this_thing;
-
-    this_thing = (output_indent_ty *)fp;
-    return output_page_width(this_thing->deeper);
+    return deeper->page_width();
 }
 
 
-static int
-output_indent_page_length(output_ty *fp)
+int
+output_indent_ty::page_length()
+    const
 {
-    output_indent_ty *this_thing;
-
-    this_thing = (output_indent_ty *)fp;
-    return output_page_length(this_thing->deeper);
+    return deeper->page_length();
 }
 
-
-static void
-output_indent_eoln(output_ty *fp)
-{
-    output_indent_ty *this_thing;
-
-    this_thing = (output_indent_ty *)fp;
-    if (this_thing->in_col)
-	output_fputc(fp, '\n');
-}
-
-
-static output_vtbl_ty vtbl =
-{
-    sizeof(output_indent_ty),
-    output_indent_destructor,
-    output_indent_filename,
-    output_indent_ftell,
-    output_indent_write,
-    output_generic_flush,
-    output_indent_page_width,
-    output_indent_page_length,
-    output_indent_eoln,
-    "indent",
-};
-
-
-output_ty *
-output_indent(output_ty	*deeper)
-{
-    output_ty	    *result;
-    output_indent_ty *this_thing;
-
-    trace(("output_indent(deeper = %08lX)\n{\n", (long)deeper));
-    result = output_new(&vtbl);
-    this_thing = (output_indent_ty *)result;
-    this_thing->deeper = deeper;
-    this_thing->depth = 0;
-    this_thing->in_col = 0;
-    this_thing->out_col = 0;
-    this_thing->continuation_line = 0;
-    this_thing->pos = 0;
-    trace(("}\n"));
-    return result;
-}
-
-
-//
-// Function Name:
-//	indent_more
-//
-// Description:
-//	The indent_more function is used to increase the indenting
-//	beyond the automatically calculated indent.
-//
-// Preconditions:
-//	There must be a matching indent_less call.
-//
-// validataion:
-//	none
-//
-// Passed:
-//	nothing
-//
-// Returns:
-//	nothing
-//
 
 void
-output_indent_more(output_ty *fp)
+output_indent_ty::end_of_line_inner()
 {
-    output_indent_ty *this_thing;
-
-    if (fp->vptr != &vtbl)
-	return;
-    this_thing = (output_indent_ty *)fp;
-    this_thing->depth++;
+    if (in_col)
+	fputc('\n');
 }
 
 
-//
-// Function Name:
-//	indent_less
-//
-// Description:
-//	The indent_less function is used to decrease the indenting
-//	to less than the automatically calculated indent.
-//
-// Preconditions:
-//	There must be a matching indent_more call.
-//
-// validataion:
-//	none
-//
-// Passed:
-//	nothing
-//
-// Returns:
-//	nothing
-//
+const char *
+output_indent_ty::type_name()
+    const
+{
+    return "indent";
+}
+
 
 void
-output_indent_less(output_ty *fp)
+output_indent_ty::indent_more()
 {
-    output_indent_ty *this_thing;
+    ++depth;
+}
 
-    if (fp->vptr != &vtbl)
-	return;
-    this_thing = (output_indent_ty *)fp;
-    if (this_thing->depth > 0)
-	this_thing->depth--;
+
+void
+output_indent_ty::indent_less()
+{
+    if (depth > 0)
+	--depth;
 }

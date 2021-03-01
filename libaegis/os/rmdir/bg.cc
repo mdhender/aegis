@@ -29,21 +29,25 @@
 
 
 void
-os_rmdir_bg(string_ty *path)
+os_rmdir_bg(const nstring &path)
 {
-    trace(("os_rmdir_bg(path = \"%s\")\n{\n", path->str_text));
+    trace(("os_rmdir_bg(path = \"%s\")\n{\n", path.c_str()));
     os_become_must_be_active();
-    if (glue_rmdir_bg(path->str_text))
+    if (glue_rmdir_bg(path.c_str()))
     {
-	sub_context_ty  *scp;
-	int             errno_old;
-
-	errno_old = errno;
-	scp = sub_context_new();
+	int errno_old = errno;
+	sub_context_ty *scp = sub_context_new();
 	sub_errno_setx(scp, errno_old);
 	sub_var_set_string(scp, "File_Name", path);
 	error_intl(scp, i18n("warning: rmdir $filename: $errno"));
 	sub_context_delete(scp);
     }
     trace(("}\n"));
+}
+
+
+void
+os_rmdir_bg(string_ty *path)
+{
+    os_rmdir_bg(nstring(str_copy(path)));
 }

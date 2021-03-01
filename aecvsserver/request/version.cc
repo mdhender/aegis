@@ -38,10 +38,10 @@ static void
 run(server_ty *sp, string_ty *arg)
 {
     //
-    // Does this need some kind od prefix?
+    // Does this need some kind of prefix?
     // They usually do.
     //
-    output_fprintf(sp->np->out, "%s\n", version_stamp());
+    sp->np->printf("%s\n", version_stamp());
     server_ok(sp);
 }
 

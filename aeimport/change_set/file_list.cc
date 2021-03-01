@@ -21,78 +21,76 @@
 //
 
 #include <change_set/file_list.h>
-#include <mem.h>
+#include <error.h> // for assert
 
 
-void
-change_set_file_list_constructor(change_set_file_list_ty *csflp)
+change_set_file_list_ty::change_set_file_list_ty() :
+    length(0),
+    maximum(0),
+    item(0)
 {
-    csflp->item = 0;
-    csflp->length = 0;
-    csflp->maximum = 0;
 }
 
 
-void
-change_set_file_list_destructor(change_set_file_list_ty *csflp)
+change_set_file_list_ty::~change_set_file_list_ty()
 {
-    size_t          j;
-
-    for (j = 0; j < csflp->length; ++j)
-        change_set_file_destructor(csflp->item + j);
-    if (csflp->item)
-        mem_free(csflp->item);
-    csflp->item = 0;
-    csflp->length = 0;
-    csflp->maximum = 0;
+    clear();
+    if (item)
+        delete item;
+    item = 0;
+    maximum = 0;
 }
 
 
 #ifdef DEBUG
 
 void
-change_set_file_list_validate(change_set_file_list_ty *csflp)
+change_set_file_list_ty::validate()
+    const
 {
-    size_t          j;
-
-    for (j = 0; j < csflp->length; ++j)
-        change_set_file_validate(csflp->item + j);
+    assert(length <= maximum);
+    assert(!item == !maximum);
+    for (size_t j = 0; j < length; ++j)
+        item[j]->validate();
 }
 
 #endif
 
 
 void
-change_set_file_list_append(change_set_file_list_ty *csflp, string_ty *filename,
-    string_ty *edit, change_set_file_action_ty action, string_list_ty *tag)
+change_set_file_list_ty::push_back(change_set_file_ty *csfp)
 {
-    change_set_file_ty *csfp;
-    size_t          j;
-
     //
     // If we already have the file, just update the edit number.
     //
-    for (j = 0; j < csflp->length; ++j)
+    for (size_t j = 0; j < length; ++j)
     {
-        csfp = csflp->item + j;
-        if (str_equal(filename, csfp->filename))
+        change_set_file_ty *csfp2 = item[j];
+        if (str_equal(csfp->filename, csfp2->filename))
         {
-            str_free(csfp->edit);
-            csfp->edit = str_copy(edit);
-            csfp->action = action;
+	    csfp2->merge(*csfp);
+	    delete csfp;
             return;
         }
     }
 
-    if (csflp->length >= csflp->maximum)
+    if (length >= maximum)
     {
-        size_t          nbytes;
-
-        csflp->maximum = csflp->maximum * 2 + 4;
-        nbytes = csflp->maximum * sizeof(csflp->item[0]);
-        csflp->item =
-            (change_set_file_ty *)mem_change_size(csflp->item, nbytes);
+        size_t new_maximum = maximum * 2 + 4;
+        change_set_file_ty **new_item = new change_set_file_ty * [new_maximum];
+	for (size_t k = 0; k < length; ++k)
+	    new_item[k] = item[k];
+	delete item;
+	maximum = new_maximum;
+	item = new_item;
     }
-    csfp = csflp->item + csflp->length++;
-    change_set_file_constructor(csfp, filename, edit, action, tag);
+    item[length++] = csfp;
+}
+
+
+void
+change_set_file_list_ty::clear()
+{
+    while (length)
+	delete item[--length];
 }

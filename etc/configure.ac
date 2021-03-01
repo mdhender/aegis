@@ -1,6 +1,6 @@
 dnl
 dnl	aegis - a project change supervisor
-dnl	Copyright (C) 1994, 1995, 1997-1999, 2001-2004 Peter Miller;
+dnl	Copyright (C) 1994, 1995, 1997-1999, 2001-2005 Peter Miller;
 dnl	All rights reserved.
 dnl
 dnl	This program is free software; you can redistribute it and/or modify
@@ -63,9 +63,14 @@ dnl Solaris 2.5.1 and below wide-character support
 AC_CHECK_FUNC(wschr, ,
 	unset ac_cv_func_wschr
 	AC_CHECK_LIB(w, wschr))
-AC_CHECK_FUNC(gettext, ,
-	unset ac_cv_func_gettext
-	AC_CHECK_LIB(intl, gettext))
+
+dnl
+dnl Solaris needs to use the GNU Gettext to have any chance of
+dnl having working error message translation.  So we look for -lintl
+dnl unconditionally.
+dnl
+AC_CHECK_LIB(intl, gettext)
+
 AC_CHECK_FUNC(setsockopt, ,
 	unset ac_cv_func_setsockopt
 	AC_CHECK_LIB(socket, setsockopt))
@@ -78,6 +83,11 @@ dnl The -lclu library is for OSF/1 clustering
 AC_CHECK_LIB(clu, main)
 AC_CHECK_LIB(curl, curl_multi_perform)
 
+#
+# Look for static libraries necessary with -lcurl, but we don't need
+# them when we are using shared libraries.
+#
+STATIC_LIBS=
 if test "$ac_cv_lib_curl_curl_multi_perform" = "yes"
 then
     AC_CHECK_PROGS(CURL_CONFIG, curl-config)
@@ -86,9 +96,10 @@ then
     then
 	CFLAGS="$CFLAGS `$CURL_CONFIG --cflags`"
         CXXFLAGS="$CXXFLAGS `$CURL_CONFIG --cflags`"
-	LIBS="$LIBS `$CURL_CONFIG --libs`"
+	STATIC_LIBS="`$CURL_CONFIG --libs`"
     fi
 fi
+AC_SUBST(STATIC_LIBS)
 
 dnl
 dnl Try to detect a library with the UUID functions.
@@ -186,7 +197,6 @@ fi
 AC_PATH_PROG(WISH, wish, /usr/local/bin/wish)
 AC_PATH_PROG(VI_PROG, vi, /bin/vi)
 
-
 AC_PATH_PROG(PERL, perl, /usr/local/bin/perl)
 AC_DEFINE_UNQUOTED(CONF_PERL, ["$PERL"],
 [Set this to be the absolute path of a Perl interpreter.])
@@ -194,9 +204,13 @@ AC_DEFINE_UNQUOTED(CONF_PERL, ["$PERL"],
 dnl
 dnl	See if we are using GNU diff
 dnl
+AC_CHECK_PROGS(DIFFsimple, gdiff diff, diff)
+AC_PATH_PROG(DIFF, $DIFFsimple, /usr/local/bin/$DIFFsimple)
+AC_DEFINE_UNQUOTED(CONF_DIFF, ["$DIFF"],
+[Set this to be the absolute path of the GNU diff command.])
 AC_MSG_CHECKING([for GNU diff])
 HAVE_GNU_DIFF=no
-if diff --version > conftest.out 2>&1
+if $DIFF --version > conftest.out 2>&1
 then
     if grep 'GNU diff' conftest.out > conftest.err 2>&1
     then
@@ -322,14 +336,14 @@ AC_SYS_LONG_FILE_NAMES
 AC_CHECK_FUNCS(clu_info crypt curl_easy_strerror curl_multi_strerror   \
         getpgrp igetspnam initgroups gettext gettimeofday iswctype     \
         magic_file mbrtowc pathconf prctl regcomp rpc_string_free      \
-        seteuid setlocale setresuid setreuid sighold sigprocmask       \
+        seteuid setlocale setresuid setreuid sighold sigrelse sigprocmask \
         snprintf strcasecmp strlcat strlcpy strncasecmp strerror       \
         strftime strsignal strtoul strverscmp symlink tcgetpgrp        \
         uuid_create uuid_export uuid_generate uuid_hash uuid_load      \
         uuid_make uuid_to_string uuid_unparse vsnprintf wcrtomb wcslen \
         wcswidth wcwidth                                               \
 	)
-AC_CHECK_DECL(crypt,,, [
+AC_CHECK_DECLS([crypt],,, [
 #if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -705,7 +719,7 @@ AC_SUBST(PROGRAM_SUFFIX)
 AH_TOP(
 [/*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2004 Peter Miller;
+ *	Copyright (C) 1991-2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify

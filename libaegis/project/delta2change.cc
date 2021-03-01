@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -59,4 +59,5 @@ project_delta_number_to_change_number(project_ty *pp, long delta_number)
     sub_var_set_long(scp, "Name", delta_number);
     project_fatal(pp, scp, i18n("no delta $name"));
     // NOTREACHED
+    return 0;
 }

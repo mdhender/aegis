@@ -23,7 +23,7 @@
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <aeibu.h>
@@ -268,6 +268,11 @@ integrate_begin_undo_main(void)
     change_integration_directory_clear(cp);
     change_build_times_clear(cp);
     cstate_data->delta_number = 0;
+    if (cstate_data->delta_uuid)
+    {
+	str_free(cstate_data->delta_uuid);
+	cstate_data->delta_uuid = 0;
+    }
 
     //
     // Complain if they are in the integration directory,

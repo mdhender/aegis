@@ -22,14 +22,18 @@
 
 #pragma implementation "change_functor_inventory"
 
+#include <ac/ctype.h>
 #include <ac/stdio.h>
 
+#include <attribute.h>
 #include <change.h>
 #include <change/branch.h>
 #include <change/functor/inventory.h>
 #include <emit/project.h>
+#include <error.h> // for assert
 #include <http.h>
 #include <project.h>
+#include <uuidentifier.h>
 
 
 change_functor_inventory::change_functor_inventory(project_ty *arg) :
@@ -49,30 +53,80 @@ change_functor_inventory::change_functor_inventory(project_ty *arg) :
     // list the project's changes
     //
     printf("<div class=\"information\"><table align=\"center\">\n");
-    printf("<tr class=\"even-group\"><th>Change</th><th>UUID</th></tr>\n");
+    printf("<tr class=\"even-group\"><th>Change</th><th>UUID</th>");
+    printf("<th>Description</th></tr>\n");
+}
+
+
+static int
+max_printable(const char *s)
+{
+    int len = 0;
+    for (;;)
+    {
+	unsigned char c = *s++;
+	if (!c || !isprint(c))
+	    break;
+	++len;
+	if (len >= 200)
+	    break;
+    }
+    return len;
 }
 
 
 void
-change_functor_inventory::operator()(change_ty *cp)
+change_functor_inventory::print_one_line(change_ty *cp, string_ty *uuid)
 {
-    cstate_ty *cstate_data = change_cstate_get(cp);
-    if (!cstate_data->uuid)
-	return;
     printf("<tr class=\"%s-group\">", (((num++ / 3) & 1) ? "even" : "odd"));
     printf("<td>");
     emit_change_href(cp, "menu");
     html_encode_string(change_version_get(cp));
     printf("</a></td><td><tt>");
     emit_change_href(cp, "aedist");
-    html_encode_string(cstate_data->uuid);
-    printf("</a></tt></td></tr>\n");
+    html_encode_string(uuid);
+    printf("</a></tt></td><td>");
+
+    //
+    // We are deliberatly not using emit_change_brief_description to
+    // ensure that this row only ever takes one line, and contains no
+    // html anchor.  This makes it simple to parse in aedist --missing
+    //
+    string_ty *s = change_brief_description_get(cp);
+    s = str_n_from_c(s->str_text, max_printable(s->str_text));
+    html_encode_string(s);
+    str_free(s);
+    printf("</td></tr>\n");
+}
+
+void
+change_functor_inventory::operator()(change_ty *cp)
+{
+    cstate_ty *cstate_data = change_cstate_get(cp);
+    if (cstate_data->uuid)
+	print_one_line(cp, cstate_data->uuid);
+    attributes_ty *ap =
+	attributes_list_find(cstate_data->attribute, ORIGINAL_UUID);
+    if (ap)
+    {
+	assert(ap->value);
+	if
+	(
+	    ap->value
+	&&
+	    // users can edit, make sure is OK
+	    universal_unique_identifier_valid(ap->value)
+	)
+	{
+	    print_one_line(cp, ap->value);
+	}
+    }
 }
 
 
 change_functor_inventory::~change_functor_inventory()
 {
-    printf("<tr class=\"even-group\"><td colspan=2>\n");
+    printf("<tr class=\"even-group\"><td colspan=3>\n");
     printf("Listed %lu change sets.</td></tr>\n", (unsigned long)num);
     printf("</table></div>\n");
 

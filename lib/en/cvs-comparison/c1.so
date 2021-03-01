@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001, 2002 Peter Miller;
+.\"	Copyright (C) 1999, 2001, 2002, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -307,7 +307,7 @@ _
 T{
 B. To set up a server for others to access:
 T};T{
-The Aegis CGI interface may be installed using the \fIaegis.cgi.i\fP command.
+The Aegis CGI interface may be installed using the \fIaeget.instal\fP command.
 You need to be running Apache.
 T};T{
 CVSup, \fIetc\fP

@@ -21,86 +21,51 @@
 //
 
 #include <error.h>
-#include <mem.h>
 #include <symtab_iter.h>
 
 
-void
-symtab_iterator_constructor(symtab_iterator *stip, symtab_ty *stp)
+symtab_iterator::symtab_iterator(const symtab_ty *arg) :
+    stp(arg),
+    rp(0),
+    pos(0)
 {
-    assert(stip);
-    stip->stp = stp;
-    stip->pos = 0;
-    stip->rp = 0;
-}
-
-
-symtab_iterator *
-symtab_iterator_new(symtab_ty *stp)
-{
-    symtab_iterator *stip;
-
     assert(stp);
-    stip = (symtab_iterator *)mem_alloc(sizeof(symtab_iterator));
-    symtab_iterator_constructor(stip, stp);
-    return stip;
+}
+
+
+symtab_iterator::~symtab_iterator()
+{
+    stp = 0;
+    pos = 0;
+    rp = 0;
 }
 
 
 void
-symtab_iterator_destructor(symtab_iterator *stip)
+symtab_iterator::reset()
 {
-    assert(stip);
-    assert(stip->stp);
-    stip->stp = 0;
-    stip->pos = 0;
-    stip->rp = 0;
+    rp = 0;
+    pos = 0;
 }
 
 
-void
-symtab_iterator_delete(symtab_iterator *stip)
+bool
+symtab_iterator::next(string_ty **key_p, void **data_p)
 {
-    assert(stip);
-    assert(stip->stp);
-    symtab_iterator_destructor(stip);
-    mem_free(stip);
-}
-
-
-void
-symtab_iterator_reset(symtab_iterator *stip)
-{
-    assert(stip);
-    assert(stip->stp);
-    stip->pos = 0;
-    stip->rp = 0;
-}
-
-
-int
-symtab_iterator_next(symtab_iterator *stip, string_ty **key, void **data)
-{
-    symtab_ty	    *stp;
-    symtab_row_ty   *rp;
-
-    assert(stip);
-    assert(key);
-    assert(data);
-    stp = stip->stp;
+    assert(key_p);
+    assert(data_p);
     assert(stp);
-    while (stip->rp == 0)
+    while (rp == 0)
     {
-	if (stip->pos >= stp->hash_modulus)
-    	    return 0;
-	stip->rp = stp->hash_table[stip->pos];
-	stip->pos++;
+	if (pos >= stp->hash_modulus)
+    	    return false;
+	rp = stp->hash_table[pos];
+	pos++;
     }
-    rp = stip->rp;
-    *key = rp->key;
-    assert(*key);
-    *data = rp->data;
-    assert(*data);
-    stip->rp = rp->overflow;
-    return 1;
+    assert(rp->key);
+    *key_p = rp->key;
+    assert(rp->data);
+    *data_p = rp->data;
+    rp = rp->overflow;
+    return true;
 }

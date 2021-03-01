@@ -30,9 +30,7 @@
   * \ingroup Common
   * @{
   */
-#define error /!/!/
 void error_raw(const char *, ...);
-#define fatal /!/!/
 void fatal_raw(const char *, ...) NORETURN;
 
 void nerror(const char *, ...);

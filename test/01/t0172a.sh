@@ -761,6 +761,7 @@ state = completed;
 given_test_exemption = true;
 given_regression_test_exemption = true;
 delta_number = 2;
+delta_uuid = "UUID";
 minimum_integration = true;
 project_file_command_sync = 88;
 history =
@@ -1094,6 +1095,7 @@ copyright_years =
 ];
 state = completed;
 delta_number = 2;
+delta_uuid = "UUID";
 minimum_integration = true;
 history =
 [

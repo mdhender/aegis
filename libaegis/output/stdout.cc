@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -24,137 +24,110 @@
 #include <ac/stddef.h>
 #include <ac/stdio.h>
 #include <ac/unistd.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <output/private.h>
+#include <nstring.h>
 #include <output/stdout.h>
 #include <page.h>
 #include <sub.h>
 
 
-struct output_stdout_ty
+static nstring
+standard_output_name(void)
 {
-	output_ty	inherited;
-	int		bol;
-};
-
-
-static string_ty *
-standard_output(void)
-{
-	static string_ty *name;
-	sub_context_ty	*scp;
-
-	if (!name)
-	{
-		scp = sub_context_new();
-		name = subst_intl(scp, i18n("standard output"));
-		sub_context_delete(scp);
-	}
-	return name;
+    static nstring name;
+    if (name.empty())
+    {
+	sub_context_ty sc;
+	name = nstring(sc.subst_intl(i18n("standard output")));
+    }
+    return name;
 }
 
 
-static void
-output_stdout_destructor(output_ty *this_thing)
+output_stdout_ty::~output_stdout_ty()
+{
+    //
+    // Make sure all buffered data has been passed to our write_inner
+    // method.
+    //
+    flush();
+}
+
+
+output_stdout_ty::output_stdout_ty() :
+    bol(true)
 {
 }
 
 
-static string_ty *
-output_stdout_filename(output_ty *this_thing)
+string_ty *
+output_stdout_ty::filename()
+    const
 {
-	return standard_output();
+    return standard_output_name().get_ref();
 }
 
 
-static long
-output_stdout_ftell(output_ty *fp)
+long
+output_stdout_ty::ftell_inner()
+    const
 {
-	return lseek(fileno(stdout), 0L, SEEK_CUR);
+    return lseek(fileno(stdout), 0L, SEEK_CUR);
 }
 
 
-static void
-output_stdout_write(output_ty *fp, const void *data, size_t len)
+void
+output_stdout_ty::write_inner(const void *data, size_t len)
 {
-	output_stdout_ty *this_thing;
-
-	this_thing = (output_stdout_ty *)fp;
-	if (write(fileno(stdout), data, len) < 0)
-	{
-		sub_context_ty	*scp;
-		int             errno_old;
-
-		errno_old = errno;
-		scp = sub_context_new();
-		sub_errno_setx(scp, errno_old);
-		sub_var_set_string(scp, "File_Name", standard_output());
-		fatal_intl(scp, i18n("write $filename: $errno"));
-		// NOTREACHED
-	}
-	if (len > 0)
-		this_thing->bol = (((const char *)data)[len - 1] == '\n');
+    if (::write(fileno(stdout), data, len) < 0)
+    {
+	    int errno_old = errno;
+	    sub_context_ty sc;
+	    sc.errno_setx(errno_old);
+	    sc.var_set_string("File_Name", standard_output_name());
+	    sc.fatal_intl(i18n("write $filename: $errno"));
+	    // NOTREACHED
+    }
+    if (len > 0)
+	bol = (((const char *)data)[len - 1] == '\n');
 }
 
 
-static int
-output_stdout_page_width(output_ty *fp)
+int
+output_stdout_ty::page_width()
+    const
 {
-	struct stat	st;
-
-	if (fstat(fileno(stdout), &st) == 0 && S_ISREG(st.st_mode))
-		return page_width_get(DEFAULT_PRINTER_WIDTH);
-	return page_width_get(-1) - 1;
+    struct stat	st;
+    if (fstat(fileno(stdout), &st) == 0 && S_ISREG(st.st_mode))
+	return page_width_get(DEFAULT_PRINTER_WIDTH);
+    return page_width_get(-1) - 1;
 }
 
 
-static int
-output_stdout_page_length(output_ty *fp)
+int
+output_stdout_ty::page_length()
+    const
 {
-	struct stat	st;
-
-	if (fstat(fileno(stdout), &st) == 0 && S_ISREG(st.st_mode))
-		return page_length_get(DEFAULT_PRINTER_LENGTH);
-	return page_length_get(-1);
+    struct stat	st;
+    if (fstat(fileno(stdout), &st) == 0 && S_ISREG(st.st_mode))
+	return page_length_get(DEFAULT_PRINTER_LENGTH);
+    return page_length_get(-1);
 }
 
 
-static void
-output_stdout_eoln(output_ty *fp)
+void
+output_stdout_ty::end_of_line_inner()
 {
-	output_stdout_ty *this_thing;
-
-	this_thing = (output_stdout_ty *)fp;
-	if (!this_thing->bol)
-		output_fputc(fp, '\n');
+    if (!bol)
+	fputc('\n');
 }
 
 
-static output_vtbl_ty vtbl =
+const char *
+output_stdout_ty::type_name()
+    const
 {
-	sizeof(output_stdout_ty),
-	output_stdout_destructor,
-	output_stdout_filename,
-	output_stdout_ftell,
-	output_stdout_write,
-	output_generic_flush,
-	output_stdout_page_width,
-	output_stdout_page_length,
-	output_stdout_eoln,
-	"stdout",
-};
-
-
-output_ty *
-output_stdout(void)
-{
-	output_ty	*result;
-	output_stdout_ty *this_thing;
-
-	result = output_new(&vtbl);
-	this_thing = (output_stdout_ty *)result;
-	this_thing->bol = 1;
-	return result;
+    return standard_output_name().c_str();
 }

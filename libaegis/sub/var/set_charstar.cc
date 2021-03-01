@@ -20,15 +20,12 @@
 // MANIFEST: functions to manipulate set_charstars
 //
 
+#include <nstring.h>
 #include <sub.h>
 
 
 void
-sub_var_set_charstar(sub_context_ty *scp, const char *name, const char *value)
+sub_context_ty::var_set_charstar(const char *name, const char *value)
 {
-    string_ty	    *s;
-
-    s = str_from_c(value);
-    sub_var_set_string(scp, name, s);
-    str_free(s);
+    var_set_string(name, nstring(value));
 }

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -54,6 +54,8 @@ lang_by_name(const char *name)
     }
 
     fatal_raw("language ``%s'' unknown", name);
+    // NOTREACHED
+    return 0;
 }
 
 
@@ -134,7 +136,7 @@ lang_data_print(FILE *fp, lang_data_t *ldp)
 		"{ name = \"halstead_vocabulary\"; value = %ld; },\n",
 		n
 	    );
-	    v = N * log(n) / M_LN2;
+	    v = N * log((double)n) / M_LN2;
 	    fprintf
 	    (
 		fp,

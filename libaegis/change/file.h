@@ -1,24 +1,24 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1991-1997, 1999, 2000, 2002-2004 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for aegis/change_file.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1991-1997, 1999, 2000, 2002-2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for aegis/change_file.c
+//
 
 #ifndef CHANGE_FILE_H
 #define CHANGE_FILE_H
@@ -26,19 +26,65 @@
 #include <change.h>
 #include <view_path.h>
 
-struct string_list_ty; /* existence */
+struct string_list_ty; // forward
+class nstring; // forward
 
-/*
- * This would be static to aegis/change_file.c if only aegis/aer/value/fstate.c
- * did not need it.  No other place should access this directly.
- */
+/**
+  * This would be static to aegis/change_file.c if only aegis/aer/value/fstate.c
+  * did not need it.  No other place should access this directly.
+  */
 fstate_ty *change_fstate_get(change_ty *);
 
-fstate_src_ty *change_file_find(change_ty *, string_ty *, view_path_ty);
+/**
+  * The change_file_find fucntion is used to locate a change file
+  * similar to the one indicated.  If possible it uses the UUID
+  * otherwise (for backwards compatibility) is used the file name.
+  *
+  * \param cp
+  *     The change to work within.
+  * \param src
+  *     The meta-data of the file to be found.
+  * \param vp
+  *     The style of view path to be used.
+  */
+fstate_src_ty *change_file_find(change_ty *cp, fstate_src_ty *src,
+    view_path_ty vp);
+
+/**
+  * The change_file_find fucntion is used to locate a change file
+  * similar to the one indicated.  If possible it uses the UUID
+  * otherwise (for backwards compatibility) is used the file name.
+  *
+  * \param cp
+  *     The change to work within.
+  * \param filename
+  *     The name of the file to be found.
+  * \param vp
+  *     The style of view path to be used.
+  */
+fstate_src_ty *change_file_find(change_ty *cp, string_ty *filename,
+    view_path_ty vp);
+
+/**
+  * The change_file_find fucntion is used to locate a change file
+  * similar to the one indicated.  If possible it uses the UUID
+  * otherwise (for backwards compatibility) is used the file name.
+  *
+  * \param cp
+  *     The change to work within.
+  * \param filename
+  *     The name of the file to be found.
+  * \param vp
+  *     The style of view path to be used.
+  */
+fstate_src_ty *change_file_find(change_ty *cp, const nstring &filename,
+    view_path_ty vp);
+
 fstate_src_ty *change_file_find_fuzzy(change_ty *, string_ty *);
 
 /**
-  * The change_file_find_uuid is used to find a source file given the UUID.
+  * The change_file_find_uuid function is used to find a source file
+  * given the UUID.
   *
   * @param cp
   *     The change to search within (and implicitly the project to search,
@@ -101,4 +147,38 @@ int change_file_is_config(change_ty *, string_ty *);
   */
 void change_file_copy_basic_attributes(fstate_src_ty *to, fstate_src_ty *from);
 
-#endif /* CHANGE_FILE_H */
+/**
+  * The change_file_resolve_names function is used to resolve arbitrary
+  * UNIX pathnames (relative or absolute) into base relative paths
+  * within a change set's search path.
+  *
+  * \param cp
+  *     The change this is relative to.
+  * \param up
+  *     The user invoking the program.
+  * \param file_names
+  *     The file names to be resolved.
+  *     This parameter ISN'T const because this will be done in situ.
+  */
+void change_file_resolve_names(change_ty *cp, user_ty *up,
+    string_list_ty &file_names);
+
+/**
+  * The change_file_resolve_name function is used to resolve an
+  * arbitrary UNIX pathname (relative or absolute) into a base relative
+  * path within a change set's search path.
+  *
+  * \param cp
+  *     The change this is relative to.
+  * \param up
+  *     The user invoking the program.
+  * \param file_name
+  *     The file name to be resolved.
+  * \returns
+  *     The resolved base relative file name.  Use str_free when you are
+  *     done with it.
+  */
+string_ty *change_file_resolve_name(change_ty *cp, user_ty *up,
+    string_ty *file_name);
+
+#endif // CHANGE_FILE_H

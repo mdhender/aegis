@@ -46,17 +46,13 @@ run_test_command(change_ty *cp, user_ty *up, string_ty *filename,
 
     if (bl && !cp->bogus)
     {
-	string_list_ty	spbl;
-	string_ty	*s;
-
-	string_list_constructor(&spbl);
+	string_list_ty spbl;
 	project_search_path_get(cp->pp, &spbl, 0);
-	s = wl2str(&spbl, 0, spbl.nstrings, ":");
+	string_ty *s = spbl.unsplit(":");
 	sub_var_set_string(scp, "Search_Path_Executable", s);
 	str_free(s);
 	sub_var_override(scp, "Search_Path_Executable");
 	sub_var_optional(scp, "Search_Path_Executable");
-	string_list_destructor(&spbl);
     }
     the_command = substitute(scp, cp, the_command);
     sub_context_delete(scp);

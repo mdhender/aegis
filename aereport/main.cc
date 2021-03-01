@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1997, 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -110,19 +110,12 @@ report_help(void)
 static void
 report_main(void)
 {
-    string_ty	    *project_name;
-    long	    change_number;
-    string_list_ty  arg;
-    string_ty	    *infile;
-    string_ty	    *outfile;
-    string_ty	    *s;
-
     trace(("report_main()\n{\n"));
-    project_name = 0;
-    change_number = 0;
-    infile = 0;
-    outfile = 0;
-    string_list_constructor(&arg);
+    string_ty *project_name = 0;
+    long change_number = 0;
+    string_ty *infile = 0;
+    string_ty *outfile = 0;
+    string_list_ty arg;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -171,9 +164,11 @@ report_main(void)
 
 	case arglex_token_string:
 	case arglex_token_number:
-	    s = str_from_c(arglex_value.alv_string);
-	    string_list_append(&arg, s);
-	    str_free(s);
+	    {
+		string_ty *s = str_from_c(arglex_value.alv_string);
+		arg.push_back(s);
+		str_free(s);
+	    }
 	    break;
 	}
 	arglex();
@@ -181,7 +176,7 @@ report_main(void)
     if (infile)
     {
 	trace(("prepending report file name to args\n"));
-	string_list_prepend(&arg, infile);
+	arg.push_front(infile);
     }
     else if (arg.nstrings == 0)
     {
@@ -226,7 +221,6 @@ report_main(void)
 	str_free(infile);
     if (outfile)
 	str_free(outfile);
-    string_list_destructor(&arg);
     trace(("}\n"));
 }
 
@@ -270,6 +264,6 @@ main(int argc, char **argv)
 	version();
 	break;
     }
-    exit(0);
+    quit(0);
     return 0;
 }

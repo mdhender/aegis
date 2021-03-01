@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1992-1995, 1997-2004 Peter Miller;
+.\"	Copyright (C) 1992-1995, 1997-2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -47,7 +47,7 @@ See the LICENSE section, below, for more details.
 (ee.j.iz)
 .I n.,
 a protection,
-a defence.
+a defense.
 .SH SPACE REQUIREMENTS
 You will need up to 250MB to unpack and build the
 .I aegis
@@ -107,7 +107,7 @@ functions.  If your system does not have them, it is worth fetching
 and installing \fBGNU zlib\fP compression library before you run the
 \fIconfigure\fP script.
 (See \f[CW]http://www.gzip.org/zlib/\fP for download.)
-This is essential, becaise Aegis will not build.
+This is essential, because Aegis will not build.
 without it.
 (\fBNote:\fP
 this is not the same thing as \f[CW]zlib\fP\f[CB]c\fP
@@ -188,6 +188,34 @@ You need to use the following configuration
 .RE
 to increase the length of command lines.
 .\" And be thankful it isn't Windows.
+.PP
+.\" Jerry Pendergraft <jerry@endocardial.com> 22-Jan-2005
+For mips IRIX and IRIX64 using the MipsPro compiler up to at least
+version 7.3 you must specify the flag to allow
+-I for
+loop initializations. You may give either of:
+.RS
+.ft CW
+.nf
+CXXFLAGS='LANG:ansi-for-init-scope=ON'
+CXXFLAGS='LANG:std'
+.fi
+.ft R
+.RE
+Also required is
+.I -lCio
+but configure will test for that. Even using that library there remains
+a link failure due to:
+.RS
+.ft CW
+.nf
+Unresolved text symbol
+"std::_List_base<undo_item*,std::allocator<undo_item*> >::clear(void)"
+.fi
+.ft R
+.RE
+on several of the binaries. A work around for this problem is not
+known at this time.
 .PP
 By default,
 .I configure
@@ -569,7 +597,7 @@ using a newer version of
 .SS Upgrading
 When upgrading from one release to a newer one, it is important that all
 of the machines on your network are running the same release of Aegis.
-This minimises the possibility of database incompatibilities.  In general,
+This minimizes the possibility of database incompatibilities.  In general,
 Aegis is backwards compatible with earlier releases, but not forwards
 compatible in the face of new capabilities.
 .SH OTHER USEFUL SOFTWARE
@@ -757,6 +785,11 @@ with a few very fast,
 and a couple very slow,
 but it varies greatly depending on your CPU.
 .SS Known Problems
+In order to get the long form of the error messages on Solaris, it is
+necessary to install GNU Gettext before running \&./configure, and once
+\&./configure has been run you need to edit the Makefile to statically
+link the executables.
+.PP
 The tests assume that the RCS commands "ci", "co", "rlog" and "rcs" are
 somewhere in the command search PATH.
 .PP
@@ -1053,22 +1086,22 @@ this directory only contains pointers.
 appropriate if you are using some other prefix.)
 .SS Web Interface
 If you have a Web server, you may like to install the Aegis web interface.
-You do this by copying the \fIaegis.cgi\fP script from
-\fI/usr/local/bin/aegis.cgi\fP into your web server's \fIcgi-bin\fP directory.
-There is a \fIaegis.cgi.i\fP helper script,
+You do this by copying the \fIaeget\fP script from
+\fI/usr/local/bin/aeget\fP into your web server's \fIcgi-bin\fP directory.
+There is a \fIaeget.instal\fP helper script,
 if you don't know where your web server's \fIcgi-bin\fP directory is.
 .PP
 You may prefer to use a symbolic link, as this will be more stable
 across Aegis upgrades.  However, this requires a corresponding
 \fIfollow-symlinks\fP setting in your web server's configuration file.
-(Use the \fIaegis.cgi.i \-s\fP option.)
+(Use the \fIaeget.instal \-s\fP option.)
 .PP
-Within the \f[CW]aegis.cgi\fP script, can set the \fIAEGIS_PATH\fP
+You may need to wrap \fIaeget\fP with a script which sets
+the \fIAEGIS_PATH\fP
 environment variable, if you want it to be able to see more
-projects than just the global projects.  You do this by creating a
-\fI/usr/local/lib/\%aegis.cgi.conf\fP file (there isn't one, by default)
-and setting the \fIAEGIS_PATH\fP environment variable in it.  This is
-a fragment of Bourne shell script, not just the name.
+projects than just the global projects.
+You may also need to set the \fIPATH\fP environment variable,
+if you don't have the Aegis install path in the default path.
 .PP
 (Note that these building instructions assume you are using the default
 \fI/usr/local\fP as the install prefix.  You will need to substitute as

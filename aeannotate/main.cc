@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@
 #include <language.h>
 #include <list.h>
 #include <os.h>
+#include <quit.h>
 #include <usage.h>
 #include <version.h>
 
@@ -70,6 +71,6 @@ main(int argc, char **argv)
     language_init();
     os_become_init_mortal();
     arglex_dispatch(dispatch, SIZEOF(dispatch), annotate);
-    exit(0);
+    quit(0);
     return 0;
 }

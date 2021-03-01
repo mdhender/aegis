@@ -48,19 +48,39 @@
 string_ty *
 os_dirname_relative(string_ty *path)
 {
-	char		*cp;
-	string_ty	*s;
+    trace(("os_dirname_relative(path = %08lX)\n{\n", (long)path));
+    trace_string(path->str_text);
+    const char *cp = strrchr(path->str_text, '/');
+    string_ty *s = 0;
+    if (!cp)
+	    s = str_from_c(".");
+    else if (cp == path->str_text)
+	    s = str_from_c("/");
+    else
+	    s = str_n_from_c(path->str_text, cp - path->str_text);
+    trace_string(s->str_text);
+    trace(("}\n"));
+    return s;
+}
 
-	trace(("os_dirname_relative(path = %08lX)\n{\n", (long)path));
-	trace_string(path->str_text);
-	cp = strrchr(path->str_text, '/');
-	if (!cp)
-		s = str_from_c(".");
-	else if (cp == path->str_text)
-		s = str_from_c("/");
-	else
-		s = str_n_from_c(path->str_text, cp - path->str_text);
-	trace_string(s->str_text);
-	trace(("}\n"));
-	return s;
+
+nstring
+os_dirname_relative(const nstring &path)
+{
+    trace(("os_dirname_relative(path = \"%s\")\n{\n", path.c_str()));
+    const char *cp = strrchr(path.c_str(), '/');
+    if (!cp)
+    {
+	trace(("return \".\";\n}\n"));
+	return ".";
+    }
+    if (cp == path.c_str())
+    {
+	trace(("return \"/\";\n}\n"));
+	return "/";
+    }
+    nstring result(path.c_str(), cp - path.c_str());
+    trace(("return \"%s\";\n", result.c_str()));
+    trace(("}\n"));
+    return result;
 }

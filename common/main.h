@@ -76,10 +76,18 @@
  */
 #ifdef __GNUC__
 #define ATTR_PRINTF(x, y) __attribute__((format(printf, x, y)))
+#define ATTR_VPRINTF(x) __attribute__((format(printf, x, 0)))
 #define NORETURN __attribute__((noreturn))
 #else
 #define ATTR_PRINTF(x, y)
+#define ATTR_VPRINTF(x)
 #define NORETURN
+#endif
+
+#if (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
+#define DEPRECATED __attribute__((deprecated))
+#else
+#define DEPRECATED
 #endif
 
 /*

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2001, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -35,12 +35,18 @@ static arglex_table_ty argtab[] =
 	{ "-Not_Description_Header", arglex_token_description_header_not, },
 	{ "-Entire_Source", arglex_token_entire_source, },
 	{ "-Not_Entire_Source", arglex_token_entire_source_not, },
-	{ "-PATch", arglex_token_patch, },
+        { "-EXclude_UUID", arglex_token_exclude_uuid, },
+        { "-INclude_UUID", arglex_token_exclude_uuid_not, },
+        { "-EXclude_VERsion", arglex_token_exclude_version, },
+        { "-INclude_VERsion", arglex_token_exclude_version_not, },
+        { "-MIssing", arglex_token_missing, },
+        { "-PATch", arglex_token_patch, },
 	{ "-Not_PATch", arglex_token_patch_not, },
 	{ "-Partial_Source", arglex_token_entire_source_not, },
         { "-IGnore_UUID", arglex_token_ignore_uuid, },
         { "-Not_IGnore_UUID", arglex_token_ignore_uuid_not, },
         { "-Receive", arglex_token_receive, },
+        { "-REPlay", arglex_token_replay, },
 	{ "-Send", arglex_token_send, },
 	{ "-Trojan", arglex_token_trojan, },
 	{ "-Not_Trojan", arglex_token_trojan_not, },

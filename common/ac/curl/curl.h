@@ -28,6 +28,14 @@
 #ifdef HAVE_CURL_CURL_H
 #include <curl/curl.h>
 
+/*
+ * Some older versions of libcurl (CURL_VERSION < 0x070A00) don't
+ * include <curl/multi.h> for you, so you have to do it yourself, but it
+ * has to be after <curl/curl.h> is included.  It is safe for this file
+ * to be included more than once.
+ */
+#include <curl/multi.h>
+
 #ifndef HAVE_CURL_EASY_STRERROR
 
 /**

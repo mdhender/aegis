@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@
 #include <input/file.h>
 #include <input/gunzip.h>
 #include <input/tar.h>
+#include <nstring.h>
 #include <os.h>
 #include <output/file.h>
 #include <progname.h>
@@ -42,6 +43,7 @@
 #include <str.h>
 #include <str_list.h>
 #include <sub.h>
+#include <trace.h>
 #include <undo.h>
 #include <user.h>
 
@@ -112,6 +114,7 @@ mangle(string_ty **filename_p)
 void
 receive(void)
 {
+    trace(("receive()\n{\n"));
     string_ty       *project_name;
     long            change_number;
     string_ty       *ifn;
@@ -233,7 +236,7 @@ receive(void)
 	    if (arglex() != arglex_token_string)
 		option_needs_file(arglex_token_path_prefix_add, usage);
 	    s = str_from_c(arglex_value.alv_string);
-	    string_list_append_unique(&path_prefix_remove, s);
+	    path_prefix_remove.push_back_unique(s);
 	    str_free(s);
 	    break;
 	}
@@ -270,24 +273,25 @@ receive(void)
     attribute_file_name = os_edit_filename(0);
     undo_unlink_errok(attribute_file_name);
     ofp = output_file_text_open(attribute_file_name);
-    output_fputs
+    ofp->fputs
     (
-	ofp, "\
-brief_description = \"none\";\n\
-description = \"This change was extracted from a tarball.\";\n\
-cause = external_bug;\n"
+	"brief_description = \"none\";\n"
+	"description = \"This change was extracted from a tarball.\";\n"
+	"cause = external_bug;\n"
     );
-    output_delete(ofp);
+    delete ofp;
     ofp = 0;
 
+    nstring trace_options(trace_args());
     dot = os_curdir();
     s =
 	str_format
 	(
-	    "aegis --new-change %ld --project=%s --file=%s --verbose",
+	    "aegis --new-change %ld --project=%s --file=%s%s --verbose",
 	    change_number,
 	    project_name->str_text,
-	    attribute_file_name->str_text
+	    attribute_file_name->str_text,
+            trace_options.c_str()
 	);
     os_execute(s, OS_EXEC_FLAG_INPUT, dot);
     str_free(s);
@@ -300,10 +304,11 @@ cause = external_bug;\n"
     s =
 	str_format
 	(
-	    "aegis --develop-begin %ld --project %s --verbose%s",
+	    "aegis --develop-begin %ld --project %s --verbose%s%s",
 	    change_number,
 	    project_name->str_text,
-	    (devdir ? devdir->str_text : "")
+	    (devdir ? devdir->str_text : ""),
+            trace_options.c_str()
 	);
     os_execute(s, OS_EXEC_FLAG_INPUT, dot);
     str_free(s);
@@ -335,7 +340,7 @@ cause = external_bug;\n"
 	input_ty        *ip;
 	string_ty       *filename;
 	fstate_src_ty   *src_data;
-	string_ty       *cmd;
+	string_ty       *cmd = 0;
 
 	//
 	// Find the next file in the archive.
@@ -362,36 +367,65 @@ cause = external_bug;\n"
 	//
 	if (src_data)
 	{
-	    cmd =
-		str_format
-		(
-		    "aegis --copy-file %s --project=%s --change=%ld --verbose",
-		    filename->str_text,
-		    project_name->str_text,
-		    change_number
-		);
+            //
+            // Skip build files, we cannot copy them into the change
+            //
+            switch (src_data->usage)
+            {
+            case file_usage_build:
+                os_become_orig();
+                os_unlink_errok(src_data->file_name);
+                os_become_undo();
+                break;
+
+            case file_usage_source:
+            case file_usage_config:
+            case file_usage_manual_test:
+            case file_usage_test:
+#ifndef DEBUG
+            default:
+#endif
+                    cmd =
+                    str_format
+                    (
+                        "aegis --copy-file %s --project=%s --change=%ld%s "
+                        "--verbose",
+                        filename->str_text,
+                        project_name->str_text,
+                        change_number,
+                        trace_options.c_str()
+                    );
+                break;
+            }
 	}
 	else
 	{
 	    cmd =
 		str_format
 		(
-	"aegis --new-file %s --no-template --project=%s --change=%ld --verbose",
+                    "aegis --new-file %s --no-template --project=%s "
+                        "--change=%ld%s --verbose",
 		    filename->str_text,
 		    project_name->str_text,
-		    change_number
+		    change_number,
+                    trace_options.c_str()
 		);
 	}
-	os_become_orig();
-	os_execute(cmd, OS_EXEC_FLAG_INPUT, dd);
-	str_free(cmd);
+        if (cmd)
+        {
+            os_become_orig();
+            os_execute(cmd, OS_EXEC_FLAG_INPUT, dd);
+            os_become_undo();
+            str_free(cmd);
+        }
 
-	//
+        //
 	// Now copy the file into the project.
 	//
-	ofp = output_file_binary_open(filename);
+        os_become_orig();
+        ofp = output_file_binary_open(filename);
 	input_to_output(ip, ofp);
-	output_delete(ofp);
+	delete ofp;
 	input_delete(ip);
 	os_become_undo();
 	str_free(filename);
@@ -400,4 +434,5 @@ cause = external_bug;\n"
 
     project_free(pp);
     pp = 0;
+    trace(("}\n"));
 }

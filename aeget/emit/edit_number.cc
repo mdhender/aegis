@@ -28,8 +28,8 @@
 #include <http.h>
 
 
-void
-emit_edit_number(change_ty *cp, fstate_src_ty *src_data)
+static void
+emit_edit_number_inner(change_ty *cp, fstate_src_ty *src_data)
 {
     if (src_data->edit_origin && src_data->edit)
     {
@@ -51,7 +51,7 @@ emit_edit_number(change_ty *cp, fstate_src_ty *src_data)
 	    )
 	)
 	    return;
-	printf(" -> %s", src_data->edit->revision->str_text);
+	printf(" &rarr; %s", src_data->edit->revision->str_text);
 	return;
     }
 
@@ -78,5 +78,26 @@ emit_edit_number(change_ty *cp, fstate_src_ty *src_data)
 	printf("<br>{cross ");
 	html_encode_string(src_data->edit_origin_new->revision);
 	printf("}\n");
+    }
+}
+
+
+void
+emit_edit_number(change_ty *cp, fstate_src_ty *src)
+{
+    switch (src->action)
+    {
+    case file_action_remove:
+    case file_action_insulate:
+    case file_action_transparent:
+	emit_edit_number_inner(cp, src);
+	break;
+
+    case file_action_create:
+    case file_action_modify:
+	emit_file_href(cp, src->file_name, 0);
+	emit_edit_number_inner(cp, src);
+	printf("</a>");
+	break;
     }
 }

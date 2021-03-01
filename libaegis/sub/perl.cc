@@ -24,7 +24,7 @@
 #include <sub/perl.h>
 #include <trace.h>
 #include <wstr.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 //
@@ -56,7 +56,7 @@ sub_perl(sub_context_ty *scp, wstring_list_ty *arg)
 
     trace(("sub_perl()\n{\n"));
     result = 0;
-    if (arg->nitems != 1)
+    if (arg->size() != 1)
 	sub_context_error_set(scp, i18n("requires zero arguments"));
     else
 	result = wstr_from_c(CONF_PERL);

@@ -359,12 +359,9 @@ project_attributes_main(void)
 
     if (recursive)
     {
-	string_list_ty  pl;
-	size_t          j;
-
-	string_list_constructor(&pl);
+	string_list_ty pl;
 	project_list_inner(&pl, pp);
-	for (j = 0; j < pl.nstrings; ++j)
+	for (size_t j = 0; j < pl.nstrings; ++j)
 	{
 	    project_ty      *branch;
 
@@ -373,7 +370,6 @@ project_attributes_main(void)
 	    change_existing_project_attributes(branch, pattr_data);
 	    project_free(branch);
 	}
-	string_list_destructor(&pl);
     }
     else
     {

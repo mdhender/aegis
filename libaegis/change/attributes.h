@@ -26,14 +26,46 @@
 #include <main.h>
 
 struct cattr_ty;
+struct change_ty;
 struct cstate_ty;
 struct pconf_ty;
 struct project_ty;
+struct string_ty;
 
 void change_attributes_default(struct cattr_ty *, struct project_ty *,
 	struct pconf_ty *);
 void change_attributes_copy(struct cattr_ty *, struct cstate_ty *);
 void change_attributes_verify(string_ty *, struct cattr_ty *);
 void change_attributes_edit(struct cattr_ty **, int);
+
+/**
+  * The change_attributes_append function is used to append an
+  * attribute to the change's list of attributes.  Note this this allow
+  * duplicates.
+  *
+  * \param cs
+  *     The chage state to work on.
+  * \param name
+  *     The name of the attribute, case insensitive.
+  *     (names atrting with a lower-case letter do not appear in listings)
+  * \param value
+  *     The value to assign to the attribute.
+  */
+void change_attributes_append(struct cstate_ty *cs, const char *name,
+    const char *value);
+
+/**
+  * The change_attributes_find function is used to find a specific named
+  * attribute amongst the given change's attributes.  Only the first
+  * such attribute is returned.
+  *
+  * \param cp
+  *     The change to be searched.
+  * \param name
+  *     The name of the attribute to search for.
+  * \returns
+  *     The value of the given attribute, or NULL if not found.
+  */
+string_ty *change_attributes_find(change_ty *cp, string_ty *name);
 
 #endif /* LIBAEGIS_CHANGE_ATTRIBUTES_H */

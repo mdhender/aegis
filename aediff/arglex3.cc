@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,8 @@
 
 static arglex_table_ty argtab[] =
 {
-    { "-COntext", arglex_token_context, },
+    { "-COMmand", arglex_token_command, },
+    { "-CONtext", arglex_token_context, },
     { "-Ignore_All_Space", arglex_token_ignore_all_space, },
     { "-Ignore_Blank_Lines", arglex_token_ignore_blank_lines, },
     { "-Ignore_Case", arglex_token_ignore_case, },

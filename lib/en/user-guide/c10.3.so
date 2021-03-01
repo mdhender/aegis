@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2002 Peter Miller;
+.\"	Copyright (C) 1999, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -21,19 +21,58 @@
 .\"
 .nh 2 "World Wide Web"
 .LP
-This section describes how to use \fIaedist\fP to transport change sets
-using the World Wide Web.  This requires configuration of the web server
-to package and send the change sets, and configuration of the browser
-to receive and unpack the change sets.
+This section describes how to use \fIaeget\fP(1) and \fIaedist\fP(1)
+to transport change sets using the World Wide Web.  This requires
+configuration of the web server to package and send the change sets, and
+configuration of the browser to receive and unpack the change sets.
+You can also automatically track a remote site, efficiently downloading
+and applying new change sets as they appear.
 .nh 3 "Server"
 .LP
-\fIwrite this section\fP
+Aegis has a read-only web interface to its database,
+it is a web server CGI interface.
+If you are running Apache, or similar,
+all you have to do is copy (or symlink, if you have symlinks enabled)
+the \fI\*(B)/aeget\fP file into the web server's \fIcgi-bin\fP directory.
+For example, the default Apache install would need the following command:
+.E(
+ln -s \*(B)/aeget /var/www/cgi-bin/aeget
+.E)
 .LP
-You have a CGI script which invokes \fIaedist\fP(1).
-There is no need to encode base64 in this case, so use the appropriate option.
 .nh 3 "Browser"
-.LP
-\fIwrite this section\fP
 .LP
 You need to set the appropriate mailcap entry, so that
 \f(CWapplication/aegis-change-set\fP is handled by \fIaedist --receive\fP.
+.LP
+Edit the \fI/etc/mailcap\fP file, and add the lines
+.E(
+# Aegis
+application/aegis-change-set;\*(B)/aedist -receive -f %s
+.E)
+You may need to restart your web browser for this to take effect.
+.nh 3 "Hands-Free Tracking"
+.LP
+Clients of sites using a web server,
+such as the various developers in an open sourec project,
+it is possible to automatically "replay" change sets on the server
+which have not yet been incorporated at your site.
+.LP
+The command
+.E(
+aedist --replay -f \fIname-of-web-server\fP
+.E)
+will automatically download any remote change sets not present in the
+local repository.  It downloads them by using the \fIaedist\fP(1)
+command.  It uses commands of the form
+.E(
+aedist --receive -f \fIurl-of-change-set\fP
+.E)
+to download the change sets, which have to go through all of
+the usual Aegis process before vecoming part of your local
+repository.  This includes code review, unless you have configured the
+\fIdevelop_\%end_\%action\fP field of the project configuration to be
+\fIgoto_\%awaiting_\%development\fP.
+.LP
+If you add this command to a \fIcrontab\fI(1) entry,
+you can check to see if there are change sets to synchronize with
+once a day, or however often you set the line to run.

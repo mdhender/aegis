@@ -37,6 +37,7 @@
 #include <change.h>
 #include <change/branch.h>
 #include <change/file.h>
+#include <change/identifier.h>
 #include <error.h>
 #include <help.h>
 #include <lock.h>
@@ -163,13 +164,7 @@ build_main(void)
 {
     cstate_ty       *cstate_data;
     pconf_ty        *pconf_data;
-    string_ty       *project_name;
-    project_ty      *pp;
-    long            change_number;
-    change_ty       *cp;
     log_style_ty    log_style;
-    user_ty         *up;
-    string_list_ty  partial;
     string_ty       *s1;
     string_ty       *s2;
     bool            minimum;
@@ -177,12 +172,11 @@ build_main(void)
     string_ty       *base;
 
     trace(("build_main()\n{\n"));
+    change_identifier cid;
     arglex();
     log_style = log_style_snuggle_default;
-    project_name = 0;
-    change_number = 0;
     minimum = false;
-    string_list_constructor(&partial);
+    string_list_ty partial;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -192,16 +186,9 @@ build_main(void)
 	    continue;
 
 	case arglex_token_change:
-	    arglex();
-	    // fall through...
-
 	case arglex_token_number:
-	    arglex_parse_change(&project_name, &change_number, build_usage);
-	    continue;
-
 	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, build_usage);
+	    cid.command_line_parse(build_usage);
 	    continue;
 
 	case arglex_token_file:
@@ -211,7 +198,7 @@ build_main(void)
 
 	case arglex_token_string:
 	    s2 = str_from_c(arglex_value.alv_string);
-	    string_list_append(&partial, s2);
+	    partial.push_back(s2);
 	    str_free(s2);
 	    break;
 
@@ -244,28 +231,7 @@ build_main(void)
 	}
 	arglex();
     }
-
-    //
-    // locate project data
-    //
-    if (!project_name)
-	project_name = user_default_project();
-    pp = project_alloc(project_name);
-    str_free(project_name);
-    project_bind_existing(pp);
-
-    //
-    // locate user data
-    //
-    up = user_executing(pp);
-
-    //
-    // locate change data
-    //
-    if (!change_number)
-	change_number = user_default_change(up);
-    cp = change_alloc(pp, change_number);
-    change_bind_existing(cp);
+    cid.command_line_check(build_usage);
 
     //
     // Take an advisory write lock on this row of the change table.
@@ -275,10 +241,10 @@ build_main(void)
     // not change (aeip) for the duration of the build.
     //
     if (!partial.nstrings)
-	change_cstate_lock_prepare(cp);
-    project_baseline_read_lock_prepare(pp);
+	change_cstate_lock_prepare(cid.get_cp());
+    project_baseline_read_lock_prepare(cid.get_pp());
     lock_take();
-    cstate_data = change_cstate_get(cp);
+    cstate_data = change_cstate_get(cid.get_cp());
 
     //
     // Extract the appropriate row of the change table.
@@ -288,24 +254,45 @@ build_main(void)
     //
     switch (cstate_data->state)
     {
+    case cstate_state_awaiting_development:
+    case cstate_state_awaiting_integration:
+    case cstate_state_awaiting_review:
+    case cstate_state_being_reviewed:
+    case cstate_state_completed:
+#ifndef DEBUG
     default:
-	change_fatal(cp, 0, i18n("bad build state"));
+#endif
+	change_fatal(cid.get_cp(), 0, i18n("bad build state"));
 	break;
 
     case cstate_state_being_developed:
-	if (change_is_a_branch(cp))
-	    change_fatal(cp, 0, i18n("bad branch build"));
-	if (!str_equal(change_developer_name(cp), user_name(up)))
-	    change_fatal(cp, 0, i18n("not developer"));
-	if (!change_file_nth(cp, (size_t)0, view_path_first))
-	    change_fatal(cp, 0, i18n("no files"));
+	if (change_is_a_branch(cid.get_cp()))
+	    change_fatal(cid.get_cp(), 0, i18n("bad branch build"));
+	if
+	(
+	    !str_equal
+	    (
+		change_developer_name(cid.get_cp()),
+		user_name(cid.get_up())
+	    )
+	)
+	    change_fatal(cid.get_cp(), 0, i18n("not developer"));
+	if (!change_file_nth(cid.get_cp(), (size_t)0, view_path_first))
+	    change_fatal(cid.get_cp(), 0, i18n("no files"));
 	break;
 
     case cstate_state_being_integrated:
-	if (!str_equal(change_integrator_name(cp), user_name(up)))
-	    change_fatal(cp, 0, i18n("not integrator"));
+	if
+	(
+	    !str_equal
+	    (
+		change_integrator_name(cid.get_cp()),
+		user_name(cid.get_up())
+	    )
+	)
+	    change_fatal(cid.get_cp(), 0, i18n("not integrator"));
 	if (partial.nstrings)
-	    change_fatal(cp, 0, i18n("bad build, partial"));
+	    change_fatal(cid.get_cp(), 0, i18n("bad build, partial"));
 	break;
     }
 
@@ -316,14 +303,13 @@ build_main(void)
     if (partial.nstrings)
     {
 	string_list_ty  search_path;
-	string_list_ty  wl2;
 	size_t          j;
 	size_t          k;
 
 	//
 	// Search path for resolving file names.
 	//
-	change_search_path_get(cp, &search_path, 1);
+	change_search_path_get(cid.get_cp(), &search_path, 1);
 
 	//
 	// Find the base for relative filenames.
@@ -335,7 +321,7 @@ build_main(void)
 		(
 		    user_relative_filename_preference
 		    (
-			up,
+			cid.get_up(),
 			uconf_relative_filename_preference_base
 		    )
 		==
@@ -358,7 +344,7 @@ build_main(void)
 	// 3.   if the file is inside the baseline, ok
 	// 4.   if neither, error
 	//
-	string_list_constructor(&wl2);
+	string_list_ty wl2;
 	for (j = 0; j < partial.nstrings; ++j)
 	{
 	    //
@@ -367,7 +353,7 @@ build_main(void)
 	    s1 = partial.string[j];
 	    if (strchr(s1->str_text, '='))
 	    {
-		string_list_append(&wl2, s1);
+		wl2.push_back(s1);
 		continue;
 	    }
 
@@ -378,7 +364,7 @@ build_main(void)
 		s2 = str_copy(s1);
 	    else
 		s2 = os_path_join(base, s1);
-	    user_become(up);
+	    user_become(cid.get_up());
 	    s1 = os_pathname(s2, 0);
 	    user_become_undo();
 	    str_free(s2);
@@ -396,7 +382,7 @@ build_main(void)
 
 		scp = sub_context_new();
 		sub_var_set_string(scp, "File_Name", partial.string[j]);
-		change_fatal(cp, scp, i18n("$filename unrelated"));
+		change_fatal(cid.get_cp(), scp, i18n("$filename unrelated"));
 		// NOTREACHED
 		sub_context_delete(scp);
 	    }
@@ -404,21 +390,20 @@ build_main(void)
 	    //
 	    // make sure it's unique
 	    //
-	    if (string_list_member(&wl2, s2))
+	    if (wl2.member(s2))
 	    {
 		sub_context_ty  *scp;
 
 		scp = sub_context_new();
 		sub_var_set_string(scp, "File_Name", s2);
-		change_fatal(cp, scp, i18n("too many $filename"));
+		change_fatal(cid.get_cp(), scp, i18n("too many $filename"));
 		// NOTREACHED
 		sub_context_delete(scp);
 	    }
 	    else
-		string_list_append(&wl2, s2);
+		wl2.push_back(s2);
 	    str_free(s2);
 	}
-	string_list_destructor(&partial);
 	partial = wl2;
     }
 
@@ -426,14 +411,14 @@ build_main(void)
     // It is an error if the change attributes include architectures
     // not in the project.
     //
-    change_check_architectures(cp);
+    change_check_architectures(cid.get_cp());
 
     //
     // Update the time the build was done.
     // This will not be written out if the build fails.
     //
     os_throttle();
-    change_build_time_set(cp);
+    change_build_time_set(cid.get_cp());
 
     //
     // get the command to execute
@@ -441,7 +426,7 @@ build_main(void)
     //  2. if the baseline contains config, use that
     //  3. error if can't find one (DON'T look for file existence)
     //
-    pconf_data = change_pconf_get(cp, 1);
+    pconf_data = change_pconf_get(cid.get_cp(), 1);
 
 
     //
@@ -462,7 +447,7 @@ build_main(void)
     // so stomp on the validation fields.
     //
     trace(("nuke time stamps\n"));
-    change_test_times_clear(cp);
+    change_test_times_clear(cid.get_cp());
 
     //
     // do the build
@@ -471,10 +456,8 @@ build_main(void)
     trace(("do the build\n"));
     if (cstate_data->state == cstate_state_being_integrated)
     {
-	user_ty        *pup;
-
-	pup = project_user(pp);
-	log_open(change_logfile_get(cp), pup, log_style);
+	user_ty *pup = project_user(cid.get_pp());
+	log_open(change_logfile_get(cid.get_cp()), pup, log_style);
 
 	assert(pconf_data->integration_directory_style);
 	work_area_style_ty style = *pconf_data->integration_directory_style;
@@ -484,18 +467,18 @@ build_main(void)
 	    style.derived_file_symlink = false;
 	    style.derived_file_copy = false;
 	}
-	change_create_symlinks_to_baseline(cp, pup, style);
+	change_create_symlinks_to_baseline(cid.get_cp(), pup, style);
 
-	change_verbose(cp, 0, i18n("integration build started"));
-	change_run_build_command(cp);
-	change_verbose(cp, 0, i18n("integration build complete"));
+	change_verbose(cid.get_cp(), 0, i18n("integration build started"));
+	change_run_build_command(cid.get_cp());
+	change_verbose(cid.get_cp(), 0, i18n("integration build complete"));
 
-	change_remove_symlinks_to_baseline(cp, pup, style);
+	change_remove_symlinks_to_baseline(cid.get_cp(), pup, style);
 	user_free(pup);
     }
     else
     {
-	log_open(change_logfile_get(cp), up, log_style);
+	log_open(change_logfile_get(cid.get_cp()), cid.get_up(), log_style);
 
 	assert(pconf_data->development_directory_style);
 	work_area_style_ty style = *pconf_data->development_directory_style;
@@ -524,28 +507,40 @@ build_main(void)
 		(
 		    style.during_build_only
 		||
-		    change_run_project_file_command_needed(cp)
+		    change_run_project_file_command_needed(cid.get_cp())
 		);
-	    if (user_symlink_pref(up, verify_dflt))
-		change_create_symlinks_to_baseline(cp, up, style);
+	    if (user_symlink_pref(cid.get_up(), verify_dflt))
+	    {
+		change_create_symlinks_to_baseline
+		(
+		    cid.get_cp(),
+		    cid.get_up(),
+		    style
+		);
+	    }
 	}
 
 	if (partial.nstrings)
-	    change_verbose(cp, 0, i18n("partial build started"));
+	    change_verbose(cid.get_cp(), 0, i18n("partial build started"));
 	else
-	    change_verbose(cp, 0, i18n("development build started"));
-	change_run_project_file_command(cp, up);
-	change_run_development_build_command(cp, up, &partial);
+	    change_verbose(cid.get_cp(), 0, i18n("development build started"));
+	change_run_project_file_command(cid.get_cp(), cid.get_up());
+	change_run_development_build_command
+	(
+	    cid.get_cp(),
+	    cid.get_up(),
+	    &partial
+	);
 	if (partial.nstrings)
-	    change_verbose(cp, 0, i18n("partial build complete"));
+	    change_verbose(cid.get_cp(), 0, i18n("partial build complete"));
 	else
-	    change_verbose(cp, 0, i18n("development build complete"));
+	    change_verbose(cid.get_cp(), 0, i18n("development build complete"));
 
 	//
         // This looks unconditional.  The conditional logic is within
         // the function, rather than out here.
 	//
-	change_remove_symlinks_to_baseline(cp, up, style);
+	change_remove_symlinks_to_baseline(cid.get_cp(), cid.get_up(), style);
     }
 
     //
@@ -555,14 +550,11 @@ build_main(void)
     //
     if (!partial.nstrings)
     {
-	change_file_list_metrics_check(cp);
-	change_cstate_write(cp);
+	change_file_list_metrics_check(cid.get_cp());
+	change_cstate_write(cid.get_cp());
 	commit();
     }
     lock_release();
-    project_free(pp);
-    change_free(cp);
-    user_free(up);
     trace(("}\n"));
 }
 

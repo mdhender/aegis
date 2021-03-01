@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -22,13 +22,18 @@
 
 #pragma implementation "change_functor_inventory_list"
 
+#include <ac/string.h>
+
 #include <ael/column_width.h>
+#include <attribute.h>
 #include <change/branch.h>
 #include <change/functor/invento_list.h>
 #include <col.h>
+#include <error.h> // for assert
 #include <option.h>
 #include <output.h>
 #include <project.h>
+#include <uuidentifier.h>
 
 
 change_functor_inventory_list::~change_functor_inventory_list()
@@ -61,13 +66,10 @@ change_functor_inventory_list::change_functor_inventory_list(project_ty *pp) :
 
 
 void
-change_functor_inventory_list::operator()(change_ty *cp)
+change_functor_inventory_list::print_one_line(change_ty *cp, string_ty *uuid)
 {
-    cstate_ty *cstate_data = change_cstate_get(cp);
-    if (!cstate_data->uuid)
-	return;
-    output_put_str(vers_col, change_version_get(cp));
-    output_put_str(uuid_col, cstate_data->uuid);
+    vers_col->fputs(change_version_get(cp));
+    uuid_col->fputs(uuid);
     if (when_col)
     {
 	//
@@ -79,7 +81,34 @@ change_functor_inventory_list::operator()(change_ty *cp)
 	struct tm *theTm = localtime(&when);
 	char buffer[30];
 	strftime(buffer, sizeof(buffer), "%Y-%b-%d %H:%M:%S", theTm);
-	output_fputs(when_col, buffer);
+	when_col->fputs(buffer);
     }
     col_eoln(colp);
+}
+
+
+void
+change_functor_inventory_list::operator()(change_ty *cp)
+{
+    cstate_ty *cstate_data = change_cstate_get(cp);
+    if (cstate_data->uuid)
+	print_one_line(cp, cstate_data->uuid);
+    if (!cstate_data->attribute)
+	return;
+    for (size_t j = 0; j < cstate_data->attribute->length; ++j)
+    {
+	attributes_ty *ap = cstate_data->attribute->list[j];
+	assert(ap->name);
+	assert(ap->value);
+	if
+	(
+	    ap->value
+	&&
+	    // users can edit, we will check
+	    universal_unique_identifier_valid(ap->value)
+	)
+	{
+	    print_one_line(cp, ap->value);
+	}
+    }
 }

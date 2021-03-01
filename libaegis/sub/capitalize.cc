@@ -24,7 +24,7 @@
 #include <sub.h>
 #include <sub/capitalize.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 //
@@ -55,16 +55,14 @@ sub_capitalize(sub_context_ty *scp, wstring_list_ty *arg)
     wstring_ty	    *result;
 
     trace(("sub_capitalize()\n{\n"));
-    if (arg->nitems < 2)
+    if (arg->size() < 2)
     {
 	sub_context_error_set(scp, i18n("requires one argument"));
 	result = 0;
     }
     else
     {
-	wstring_ty	*ws;
-
-	ws = wstring_list_to_wstring(arg, 1, arg->nitems, 0);
+	wstring_ty *ws = arg->unsplit(1, arg->size(), 0);
 	result = wstr_capitalize(ws);
 	wstr_free(ws);
     }

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,6 @@ change_run_history_get_command(change_ty *cp, fstate_src_ty *src,
     sub_context_ty  *scp;
     string_ty       *hp;
     string_ty       *hfn;
-    cstate_ty       *cstate_data;
     string_ty	    *the_command;
     pconf_ty        *pconf_data;
     string_ty	    *name_of_encoded_file;
@@ -114,7 +113,6 @@ change_run_history_get_command(change_ty *cp, fstate_src_ty *src,
     // run the command as the current user
     // (always output is to /tmp)
     //
-    cstate_data = change_cstate_get(cp);
     change_env_set(cp, 0);
     hp = project_history_path_get(cp->pp);
     user_become(up);
@@ -151,7 +149,7 @@ change_run_history_get_command(change_ty *cp, fstate_src_ty *src,
     }
     input_to_output(ip, op);
     input_delete(ip);
-    output_delete(op);
+    delete op;
     os_unlink(name_of_encoded_file);
     os_become_undo();
     str_free(name_of_encoded_file);

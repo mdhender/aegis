@@ -20,56 +20,48 @@
 // MANIFEST: functions to manipulate zero_pads
 //
 
-#include <mem.h>
+#include <ac/string.h>
+
 #include <sub.h>
 #include <sub/zero_pad.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 wstring_ty *
 sub_zero_pad(sub_context_ty *scp, wstring_list_ty *arg)
 {
-        wstring_ty      *result;
-        string_ty       *s;
-        long            n;
+    trace(("sub_zero_pad()\n{\n"));
+    if (arg->size() != 3)
+    {
+	sub_context_error_set(scp, i18n("requires two arguments"));
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
+    }
+    string_ty *s = wstr_to_str(arg->get(2));
+    long n = atol(s->str_text);
+    trace(("n = %ld;\n", n));
+    str_free(s);
 
-        trace(("sub_zero_pad()\n{\n"));
-        if (arg->nitems != 3)
-        {
-                sub_context_error_set(scp, i18n("requires two arguments"));
-                trace(("return NULL;\n"));
-                trace(("}\n"));
-                return 0;
-        }
-        s = wstr_to_str(arg->item[2]);
-        n = atol(s->str_text);
-        trace(("n = %ld;\n", n));
-        str_free(s);
-
-        if (n <= (long)arg->item[1]->wstr_length)
-                result = wstr_copy(arg->item[1]);
-        else
-        {
-                size_t          len;
-                char            *buffer;
-                string_ty       *s2;
-                size_t          j;
-
-                len = n - arg->item[1]->wstr_length;
-                s = wstr_to_str(arg->item[1]);
-                buffer = (char *)mem_alloc(len + 1);
-                for (j = 0; j < len; ++j)
-                        buffer[j] = '0';
-                buffer[len] = 0;
-                s2 = str_format("%s%s", buffer, s->str_text);
-                trace(("result = \"%s\";\n", s2->str_text));
-                mem_free(buffer);
-                str_free(s);
-                result = str_to_wstr(s2);
-                str_free(s2);
-        }
-        trace(("return %8.8lX;\n", (long)result));
-        trace(("}\n"));
-        return result;
+    wstring_ty *result = 0;
+    if (n <= (long)arg->get(1)->wstr_length)
+	result = wstr_copy(arg->get(1));
+    else
+    {
+	size_t len = n - arg->get(1)->wstr_length;
+	string_ty *s3 = wstr_to_str(arg->get(1));
+	char *buffer = new char [len + 1];
+	memset(buffer, '0', len);
+	buffer[len] = 0;
+	string_ty *s2 = str_format("%s%s", buffer, s3->str_text);
+	trace(("result = \"%s\";\n", s2->str_text));
+	delete [] buffer;
+	str_free(s3);
+	result = str_to_wstr(s2);
+	str_free(s2);
+    }
+    trace(("return %8.8lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }

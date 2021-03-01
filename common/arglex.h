@@ -68,7 +68,52 @@ extern arglex_value_ty arglex_value;
 void arglex_init(int, char **, arglex_table_ty *);
 int arglex(void);
 int arglex_prefetch(int *, int);
-int arglex_compare(const char *formal, const char *actual);
+
+/**
+  * The arglex_compare function is used to compare a command line string
+  * with a formal spec of the option, to see if they compare equal.
+  *
+  * The actual is case-insensitive.  Uppercase in the formal means a
+  * mandatory character, while lower case means optional.  Any number of
+  * consecutive optional characters may be supplied by actual, but none
+  * may be skipped, unless all are skipped to the next non-lower-case
+  * letter.
+  *
+  * The underscore (_) is like a lower-case minus, it matches "", "-"
+  * and "_".
+  *
+  * The "*" in a pattern matches everything to the end of the line,
+  * anything after the "*" is ignored.  The rest of the line is pointed
+  * to by the "partial" variable as a side-effect (else it will be 0).
+  * This rather ugly feature is to support "-I./dir" type options.
+  *
+  * A backslash in a pattern nominates an exact match required, case
+  * must matche excatly here.  This rather ugly feature is to support
+  * "-I./dir" type options.
+  *
+  * For example: "-project" and "-P' both match "-Project", as does
+  * "-proJ", but "-prj" does not.
+  *
+  * For example: "-devDir" and "-d_d' both match
+  * "-Development_Directory", but "-dvlpmnt_drctry" does not.
+  *
+  * For example: to match include path specifications, use a pattern
+  * such as "-\\I*", and the partial global variable will have the path
+  * in it on return.
+  *
+  * \param formal
+  *     the "pattern" for the option
+  * \param actual
+  *     what the user supplied
+  * \param partial
+  *     Where to put the results of a "*" match.
+  *
+  * \returns
+  *     int; zero if no match, non-zero if they do match.
+  */
+bool arglex_compare(const char *formal, const char *actual,
+    const char **partial);
+
 const char *arglex_token_name(int);
 
 arglex_table_ty *arglex_table_catenate(arglex_table_ty *, arglex_table_ty *);

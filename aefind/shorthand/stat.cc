@@ -473,7 +473,7 @@ type_name_by_pattern(string_ty *abbrev)
     sub_context_ty  *scp;
 
     for (tp = table; tp < ENDOF(table); ++tp)
-	if (arglex_compare(tp->pattern, abbrev->str_text))
+	if (arglex_compare(tp->pattern, abbrev->str_text, 0))
     	    return str_from_c(tp->name);
     scp = sub_context_new();
     sub_var_set_string(scp, "Name", abbrev);

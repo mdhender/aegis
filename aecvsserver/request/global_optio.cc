@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -32,42 +32,58 @@
 // Root required: no.
 //
 
+#include <ac/string.h>
+
 #include <request/global_optio.h>
 #include <server.h>
 
 
 static void
-run(server_ty *sp, string_ty *arg)
+run(server_ty *sp, string_ty *fn)
 {
+    size_t j = 0;
+    for (j = 0; j < sp->np->argument_count(); ++j)
+    {
+	string_ty *arg = sp->np->argument_nth(j);
+	if (arg->str_text[0] != '-')
+	    break;
+	if (0 == strcmp(arg->str_text, "--"))
+	{
+	    ++j;
+	    break;
+	}
+	//
+        // From cvs(1) we glean the following options:
+	//
+	//  -l  Do not log the cvs_command in the command history (but
+	//      execute it anyway).  See the description of the history
+	//      command for information on command history.
+	//
+	//  -n  Do not change any files.  Attempt to execute the cvs_command,
+	//      but only to issue reports; do not remove, update, or merge
+	//      any existing files, or create any new files.
+	//
+	//  -Q  Causes the command to be really quiet; the command will
+	//      generate output only for serious problems.
+	//
+	//  -q  Causes the command to be somewhat quiet; informational
+	//      messages, such as	reports of recursion through
+	//      subdirectories, are suppressed.
+	//
+	//  -r  Makes new working files read-only.  Same effect as if the
+	//      CVSREAD environment variable is set.
+	//
+	//  -t  Trace program execution; display messages showing the steps
+	//      of cvs activity.  Particularly useful with -n to explore
+	//      the potential impact of an unfamiliar command.
+	//
+	// But there is no statement that's what the protocol actually wants.
+	//
+    }
+
     //
-    // For now we ignore this request.
-    //
-    // It would help of the documentation actually said what they do.
-    // From cvs(1) we glean
-    //
-    //  -l  Do not log the cvs_command in the command history (but
-    //      execute it anyway).  See the description of the history
-    //      command for information on command history.
-    //
-    //  -n  Do not change any files.  Attempt to execute the cvs_command,
-    //      but only to issue reports; do not remove, update, or merge
-    //      any existing files, or create any new files.
-    //
-    //  -Q  Causes the command to be really quiet; the command will
-    //      generate output only for serious problems.
-    //
-    //  -q  Causes the command to be somewhat quiet; informational
-    //      messages, such as	reports of recursion through
-    //      subdirectories, are suppressed.
-    //
-    //  -r  Makes new working files read-only.	Same effect as if the
-    //      CVSREAD environment variable is set.
-    //
-    //  -t  Trace program execution; display messages showing the steps
-    //      of cvs activity.  Particularly useful with -n to explore
-    //      the potential impact of an unfamiliar command.
-    //
-    // But there is no statement that's what the protocol actually wants.
+    // It would help of the documentation actually said what this
+    // request does.  For now we ignore this request.
     //
 }
 

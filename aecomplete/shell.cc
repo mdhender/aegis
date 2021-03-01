@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -52,6 +52,8 @@ shell_find(void)
 	shell_delete(sp);
     }
     fatal_intl(0, i18n("unknown shell"));
+    // NOTREACHED
+    return 0;
 }
 
 

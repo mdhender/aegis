@@ -35,45 +35,43 @@
 <img src="aegis.png" align=left>
 <img src="aegis.png" align=right>
 <center>Aegis \*(v)<br>Web Interface</center></h1>
-Aegis has a read-only web interface to its database.  The page uses Aegis'
-own web interface to look at Aegis' own development (because Aegis is
-developed using Aegis).  If you have Apache installed when Aegis is
-configured and built, this interface (to your projects, not this one)
-will be installed for you at your site, too.
+Aegis has a read-only web interface to its database.  There is a page
+which uses Aegis' own web interface to look at Aegis' own development
+(because Aegis is developed using Aegis).  If you have Apache installed
+when Aegis is configured and built, this interface (to your projects,
+not this one) will be installed for you at your site, too.
 .br
 <p>
 The <a
-.br
-href="/cgi-bin/aegis.cgi?">
-top-level view</a>
-is of all projects being managed by Aegis.
-You can drill down to everything else from this point.
-.br
-<p>
-There is also a new <a
 .br
 href="/cgi-bin/aeget">
-aeget</a>
-interface.
-At this point it is less complete than the interface above,
-but it is faster, has more complete file histories,
-and better download support.
+top-level view</a>
+is of all SourceForge projects being managed by Aegis.
+You can drill down to everything else from this point.
+(See also the old <a
+.br
+href="/cgi-bin/aegis.cgi?">
+.br
+aegis.cgi</a> interface.)
 .br
 <p>
 The <a
 .br
-href="/cgi-bin/aegis.cgi?file@proj_menu+project@aegis.\*(v)">
+href="/cgi-bin/aeget/aegis.\*(v)/?menu">
+.br
 project</a> page.  Every project (and each branch) has one.  In this
 case you will be taken to the one for Aegis \*(v).
-(See also <a
+(See also the old <a
 .br
-href="/cgi-bin/aeget/aegis.\*(v)/@@menu"
->aeget</a>.)
+href="/cgi-bin/aegis.cgi?file@proj_menu+project@aegis.\*(v)">
+.br
+aegis.cgi</a> interface.)
 .br
 <p>
 The <a
 .br
-href="/cgi-bin/aegis.cgi?file@proj_hstry+project@aegis.\*(v)">
+href="/cgi-bin/aeget/aegis.\*(v)/?changes">
+.br
 completed changes</a>
 page lists all of the completed changes to date (on the development branch).
 This is the bleeding edge.
@@ -81,10 +79,11 @@ The <i>Download</i> links are only of interest to Aegis developers, but
 they demonstrate <i>how</i> an Internet project (or a global VPN project)
 could distribute change sets.  Click on the change number for more
 information about each change.
-(See also <a
+(See also the old <a
 .br
-href="/cgi-bin/aeget/aegis.\*(v)/@@changes"
->aeget</a>.)
+href="/cgi-bin/aegis.cgi?file@proj_hstry+project@aegis.\*(v)">
+.br
+aegis.cgi</a> interface.)
 .br
 </table>
 .br
@@ -107,7 +106,7 @@ mentioned in the instructions below.
 <li>
 Send email to <a href="mailto:millerp@canb.auug.org.au">Peter Miller</a>
 he will add a project pointer and your project will appear in the
-<a href="/cgi-bin/aegis.cgi?">list of projects</a>.
+<a href="/cgi-bin/aeget">list of projects</a>.
 </ol>
 .br
 <hr>
@@ -166,11 +165,15 @@ The rest can be removed.
 .nf
 <pre>cd /home/groups/a/ae/aegis
 mkdir -m755 cgi-bin
-rm bin/aeannotate bin/aebuffy bin/aecomp bin/aecomplete bin/ae-cvs-ci
-rm bin/aecvsserver bin/aeedit bin/aefind bin/aegis.cgi.i bin/aeimport
-rm bin/aeintegratq bin/aels bin/aemeasure bin/ae-sccs-put bin/aesub
-rm bin/aexml bin/tkaeca bin/tkaegis bin/tkaenc bin/tkaepa bin/tkaer
-rm bin/xaegis
+for f in \
+    aeannotate aebuffy aecomp aecomplete ae-cvs-ci aecvsserver     \
+    aeedit aefind aeget.instal aegis.cgi.i aeimport aeintegratq    \
+    aels aemeasure aepromptcmd ae-sccs-put aesub aexml tkaeca      \
+    tkaegis tkaenc tkaepa tkaer xaegis
+do
+    rm bin/$f
+done
+strip bin/*
 rm -r com lib man etc
 mkdir -p share-new/en
 mv share/en/html share-new/en
@@ -234,11 +237,6 @@ Something like <blockquote>
 .fi
 ];</pre></blockquote>
 <li>
-You will need to create a <tt >/home/groups/<i >p</i>/<i >pr</i>/<i
->project</i>/lib/aegis/aegis.cgi.conf</tt> file, and use it to the the PATH
-<blockquote><pre >PATH=${PATH}:/home/groups/<i >p</i>/<i >pr</i>/<i
->project</i >/bin</pre ></blockquote>
-environment variable, so that <tt>aegis.cgi</tt> can find necessary commands.
 </ol>
 If this takes off, I'll ask the SourceForge people to install it, so
 that most of these instructions are unnecessary.

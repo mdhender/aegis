@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2004 Peter Miller;
+.\"	Copyright (C) 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -67,12 +67,29 @@ be used:
 \*(n) -branch 7.6 -bl  aegis.conf
 .RE
 Many, many other combinatiosn are possible.
+.SS Using Graphical Tools
+It is possible to use a graphical diff tool with the \fI\*(n)\fP(1)
+command.  This is done by using the \-command\fP option, or setting
+the \f[CW]AE2DIFF\fP environment variable.  For example, to use the
+\fItkdiff\fP(1) command to display the differences you would use a
+command such as:
+.RS
+\*(n) --command=tkdiff \fIfilename\fP
+.RE
+If you use this option, many of the \fIdiff\fP(1)-specific options will
+be ignored.
 .SH OPTIONS
 The following options are understood:
 .so o_baselin.so
 .so o_change.so
 .TP 8n
-\fB\-context\fP [ \fIlines\fP ]
+\fB\-COMmand\fP \fIstring\fP
+This option may be used to set the command used to display differences.
+Using this option will cause \fIdiff\fP(1)-specific options to be
+ignored.  If not set, defaults to the value of the \f[CW]AE2DIFF\fP
+environment variable, or "diff" otherwise.
+.TP 8n
+\fB\-CONtext\fP [ \fIlines\fP ]
 Use the context output format, showing \fIlines\fP (an integer) lines of
 context, or three if \fIlines\fP is not given.  For proper operation,
 \fIpatch\fP(1) typically needs at least two lines of context.

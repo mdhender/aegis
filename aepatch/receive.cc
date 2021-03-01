@@ -38,8 +38,9 @@
 #include <input/base64.h>
 #include <input/gunzip.h>
 #include <input/string.h>
+#include <nstring.h>
 #include <os.h>
-#include <patch/file.h>
+#include <patch.h>
 #include <pconf.h>
 #include <progname.h>
 #include <project.h>
@@ -243,7 +244,7 @@ mangle_file_names(patch_list_ty *plp, project_ty *pp)
 	// list of names.
 	//
 	s = str_from_c(cp);
-	string_list_prepend(&p->name, s);
+	p->name.push_front(s);
 	str_free(s);
     }
     trace(("}\n"));
@@ -370,11 +371,6 @@ receive(void)
     int		    need_to_test;
     int		    could_have_a_trojan;
     const char      *delta;
-    string_list_ty  files_source;
-    string_list_ty  files_config;
-    string_list_ty  files_build;
-    string_list_ty  files_test_auto;
-    string_list_ty  files_test_manual;
     int		    uncopy;
     int		    config_seen;
     int		    trojan;
@@ -491,7 +487,7 @@ receive(void)
 	    if (arglex() != arglex_token_string)
 		option_needs_file(arglex_token_path_prefix_add, usage);
 	    s = str_from_c(arglex_value.alv_string);
-	    string_list_append_unique(&path_prefix_remove, s);
+	    path_prefix_remove.push_back_unique(s);
 	    str_free(s);
 	    break;
 	}
@@ -603,14 +599,16 @@ receive(void)
     //
     // create the new change
     //
+    nstring trace_options(trace_args());
     dot = os_curdir();
     s =
 	str_format
 	(
-	    "aegis --new-change %ld --project=%s --file=%s --verbose",
+	    "aegis --new-change %ld --project=%s --file=%s --verbose%s",
 	    change_number,
 	    project_name->str_text,
-	    attribute_file_name->str_text
+	    attribute_file_name->str_text,
+            trace_options.c_str()
 	);
     os_execute(s, OS_EXEC_FLAG_INPUT, dot);
     str_free(s);
@@ -623,10 +621,11 @@ receive(void)
     s =
 	str_format
 	(
-	    "aegis --develop-begin %ld --project %s --verbose%s",
+	    "aegis --develop-begin %ld --project %s --verbose%s%s",
 	    change_number,
 	    project_name->str_text,
-	    (devdir ? devdir->str_text : "")
+	    (devdir ? devdir->str_text : ""),
+            trace_options.c_str()
 	);
     os_execute(s, OS_EXEC_FLAG_INPUT, dot);
     str_free(s);
@@ -719,9 +718,9 @@ receive(void)
     //
     // add the modified files to the change
     //
-    string_list_constructor(&files_source);
-    string_list_constructor(&files_test_auto);
-    string_list_constructor(&files_test_manual);
+    string_list_ty files_source;
+    string_list_ty files_test_auto;
+    string_list_ty files_test_manual;
     for (j = 0; j < plp->length; ++j)
     {
 	patch_ty	*p;
@@ -769,7 +768,7 @@ receive(void)
 	//
 	// add it to the list
 	//
-	string_list_append_unique(&files_source, file_name);
+	files_source.push_back_unique(file_name);
     }
     uncopy = 0;
     if (files_source.nstrings)
@@ -789,9 +788,10 @@ receive(void)
 	s =
 	    str_format
 	    (
-		"aegis --copy-file --project=%s --change=%ld --verbose%s",
+		"aegis --copy-file --project=%s --change=%ld%s --verbose%s",
 		project_name->str_text,
 		change_number,
+                trace_options.c_str(),
 		(delopt ? delopt->str_text : "")
 	    );
 	if (delopt)
@@ -802,11 +802,11 @@ receive(void)
 	// change state invalid
 	change_lock_sync_forced(cp);
     }
-    string_list_destructor(&files_source);
 
     //
     // add the removed files to the change
     //
+    files_source.clear();
     for (j = 0; j < plp->length; ++j)
     {
 	patch_ty	*p;
@@ -834,30 +834,31 @@ receive(void)
 	//
 	// add it to the list
 	//
-	string_list_append_unique(&files_source, p->name.string[0]);
+	files_source.push_back_unique(p->name.string[0]);
     }
     if (files_source.nstrings)
     {
 	s =
 	    str_format
 	    (
-		"aegis --remove-file --project=%s --change=%ld --verbose",
+		"aegis --remove-file --project=%s --change=%ld%s --verbose",
 		project_name->str_text,
-		change_number
-	    );
+                change_number,
+                trace_options.c_str()
+            );
 	os_xargs(s, &files_source, dd);
 	str_free(s);
 
 	// change state invalid
 	change_lock_sync_forced(cp);
     }
-    string_list_destructor(&files_source);
 
     //
     // add the new files to the change
     //
-    string_list_constructor(&files_config);
-    string_list_constructor(&files_build);
+    files_source.clear();
+    string_list_ty files_config;
+    string_list_ty files_build;
     need_to_test = 0;
     for (j = 0; j < plp->length; ++j)
     {
@@ -892,26 +893,26 @@ receive(void)
 	{
 	case file_usage_source:
 	    if (change_file_is_config(cp, fn))
-		string_list_append_unique(&files_config, fn);
+		files_config.push_back_unique(fn);
 	    else
-		string_list_append_unique(&files_source, fn);
+		files_source.push_back_unique(fn);
 	    break;
 
 	case file_usage_config:
-	    string_list_append_unique(&files_config, fn);
+	    files_config.push_back_unique(fn);
 	    break;
 
 	case file_usage_build:
-	    string_list_append_unique(&files_build, fn);
+	    files_build.push_back_unique(fn);
 	    break;
 
 	case file_usage_test:
-	    string_list_append_unique(&files_test_auto, fn);
+	    files_test_auto.push_back_unique(fn);
 	    need_to_test = 1;
 	    break;
 
 	case file_usage_manual_test:
-	    string_list_append_unique(&files_test_manual, fn);
+	    files_test_manual.push_back_unique(fn);
 	    need_to_test = 1;
 	    break;
 	}
@@ -922,10 +923,11 @@ receive(void)
 	s =
 	    str_format
 	    (
-		"aegis --new-test --automatic --project=%s --change=%ld "
+		"aegis --new-test --automatic --project=%s --change=%ld%s "
 		    "--verbose --no-template",
 		project_name->str_text,
-		change_number
+		change_number,
+                trace_options.c_str()
 	    );
 	os_xargs(s, &files_test_auto, dd);
 	str_free(s);
@@ -938,10 +940,11 @@ receive(void)
 	s =
 	    str_format
 	    (
-		"aegis --new-test --manual --project=%s --change=%ld --verbose "
-		    "--no-template",
+		"aegis --new-test --manual --project=%s --change=%ld%s "
+                    "--verbose --no-template",
 		project_name->str_text,
-		change_number
+		change_number,
+                trace_options.c_str()
 	    );
 	os_xargs(s, &files_test_manual, dd);
 	str_free(s);
@@ -959,10 +962,11 @@ receive(void)
 	s =
 	    str_format
 	    (
-		"aegis --new-file --project=%s --change=%ld --verbose "
+		"aegis --new-file --project=%s --change=%ld%s --verbose "
 		    "--no-template --no-configured",
 		project_name->str_text,
-		change_number
+		change_number,
+                trace_options.c_str()
 	    );
 	os_xargs(s, &files_source, dd);
 	str_free(s);
@@ -975,10 +979,11 @@ receive(void)
 	s =
 	    str_format
 	    (
-		"aegis --new-file --build --project=%s --change=%ld --verbose "
-		    "--no-template",
+		"aegis --new-file --build --project=%s --change=%ld%s "
+                    "--verbose --no-template",
 		project_name->str_text,
-		change_number
+		change_number,
+                trace_options.c_str()
 	    );
 	os_xargs(s, &files_build, dd);
 	str_free(s);
@@ -991,10 +996,11 @@ receive(void)
 	s =
 	    str_format
 	    (
-		"aegis --new-file --config --project=%s --change=%ld --verbose "
-		    "--no-template",
+		"aegis --new-file --config --project=%s --change=%ld%s "
+                    "--verbose --no-template",
 		project_name->str_text,
-		change_number
+		change_number,
+                trace_options.c_str()
 	    );
 	os_xargs(s, &files_config, dd);
 	str_free(s);
@@ -1002,11 +1008,6 @@ receive(void)
 	// change state invalid
 	change_lock_sync_forced(cp);
     }
-    string_list_destructor(&files_source);
-    string_list_destructor(&files_config);
-    string_list_destructor(&files_build);
-    string_list_destructor(&files_test_auto);
-    string_list_destructor(&files_test_manual);
 
     //
     // now extract each file from the input
@@ -1128,10 +1129,11 @@ receive(void)
 	s =
 	    str_format
 	    (
-		"aegis --copy-file-undo --unchanged --change=%ld --project=%s "
-		    "--verbose",
+		"aegis --copy-file-undo --unchanged --change=%ld "
+                    "--project=%s%s --verbose",
 		change_number,
-		project_name->str_text
+		project_name->str_text,
+                trace_options.c_str()
 	    );
 	os_become_orig();
 	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
@@ -1154,10 +1156,11 @@ receive(void)
 	    s =
 		str_format
 		(
-		    "aegis --develop-begin-undo --change=%ld --project=%s "
+		    "aegis --develop-begin-undo --change=%ld --project=%s%s "
 			"--verbose",
 		    change_number,
-		    project_name->str_text
+		    project_name->str_text,
+                    trace_options.c_str()
 		);
 	    os_become_orig();
 	    os_execute(s, OS_EXEC_FLAG_INPUT, dot);
@@ -1169,10 +1172,11 @@ receive(void)
 	    s =
 		str_format
 		(
-		    "aegis --new-change-undo --change=%ld --project=%s "
+		    "aegis --new-change-undo --change=%ld --project=%s%s "
 			"--verbose",
 		    change_number,
-		    project_name->str_text
+		    project_name->str_text,
+                    trace_options.c_str()
 		);
 	    os_execute(s, OS_EXEC_FLAG_INPUT, dot);
 	    os_become_undo();
@@ -1223,9 +1227,10 @@ receive(void)
     s =
 	str_format
 	(
-	    "aegis --diff --no-merge --change=%ld --project=%s --verbose",
+	    "aegis --diff --no-merge --change=%ld --project=%s%s --verbose",
 	    change_number,
-	    project_name->str_text
+	    project_name->str_text,
+            trace_options.c_str()
 	);
     os_become_orig();
     os_execute(s, OS_EXEC_FLAG_INPUT, dd);
@@ -1248,10 +1253,11 @@ receive(void)
 	s =
 	    str_format
 	    (
-		"aegis --change-attr --uuid %s -change=%ld --project=%s",
+		"aegis --change-attr --uuid %s -change=%ld --project=%s%s",
 		quoted_uuid->str_text,
 		change_number,
-		project_name->str_text
+		project_name->str_text,
+                trace_options.c_str()
 	    );
 	str_free(quoted_uuid);
 	os_become_orig();
@@ -1288,9 +1294,10 @@ receive(void)
     s =
 	str_format
 	(
-	    "aegis --build --change=%ld --project=%s --verbose",
+	    "aegis --build --change=%ld --project=%s%s --verbose",
 	    change_number,
-	    project_name->str_text
+	    project_name->str_text,
+            trace_options.c_str()
 	);
     os_become_orig();
     os_execute(s, OS_EXEC_FLAG_INPUT, dd);
@@ -1318,9 +1325,10 @@ receive(void)
 	s =
 	    str_format
 	    (
-		"aegis --test --change=%ld --project=%s --verbose",
+		"aegis --test --change=%ld --project=%s%s --verbose",
 		change_number,
-		project_name->str_text
+		project_name->str_text,
+                trace_options.c_str()
 	    );
 	os_become_orig();
 	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
@@ -1332,9 +1340,10 @@ receive(void)
 	s =
 	    str_format
 	    (
-		"aegis --test --baseline --change=%ld --project=%s --verbose",
+		"aegis --test --baseline --change=%ld --project=%s%s --verbose",
 		change_number,
-		project_name->str_text
+		project_name->str_text,
+                trace_options.c_str()
 	    );
 	os_become_orig();
 	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
@@ -1348,9 +1357,11 @@ receive(void)
 	s =
 	    str_format
 	    (
-		"aegis --test --regression --change=%ld --project=%s --verbose",
+		"aegis --test --regression --change=%ld --project=%s%s "
+                "--verbose",
 		change_number,
-		project_name->str_text
+		project_name->str_text,
+                trace_options.c_str()
 	    );
 	os_become_orig();
 	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
@@ -1369,9 +1380,10 @@ receive(void)
     s =
 	str_format
 	(
-	    "aegis --develop-end --change=%ld --project=%s --verbose",
+	    "aegis --develop-end --change=%ld --project=%s%s --verbose",
 	    change_number,
-	    project_name->str_text
+	    project_name->str_text,
+            trace_options.c_str()
 	);
     os_become_orig();
     os_execute(s, OS_EXEC_FLAG_INPUT, dd);

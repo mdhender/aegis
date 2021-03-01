@@ -45,7 +45,7 @@ change_set_list_delete(change_set_list_ty *cslp)
     size_t          j;
 
     for (j = 0; j < cslp->length; ++j)
-            change_set_delete(cslp->item[j]);
+            delete cslp->item[j];
     if (cslp->item)
             mem_free(cslp->item);
     cslp->length = 0;
@@ -63,7 +63,7 @@ change_set_list_validate(change_set_list_ty *cslp)
     size_t          j;
 
     for (j = 0; j < cslp->length; ++j)
-        change_set_validate(cslp->item[j]);
+        cslp->item[j]->validate();
 }
 
 #endif

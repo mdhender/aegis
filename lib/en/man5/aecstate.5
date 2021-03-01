@@ -106,6 +106,14 @@ or
 .I completed
 states.
 .TP 8n
+delta_uuid = string;
+.br
+This field records a universally unique identifier for this
+configuration.  It is supplements the \fIdelta_number\fP field in
+that it is unique across all replicas of the project, whereas the
+delta number is ambiguous across replicas.  It is only present in the
+\fIbeing_integrated\fP and \fIcompleted\fP states.
+.TP 8n
 minimum_integration = boolean;
 .br
 This field records whether the change was placed into the

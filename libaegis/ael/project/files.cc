@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -131,14 +131,11 @@ list_project_files(string_ty *project_name, long change_number,
 		continue;
 	    for (k = 0; k < src_data->attribute->length; ++k)
 	    {
-		attributes_ty   *ap;
-
-		ap = src_data->attribute->list[k];
+		attributes_ty *ap = src_data->attribute->list[k];
 		if (ael_attribute_listable(ap))
 		{
-		    void            *p;
-
-		    p = symtab_query(attr_col_stp, ap->name);
+		    string_ty *lc_name = str_downcase(ap->name);
+		    void *p = symtab_query(attr_col_stp, lc_name);
 		    if (!p)
 		    {
 			string_ty       *s;
@@ -154,9 +151,10 @@ list_project_files(string_ty *project_name, long change_number,
 				s->str_text
 			    );
 			str_free(s);
-			symtab_assign(attr_col_stp, ap->name, op);
+			symtab_assign(attr_col_stp, lc_name, op);
 			left += ATTR_WIDTH + 1;
 		    }
+		    str_free(lc_name);
 		}
 	    }
 	}
@@ -187,7 +185,7 @@ list_project_files(string_ty *project_name, long change_number,
 	}
 	else
 	{
-	    output_fputs(usage_col, file_usage_ename(src_data->usage));
+	    usage_col->fputs(file_usage_ename(src_data->usage));
 	    list_format_edit_number(edit_col, src_data);
 	    if
 	    (
@@ -210,9 +208,8 @@ list_project_files(string_ty *project_name, long change_number,
 		if (psrc_data && psrc_data->edit)
 		{
 		    assert(psrc_data->edit->revision);
-		    output_fprintf
+		    edit_col->fprintf
 		    (
-			edit_col,
 			" (%s)",
 			psrc_data->edit->revision->str_text
 		    );
@@ -220,43 +217,39 @@ list_project_files(string_ty *project_name, long change_number,
 	    }
 	}
 	assert(src_data->file_name);
-	output_put_str(file_name_col, src_data->file_name);
+	file_name_col->fputs(src_data->file_name);
 	if (src_data->about_to_be_created_by)
 	{
-	    output_end_of_line(file_name_col);
-	    output_fprintf
+	    file_name_col->end_of_line();
+	    file_name_col->fprintf
 	    (
-		file_name_col,
 		"About to be created by change %ld.",
 		magic_zero_decode(src_data->about_to_be_created_by)
 	    );
 	}
 	if (src_data->deleted_by)
 	{
-	    output_end_of_line(file_name_col);
-	    output_fprintf
+	    file_name_col->end_of_line();
+	    file_name_col->fprintf
 	    (
-		file_name_col,
 		"Deleted by change %ld.",
 		magic_zero_decode(src_data->deleted_by)
 	    );
 	}
 	if (src_data->locked_by)
 	{
-	    output_end_of_line(file_name_col);
-	    output_fprintf
+	    file_name_col->end_of_line();
+	    file_name_col->fprintf
 	    (
-		file_name_col,
 		"Locked by change %ld.",
 		magic_zero_decode(src_data->locked_by)
 	    );
 	}
 	if (src_data->about_to_be_copied_by)
 	{
-	    output_end_of_line(file_name_col);
-	    output_fprintf
+	    file_name_col->end_of_line();
+	    file_name_col->fprintf
 	    (
-		file_name_col,
 		"About to be copied by change %ld.",
 		magic_zero_decode(src_data->about_to_be_copied_by)
 	    );
@@ -266,15 +259,15 @@ list_project_files(string_ty *project_name, long change_number,
 	    switch (src_data->action)
 	    {
 	    case file_action_create:
-		output_end_of_line(file_name_col);
-		output_fputs(file_name_col, "Moved from ");
-		output_fputs(file_name_col, src_data->move->str_text);
+		file_name_col->end_of_line();
+		file_name_col->fputs("Moved from ");
+		file_name_col->fputs(src_data->move->str_text);
 		break;
 
 	    case file_action_remove:
-		output_end_of_line(file_name_col);
-		output_fputs(file_name_col, "Moved to ");
-		output_fputs(file_name_col, src_data->move->str_text);
+		file_name_col->end_of_line();
+		file_name_col->fputs("Moved to ");
+		file_name_col->fputs(src_data->move->str_text);
 		break;
 
 	    case file_action_modify:
@@ -290,13 +283,19 @@ list_project_files(string_ty *project_name, long change_number,
 
 	    for (k = 0; k < src_data->attribute->length; ++k)
 	    {
-		attributes_ty   *ap;
-		output_ty       *op;
-
-		ap = src_data->attribute->list[k];
-		op = (output_ty *)symtab_query(attr_col_stp, ap->name);
-		if (op && ap->value)
-		    output_put_str(op, ap->value);
+		attributes_ty *ap = src_data->attribute->list[k];
+		assert(ap);
+		assert(ap->name);
+		assert(ap->value);
+		if (ap->name && ap->value)
+		{
+		    string_ty *lc_name = str_downcase(ap->name);
+		    output_ty *op =
+			(output_ty *)symtab_query(attr_col_stp, lc_name);
+		    if (op)
+			op->fputs(ap->value);
+		    str_free(lc_name);
+		}
 	    }
 	}
 	col_eoln(colp);

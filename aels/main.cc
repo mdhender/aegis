@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -112,7 +112,6 @@ main(int argc, char **argv)
 {
     long	    change_number;
     string_ty	    *project_name;
-    string_list_ty  name;
     string_ty	    *s;
     project_ty	    *pp;
     change_ty	    *cp;
@@ -131,17 +130,17 @@ main(int argc, char **argv)
     {
     case arglex_token_help:
 	list_help();
-	exit(0);
+	quit(0);
 
     case arglex_token_version:
 	version();
-	exit(0);
+	quit(0);
     }
 
     project_name = 0;
     change_number = 0;
     baseline = 0;
-    string_list_constructor(&name);
+    string_list_ty name;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -165,7 +164,7 @@ main(int argc, char **argv)
 
         case arglex_token_string:
 	    s = str_from_c(arglex_value.alv_string);
-	    string_list_append(&name, s);
+	    name.push_back(s);
 	    str_free(s);
 	    break;
 
@@ -329,6 +328,8 @@ main(int argc, char **argv)
     // 3. if the file is inside the baseline, ok
     // 4. if neither, error
     //
+    if (!up)
+	up = user_executing(pp);
     based =
 	(
 	    up != 0
@@ -346,7 +347,7 @@ main(int argc, char **argv)
     if (!name.nstrings)
     {
 	os_become_orig();
-	string_list_append(&name, os_curdir());
+	name.push_back(os_curdir());
 	os_become_undo();
     }
     for (j = 0; j < name.nstrings; ++j)
@@ -386,6 +387,6 @@ main(int argc, char **argv)
     //
     // report success
     //
-    exit(0);
+    quit(0);
     return 0;
 }

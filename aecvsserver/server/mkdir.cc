@@ -32,7 +32,7 @@ server_mkdir(server_ty *sp, string_ty *client_side, string_ty *server_side)
     //
     // If the directory exists, do nothing.
     //
-    if (net_directory_find_client_side(sp->np, client_side))
+    if (sp->np->directory_find_client_side(client_side))
 	return;
 
     //
@@ -57,7 +57,7 @@ server_mkdir(server_ty *sp, string_ty *client_side, string_ty *server_side)
     //
     // Remember that the directory now exists.
     //
-    net_directory_set(sp->np, client_side, server_side);
+    sp->np->directory_set(client_side, server_side);
 }
 
 

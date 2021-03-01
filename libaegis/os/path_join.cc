@@ -32,3 +32,10 @@ os_path_join(string_ty *lhs, string_ty *rhs)
 	slash = str_from_c("/");
     return str_cat_three(lhs, slash, rhs);
 }
+
+
+nstring
+os_path_join(const nstring &lhs, const nstring &rhs)
+{
+    return (lhs + "/" + rhs);
+}

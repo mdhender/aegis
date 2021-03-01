@@ -58,7 +58,7 @@ uncommon name, you can set the appropriate attribute by editing the
 .IP \(bu 2n
 GNU Automake.
 .br
-http://ftp.gnu.org/pub/gnu/automake/
+http://ftp.gnu.org/\%pub/\%gnu/\%automake/
 .IP \(bu 2n
 You will need to install FHist, for the history tool.
 .br
@@ -66,13 +66,13 @@ http://fhist.sourceforge.net/
 .IP \(bu 2n
 You will need to install \fItardy\fP, for manipulating tarballs.
 .br
-http://www.canb.auug.org.au/~millerp/tardy.html
+http://www.canb.auug.org.au/\%~millerp/\%tardy.html
 .IP \(bu 2n
 You will need to install \fIptx\fP(1), for the permuted indexes in the
 documentation.
 This is now part of GNU coreutils.
 .br
-http://ftp.gnu.org/pub/gnu/coreutils/
+http://ftp.gnu.org/\%pub/\%gnu/\%coreutils/
 .IP \(bu 2n
 You need psutils for the \fIpsselect\fP utility, to manipulate the
 documentation files, mostly to put the tables of contents at the start,

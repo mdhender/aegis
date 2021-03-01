@@ -24,7 +24,7 @@
 #include <ac/stddef.h>
 #include <ac/stdlib.h>
 #include <ac/unistd.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <dir.h>
@@ -87,7 +87,7 @@ rmdir_callback(void *arg, dir_walk_message_ty message, string_ty *path,
 
 
 int
-rmdir_bg(char *path)
+rmdir_bg(const char *path)
 {
     string_ty	    *s;
 
@@ -115,7 +115,7 @@ rmdir_bg(char *path)
 
 
 int
-rmdir_tree(char *path)
+rmdir_tree(const char *path)
 {
     string_ty	    *s;
 

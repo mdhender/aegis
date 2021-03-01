@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -93,13 +93,13 @@ list_change_file_inventory(string_ty *project_name, long change_number,
 	fstate_src_ty *src_data = change_file_nth(cp, j, view_path_first);
 	if (!src_data)
 	    break;
-	output_put_str(file_name_col, src_data->file_name);
+	file_name_col->fputs(src_data->file_name);
 	if (src_data->uuid)
-	    output_put_str(uuid_col, src_data->uuid);
+	    uuid_col->fputs(src_data->uuid);
 	else if (indev && src_data->action == file_action_create)
-	    output_fputs(uuid_col, "# uuid to be set by integrate pass");
+	    uuid_col->fputs("# uuid to be set by integrate pass");
 	else
-	    output_put_str(uuid_col, src_data->file_name);
+	    uuid_col->fputs(src_data->file_name);
 	col_eoln(colp);
     }
 

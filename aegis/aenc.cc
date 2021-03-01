@@ -151,9 +151,6 @@ new_change_main(void)
     edit_ty	    edit;
     size_t	    j;
     pconf_ty        *pconf_data;
-    string_list_ty  carch;
-    string_list_ty  darch;
-    string_list_ty  parch;
     const char      *output;
     string_ty	    *input;
 
@@ -517,16 +514,14 @@ new_change_main(void)
 	assert(dflt->architecture);
 	assert(dflt->architecture->length);
 
-	string_list_constructor(&carch);
+	string_list_ty carch;
 	for (j = 0; j < cattr_data->architecture->length; ++j)
-	    string_list_append(&carch, cattr_data->architecture->list[j]);
-	string_list_constructor(&darch);
+	    carch.push_back(cattr_data->architecture->list[j]);
+	string_list_ty darch;
 	for (j = 0; j < dflt->architecture->length; ++j)
-	    string_list_append(&darch, dflt->architecture->list[j]);
-	if (!string_list_equal(&carch, &darch))
+	    darch.push_back(dflt->architecture->list[j]);
+	if (carch != darch)
 	    fatal_intl(0, i18n("bad ca, no arch exempt"));
-	string_list_destructor(&carch);
-	string_list_destructor(&darch);
 	cattr_type.free(dflt);
     }
 
@@ -535,17 +530,15 @@ new_change_main(void)
     // variations in the project's architecture list
     //
     assert(cattr_data->architecture);
-    string_list_constructor(&carch);
+    string_list_ty carch;
     for (j = 0; j < cattr_data->architecture->length; ++j)
-	string_list_append(&carch, cattr_data->architecture->list[j]);
+	carch.push_back(cattr_data->architecture->list[j]);
     assert(pconf_data->architecture);
-    string_list_constructor(&parch);
+    string_list_ty parch;
     for (j = 0; j < pconf_data->architecture->length; ++j)
-	string_list_append(&parch, pconf_data->architecture->list[j]->name);
-    if (!string_list_subset(&carch, &parch))
+	parch.push_back(pconf_data->architecture->list[j]->name);
+    if (!carch.subset(parch))
 	fatal_intl(0, i18n("bad ca, unknown architecture"));
-    string_list_destructor(&carch);
-    string_list_destructor(&parch);
 
     //
     // set change state from the attributes

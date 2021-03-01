@@ -25,21 +25,9 @@ The model of the software development process
 used by Aegis
 evolved and grew with time in a commercial software development environment,
 and it has continued to be used and developed.
-Unfortunately,
-this environment was the largest experienced by the author to date,
-and consisted of only about forty software engineers working on
-a single project.\**
-.FS
-"Unfortunately,"
-because many real-world projects are far larger,
-but the author has yet to experience,
-and understand,
-the issues and procedures required.
-(Think of problems,
-yes;
-think of real-world solutions,
-no.)
-.FE
+.LP
+The model described here is generic, and can be adapted in a variety of
+ways.  These will be described at the relevant points in the text.
 .nh 3 "The Baseline"
 .LP
 Most CASE systems revolve around a repository:
@@ -352,6 +340,26 @@ The Aegis program provides a mechanism,
 described later,
 for bringing out-of-date files in changes up-to-date without losing the
 edits made by the developer.
+.nh 4 "Awaiting Review"
+.LP
+The default configuration for an Aegis project does not use this state,
+because for small-ish projects it can be tedious.  For larger projects,
+however, it assists in coordinating reviewers when you use email
+notification that a review is required to several potential reviewers.
+.LP
+To enable this state, you need to change the \fIdevelop_\%end_\%action\fP
+field of the project attributes.  See \fIaepa\fP(1) for more
+information, or \fItkaepa\fP(1) for a GUI interface.
+.LP
+It is also possible, by a different setting of the same project
+attribute, to skip the code review step altogether.  This can be of
+benefit to one-person projects where independent code review would be
+impossible.
+.LP
+The rest of this description will assume the \fIawaiting review\fP state
+is not being used, but code reviews \fIare\fP being used, to simplify
+matters.  Once you are more familiar with Aegis, enabling the use of the
+\fIawaiting review\fP state will be simple and will behave intuitively.
 .nh 4 "Being Reviewed"
 .LP
 A change is in this state after a developer has indicated that development is
@@ -401,6 +409,18 @@ and the changes are to the current version of the baseline.
 The reviewer may thus concentrate on issues of completeness,
 implementation,
 and standards - to name only a few.
+.nh 5 "Customizing Code Review Policy"
+.LP
+It is possible to require more than one reviewer for a change.  By
+setting the \fIreview_\%policy_\%command\fP of the project configuration
+file, you can pass a shell script (or other command) the relevant change
+details, and the exit status will be used to determine of the change
+advances to the \fIawaiting integration\fP state, or requires additional
+code reviewers first.
+.LP
+Because it is a program, it is possible to implement almost any policy
+you can think of, including particular reviewers for particular areas of
+code, or that there must be 3 different reviewers, \fIetc\fP.
 .nh 4 "Awaiting Integration"
 .LP
 A change is in this state after a reviewer has indicated that a change is

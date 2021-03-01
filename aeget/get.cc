@@ -31,7 +31,7 @@
 #include <get/rect.h>
 #include <project.h>
 #include <str.h>
-#include <str_list.h>
+#include <nstring/list.h>
 
 
 static int
@@ -79,7 +79,6 @@ void
 get(void)
 {
     string_ty       *path;
-    string_list_ty  modifier;
     char            *end;
     string_ty       *project_name;
     project_ty      *pp;
@@ -95,19 +94,33 @@ get(void)
     // Pull out the @@ modifier.
     // It may have several parts, e.g. @@changes@being_developed
     //
-    string_list_constructor(&modifier);
+    string_list_ty modifier;
     end = strstr(path->str_text, "@@");
     if (end)
     {
-	string_ty       *s;
-
-	s = str_from_c(end + 2);
-	str2wl(&modifier, s, "@", 0);
+	string_ty *s = str_from_c(end + 2);
+	modifier.split(s, "@");
 	str_free(s);
 
 	s = str_n_from_c(path->str_text, end - path->str_text);
 	str_free(path);
 	path = s;
+    }
+
+    //
+    // Pull out the ? modifier.
+    // It may have several parts, e.g. ?changes+being_developed
+    //
+    const char *query_string = getenv("QUERY_STRING");
+    if (query_string && *query_string)
+    {
+	nstring_list qm;
+	qm.split(query_string, "+");
+	for (size_t j = 0; j < qm.size(); ++j)
+	{
+	    nstring ms = qm[j].url_unquote();
+	    modifier.push_back(ms.get_ref());
+	}
     }
 
     if (path->str_length == 0)
@@ -187,5 +200,4 @@ get(void)
     }
     str_free(project_name);
     str_free(path);
-    string_list_destructor(&modifier);
 }

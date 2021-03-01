@@ -25,47 +25,39 @@
 #include <sub.h>
 #include <sub/namemax.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 wstring_ty *
 sub_namemax(sub_context_ty *scp, wstring_list_ty *arg)
 {
-    wstring_ty      *result;
-
     trace(("sub_namemax()\n{\n"));
-    if (arg->nitems < 2)
+    if (arg->size() < 2)
     {
        	sub_context_error_set(scp, i18n("requires one argument"));
-	result = 0;
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
     }
-    else
+
+    string_list_ty results;
+    os_become_orig();
+    for (size_t j = 1; j < arg->size(); ++j)
     {
-	string_list_ty	results;
-	size_t		j;
-	string_ty	*s;
-
-	string_list_constructor(&results);
-	os_become_orig();
-	for (j = 1; j < arg->nitems; ++j)
-	{
-	    int             n;
-
-	    s = wstr_to_str(arg->item[j]);
-	    trace(("s = \"%s\";\n", s->str_text));
-	    n = os_pathconf_name_max(s);
-	    str_free(s);
-	    s = str_format("%d", n);
-	    trace(("result = \"%s\";\n", s->str_text));
-	    string_list_append(&results, s);
-	    str_free(s);
-	}
-	os_become_undo();
-	s = wl2str(&results, 0, results.nstrings, 0);
-	string_list_destructor(&results);
-	result = str_to_wstr(s);
+	string_ty *s = wstr_to_str(arg->get(j));
+	trace(("s = \"%s\";\n", s->str_text));
+	int n = os_pathconf_name_max(s);
+	str_free(s);
+	s = str_format("%d", n);
+	trace(("result = \"%s\";\n", s->str_text));
+	results.push_back(s);
 	str_free(s);
     }
+    os_become_undo();
+
+    string_ty *s = results.unsplit();
+    wstring_ty *result = str_to_wstr(s);
+    str_free(s);
     trace(("return %8.8lX;\n", (long)result));
     trace(("}\n"));
     return result;

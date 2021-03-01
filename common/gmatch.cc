@@ -23,6 +23,7 @@
 #include <ac/string.h>
 
 #include <gmatch.h>
+#include <nstring.h>
 #include <trace.h>
 
 
@@ -260,4 +261,11 @@ gmatch(const char *formal, const char *actual)
     trace(("return %d;\n", result));
     trace(("}\n"));
     return result;
+}
+
+
+int
+gmatch(const nstring &pattern, const nstring &candidate)
+{
+    return gmatch(pattern.c_str(), candidate.c_str());
 }

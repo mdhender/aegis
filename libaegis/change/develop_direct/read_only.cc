@@ -21,7 +21,7 @@
 //
 
 #include <ac/stddef.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <cstate.h>

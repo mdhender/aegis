@@ -20,15 +20,13 @@
 // MANIFEST: functions to manipulate set_times
 //
 
+#include <nstring.h>
 #include <sub.h>
 
 
 void
-sub_var_set_time(sub_context_ty *scp, const char *name, time_t value)
+sub_context_ty::var_set_time(const char *name, time_t value)
 {
-    string_ty       *s;
-
-    s = str_format("%.24s", ctime(&value));
-    sub_var_set_string(scp, name, s);
-    str_free(s);
+    nstring s = nstring::format("%.24s", ctime(&value));
+    var_set_string(name, s);
 }

@@ -181,9 +181,6 @@ make_transparent_list(void)
 static void
 make_transparent_main(void)
 {
-    string_list_ty  wl;
-    string_list_ty  wl2;
-    string_list_ty  wl_in;
     string_ty	    *s1;
     string_ty	    *s2;
     fstate_src_ty   *c_src_data;
@@ -209,7 +206,7 @@ make_transparent_main(void)
     arglex();
     project_name = 0;
     change_number = 0;
-    string_list_constructor(&wl);
+    string_list_ty wl;
     log_style = log_style_append_default;
     unchanged = 0;
     while (arglex_token != arglex_token_eoln)
@@ -228,7 +225,7 @@ make_transparent_main(void)
 
 	case arglex_token_string:
 	    s2 = str_from_c(arglex_value.alv_string);
-	    string_list_append(&wl, s2);
+	    wl.push_back(s2);
 	    str_free(s2);
 	    break;
 
@@ -332,7 +329,7 @@ make_transparent_main(void)
     // It is an error if there are none.
     //
     if (!wl.nstrings)
-	string_list_append(&wl, change_development_directory_get(cp, 1));
+	wl.push_back(change_development_directory_get(cp, 1));
 
     //
     // Where to search to resolve file names.
@@ -374,7 +371,7 @@ make_transparent_main(void)
     //
     bcp = project_change_get(pp);
     number_of_errors = 0;
-    string_list_constructor(&wl2);
+    string_list_ty wl2;
     for (j = 0; j < wl.nstrings; ++j)
     {
 	s1 = wl.string[j];
@@ -403,6 +400,7 @@ make_transparent_main(void)
 	    ++number_of_errors;
 	    continue;
 	}
+	string_list_ty wl_in;
 	change_file_directory_query(bcp, s2, &wl_in, 0);
 	if (wl_in.nstrings)
 	{
@@ -421,7 +419,7 @@ make_transparent_main(void)
 		s3 = wl_in.string[k];
 		if (!change_file_find(cp, s3, view_path_first))
 		{
-		    if (string_list_member(&wl2, s3))
+		    if (wl2.member(s3))
 		    {
 			scp = sub_context_new();
 			sub_var_set_string(scp, "File_Name", s3);
@@ -430,7 +428,7 @@ make_transparent_main(void)
 			++number_of_errors;
 		    }
 		    else
-			string_list_append(&wl2, s3);
+			wl2.push_back(s3);
 		    ++used;
 		}
 	    }
@@ -455,7 +453,7 @@ make_transparent_main(void)
 	}
 	else
 	{
-	    if (string_list_member(&wl2, s2))
+	    if (wl2.member(s2))
 	    {
 		scp = sub_context_new();
 		sub_var_set_string(scp, "File_Name", s2);
@@ -464,14 +462,11 @@ make_transparent_main(void)
 		++number_of_errors;
 	    }
 	    else
-		string_list_append(&wl2, s2);
+		wl2.push_back(s2);
 	}
-	string_list_destructor(&wl_in);
 	str_free(s2);
     }
-    string_list_destructor(&wl);
     wl = wl2;
-    string_list_destructor(&search_path);
 
     //
     // ensure that each file
@@ -770,7 +765,6 @@ make_transparent_main(void)
     change_verbose(cp, scp, i18n("make transparent complete"));
     sub_context_delete(scp);
 
-    string_list_destructor(&wl);
     change_free(cp);
     project_free(pp);
     user_free(up);

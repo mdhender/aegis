@@ -25,8 +25,21 @@
 
 #include <patch.h>
 
+struct patch_list_ty
+{
+    string_ty       *project_name;
+    long            change_number;
+    string_ty       *brief_description;
+    string_ty       *description;
+
+    size_t          length;
+    size_t          maximum;
+    patch_ty        **item;
+};
+
 patch_list_ty *patch_list_new(void);
 void patch_list_delete(patch_list_ty *);
 void patch_list_append(patch_list_ty *, patch_ty *);
+patch_list_ty *patch_read(struct input_ty *, int);
 
 #endif /* LIBAEGIS_PATCH_LIST_H */

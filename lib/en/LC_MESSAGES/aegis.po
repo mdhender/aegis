@@ -47,7 +47,7 @@
 # -------------------------------------------------------------------------
 #
 msgid	""
-msgstr	"PO-Revision-Date: 2004-07-16\n"
+msgstr	"PO-Revision-Date: 2004-10-20\n"
 	"MIME-Version: 1.0\n"
 	"Content-Type: text/plain; charset=ascii\n"
 	"Content-Transfer-Encoding: 8bit\n"
@@ -261,7 +261,28 @@ msgstr	"test \"$filename\" passed"
 # 	$File_Name	The offending command line argument.
 #
 msgid	"$filename unrelated"
-msgstr	"path \"$filename\" unrelated"
+msgstr	"path \"$filename\" is not within any change or project directory "
+	"tree; maybe the -base-relative option will help"
+
+#
+# This fatal error message is issued by the aefa -uuid command if the
+# file already has a UUID set.
+#
+#	$File_Name	the offending filename
+#
+msgid	"$filename uuid already set"
+msgstr	"the \"$filename\" file alreday has a UUID"
+
+#
+# This fatal error message is issued by the aefa -uuid command if the
+# file already has a UUID set.
+#
+#	$File_Name	the offending filename
+#	$Other		the other filename using the UUID (optional)
+#
+msgid	"$filename uuid duplicate"
+msgstr	"the UUID specified for the \"$filename\" file is already in use "
+        "by the \"$other\" file"
 
 #
 # This error message is issued when a substitution function is formed
@@ -312,7 +333,7 @@ msgstr	"$filename: $linenumber: in substitution \"$message\" variable "
 # important that THIS substitution not fail, otherwise there will be an
 # infinite loop - it is caught, but does not yield a particularly
 # helpful message, nor will it impress the users.)
-# This +++ message works with the other messages marked +++ above.
+# This +++ message works with the other messages marked "See (+++)".
 #
 # 	$File_Name	The filename containg the message
 # 	$Line_Number	The line number of the message
@@ -324,7 +345,7 @@ msgstr	"$filename: $linenumber: substitution $${$name} failed: $message"
 
 #
 # This error message is issued when a substitution function is formed
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 # 	$File_Name	The filename containg the message
 # 	$Line_Number	The line number of the message
@@ -334,7 +355,7 @@ msgstr	"$filename: $linenumber: unterminated $${} \\ sequence"
 
 #
 # This error message is issued when a substitution function is formed
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 # 	$File_Name	The filename containg the message
 # 	$Line_Number	The line number of the message
@@ -344,7 +365,7 @@ msgstr	"$filename: $linenumber: unterminated $${} quotes"
 
 #
 # This error message is issued when a substitution function is formed
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 msgid	"$filename: $linenumber: unterminated $${} substitution"
 msgstr	"$filename: $linenumber: unterminated $${} substitution"
@@ -889,7 +910,7 @@ msgstr	"Project \"$name\", Change $number, File \"$filename\""
 
 #
 # This error message is issued when the ${read_file} substitution is
-# called incorrectly.  See (+++) below.
+# called incorrectly.  See (+++) above.
 #
 msgid	"absolute path required"
 msgstr	"absolute path required"
@@ -937,7 +958,7 @@ msgstr	"it appears that all test numbers have been consumed"
 
 #
 # This error message is issued when an unknown substitution is
-# referenced.  See (+++) below.
+# referenced.  See (+++) above.
 #
 msgid	"ambiguous substitution name"
 msgstr	"ambiguous substitution name"
@@ -2280,6 +2301,14 @@ msgid	"duplicate $name option"
 msgstr	"duplicate $name option, you may only give one"
 
 #
+# This error message is issued when the aerpass command detects that a
+# user has already reviewed this change once since the last develop end.
+# (This can occur when the review_policy_command is being used.)
+#
+msgid	"duplicate review"
+msgstr	"you may not review the same change twice"
+
+#
 # This error message is issued when an unterminated comment is seen.
 # Comments may not span input files.
 #
@@ -2602,7 +2631,7 @@ msgstr	"file name \"$filename\" not suitable for Windows "
 
 #
 # This error message is issued when a file qualifier in a substitution
-# is an unknown name.  See (+++) below.
+# is an unknown name.  See (+++) above.
 #
 msgid	"file qualifier unknown"
 msgstr	"file qualifier unknown"
@@ -4137,7 +4166,7 @@ msgstr	"user \"$user\" is not the reviewer, only user \"$reviewer\" may "
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 msgid	"not valid in current context"
 msgstr	"not valid in current context"
@@ -4149,6 +4178,19 @@ msgstr	"not valid in current context"
 #
 msgid	"open $filename: $errno"
 msgstr	"open \"$filename\": $errno"
+
+#
+# This error message is issued when a file open fails because there was
+# no curl library available when ./configure was run.
+#
+# 	$File_Name	The name of the offending file.
+#
+msgid	"open $filename: no curl library"
+msgstr	"unable to open \"$filename\" because there was no -lcurl library "
+	"available when Aegis was built.  The curl library is used to "
+	"read many different style of URL.  If you are using a package "
+	"manager, it may usually be found in the curl-devel package.  You "
+	"will need to reconfigure and rebuild Aegis once it is installed."
 
 #
 # This error message is issued by aede when attempting to end the
@@ -4533,56 +4575,56 @@ msgstr	"report aborted"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 msgid	"requires at least one argument"
 msgstr	"requires at least one argument"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 msgid	"requires one argument"
 msgstr	"requires one argument"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 msgid	"requires one or two arguments"
 msgstr	"requires one or two arguments"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 msgid	"requires three arguments"
 msgstr	"requires three arguments"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 msgid	"requires two arguments"
 msgstr	"requires two arguments"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 msgid	"requires two or more arguments"
 msgstr	"requires two or more arguments"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 msgid	"requires two or three arguments"
 msgstr	"requires two or three arguments"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 msgid	"requires zero arguments"
 msgstr	"requires zero arguments"
@@ -4654,7 +4696,7 @@ msgstr	"rmdir \"$filename\": $errno"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 msgid	"second argument must be \"Absolute\" or \"Relative\""
 msgstr	"second argument must be \"Absolute\" or \"Relative\""
@@ -4706,7 +4748,7 @@ msgstr	"sort requires exactly 1 argument (was given $number)"
 
 #
 # This error message is issued when the ${source} substitution is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 msgid	"source file unknown"
 msgstr	"source file unknown"
@@ -5112,14 +5154,14 @@ msgstr	"unable to determine the shell which has requested the completion"
 
 #
 # This error message is issued when an unknown substitution is
-# referenced.  See (+++) below.
+# referenced.  See (+++) above.
 #
 msgid	"unknown substitution name"
 msgstr	"unknown substitution name"
 
 #
 # This error message is issued when an unknown substitution variant
-# is referenced.  See (+++) below.
+# is referenced.  See (+++) above.
 #
 msgid	"unknown substitution variant"
 msgstr	"unknown substitution variant"

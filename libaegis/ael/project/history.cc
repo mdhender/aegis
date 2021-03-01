@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -37,167 +37,128 @@
 
 
 void
-list_project_history(string_ty *project_name,
-                     long change_number,
-                     string_list_ty *args)
+list_project_history(string_ty *project_name, long change_number,
+    string_list_ty *args)
 {
-	output_ty	*name_col = 0;
-	output_ty	*delta_col = 0;
-	output_ty	*date_col = 0;
-	output_ty	*change_col = 0;
-	output_ty	*description_col = 0;
-	size_t		j, k;
-	project_ty	*pp;
-	string_ty	*line1;
-	int		left;
-	col_ty		*colp;
+    output_ty       *name_col = 0;
+    output_ty       *delta_col = 0;
+    output_ty       *date_col = 0;
+    output_ty       *change_col = 0;
+    output_ty       *description_col = 0;
+    size_t          j, k;
+    project_ty      *pp;
+    string_ty       *line1;
+    int             left;
+    col_ty          *colp;
 
-	trace(("list_project_history()\n{\n"));
-	if (change_number)
-		list_change_inappropriate();
+    trace(("list_project_history()\n{\n"));
+    if (change_number)
+	list_change_inappropriate();
 
-	//
-	// locate project data
-	//
-	if (!project_name)
-		project_name = user_default_project();
-	else
-		project_name = str_copy(project_name);
-	pp = project_alloc(project_name);
-	str_free(project_name);
-	project_bind_existing(pp);
+    //
+    // locate project data
+    //
+    if (!project_name)
+	project_name = user_default_project();
+    else
+	project_name = str_copy(project_name);
+    pp = project_alloc(project_name);
+    str_free(project_name);
+    project_bind_existing(pp);
 
-	//
-	// create the columns
-	//
-	colp = col_open((string_ty *)0);
-	line1 = str_format("Project \"%s\"", project_name_get(pp)->str_text);
-	col_title(colp, line1->str_text, "History");
-	str_free(line1);
+    //
+    // create the columns
+    //
+    colp = col_open((string_ty *)0);
+    line1 = str_format("Project \"%s\"", project_name_get(pp)->str_text);
+    col_title(colp, line1->str_text, "History");
+    str_free(line1);
 
-	// the delta name column is the whole page wide
-	name_col = col_create(colp, 0, 0, (const char *)0);
+    // the delta name column is the whole page wide
+    name_col = col_create(colp, 0, 0, (const char *)0);
 
-	left = 0;
-	delta_col =
-		col_create
-		(
-			colp,
-			left,
-			left + CHANGE_WIDTH,
-			"Delta\n-------"
-		);
+    left = 0;
+    delta_col = col_create(colp, left, left + CHANGE_WIDTH, "Delta\n-------");
+    left += CHANGE_WIDTH + 1;
+
+    if (!option_terse_get())
+    {
+	date_col =
+	    col_create
+	    (
+	       	colp,
+	       	left,
+	       	left + WHEN_WIDTH,
+	       	"Date and Time\n---------------"
+	    );
+	left += WHEN_WIDTH + 1;
+
+	change_col =
+	    col_create(colp, left, left + CHANGE_WIDTH, "Change\n-------");
 	left += CHANGE_WIDTH + 1;
 
+	description_col =
+	    col_create(colp, left, 0, "Description\n-------------");
+    }
+
+    //
+    // list the project's successful integrations
+    //
+    for (j = 0; ; ++j)
+    {
+	long		cn;
+	long		dn;
+	string_list_ty	name;
+
+	if (!project_history_nth(pp, j, &cn, &dn, &name))
+	    break;
+	if (!option_terse_get() && name.nstrings)
+	{
+	    col_need(colp, 4);
+	    name_col->fprintf("Name%s: ", (name.nstrings == 1 ? "" : "s"));
+	    for (k = 0; k < name.nstrings; ++k)
+	    {
+		if (k)
+		    name_col->fputs(", ");
+		name_col->fprintf("\"%s\"", name.string[k]->str_text);
+	    }
+
+	    //
+	    // If we don't eoln here, and there are lots
+	    // of names, then they get intermingled with
+	    // the date and description lines, and it
+	    // looks weird.
+	    //
+	    col_eoln(colp);
+	}
+	delta_col->fprintf("%4ld", dn);
 	if (!option_terse_get())
 	{
-		date_col =
-			col_create
-			(
-				colp,
-				left,
-				left + WHEN_WIDTH,
-				"Date and Time\n---------------"
-			);
-		left += WHEN_WIDTH + 1;
+	    cstate_ty       *cstate_data;
+	    time_t          t;
+	    change_ty       *cp;
 
-		change_col =
-			col_create
-			(
-				colp,
-				left,
-				left + CHANGE_WIDTH,
-				"Change\n-------"
-			);
-		left += CHANGE_WIDTH + 1;
-
-		description_col =
-			col_create(colp, left, 0, "Description\n-------------");
+	    cp = change_alloc(pp, cn);
+	    change_bind_existing(cp);
+	    cstate_data = change_cstate_get(cp);
+	    t =
+		cstate_data->history->list
+		[
+			cstate_data->history->length - 1
+		]->when;
+	    date_col->fputs(ctime(&t));
+	    change_col->fprintf("%4ld", cn);
+	    assert(cstate_data->brief_description);
+	    description_col->fputs(cstate_data->brief_description);
+	    change_free(cp);
 	}
+	col_eoln(colp);
+    }
 
-	//
-	// list the project's successful integrations
-	//
-	for (j = 0; ; ++j)
-	{
-		long		cn;
-		long		dn;
-		string_list_ty	name;
-
-		if (!project_history_nth(pp, j, &cn, &dn, &name))
-			break;
-		if
-		(
-			!option_terse_get()
-		&&
-			name.nstrings
-		)
-		{
-			col_need(colp, 4);
-			output_fprintf
-			(
-				name_col,
-				"Name%s: ",
-				(name.nstrings == 1 ? "" : "s")
-			);
-			for (k = 0; k < name.nstrings; ++k)
-			{
-				if (k)
-					output_fputs(name_col, ", ");
-				output_fprintf
-				(
-					name_col,
-					"\"%s\"",
-					name.string[k]->str_text
-				);
-			}
-
-			//
-			// If we don't eoln here, and there are lots
-			// of names, then they get intermingled with
-			// the date and description lines, and it
-			// looks weird.
-			//
-			col_eoln(colp);
-		}
-		output_fprintf(delta_col, "%4ld", dn);
-		if (!option_terse_get())
-		{
-			cstate_ty       *cstate_data;
-			time_t		t;
-			change_ty	*cp;
-
-			cp = change_alloc(pp, cn);
-			change_bind_existing(cp);
-			cstate_data = change_cstate_get(cp);
-			t =
-				cstate_data->history->list
-				[
-					cstate_data->history->length - 1
-				]->when;
-			output_fputs(date_col, ctime(&t));
-			output_fprintf
-			(
-				change_col,
-				"%4ld",
-				cn
-			);
-			assert(cstate_data->brief_description);
-			output_put_str
-			(
-				description_col,
-				cstate_data->brief_description
-			);
-			change_free(cp);
-		}
-		col_eoln(colp);
-		string_list_destructor(&name);
-	}
-
-	//
-	// clean up and go home
-	//
-	col_close(colp);
-	project_free(pp);
-	trace(("}\n"));
+    //
+    // clean up and go home
+    //
+    col_close(colp);
+    project_free(pp);
+    trace(("}\n"));
 }

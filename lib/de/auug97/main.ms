@@ -157,4 +157,6 @@ dieser Werkzeuge auf vielen Internet Sites erm\*:oglichte
 den Einblick, der zu diesem Artikel f\*:uhrte.
 .LP
 Wenn Sie Interesse am Bezug der freien Software des Autors haben, besuchen
+.\" do not warn "cannot adjust line"
+.warn (\n[.warn]-(((\n[.warn]/4)%2)*4))
 Sie bitte: \f(CWhttp://www\%.canb\%.auug\%.org\%.au\%/~millerp/\fP

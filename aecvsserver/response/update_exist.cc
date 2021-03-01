@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -109,12 +109,11 @@ write(response_ty *rp, output_ty *op)
     rcp = (response_update_existing_ty *)rp;
     short_dir_name = os_dirname_relative(rcp->client_side);
     short_file_name = os_entryname_relative(rcp->client_side);
-    output_fprintf(op, "M U %s\n", short_file_name->str_text);
-    output_fprintf(op, "Update-existing %s/\n", short_dir_name->str_text);
-    output_fprintf(op, "/aegis/%s\n", rcp->server_side->str_text);
-    output_fprintf
+    op->fprintf("M U %s\n", short_file_name->str_text);
+    op->fprintf("Update-existing %s/\n", short_dir_name->str_text);
+    op->fprintf("/aegis/%s\n", rcp->server_side->str_text);
+    op->fprintf
     (
-	op,
 	"/%s/%s///\n",
 	short_file_name->str_text,
 	rcp->version->str_text
@@ -130,12 +129,12 @@ write(response_ty *rp, output_ty *op)
 	// send the *compressed* file size first, which isn't easy using
 	// a naive usage of output_gzip().  Just say no.
 	//
-	output_fprintf(op, "%ld\n", length);
+	op->fprintf("%ld\n", length);
 	input_to_output(rcp->source, op);
     }
     else
     {
-	output_fprintf(op, "0\n");
+	op->fputs("0\n");
     }
     os_become_undo();
     str_free(short_dir_name);

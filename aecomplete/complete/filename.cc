@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 //
 
 #include <ac/stddef.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <complete/filename.h>
@@ -43,16 +43,13 @@ struct complete_filename_ty
 static void
 destructor(complete_ty *cp)
 {
-    complete_filename_ty *this_thing;
-
-    this_thing = (complete_filename_ty *)cp;
 }
 
 
 static void
 read_dir(string_ty *path, string_list_ty *wlp)
 {
-    string_list_constructor(wlp);
+    wlp->clear();
     read_whole_dir__wl(path->str_text, wlp);
 }
 
@@ -125,7 +122,6 @@ perform(complete_ty *cp, shell_ty *sh)
 	}
 	str_free(path);
     }
-    string_list_destructor(&names);
     str_free(prefix_ent);
     str_free(prefix_dir);
 }

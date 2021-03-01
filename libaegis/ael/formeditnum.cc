@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2001, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -38,12 +38,7 @@ list_format_edit_number(output_ty *edit_col, fstate_src_ty *src_data)
 	//
 	assert(src_data->edit->revision);
 	assert(src_data->edit_origin->revision);
-	output_fprintf
-	(
-	    edit_col,
-	    "%4s",
-	    src_data->edit_origin->revision->str_text
-	);
+	edit_col->fprintf("%4s", src_data->edit_origin->revision->str_text);
 	if
 	(
 	    str_equal
@@ -53,7 +48,7 @@ list_format_edit_number(output_ty *edit_col, fstate_src_ty *src_data)
 	    )
 	)
 	    return;
-	output_fprintf(edit_col, " -> %s", src_data->edit->revision->str_text);
+	edit_col->fprintf(" -> %s", src_data->edit->revision->str_text);
 	return;
     }
 
@@ -63,12 +58,7 @@ list_format_edit_number(output_ty *edit_col, fstate_src_ty *src_data)
 	// The "original version" copied.
 	//
 	assert(src_data->edit_origin->revision);
-	output_fprintf
-	(
-	    edit_col,
-	    "%4s",
-	    src_data->edit_origin->revision->str_text
-	);
+	edit_col->fprintf("%4s", src_data->edit_origin->revision->str_text);
     }
     if (src_data->edit)
     {
@@ -78,6 +68,6 @@ list_format_edit_number(output_ty *edit_col, fstate_src_ty *src_data)
 	// and branches, the revision at aeipass.
 	//
 	assert(src_data->edit->revision);
-	output_fprintf(edit_col, "%4s", src_data->edit->revision->str_text);
+	edit_col->fprintf("%4s", src_data->edit->revision->str_text);
     }
 }

@@ -134,26 +134,9 @@ is in the \fIbeing integrated\fP state, and the developer specified
 then this option is set by default.
 .so o_nolog.so
 .so o_project.so
-.TP 8n
-\fB\-Verify_Symbolic_Links\fP
-This option may be used to request a scan for up-to-date symbolic links
-before and after the build.  (Actually, this does the updating for all
-\fIdevelopment_\%directory_\%style\fP variants.)  This is the default.
-See also the ``symbolic_links_preference'' field of \fIaeuconf\fP(5).
-This option is not meaningful if \fIdevelopment_\%directory_\%style\fP
-is not being used.
-.TP 8n
-\fB\-Assume_Symbolic_Links\fP
-This option may be used to request no scan for up-to-date
-symbolic links before and after the build, this is useful
-when you have just done a build and you know they are already
-up-to-date.  (Actually, this suppresses all updating for all
-\fIdevelopment_\%directory_\%style\fP variants.)  See also the
-``symbolic_links_preference'' field of \fIaeuconf\fP(5).  This option
-is not meaningful if \fIdevelopment_\%directory_\%style\fP is not being
-used.
 .so o_terse.so
 .so o_verbose.so
+.so o_symlnk_vfy.so
 .so o_wait.so
 .so o__rules.so
 .SH RECOMMENDED ALIAS

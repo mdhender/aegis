@@ -55,7 +55,7 @@ usage(void)
 
     progname = progname_get();
     fprintf(stderr, "Usage: %s [ -GENerate | -CHEck ]\n", progname);
-    exit(1);
+    exit(EXIT_FAILURE);
 }
 
 
@@ -71,9 +71,9 @@ generate_uuid(string_ty *ifn, string_ty *ofn)
     ofp = output_file_text_open(ofn);
     if (!ofp)
 	fatal_raw("Unable to open %s from writing", ofn);
-    output_put_str(ofp, uuid);
-    output_end_of_line(ofp);
-    output_delete(ofp);
+    ofp->fputs(uuid);
+    ofp->end_of_line();
+    delete ofp;
     ofp = 0;
     os_become_undo();
     return 1;

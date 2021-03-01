@@ -26,7 +26,7 @@
 #include <sub.h>
 #include <trace.h>
 #include <wstr.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 
@@ -56,34 +56,26 @@ sub_getenv(sub_context_ty *scp, wstring_list_ty *arg)
     wstring_ty	    *result;
 
     trace(("sub_getenv()\n{\n"));
-    if (arg->nitems < 2)
+    if (arg->size() < 2)
     {
        	sub_context_error_set(scp, i18n("requires one argument"));
        	result = 0;
     }
     else
     {
-	string_list_ty	results;
-	size_t		j;
-	string_ty	*s;
-
-	string_list_constructor(&results);
-	for (j = 1; j < arg->nitems; ++j)
+	string_list_ty results;
+	for (size_t j = 1; j < arg->size(); ++j)
 	{
-	    string_ty	    *name;
-	    const char      *value;
-
-	    name = wstr_to_str(arg->item[j]);
-	    value = getenv(name->str_text);
+	    string_ty *name = wstr_to_str(arg->get(j));
+	    const char *value = getenv(name->str_text);
 	    str_free(name);
 	    if (!value)
 		value = "";
-	    s = str_from_c(value);
-	    string_list_append(&results, s);
+	    string_ty *s = str_from_c(value);
+	    results.push_back(s);
 	    str_free(s);
 	}
-	s = wl2str(&results, 0, results.nstrings, 0);
-	string_list_destructor(&results);
+	string_ty *s = results.unsplit();
 	result = str_to_wstr(s);
 	str_free(s);
     }

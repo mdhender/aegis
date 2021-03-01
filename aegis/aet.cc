@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2004 Peter Miller;
+//	Copyright (C) 1991-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -151,7 +151,7 @@ limit_suggestions_cmp(const void *va, const void *vb)
 
 static void
 limit_suggestions(change_ty *cp, string_list_ty *flp, int want,
-    int noise_percent)
+    int noise_percent, bool sort_by_name)
 {
     project_ty	    *pp;
     limit_suggestions_ty *item;
@@ -165,7 +165,7 @@ limit_suggestions(change_ty *cp, string_list_ty *flp, int want,
     //
     // do nothing if at all possible
     //
-    if (want > 0 && flp->nstrings < (size_t)want)
+    if (sort_by_name && want > 0 && flp->nstrings < (size_t)want)
     {
 	sub_context_ty	*scp;
 
@@ -179,7 +179,7 @@ limit_suggestions(change_ty *cp, string_list_ty *flp, int want,
     }
     if (want < 0)
 	want = 10;
-    if (flp->nstrings <= (size_t)want)
+    if (sort_by_name && flp->nstrings <= (size_t)want)
 	return;
 
     //
@@ -197,7 +197,7 @@ limit_suggestions(change_ty *cp, string_list_ty *flp, int want,
 	lp->count = 0;
 	symtab_assign(stp, lp->filename, lp);
     }
-    string_list_destructor(flp);
+    flp->clear();
     count_max = 0;
 
     //
@@ -293,35 +293,36 @@ limit_suggestions(change_ty *cp, string_list_ty *flp, int want,
 	lp = item + j;
 	if (j < (size_t)want)
 	{
-	    sub_context_ty  *scp;
-
-	    string_list_append(flp, lp->filename);
-
-	    //
-	    // Verbose information message, so the user will
-	    // know why the tests were chosen.
-	    //
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", lp->filename);
-	    sub_var_set_format
-	    (
-		scp,
-		"Number",
-		"scp, %6.2f",
-		100. * lp->count / item[0].count
-	    );
-	    change_verbose(cp, scp, i18n("test $filename scored $number"));
-	    sub_context_delete(scp);
+	    flp->push_back(lp->filename);
+	    if (sort_by_name)
+	    {
+		//
+		// Verbose information message, so the user will
+		// know why the tests were chosen.
+		//
+		sub_context_ty sc;
+		sc.var_set_string("File_Name", lp->filename);
+		sc.var_set_format
+		(
+		    "Number",
+		    "scp, %6.2f",
+		    100. * lp->count / item[0].count
+		);
+		change_verbose(cp, &sc, i18n("test $filename scored $number"));
+	    }
 	}
 	str_free(lp->filename);
     }
     mem_free(item);
 
-    //
-    // Sort the filenames, so that the tests will be executed in the
-    // same order as by aet -reg.
-    //
-    string_list_sort(flp);
+    if (sort_by_name)
+    {
+	//
+        // Sort the filenames, so that the tests will be executed in the
+        // same order as by aet -reg.
+	//
+	flp->sort();
+    }
 }
 
 
@@ -383,8 +384,6 @@ test_main(void)
     int		    manual_flag;
     int		    automatic_flag;
     int		    progress_flag;
-    string_list_ty  wl;
-    string_list_ty  wl2;
     string_ty	    *s1;
     string_ty	    *s2;
     fstate_src_ty   *p_src_data;
@@ -421,11 +420,12 @@ test_main(void)
     automatic_flag = 0;
     force = 0;
     log_style = log_style_snuggle_default;
-    string_list_constructor(&wl);
+    string_list_ty wl;
     dir = 0;
     suggest = 0;
     suggest_noise = -1;
     progress_flag = -1;
+    int suggest_limit = 0;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -498,7 +498,7 @@ test_main(void)
 
 	case arglex_token_string:
 	    s2 = str_from_c(arglex_value.alv_string);
-	    string_list_append(&wl, s2);
+	    wl.push_back(s2);
 	    str_free(s2);
 	    break;
 
@@ -575,11 +575,37 @@ test_main(void)
 	case arglex_token_current_relative:
 	    user_relative_filename_preference_argument(test_usage);
 	    break;
+
+	case arglex_token_suggest_limit:
+	    if (suggest_limit > 0)
+		duplicate_option(test_usage);
+	    if (arglex() != arglex_token_number)
+		option_needs_number(arglex_token_suggest_limit, test_usage);
+	    suggest_limit = arglex_value.alv_number;
+	    if (suggest_limit <= 0)
+	    {
+		sub_context_ty sc;
+		sc.var_set_charstar
+		(
+		    "Name",
+		    arglex_token_name(arglex_token_suggest_limit)
+		);
+		sc.var_set_long("Number", arglex_value.alv_number);
+		sc.error_intl(i18n("$name $number must be pos"));
+		test_usage();
+	    }
+	    break;
 	}
 	arglex();
     }
     if (suggest_noise >= 0 && !suggest)
 	suggest = -1;
+    if (suggest_limit > 0)
+    {
+	if (!suggest)
+	    suggest = 32767;
+	suggest_limit = now() + 60 * suggest_limit;
+    }
     if (suggest)
 	regression_flag = 1;
     if (suggest_noise < 0)
@@ -731,8 +757,15 @@ test_main(void)
 	force = 1;
 	break;
 
+    case cstate_state_awaiting_development:
+    case cstate_state_awaiting_integration:
+    case cstate_state_awaiting_review:
+    case cstate_state_completed:
+#ifndef DEBUG
     default:
+#endif
 	change_fatal(cp, 0, i18n("bad test state"));
+	break;
     }
     assert(dir);
 
@@ -790,11 +823,9 @@ test_main(void)
     //
     // check that the named files make sense
     //
-    string_list_constructor(&wl2);
+    string_list_ty wl2;
     for (j = 0; j < wl.nstrings; ++j)
     {
-	string_list_ty	wl_in;
-
 	s1 = wl.string[j];
 	if (s1->str_text[0] == '/')
 	    s2 = str_copy(s1);
@@ -824,6 +855,7 @@ test_main(void)
 	//
 	// see if they named a directory
 	//
+	string_list_ty wl_in;
 	change_file_directory_query(cp, s2, &wl_in, 0);
 	if (wl_in.nstrings)
 	{
@@ -842,7 +874,7 @@ test_main(void)
 		{
 		case file_usage_test:
 		case file_usage_manual_test:
-		    if (string_list_member(&wl2, s3))
+		    if (wl2.member(s3))
 		    {
 			scp = sub_context_new();
 			sub_var_set_string(scp, "File_Name", s3);
@@ -851,7 +883,7 @@ test_main(void)
 			sub_context_delete(scp);
 		    }
 		    else
-			string_list_append(&wl2, s3);
+			wl2.push_back(s3);
 		    used = 1;
 		    break;
 
@@ -880,10 +912,8 @@ test_main(void)
 		sub_context_delete(scp);
 	    }
 	    str_free(s2);
-	    string_list_destructor(&wl_in);
 	    continue;
 	}
-	string_list_destructor(&wl_in);
 
 	//
 	// make sure the explicitly named file is appropriate
@@ -929,7 +959,7 @@ test_main(void)
 	    case file_action_transparent:
 		break;
 	    }
-	    if (string_list_member(&wl2, s2))
+	    if (wl2.member(s2))
 	    {
 		scp = sub_context_new();
 		sub_var_set_string(scp, "File_Name", s2);
@@ -938,7 +968,7 @@ test_main(void)
 		sub_context_delete(scp);
 	    }
 	    else
-		string_list_append(&wl2, s2);
+		wl2.push_back(s2);
 	}
 	else
 	{
@@ -991,7 +1021,7 @@ test_main(void)
 		sub_context_delete(scp);
 		break;
 	    }
-	    if (string_list_member(&wl2, s2))
+	    if (wl2.member(s2))
 	    {
 		scp = sub_context_new();
 		sub_var_set_string(scp, "File_Name", s2);
@@ -1000,12 +1030,10 @@ test_main(void)
 		sub_context_delete(scp);
 	    }
 	    else
-		string_list_append(&wl2, s2);
+		wl2.push_back(s2);
 	}
 	str_free(s2);
     }
-    string_list_destructor(&search_path);
-    string_list_destructor(&wl);
     wl = wl2;
 
     if (automatic_flag || manual_flag)
@@ -1039,12 +1067,12 @@ test_main(void)
 		{
 		case file_usage_test:
 		    if (automatic_flag)
-			string_list_append(&wl, p_src_data->file_name);
+			wl.push_back(p_src_data->file_name);
 		    break;
 
 		case file_usage_manual_test:
 		    if (manual_flag)
-			string_list_append(&wl, p_src_data->file_name);
+			wl.push_back(p_src_data->file_name);
 		    break;
 
 		case file_usage_source:
@@ -1076,13 +1104,13 @@ test_main(void)
 		{
 		case file_usage_test:
 		    if (automatic_flag)
-			string_list_append(&wl, c_src_data->file_name);
+			wl.push_back(c_src_data->file_name);
 		    break;
 
 		case file_usage_manual_test:
 		    if (manual_flag)
 		    {
-			string_list_append(&wl, c_src_data->file_name);
+			wl.push_back(c_src_data->file_name);
 			log_style = log_style_none;
 		    }
 		    break;
@@ -1153,11 +1181,16 @@ test_main(void)
     // Do this after the log file is open, so that the weightings
     // are recorded in the log file.
     //
+    // Only sort the list by name if a time limit has not been given.
+    // If we have a time limit, we want to test the most relevant first.
+    //
     if (suggest)
-	limit_suggestions(cp, &wl, suggest, suggest_noise);
+    {
+	limit_suggestions(cp, &wl, suggest, suggest_noise, suggest_limit == 0);
+    }
     else if (!force)
     {
-	string_list_constructor(&wl2);
+	string_list_ty wl3;
 	for (j = 0; j < wl.nstrings; ++j)
 	{
 	    string_ty	    *fn;
@@ -1172,7 +1205,7 @@ test_main(void)
 	    src_data = change_file_find(cp, fn, view_path_first);
 	    if (!src_data)
 	    {
-		string_list_append(&wl2, fn);
+		wl3.push_back(fn);
 		continue;
 	    }
 
@@ -1199,10 +1232,9 @@ test_main(void)
 	    assert(src_data->file_fp->youngest>=0);
 	    assert(src_data->file_fp->oldest>=0);
 	    if (!last_time || src_data->file_fp->oldest >= last_time)
-		string_list_append(&wl2, fn);
+		wl3.push_back(fn);
 	}
-	string_list_destructor(&wl);
-	wl = wl2;
+	wl = wl3;
     }
 
     //
@@ -1211,7 +1243,16 @@ test_main(void)
     trace_string(dir->str_text);
     if (progress_flag < 0)
 	progress_flag = 0;
-    brlp = change_test_run_list(cp, &wl, up, baseline_flag, progress_flag);
+    brlp =
+	change_test_run_list
+	(
+	    cp,
+	    &wl,
+	    up,
+	    baseline_flag,
+	    progress_flag,
+	    suggest_limit
+	);
 
     //
     // transcribe the results
@@ -1327,9 +1368,6 @@ test_independent(void)
     int		    automatic_flag;
     int		    manual_flag;
     int		    progress_flag;
-    string_list_ty  wl;
-    string_list_ty  wl2;
-    string_list_ty  wl_in;
     string_ty	    *s1;
     string_ty	    *s2;
     string_ty	    *s3;
@@ -1338,9 +1376,7 @@ test_independent(void)
     size_t	    k;
     string_ty	    *project_name;
     project_ty	    *pp;
-    user_ty	    *pup;
     user_ty	    *up;
-    string_list_ty  search_path;
     int		    based;
     string_ty	    *base;
     batch_result_list_ty *brlp;
@@ -1350,7 +1386,7 @@ test_independent(void)
     automatic_flag = 0;
     manual_flag = 0;
     progress_flag = -1;
-    string_list_constructor(&wl);
+    string_list_ty wl;
     arglex();
     while (arglex_token != arglex_token_eoln)
     {
@@ -1409,7 +1445,7 @@ test_independent(void)
 	case arglex_token_string:
 	    get_file_names:
 	    s2 = str_from_c(arglex_value.alv_string);
-	    string_list_append(&wl, s2);
+	    wl.push_back(s2);
 	    str_free(s2);
 	    break;
 
@@ -1485,7 +1521,6 @@ test_independent(void)
     pp = project_alloc(project_name);
     str_free(project_name);
     project_bind_existing(pp);
-    pup = project_user(pp);
 
     //
     // locate user data
@@ -1501,7 +1536,7 @@ test_independent(void)
     //
     // Search path for resolving filenames.
     //
-    string_list_constructor(&search_path);
+    string_list_ty search_path;
     project_search_path_get(pp, &search_path, 1);
 
     //
@@ -1533,7 +1568,7 @@ test_independent(void)
     //
     // make sure the paths make sense
     //
-    string_list_constructor(&wl2);
+    string_list_ty wl2;
     for (j = 0; j < wl.nstrings; ++j)
     {
 	s1 = wl.string[j];
@@ -1567,6 +1602,7 @@ test_independent(void)
 	//
 	// check to see if a directory was named
 	//
+	string_list_ty wl_in;
 	project_file_directory_query(pp, s2, &wl_in, 0, view_path_extreme);
 	if (wl_in.nstrings)
 	{
@@ -1583,7 +1619,7 @@ test_independent(void)
 		{
 		case file_usage_test:
 		case file_usage_manual_test:
-		    if (string_list_member(&wl2, s3))
+		    if (wl2.member(s3))
 		    {
 			sub_context_ty	*scp;
 
@@ -1594,7 +1630,7 @@ test_independent(void)
 			sub_context_delete(scp);
 		    }
 		    else
-			string_list_append(&wl2, s3);
+			wl2.push_back(s3);
 		    used = 1;
 		    break;
 
@@ -1625,10 +1661,8 @@ test_independent(void)
 		sub_context_delete(scp);
 	    }
 	    str_free(s2);
-	    string_list_destructor(&wl_in);
 	    continue;
 	}
-	string_list_destructor(&wl_in);
 
 	//
 	// make sure the explicitly named file is relevant
@@ -1665,7 +1699,7 @@ test_independent(void)
 	    sub_context_delete(scp);
 	    break;
 	}
-	if (string_list_member(&wl2, s2))
+	if (wl2.member(s2))
 	{
 	    sub_context_ty  *scp;
 
@@ -1676,11 +1710,9 @@ test_independent(void)
 	    sub_context_delete(scp);
 	}
 	else
-	    string_list_append(&wl2, s2);
+	    wl2.push_back(s2);
     }
-    string_list_destructor(&wl);
     wl = wl2;
-    string_list_destructor(&search_path);
 
     //
     // snarf the test names from the project
@@ -1696,12 +1728,12 @@ test_independent(void)
 	    {
 	    case file_usage_test:
 		if (automatic_flag)
-		    string_list_append(&wl, src_data->file_name);
+		    wl.push_back(src_data->file_name);
 		break;
 
 	    case file_usage_manual_test:
 		if (manual_flag)
-		    string_list_append(&wl, src_data->file_name);
+		    wl.push_back(src_data->file_name);
 		break;
 
 	    case file_usage_source:
@@ -1721,7 +1753,7 @@ test_independent(void)
     //
     if (progress_flag < 0)
 	progress_flag = 0;
-    brlp = project_test_run_list(pp, &wl, up, progress_flag);
+    brlp = project_test_run_list(pp, &wl, up, progress_flag, 0);
 
     //
     // Release the baseline read lock.

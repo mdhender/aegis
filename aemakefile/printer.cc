@@ -22,7 +22,7 @@
 
 #pragma implementation "printer"
 
-#include <nstring_list.h>
+#include <nstring/list.h>
 #include <printer.h>
 
 

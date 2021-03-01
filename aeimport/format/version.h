@@ -23,12 +23,34 @@
 #ifndef AEIMPORT_FORMAT_VERSION_H
 #define AEIMPORT_FORMAT_VERSION_H
 
+#pragma interface "format_version_ty"
+
 #include <ac/time.h>
 
 #include <str_list.h>
 
-struct format_version_ty
+class format_version_ty
 {
+public:
+    /**
+      * The destructor.
+      * Do not derived from this class, the destructor isn't  virtual.
+      */
+    ~format_version_ty();
+
+    /**
+      * The default constructor.
+      */
+    format_version_ty();
+
+    /**
+      * The validate method is used to check that this data structure is
+      * in a valid state.  Intended for debugging; it will abort() if it
+      * finds a problem.
+      */
+    void validate() const;
+
+//private:
     string_ty       *filename_physical;
     string_ty       *filename_logical;
     string_ty       *edit;
@@ -40,10 +62,35 @@ struct format_version_ty
     format_version_ty *after;
     struct format_version_list_ty *after_branch;
     int		    dead;
+
+private:
+    /**
+      * The copy constructor.  Do not use.
+      */
+    format_version_ty(const format_version_ty &);
+
+    /**
+      * The assignment operator.  Do not use.
+      */
+    format_version_ty &operator=(const format_version_ty &);
 };
 
-format_version_ty *format_version_new(void);
-void format_version_delete(format_version_ty *);
-void format_version_validate(format_version_ty *);
+inline format_version_ty *
+format_version_new(void)
+{
+    return new format_version_ty();
+}
+
+inline void
+format_version_delete(format_version_ty *arg)
+{
+    delete arg;
+}
+
+inline void
+format_version_validate(const format_version_ty *arg)
+{
+    arg->validate();
+}
 
 #endif // AEIMPORT_FORMAT_VERSION_H

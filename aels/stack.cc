@@ -86,7 +86,7 @@ stack_nth(size_t n)
 void
 stack_from_project(project_ty *pp)
 {
-    stack = string_list_new();
+    stack = new string_list_ty();
     project_search_path_get(pp, stack, 1);
 
     // error if project is a completed branch...
@@ -96,6 +96,6 @@ stack_from_project(project_ty *pp)
 void
 stack_from_change(change_ty *cp)
 {
-    stack = string_list_new();
+    stack = new string_list_ty();
     change_search_path_get(cp, stack, 1);
 }

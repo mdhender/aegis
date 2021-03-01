@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -60,7 +60,7 @@ write(response_ty *rp, output_ty *op)
     response_module_expansion_ty *rmep;
 
     rmep = (response_module_expansion_ty *)rp;
-    output_fprintf(op, "Module-expansion %s\n", rmep->name->str_text);
+    op->fprintf("Module-expansion %s\n", rmep->name->str_text);
 }
 
 

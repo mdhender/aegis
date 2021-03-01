@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2004 Peter Miller;
+//	Copyright (C) 1999-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@
 #include <arglex/project.h>
 #include <change/branch.h>
 #include <change/file.h>
+#include <change/functor/attribu_list.h>
 #include <change/signedoffby.h>
 #include <change.h>
 #include <error.h>	// for assert
@@ -46,13 +47,16 @@
 #include <output/indent.h>
 #include <project/file.h>
 #include <project/file/roll_forward.h>
+#include <project/invento_walk.h>
 #include <project.h>
 #include <project/history.h>
 #include <send.h>
 #include <str.h>
+#include <str_list.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
+#include <usage.h>
 #include <user.h>
 
 
@@ -140,7 +144,7 @@ len_printable(string_ty *s, int max)
 
 
 void
-send_main(void (*usage)(void))
+send_main(void)
 {
     int             use_attributes;
     int		    use_patch;
@@ -153,25 +157,20 @@ send_main(void (*usage)(void))
     int             grandparent;
     int             trunk;
     output_ty       *ofp;
-    output_ty       *cpio_p;
     input_ty        *ifp;
     project_ty      *pp;
     change_ty       *cp;
     user_ty         *up;
     cstate_ty       *cstate_data;
     string_ty       *output;
-    string_ty       *s;
-    string_ty       *s2;
     cstate_ty       *change_set;
     time_t          when;
     size_t          j;
-    char            *buffer;
-    size_t          buffer_size;
     int             description_header;
     int             baseline;
     int             entire_source;
     content_encoding_t ascii_armor;
-    int             compress;
+    int             needs_compression;
     string_ty       *dev_null;
     string_ty       *diff_output_filename;
     long            delta_number;
@@ -179,6 +178,7 @@ send_main(void (*usage)(void))
     const char      *delta_name;
     const char      *compatibility;
 
+    arglex();
     compatibility = 0;
     branch = 0;
     change_number = 0;
@@ -190,7 +190,7 @@ send_main(void (*usage)(void))
     baseline = 0;
     entire_source = -1;
     ascii_armor = content_encoding_unset;
-    compress = -1;
+    needs_compression = -1;
     delta_date = NO_TIME_SET;
     delta_number = -1;
     delta_name = 0;
@@ -361,9 +361,9 @@ send_main(void (*usage)(void))
 	    break;
 
 	case arglex_token_compress:
-	    if (compress > 0)
+	    if (needs_compression > 0)
 		duplicate_option(usage);
-	    else if (compress >= 0)
+	    else if (needs_compression >= 0)
 	    {
 	        compress_yuck:
 		mutually_exclusive_options
@@ -373,15 +373,15 @@ send_main(void (*usage)(void))
 		    usage
 		);
 	    }
-	    compress = 1;
+	    needs_compression = 1;
 	    break;
 
 	case arglex_token_compress_not:
-	    if (compress == 0)
+	    if (needs_compression == 0)
 		duplicate_option(usage);
-	    else if (compress >= 0)
+	    else if (needs_compression >= 0)
 		goto compress_yuck;
-	    compress = 0;
+	    needs_compression = 0;
 	    break;
 
 	case arglex_token_delta:
@@ -561,6 +561,11 @@ send_main(void (*usage)(void))
         // Peter's 4.18.D004, publicly in 4.19
         //
         use_rename_patch = (strverscmp(compatibility, "4.19") >= 0);
+    }
+    if (entire_source)
+    {
+	use_patch = 0;
+	use_rename_patch = 0;
     }
 
     //
@@ -754,85 +759,72 @@ send_main(void (*usage)(void))
     os_become_orig();
     if (ascii_armor == content_encoding_unset)
 	ascii_armor = content_encoding_base64;
-    if (ascii_armor != content_encoding_none || !compress)
+    if (ascii_armor != content_encoding_none || !needs_compression)
 	ofp = output_file_text_open(output);
     else
 	ofp = output_file_binary_open(output);
-    output_fputs(ofp, "MIME-Version: 1.0\n");
-    output_fputs(ofp, "Content-Type: application/aegis-change-set\n");
+    ofp->fputs("MIME-Version: 1.0\n");
+    ofp->fputs("Content-Type: application/aegis-change-set\n");
     content_encoding_header(ofp, ascii_armor);
-    s = project_name_get(pp);
+    string_ty *s1 = project_name_get(pp);
+    string_ty *s2 = cstate_data->brief_description;
     if (entire_source)
 	s2 = project_description_get(pp);
-    else
-	s2 = cstate_data->brief_description;
-    output_fprintf
+    ofp->fprintf
     (
-	ofp,
 	"Subject: %.*s - %.*s\n",
-	len_printable(s, 40),
-	s->str_text,
+	len_printable(s1, 40),
+	s1->str_text,
 	len_printable(s2, 80),
 	s2->str_text
     );
     if (change_number && !entire_source)
     {
-	output_fprintf
+	ofp->fprintf
 	(
-	    ofp,
 	    "Content-Name: %s.C%3.3ld.ae\n",
 	    project_name_get(pp)->str_text,
 	    change_number
 	);
-	output_fprintf
+	ofp->fprintf
 	(
-	    ofp,
-	    "Content-Disposition: attachment; "
-	    "filename=%s.C%3.3ld.ae\n",
+	    "Content-Disposition: attachment; filename=%s.C%3.3ld.ae\n",
 	    project_name_get(pp)->str_text,
 	    change_number
 	);
     }
     else
     {
-	output_fprintf
+	ofp->fprintf("Content-Name: %s.ae\n", project_name_get(pp)->str_text);
+	ofp->fprintf
 	(
-	    ofp,
-	    "Content-Name: %s.ae\n",
-	    project_name_get(pp)->str_text
-	);
-	output_fprintf
-	(
-	    ofp,
 	    "Content-Disposition: attachment; filename=%s.ae\n",
 	    project_name_get(pp)->str_text
 	);
     }
-    output_fputc(ofp, '\n');
+    ofp->fputc('\n');
     ofp = output_content_encoding(ofp, ascii_armor);
-    if (compress)
-	ofp = output_gzip(ofp);
-    cpio_p = output_cpio(ofp);
+    if (needs_compression)
+	ofp = new output_gzip_ty(ofp, true);
+    output_cpio_ty *cpio_p = new output_cpio_ty(ofp);
 
     //
     // Add the project name to the archive.
     //
-    s = str_from_c("etc/project-name");
-    ofp = output_cpio_child(cpio_p, s, -1);
-    str_free(s);
-    output_fprintf(ofp, "%s\n", project_name_get(pp)->str_text);
-    output_delete(ofp);
+    nstring childs_name = "etc/project-name";
+    ofp = cpio_p->child(childs_name, -1);
+    ofp->fprintf("%s\n", project_name_get(pp)->str_text);
+    delete ofp;
 
     //
     // Add the change number to the archive.
     //
     if (use_change_number)
     {
-	s = str_from_c("etc/change-number");
-	ofp = output_cpio_child(cpio_p, s, -1);
-	str_free(s);
-	output_fprintf(ofp, "%ld\n", change_number);
-	output_delete(ofp);
+	childs_name = "etc/change-number";
+	ofp = cpio_p->child(childs_name, -1);
+	ofp->fprintf("%ld\n", change_number);
+	delete ofp;
     }
     os_become_undo();
 
@@ -907,8 +899,44 @@ send_main(void (*usage)(void))
     change_set->test_exempt = cstate_data->test_exempt;
     change_set->test_baseline_exempt = cstate_data->test_baseline_exempt;
     change_set->regression_test_exempt = cstate_data->regression_test_exempt;
-    if (use_attributes && cstate_data->attribute)
-	change_set->attribute = attributes_list_copy(cstate_data->attribute);
+    if (use_attributes)
+    {
+	change_set->attribute =
+	    (
+		cstate_data->attribute
+	    ?
+		attributes_list_copy(cstate_data->attribute)
+	    :
+		(attributes_list_ty *)attributes_list_type.alloc()
+	    );
+	change_functor_attribute_list result(change_set->attribute);
+	if (change_was_a_branch(cp))
+	{
+	    //
+            // For branches, add all of the constituent change sets'
+            // UUIDs.  That way, if you resynch by grabbing a whole
+            // branch as one change set, you still grab all of the
+            // constituent set UUIDs.
+	    //
+	    project_inventory_walk(pp, result);
+	}
+	if (entire_source)
+	{
+	    //
+            // If they said --entire-source, add all of the accumulated
+            // change set UUIDs.  That way, if you resynch by grabbing
+            // a whole project as one change set, you still grab all of
+            // the constituent change set UUIDs.
+	    //
+	    time_t limit = change_completion_timestamp(cp);
+	    project_inventory_walk(pp, result, limit);
+	}
+	if (change_set->attribute->length == 0)
+	{
+	    attributes_list_type.free(change_set->attribute);
+	    change_set->attribute = 0;
+	}
+    }
     if (use_attributes && cstate_data->uuid)
 	change_set->uuid = str_copy(cstate_data->uuid);
     // architecture
@@ -950,7 +978,7 @@ send_main(void (*usage)(void))
 	    case file_action_modify:
 		if (cstate_data->state < cstate_state_completed)
 		{
-		    s = change_file_path(cp, src_data->file_name);
+		    string_ty *s = change_file_path(cp, src_data->file_name);
 		    assert(s);
 		    if (s)
 		    {
@@ -986,52 +1014,112 @@ send_main(void (*usage)(void))
     }
     if (entire_source)
     {
-	for (j = 0;; ++j)
+	if (historian.is_set())
 	{
-	    fstate_src_ty   *src_data;
-
-	    src_data = project_file_nth(pp, j, view_path_simple);
-	    if (!src_data)
-		break;
-	    switch (src_data->usage)
+	    nstring_list file_name_list;
+	    historian.keys(file_name_list);
+	    for (j = 0; j < file_name_list.size(); ++j)
 	    {
-	    case file_usage_build:
-		switch (src_data->action)
-		{
-		case file_action_modify:
+		nstring file_name = file_name_list[j];
+		assert(file_name.length());
+		file_event_ty *fep = historian.get_last(file_name);
+		assert(fep);
+		if (!fep)
 		    continue;
+		assert(fep->src);
+		switch (fep->src->usage)
+		{
+		case file_usage_build:
+		    switch (fep->src->action)
+		    {
+		    case file_action_modify:
+			continue;
 
-		case file_action_create:
-		case file_action_remove:
-		case file_action_insulate:
-		case file_action_transparent:
+		    case file_action_create:
+		    case file_action_remove:
+		    case file_action_insulate:
+		    case file_action_transparent:
+			break;
+		    }
+		    // fall through...
+
+		case file_usage_source:
+		case file_usage_config:
+		case file_usage_test:
+		case file_usage_manual_test:
+		    switch (fep->src->action)
+		    {
+		    case file_action_create:
+		    case file_action_modify:
+		    case file_action_remove:
+			break;
+
+		    case file_action_insulate:
+		    case file_action_transparent:
+			// can't happen
+			assert(0);
+			continue;
+		    }
 		    break;
 		}
-		// fall through...
-
-	    case file_usage_source:
-	    case file_usage_config:
-	    case file_usage_test:
-	    case file_usage_manual_test:
-		switch (src_data->action)
+		if (!have_it_already(change_set, fep->src))
 		{
-		case file_action_create:
-		case file_action_modify:
-		case file_action_remove:
-		    break;
-
-		case file_action_insulate:
-		case file_action_transparent:
-		    // can't happen
-		    continue;
+		    if (!use_config && fep->src->usage == file_usage_config)
+			fep->src->usage = file_usage_source;
+		    one_more_src(change_set, fep->src, use_attributes);
 		}
-		break;
 	    }
-	    if (!have_it_already(change_set, src_data))
+	}
+	else
+	{
+	    for (j = 0;; ++j)
 	    {
-		if (!use_config && src_data->usage == file_usage_config)
-		    src_data->usage = file_usage_source;
-		one_more_src(change_set, src_data, use_attributes);
+		fstate_src_ty   *src_data;
+
+		src_data = project_file_nth(pp, j, view_path_simple);
+		if (!src_data)
+		    break;
+		switch (src_data->usage)
+		{
+		case file_usage_build:
+		    switch (src_data->action)
+		    {
+		    case file_action_modify:
+			continue;
+
+		    case file_action_create:
+		    case file_action_remove:
+		    case file_action_insulate:
+		    case file_action_transparent:
+			break;
+		    }
+		    // fall through...
+
+		case file_usage_source:
+		case file_usage_config:
+		case file_usage_test:
+		case file_usage_manual_test:
+		    switch (src_data->action)
+		    {
+		    case file_action_create:
+		    case file_action_modify:
+		    case file_action_remove:
+			break;
+
+		    case file_action_insulate:
+		    case file_action_transparent:
+			// can't happen
+			assert(0);
+			continue;
+		    }
+		    break;
+		}
+		if (!have_it_already(change_set, src_data))
+		{
+		    if (!use_config && src_data->usage == file_usage_config)
+			src_data->usage = file_usage_source;
+		    one_more_src(change_set, src_data, use_attributes);
+		}
 	    }
 	}
     }
@@ -1050,12 +1138,11 @@ send_main(void (*usage)(void))
     );
 
     os_become_orig();
-    s = str_format("etc/change-set");
-    ofp = output_cpio_child(cpio_p, s, -1);
-    ofp = output_indent(ofp);
-    str_free(s);
+    childs_name = "etc/change-set";
+    ofp = cpio_p->child(childs_name, -1);
+    ofp = new output_indent_ty(ofp, true);
     cstate_write(ofp, change_set);
-    output_delete(ofp);
+    delete ofp;
     os_become_undo();
 
     //
@@ -1070,8 +1157,6 @@ send_main(void (*usage)(void))
     //
     // add each of the relevant source files to the archive
     //
-    buffer_size = (size_t)1 << 13;
-    buffer = (char *)mem_alloc(buffer_size);
     for (j = 0; j < change_set->src->length; ++j)
     {
 	cstate_src_ty   *csrc;
@@ -1154,13 +1239,12 @@ send_main(void (*usage)(void))
                     // time, so there is no need (or ability) to create a
                     // patch for it.
                     //
+                    assert(!orig_felp || orig_felp->length >= 1);
                     if (!orig_felp)
                     {
                         original_filename = str_copy(dev_null);
                         break;
                     }
-
-                    assert(orig_felp->length >= 1);
 
                     orig_fep = &orig_felp->item[orig_felp->length - 1];
                     orig_src =
@@ -1192,9 +1276,9 @@ send_main(void (*usage)(void))
 	    default:
 #endif
 		original_filename = project_file_path(pp, csrc->file_name);
-		assert(original_filename);
 		break;
 	    }
+	    assert(original_filename);
 
 	    //
 	    // Get the input file.
@@ -1218,9 +1302,9 @@ send_main(void (*usage)(void))
 		input_filename = change_file_path(cp, csrc->file_name);
 		if (!input_filename)
 		    input_filename = project_file_path(pp, csrc->file_name);
-		assert(input_filename);
 		break;
 	    }
+	    assert(input_filename);
 	    break;
 
 	case cstate_state_completed:
@@ -1267,36 +1351,46 @@ send_main(void (*usage)(void))
 
                     //
                     // It's tempting to say
-                    //     assert(felp);
+                    //     assert(orig_felp);
                     // but file file may not yet exist at this point in
                     // time, so there is no need (or ability) to create a
                     // patch for it.
+		    //
+		    // It is also tempting to think that for every
+		    // remove there must be a corresponding create.
+		    // However if a file is created an removed on a
+		    // branch, and the branch is ended, the parent
+		    // branch only sees the remove.
+		    //
+		    // This means you can have a removed file with a
+		    // history length of exactly one.
                     //
-                    if (!orig_felp)
+		    assert(!orig_felp || orig_felp->length >= 1);
+                    if (!orig_felp || orig_felp->length < 2)
                     {
                         original_filename = str_copy(dev_null);
-                        break;
                     }
-                    assert(orig_felp->length >= 2);
-
-                    orig_fep = &orig_felp->item[orig_felp->length - 2];
-                    assert(orig_fep);
-                    orig_src =
-                        change_file_find
-                        (
-                            orig_fep->cp,
-                            csrc->move,
-                            view_path_first
-                        );
-                    assert(orig_src);
-                    original_filename =
-                        project_file_version_path
-                        (
-                            pp,
-                            orig_src,
-                            &original_filename_unlink
-                        );
-                    fstate_src_type.free(orig_src);
+		    else
+		    {
+			orig_fep = &orig_felp->item[orig_felp->length - 2];
+			assert(orig_fep);
+			orig_src =
+			    change_file_find
+			    (
+				orig_fep->cp,
+				csrc->move,
+				view_path_first
+			    );
+			assert(orig_src);
+			original_filename =
+			    project_file_version_path
+			    (
+				pp,
+				orig_src,
+				&original_filename_unlink
+			    );
+			fstate_src_type.free(orig_src);
+		    }
                 }
                 else
                     original_filename = str_copy(dev_null);
@@ -1315,6 +1409,8 @@ send_main(void (*usage)(void))
 			old_src,
 			&input_filename_unlink
 		    );
+		assert(original_filename);
+		assert(input_filename);
 		break;
 
 	    case file_action_remove:
@@ -1337,31 +1433,22 @@ send_main(void (*usage)(void))
 		// time, so there is no need (or ability) to create a
 		// patch for it.
 		//
-		if (!felp)
-		{
-		    original_filename = str_copy(dev_null);
-		    input_filename = str_copy(dev_null);
-		    break;
-		}
-
-		//
-		// It is tempting to say
+		// It is also tempting to say
 		//	assert(felp->length >= 2);
 		// except that a file which is created and removed in
 		// the same branch, will result in only a remove record
 		// in its parent branch when integrated.
 		//
-		assert(felp->length >= 1);
-
-		//
-		// Get the orginal file.
-		//
-		if (felp->length < 2)
+		assert(!felp || felp->length >= 1);
+		if (!felp || felp->length < 2)
 		{
 		    original_filename = str_copy(dev_null);
 		}
 		else
 		{
+		    //
+		    // Get the orginal file.
+		    //
 		    fep = &felp->item[felp->length - 2];
 		    old_src =
 			change_file_find
@@ -1396,6 +1483,7 @@ send_main(void (*usage)(void))
 		// time, so there is no need (or ability) to create a
 		// patch for it.
 		//
+		assert(!felp || felp->length >= 1);
 		if (!felp)
 		{
 		    original_filename = str_copy(dev_null);
@@ -1403,22 +1491,32 @@ send_main(void (*usage)(void))
 		    break;
 		}
 
-		assert(felp->length >= 2);
-
 		//
 		// Get the orginal file.
 		//
-		fep = &felp->item[felp->length - 2];
-		old_src =
-		    change_file_find(fep->cp, csrc->file_name, view_path_first);
-		assert(old_src);
-		original_filename =
-		    project_file_version_path
-		    (
-			pp,
-			old_src,
-			&original_filename_unlink
-		    );
+		if (felp->length < 2)
+		{
+		    original_filename = str_copy(dev_null);
+		}
+		else
+		{
+		    fep = &felp->item[felp->length - 2];
+		    old_src =
+			change_file_find
+			(
+			    fep->cp,
+			    csrc->file_name,
+			    view_path_first
+			);
+		    assert(old_src);
+		    original_filename =
+			project_file_version_path
+			(
+			    pp,
+			    old_src,
+			    &original_filename_unlink
+			);
+		}
 
 		//
 		// Get the input file.
@@ -1440,19 +1538,27 @@ send_main(void (*usage)(void))
 		// this is supposed to be impossible
 		trace(("insulate = \"%s\"\n", csrc->file_name->str_text));
 		assert(0);
+		original_filename = str_copy(dev_null);
+		input_filename = str_copy(dev_null);
 		break;
 
 	    case file_action_transparent:
 		// no file content appears in the output
 		trace(("transparent = \"%s\"\n", csrc->file_name->str_text));
+		original_filename = str_copy(dev_null);
+		input_filename = str_copy(dev_null);
 		break;
 	    }
+	    assert(original_filename);
+	    assert(input_filename);
 	    break;
 	}
 
 	//
 	// If they are both /dev/null don't bother with a patch.
 	//
+	assert(original_filename);
+	assert(input_filename);
 	if
 	(
 	    !str_equal(original_filename, dev_null)
@@ -1468,8 +1574,6 @@ send_main(void (*usage)(void))
 	    // we simply include the whole source in the next section.
 	    //
 	    bool is_a_rename = false;
-	    assert(original_filename);
-	    assert(input_filename);
 	    switch (csrc->action)
 	    {
 	    case file_action_remove:
@@ -1522,11 +1626,11 @@ send_main(void (*usage)(void))
                 assert(len >= 0);
 		if (len > 0 || is_a_rename)
 		{
-		    s = str_format("patch/%s", csrc->file_name->str_text);
-                    ofp = output_cpio_child(cpio_p, s, len);
-		    str_free(s);
+		    childs_name =
+			nstring::format("patch/%s", csrc->file_name->str_text);
+                    ofp = cpio_p->child(childs_name, len);
 		    input_to_output(ifp, ofp);
-		    output_delete(ofp);
+		    delete ofp;
 		}
 		input_delete(ifp);
 		os_become_undo();
@@ -1561,12 +1665,12 @@ send_main(void (*usage)(void))
 	    ifp = input_file_open(input_filename);
 	    assert(ifp);
 	    len = input_length(ifp);
-	    s = str_format("src/%s", csrc->file_name->str_text);
-	    ofp = output_cpio_child(cpio_p, s, len);
-	    str_free(s);
+	    childs_name =
+		nstring::format("src/%s", csrc->file_name->str_text);
+	    ofp = cpio_p->child(childs_name, len);
 	    input_to_output(ifp, ofp);
 	    input_delete(ifp);
-	    output_delete(ofp);
+	    delete ofp;
 	    os_become_undo();
 	    break;
 	}
@@ -1597,7 +1701,7 @@ send_main(void (*usage)(void))
 
     // finish writing the cpio archive
     os_become_orig();
-    output_delete(cpio_p);
+    delete cpio_p;
     os_become_undo();
 
     // clean up and go home

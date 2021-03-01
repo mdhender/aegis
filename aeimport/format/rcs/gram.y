@@ -108,17 +108,10 @@ rcs_parse(string_ty *physical, string_ty *logical)
 static time_t
 str2date(string_ty *s)
 {
-    string_list_ty  sl;
-    string_ty       *s2;
-    time_t          t;
-
-    string_list_constructor(&sl);
-    str2wl(&sl, s, ".", 0);
+    string_list_ty sl;
+    sl.split(s, ".");
     if (sl.nstrings != 6)
     {
-        string_list_destructor(&sl);
-
-        failed:
         fatal_date_unknown(s->str_text);
     }
 
@@ -126,7 +119,7 @@ str2date(string_ty *s)
      * Turn it into a format that scan_date understands.
      * (Probably not the fastest way to get is converted into a date.)
      */
-    s2 =
+    string_ty *s2 =
         str_format
         (
             "%s/%s/%s %s:%s:%s GMT",
@@ -137,11 +130,12 @@ str2date(string_ty *s)
             sl.string[4]->str_text,
             sl.string[5]->str_text
         );
-    string_list_destructor(&sl);
-    t = date_scan(s2->str_text);
+    time_t t = date_scan(s2->str_text);
     str_free(s2);
     if (t == (time_t)-1)
-        goto failed;
+    {
+        fatal_date_unknown(s->str_text);
+    }
     return t;
 }
 
@@ -197,7 +191,7 @@ admin
     : head branch_opt suffix_opt access symbols locks strict_opt
       comment_opt expand_opt
         {
-            string_list_delete($2);
+            delete $2;
         }
     ;
 
@@ -216,7 +210,7 @@ branch
 
 branch_opt
     : /* empty */
-        { $$ = string_list_new(); }
+        { $$ = new string_list_ty(); }
     | branch
         { $$ = $1; }
     ;
@@ -235,7 +229,7 @@ suffix_opt
 
 access
     : ACCESS identifiers_opt SEMI
-        { string_list_delete($2); }
+        { delete $2; }
     ;
 
 symbols
@@ -253,7 +247,7 @@ symbol
             format_version_ty *rp;
 
             rp = find($3);
-            string_list_append(&rp->tag, $1);
+            rp->tag.push_back($1);
 
             str_free($1);
             str_free($3);
@@ -298,7 +292,7 @@ comment_opt
 
 expand
     : EXPAND strings_opt SEMI
-        { string_list_delete($2); }
+        { delete $2; }
     ;
 
 expand_opt
@@ -309,12 +303,12 @@ expand_opt
 identifiers_opt
     : /* empty */
         {
-            $$ = string_list_new();
+            $$ = new string_list_ty();
         }
     | identifiers_opt IDENTIFIER
         {
             $$ = $1;
-            string_list_append($$, $2);
+            $$->push_back($2);
             str_free($2);
         }
     ;
@@ -322,12 +316,12 @@ identifiers_opt
 strings_opt
     : /* empty */
         {
-            $$ = string_list_new();
+            $$ = new string_list_ty();
         }
     | strings_opt STRING
         {
             $$ = $1;
-            string_list_append($$, $2);
+            $$->push_back($2);
             str_free($2);
         }
     ;
@@ -378,7 +372,7 @@ delta
                     other
                 );
             }
-            string_list_delete($5);
+            delete $5;
 
             if ($6)
             {
@@ -420,12 +414,12 @@ state
 numbers_opt
     : /* empty */
         {
-            $$ = string_list_new();
+            $$ = new string_list_ty();
         }
     | numbers_opt NUMBER
         {
             $$ = $1;
-            string_list_append($$, $2);
+            $$->push_back($2);
             str_free($2);
         }
     ;

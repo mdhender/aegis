@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -54,7 +54,7 @@ content_encoding_grok(const char *name)
     //
     for (tp = table; tp < ENDOF(table); ++tp)
     {
-	if (arglex_compare(tp->name, name))
+	if (arglex_compare(tp->name, name, 0))
 	    return tp->value;
     }
 
@@ -79,15 +79,15 @@ content_encoding_header(output_ty *ofp, content_encoding_t name)
 	break;
 
     case content_encoding_base64:
-	output_fputs(ofp, "Content-Transfer-Encoding: base64\n");
+	ofp->fputs("Content-Transfer-Encoding: base64\n");
 	break;
 
     case content_encoding_quoted_printable:
-	output_fputs(ofp, "Content-Transfer-Encoding: quoted-printable\n");
+	ofp->fputs("Content-Transfer-Encoding: quoted-printable\n");
 	break;
 
     case content_encoding_uuencode:
-	output_fputs(ofp, "Content-Transfer-Encoding: uuencode\n");
+	ofp->fputs("Content-Transfer-Encoding: uuencode\n");
 	break;
     }
 }
@@ -103,13 +103,13 @@ output_content_encoding(output_ty *ofp, content_encoding_t name)
 	break;
 
     case content_encoding_base64:
-	return output_base64(ofp, 1);
+	return new output_base64_ty(ofp, true);
 
     case content_encoding_quoted_printable:
-	return output_quoted_printable(ofp, 1, 0);
+	return new output_quoted_printable_ty(ofp, true, false);
 
     case content_encoding_uuencode:
-	return output_uuencode(ofp, 1);
+	return new output_uuencode_ty(ofp, true);
     }
     return ofp;
 }

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -25,14 +25,17 @@
 
 #include <arglex3.h>
 #include <arglex/project.h>
-#include <change_id.h>
+#include <change/identifi_sub.h>
+#include <change/functor.h>
 #include <diff.h>
-#include <file_version.h>
+#include <file_revision.h>
 #include <help.h>
-#include <nstring_list.h>
+#include <nstring/list.h>
 #include <option.h>
 #include <os.h>
 #include <progname.h>
+#include <project/identifi_sub/plain.h>
+#include <project/identifi_sub/branch.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>
@@ -49,15 +52,41 @@ diff_usage()
 }
 
 
+class aediff_bad_state:
+    public change_functor
+{
+public:
+    void
+    operator()(change_ty *cp)
+    {
+	change_fatal(cp, 0, i18n("bad patch send state"));
+    }
+};
+
+static aediff_bad_state barf_adev;
+
+
+static const char *
+ae2diff(const char *dflt)
+{
+    const char *ep = getenv("AE2DIFF");
+    if (!ep || !*ep)
+	return dflt;
+    return ep;
+}
+
+
 void
 diff()
 {
     trace(("diff()\n{\n"));
-    nstring base_command("diff");
-    string_ty *project_name = 0;
+    nstring base_command(ae2diff(CONF_DIFF));
     nstring filename;
-    change_id first;
-    change_id second;
+    project_identifier_subset_plain pid;
+    project_identifier_subset_branch first_branch(pid);
+    change_identifier_subset first(first_branch);
+    project_identifier_subset_branch second_branch(pid);
+    change_identifier_subset second(second_branch);
     int context = 0;
     int unified = 0;
     bool text = false;
@@ -76,12 +105,6 @@ diff()
 	    continue;
 
 	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, diff_usage);
-	    first.set_project_name(project_name);
-	    second.set_project_name(project_name);
-	    continue;
-
 	case arglex_token_baseline:
 	case arglex_token_branch:
 	case arglex_token_change:
@@ -164,6 +187,12 @@ diff()
 		duplicate_option(diff_usage);
 	    show_c_function = true;
 	    break;
+
+	case arglex_token_command:
+	    if (arglex() != arglex_token_string)
+		option_needs_string(arglex_token_command, diff_usage);
+	    base_command = arglex_value.alv_string;
+	    break;
 	}
 	arglex();
     }
@@ -195,44 +224,52 @@ diff()
     second.command_line_check(diff_usage);
 
     //
-    // locate the project and branch data
+    // Get the two revisions of the file.
     //
-    first.set_project();
-    second.set_project();
-
-    //
-    // Get the two versions of the file.
-    //
-    first.set_change(diff_usage);
-    file_version lhs = first.get_file_version(filename);
+    file_revision lhs = first.get_file_revision(filename, barf_adev);
     trace(("lhs=%s\n", lhs.get_path().c_str()));
-    second.set_change(diff_usage);
-    file_version rhs = second.get_file_version(filename);
+    file_revision rhs = second.get_file_revision(filename, barf_adev);
     trace(("rhs=%s\n", rhs.get_path().c_str()));
 
     //
     // Build the command to be executed.
     //
     nstring_list command_args;
+    command_args.push_back("set +e ;");
+
     command_args.push_back(base_command);
-    if (text)
-	command_args.push_back("--text");
-    if (context)
-	command_args.push_back(nstring::format("-C%d", context));
-    else if (unified)
-	command_args.push_back(nstring::format("-U%d", unified));
-    if (ignore_all_space)
-	command_args.push_back("--ignore-all-space");
-    if (ignore_blank_lines)
-	command_args.push_back("--ignore-blank-lines");
-    if (ignore_case)
-	command_args.push_back("--ignore-case");
-    if (ignore_space_change)
-	command_args.push_back("--ignore-space-change");
-    if (show_c_function)
-	command_args.push_back("--show-c-function");
+    if (base_command == CONF_DIFF)
+    {
+        if (text)
+            command_args.push_back("--text");
+        if (context)
+            command_args.push_back(nstring::format("-C%d", context));
+        else if (unified)
+            command_args.push_back(nstring::format("-U%d", unified));
+#ifdef HAVE_GNU_DIFF
+        if (context || unified)
+        {
+            nstring label = first.get_change_version_string() + "/" + filename;
+            command_args.push_back("--label=" + label.quote_shell());
+            label = second.get_change_version_string() + "/" + filename;
+            command_args.push_back("--label=" + label.quote_shell());
+        }
+#endif
+        if (ignore_all_space)
+            command_args.push_back("--ignore-all-space");
+        if (ignore_blank_lines)
+            command_args.push_back("--ignore-blank-lines");
+        if (ignore_case)
+            command_args.push_back("--ignore-case");
+        if (ignore_space_change)
+            command_args.push_back("--ignore-space-change");
+        if (show_c_function)
+            command_args.push_back("--show-c-function");
+    }
+
     command_args.push_back(lhs.get_path().quote_shell());
     command_args.push_back(rhs.get_path().quote_shell());
+    command_args.push_back("; test $? -le 1");
 
     nstring command = command_args.unsplit(" ");
 

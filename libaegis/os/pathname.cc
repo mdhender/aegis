@@ -28,7 +28,7 @@
 #include <ac/stdlib.h>
 #include <ac/string.h>
 
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 #include <ac/unistd.h>
 #include <ac/mntent.h>
@@ -242,7 +242,7 @@ has_a_prefix(string_list_ty *pfx, string_ty *path)
 //
 // RETURNS
 //	string list of prefixes
-//	DO NOT string_list_delete is *ever* because it is cached.
+//	DO NOT delete it *ever* because it is cached.
 //
 
 static string_list_ty *
@@ -250,7 +250,6 @@ get_prefix_list(void)
 {
     static string_list_ty *prefix;
     const char      *cp;
-    string_list_ty  tmp;
     string_ty       *s;
     size_t          j;
 
@@ -262,13 +261,13 @@ get_prefix_list(void)
     // variable, and break it into pieces (it's colon
     // separated).
     //
-    prefix = string_list_new();
+    prefix = new string_list_ty();
     cp = getenv("AEGIS_AUTOMOUNT_POINTS");
     if (!cp)
 	cp = "/tmp_mnt:/a:/.automount";
     s = str_from_c(cp);
-    string_list_constructor(&tmp);
-    str2wl(&tmp, s, ":", 0);
+    string_list_ty tmp;
+    tmp.split(s, ":");
     str_free(s);
 
     //
@@ -289,15 +288,13 @@ get_prefix_list(void)
 	    if (max > 0)
 	    {
 		s = str_n_from_c(s->str_text, max);
-		string_list_append_unique(prefix, s);
+		prefix->push_back_unique(s);
 		str_free(s);
 	    }
 	}
 	else
-	    string_list_append_unique(prefix, s);
+	    prefix->push_back_unique(s);
     }
-    string_list_destructor(&tmp);
-
     return prefix;
 }
 
@@ -322,7 +319,7 @@ get_prefix_list(void)
 //
 // RETURNS
 //	String list of actual automounted mount points.
-//	DO NOT string_list_delete is *ever* because it is cached.
+//	DO NOT delete it *ever* because it is cached.
 //
 
 static string_list_ty *
@@ -342,11 +339,8 @@ get_auto_mount_dirs(string_list_ty *prefix)
     fp = setmntent(MOUNTED, "r");
     if (!fp)
     {
-	if (dirs && dirs->nstrings)
-	{
-	    string_list_delete(dirs);
-	    dirs = string_list_new();
-	}
+	if (dirs)
+	    dirs->clear();
 	return dirs;
     }
 
@@ -369,8 +363,9 @@ get_auto_mount_dirs(string_list_ty *prefix)
     if (!slash)
 	slash = str_from_c("/");
     if (dirs)
-	string_list_delete(dirs);
-    dirs = string_list_new();
+	dirs->clear();
+    else
+	dirs = new string_list_ty();
     for (;;)
     {
 	struct mntent   *mep;
@@ -430,7 +425,7 @@ get_auto_mount_dirs(string_list_ty *prefix)
 	// Everything checks out,
 	// remember this one.
 	//
-	string_list_append(dirs, dir);
+	dirs->push_back(dir);
 	str_free(dir);
     }
     endmntent(fp);
@@ -577,7 +572,7 @@ magic_memb_replace(string_ty *s)
     char            *end;
     char            *ep;
 
-    stracc_open(&sa);
+    sa.clear();
     cp = s->str_text;
     end = s->str_text + s->str_length;
     while (cp < end)
@@ -602,9 +597,9 @@ magic_memb_replace(string_ty *s)
 	    cp += 6;
 	}
 	else
-	    stracc_char(&sa, *cp++);
+	    sa.push_back(*cp++);
     }
-    return stracc_close(&sa);
+    return sa.mkstr();
 }
 
 #endif
@@ -911,4 +906,11 @@ os_pathname(string_ty *path, int resolve)
     trace_string(result->str_text);
     trace(("}\n"));
     return result;
+}
+
+
+nstring
+os_pathname(const nstring &path, bool resolve)
+{
+    return nstring(os_pathname(path.get_ref(), (int)resolve));
 }

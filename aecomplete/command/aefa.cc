@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -51,14 +51,11 @@ static complete_ty *
 completion_get(command_ty *cmd)
 {
     string_ty       *project_name;
-    int             overwriting;
     int             baserel;
     complete_ty     *result;
-    int             incomplete_filename;
     int             incomplete_change_number;
     int             incomplete_branch;
     int             change_number;
-    const char      *branch;
     project_ty      *pp;
     user_ty         *up;
     change_ty       *cp;
@@ -66,12 +63,9 @@ completion_get(command_ty *cmd)
     arglex2_retable(0);
     arglex();
     project_name = 0;
-    overwriting = 0;
-    incomplete_filename = 0;
     incomplete_change_number = 0;
     incomplete_branch = 0;
     change_number = 0;
-    branch = 0;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -81,10 +75,6 @@ completion_get(command_ty *cmd)
 	    if (result)
 		return result;
 	    continue;
-
-	case arglex_token_overwriting:
-	    overwriting = 1;
-	    break;
 
 	case arglex_token_directory:
 	case arglex_token_file:
@@ -96,7 +86,7 @@ completion_get(command_ty *cmd)
 	    break;
 
 	case arglex_token_string_incomplete:
-	    incomplete_filename = 1;
+	    // incomplete filename
 	    break;
 
 	case arglex_token_change:
@@ -171,11 +161,9 @@ completion_get(command_ty *cmd)
 
 	    case arglex_token_number:
 	    case arglex_token_string:
-		branch = arglex_value.alv_string;
 		break;
 
 	    case arglex_token_stdio:
-		branch = "";
 		break;
 
 	    case arglex_token_number_incomplete:
@@ -186,7 +174,6 @@ completion_get(command_ty *cmd)
 	    break;
 
 	case arglex_token_trunk:
-	    branch = "";
 	    break;
 
 	case arglex_token_base_relative:

@@ -56,9 +56,8 @@ The entry in the
 file looks like this:
 .E(
 history_create_command =
-  "ae-sccs-put \e
-    -y$version -G$input \e
-    ${d $h}/s.${b $h}";
+  "ae-sccs-put -y$version -G$input "
+  " ${d $h}/s.${b $h}";
 .E)
 .LP
 It is important that
@@ -83,8 +82,8 @@ The entry in the
 file looks like this:
 .E(
 history_get_command =
-  "get -r'$e' -s -p -k \e
-    ${d $h}/s.${b $h} > $o";
+  "get -r'$e' -s -p -k "
+  " ${d $h}/s.${b $h} > $o";
 .E)
 .nh 3 "history_put_command"
 .LP
@@ -103,9 +102,8 @@ The entry in the
 file looks like this:
 .E(
 history_put_command =
-  "ae-sccs-put \e
-    -y$version -G$input \e
-    ${d $h}/s.${b $h}";
+  "ae-sccs-put -y$version -G$input "
+  " ${d $h}/s.${b $h}";
 .E)
 .LP
 Note that the SCCS file is left in the \fInot-edit\fP state,
@@ -143,10 +141,12 @@ history_query_command =
 Note that "get" reports the edit number on stdout.
 .nh 3 "Templates"
 .LP
-The \fIlib/config.example/sccs\fP file in the Aegis distribution contains
-all of the above commands, so that you may readily insert them into
-your project configuration file (called \fIaegis.conf\fP by default,
-see \fIaepconf(5) for how to call it something else).
+The \fIlib/config.example/sccs\fP file in the Aegis
+distribution contains all of the above commands (installed as
+\fI\*(D)/example.config/sccs\fP by default) so that you may
+readily insert them into your project configuration file (called
+\fIaegis.conf\fP by default, see \fIaepconf(5) for how to call it
+something else).
 .LP
 Also, there are some subtleties to writing the commands, which are not
 present in the above examples.  In particular, being able to support file

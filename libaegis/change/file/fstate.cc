@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -183,7 +183,6 @@ fimprove(fstate_ty *fstate_data, string_ty *filename, change_ty *cp)
 fstate_ty *
 change_fstate_get(change_ty *cp)
 {
-    cstate_ty       *cstate_data;
     string_ty	    *fn;
     size_t	    j;
 
@@ -193,7 +192,7 @@ change_fstate_get(change_ty *cp)
     // (also to ensure lock_sync has been called for both)
     //
     trace(("change_fstate_get(cp = %08lX)\n{\n", (long)cp));
-    cstate_data = change_cstate_get(cp);
+    change_cstate_get(cp);
 
     if (!cp->fstate_data)
     {

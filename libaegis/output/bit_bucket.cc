@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -22,107 +22,73 @@
 
 #include <page.h>
 #include <output/bit_bucket.h>
-#include <output/private.h>
-#include <str.h>
 
-struct output_bit_bucket_ty
+
+output_bit_bucket_ty::~output_bit_bucket_ty()
 {
-    output_ty       inherited;
-    string_ty       *filename;
-    size_t          pos;
-};
-
-
-static void
-output_bit_bucket_destructor(output_ty *fp)
-{
-    output_bit_bucket_ty *this_thing;
-
-    this_thing = (output_bit_bucket_ty *)fp;
-    if (this_thing->filename)
-	str_free(this_thing->filename);
-    this_thing->filename = 0;
-    this_thing->pos = 0;
+    //
+    // Make sure all buffered data has been passed to our write_inner
+    // method.
+    //
+    flush();
 }
 
 
-static string_ty *
-output_bit_bucket_filename(output_ty *fp)
+output_bit_bucket_ty::output_bit_bucket_ty() :
+    file_name("/dev/null"),
+    pos(0)
 {
-    output_bit_bucket_ty *this_thing;
-
-    this_thing = (output_bit_bucket_ty *)fp;
-    if (!this_thing->filename)
-	this_thing->filename = str_from_c("/dev/null");
-    return this_thing->filename;
 }
 
 
-static long
-output_bit_bucket_ftell(output_ty *fp)
+string_ty *
+output_bit_bucket_ty::filename()
+    const
 {
-    output_bit_bucket_ty *this_thing;
-
-    this_thing = (output_bit_bucket_ty *)fp;
-    return this_thing->pos;
+    return file_name.get_ref();
 }
 
 
-static void
-output_bit_bucket_write(output_ty *fp, const void *data, size_t len)
+long
+output_bit_bucket_ty::ftell_inner()
+    const
 {
-    output_bit_bucket_ty *this_thing;
-
-    this_thing = (output_bit_bucket_ty *)fp;
-    this_thing->pos += len;
+    return pos;
 }
 
 
-static int
-output_bit_bucket_page_width(output_ty *fp)
+void
+output_bit_bucket_ty::write_inner(const void *data, size_t len)
+{
+    pos += len;
+}
+
+
+int
+output_bit_bucket_ty::page_width()
+    const
 {
     return page_width_get(DEFAULT_PRINTER_WIDTH);
 }
 
 
-static int
-output_bit_bucket_page_length(output_ty *fp)
+int
+output_bit_bucket_ty::page_length()
+    const
 {
     return page_length_get(DEFAULT_PRINTER_LENGTH);
 }
 
 
-static void
-output_bit_bucket_eoln(output_ty *fp)
+void
+output_bit_bucket_ty::end_of_line_inner()
 {
 }
 
 
-
-static output_vtbl_ty vtbl =
+const char *
+output_bit_bucket_ty::type_name()
+    const
 {
-    sizeof(output_bit_bucket_ty),
-    output_bit_bucket_destructor,
-    output_bit_bucket_filename,
-    output_bit_bucket_ftell,
-    output_bit_bucket_write,
-    output_generic_flush,
-    output_bit_bucket_page_width,
-    output_bit_bucket_page_length,
-    output_bit_bucket_eoln,
-    "file",
-};
-
-
-output_ty *
-output_bit_bucket(void)
-{
-    output_ty       *result;
-    output_bit_bucket_ty *this_thing;
-
-    result = output_new(&vtbl);
-    this_thing = (output_bit_bucket_ty *) result;
-    this_thing->filename = 0;
-    this_thing->pos = 0;
-    return result;
+    return file_name.c_str();
 }

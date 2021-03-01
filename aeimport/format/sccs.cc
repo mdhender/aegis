@@ -53,29 +53,26 @@ is_a_candidate(format_ty *fp, string_ty *filename)
 static string_ty *
 sanitize(format_ty *fp, string_ty *filename)
 {
-    string_list_ty  sl;
     size_t	    j;
-    string_list_ty  sl2;
 
     //
     // Break the filename into path elements.
     //
-    string_list_constructor(&sl);
-    str2wl(&sl, filename, "/", 0);
+    string_list_ty sl;
+    sl.split(filename, "/");
 
     //
     // get rid of path elements named "SCCS"
     //
-    string_list_constructor(&sl2);
+    string_list_ty sl2;
     for (j = 0; j < sl.nstrings; ++j)
     {
 	string_ty	*s;
 
 	s = sl.string[j];
 	if (strcasecmp(s->str_text, "sccs"))
-    	    string_list_append(&sl2, s);
+    	    sl2.push_back(s);
     }
-    string_list_destructor(&sl);
 
     //
     // Remove the "s." from the beginning of the last path element.
@@ -96,9 +93,7 @@ sanitize(format_ty *fp, string_ty *filename)
     //
     // Rebuild the filename from the remaining path elements.
     //
-    filename = wl2str(&sl2, 0, sl2.nstrings, "/");
-    string_list_destructor(&sl2);
-    return filename;
+    return sl2.unsplit("/");
 }
 
 
@@ -165,7 +160,7 @@ diff(format_ty *fp)
 	str_from_c
 	(
 	    "set +e; "
-	    "diff "
+	    CONF_DIFF " "
 #ifdef HAVE_GNU_DIFF
 		"-U10 --text "
 #else

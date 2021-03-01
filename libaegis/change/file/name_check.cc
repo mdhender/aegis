@@ -95,7 +95,7 @@ is_a_dos_filename(change_ty *cp, string_ty *fn)
     //         most 3 characters (reject empty suffix, because DOS
     //         will think that "foo" and "foo." are the same name)
     //
-    str2wl(&wl, fn, ".", 0);
+    wl.split(fn, ".");
     result = 0;
     if (wl.nstrings < 1 || wl.nstrings > 2)
 	goto done;
@@ -126,7 +126,6 @@ is_a_dos_filename(change_ty *cp, string_ty *fn)
     result = 1;
 
     done:
-    string_list_destructor(&wl);
     return result;
 }
 
@@ -447,7 +446,7 @@ change_filename_check(change_ty *cp, string_ty *filename)
     // break into path elements
     // and check each element
     //
-    str2wl(&part, filename, "/", 0);
+    part.split(filename, "/");
     result = 0;
     for (k = 0; k < part.nstrings; ++k)
     {
@@ -686,7 +685,6 @@ i18n("file \"$filename\" part \"$part\" too long, suggest \"$suggest\" instead")
     // here for all exits
     //
     done:
-    string_list_destructor(&part);
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;

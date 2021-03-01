@@ -40,7 +40,7 @@ project_list_inner(string_list_ty *wlp, project_ty *pp)
 	//
 	// add the cannonical name of this project to the list
 	//
-	string_list_append(wlp, project_name_get(pp));
+	wlp->push_back(project_name_get(pp));
 
 	//
 	// check each change
@@ -84,7 +84,7 @@ project_list_get(string_list_ty *wlp)
 	// get the top-level project list
 	//
 	trace(("project_list_get()\n{\n"));
-	string_list_constructor(wlp);
+	wlp->clear();
 	gonzo_project_list(&toplevel);
 
 	//
@@ -113,10 +113,9 @@ project_list_get(string_list_ty *wlp)
 		if (!err)
 			project_list_inner(wlp, pp);
 		else
-			string_list_append(wlp, project_name_get(pp));
+			wlp->push_back(project_name_get(pp));
 		project_free(pp);
 	}
-	string_list_destructor(&toplevel);
 
 	//
 	// sort the list of names
@@ -125,6 +124,6 @@ project_list_get(string_list_ty *wlp)
 	// Project names look a lot like versions strings (indeed,
 	// the tail ends *are* version strings) so sort them as such.
 	//
-	string_list_sort_version(wlp);
+	wlp->sort_version();
 	trace(("}\n"));
 }

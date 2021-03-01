@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2004 Peter Miller;
+//	Copyright (C) 1991-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -122,7 +122,6 @@ new_test_main(void)
     cstate_ty	    *cstate_data;
     string_ty	    *s1;
     string_ty	    *s2;
-    string_ty	    *dd;
     fstate_src_ty   *src_data;
     int		    manual_flag;
     int		    automatic_flag;
@@ -132,7 +131,6 @@ new_test_main(void)
     change_ty	    *cp;
     user_ty	    *up;
     long	    n;
-    string_list_ty  wl;
     size_t	    j;
     size_t	    k;
     int		    nerrs;
@@ -148,7 +146,7 @@ new_test_main(void)
     project_name = 0;
     change_number = 0;
     log_style = log_style_append_default;
-    string_list_constructor(&wl);
+    string_list_ty wl;
     output = 0;
     use_template = -1;
     uuid = 0;
@@ -192,7 +190,7 @@ new_test_main(void)
 
 	case arglex_token_string:
 	    s2 = str_from_c(arglex_value.alv_string);
-	    string_list_append(&wl, s2);
+	    wl.push_back(s2);
 	    str_free(s2);
 	    break;
 
@@ -351,7 +349,6 @@ new_test_main(void)
     nerrs = 0;
     if (wl.nstrings)
     {
-	string_list_ty	wl2;
 	string_list_ty	search_path;
 	int		based;
 	string_ty	*base;
@@ -390,7 +387,7 @@ new_test_main(void)
 	//
 	// make sure each file named is unique
 	//
-	string_list_constructor(&wl2);
+	string_list_ty wl2;
 	for (j = 0; j < wl.nstrings; ++j)
 	{
 	    s1 = wl.string[j];
@@ -420,7 +417,7 @@ new_test_main(void)
 		// NOTREACHED
 		sub_context_delete(scp);
 	    }
-	    if (string_list_member(&wl2, s2))
+	    if (wl2.member(s2))
 	    {
 		sub_context_ty	*scp;
 
@@ -431,11 +428,9 @@ new_test_main(void)
 		++nerrs;
 	    }
 	    else
-		string_list_append(&wl2, s2);
+		wl2.push_back(s2);
 	    str_free(s2);
 	}
-	string_list_destructor(&search_path);
-	string_list_destructor(&wl);
 	wl = wl2;
 
 	//
@@ -512,7 +507,7 @@ new_test_main(void)
 	}
 	if (!s1)
 	    fatal_intl(0, i18n("all test numbers used"));
-	string_list_append(&wl, s1);
+	wl.push_back(s1);
 	str_free(s1);
     }
 
@@ -604,12 +599,6 @@ new_test_main(void)
     }
 
     //
-    // Create each file in the development directory.
-    // Create any necessary directories along the way.
-    //
-    dd = change_development_directory_get(cp, 1);
-
-    //
     // create the files
     //
     for (j = 0; j < wl.nstrings; ++j)
@@ -698,9 +687,7 @@ new_test_main(void)
     //
     if (output)
     {
-	string_ty	*content;
-
-	content = wl2str(&wl, 0, wl.nstrings, "\n");
+	string_ty *content = wl.unsplit("\n");
 	if (*output)
 	{
 	    string_ty	    *fn;
@@ -738,7 +725,6 @@ new_test_main(void)
 	change_verbose(cp, scp, i18n("new test $filename complete"));
 	sub_context_delete(scp);
     }
-    string_list_destructor(&wl);
     project_free(pp);
     change_free(cp);
     user_free(up);

@@ -22,7 +22,7 @@
 
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <ael/change/by_state.h>
@@ -33,6 +33,7 @@
 #include <change.h>
 #include <change/branch.h>
 #include <change/file.h>
+#include <change/run/review_polic.h>
 #include <change/signedoffby.h>
 #include <commit.h>
 #include <dir.h>
@@ -131,15 +132,18 @@ check_permissions(change_ty *cp, user_ty *up)
     hp = cstate_data->history->list[cstate_data->history->length - 1];
     if (hp->what == cstate_history_what_review_begin)
     {
-	if (!str_equal(change_reviewer_name(cp), user_name(up)))
+	if (!str_equal(hp->who, user_name(up)))
 	    change_fatal(cp, 0, i18n("not reviewer"));
     }
     else
     {
-	assert(hp->what == cstate_history_what_develop_end);
 	pp = cp->pp;
 	if (!project_reviewer_query(pp, user_name(up)))
 	    project_fatal(pp, 0, i18n("not a reviewer"));
+	if (change_reviewer_already(cp, user_name(up)))
+	{
+	    change_fatal(cp, 0, i18n("duplicate review"));
+	}
 	if
 	(
 	    !project_developer_may_review_get(pp)
@@ -357,6 +361,50 @@ review_pass_main(void)
     history_data = change_history_new(cp, up);
     history_data->what = cstate_history_what_review_pass;
     history_data->why = comment;
+    if  (0 != change_run_review_policy_command(cp, up))
+    {
+	//
+        // The review policy command failed.
+        //
+        // This means that more review is required.  Now we have to work
+        // out which state to send the change to.
+	//
+        // (If the review policy command hasn't been set, the above
+        // function returns zero, and you never get to here.)
+	//
+	switch (project_develop_end_action_get(pp))
+	{
+	case cstate_branch_develop_end_action_goto_awaiting_review:
+	    cstate_data->state = cstate_state_awaiting_review;
+	    history_data->what = cstate_history_what_review_pass_2ar;
+	    break;
+
+	case cstate_branch_develop_end_action_goto_awaiting_integration:
+            //
+            // This unlikely event happens when there were
+            // changes in awaiting_review and/or being_reviewed
+            // when the develop_end_action was changed to
+            // goto_awaiting_integration.
+            //
+            // Since we don't know that the develop_end_action was
+            // before, we assume it was the default, and fall through...
+	    //
+	case cstate_branch_develop_end_action_goto_being_reviewed:
+	    cstate_data->state = cstate_state_being_reviewed;
+	    history_data->what = cstate_history_what_review_pass_2br;
+	    break;
+
+#ifndef DEBUG
+	default:
+	    //
+	    // Something weird is going on.
+	    // Advance to being_integrated anyway.
+	    //
+	    assert(0);
+	    break;
+#endif
+	}
+    }
 
     //
     // It is an error if any of the change files have been tampered

@@ -67,7 +67,7 @@ change_run_development_build_command(change_ty *cp, user_ty *up,
     {
 	string_ty	*s;
 
-	s = wl2str(partial, 0, partial->nstrings, (char *)0);
+	s = partial->unsplit();
 	sub_var_set_string(scp, "File_List", s);
 	str_free(s);
 	sub_var_append_if_unused(scp, "File_List");

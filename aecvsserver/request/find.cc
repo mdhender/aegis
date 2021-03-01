@@ -133,7 +133,6 @@ valid_requests_run(server_ty *sp, string_ty *arg)
     string_list_ty  wl;
     const request_ty *const *tpp;
 
-    string_list_constructor(&wl);
     for (tpp = table; tpp < ENDOF(table); ++tpp)
     {
 	const request_ty *tp;
@@ -141,10 +140,9 @@ valid_requests_run(server_ty *sp, string_ty *arg)
 
 	tp = *tpp;
 	key = str_from_c(tp->name);
-	string_list_append(&wl, key);
+	wl.push_back(key);
 	str_free(key);
     }
     server_response_queue(sp, response_valid_requests_new(&wl));
-    string_list_destructor(&wl);
     server_ok(sp);
 }

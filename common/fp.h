@@ -54,8 +54,8 @@ struct fingerprint_methods_ty
 fingerprint_ty *fingerprint_new(fingerprint_methods_ty *);
 void fingerprint_delete(fingerprint_ty *);
 void fingerprint_add(fingerprint_ty *, int);
-int fingerprint_file_hash(fingerprint_ty *, char *, unsigned char *);
-int fingerprint_file_sum(fingerprint_ty *, char *, char *, size_t);
+int fingerprint_file_hash(fingerprint_ty *, const char *, unsigned char *);
+int fingerprint_file_sum(fingerprint_ty *, const char *, char *, size_t);
 
 #define fingerprint_addn(p, s, n) \
 	(p)->method->addn((p), (s), (n))

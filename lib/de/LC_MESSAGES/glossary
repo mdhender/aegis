@@ -68,6 +68,7 @@ expression              ---  Ausdruck
 
 fail                    ---  fehlschlagen (Test)
 fatal                   ---  fatal (error)
+field (in aegis database file) --- Feld (besser: `Eintrag'?)
 file                    ---  Datei
 file modification time  ---  Änderungszeit der/einer Datei
 file name pattern       ---  Dateinamensmuster
@@ -118,6 +119,7 @@ pattern        ---  Muster
 power          ---  Potenz (math.)
 print, to ~    ---  ausgeben (einen Wert, eine Variable)
 
+qualifier      ---  Qualifier (?)
 quotes         ---  Anführungszeichen
 
 recovery       ---  Wiederherstellung
@@ -125,7 +127,7 @@ remove         ---  entfernen `aegis -remove_file'
 report         ---  Bericht
 repository     ---  Repository
 request        ---  Anforderung
-review, to ~   ---  reviewen, durchsehen (?)
+review, to ~   ---  reviewen, durchsehen (?), begutachten (?)
 review fail    ---  Review-Fail
 review failed  ---  Review fehlgeschlagen
 review pass    ---  Review-Pass
@@ -156,6 +158,7 @@ unfinished     ---  unvollständiger
 unterminated   ---  unabgeschlossen
 user           ---  Benutzer
 use, to ~      ---  verwenden, benutzen
+uuid           ---  uuid
 
 version information name  ---  Versionsinformationsname
 

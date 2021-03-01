@@ -221,8 +221,8 @@ aer_report_lex(void)
 	    c = input_getc(ip);
 	    if (c == '.')
 	    {
-		stracc_open(&buffer);
-		stracc_char(&buffer, '0');
+		buffer.clear();
+		buffer.push_back('0');
 		goto fraction_part;
 	    }
 	    if (c == 'x' || c == 'X')
@@ -316,10 +316,10 @@ aer_report_lex(void)
 	case '7':
 	case '8':
 	case '9':
-	    stracc_open(&buffer);
+	    buffer.clear();
 	    for (;;)
 	    {
-		stracc_char(&buffer, c);
+		buffer.push_back(c);
 		c = input_getc(ip);
 		if (c < 0)
 		    break;
@@ -329,7 +329,7 @@ aer_report_lex(void)
 	    if (c != '.' && c != 'e' && c != 'E')
 	    {
 		lex_getc_undo(c);
-		s = stracc_close(&buffer);
+		s = buffer.mkstr();
 		aer_report_lval.lv_value = rpt_value_integer(atol(s->str_text));
 		str_free(s);
 		return CONSTANT;
@@ -339,7 +339,7 @@ aer_report_lex(void)
 		fraction_part:
 		for (;;)
 		{
-		    stracc_char(&buffer, c);
+		    buffer.push_back(c);
 		    c = input_getc(ip);
 		    if (c < 0)
 			break;
@@ -349,23 +349,23 @@ aer_report_lex(void)
 	    }
 	    if (c == 'e' || c == 'E')
 	    {
-		stracc_char(&buffer, c);
+		buffer.push_back(c);
 		c = input_getc(ip);
 		if (c == '+' || c == '-')
 		{
-		    stracc_char(&buffer, c);
+		    buffer.push_back(c);
 		    c = input_getc(ip);
 		}
 		if (c < 0 || !isdigit((unsigned char)c))
 		{
-		    stracc_char(&buffer, '0');
+		    buffer.push_back('0');
 		    aer_report_error(i18n("malformed exponent"));
 		}
 		else
 		{
 		    for (;;)
 		    {
-			stracc_char(&buffer, c);
+			buffer.push_back(c);
 			c = input_getc(ip);
 			if (c < 0)
 			    break;
@@ -375,7 +375,7 @@ aer_report_lex(void)
 		}
 	    }
 	    lex_getc_undo(c);
-	    s = stracc_close(&buffer);
+	    s = buffer.mkstr();
 	    aer_report_lval.lv_value = rpt_value_real(atof(s->str_text));
 	    str_free(s);
 	    return CONSTANT;
@@ -383,7 +383,7 @@ aer_report_lex(void)
 	case '"':
 	case '\'':
 	    term = c;
-	    stracc_open(&buffer);
+	    buffer.clear();
 	    for (;;)
 	    {
 		c = input_getc(ip);
@@ -416,29 +416,29 @@ aer_report_lex(void)
 			goto str_eof;
 
 		    case 'b':
-			stracc_char(&buffer, '\b');
+			buffer.push_back('\b');
 			break;
 
 		    case 'n':
-			stracc_char(&buffer, '\n');
+			buffer.push_back('\n');
 			break;
 
 		    case 'r':
-			stracc_char(&buffer, '\r');
+			buffer.push_back('\r');
 			break;
 
 		    case 't':
-			stracc_char(&buffer, '\t');
+			buffer.push_back('\t');
 			break;
 
 		    case 'f':
-			stracc_char(&buffer, '\f');
+			buffer.push_back('\f');
 			break;
 
 		    case '"':
 		    case '\'':
 		    case '\\':
-			stracc_char(&buffer, c);
+			buffer.push_back(c);
 			break;
 
 		    case '0':
@@ -476,15 +476,15 @@ aer_report_lex(void)
 				}
 				break;
 			    }
-			    stracc_char(&buffer, v);
+			    buffer.push_back(v);
 			}
 			break;
 		    }
 		}
 		else
-		    stracc_char(&buffer, c);
+		    buffer.push_back(c);
 	    }
-	    s = stracc_close(&buffer);
+	    s = buffer.mkstr();
 	    aer_report_lval.lv_value = rpt_value_string(s);
 	    str_free(s);
 	    return CONSTANT;
@@ -542,10 +542,10 @@ aer_report_lex(void)
 	case 'x':
 	case 'y':
 	case 'z':
-	    stracc_open(&buffer);
+	    buffer.clear();
 	    for (;;)
 	    {
-		stracc_char(&buffer, c);
+		buffer.push_back(c);
 		c = input_getc(ip);
 		switch (c)
 		{
@@ -620,7 +620,7 @@ aer_report_lex(void)
 		}
 		break;
 	    }
-	    s = stracc_close(&buffer);
+	    s = buffer.mkstr();
 	    tok = reserved(s);
 	    if (tok)
 	    {
@@ -695,22 +695,22 @@ aer_report_lex(void)
 		goto normal;
 	    }
 	    c = '.';
-	    stracc_open(&buffer);
-	    stracc_char(&buffer, '0');
+	    buffer.clear();
+	    buffer.push_back('0');
 	    goto fraction_part;
 
 	default:
 	    normal:
-	    stracc_open(&buffer);
+	    buffer.clear();
 	    for (;;)
 	    {
-		stracc_char(&buffer, c);
-		s = stracc_close(&buffer);
+		buffer.push_back(c);
+		s = buffer.mkstr();
 		if (!symtab_query(stp, s))
 		{
-		    if (buffer.length > 1)
+		    if (buffer.size() > 1)
 		    {
-			buffer.length--;
+			buffer.pop_back();
 			lex_getc_undo(c);
 		    }
 		    str_free(s);
@@ -719,7 +719,7 @@ aer_report_lex(void)
 		str_free(s);
 		c = input_getc(ip);
 	    }
-	    s = stracc_close(&buffer);
+	    s = buffer.mkstr();
 	    tok = reserved(s);
 	    str_free(s);
 	    return (tok ? tok : JUNK);

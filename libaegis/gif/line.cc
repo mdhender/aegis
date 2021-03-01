@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 2003, 2004 Peter Miller;
+//	Copyright (C) 1998, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -58,7 +58,6 @@ gif_line(gif_ty *gp, int x1, int y1, int x2, int y2, int clr)
 	int		dy;
 	int		e;
 	int		dirn;
-	int		j;
 
 	dx1 = x1;
 	dx2 = x2;
@@ -197,7 +196,6 @@ gif_line(gif_ty *gp, int x1, int y1, int x2, int y2, int clr)
 		}
 		dirn = (y1 < y2) ? 1 : -1;
 		e = dx/2;
-		j = 0;
 		do
 		{
 			gif_pixel_set(gp, x1, y1, clr);
@@ -227,7 +225,6 @@ gif_line(gif_ty *gp, int x1, int y1, int x2, int y2, int clr)
 		}
 		dirn = (x1 < x2) ? 1 : -1;
 		e = dy/2;
-		j = 0;
 		do
 		{
 			gif_pixel_set(gp, x1, y1, clr);

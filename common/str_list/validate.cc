@@ -23,13 +23,16 @@
 #include <str_list.h>
 
 
-int
-string_list_validate(const string_list_ty *slp)
+bool
+string_list_ty::validate()
+    const
 {
-    size_t          j;
-
-    for (j = 0; j < slp->nstrings; ++j)
-	if (!str_validate(slp->string[j]))
-	    return 0;
-    return 1;
+    if (nstrings > nstrings_max)
+	return false;
+    if (nstrings_max && !string)
+	return false;
+    for (size_t j = 0; j < nstrings; ++j)
+	if (!str_validate(string[j]))
+	    return false;
+    return true;
 }

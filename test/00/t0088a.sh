@@ -105,6 +105,7 @@ fubar
 if test $? -ne 0 ; then no_result; fi
 
 cat > test.ok.uue << 'fubar'
+
 begin 644 test.ok
 M'XL(`````````PO)2%4H+,U,SE9(*LHOSU-(RZ]0R"K-+2A6R"]++5(H`4KG
 3)%95*J3DI^MQ`0!JS%#K+0``````
@@ -113,7 +114,7 @@ end
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-uudecode test.ok.uue
+$bin/test_base64 -uu -i test.ok.uue test.ok
 if test $? -ne 0 ; then no_result; fi
 
 $bin/test_zlib -o test.in test.out

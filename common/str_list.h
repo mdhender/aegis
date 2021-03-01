@@ -23,6 +23,8 @@
 #ifndef COMMON_STR_LIST_H
 #define COMMON_STR_LIST_H
 
+#pragma interface "string_list_ty"
+
 #include <str.h>
 
 /** \addtogroup String_List
@@ -35,18 +37,319 @@
   * The string_list_ty type is used to represent a list of string
   * (string_ty *) values.
   */
-struct string_list_ty
+class string_list_ty
 {
-	size_t		nstrings;
-	size_t		nstrings_max;
-	string_ty	**string;
+public:
+    /**
+      * The destructor.
+      */
+    ~string_list_ty();
+
+    /**
+      * The default constructor.  This list will be initialised as
+      * being empty.
+      */
+    string_list_ty();
+
+    /**
+      * The copy constructor.
+      */
+    string_list_ty(const string_list_ty &);
+
+    /**
+      * The assignment operator.
+      */
+    string_list_ty &operator=(const string_list_ty &);
+
+    /**
+      * The member method is used to test whether a given string value
+      * is a member of the string list.
+      *
+      * \param arg
+      *     The string value to search for.
+      * \returns
+      *     bool: true if the string is present, false if it is not.
+      */
+    bool member(string_ty *arg) const;
+
+    /**
+      * The member_nocase method is used to test whether a given string
+      * value is a member of the string list.  The conparison is
+      * performed in a case-INsensitive way.
+      *
+      * \param arg
+      *     The string value to search for.
+      * \returns
+      *     bool: true if the string is present, false if it is not.
+      */
+    bool member_nocase(string_ty *arg) const;
+
+    /**
+      * The size method is used to obtain the number of string in the
+      * list.
+      */
+    size_t size() const { return nstrings; }
+
+    /**
+      * The empty method i used to determine if the list is empty
+      * (contains no strings) or not.
+      *
+      * \returns
+      *     bool: true if the list contains no strings, false if the
+      *     list contains one or more strings.
+      */
+    bool empty() const { return (nstrings == 0); }
+
+    /**
+      * The [] operator may be used to extract a list member.  It may
+      * only be used as an r-value.
+      */
+    string_ty *operator[](size_t n) const { return string[n]; }
+
+    /**
+      * The unsplit method is used to form a string from a word list.
+      *
+      * \param start
+      *     The first string in the list to start from.
+      * \param finish
+      *     One past the last string in the list be be used.
+      * \param sep
+      *     The seapator string between words.  If yoy give NULL, it
+      *     will use a single space.
+      * \returns
+      *     A pointer to the newly formed string in dynamic memory.
+      *
+      * \note
+      *     It is the responsibility of the caller to ensure that the
+      *     new string is freed when finished with, by a call to str_free().
+      */
+    string_ty *unsplit(size_t start, size_t finish, const char *sep) const;
+
+    /**
+      * The unsplit method is used to form a string from a word list.
+      *
+      * \param sep
+      *     The seapator string between words.  If yoy give NULL, it
+      *     will use a single space.
+      * \returns
+      *     A pointer to the newly formed string in dynamic memory.
+      *
+      * \note
+      *     It is the responsibility of the caller to ensure that the
+      *     new string is freed when finished with, by a call to str_free().
+      */
+    string_ty *unsplit(const char *sep = 0) const;
+
+    /**
+      * The push_front method is used to prepend a string to the list.
+      *
+      * \param arg
+      *     The string to be appended.
+      * \note
+      *     This is not terribly efficient, try not to use it too often,
+      *     because it has to shuffle all of the string contents up by
+      *     one.
+      */
+    void push_front(string_ty *arg);
+
+    /**
+      * The push_front method is used to prepend a string to the list.
+      *
+      * \param arg
+      *     The list of string to be appended.
+      * \note
+      *     This is not terribly efficient, try not to use it too often,
+      *     because it has to shuffle all of the string contents up first.
+      */
+    void push_front(const string_list_ty &arg);
+
+    /**
+      * The push_back method is used to append a string to the list.
+      * This has O(1) insert times.
+      *
+      * \param arg
+      *     The string to be appended.
+      */
+    void push_back(string_ty *arg);
+
+    /**
+      * The push_back method is used to append a string to the list,
+      * but only if it isn't already in the list.
+      * This has O(n) insert times.
+      *
+      * \param arg
+      *     The string to be appended.
+      */
+    void push_back_unique(string_ty *arg);
+
+    /**
+      * The push_back method is used to append all the strings string in
+      * one list to the end of this list.  This has O(1) insert times.
+      *
+      * \param arg
+      *     The strings to be appended.
+      */
+    void push_back(const string_list_ty &arg);
+
+    /**
+      * The push_back method is used to append all the strings string in
+      * one list to the end of this list.  This has O(n*m) insert times.
+      *
+      * \param arg
+      *     The strings to be appended.
+      */
+    void push_back_unique(const string_list_ty &arg);
+
+    /**
+      * The split method is used to convert a string to a word list.
+      * The string list is cleared()ed before the string is split into it.
+      *
+      * \param arg
+      *     The string to be split into pieces.
+      * \param sep
+      *      Separator characters; sequences of noe or more of these
+      *      characters seaprate each part.  Defaults to " " if NULL is
+      *      given.
+      * \param white
+      *      if true, supress extra white space around separators
+      * \note
+      *     Quoting is not understood.
+      */
+    void split(string_ty *arg, const char *sep = 0, bool white = false);
+
+    /**
+      * The remove method is used to remove a string.  It is not an
+      * error if the string is not present.
+      * This has O(n) behaviour.
+      *
+      * \param arg
+      *     The string value to be removed.
+      */
+    void remove(string_ty *arg);
+
+    /**
+      * The remove method is used to remove a set of string.  It is not
+      * an error if one or more of the strings are not present.
+      * This has O(n*m) behaviour.
+      *
+      * \param arg
+      *     The string values to be removed.
+      */
+    void remove(const string_list_ty &arg);
+
+    /**
+      * The clear method is used to remove all list elements.  This has
+      * O(n) behaviour.  Afterwards, the list is once again empty.
+      */
+    void clear();
+
+    /**
+      * The front method is used to obtain the first string value in the
+      * list.
+      */
+    string_ty *front() { return (nstrings ? string[0] : 0); }
+
+    /**
+      * The back method is used to obtain the last string value in the
+      * list.
+      */
+    string_ty *back() { return (nstrings ? string[nstrings - 1] : 0); }
+
+    /**
+      * The pop_front method is used to discard the first value in the list.
+      * This has O(n) behaviour.
+      */
+    void pop_front();
+
+    /**
+      * The pop_back method is used to discard the last value in the list.
+      * This has O(1) behaviour.
+      */
+    void pop_back();
+
+    /**
+      * The equal method is used to determine if this string list is
+      * equal to another string list.  Two lists are considered equal if
+      * they both contains the same strings, regardless of order.
+      *
+      * \returns
+      *     bool: true if equal, false if not
+      */
+    bool equal(const string_list_ty &arg) const;
+
+    /**
+      * The subset method is used to determine if this string list is
+      * a subset of another string list, regardless of order.
+      *
+      * \param arg
+      *     strings list to test against,
+      *     i.e. that is (*this is-a-subset-of arg).
+      * \returns
+      *     bool: true if subset, false if not
+      *
+      * \note
+      *     By subset, this also includes improper subsets (equality).
+      */
+    bool subset(const string_list_ty &arg) const;
+
+    /**
+      * The sort method is used to perform an <i>in situ</i> sort the
+      * string list values in a string list.  The comparison function
+      * used is strcmp.
+      */
+    void sort();
+
+    /**
+      * The sort method is used to perform an <i>in situ</i> sort the
+      * string list values in a string list.  The comparison function
+      * used is strcasecmp.
+      */
+    void sort_nocase();
+
+    /**
+      * The sort method is used to perform an <i>in situ</i> sort the
+      * string list values in a string list.  The comparison function
+      * used is strverscmp.
+      */
+    void sort_version();
+
+    /**
+      * The quote_shell method is used to produce a new string list by
+      * quoting the strings of this string list.
+      */
+    string_list_ty quote_shell() const;
+
+    /**
+      * The validate method is used to validate a string list.
+      * Usually used for debugging, usually with assert.
+      *
+      * \returns
+      *     bool: true if the string list is valis, false if not.
+      */
+    bool validate() const;
+
+    /**
+      * The intersection method is used to calculate the set
+      * intersection between this set of strings and the rhs set of
+      * strings.
+      */
+    string_list_ty intersection(const string_list_ty &rhs) const;
+
+// private:
+    size_t nstrings;
+    size_t nstrings_max;
+    string_ty **string;
 };
 
 /**
   * The string_list_member function is used to test for the existence
   * of a string in a string list.  (This is an O(n) search.)
   */
-int string_list_member(const string_list_ty *, string_ty *);
+inline DEPRECATED int
+string_list_member(const string_list_ty *slp, string_ty *s)
+{
+    return slp->member(s);
+}
 
 /**
   * The wl2str function is used to convert a list of strings into a
@@ -63,8 +366,11 @@ int string_list_member(const string_list_ty *, string_ty *);
   * @param sep
   *     The separator characters.  Defaults to spaces if NULL.
   */
-string_ty *wl2str(const string_list_ty *slp, int start, int finish,
-    const char *sep);
+inline DEPRECATED string_ty *
+wl2str(const string_list_ty *slp, int start, int finish, const char *sep)
+{
+    return slp->unsplit(start, finish, sep);
+}
 
 /**
   * The str2wl function is used to break a string up into several strings
@@ -84,7 +390,11 @@ string_ty *wl2str(const string_list_ty *slp, int start, int finish,
   *	removed from the result strings.  If false (zero) white space
   *	will be retained.
   */
-void str2wl(string_list_ty *slp, string_ty *arg, const char *sep, int white);
+inline DEPRECATED void
+str2wl(string_list_ty *slp, string_ty *arg, const char *sep, int white)
+{
+    slp->split(arg, sep, white);
+}
 
 /**
   * The string_list_prepend function is used to add another string to
@@ -95,7 +405,11 @@ void str2wl(string_list_ty *slp, string_ty *arg, const char *sep, int white);
   * @param rhs
   *	The string to be added to the front of lhs.
   */
-void string_list_prepend(string_list_ty *lhs, string_ty *rhs);
+inline DEPRECATED void
+string_list_prepend(string_list_ty *lhs, string_ty *rhs)
+{
+    lhs->push_front(rhs);
+}
 
 /**
   * The string_list_prepend_list function is used to add all the strings
@@ -106,7 +420,11 @@ void string_list_prepend(string_list_ty *lhs, string_ty *rhs);
   * @param rhs
   *	The string list to be added to the front of lhs.
   */
-void string_list_prepend_list(string_list_ty *lhs, const string_list_ty *rhs);
+inline DEPRECATED void
+string_list_prepend_list(string_list_ty *lhs, const string_list_ty *rhs)
+{
+    lhs->push_front(*rhs);
+}
 
 /**
   * The string_list_append function is used to add another string to
@@ -117,7 +435,11 @@ void string_list_prepend_list(string_list_ty *lhs, const string_list_ty *rhs);
   * @param rhs
   *	The string to be added to the end of lhs.
   */
-void string_list_append(string_list_ty *lhs, string_ty *rhs);
+inline DEPRECATED void
+string_list_append(string_list_ty *lhs, string_ty *rhs)
+{
+    lhs->push_back(rhs);
+}
 
 /**
   * The string_list_append_list function is used to add all the strings
@@ -128,7 +450,11 @@ void string_list_append(string_list_ty *lhs, string_ty *rhs);
   * @param rhs
   *	The string list to be added to the end of lhs.
   */
-void string_list_append_list(string_list_ty *lhs, const string_list_ty *rhs);
+inline DEPRECATED void
+string_list_append_list(string_list_ty *lhs, const string_list_ty *rhs)
+{
+    lhs->push_back(*rhs);
+}
 
 /**
   * The string_list_append_unique function is used to add another string
@@ -140,7 +466,11 @@ void string_list_append_list(string_list_ty *lhs, const string_list_ty *rhs);
   * @param rhs
   *	The string to be added to the end of lhs.
   */
-void string_list_append_unique(string_list_ty *lhs, string_ty *rhs);
+inline DEPRECATED void
+string_list_append_unique(string_list_ty *lhs, string_ty *rhs)
+{
+    lhs->push_back_unique(rhs);
+}
 
 /**
   * The string_list_append_list_unique function is used to add all the
@@ -152,8 +482,11 @@ void string_list_append_unique(string_list_ty *lhs, string_ty *rhs);
   * @param rhs
   *	The string list to be added to the end of lhs.
   */
-void string_list_append_list_unique(string_list_ty *lhs,
-    const string_list_ty *rhs);
+inline DEPRECATED void
+string_list_append_list_unique(string_list_ty *lhs, const string_list_ty *rhs)
+{
+    lhs->push_back_unique(*rhs);
+}
 
 /**
   * The string_list_copy function is sued to replace the contents of one
@@ -161,7 +494,11 @@ void string_list_append_list_unique(string_list_ty *lhs,
   * an assignment operator.  The previous contents will be discarded
   * NOT free()ed.
   */
-void string_list_copy(string_list_ty *lhs, const string_list_ty *rhs);
+inline DEPRECATED void
+string_list_copy(string_list_ty *lhs, const string_list_ty *rhs)
+{
+    *lhs = *rhs;
+}
 
 /**
   * The string_list_remove function is used to remove a speific valued
@@ -169,7 +506,11 @@ void string_list_copy(string_list_ty *lhs, const string_list_ty *rhs);
   * an error.  If there is more than one occurrece, only the first will
   * be removed.  This is an O(n) operation.
   */
-void string_list_remove(string_list_ty *, string_ty *);
+inline DEPRECATED void
+string_list_remove(string_list_ty *slp, string_ty *s)
+{
+    slp->remove(s);
+}
 
 /**
   * The string_list_remove_list function is used to remove all instances
@@ -180,47 +521,68 @@ void string_list_remove(string_list_ty *, string_ty *);
   * @param rhs
   *	The list of values to be removed from lhs.
   */
-void string_list_remove_list(string_list_ty *lhs, const string_list_ty *rhs);
+inline DEPRECATED void
+string_list_remove_list(string_list_ty *lhs, const string_list_ty *rhs)
+{
+    lhs->remove(*rhs);
+}
 
 /**
   * The string_list_destructor function is used to release all resources
   * held by a string list.  This function shall be called when you are
   * finished with a string list.
   */
-void string_list_destructor(string_list_ty *);
-
-/**
-  * The string_list_delete function is used to release all resources
-  * held by a dynamically allocated string list (created by the
-  * string_list_new() function).  This function shall be called when
-  * you are finished with a dynamically allocated string list.
-  */
-void string_list_delete(string_list_ty *);
+inline DEPRECATED void
+string_list_destructor(string_list_ty *slp)
+{
+    // from context, this is the right thing to do,
+    // now that the real destructor does something useful.
+    slp->clear();
+}
 
 /**
   * The string_list_constructor function is used to prepare a string
   * list for use.  (Note: strings lists which are global variables do
   * NOT need this function called before use).
   */
-void string_list_constructor(string_list_ty *);
+inline DEPRECATED void
+string_list_constructor(string_list_ty *slp)
+{
+    // from context, this is the right thing to do,
+    // now that the real constructor does something useful.
+    slp->clear();
+}
 
 /**
-  * The string_list_new function is used to allocate a string list
-  * in dynamic memory and prepare it for use.  You shall call the
-  * string_list_delete() function when you are finished with it.
-  */
-string_list_ty *string_list_new(void);
-
-/**
-  * The string_list_equal function is used to determine if two string
-  * lists contain the same strings.  The *order* of the strings is not
-  * considered. This is an O(n**2) operation.
+  * The quality (==) operator is used to determine if two string lists
+  * contain the same strings.  The _ordering_ of the strings is not
+  * considered.  This is an O(n**2) operation.
   *
   * @return
-  *	Returns true (non-zero) if the two sets of strings are the same,
-  *	false (zero) if they are not.
+  *	Returns true if the two sets of strings are the same,
+  *	false if they are not.
   */
-int string_list_equal(const string_list_ty *, const string_list_ty *);
+inline bool
+operator==(const string_list_ty &lhs, const string_list_ty &rhs)
+{
+    return lhs.equal(rhs);
+}
+
+
+/**
+  * The inquality (!=) operator is used to determine if two string lists
+  * do not contain the same strings.  The _ordering_ of the strings is
+  * not considered.  This is an O(n**2) operation.
+  *
+  * @return
+  *     Returns true if the two sets of strings are different, false if
+  *     they are the same.
+  */
+inline bool
+operator!=(const string_list_ty &lhs, const string_list_ty &rhs)
+{
+    return !lhs.equal(rhs);
+}
 
 /**
   * The string_list_subset function is used to determine if lhs is an
@@ -230,21 +592,22 @@ int string_list_equal(const string_list_ty *, const string_list_ty *);
   *	Returns true (non-zero) if the two sets of strings are the same,
   *	false (zero) if they are not.
   */
-int string_list_subset(const string_list_ty *lhs, const string_list_ty *rhs);
+inline DEPRECATED int
+string_list_subset(const string_list_ty *lhs, const string_list_ty *rhs)
+{
+    return lhs->subset(*rhs);
+}
 
 /**
   * The string_list_sort function is used to sort a list of strings.
   * The comparison function is strcmp(3).  This is an O(n log n)
   * operation.
   */
-void string_list_sort(string_list_ty *);
-
-/**
-  * The string_list_sort_version function is used to sort a list of
-  * strings.  The comparison function is strverscmp(3).  This is an O(n
-  * log n) operation.
-  */
-void string_list_sort_version(string_list_ty *);
+inline DEPRECATED void
+string_list_sort(string_list_ty *slp)
+{
+    slp->sort();
+}
 
 /**
   * The string_list_quote_shell function is used to shell quote each
@@ -256,14 +619,77 @@ void string_list_sort_version(string_list_ty *);
   * @param rhs
   *	The unquoted input strings.
   */
-void string_list_quote_shell(string_list_ty *lhs, const string_list_ty *rhs);
+inline DEPRECATED void
+string_list_quote_shell(string_list_ty *lhs, const string_list_ty *rhs)
+{
+    *lhs = rhs->quote_shell();
+}
 
 /**
-  * The string_list_validate function is used to validate the internal
-  * structure of a string list.  It is used for debugging, and shall
-  * not be used when the DEBUG symbol is not defined.
+  * The in situ addition operator is used to union values into a set of
+  * strings.  Duplicates on the right will be omitted.
   */
-int string_list_validate(const string_list_ty *);
+inline void
+operator+=(string_list_ty &lhs, const string_list_ty &rhs)
+{
+    lhs.push_back_unique(rhs);
+}
+
+/**
+  * The addition operator is used to union two sets of strings.
+  * Duplicates will be omitted.
+  */
+inline string_list_ty
+operator+(const string_list_ty &lhs, const string_list_ty &rhs)
+{
+    string_list_ty result;
+    result.push_back_unique(lhs);
+    result.push_back_unique(rhs);
+    return result;
+}
+
+/**
+  * The in situ subtract operator is used to difference two sets of
+  * strings by removing strings from the left which appear in the right.
+  */
+inline void
+operator-=(string_list_ty &lhs, const string_list_ty &rhs)
+{
+    lhs.remove(rhs);
+}
+
+/**
+  * The subtract operator is used to create a new set of strings
+  * by removing strings from the left which appear in the right.
+  */
+inline string_list_ty
+operator-(const string_list_ty &lhs, const string_list_ty &rhs)
+{
+    string_list_ty result;
+    result.push_back_unique(lhs);
+    result.remove(rhs);
+    return result;
+}
+
+/**
+  * The in situ multiply operator is used to keep only those strings on
+  * the left which also appear on the right.  Duplicates are omitted.
+  */
+inline void
+operator*=(string_list_ty &lhs, const string_list_ty &rhs)
+{
+    lhs = lhs.intersection(rhs);
+}
+
+/**
+  * The multiply operator is used to calculate the set intersection of
+  * the left and right.  Duplicates are omitted.
+  */
+inline string_list_ty
+operator*(const string_list_ty &lhs, const string_list_ty &rhs)
+{
+    return lhs.intersection(rhs);
+}
 
 /** @} */
 #endif // COMMON_STR_LIST_H

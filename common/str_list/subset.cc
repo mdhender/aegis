@@ -23,23 +23,23 @@
 #include <str_list.h>
 
 
-int
-string_list_subset(const string_list_ty *a, const string_list_ty *b)
+bool
+string_list_ty::subset(const string_list_ty &arg)
+    const
 {
-    size_t          j, k;
-
     //
     // test if "a is a subset of b"
     //
-    if (a->nstrings > b->nstrings)
-	return 0;
-    for (j = 0; j < a->nstrings; ++j)
+    if (nstrings > arg.nstrings)
+	return false;
+    for (size_t j = 0; j < nstrings; ++j)
     {
-	for (k = 0; k < b->nstrings; ++k)
-	    if (str_equal(a->string[j], b->string[k]))
+	size_t k;
+	for (k = 0; k < arg.size(); ++k)
+	    if (str_equal(string[j], arg[k]))
 		break;
-	if (k >= b->nstrings)
-	    return 0;
+	if (k >= arg.nstrings)
+	    return false;
     }
-    return 1;
+    return true;
 }

@@ -108,3 +108,10 @@ void
 type_ty::toplevel()
 {
 }
+
+
+void
+type_ty::gen_code_copy(const nstring &member_name)
+    const
+{
+}

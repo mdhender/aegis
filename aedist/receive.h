@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,10 @@
 #ifndef AEDIST_RECEIVE_H
 #define AEDIST_RECEIVE_H
 
-#include <main.h>
-
-void receive_main(void(*)(void));
+/**
+  * The receive_main function is used to implement the aedist --receive
+  * command.
+  */
+void receive_main(void);
 
 #endif /* AEDIST_RECEIVE_H */

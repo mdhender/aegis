@@ -25,7 +25,7 @@
 #include <ac/string.h>
 #include <ac/time.h>
 
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <aede.h>

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2002 Peter Miller;
+#	Copyright (C) 2002, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 # Work out if there is a diff2html program on the PATH.
 # This can't be worked out by ./configure, because this happens on the
 # machine which *builds* the RPM, and not the machine on which the rpm
-# is installed.  Plus, they could run aegis.cgi in a chroot jail, and
+# is installed.  Plus, they could run aeget in a chroot jail, and
 # not put diff2html in the jail with it.
 #
 have_diff2html=no

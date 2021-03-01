@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -72,7 +72,7 @@ test_input(string_ty *ifn, string_ty *ofn)
     ofp = output_file_binary_open(ofn);
     input_to_output(ifp, ofp);
     input_delete(ifp);
-    output_delete(ofp);
+    delete ofp;
 }
 
 
@@ -86,10 +86,10 @@ test_output(string_ty *ifn, string_ty *ofn)
     ifp = input_file_open(ifn);
     ifp = input_crlf(ifp, 1);
     ofp = output_file_text_open(ofn);
-    ofp = output_gzip(ofp);
+    ofp = new output_gzip_ty(ofp, true);
     input_to_output(ifp, ofp);
     input_delete(ifp);
-    output_delete(ofp);
+    delete ofp;
 }
 
 

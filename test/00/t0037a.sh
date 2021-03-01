@@ -317,7 +317,12 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # make sure progress messages is in the log
 #
-grep '^aegis: project' log > $tmp.log
+grep '^aegis: project' log > $tmp.logx
+if test $? -ne 0 ; then no_result; fi
+
+grep -v 'waiting for' $tmp.logx > $tmp.log
+if test $? -ne 0 ; then no_result; fi
+
 cat > $tmp.log.ideal << 'end'
 aegis: project "foo": change 10: test 1 of 3
 aegis: project "foo": change 10: test/00/t0001a.sh pass
@@ -327,7 +332,7 @@ aegis: project "foo": change 10: test 3 of 3
 aegis: project "foo": change 10: test/00/t0003a.sh pass
 aegis: project "foo": change 10: passed 3 tests
 end
-diff $tmp.log $tmp.log.ideal > log 2>&1
+diff $tmp.log.ideal $tmp.log > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #

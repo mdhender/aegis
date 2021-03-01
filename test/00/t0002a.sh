@@ -77,6 +77,7 @@ check_it()
 		-e 's/delta[0-9][0-9]*/delta/' \
 		-e 's/19[0-9][0-9]/YYYY/' \
 		-e 's/20[0-9][0-9]/YYYY/' \
+		-e 's/delta_uuid = ".*"/delta_uuid = "UUID"/'\
 		-e 's/node = ".*"/node = "NODE"/' \
 		-e 's/crypto = ".*"/crypto = "GUNK"/' \
 		< $1 > $work/sed.out
@@ -860,6 +861,7 @@ copyright_years =
 state = completed;
 given_regression_test_exemption = true;
 delta_number = 1;
+delta_uuid = "UUID";
 history =
 [
 	{
@@ -1198,6 +1200,7 @@ copyright_years =
 state = being_integrated;
 given_regression_test_exemption = true;
 delta_number = 2;
+delta_uuid = "UUID";
 project_file_command_sync = 1;
 development_directory = ".../foo.chan";
 integration_directory = "delta.002";
@@ -1274,6 +1277,7 @@ copyright_years =
 state = completed;
 given_regression_test_exemption = true;
 delta_number = 2;
+delta_uuid = "UUID";
 project_file_command_sync = 1;
 history =
 [

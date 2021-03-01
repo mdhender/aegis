@@ -42,7 +42,9 @@ one of the template projects.  This gives you a project which (almost
 always) works correctly the first time ``out of the box''.
 .IP \(bu 2n
 The template projects can be found on the Aegis home page:
-\f[CW]http://www.canb.auug.org.au/\%~millerp/\%aegis/\fP
+.\" do not warn "cannot adjust line"
+.warn (\n[.warn]-(((\n[.warn]/4)%2)*4))
+\f[CW]http://\%www.canb.auug.org.au/\%~millerp/\%aegis/\fP
 .IP \(bu 2n
 If you are a long-time GNU Make user, you probably want the Make-RCS
 template, at least to start with.

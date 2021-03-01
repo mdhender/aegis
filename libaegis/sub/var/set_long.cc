@@ -20,15 +20,13 @@
 // MANIFEST: functions to manipulate set_longs
 //
 
+#include <nstring.h>
 #include <sub.h>
 
 
 void
-sub_var_set_long(sub_context_ty * scp, const char *name, long value)
+sub_context_ty::var_set_long(const char *name, long value)
 {
-    string_ty	    *s;
-
-    s = str_format("%ld", value);
-    sub_var_set_string(scp, name, s);
-    str_free(s);
+    nstring s = nstring::format("%ld", value);
+    var_set_string(name, s);
 }

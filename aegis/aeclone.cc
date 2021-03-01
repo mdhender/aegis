@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998-2004 Peter Miller;
+//	Copyright (C) 1998-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -122,7 +122,6 @@ clone_main(void)
     cstate_ty       *cstate_data;
     cstate_ty       *cstate_data2;
     cstate_history_ty *history_data;
-    string_ty	    *usr;
     string_ty	    *devdir;
     size_t	    j;
     pconf_ty        *pconf_data;
@@ -131,11 +130,6 @@ clone_main(void)
     int		    grandparent;
     int		    mode;
     const char      *output;
-    string_list_ty  wl_nf;
-    string_list_ty  wl_nt;
-    string_list_ty  wl_cp;
-    string_list_ty  wl_rm;
-    string_list_ty  wl_mt;
     int             the_umask;
 
     trace(("clone_main()\n{\n"));
@@ -143,7 +137,6 @@ clone_main(void)
     project_name = 0;
     change_number = 0;
     change_number2 = 0;
-    usr = 0;
     devdir = 0;
     branch = 0;
     trunk = 0;
@@ -797,11 +790,11 @@ clone_main(void)
 	// run the change file command
 	// and the project file command if necessary
 	//
-	string_list_constructor(&wl_nf);
-	string_list_constructor(&wl_nt);
-	string_list_constructor(&wl_cp);
-	string_list_constructor(&wl_rm);
-	string_list_constructor(&wl_mt);
+	string_list_ty wl_nf;
+	string_list_ty wl_nt;
+	string_list_ty wl_cp;
+	string_list_ty wl_rm;
+	string_list_ty wl_mt;
 	for (j = 0;; ++j)
 	{
 	    fstate_src_ty   *c_src;
@@ -816,28 +809,28 @@ clone_main(void)
 		{
 		case file_usage_test:
 		case file_usage_manual_test:
-		    string_list_append(&wl_nt, c_src->file_name);
+		    wl_nt.push_back(c_src->file_name);
 		    break;
 
 		case file_usage_source:
 		case file_usage_config:
 		case file_usage_build:
-		    string_list_append(&wl_nf, c_src->file_name);
+		    wl_nf.push_back(c_src->file_name);
 		    break;
 		}
 		break;
 
 	    case file_action_modify:
 	    case file_action_insulate:
-		string_list_append(&wl_cp, c_src->file_name);
+		wl_cp.push_back(c_src->file_name);
 		break;
 
 	    case file_action_transparent:
-		string_list_append(&wl_mt, c_src->file_name);
+		wl_mt.push_back(c_src->file_name);
 		break;
 
 	    case file_action_remove:
-		string_list_append(&wl_rm, c_src->file_name);
+		wl_rm.push_back(c_src->file_name);
 		break;
 	    }
 	}
@@ -851,11 +844,6 @@ clone_main(void)
 	    change_run_remove_file_command(cp, &wl_rm, up);
 	if (wl_mt.nstrings)
 	    change_run_make_transparent_command(cp, &wl_mt, up);
-	string_list_destructor(&wl_nf);
-	string_list_destructor(&wl_nt);
-	string_list_destructor(&wl_cp);
-	string_list_destructor(&wl_rm);
-	string_list_destructor(&wl_mt);
 	change_run_project_file_command(cp, up);
 
 	//

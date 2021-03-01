@@ -195,13 +195,13 @@ all : a
 
 a : b
 	rm -f $@
-	cp $< $@
+	cp b $@
 
 b : barney
 	rm -f $@
 	cp barney $@
 	rm -f $@.lnk
-	ln -s $< $@.lnk
+	ln -s barney $@.lnk
 EOF
 if test $? -ne 0; then no_result; fi
 $bin/aegis -nf $work/test.C010/makefile -v > log 2>&1
@@ -264,3 +264,4 @@ if test $? -ne 0 ; then fail; fi
 # no other guarantees are made.
 #
 pass
+    echo \$r

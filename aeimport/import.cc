@@ -168,7 +168,6 @@ import_main(void)
     string_ty	    *source_directory;
     change_set_list_ty *cslp;
     project_ty	    *ppp;
-    string_list_ty  staff;
     int		    mode;
     string_ty       *cfg;
 
@@ -321,7 +320,7 @@ import_main(void)
     // This is used to populate the developer, reviewer and integrator
     // lists for the project.
     //
-    string_list_constructor(&staff);
+    string_list_ty staff;
     format_search_list_staff(fslp, &staff);
 
     //

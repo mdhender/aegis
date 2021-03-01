@@ -24,10 +24,8 @@
 
 
 void
-string_list_append_list_unique(string_list_ty *wlp, const string_list_ty *arg)
+string_list_ty::push_back_unique(const string_list_ty &arg)
 {
-    size_t          j;
-
-    for (j = 0; j < arg->nstrings; ++j)
-	string_list_append_unique(wlp, arg->string[j]);
+    for (size_t j = 0; j < arg.size(); ++j)
+	push_back_unique(arg[j]);
 }

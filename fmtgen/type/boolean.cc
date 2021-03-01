@@ -107,3 +107,29 @@ type_boolean::has_a_mask()
 {
     return true;
 }
+
+
+void
+type_boolean::gen_code_copy(const nstring &member_name)
+    const
+{
+    indent_printf
+    (
+	"result->%s = this_thing->%s;\n",
+	member_name.c_str(),
+	member_name.c_str()
+    );
+}
+
+
+void
+type_boolean::gen_code_trace(const nstring &vname, const nstring &value)
+    const
+{
+    indent_printf
+    (
+	"trace_bool_real(\"%s\", %s);\n",
+	vname.c_str(),
+	value.c_str()
+    );
+}

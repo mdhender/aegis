@@ -50,7 +50,7 @@
 //
 
 int
-copyfile(char *src, char *dst)
+copyfile(const char *src, const char *dst)
 {
 	int	src_fd;
 	int	dst_fd;

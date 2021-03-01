@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -39,10 +39,10 @@ boolean_write(output_ty *fp, const char *name, bool this_thing, int show)
 	    return;
     }
     if (name)
-	output_fprintf(fp, "%s = ", name);
-    output_fputs(fp, boolean_ename(this_thing));
+	fp->fprintf("%s = ", name);
+    fp->fputs(boolean_ename(this_thing));
     if (name)
-	output_fputs(fp, ";\n");
+	fp->fputs(";\n");
 }
 
 
@@ -56,7 +56,7 @@ boolean_write_xml(output_ty *fp, const char *name, bool this_thing, int show)
     }
     if (!name)
 	name = "boolean";
-    output_fprintf(fp, "<%s>%s</%s>\n", name, boolean_ename(this_thing), name);
+    fp->fprintf("<%s>%s</%s>\n", name, boolean_ename(this_thing), name);
 }
 
 
@@ -66,18 +66,18 @@ integer_write(output_ty *fp, const char *name, long this_thing, int show)
     if (this_thing == INTEGER_NOT_SET && !show)
 	return;
     if (name)
-	output_fprintf(fp, "%s = ", name);
+	fp->fprintf("%s = ", name);
     if (name && !strcmp(name, "umask"))
-	output_fprintf(fp, "0%lo", this_thing & 07777);
+	fp->fprintf("0%lo", this_thing & 07777);
     else
     {
 	if (this_thing == MAGIC_ZERO)
-    	    output_fputs(fp, "ZERO");
+    	    fp->fputs("ZERO");
 	else
-    	    output_fprintf(fp, "%ld", this_thing);
+    	    fp->fprintf("%ld", this_thing);
     }
     if (name)
-	output_fputs(fp, ";\n");
+	fp->fputs(";\n");
 }
 
 
@@ -88,18 +88,18 @@ integer_write_xml(output_ty *fp, const char *name, long this_thing, int show)
 	return;
     if (!name)
 	name = "integer";
-    output_fprintf(fp, "<%s>", name);
+    fp->fprintf("<%s>", name);
     if (!strcmp(name, "umask"))
-	output_fprintf(fp, "0%lo", this_thing & 07777);
+	fp->fprintf("0%lo", this_thing & 07777);
     else
     {
 	if (this_thing == MAGIC_ZERO)
-    	    output_fputs(fp, "0");
+    	    fp->fputs("0");
 	else
-    	    output_fprintf(fp, "%ld", this_thing);
+    	    fp->fprintf("%ld", this_thing);
     }
-    output_fprintf(fp, "</%s>", name);
-    output_fputc(fp, '\n');
+    fp->fprintf("</%s>", name);
+    fp->fputc('\n');
 }
 
 
@@ -109,10 +109,10 @@ real_write(output_ty *fp, const char *name, double this_thing, int show)
     if (this_thing == REAL_NOT_SET && !show)
 	return;
     if (name)
-	output_fprintf(fp, "%s = ", name);
-    output_fprintf(fp, "%g", this_thing);
+	fp->fprintf("%s = ", name);
+    fp->fprintf("%g", this_thing);
     if (name)
-	output_fputs(fp, ";\n");
+	fp->fputs(";\n");
 }
 
 
@@ -123,10 +123,7 @@ real_write_xml(output_ty *fp, const char *name, double this_thing, int show)
 	return;
     if (!name)
 	name = "real";
-    output_fprintf(fp, "<%s>", name);
-    output_fprintf(fp, "%g", this_thing);
-    output_fprintf(fp, "</%s>", name);
-    output_fputc(fp, '\n');
+    fp->fprintf("<%s>%g</%s>\n", name, this_thing, name);
 }
 
 
@@ -136,7 +133,7 @@ time_write(output_ty *fp, const char *name, time_t this_thing, int show)
     if (this_thing == TIME_NOT_SET && !show)
 	return;
     if (name)
-	output_fprintf(fp, "%s = ", name);
+	fp->fprintf("%s = ", name);
 
     //
     // Time is always an arithmetic type, never a structure.
@@ -144,9 +141,9 @@ time_write(output_ty *fp, const char *name, time_t this_thing, int show)
     // without loss of precision.
     // (Loss of fractions of a second is acceptable.)
     //
-    output_fprintf(fp, "%ld", (long)this_thing);
+    fp->fprintf("%ld", (long)this_thing);
     if (name)
-	output_fprintf(fp, "; /* %.24s */\n", ctime(&this_thing));
+	fp->fprintf("; /* %.24s */\n", ctime(&this_thing));
 }
 
 
@@ -157,10 +154,14 @@ time_write_xml(output_ty *fp, const char *name, time_t this_thing, int show)
 	return;
     if (!name)
 	name = "time";
-    output_fprintf(fp, "<%s>", name);
-    output_fprintf(fp, "%ld", (long)this_thing);
-    output_fprintf(fp, "</%s>", name);
-    output_fprintf(fp, " <!-- %.24s -->\n", ctime(&this_thing));
+    fp->fprintf
+    (
+	"<%s>%ld</%s> <!-- %.24s -->\n",
+	name,
+	(long)this_thing,
+	name,
+	ctime(&this_thing)
+    );
 }
 
 
@@ -173,8 +174,8 @@ string_write(output_ty *fp, const char *name, string_ty *this_thing)
     if (!this_thing && name)
 	return;
     if (name)
-	output_fprintf(fp, "%s = ", name);
-    output_fputc(fp, '"');
+	fp->fprintf("%s = ", name);
+    fp->fputc('"');
     if (this_thing)
     {
 	count = 0;
@@ -210,10 +211,10 @@ string_write(output_ty *fp, const char *name, string_ty *this_thing)
 		cp = strchr("\bb\ff\nn\rr\tt", c);
 		if (cp)
 		{
-		    output_fputc(fp, '\\');
-		    output_fputc(fp, cp[1]);
+		    fp->fputc('\\');
+		    fp->fputc(cp[1]);
 		    if (c == '\n')
-		       	output_fputs(fp, "\\\n");
+		       	fp->fputs("\\\n");
 		}
 		else
 		{
@@ -230,13 +231,13 @@ string_write(output_ty *fp, const char *name, string_ty *this_thing)
 			// And "\\3.3o" isn't any better
 			// (for the exact opposite reason).
 			//
-			output_fputc(fp, '\\');
-			output_fputc(fp, '0' + ((c>>6)&3));
-			output_fputc(fp, '0' + ((c>>3)&7));
-			output_fputc(fp, '0' + ( c    &7));
+			fp->fputc('\\');
+			fp->fputc('0' + ((c>>6)&3));
+			fp->fputc('0' + ((c>>3)&7));
+			fp->fputc('0' + ( c    &7));
 		    }
 		    else
-			output_fprintf(fp, "\\%o", c);
+			fp->fprintf("\\%o", c);
 		}
 	    }
 	    else
@@ -261,16 +262,16 @@ string_write(output_ty *fp, const char *name, string_ty *this_thing)
 
 		case '\\':
 		case '"':
-		    output_fputc(fp, '\\');
+		    fp->fputc('\\');
 		    break;
 		}
-		output_fputc(fp, c);
+		fp->fputc(c);
 	    }
 	}
     }
-    output_fputc(fp, '"');
+    fp->fputc('"');
     if (name)
-	output_fputs(fp, ";\n");
+	fp->fputs(";\n");
 }
 
 
@@ -281,7 +282,7 @@ string_write_xml(output_ty *fp, const char *name, string_ty *this_thing)
 	return;
     if (!name)
 	name = "string";
-    output_fprintf(fp, "<%s>", name);
+    fp->fprintf("<%s>", name);
     if (this_thing)
     {
 	char            *s;
@@ -294,36 +295,36 @@ string_write_xml(output_ty *fp, const char *name, string_ty *this_thing)
 	    switch (c)
 	    {
 	    case '<':
-		output_fputs(fp, "&lt;");
+		fp->fputs("&lt;");
 		break;
 
 	    case '>':
-		output_fputs(fp, "&gt;");
+		fp->fputs("&gt;");
 		break;
 
 	    case '&':
-		output_fputs(fp, "&amp;");
+		fp->fputs("&amp;");
 		break;
 
 	    case '"':
-		output_fputs(fp, "&quot;");
+		fp->fputs("&quot;");
 		break;
 
 	    case '\n':
-		output_fputc(fp, c);
+		fp->fputc('\n');
 		break;
 
 	    default:
 		// always in the C locale
 		if (isprint(c))
-		    output_fputc(fp, c);
+		    fp->fputc(c);
 		else
-		    output_fprintf(fp, "&#%d;", c);
+		    fp->fprintf("&#%d;", c);
 		break;
 	    }
 	}
     }
-    output_fprintf(fp, "</%s>\n", name);
+    fp->fprintf("</%s>\n", name);
 }
 
 
@@ -347,14 +348,13 @@ io_comment_append(sub_context_ty *scp, const char *fmt)
     else
 	s = subst_intl(scp, fmt);
 
-    str2wl(&wl, s, "\n", 1);
+    wl.split(s, "\n", true);
     str_free(s);
     for (k = wl.nstrings; k > 0; --k)
 	if (wl.string[k - 1]->str_length)
     	    break;
     for (j = 0; j < k; ++j)
-	string_list_append(&comment, wl.string[j]);
-    string_list_destructor(&wl);
+	comment.push_back(wl.string[j]);
 }
 
 
@@ -365,9 +365,9 @@ io_comment_emit(output_ty *fp)
 
     if (!comment.nstrings)
 	return;
-    output_fputs(fp, "/*\n");
+    fp->fputs("/*\n");
     for (j = 0; j < comment.nstrings; ++j)
-	output_fprintf(fp, "** %s\n", comment.string[j]->str_text);
-    output_fputs(fp, "*/\n");
-    string_list_destructor(&comment);
+	fp->fprintf("** %s\n", comment.string[j]->str_text);
+    fp->fputs("*/\n");
+    comment.clear();
 }

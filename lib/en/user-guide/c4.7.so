@@ -197,7 +197,9 @@ signed_off_by = true;
 Only open source projects should use this field.
 The OSDL definition of the Developer's Certificate of Origin 1.0
 can be found at
-http://www.osdl.org/newsroom/press_releases/2004/2004_05_24_dco.html
+.\" do not warn "cannot adjust line"
+.warn (\n[.warn]-(((\n[.warn]/4)%2)*4))
+http://\%www.osdl.org/\%newsroom/\%press_releases/\%2004/\%2004_05_24_dco.html
 and is defined to mean:
 .LP
 "By making a contribution to this project, I certify that:

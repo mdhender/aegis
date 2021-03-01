@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -53,10 +53,8 @@ completion_get(command_ty *cmd)
     complete_ty    *result;
     string_ty      *project_name;
     long           change_number1;
-    long           change_number2;
     const char     *branch;
     project_ty     *pp;
-    int            incomplete_filename;
     int            incomplete_change_number1;
     int            incomplete_change_number2;
     int            incomplete_branch;
@@ -68,9 +66,7 @@ completion_get(command_ty *cmd)
     arglex();
     project_name = 0;
     change_number1 = 0;
-    change_number2 = 0;
     branch = 0;
-    incomplete_filename = 0;
     incomplete_change_number1 = 0;
     incomplete_change_number2 = 0;
     incomplete_branch = 0;
@@ -122,10 +118,7 @@ completion_get(command_ty *cmd)
 		continue;
 
 	    case arglex_token_number:
-		if (arglex_value.alv_number == 0)
-		    change_number2 = MAGIC_ZERO;
-		else if (arglex_value.alv_number > 0)
-		    change_number2 = arglex_value.alv_number;
+		// second change number
 		break;
 
 	    case arglex_token_number_incomplete:
@@ -192,7 +185,7 @@ completion_get(command_ty *cmd)
 	    break;
 
 	case arglex_token_string_incomplete:
-	    incomplete_filename = 1;
+	    // incomplete file name
 	    break;
 
 	case arglex_token_base_relative:

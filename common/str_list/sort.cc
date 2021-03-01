@@ -29,18 +29,15 @@
 static int
 wl_sort_cmp(const void *va, const void *vb)
 {
-    string_ty       *a;
-    string_ty       *b;
-
-    a = *(string_ty **)va;
-    b = *(string_ty **)vb;
+    string_ty *a = *(string_ty **)va;
+    string_ty *b = *(string_ty **)vb;
     // C locale
     return strcmp(a->str_text, b->str_text);
 }
 
 
 void
-string_list_sort(string_list_ty *wlp)
+string_list_ty::sort()
 {
-    qsort(wlp->string, wlp->nstrings, sizeof(wlp->string[0]), wl_sort_cmp);
+    qsort(string, nstrings, sizeof(string[0]), wl_sort_cmp);
 }

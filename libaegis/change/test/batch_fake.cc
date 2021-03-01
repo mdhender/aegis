@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000-2004 Peter Miller;
+//	Copyright (C) 2000-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -36,8 +36,8 @@
 
 
 batch_result_list_ty *
-change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
-    int current, int total)
+change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up,
+    bool baseline_flag, int current, int total, time_t time_limit)
 {
     size_t	    j;
     string_ty	    *dir;
@@ -51,8 +51,9 @@ change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
     // which command
     //
     trace(("change_test_batch_fake(cp = %08lX, wlp = %08lX, up = %08lX, "
-	"bl = %d, current = %d, total = %d)\n{\n", (long)cp, (long)wlp,
-	(long)up, bl, current, total));
+	"baseline_flag = %d, current = %d, total = %d, time_limit = %ld)\n{\n",
+	(long)cp, (long)wlp, (long)up, baseline_flag, current, total,
+	(long)time_limit));
     cstate_data = change_cstate_get(cp);
     run_test_command = change_run_test_command;
     if (cstate_data->state != cstate_state_being_integrated)
@@ -68,7 +69,7 @@ change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
     // unresolved, and thus always trigger the automounter.
     //
     dir = project_baseline_path_get(cp->pp, 0);
-    if (!bl && !cp->bogus)
+    if (!baseline_flag && !cp->bogus)
     {
 	switch (cstate_data->state)
 	{
@@ -157,7 +158,7 @@ change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
 	//
 	// run the command
 	//
-	exit_status = run_test_command(cp, up, fn_abs, dir, inp, bl);
+	exit_status = run_test_command(cp, up, fn_abs, dir, inp, baseline_flag);
 
 	//
 	// remember what happened
@@ -170,7 +171,7 @@ change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
 	switch (exit_status)
 	{
 	case 1:
-	    if (bl)
+	    if (baseline_flag)
 	    {
 		scp = sub_context_new();
 		sub_var_set_string(scp, "File_Name", fn);
@@ -189,7 +190,7 @@ change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
 	    break;
 
 	case 0:
-	    if (bl)
+	    if (baseline_flag)
 	    {
 		scp = sub_context_new();
 		sub_var_set_string(scp, "File_Name", fn);
@@ -225,8 +226,20 @@ change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
 	//
 	// don't persevere if the user asked us not to
 	//
-	if (result->fail_count && !persevere)
+	if (!persevere && (result->fail_count || result->no_result_count))
 	    break;
+
+	//
+        // If we have been given a time limit, and that time has passed,
+        // do not continue testing.
+	//
+	if (time_limit)
+	{
+	    time_t now;
+	    time(&now);
+	    if (now >= time_limit)
+		break;
+	}
     }
 
     //

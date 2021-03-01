@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,10 @@
 #ifndef AEDIST_LIST_H
 #define AEDIST_LIST_H
 
-#include <main.h>
-
-void list_main(void(*)(void));
+/**
+  * The list_main function is used to implement the aedist --list
+  * command.
+  */
+void list_main(void);
 
 #endif /* AEDIST_LIST_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000, 2002 Peter Miller;
+ *	Copyright (C) 2000, 2002, 2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,25 @@ struct change_ty;
 struct string_list_ty;
 struct user_ty;
 
-batch_result_list_ty *change_test_batch(struct change_ty *,
-	struct string_list_ty *, struct user_ty *, int, int, int);
+/**
+  * The change_test_batch function is used to run a batch of tests using
+  * the batch_test_command field of the project configuration file.
+  *
+  * \param cp
+  *     The change being tested.
+  * \param wlp
+  *     The list of test files names to be run.
+  * \param up
+  *     The user to run the tests as.
+  * \param baseline
+  *     true if this is a baseline (negative) test, or
+  *     false if this is a regular (positive) test.
+  * \param current
+  *     The number of tests completed so far.
+  * \param total
+  *     The total number opf tests to be run.
+  */
+batch_result_list_ty *change_test_batch(change_ty *cp, string_list_ty *wlp,
+    user_ty *up, bool baseline, int current, int total);
 
 #endif /* LIBAEGIS_CHANGE_TEST_BATCH_H */

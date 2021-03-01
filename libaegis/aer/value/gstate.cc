@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 1997, 1999, 2000, 2003, 2004 Peter Miller;
+//	Copyright (C) 1994, 1996, 1997, 1999, 2000, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -64,7 +64,10 @@ destruct(rpt_value_ty *vp)
     trace(("rpt_value_gstate::destruct(vp = %08lX)\n{\n", (long)vp));
     this_thing = (rpt_value_gstate_ty *)vp;
     if (this_thing->keys)
-	string_list_delete(this_thing->keys);
+    {
+	delete this_thing->keys;
+	this_thing->keys = 0;
+    }
     trace(("}\n"));
 }
 
@@ -148,7 +151,7 @@ grab(rpt_value_gstate_ty *this_thing)
     //
     trace(("rpt_value_gstate::grab(this = %08lX)\n{\n", (long)this_thing));
     assert(!this_thing->keys);
-    this_thing->keys = string_list_new();
+    this_thing->keys = new string_list_ty();
 
     //
     // ask gonzo for the list of project names
@@ -161,12 +164,10 @@ grab(rpt_value_gstate_ty *this_thing)
 static rpt_value_ty *
 lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lval)
 {
-    rpt_value_gstate_ty *this_thing;
     rpt_value_ty    *rhs2;
     rpt_value_ty    *result;
 
     trace(("rpt_value_gstate::lookup(this = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_gstate_ty *)vp;
 
     rhs2 = rpt_value_stringize(rhs);
     if (rhs2->method->type == rpt_value_type_string)

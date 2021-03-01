@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993, 1995, 1999-2003 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 1992, 1993, 1995, 1999-2004 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -24,6 +23,7 @@
 # review_pass_notify_command = "$datadir/rp.sh $p $c $developer $reviewer";
 #
 aegis=aegis
+aesub=aesub
 case $# in
 4)
 	project=$1
@@ -31,7 +31,6 @@ case $# in
 	developer=$3
 	reviewer=$4
 	;;
-
 *)
 	echo "Usage: $0 <project> <change> <developer> <reviewer>" 1>&2
 	exit 1
@@ -56,7 +55,6 @@ then
 	integrators=`$aegis -list administrators -project $project -terse`
 	if [ $? -ne 0 ]; then quit; fi
 fi
-integrators=`echo $integrators | sed 's/ /,/g'`
 
 #
 # Get any aliases for the project
@@ -65,18 +63,34 @@ aliases=`aegis -list Project_Aliases -unf -p $project | awk '{ print $1 }'`
 if [ "$aliases" ]
 then
     # format as comma separated list in brackets
-   aliases=" ["`echo $aliases | tr ' ' ','`"]"
+    aliases=" ["`echo $aliases | tr ' ' ','`"]"
 fi
+
+state=`$aesub '$state' -c $change -p $project `
+case $state in
+awaiting_integration)
+    coda="It is now awaiting integration."
+    to=`$aesub -p $project "\${email_address -comma $developer $integrators}"`
+    ;;
+awaiting_review | being_reviewed)
+    coda="It is still awaiting further review."
+    to=`$aesub -p $project '\${email_address -comma $reviewer_list}'`
+    ;;
+*)
+    coda="It is now $state"
+    to=`$aesub -p $project '${email_addr -comma $administrator_list}'`
+    ;;
+esac
 
 #
 # build the notice to be mailed
 #
 cat > $tmp << TheEnd
 Subject: Project ${project}$aliases: Change $change: passed review
-To: $developer, $integrators
+To: $to
 
 The change described below has passed review.
-It is now awaiting integration.
+$coda
 
 TheEnd
 if [ $? -ne 0 ]; then quit; fi

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -71,8 +71,8 @@ write(response_ty *rp, output_ty *op)
 
     rcsp = (response_clear_sticky_ty *)rp;
     dir = rcsp->client_side->str_text;
-    output_fprintf(op, "Clear-sticky %s/\n", dir);
-    output_fprintf(op, ROOT_PATH "/%s/\n", dir);
+    op->fprintf("Clear-sticky %s/\n", dir);
+    op->fprintf(ROOT_PATH "/%s/\n", dir);
 }
 
 

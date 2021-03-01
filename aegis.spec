@@ -5,11 +5,11 @@
 #
 Summary: project change supervisor
 Name: aegis
-Version: 4.19
+Version: 4.20
 Release: 1
 Copyright: GPL
 Group: Development/Version Control
-Source: http://www.canb.auug.org.au/~millerp/aegis-4.19.tar.gz
+Source: http://www.canb.auug.org.au/~millerp/aegis-4.20.tar.gz
 URL: http://www.canb.auug.org.au/~millerp/aegis.html
 BuildRoot: /tmp/aegis-build-root
 Icon: aegis.xpm
@@ -132,6 +132,7 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0755,root,bin) /usr/bin/aebuffy
 %attr(0755,root,bin) /usr/bin/aecomp
 %attr(0755,root,bin) /usr/bin/aeedit
+%attr(0755,root,bin) /usr/bin/aeget.instal
 %attr(0755,root,bin) /usr/bin/aegis.cgi.i
 %attr(0755,root,bin) /usr/bin/aegis.cgi
 %attr(0755,root,bin) /usr/bin/aeintegratq
@@ -505,8 +506,7 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 # random across the various Unix implementations.  Sigh.
 #
 %post
-chown -R 3 /usr/com/aegis /usr/lib/aegis /usr/share/aegis
-chgrp -R 3 /usr/com/aegis /usr/lib/aegis /usr/share/aegis
+chown -R 3 /usr/com/aegis && chgrp -R 3 /usr/com/aegis
 
 %clean
 rm -rf $RPM_BUILD_ROOT

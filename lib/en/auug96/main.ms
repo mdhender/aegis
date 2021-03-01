@@ -518,6 +518,8 @@ Miller, P. A.,
 .ft I
 Aegis User Guide
 .ft R
+.\" do not warn "cannot adjust line"
+.warn (\n[.warn]-(((\n[.warn]/4)%2)*4))
 \f(CWhttp:\%//www.canb.auug.org.au/\%~millerp/\%aegis.html\fP,
 .IP [3]
 Mockapetris, P.,

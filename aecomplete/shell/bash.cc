@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2002-2004 Peter Miller;
+//      Copyright (C) 2002-2005 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -321,10 +321,8 @@ prefix_get(shell_ty *sh)
 static void
 emit(shell_ty *sh, string_ty *s)
 {
-    shell_bash_ty   *this_thing;
     char            *cp;
 
-    this_thing = (shell_bash_ty *)sh;
     for (cp = s->str_text; *cp; ++cp)
     {
         switch (*cp)

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2003 Peter Miller;
+ *	Copyright (C) 2003, 2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,6 +37,6 @@ input_ty *input_curl_open(struct string_ty *);
   * and see if it starts with a prototype name (e.g. http: or ftp:)
   * making it a likely bcandidate for the input_curl_open function.
   */
-int input_curl_looks_likely(struct string_ty *);
+bool input_curl_looks_likely(struct string_ty *);
 
 #endif /* LIBAEGIS_INPUT_CURL_H */

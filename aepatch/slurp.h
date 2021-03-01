@@ -23,7 +23,7 @@
 #ifndef AEPATCH_SLURP_H
 #define AEPATCH_SLURP_H
 
-#include <patch.h>
+#include <patch/list.h>
 
 patch_list_ty *patch_slurp(string_ty *filename);
 

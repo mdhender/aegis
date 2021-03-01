@@ -36,7 +36,7 @@ str_trim(string_ty *s)
     string_ty	    *result;
 
     whitespace = 0;
-    stracc_open(&buffer);
+    buffer.clear();
     language_human();
     for (cp = s->str_text; *cp; ++cp)
     {
@@ -46,14 +46,14 @@ str_trim(string_ty *s)
 	{
 	    if (whitespace)
 	    {
-	       	if (buffer.length)
-		    stracc_char(&buffer, ' ');
+	       	if (buffer.size())
+		    buffer.push_back(' ');
 	       	whitespace = 0;
 	    }
-	    stracc_char(&buffer, *cp);
+	    buffer.push_back(*cp);
 	}
     }
     language_C();
-    result = stracc_close(&buffer);
+    result = buffer.mkstr();
     return result;
 }

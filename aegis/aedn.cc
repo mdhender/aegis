@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1994-1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -392,7 +392,7 @@ delta_name_main(void)
 		//
 		continue;
 	    }
-	    src = change_file_find(fep->cp, src->file_name, view_path_first);
+	    src = fep->src;
 	    assert(src);
 	    switch (src->action)
 	    {

@@ -22,7 +22,7 @@
 
 #include <ac/errno.h>
 #include <ac/stddef.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <glue.h>
@@ -34,16 +34,20 @@
 void
 os_chmod(string_ty *path, int mode)
 {
-    trace(("os_chmod(path = \"%s\", mode = 0%o)\n{\n", path->str_text, mode));
+    os_chmod(nstring(str_copy(path)), mode);
+}
+
+
+void
+os_chmod(const nstring &path, int mode)
+{
+    trace(("os_chmod(path = \"%s\", mode = 0%o)\n{\n", path.c_str(), mode));
     mode &= 07777;
     os_become_must_be_active();
-    if (glue_chmod(path->str_text, mode))
+    if (glue_chmod(path.c_str(), mode))
     {
-	sub_context_ty  *scp;
-	int             errno_old;
-
-	errno_old = errno;
-	scp = sub_context_new();
+	int errno_old = errno;
+	sub_context_ty *scp = sub_context_new();
 	sub_errno_setx(scp, errno_old);
 	sub_var_set_string(scp, "File_Name", path);
 	sub_var_set_format(scp, "Argument", "%5.5o", mode);

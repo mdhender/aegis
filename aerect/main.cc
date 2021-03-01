@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998-2000, 2002-2004 Peter Miller;
+//	Copyright (C) 1998-2000, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -255,6 +255,6 @@ main(int argc, char **argv)
     if (!width || !height)
 	fatal_intl(0, i18n("no size specified"));
     rect(outfile, width, height, label);
-    exit(0);
+    quit(0);
     return 0;
 }

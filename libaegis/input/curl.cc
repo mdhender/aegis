@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 #include <ac/ctype.h>
 #include <ac/curl/curl.h>
 #include <ac/errno.h>
+#include <ac/stdlib.h>
 #include <ac/string.h>
 #include <ac/time.h>
 #include <ac/unistd.h>
@@ -31,11 +32,13 @@
 #include <input/curl.h>
 #include <input/private.h>
 #include <mem.h>
+#include <nstring.h>
 #include <option.h>
 #include <os.h>
 #include <page.h>
 #include <sub.h>
 #include <itab.h>
+#include <url.h>
 
 #ifdef HAVE_LIBCURL
 
@@ -62,6 +65,10 @@ struct input_curl_ty
     char            *progress_buffer;
     int             progress_buflen;
     int             progress_cleanup;
+#if (LIBCURL_VERSION_NUM < 0x070b01)
+    nstring         *proxy;
+    nstring         *userpass;
+#endif
 };
 
 
@@ -259,6 +266,10 @@ destruct(input_ty *p)
     fp->buffer_maximum = 0;
     str_free(fp->fn);
     fp->fn = 0;
+#if (LIBCURL_VERSION_NUM < 0x070b01)
+    delete fp->userpass;
+    delete fp->proxy;
+#endif
 }
 
 
@@ -414,7 +425,7 @@ perform(void)
 	    //
 	    call_multi_immediate = 1;
 	}
-    }
+        }
     }
 }
 
@@ -552,6 +563,56 @@ input_curl_open(string_ty *fn)
     err = curl_easy_setopt(fp->handle, CURLOPT_ERRORBUFFER, fp->errbuf);
     if (err)
 	FATAL("curl_easy_setopt", curl_easy_strerror(err));
+
+#if (LIBCURL_VERSION_NUM < 0x070b01)
+    //
+    // libcurl prior to 7.11.1 has problems handling autenticated
+    // proxy specified by http_proxy or HTTP_PROXY, so we set them
+    // manually.
+    //
+
+    int         uid;
+    int         gid;
+    int         umask;
+    //
+    // We need to save the user identity because the url::split method
+    // call os_become_ itself and we must issue os_become_undo and
+    // os_become to not raise a multiple permission error.
+    //
+    os_become_query(&uid, &gid, &umask);
+    os_become_undo();
+    url target_url(fn->str_text);
+    os_become(uid, gid, umask);
+    if (target_url.get_protocol() == "http")
+    {
+        char *http_proxy = getenv("http_proxy");
+        if (!http_proxy || http_proxy[0] == '\0')
+            http_proxy = getenv("HTTP_PROXY");
+        if (http_proxy && http_proxy[0] != '\0')
+        {
+            //
+            // We use the user's identity previously saved to
+            // undo/restore the process identity in order to prevent a
+            // multiple permission error from url::split.
+            //
+            os_become_undo();
+            url proxy_url(http_proxy);
+            os_become(uid, gid, umask);
+            fp->userpass = new nstring(proxy_url.get_userpass());
+            fp->proxy = new nstring(proxy_url.reassemble(true));
+            if (!fp->userpass->empty())
+            {
+                curl_easy_setopt
+                (
+                    fp->handle,
+                    CURLOPT_PROXYUSERPWD,
+                    fp->userpass->c_str()
+                );
+            }
+            curl_easy_setopt(fp->handle, CURLOPT_PROXY, fp->proxy->c_str());
+        }
+    }
+#endif
     err = curl_easy_setopt(fp->handle, CURLOPT_URL, fp->fn->str_text);
     if (err)
 	FATAL("curl_easy_setopt", curl_easy_strerror(err));
@@ -628,13 +689,13 @@ input_curl_open(string_ty *fn)
     return result;
 }
 
+#endif // HAVE_LIBCURL
 
-int
+
+bool
 input_curl_looks_likely(string_ty *fn)
 {
-    const char *cp;
-
-    cp = fn->str_text;
+    const char *cp = fn->str_text;
     if (!isalpha((unsigned char)*cp))
 	return 0;
     for (;;)
@@ -645,5 +706,3 @@ input_curl_looks_likely(string_ty *fn)
     }
     return (cp[0] == ':' && cp[1] != '\0');
 }
-
-#endif // HAVE_LIBCURL

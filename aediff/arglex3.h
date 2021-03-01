@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,8 @@
 
 enum
 {
-    arglex_token_context = ARGLEX2_MAX,
+    arglex_token_command = ARGLEX2_MAX,
+    arglex_token_context,
     arglex_token_ignore_all_space,
     arglex_token_ignore_blank_lines,
     arglex_token_ignore_case,

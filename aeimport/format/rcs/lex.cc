@@ -439,10 +439,10 @@ format_rcs_gram_lex(void)
             break;
 
         case ctab_is_alpha:
-            stracc_open(&buffer);
+            buffer.clear();
             for (;;)
             {
-                stracc_char(&buffer, c);
+                buffer.push_back(c);
                 c = input_getc(ip);
                 if (c < 0)
                     break;
@@ -460,7 +460,7 @@ format_rcs_gram_lex(void)
                 }
                 break;
             }
-            format_rcs_gram_lval.lv_string = stracc_close(&buffer);
+            format_rcs_gram_lval.lv_string = buffer.mkstr();
             if (keyword_expected)
             {
                 table_ty *tp =
@@ -480,10 +480,10 @@ format_rcs_gram_lex(void)
             return IDENTIFIER;
 
         case ctab_is_digit:
-            stracc_open(&buffer);
+            buffer.clear();
             for (;;)
             {
-                stracc_char(&buffer, c);
+                buffer.push_back(c);
                 c = input_getc(ip);
                 if (c < 0)
                     break;
@@ -500,13 +500,13 @@ format_rcs_gram_lex(void)
                 }
                 break;
             }
-            format_rcs_gram_lval.lv_string = stracc_close(&buffer);
+            format_rcs_gram_lval.lv_string = buffer.mkstr();
             trace(("NUMBER \"%s\"\n",
                 format_rcs_gram_lval.lv_string->str_text));
             return NUMBER;
 
         case ctab_is_string:
-            stracc_open(&buffer);
+            buffer.clear();
             for (;;)
             {
                 c = input_getc(ip);
@@ -525,9 +525,9 @@ format_rcs_gram_lex(void)
                         break;
                     }
                 }
-                stracc_char(&buffer, c);
+                buffer.push_back(c);
             }
-            format_rcs_gram_lval.lv_string = stracc_close(&buffer);
+            format_rcs_gram_lval.lv_string = buffer.mkstr();
             trace(("STRING\n"));
             return STRING;
 

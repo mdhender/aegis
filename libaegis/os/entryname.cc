@@ -47,19 +47,30 @@
 string_ty *
 os_entryname(string_ty *path)
 {
-	string_ty	*s;
-	char		*cp;
+    trace(("os_entryname(path = %08lX)\n{\n", (long)path));
+    trace_string(path->str_text);
+    string_ty *s = os_pathname(path, 1);
+    const char *cp = strrchr(s->str_text, '/');
+    if (cp && s->str_length > 1)
+	path = str_from_c(cp + 1);
+    else
+	path = str_copy(s);
+    str_free(s);
+    trace_string(path->str_text);
+    trace(("}\n"));
+    return path;
+}
 
-	trace(("os_entryname(path = %08lX)\n{\n", (long)path));
-	trace_string(path->str_text);
-	s = os_pathname(path, 1);
-	cp = strrchr(s->str_text, '/');
-	if (cp && s->str_length > 1)
-		path = str_from_c(cp + 1);
-	else
-		path = str_copy(s);
-	str_free(s);
-	trace_string(path->str_text);
-	trace(("}\n"));
-	return path;
+
+nstring
+os_entryname(const nstring &path)
+{
+    trace(("os_entryname(path = \"%s\")\n{\n", path.c_str()));
+    nstring s = os_pathname(path, true);
+    const char *cp = strrchr(s.c_str(), '/');
+    if (cp && s.size() > 1)
+	s = nstring(cp + 1);
+    trace(("return \"%s\";\n", s.c_str()));
+    trace(("}\n"));
+    return s;
 }

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1997-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1994, 1997-1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -63,7 +63,7 @@ type_enumeration_ty::gen_include()
     indent_printf("};\n");
     indent_printf("#define %s_max %u\n",
                   def_name().c_str(),
-                  elements.size());
+                  (unsigned)elements.size());
     indent_printf("#endif // %s_DEF\n", def_name().c_str());
 
     indent_putchar('\n');
@@ -133,7 +133,7 @@ type_enumeration_ty::gen_code()
     indent_printf("{\n");
     indent_printf("static char\1buffer[20];\n\n");
     indent_printf("if ((int)this_thing >= 0 && (int)this_thing < %d)\n",
-                  elements.size());
+                  (int)elements.size());
     indent_more();
     indent_printf("return %s_s[this_thing];\n", def_name().c_str());
     indent_less();
@@ -163,14 +163,14 @@ type_enumeration_ty::gen_code()
     indent_printf("}\n");
     indent_printf("if (name)\n");
     indent_printf("{\n");
-    indent_printf("output_fputs(fp, name);\n");
-    indent_printf("output_fputs(fp, \" = \");\n");
+    indent_printf("fp->fputs(name);\n");
+    indent_printf("fp->fputs(\" = \");\n");
     indent_printf("}\n");
-    indent_printf("output_fputs(fp, %s_s[this_thing]);\n",
+    indent_printf("fp->fputs(%s_s[this_thing]);\n",
                   def_name().c_str());
     indent_printf("if (name)\n");
     indent_more();
-    indent_printf("output_fputs(fp, \";\\n\");\n");
+    indent_printf("fp->fputs(\";\\n\");\n");
     indent_less();
     indent_printf("}\n");
 
@@ -197,14 +197,13 @@ type_enumeration_ty::gen_code()
         "assert((size_t)this_thing < SIZEOF(%s_s));\n",
 	def_name().c_str()
     );
-    indent_printf("output_fputc(fp, '<');\n");
-    indent_printf("output_fputs(fp, name);\n");
-    indent_printf("output_fputc(fp, '>');\n");
-    indent_printf(
-        "output_fputs(fp, %s_s[this_thing]);\n", def_name().c_str());
-    indent_printf("output_fputs(fp, \"</\");\n");
-    indent_printf("output_fputs(fp, name);\n");
-    indent_printf("output_fputs(fp, \">\\n\");\n");
+    indent_printf("fp->fputc('<');\n");
+    indent_printf("fp->fputs(name);\n");
+    indent_printf("fp->fputc('>');\n");
+    indent_printf("fp->fputs(%s_s[this_thing]);\n", def_name().c_str());
+    indent_printf("fp->fputs(\"</\");\n");
+    indent_printf("fp->fputs(name);\n");
+    indent_printf("fp->fputs(\">\\n\");\n");
     indent_printf("}\n");
 
     indent_putchar('\n');
@@ -373,4 +372,31 @@ type_enumeration_ty::has_a_mask()
     const
 {
     return true;
+}
+
+
+void
+type_enumeration_ty::gen_code_copy(const nstring &member_name)
+    const
+{
+    indent_printf
+    (
+	"result->%s = this_thing->%s;\n",
+	member_name.c_str(),
+	member_name.c_str()
+    );
+}
+
+
+void
+type_enumeration_ty::gen_code_trace(const nstring &vname, const nstring &value)
+    const
+{
+    indent_printf
+    (
+	"trace_printf(\"%s = %%s;\\n\", %s_ename(%s));\n",
+	vname.c_str(),
+	def_name().c_str(),
+	value.c_str()
+    );
 }

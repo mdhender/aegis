@@ -183,7 +183,7 @@ change_file_list_get(change_ty *cp, view_path_ty as_view_path)
 	// This has O(1) query times.
 	//
 	tmpi = symtab_iterator_new(tmp);
-	wlp = string_list_new();
+	wlp = new string_list_ty();
 	while (symtab_iterator_next(tmpi, &key, &data))
 	{
 	    fstate_src_ty   *fsp;
@@ -225,7 +225,7 @@ change_file_list_get(change_ty *cp, view_path_ty as_view_path)
 		}
 		break;
 	    }
-	    string_list_append(wlp, key);
+	    wlp->push_back(key);
 	}
 	symtab_iterator_delete(tmpi);
 	symtab_free(tmp);
@@ -241,7 +241,7 @@ change_file_list_get(change_ty *cp, view_path_ty as_view_path)
 	// plus O(n log n) for the qsort, where n is the number
 	// of files.
 	//
-	string_list_sort(wlp);
+	wlp->sort();
 	cp->file_list[as_view_path] = wlp;
     }
     trace(("return %8.8lX;\n", (long)cp->file_list[as_view_path]));

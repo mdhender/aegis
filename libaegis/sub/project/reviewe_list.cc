@@ -28,7 +28,7 @@
 #include <trace.h>
 #include <user.h>
 #include <wstr.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 //
@@ -54,74 +54,65 @@
 wstring_ty *
 sub_reviewer_list(sub_context_ty *scp, wstring_list_ty *arg)
 {
-	wstring_ty	*result;
-	long		j;
-	string_list_ty	wl;
-	string_ty	*s;
-	project_ty	*pp;
-	sub_user_func_ptr func;
-	user_ty		*up;
+    long j;
+    string_ty *s;
+    project_ty *pp;
+    sub_user_func_ptr func;
+    user_ty *up;
 
-	trace(("sub_reviewer_list()\n{\n"));
-	pp = sub_context_project_get(scp);
-	if (!pp)
-	{
-		sub_context_error_set
-		(
-			scp,
-			i18n("not valid in current context")
-		);
-		result = 0;
-		goto done;
-	}
-	func = user_name;
-	switch (arg->nitems)
-	{
-	default:
-		sub_context_error_set(scp, i18n("requires one argument"));
-		result = 0;
-		goto done;
-
-	case 1:
-		break;
-
-	case 2:
-		s = wstr_to_str(arg->item[1]);
-		func = sub_user_func(s);
-		str_free(s);
-		if (!func)
-		{
-			sub_context_error_set
-			(
-				scp,
-				i18n("unknown substitution variant")
-			);
-			result = 0;
-			goto done;
-		}
-		break;
-	}
-
-	//
-	// build a string containing all of the project reviewers
-	//
-	string_list_constructor(&wl);
-	for (j = 0; ; ++j)
-	{
-		s = project_reviewer_nth(pp, j);
-		if (!s)
-			break;
-		up = user_symbolic(pp, s);
-		s = func(up);
-		string_list_append(&wl, s);
-	}
-	s = wl2str(&wl, 0, wl.nstrings, " ");
-	string_list_destructor(&wl);
-	result = str_to_wstr(s);
-	str_free(s);
-
-	done:
-	trace(("return %8.8lX;\n", (long)result));
+    trace(("sub_reviewer_list()\n{\n"));
+    pp = sub_context_project_get(scp);
+    if (!pp)
+    {
+	sub_context_error_set(scp, i18n("not valid in current context"));
+	trace(("return NULL;\n"));
 	trace(("}\n"));
-	return result;
+	return 0;
+    }
+    func = user_name;
+    switch (arg->size())
+    {
+    default:
+	sub_context_error_set(scp, i18n("requires one argument"));
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
+
+    case 1:
+	break;
+
+    case 2:
+	s = wstr_to_str(arg->get(1));
+	func = sub_user_func(s);
+	str_free(s);
+	if (!func)
+	{
+	    sub_context_error_set(scp, i18n("unknown substitution variant"));
+	    trace(("return NULL;\n"));
+	    trace(("}\n"));
+	    return 0;
+	}
+	break;
+    }
+
+    //
+    // build a string containing all of the project reviewers
+    //
+    string_list_ty wl;
+    for (j = 0; ; ++j)
+    {
+	s = project_reviewer_nth(pp, j);
+	if (!s)
+	    break;
+	up = user_symbolic(pp, s);
+	s = func(up);
+	wl.push_back(s);
+    }
+    s = wl.unsplit();
+    wstring_ty *result = str_to_wstr(s);
+    str_free(s);
+
+    trace(("return %8.8lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }

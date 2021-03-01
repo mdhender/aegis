@@ -22,7 +22,7 @@
 
 #include <ac/errno.h>
 #include <ac/stddef.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 #include <ac/unistd.h>
 
@@ -33,37 +33,31 @@
 
 
 void
-os_unlink(string_ty *path)
+os_unlink(const nstring &path)
 {
-    struct stat     st;
-    int             oret;
-
-    trace(("os_unlink(path = %08lX)\n{\n", (long)path));
+    trace(("os_unlink(path = \"%s\")\n{\n", path.c_str()));
     os_become_must_be_active();
-    trace_string(path->str_text);
 
     //
     // We must check that we are not unlinking a directory,
     // because we are set-uid-root, and root can unlink directories!
     //
+    struct stat st;
 #ifdef S_IFLNK
-    oret = glue_lstat(path->str_text, &st);
+    int oret = glue_lstat(path.c_str(), &st);
 #else
-    oret = glue_stat(path->str_text, &st);
+    int oret = glue_stat(path.c_str(), &st);
 #endif
     if (oret)
     {
-	sub_context_ty  *scp;
-	int             errno_old;
-
-	errno_old = errno;
+	int errno_old = errno;
 	if (errno_old == ENOENT)
 	{
 	    // Don't complain if it's not there.
 	    trace(("}\n"));
 	    return;
 	}
-	scp = sub_context_new();
+	sub_context_ty *scp = sub_context_new();
 	sub_errno_setx(scp, errno_old);
 	sub_var_set_string(scp, "File_Name", path);
 	fatal_intl(scp, i18n("stat $filename: $errno"));
@@ -71,25 +65,27 @@ os_unlink(string_ty *path)
     }
     if ((st.st_mode & S_IFMT) == S_IFDIR)
     {
-	sub_context_ty  *scp;
-
-	scp = sub_context_new();
+	sub_context_ty *scp = sub_context_new();
 	sub_errno_setx(scp, EISDIR);
 	sub_var_set_string(scp, "File_Name", path);
 	fatal_intl(scp, i18n("unlink $filename: $errno"));
 	// NOTREACHED
     }
-    if (glue_unlink(path->str_text))
+    if (glue_unlink(path.c_str()))
     {
-	sub_context_ty  *scp;
-	int             errno_old;
-
-	errno_old = errno;
-	scp = sub_context_new();
+	int errno_old = errno;
+	sub_context_ty *scp = sub_context_new();
 	sub_errno_setx(scp, errno_old);
 	sub_var_set_string(scp, "File_Name", path);
 	fatal_intl(scp, i18n("unlink $filename: $errno"));
 	// NOTREACHED
     }
     trace(("}\n"));
+}
+
+
+void
+os_unlink(string_ty *path)
+{
+    os_unlink(nstring(str_copy(path)));
 }

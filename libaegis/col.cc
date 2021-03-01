@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1997-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1995, 1997-1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -160,8 +160,9 @@ col_close(col_ty *fp)
 //	title	- the column title to use.  Give NULL pointer for none.
 //
 // RETURNS
-//	output_ty *; a pointer to an output stream to be used to write
-//	into this column.  Use output_delete when you are done with the column.
+//      output_ty *; a pointer to an output stream to be used to write
+//      into this column.  Use the delete operator when you are done
+//      with the column.
 //
 
 output_ty *

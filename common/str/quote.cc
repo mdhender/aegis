@@ -116,8 +116,8 @@ str_quote_shell(string_ty *s)
     // Also, the rules change depending on which style of quoting
     // is in force at the time.
     //
-    stracc_open(&buffer);
-    stracc_char(&buffer, mode);
+    buffer.clear();
+    buffer.push_back(mode);
     for (cp = s->str_text; *cp; ++cp)
     {
 	if (mode == '\'')
@@ -130,11 +130,11 @@ str_quote_shell(string_ty *s)
 		// single quotes.  Need to change to
 		// double quote mode.
 		//
-		stracc_chars(&buffer, "'\"'", 3);
+		buffer.push_back("'\"'", 3);
 		mode = '"';
 	    }
 	    else
-		stracc_char(&buffer, *cp);
+		buffer.push_back(*cp);
 	}
 	else
 	{
@@ -147,7 +147,7 @@ str_quote_shell(string_ty *s)
 		// within double quotes.  Need to change
 		// to single quote mode.
 		//
-		stracc_chars(&buffer, "\"'!", 3);
+		buffer.push_back("\"'!", 3);
 		mode = '\'';
 		break;
 
@@ -156,17 +156,17 @@ str_quote_shell(string_ty *s)
 	    case '\\':
 	    case '`': // stop command substitutions
 	    case '$': // stop variable substitutions
-		    stracc_char(&buffer, '\\');
+		    buffer.push_back('\\');
 		    // fall through...
 
 	    default:
-		stracc_char(&buffer, *cp);
+		buffer.push_back(*cp);
 		break;
 	    }
 	}
     }
-    stracc_char(&buffer, mode);
-    s = stracc_close(&buffer);
+    buffer.push_back(mode);
+    s = buffer.mkstr();
 
     //
     // all done

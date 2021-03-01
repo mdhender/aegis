@@ -1390,3 +1390,16 @@ build_time_adjust = (adjust_and_sleep, adjust_only, dont_adjust);
  *     who certified (a), (b) or (c) and I have not modified it.
  */
 signed_off_by = boolean;
+
+/*
+ * Executed whenever the aegis -review_pass command is run.
+ * Defaults to `exit 0;' if not set.
+ *
+ * All of the substitutions described in aesub(5) are available.
+ *
+ * Executed as: the current reviewer.
+ * Current directory: the development directory of the change
+ * Exit status: zero means the change has been reviewed sufficiently.
+ *	non-zero means that further review(s) are necessary.
+ */
+review_policy_command = string;

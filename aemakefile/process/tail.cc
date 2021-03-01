@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -66,14 +66,17 @@ process_tail::process_tail(printer &arg) :
     find_sizes_files->push_back("common/ac/wchar.$(OBJEXT)");
     find_sizes_files->push_back("common/ac/wctype.$(OBJEXT)");
     find_sizes_files->push_back("common/arglex.$(OBJEXT)");
+    find_sizes_files->push_back("common/arglex/compare.$(OBJEXT)");
     find_sizes_files->push_back("common/error.$(OBJEXT)");
     find_sizes_files->push_back("common/exeext.$(OBJEXT)");
     find_sizes_files->push_back("common/libdir.$(OBJEXT)");
     find_sizes_files->push_back("common/mem.$(OBJEXT)");
     find_sizes_files->push_back("common/mprintf.$(OBJEXT)");
+    find_sizes_files->push_back("common/nstring.$(OBJEXT)");
     find_sizes_files->push_back("common/progname.$(OBJEXT)");
     find_sizes_files->push_back("common/quit.$(OBJEXT)");
     find_sizes_files->push_back("common/str.$(OBJEXT)");
+    find_sizes_files->push_back("common/str/catenate.$(OBJEXT)");
     find_sizes_files->push_back("common/str/format.$(OBJEXT)");
     find_sizes_files->push_back("common/trace.$(OBJEXT)");
 
@@ -97,15 +100,7 @@ dirname(const nstring &s)
 
 
 //
-// The mkdir could all be done with install,
-// but it has two incompatible forms:
-//	$(INSTALL_PROGRAM) -d -m 0755 -o $(AEGIS_UID) -g $(AEGIS_GID) $(libdir)
-//	$(INSTALL_PROGRAM) -d -m 0755 -u $(AEGIS_UID) -g $(AEGIS_GID) $(libdir)
-// The form which takes -u interprets -o as something else.
-// This is not determined automagically by autoconf.
-//
-// Note: if $(libdir) has the wrong owner or the wrong permissions,
-//	aegis will exit with a fatal error.
+// Create directories and any necessary parent directories.
 //
 void
 process_tail::recursive_mkdir(const nstring &src_dir_arg,
@@ -134,8 +129,6 @@ process_tail::recursive_mkdir(const nstring &src_dir_arg,
 		print << src_dir << "/.mkdir." << dir_suffix << ":\n";
 	    }
 	    print << "\t-$(INSTALL) -m 0755 -d " << dst_dir << "\n";
-	    print << "\t-chown $(AEGIS_UID) " << dst_dir
-		<< " && chgrp $(AEGIS_GID) " << dst_dir << "\n";
 	    print << "\t-@touch $@\n";
 	    print << "\t@sleep 1\n";
 	    clean_files.push_back(src_dir + "/.mkdir." + dir_suffix);
@@ -354,7 +347,7 @@ process_tail::postlude()
 		<< "_files) common/common.$(LIBEXT) .bin\n"
 		<< "\t@sleep 1\n"
 		<< "\t$(CXX) $(LDFLAGS) -o $@ $(" << name
-		<< "_files) common/common.$(LIBEXT) $(LIBS)\n"
+		    << "_files) common/common.$(LIBEXT) $(LIBS)\n"
 		<< "\t@sleep 1\n";
 	}
 	else
@@ -378,9 +371,9 @@ process_tail::postlude()
 	    print << "\t-chown root $@ && chmod 4755 $@\n";
     }
 
-    for (size_t j = 0; j < scripts.size(); ++j)
+    for (size_t k = 0; k < scripts.size(); ++k)
     {
-	nstring name(scripts[j]);
+	nstring name(scripts[k]);
 	print << "\n";
 	print << "bin/" << name << "$(EXEEXT): script/" << name << ".in .bin\n";
 	print << "\t@sleep 1\n";
@@ -404,21 +397,19 @@ process_tail::postlude()
     print << "\ninstall-man-yes: " << man_files << "\n";
 
     print << "\n"
-	"uninstall-man-yes:\n"
+	"uninstall-man:\n"
 	"\trm -f " << man_files << "\n";
 
     print << "\ninstall-man-no:\n";
-    print << "\nuninstall-man-no:\n";
     print << "\npo_files_yes: " << po_files << "\n";
     print << "\npo_files_no:\n";
     print << "\ninstall-po-yes: " << install_po_files << "\n";
 
     print << "\n"
-	"uninstall-po-yes:\n"
+	"uninstall-po:\n"
 	"\trm -f " << install_po_files << "\n";
 
     print << "\ninstall-po-no:\n";
-    print << "\nuninstall-po-no:\n";
     print << "\ndvi-doc-files: " << dvi_doc_files << "\n";
     print << "\ndoc_files_yes: " << ps_doc_files << " " << txt_doc_files
 	<< "\n";
@@ -426,11 +417,10 @@ process_tail::postlude()
     print << "\ninstall-doc-yes: " << install_doc_files << "\n";
 
     print << "\n"
-	"uninstall-doc-yes:\n"
+	"uninstall-doc:\n"
 	"\trm -f " << install_doc_files << "\n";
 
     print << "\ninstall-doc-no:\n";
-    print << "\nuninstall-doc-no:\n";
     print << "\nTestFiles = " << test_files << "\n";
 
     //
@@ -438,8 +428,8 @@ process_tail::postlude()
     //	(make sure command lines do not get too long)
     //
     print << "\nclean-obj:\n";
-    for (size_t j = 0; j < clean_files.size(); ++j)
-	print << "\trm -f " << clean_files[j] << "\n";
+    for (size_t m = 0; m < clean_files.size(); ++m)
+	print << "\trm -f " << clean_files[m] << "\n";
 
     print << "\nclean: clean-obj\n";
     print << "\trm -f " << commands_bin << "\n";
@@ -520,9 +510,10 @@ process_tail::postlude()
 	"#\n"
 	"install-libdir: lib/.mkdir.datadir lib/.mkdir.libdir .comdir "
 	    "install-po\n"
-	"\t-chown root bin/aegis$(EXEEXT) && chmod 4755 bin/aegis$(EXEEXT)\n"
-	"\t-chown root bin/aeimport$(EXEEXT) && chmod 4755 "
-	    "bin/aeimport$(EXEEXT)\n"
+	"\t-chown root bin/aegis$(EXEEXT) "
+	    "&& chmod 4755 bin/aegis$(EXEEXT)\n"
+	"\t-chown root bin/aeimport$(EXEEXT) "
+	    "&& chmod 4755 bin/aeimport$(EXEEXT)\n"
 	"\n"
 	"install-lib: $(LibFiles) $(DataFiles) .comdir\n"
 	"\n"
@@ -530,15 +521,13 @@ process_tail::postlude()
 	"\trm -f $(LibFiles) $(DataFiles)\n"
 	"\n"
 	"install-po: install-po-$(HAVE_MSGFMT)\n"
-	"uninstall-po: uninstall-po-$(HAVE_MSGFMT)\n"
 	"\n"
 	"install-man: install-man-$(HAVE_GROFF)\n"
-	"uninstall-man: uninstall-man-$(HAVE_GROFF)\n"
 	"\n"
 	"install-doc: install-doc-$(HAVE_GROFF)\n"
-	"uninstall-doc: uninstall-doc-$(HAVE_GROFF)\n"
 	"\n"
 	"install: install-bin install-lib install-po install-man install-doc\n"
+	"\n"
 	"uninstall: uninstall-bin uninstall-lib uninstall-po uninstall-man "
 	    "uninstall-doc\n";
 }

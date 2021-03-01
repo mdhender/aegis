@@ -1,6 +1,6 @@
 '\" t
 .\"     aegis - project change supervisor
-.\"     Copyright (C) 2002, 2004 Peter Miller;
+.\"     Copyright (C) 2002, 2004, 2005 Peter Miller;
 .\"     All rights reserved.
 .\"
 .\"     This program is free software; you can redistribute it and/or modify
@@ -39,9 +39,12 @@ one or more projects.  Normally run via \fIcron\fP(1) or \fIat\fP(1)
 with the name of a single project, \*(n) will manage all operations
 for integration even when \fB\-Build\fP and \fB\-Test\fP are required
 on multiple architectures. If a change review is revoked after the queue
-is running \*(n) will notice the bad state and just move on.
-Additional options allow the integrator full control over most aspects
-of queue management such as the order of integration of multiple changes.
+is running \*(n) will notice the bad state and silently move on.
+If one or more changes are ended or passed after the queue is running,
+and -loop has been given, \*(n) will notice the new change[s] and
+integrate them. Additional options allow the integrator full control
+over most aspects of queue management such as the order of integration
+of multiple changes.
 .SH OPTIONS
 The following options are understood:
 .SS Option Summary
@@ -67,6 +70,10 @@ Keep the scripts and report files.
 \fB\-K\fP
 Keep the temp file even if integration passes.
 .TP 8n
+\fB\-loop\fP
+Loop to process more changes if they become available before \*(n)
+completes.  It will stop when there is nothing more to be done.
+.TP 8n
 \fB\-M\fP \fIlist\fP
 Minimum, run given changes \fI\-minimum\fP
 .TP 8n
@@ -90,7 +97,7 @@ only a single project may be integrated since the
 options would be meaningless to the next project given.
 .PP
 Some options are present only for testing and investigation.
-Options are rarely required for normal operations.
+Note that options are rarely required for normal operations.
 .SS Control Options
 The following options are available for special needs.
 They control the order and disposition of each change
@@ -100,7 +107,9 @@ They control the order and disposition of each change
 .RS
 This option is used to specify order or subset to
 integrate.  Only those changes listed will be attempted, and in exactly
-the order given.
+the order given. This applies to queue looping if \fB-loop\fP is
+given. In particular note unless the list includes future changes,
+future loops will not integrate them.
 .PP
 Useful if a particular change must go in before another for some
 reason.  Or if only integrating one or two changes when several are
@@ -141,6 +150,9 @@ integrations of a run will be a minimum.  This feature allows
 practical use of minimum integrations without requiring
 \fB\-minimum\fP on each and every integration.  See the section below
 on \fIMinimum integrations\fP for more information.
+If \fB-loop\fP is given any change[s] specified as minimum will run at
+the end of the loop in which they are ready, they will not be pushed
+to the final loop.
 .SS Stage Options
 The following options allow [re]starting an integration which has
 already progressed through some stages.  This is useful to deal with
@@ -250,7 +262,8 @@ integrator with the \fIdelta\fP directory as current directory.  The program
 may do any commands necessary to clean up and/or diagnose the error.  If the
 script finds the problem to be transient and fix-able, it exits successfully
 (with 0 status) and \*(n) will re-launch the \fB\-Build\fP and log the
-re-try.  Otherwise it exits with a 1 and the change fails.
+re-try.  Otherwise the script should exit with a 1 and the change will
+fail.
 .SH Multi-Architecture integrations
 For projects which build and test on multiple architectures, \*(n)
 requires \fIarch_hosts\fP be installed and have available at least
@@ -300,6 +313,31 @@ where a file upon which everything depends is changed, everything will
 be built anyway so the copy of the already built files is a waste of
 time.  This means that sometimes a minimum can be as cheap as a normal
 integration.
+.SH Manual Tests
+\*(A) allows tests to be defined as \fImanual\fP which may be
+necessary if the test requires human interaction or some transient
+resource. Such tests can be problematic for automatic integrations
+and generally must have some means to pass without running during
+integrations. For this, and other, reasons most sites seek to avoid
+\fImanual\fP tests. There are a number of ways to code a test such
+that it will pass automatically during integrations. Just one example
+for shell script tests might be:
+
+.LP
+.nb 1
+CSTATE=`aesub -p $AEGIS_PROJECT -c $AEGIS_CHANGE '${state}'`
+.br
+if [ "$CSTATE" = "being_integrated" ]
+.br
+then
+.br
+    echo "`basename $0` passes during integration"
+.br
+    exit 0
+.br
+fi
+.br
+
 .SH Optional Support Programs
 .so libdir.so
 There are some programs which \*(n) will use if they are installed.
@@ -340,9 +378,9 @@ sound file on each machine or, assuming that other audio capabilities
 exist, might do any form of announcement desired.
 .so z_exit.so
 .SH FILES
-The control files are searched for in the \fI$HOME\fP directory.  They are
-named <type>.<project>, where type may be \fBstrategy\fP or
-\fBminimum\fP.  They need not exist if no special action is necessary.
+Control files are searched for in the \fI$HOME\fP directory.  They are
+named strategy.<project>, They need not exist if no special action is
+necessary.
 .PP
 The hook scripts are searched for in the \fI$HOME/integration_hooks\fP
 directory.  They are named <project>.<stage>.  Also \fIaeintegratq.end\fP
@@ -356,7 +394,7 @@ special action is desired.
 .br
 .if t .ds C) \(co
 .if n .ds C) (C)
-Copyright \*(C) 1998-2002 Endocardial Solutions, Inc.
+Copyright \*(C) 1998-2005 Endocardial Solutions, Inc.
 .br
 All rights reserved.
 .PP
@@ -369,5 +407,3 @@ and you are welcome to redistribute it under certain conditions;
 .TS
 tab(;);
 l r l.
-Jerry Pendergraft;E-Mail:;jerry@endocardial.com
-.TE

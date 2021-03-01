@@ -46,3 +46,27 @@ os_basename(string_ty *name, string_ty *ext)
     trace(("}\n"));
     return path;
 }
+
+
+nstring
+os_basename(const nstring &name, const nstring &ext)
+{
+    trace(("os_basename(name =\"%s\", ext = \"%s\")\n{\n",
+	name.c_str(), ext.c_str()));
+    const char *cp = strrchr(name.c_str(), '/');
+    if (cp)
+	++cp;
+    else
+	cp = name.c_str();
+
+    const char *ep = name.c_str() + name.size();
+    if (ep >= cp + ext.size() && name.ends_with(ext))
+    {
+	ep -= ext.size();
+    }
+
+    nstring result(cp, ep - cp);
+    trace(("return \"%s\";\n", result.c_str()));
+    trace(("}\n"));
+    return result;
+}

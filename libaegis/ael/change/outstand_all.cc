@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -128,16 +128,11 @@ list_outstanding_changes_all(string_ty *project_name, long change_number,
 	    //
 	    // print the details
 	    //
-	    output_put_str(project_col, project_name_get(pp));
-	    output_fprintf
-	    (
-		number_col,
-		"%4ld",
-		magic_zero_decode(change_number)
-	    );
+	    project_col->fputs(project_name_get(pp));
+	    number_col->fprintf("%4ld", magic_zero_decode(change_number));
 	    if (state_col)
 	    {
-		output_fputs(state_col, cstate_state_ename(cstate_data->state));
+		state_col->fputs(cstate_state_ename(cstate_data->state));
 		if
 		(
 		    option_verbose_get()
@@ -145,8 +140,8 @@ list_outstanding_changes_all(string_ty *project_name, long change_number,
 		    cstate_data->state == cstate_state_being_developed
 		)
 		{
-		    output_end_of_line(state_col);
-		    output_put_str(state_col, change_developer_name(cp));
+		    state_col->end_of_line();
+		    state_col->fputs(change_developer_name(cp));
 		}
 		if
 		(
@@ -155,13 +150,13 @@ list_outstanding_changes_all(string_ty *project_name, long change_number,
 		    cstate_data->state == cstate_state_being_integrated
 		)
 		{
-		    output_end_of_line(state_col);
-		    output_put_str(state_col, change_integrator_name(cp));
+		    state_col->end_of_line();
+		    state_col->fputs(change_integrator_name(cp));
 		}
 	    }
 	    if (description_col && cstate_data->brief_description)
 	    {
-		output_put_str(description_col, cstate_data->brief_description);
+		description_col->fputs(cstate_data->brief_description);
 	    }
 	    col_eoln(colp);
 

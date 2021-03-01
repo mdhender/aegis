@@ -24,10 +24,8 @@
 
 
 void
-string_list_remove_list(string_list_ty *wlp, const string_list_ty *arg)
+string_list_ty::remove(const string_list_ty &arg)
 {
-    size_t          j;
-
-    for (j = 0; j < arg->nstrings; ++j)
-	string_list_remove(wlp, arg->string[j]);
+    for (size_t j = 0; j < arg.size(); ++j)
+	remove(arg[j]);
 }

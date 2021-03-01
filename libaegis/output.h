@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -25,79 +25,297 @@
 
 #include <ac/stdarg.h>
 #include <ac/stddef.h>
+#include <main.h> // for gcc attributes
 
-#include <main.h>
+struct string_ty; // forward
+class nstring; // forward
 
-struct string_ty; // existence
-struct output_ty;
 
-typedef void (*output_delete_callback_ty)(struct output_ty *, void *);
-
-struct output_ty
+/**
+  * The output_ty class is used to describe the interface to an
+  * arbitrary output destination.  It could be a file, it could be a
+  * string, or many other things, including several filters.
+  */
+class output_ty
 {
-	struct output_vtbl_ty *vptr;
+public:
+    typedef void (*delete_callback_ty)(output_ty *, void *);
 
-	// private:
-	output_delete_callback_ty del_cb;
-	void		*del_cb_arg;
+    /**
+      * The destructor.
+      */
+    virtual ~output_ty();
 
-	// private:
-	unsigned char	*buffer;
-	size_t		buffer_size;
-	unsigned char	*buffer_position;
-	unsigned char	*buffer_end;
+    /**
+      * The default constructor.
+      */
+    output_ty();
+
+    /**
+      * The filename method is used to obtain the filename of this output.
+      */
+    virtual struct string_ty *filename() const = 0;
+
+    /**
+      * The ftell method is used to determine the current file position
+      * of the output.
+      */
+    long ftell() const;
+
+    /**
+      * The write method is used to write date to the output.
+      */
+    void write(const void *data, size_t nbytes);
+
+    /**
+      * The flush method is used to ensure that any buffered data is
+      * written to the output.
+      */
+    void flush();
+
+    /**
+      * The page_width method is used to obtain the width of the page of
+      * the output device.
+      */
+    virtual int page_width() const;
+
+    /**
+      * The page_length method is used to obtain the length of the page
+      * of the output device.
+      */
+    virtual int page_length() const;
+
+    /**
+      * The end_of_line method is used to ensure that the current output
+      * position is at the beginning of a line.
+      */
+    void end_of_line();
+
+    /**
+      * The type_name method is used to determine the name of this
+      * output device or file or type.
+      */
+    virtual const char *type_name() const = 0;
+
+    /**
+      * The fputc method is used to write a single character to the
+      * output.  The output is buffered.
+      */
+    void
+    fputc(char c)
+    {
+	if (buffer_position < buffer_end)
+	    *buffer_position++ = c;
+	else
+	    overflow(c);
+    }
+
+    /**
+      * The fputs method is used to write a NUL terminated string to the
+      * output stream.
+      */
+    void fputs(const char *);
+
+    /**
+      * The fputs method is used to write a string to the output stream.
+      */
+    void fputs(string_ty *);
+
+    /**
+      * The fputs method is used to write a string to the output stream.
+      */
+    void fputs(const nstring &);
+
+    /**
+      * The fprintf method produces output according to
+      * a format as described in the printf(3) man page.
+      *
+      * \param fmt
+      *     This method writes the output under the control of a format
+      *     string that specifies how subsequent arguments (or arguments
+      *     accessed via the variable-length argument facilities of
+      *     stdarg(3)) are converted for output.
+      */
+    void fprintf(const char *fmt, ...)                        ATTR_PRINTF(2, 3);
+
+    /**
+      * The vfprintf method is equivalent to the fprintf method, except
+      * that it is called with a va_list instead of a variable number
+      * of arguments.  This method does not call the va_end macro.
+      * Consequently, the value of ap is undefined after the call.  The
+      * application should call va_end(ap) itself afterwards.
+      */
+    void vfprintf(const char *fmt, va_list)                   ATTR_PRINTF(2, 0);
+
+    /**
+      * Set the callback function to be called by the destructor.
+      */
+    void delete_callback(delete_callback_ty cb, void *arg);
+
+private:
+    /**
+      * The ftell_inner method is used to determine the current file
+      * position, without taking the buffering into account.
+      */
+    virtual long ftell_inner() const = 0;
+
+    /**
+      * The write_inner method is used write data to the output, without
+      * taking the buffering into account.
+      */
+    virtual void write_inner(const void *data, size_t length) = 0;
+
+    /**
+      * The end_of_line_inner method is used to ensure that the current
+      * output position is at the beginning of a line, without taking
+      * the buffering into account.
+      */
+    virtual void end_of_line_inner() = 0;
+
+    /**
+      * The flush_inner method is called by the flush method once all
+      * the data has been written.  The default implementation does
+      * nothing.
+      */
+    virtual void flush_inner();
+
+    /**
+      * The overflow mwthod is used by the fputc method when the buffer
+      * is full.  It write the buffer to the output, and then adds the
+      * single character to the buffer.
+      */
+    void overflow(char c);
+
+    /**
+      * The del_cb instance variable is used to remember the callback
+      * function to be called when this output stream is destroyed.
+      */
+    delete_callback_ty del_cb;
+
+    /**
+      * The del_cb_arg instance variable is used to remember the
+      * argument to the callback function to be called when this output
+      * stream is destroyed.
+      */
+    void *del_cb_arg;
+
+    /**
+      * The buffer instance variable is used to remember the base of a
+      * dynamically allocated array of characters used to buffer the
+      * data, to minimize the number of systems calls required.
+      */
+    unsigned char *buffer;
+
+    /**
+      * The buffer_size instance variable is used to remember the number
+      * of characters allocated in the buffer array.
+      */
+    size_t buffer_size;
+
+    /**
+      * The buffer_position instance variable is used to remember the
+      * current output position withing the output buffer.
+      */
+    unsigned char *buffer_position;
+
+    /**
+      * The buffer_end instance variable is used to remember the end of
+      * the dynamically allocated buffer array.
+      */
+    unsigned char *buffer_end;
+
+    /**
+      * The copy constructor.  Do not use.
+      */
+    output_ty(const output_ty &);
+
+    /**
+      * The assignment operator.  Do not use.
+      */
+    output_ty &operator=(const output_ty &);
 };
 
-//
-// This structure is not to be used by clients of this API.  It is only
-// present to permit macro optimization of the interface.
-//
-struct output_vtbl_ty
+
+inline DEPRECATED void
+output_delete(output_ty *op)
 {
-	int		size;
+    delete op;
+}
 
-	void (*destructor)(output_ty *);
-	struct string_ty *(*filename)(output_ty *);
-	long (*ftell)(output_ty *);
-	void (*write)(output_ty *, const void *, size_t);
-	void (*flush)(output_ty *);
-	int (*page_width)(output_ty *);
-	int (*page_length)(output_ty *);
-	void (*eoln)(output_ty *);
+inline DEPRECATED struct string_ty *
+output_filename(const output_ty *op)
+{
+    return op->filename();
+}
 
-	//
-	// By putting this last, we catch many cases where a method
-	// pointer has been left out.
-	//
-	const char	*type_name;
-};
+inline DEPRECATED long
+output_ftell(const output_ty *op)
+{
+    return op->ftell();
+}
 
-void output_delete(output_ty *);
-struct string_ty *output_filename(output_ty *);
-long output_ftell(output_ty *);
-void output_fputc(output_ty *, int);
-void output_fputs(output_ty *, const char *);
-void output_put_str(output_ty *, struct string_ty *);
-void output_write(output_ty *, const void *, size_t);
-void output_flush(output_ty *);
-int output_page_width(output_ty *);
-int output_page_length(output_ty *);
-void output_fprintf(output_ty *, const char *, ...) ATTR_PRINTF(2, 3);
-void output_vfprintf(output_ty *, const char *, va_list);
-void output_end_of_line(output_ty *);
-void output_delete_callback(output_ty *, output_delete_callback_ty,
-	void *);
+inline DEPRECATED void
+output_fputc(output_ty *op, int c)
+{
+    op->fputc(c);
+}
 
-//
-// Despite looking recursive, it isn't.  Ansi C macros do not recurse,
-// so it winds up calling the real function in the "buffer needs to
-// grow" case.
-//
-// (Sun's compiler is defective, use GCC if you have a choice.)
-//
-#ifndef __SUNPRO_C
-#define output_fputc(fp, c) ((fp)->buffer_position < (fp)->buffer_end ? \
-	(void)(*((fp)->buffer_position)++ = (c)) : output_fputc((fp), (c)))
-#endif
+inline DEPRECATED void
+output_fputs(output_ty *op, const char *s)
+{
+    op->fputs(s);
+}
+
+inline DEPRECATED void
+output_put_str(output_ty *op, struct string_ty *s)
+{
+    op->fputs(s);
+}
+
+inline DEPRECATED void
+output_write(output_ty *op, const void *data, size_t length)
+{
+    op->write(data, length);
+}
+
+inline DEPRECATED void
+output_flush(output_ty *op)
+{
+    op->flush();
+}
+
+inline DEPRECATED int
+output_page_width(const output_ty *op)
+{
+    return op->page_width();
+}
+
+inline DEPRECATED int
+output_page_length(output_ty *op)
+{
+    return op->page_length();
+}
+
+void output_fprintf(output_ty *, const char *, ...)
+    ATTR_PRINTF(2, 3) DEPRECATED;
+
+inline DEPRECATED void
+output_vfprintf(output_ty *op, const char *fmt, va_list ap)
+{
+    op->vfprintf(fmt, ap);
+}
+
+inline DEPRECATED void
+output_end_of_line(output_ty *op)
+{
+    op->end_of_line();
+}
+
+inline DEPRECATED void
+output_delete_callback(output_ty *op, output_ty::delete_callback_ty cb,
+    void *arg)
+{
+    op->delete_callback(cb, arg);
+}
 
 #endif // LIBAEGIS_OUTPUT_H

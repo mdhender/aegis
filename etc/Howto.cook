@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2004 Peter Miller;
+ *	Copyright (C) 1991-2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -431,14 +431,17 @@ find_sizes_obj =
 	]
 	[arch]/common/ac/string.o
 	[arch]/common/arglex.o
+	[arch]/common/arglex/compare.o
 	[arch]/common/error.o
 	[arch]/common/exeext.o
 	[arch]/common/libdir.o
 	[arch]/common/mem.o
 	[arch]/common/mprintf.o
+	[arch]/common/nstring.o
 	[arch]/common/progname.o
 	[arch]/common/quit.o
 	[arch]/common/str.o
+        [arch]/common/str/catenate.o
 	[arch]/common/str/format.o
 	[arch]/common/trace.o
 	;
@@ -522,6 +525,8 @@ cc_include_flags =
 
 	if [match %%.gen %2] then
 	{
+	    if [in [c++] g++] then
+	    {
 		/*
 		 * Generated files may have warnings, because we have no
 		 * control over the quality of generated code (usually
@@ -529,6 +534,7 @@ cc_include_flags =
 		 * labels).
 		 */
 		extra += -Wno-unused-function -Wno-unused-label;
+	    }
 	}
 
 	[c++] [extra]
@@ -974,7 +980,7 @@ data
 [unsplit "\n" [resolve [%_obj]]]
 dataend
 
-	[c++] [debug] -o [target] [resolve [%_obj]] [libs]
+	[c++] [ld_flags] [debug] -o [target] [resolve [%_obj]] [libs]
 		set meter;
 
 	chmod 755 [target];
@@ -1162,11 +1168,6 @@ etc/CHANGES: [arch]/bin/aereport lib/report/proj_detai.rpt [vs_file]
 #include-cooked etc/documents.cook
 
 /*
- * Basic file format validations.
- */
-#include-cooked cklinlen/module.cook
-
-/*
  * Internationalization recipes
  */
 #include-cooked etc/i18n.cook
@@ -1201,3 +1202,11 @@ etc/CHANGES: [arch]/bin/aereport lib/report/proj_detai.rpt [vs_file]
  * Generate documentation out of the header files.
  */
 #include-cooked etc/doxygen.cook
+
+/*
+ * Assorted other cookbooks, proximal to their subjects.
+ */
+module.cook = [match_mask "%0module.cook" [source_files]];
+#if [count [module.cook]]
+#include [resolve [module.cook]]
+#endif

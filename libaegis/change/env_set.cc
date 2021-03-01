@@ -51,7 +51,7 @@ change_env_set(change_ty *cp, int with_arch)
 	    &&
 		ap->name->str_length > 7
 	    &&
-		0 == memcmp(ap->name->str_text, "setenv:", 7)
+		0 == strncasecmp(ap->name->str_text, "setenv:", 7)
 	    )
 	    {
 		const char *name = ap->name->str_text + 7;

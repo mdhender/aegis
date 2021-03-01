@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,97 +23,65 @@
 #include <error.h>
 #include <output/tar.h>
 #include <output/tar_child.h>
-#include <output/private.h>
-#include <str.h>
 
 
-struct output_tar_ty
+output_tar_ty::~output_tar_ty()
 {
-    output_ty       inherited;
-    output_ty       *deeper;
-};
-
-
-static void
-output_tar_destructor(output_ty *fp)
-{
-    output_tar_ty   *this_thing;
-
     //
     // Finish writing the archive file.
     //
-    this_thing = (output_tar_ty *)fp;
-    output_delete(this_thing->deeper);
+    delete deeper;
+    deeper = 0;
 }
 
 
-static string_ty *
-output_tar_filename(output_ty *fp)
+output_tar_ty::output_tar_ty(output_ty *arg1) :
+    deeper(arg1)
 {
-    output_tar_ty   *this_thing;
-
-    this_thing = (output_tar_ty *)fp;
-    return output_filename(this_thing->deeper);
 }
 
 
-static long
-output_tar_ftell(output_ty *fp)
+string_ty *
+output_tar_ty::filename()
+    const
+{
+    return deeper->filename();
+}
+
+
+long
+output_tar_ty::ftell_inner()
+    const
 {
     return 0;
 }
 
 
-static void
-output_tar_write(output_ty *fp, const void *data, size_t len)
+void
+output_tar_ty::write_inner(const void *data, size_t len)
 {
     this_is_a_bug();
 }
 
 
-static void
-output_tar_eoln(output_ty *fp)
+void
+output_tar_ty::end_of_line_inner()
 {
     this_is_a_bug();
 }
 
 
-static output_vtbl_ty vtbl =
+const char *
+output_tar_ty::type_name()
+    const
 {
-    sizeof(output_tar_ty),
-    output_tar_destructor,
-    output_tar_filename,
-    output_tar_ftell,
-    output_tar_write,
-    output_generic_flush,
-    output_generic_page_width,
-    output_generic_page_length,
-    output_tar_eoln,
-    "tar archive",
-};
-
-
-output_ty *
-output_tar(output_ty *deeper)
-{
-    output_ty       *result;
-    output_tar_ty   *this_thing;
-
-    result = output_new(&vtbl);
-    this_thing = (output_tar_ty *)result;
-    this_thing->deeper = deeper;
-    return result;
+    return "tar archive";
 }
 
 
 output_ty *
-output_tar_child(output_ty *fp, string_ty *name, long len, int executable)
+output_tar_ty::child(const nstring &name, long len, bool executable)
 {
-    output_tar_ty   *this_thing;
-
-    if (fp->vptr != &vtbl)
-	    this_is_a_bug();
-    this_thing = (output_tar_ty *)fp;
     assert(len >= 0);
-    return output_tar_child_open(this_thing->deeper, name, len, executable);
+    return new output_tar_child_ty(deeper, name, len, executable);
 }

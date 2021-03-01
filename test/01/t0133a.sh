@@ -261,6 +261,8 @@ if test $? -ne 0 ; then no_result; fi
 cp b64.out $chandir/b64
 if test $? -ne 0 ; then no_result; fi
 
+sleep 1
+
 activity="build 250"
 $bin/aegis -build -c 1 -project foo -lib $worklib > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi

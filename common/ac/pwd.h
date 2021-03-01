@@ -24,7 +24,7 @@
 #define COMMON_AC_PWD_H
 
 #include <ac/stddef.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <pwd.h>
 
 #endif /* COMMON_AC_PWD_H */

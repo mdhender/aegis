@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -24,107 +24,81 @@
 #include <output/cpio.h>
 #include <output/cpio_child.h>
 #include <output/cpio_child2.h>
-#include <output/private.h>
 #include <str.h>
 
 
-struct output_cpio_ty
+output_cpio_ty::~output_cpio_ty()
 {
-	output_ty	inherited;
-	output_ty	*deeper;
-};
+    //
+    // Emit the archive trailer.
+    // (An empty file with a magic name.)
+    //
+    nstring trailer("TRAILER!!!");
+    delete new output_cpio_child_ty(deeper, trailer.get_ref(), false);
 
-
-static void
-output_cpio_destructor(output_ty *fp)
-{
-	output_cpio_ty	*this_thing;
-	string_ty	*trailer;
-
-	//
-	// Emit the archive trailer.
-	// (An empty file with a magic name.)
-	//
-	this_thing = (output_cpio_ty *)fp;
-	trailer = str_from_c("TRAILER!!!");
-	output_delete(output_cpio_child_open(this_thing->deeper, trailer, 0));
-	str_free(trailer);
-
-	//
-	// Finish writing the archive file.
-	//
-	output_delete(this_thing->deeper);
+    //
+    // Finish writing the archive file.
+    //
+    delete deeper;
+    deeper = 0;
 }
 
 
-static string_ty *
-output_cpio_filename(output_ty *fp)
+output_cpio_ty::output_cpio_ty(output_ty *arg1) :
+    deeper(arg1)
 {
-	output_cpio_ty	*this_thing;
-
-	this_thing = (output_cpio_ty *)fp;
-	return output_filename(this_thing->deeper);
 }
 
 
-static long
-output_cpio_ftell(output_ty *fp)
+string_ty *
+output_cpio_ty::filename()
+    const
 {
-	return 0;
+    return deeper->filename();
 }
 
 
-static void
-output_cpio_write(output_ty *fp, const void *data, size_t len)
+long
+output_cpio_ty::ftell_inner()
+    const
 {
-	this_is_a_bug();
+    return 0;
 }
 
 
-static void
-output_cpio_eoln(output_ty *fp)
+void
+output_cpio_ty::write_inner(const void *data, size_t len)
 {
-	this_is_a_bug();
+    this_is_a_bug();
 }
 
 
-static output_vtbl_ty vtbl =
+void
+output_cpio_ty::end_of_line_inner()
 {
-	sizeof(output_cpio_ty),
-	output_cpio_destructor,
-	output_cpio_filename,
-	output_cpio_ftell,
-	output_cpio_write,
-	output_generic_flush,
-	output_generic_page_width,
-	output_generic_page_length,
-	output_cpio_eoln,
-	"cpio archive",
-};
+    this_is_a_bug();
+}
 
 
-output_ty *
-output_cpio(output_ty *deeper)
+const char *
+output_cpio_ty::type_name()
+    const
 {
-	output_ty	*result;
-	output_cpio_ty	*this_thing;
-
-	result = output_new(&vtbl);
-	this_thing = (output_cpio_ty *)result;
-	this_thing->deeper = deeper;
-	return result;
+    return "cpio archive";
 }
 
 
 output_ty *
-output_cpio_child(output_ty *fp, string_ty *name, long len)
+output_cpio_ty::child(const nstring &name, long len)
 {
-	output_cpio_ty	*this_thing;
-
-	if (fp->vptr != &vtbl)
-		this_is_a_bug();
-	this_thing = (output_cpio_ty *)fp;
-	if (len < 0)
-		return output_cpio_child2_open(this_thing->deeper, name);
-	return output_cpio_child_open(this_thing->deeper, name, len);
+    if (len < 0)
+    {
+	//
+        // With no length given, we have to use the memory caching
+        // version, which stasheds the data in memory until the end, and
+        // then we can write it out with the length in the header.
+	//
+	return new output_cpio_child2_ty(deeper, name);
+    }
+    return new output_cpio_child_ty(deeper, name, len);
 }

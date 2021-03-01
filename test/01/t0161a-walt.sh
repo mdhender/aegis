@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2004 Walter Franzini;
+#	Copyright (C) 2004, 2005 Walter Franzini;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,8 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	diff_preference = automatic_merge; \
 	pager_preference = never; \
 	persevere_preference = all; \
-	log_file_preference = never;"
+	log_file_preference = never; \
+	default_development_directory=\"$work\";"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=2
 export AEGIS_THROTTLE

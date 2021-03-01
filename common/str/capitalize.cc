@@ -36,7 +36,7 @@ str_capitalize(string_ty *s)
 
     language_human();
     prev_was_alpha = 0;
-    stracc_open(&sa);
+    sa.clear();
     for (j = 0; j < s->str_length; ++j)
     {
 	char            c;
@@ -56,8 +56,8 @@ str_capitalize(string_ty *s)
 	}
 	else
 	    prev_was_alpha = 0;
-	stracc_char(&sa, c);
+	sa.push_back(c);
     }
     language_C();
-    return stracc_close(&sa);
+    return sa.mkstr();
 }

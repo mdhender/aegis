@@ -27,7 +27,7 @@
 #include <ac/stddef.h>
 #include <ac/unistd.h>
 
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <env.h>

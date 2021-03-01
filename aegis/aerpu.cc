@@ -22,7 +22,7 @@
 
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <ael/change/by_state.h>
@@ -33,6 +33,7 @@
 #include <change.h>
 #include <commit.h>
 #include <dir.h>
+#include <error.h> // for assert
 #include <file.h>
 #include <help.h>
 #include <lock.h>
@@ -200,10 +201,44 @@ review_pass_undo_main(void)
     // integration' state.  It is an error if the current user is
     // not the original reviewer
     //
-    if (cstate_data->state != cstate_state_awaiting_integration)
-	change_fatal(cp, 0, i18n("bad rpu state"));
-    if (!str_equal(change_reviewer_name(cp), user_name(up)))
+    if (!change_reviewer_already(cp, user_name(up)))
 	change_fatal(cp, 0, i18n("was not reviewer"));
+    switch (cstate_data->state)
+    {
+    case cstate_state_awaiting_integration:
+	break;
+
+    case cstate_state_awaiting_review:
+    case cstate_state_being_reviewed:
+	//
+        // Depending on the settings of the develop_en_action fields and
+        // the review_policy_command filed, the change could also be in one
+        // of these states, as well.
+	//
+	break;
+
+    case cstate_state_awaiting_development:
+    case cstate_state_being_developed:
+	//
+        // Becasue the change_reviewer_already function returned true
+        // for us to get here, these two states are supposed to be
+        // impossible.
+	//
+	assert(0);
+	// fall through...
+
+    case cstate_state_being_integrated:
+    case cstate_state_completed:
+#ifndef DEBUG
+    default:
+#endif
+	//
+        // Complain if they try to rescind a review too late in the
+        // process.
+	//
+	change_fatal(cp, 0, i18n("bad rpu state"));
+	// NOTREACHED
+    }
 
     //
     // change the state

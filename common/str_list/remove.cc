@@ -23,34 +23,16 @@
 #include <str_list.h>
 
 
-//
-// NAME
-//	string_list_remove - remove list member
-//
-// SYNOPSIS
-//	void string_list_remove(string_list_ty *wlp, string_ty *wp);
-//
-// DESCRIPTION
-//	The string_list_remove function is used to delete a member of
-//	a word list.
-//
-// RETURNS
-//	void
-//
-
 void
-string_list_remove(string_list_ty *wlp, string_ty *wp)
+string_list_ty::remove(string_ty *wp)
 {
-    size_t          j;
-    size_t          k;
-
-    for (j = 0; j < wlp->nstrings; ++j)
+    for (size_t j = 0; j < nstrings; ++j)
     {
-	if (str_equal(wlp->string[j], wp))
+	if (str_equal(string[j], wp))
 	{
-	    wlp->nstrings--;
-	    for (k = j; k < wlp->nstrings; ++k)
-		wlp->string[k] = wlp->string[k + 1];
+	    nstrings--;
+	    for (size_t k = j; k < nstrings; ++k)
+		string[k] = string[k + 1];
 	    str_free(wp);
 	    break;
 	}

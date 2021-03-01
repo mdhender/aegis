@@ -24,7 +24,7 @@
 #include <sub.h>
 #include <sub/trim_directo.h>
 #include <trace.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 wstring_ty *
@@ -38,7 +38,7 @@ sub_trim_directory(sub_context_ty *scp, wstring_list_ty *arg)
 
 	trace(("sub_trim_directory()\n{\n"));
 	n = 1;
-	switch (arg->nitems)
+	switch (arg->size())
 	{
 	default:
 		sub_context_error_set(scp, i18n("requires one argument"));
@@ -48,16 +48,16 @@ sub_trim_directory(sub_context_ty *scp, wstring_list_ty *arg)
 
 	case 2:
 		n = 1;
-		dir = arg->item[1];
+		dir = arg->get(1);
 		break;
 
 	case 3:
-		s = wstr_to_str(arg->item[1]);
+		s = wstr_to_str(arg->get(1));
 		n = atol(s->str_text);
 		trace(("n = %ld;\n", n));
 		str_free(s);
 
-		dir = arg->item[2];
+		dir = arg->get(2);
 		break;
 	}
 

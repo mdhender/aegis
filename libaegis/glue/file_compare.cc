@@ -26,7 +26,7 @@
 #include <ac/stdlib.h>
 #include <ac/string.h>
 #include <ac/unistd.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <glue.h>
@@ -51,7 +51,7 @@
 //
 
 int
-file_compare(char *fn1, char *fn2)
+file_compare(const char *fn1, const char *fn2)
 {
 	int		fd1;
 	int		fd2;

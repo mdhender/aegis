@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,7 @@
 #include <change/branch.h>
 #include <change/file.h>
 #include <cstate.h>
+#include <emit/brief_descri.h>
 #include <emit/edit_number.h>
 #include <error.h> // for assert
 #include <get/file/history.h>
@@ -38,32 +39,32 @@
 
 
 void
-get_file_history(change_ty *master_cp, string_ty *filename,
+get_file_history(change_ty *master_cp, string_ty *a_filename,
     string_list_ty *modifier)
 {
-    int             all;
-    project_ty      *pp;
-    time_t          when;
-    int             detailed = 0;
-    string_list_ty  key;
-    size_t          num_files;
-    size_t          j;
-
     trace(("get_file_history()\n{\n"));
-    all = 0;
-    if (0 == strcmp(filename->str_text, "."))
-	all = 1;
-    for (j = 0; j < modifier->nstrings; ++j)
-	if (0 == strcasecmp(modifier->string[j]->str_text, "detailed"))
-	    detailed = 1;
+    nstring filename(str_copy(a_filename));
+    bool detailed = false;
+    bool all = false;
+    if (filename == ".")
+	all = true;
+    for (size_t k = 0; k < modifier->nstrings; ++k)
+    {
+	if (0 == strcasecmp(modifier->string[k]->str_text, "detailed"))
+	{
+	    detailed = true;
+	    break;
+	}
+    }
 
     //
     // Reconstruct the project file history.
     //
-    when = change_completion_timestamp(master_cp);
-    pp = master_cp->pp;
+    time_t when = change_completion_timestamp(master_cp);
+    project_ty *pp = master_cp->pp;
     project_file_roll_forward historian(pp, when, detailed);
-    historian.keys(&key);
+    nstring_list key;
+    historian.keys(key);
 
     html_header(pp, master_cp);
     printf("<title>Project ");
@@ -82,18 +83,11 @@ get_file_history(change_ty *master_cp, string_ty *filename,
     //
     // list the change's files' histories
     //
-    num_files = 0;
-    for (j = 0; j < key.nstrings; ++j)
+    size_t num_files = 0;
+    for (size_t j = 0; j < key.size(); ++j)
     {
-	file_event_list_ty *felp;
-	size_t		k;
-	int		usage_track;
-	int		action_track;
-	string_ty       *the_file_name;
-	size_t          num;
-
-	the_file_name = key.string[j];
-	if (!all && !str_equal(filename, the_file_name))
+	nstring the_file_name = key[j];
+	if (!all && filename != the_file_name)
 	    continue;
 	if
 	(
@@ -108,29 +102,23 @@ get_file_history(change_ty *master_cp, string_ty *filename,
 	emit_file_href(master_cp, the_file_name, "menu");
 	html_encode_string(the_file_name);
 	printf("</td></tr>\n");
-	num = 0;
+	size_t num = 0;
 
-	usage_track = -1;
-	action_track = -1;
+	int usage_track = -1;
+	int action_track = -1;
 
-	felp = historian.get(the_file_name);
+	file_event_list_ty *felp = historian.get(the_file_name);
 	if (felp)
 	{
-	    for (k = 0; k < felp->length; ++k)
+	    for (size_t k = 0; k < felp->length; ++k)
 	    {
-		file_event_ty	*fep;
-		fstate_src_ty   *src2_data;
-		string_ty	*s;
-		const char      *html_class;
-
-		fep = felp->item + k;
-		src2_data =
-		    change_file_find(fep->cp, the_file_name, view_path_first);
-		assert(src2_data);
-		if (!src2_data)
+		file_event_ty *fep = felp->item + k;
+		assert(fep->src);
+		if (!fep->src)
 		    continue;
 
-		html_class = (((num / 3) & 1) ?  "even-group" : "odd-group");
+		const char *html_class =
+		    (((num / 3) & 1) ?  "even-group" : "odd-group");
 		++num;
 		printf("<tr class=\"%s\">", html_class);
 
@@ -139,26 +127,26 @@ get_file_history(change_ty *master_cp, string_ty *filename,
 
 		// usage column
 		printf("<td valign=\"top\">");
-		if (usage_track != src2_data->usage)
+		if (usage_track != fep->src->usage)
 		{
-		    printf("%s", file_usage_ename(src2_data->usage));
-		    usage_track = src2_data->usage;
+		    printf("%s", file_usage_ename(fep->src->usage));
+		    usage_track = fep->src->usage;
 		}
 		printf("</td>\n");
 
 		// action column
 		printf("<td valign=\"top\">");
-		if (action_track != src2_data->action)
+		if (action_track != fep->src->action)
 		{
-		    printf("%s", file_action_ename(src2_data->action));
-		    action_track = src2_data->action;
+		    printf("%s", file_action_ename(fep->src->action));
+		    action_track = fep->src->action;
 		}
 		printf("</td>\n");
 
 		// delta column
 		printf("<td valign=\"top\">");
 		emit_change_href(fep->cp, "menu");
-		s = change_version_get(fep->cp);
+		string_ty *s = change_version_get(fep->cp);
 		html_encode_string(s);
 		str_free(s);
 		printf("</a></td>\n");
@@ -170,13 +158,13 @@ get_file_history(change_ty *master_cp, string_ty *filename,
 
 		// change column
 		printf("<td valign=\"top\" align=\"right\">");
-		emit_file_href(fep->cp, src2_data->file_name, 0);
-		emit_edit_number(fep->cp, src2_data);
+		emit_file_href(fep->cp, fep->src->file_name, 0);
+		emit_edit_number(fep->cp, fep->src);
 		printf("</a></td>\n");
 
 		// description column
 		printf("<td valign=\"top\">\n");
-		html_encode_string(change_brief_description_get(fep->cp));
+		emit_change_brief_description(fep->cp);
 		printf("</td>\n");
 
 		// download column
@@ -235,7 +223,7 @@ get_file_history(change_ty *master_cp, string_ty *filename,
 
 		// description column
 		printf("<td valign=\"top\">\n");
-		html_encode_string(change_brief_description_get(master_cp));
+		emit_change_brief_description(master_cp);
 		printf("</td>\n");
 
 		// download column
@@ -245,10 +233,24 @@ get_file_history(change_ty *master_cp, string_ty *filename,
 	    }
 	}
     }
-    printf("<tr class=\"odd-group\"><td colspan=8>Listed %ld", (long)num_files);
-    printf(" file%s.</td></tr>\n", (num_files == 1 ? "" : "s"));
+    printf("<tr class=\"even-group\"><td colspan=8>");
+    printf("Listed %ld file%s.", (long)num_files, (num_files == 1 ? "" : "s"));
+    if (!all && !detailed)
+    {
+	printf("  There is also a ");
+	emit_file_href(master_cp, filename, "history+detailed");
+	printf("detailed</a> version of this listing available.\n");
+    }
+    printf("</td></tr>\n");
 
-    printf("</table></div>\n");
+    printf("</table>\n");
+    if (!all && !detailed)
+    {
+	printf("<p>\nThere is also a ");
+	emit_file_href(master_cp, filename, "history+detailed");
+	printf("detailed</a> version of this listing available.\n");
+    }
+    printf("</div>\n");
     html_footer(pp, master_cp);
     trace(("}\n"));
 }

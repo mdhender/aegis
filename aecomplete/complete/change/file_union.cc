@@ -21,7 +21,7 @@
 //
 
 #include <ac/stddef.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <change.h>
@@ -213,8 +213,6 @@ perform(complete_ty *cp, shell_ty *sh)
 	str_free(relfn);
 	str_free(path);
     }
-    string_list_destructor(&names);
-    string_list_destructor(&search_path);
     str_free(prefix_ent);
     str_free(prefix_dir);
 }

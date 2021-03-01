@@ -20,13 +20,19 @@
 .\" MANIFEST: document describing lib/en/user-guide/c3.4s
 .\"
 .bp
-.nh 2 "Detecting File Corruption"
+.nh 2 "Detecting History File Corruption"
 .LP
 When you have files which exist for long periods of time, particularly
 files such as the ones typically used by history tools, which are
 generally appended to, without modification of the bulk of the file, there
 is a very real possibility that a block of the file could become corrupted
-over the years.  Unless you access the file versions contained within that
+over the years.\**
+.FS
+See also
+Saltzer, J.H. \fIet al\fP (1981) \fIEnd-to-end arguments in system design\fP,
+http://web.mit.edu/\%Saltzer/\%www/\%publications/\%endtoend/\%endtoend.pdf
+.FE
+Unless you access the file versions contained within that
 block, you have no way of knowing whether or not the history file is OK.
 (Arguably, the operating system should check for this, but many do not,
 and in any case the error may not be detectable at that level.)
@@ -71,7 +77,7 @@ resides - yesterday's.
 .LP
 In order to implement this,
 you need to modify some fields of your project \fIconfig\fP file as follows:
-.IP history_create_command 8n
+.IP history_create_command 2m
 You need to test if the history file and its checksum file exist, and
 check the checksum if this is the case.  Then, use whichever history tool
 you choose (see the previous sections of this chapter).  If it succeeds,
@@ -79,21 +85,29 @@ run \fImd5sum\fP(1) over the history file (\fInot\fP the source file)
 and store the checksum in a file next to the history tool's file.
 Using the same filename plus a \f[CW]\&.md5sum\fP extension makes the
 \fIcron\fP(1) job easier to write.
-.IP history_put_command 8n
+.IP history_put_command 2m
 You need to test if the file exists (it may, for example, be an old
 project to which you have recently added this technique) and check the
 checksum if this is the case.  Then, use your history tool as normal.
 If it succeeds, run \fImd5sum\fP(1) over the history file (\fInot\fP
 the source file) as in the create case.
-.IP history_get_command 8n
+.IP history_get_command 2m
 You need to test if the file exists (it may, for example, be an old
 project to which you have recently added this technique) and check the
 checksum if this is the case.  Then use your history tool as normal.
-.IP history_head_command 8n
+.IP history_head_command 2m
 This command is only used at \fIaeipass\fP file, immediately after one
 of the \fIhistory_\%create_\%command\fP or \fIhistory_\%put_\%command\fP
 commands.  It is up to you whether you think you need to add a guard as
 for the \fIhistory_\%get_\%command field.
+.nh 3 "An Alternative"
+.LP
+Rather than run \fImd5sum\fP(1) on the history files each time
+you modify them, you could use \fIgzip\fP(1) to obtain some minor
+compression, but it also provides and Adler32 checksum of the file.
+For files with long histories, this can be tedious to unpack every time
+you need to extract an old version, but such operations are frequently
+I/O bound, and so there may be no perceived slowness by the user..
 .nh 3 "Aegis' Database"
 .LP
 In addition to your history files, Aegis maintains a database of file

@@ -39,6 +39,19 @@ Aegis uses the history mechanism for file
 and so does not require many of the features of SCCS or RCS.
 This simplistic approach can sometimes make the interface to these
 utilities look a little strange.
+.nh 2 "History File Names"
+.LP
+In order to track project source file renames and yet preserve a
+continuous history, the name of each source file and the name of each
+corresponding history file have nothing in common.  The history file
+will have the same name (both on the local repository and any remote
+repository it is in) no matter how many times the source file is
+renamed.
+.LP
+Each source file is assigned universally unique identifier (UUID) when
+it is first created.  This attribute, unlike the source file's name,
+is immutable and thus is suitable for use when forming the name of the
+history file.
 .nh 2 "Interfacing"
 .LP
 The history mechanism interface is found in the
@@ -59,6 +72,9 @@ absolute path of source file
 absolute path of history file
 .LP
 In addition, all substitutions described in \fIaesub\fP(5) are available.
+.LP
+This command should be identical to the \fIhistory_\%put_\%command\fP
+otherwise mysterious things can happen when branches are ended.
 .nh 3 "history_get_command"
 .LP
 This field is used to get a file from history.
@@ -83,6 +99,9 @@ absolute path of source file
 absolute path of history file
 .LP
 In addition, all substitutions described in \fIaesub\fP(5) are available.
+.LP
+This command should be identical to the \fIhistory_\%create_\%command\fP
+otherwise mysterious things can happen when branches are ended.
 .nh 3 "history_query_command"
 .LP
 This field is used to query the topmost edit of a history file.
@@ -107,14 +126,14 @@ the NUL character.  The file must end with a newline.
 .IP binary_capable
 The history tool can cope with files without any limitation on
 the form of the contents.
-.PP
+.LP
 When a file is added to the history (by either the
 \fIhistory_\%create_\%command\fP or the \fIhistory_\%put_\%command\fP
 field) it is examined for conformance to this limitation.  If there is
 a problem, the file is encoded in either the MIME quoted printable or
 the MIME Base 64 encoding (see RFC 1521), whichever is smaller, before
 being given to the history tool.  The file in the baseline is unchanged.
-.PP
+.LP
 On extract (the \fIhistory_get_command\fP field) the encoding is reversed,
 using information attached to the change file information.  This is
 because each put could use a different encoding (although in practice,
@@ -145,6 +164,13 @@ file to \f(CWfalse\fP, you will need to surround filenames with the
 quote filenames which actually need to be quoted, so users usually will
 not notice.  This applies to all of the various filenames in
 the commands in the sections which follow.
+.nh 3 "Templates"
+.LP
+The source distribution contains numerous configuration examples in
+a directory called \fIlib/config.example/\fP which is installed into
+\fI\*(D)/config.example/\fP by default.  In the interests of accuracy,
+it may be best to copy configurations from there, rather than copy-type
+the ones below.
 .so c3.1.so
 .so c3.2.so
 .so c3.3.so

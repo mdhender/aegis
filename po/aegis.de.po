@@ -56,8 +56,8 @@
 #
 msgid ""
 msgstr ""
-"POT-Creation-Date: Thu Sep 30 16:34:22 EST 2004\n"
-"PO-Revision-Date: 2004-07-16\n"
+"POT-Creation-Date: Fri Jan 28 11:29:18 EST 2005\n"
+"PO-Revision-Date: 2004-10-20\n"
 "Last-Translator: Ralf Fassel <ralf@akutech.de>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
@@ -74,10 +74,9 @@ msgstr ""
 #. Please translate the English msgstr, not the msgid.
 #: libaegis/user.cc:1639
 msgid "$$$name must be positive"
-msgstr "Die Umgebungsvariable $$$name muss einen positive Dezimalzahl sein"
+msgstr "Die Umgebungsvariable $$$name muss eine positive Dezimalzahl sein"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when the parameter of the -UUid switch is
 # not a valid uuid.
 #
@@ -86,10 +85,9 @@ msgstr "Die Umgebungsvariable $$$name muss einen positive Dezimalzahl sein"
 #. For consistent translation, here is the English text:
 #. msgstr "The $Name option needs to be given a valid UUID"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/help.cc:463
-#, fuzzy
+#: libaegis/help.cc:437
 msgid "$Name needs an uuid"
-msgstr "The $Name option needs to be given a valid UUID"
+msgstr "Zur Option $Name muß eine gültige UUID angegeben werden"
 
 #
 # This error message is issued when a file has been tampered with while
@@ -102,22 +100,20 @@ msgstr "The $Name option needs to be given a valid UUID"
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" has been altered"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aede.cc:368 aegis/aeib.cc:1041 aegis/aeib.cc:1064 aegis/aerb.cc:340
-#: aegis/aerb.cc:364 aegis/aerp.cc:439 aegis/aerp.cc:463
+#: aegis/aede.cc:368 aegis/aeib.cc:1043 aegis/aeib.cc:1066 aegis/aerb.cc:340
+#: aegis/aerb.cc:364 aegis/aerp.cc:487 aegis/aerp.cc:511
 msgid "$filename altered"
 msgstr "Datei \"$filename\" wurde verändert"
 
 #
-# TRANSLATION REQUIRED
 # This message is issued when an aefa is successfully completed.
 #
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" attributes changed"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aefa.cc:776
-#, fuzzy
+#: aegis/aefa.cc:635 aegis/aefa.cc:818
 msgid "$filename attributes changed"
-msgstr "file \"$filename\" attributes changed"
+msgstr "Attribute für Datei \"$filename\" geändert"
 
 #
 # This error message is issued when aenf is invoked on a file which is
@@ -131,7 +127,7 @@ msgstr "file \"$filename\" attributes changed"
 #. "this command for normal files.  Symbolic links and other special file types "
 #. "must be created at build time."
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aenf.cc:574
+#: aegis/aenf.cc:565
 msgid "$filename bad nf type"
 msgstr ""
 "Die Datei \"$filename\" ist kein passender Dateityp.  Dieses Kommando kann "
@@ -150,7 +146,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "test \"$filename\" on baseline failed (as it should)"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/test/batch.cc:313 libaegis/change/test/batch_fake.cc:177
+#: libaegis/change/test/batch.cc:309 libaegis/change/test/batch_fake.cc:178
 msgid "$filename baseline fail, good"
 msgstr "Test \"$filename\" gegen Baseline fehlgeschlagen (wie sich's gehört)"
 
@@ -163,7 +159,7 @@ msgstr "Test \"$filename\" gegen Baseline fehlgeschlagen (wie sich's gehört)"
 #. For consistent translation, here is the English text:
 #. msgstr "test \"$filename\" on baseline passed (it must fail)"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/test/batch.cc:336 libaegis/change/test/batch_fake.cc:200
+#: libaegis/change/test/batch.cc:332 libaegis/change/test/batch_fake.cc:201
 msgid "$filename baseline pass, not good"
 msgstr "Test \"$filename\" gegen Baseline bestanden (er muss fehlschlagen)"
 
@@ -176,7 +172,7 @@ msgstr "Test \"$filename\" gegen Baseline bestanden (er muss fehlschlagen)"
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" is being removed"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aet.cc:921
+#: aegis/aet.cc:951
 msgid "$filename being removed"
 msgstr "Datei \"$filename\" wird in diesem Change entfernt"
 
@@ -229,7 +225,7 @@ msgstr ""
 #. msgstr ""
 #. "file \"$filename\" was out of date, see \"$filename,D\" for merged source"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aed.cc:1521
+#: aegis/aed.cc:1509
 msgid "$filename diff3ed"
 msgstr ""
 "Datei \"$filename\" war veraltet, siehe \"$filename,D\" für die angepaßte "
@@ -243,7 +239,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "test \"$filename\" failed"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/test/batch.cc:321 libaegis/change/test/batch_fake.cc:185
+#: libaegis/change/test/batch.cc:317 libaegis/change/test/batch_fake.cc:186
 msgid "$filename fail"
 msgstr "Test \"$filename\" fehlgeschlagen"
 
@@ -257,7 +253,7 @@ msgstr "Test \"$filename\" fehlgeschlagen"
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" already exists in the project"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aede.cc:812 aegis/aemv.cc:217 aegis/aenf.cc:705 aegis/aent.cc:484
+#: aegis/aede.cc:812 aegis/aemv.cc:216 aegis/aenf.cc:694 aegis/aent.cc:479
 msgid "$filename in baseline"
 msgstr "Datei \"$filename\" existiert bereits im Projekt"
 
@@ -270,7 +266,7 @@ msgstr "Datei \"$filename\" existiert bereits im Projekt"
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" is built, it may not be copied into a change"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecp.cc:1553
+#: aegis/aecp.cc:1558
 msgid "$filename is built"
 msgstr ""
 "Datei \"$filename\" wird durch Build erzeugt, sie kann nicht in einen Change "
@@ -303,7 +299,7 @@ msgstr ""
 #. "file \"$filename\" was out of date and has been merged with the up to date "
 #. "version, see \"$filename,B\" for the original source"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aed.cc:1519
+#: aegis/aed.cc:1507
 msgid "$filename merged"
 msgstr ""
 "Datei \"$filename\" war nicht mehr aktuell und wurde mit der aktuellen "
@@ -334,7 +330,7 @@ msgstr "Das History-Tool hat die Source-Datei \"$filename\" verändert"
 #. "test \"$filename\" returned no result; some other problem prevented the "
 #. "functionality under test from being exercised"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/test/batch.cc:354 libaegis/change/test/batch_fake.cc:218
+#: libaegis/change/test/batch.cc:350 libaegis/change/test/batch_fake.cc:219
 msgid "$filename no result"
 msgstr ""
 "Test \"$filename\" lieferte kein Ergebnis; ein anderes Problem verhinderte, "
@@ -363,7 +359,7 @@ msgstr "Datei \"$filename\" nicht gefunden"
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" is not a test"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aet.cc:911 aegis/aet.cc:989 aegis/aet.cc:1663
+#: aegis/aet.cc:941 aegis/aet.cc:1019 aegis/aet.cc:1697
 msgid "$filename not test"
 msgstr "Datei \"$filename\" ist kein Test"
 
@@ -375,7 +371,7 @@ msgstr "Datei \"$filename\" ist kein Test"
 #. For consistent translation, here is the English text:
 #. msgstr "test \"$filename\" passed"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/test/batch.cc:345 libaegis/change/test/batch_fake.cc:209
+#: libaegis/change/test/batch.cc:341 libaegis/change/test/batch_fake.cc:210
 msgid "$filename pass"
 msgstr "Test \"$filename\" bestanden"
 
@@ -386,17 +382,57 @@ msgstr "Test \"$filename\" bestanden"
 # 	$File_Name	The offending command line argument.
 #
 #. For consistent translation, here is the English text:
-#. msgstr "path \"$filename\" unrelated"
+#. msgstr ""
+#. "path \"$filename\" is not within any change or project directory tree; maybe "
+#. "the -base-relative option will help"
 #. Please translate the English msgstr, not the msgid.
-#: aefind/cmdline.y:262 aefind/cmdline.y:263 aegis/aeb.cc:399
-#: aegis/aecp.cc:534 aegis/aecp.cc:1361 aegis/aecpu.cc:349 aegis/aed.cc:305
-#: aegis/aed.cc:1006 aegis/aefa.cc:318 aegis/aefa.cc:677 aegis/aemt.cc:401
-#: aegis/aemtu.cc:346 aegis/aemv.cc:529 aegis/aemv.cc:566 aegis/aemvu.cc:335
-#: aegis/aenf.cc:471 aegis/aenfu.cc:362 aegis/aent.cc:419 aegis/aentu.cc:378
-#: aegis/aerm.cc:406 aegis/aermu.cc:397 aegis/aet.cc:819 aegis/aet.cc:1562
-#: aels/main.cc:372 aels/main.cc:373
+#: aefind/cmdline.y:262 aefind/cmdline.y:263 aegis/aeb.cc:385
+#: aegis/aecp.cc:515 aegis/aecp.cc:1375 aegis/aecpu.cc:350 aegis/aed.cc:299
+#: aegis/aed.cc:996 aegis/aemt.cc:398 aegis/aemtu.cc:347 aegis/aemv.cc:522
+#: aegis/aemv.cc:559 aegis/aemvu.cc:333 aegis/aenf.cc:468 aegis/aenfu.cc:365
+#: aegis/aent.cc:416 aegis/aentu.cc:381 aegis/aerm.cc:402 aegis/aermu.cc:395
+#: aegis/aet.cc:850 aegis/aet.cc:1597 aels/main.cc:373 aels/main.cc:374
+#: libaegis/change/file/resolve_name.cc:117
 msgid "$filename unrelated"
-msgstr "Pfad \"$filename\" unrelated"
+msgstr ""
+"Pfadname \"$filename\" liegt nicht innerhalb eines Change- oder "
+"Projektverzeichnisses; unter Umständen kann die Option -base-relative "
+"hilfreich sein"
+
+# TRANSLATION REQUIRED
+#
+# This fatal error message is issued by the aefa -uuid command if the
+# file already has a UUID set.
+#
+# 	$File_Name	the offending filename
+#
+#. For consistent translation, here is the English text:
+#. msgstr "the \"$filename\" file alreday has a UUID"
+#. Please translate the English msgstr, not the msgid.
+#: aegis/aefa.cc:769
+#, fuzzy
+msgid "$filename uuid already set"
+msgstr "the \"$filename\" file alreday has a UUID"
+
+# TRANSLATION REQUIRED
+#
+# This fatal error message is issued by the aefa -uuid command if the
+# file already has a UUID set.
+#
+# 	$File_Name	the offending filename
+# 	$Other		the other filename using the UUID (optional)
+#
+#. For consistent translation, here is the English text:
+#. msgstr ""
+#. "the UUID specified for the \"$filename\" file is already in use by the "
+#. "\"$other\" file"
+#. Please translate the English msgstr, not the msgid.
+#: aegis/aefa.cc:796
+#, fuzzy
+msgid "$filename uuid duplicate"
+msgstr ""
+"the UUID specified for the \"$filename\" file is already in use by the "
+"\"$other\" file"
 
 #
 # This error message is issued when a substitution function is formed
@@ -408,7 +444,7 @@ msgstr "Pfad \"$filename\" unrelated"
 #. For consistent translation, here is the English text:
 #. msgstr "$filename: $linenumber: empty $${} substitution"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub.cc:517
+#: libaegis/sub.cc:369
 msgid "$filename: $linenumber: empty $${} substitution"
 msgstr "$filename: $linenumber: leere $${} Ersetzung"
 
@@ -429,7 +465,7 @@ msgstr "$filename: $linenumber: leere $${} Ersetzung"
 #. "$filename: $linenumber: in substitution \"$message\" found $number unused "
 #. "variable${plural $number s} (aborting)"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub.cc:1392
+#: libaegis/sub.cc:1042
 msgid ""
 "$filename: $linenumber: in substitution \"$message\" found unused variables"
 msgstr ""
@@ -453,7 +489,7 @@ msgstr ""
 #. "$filename: $linenumber: in substitution \"$message\" variable \"$name\" "
 #. "unused"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub.cc:1364
+#: libaegis/sub.cc:1015
 msgid ""
 "$filename: $linenumber: in substitution \"$message\" variable \"$name\" "
 "unused"
@@ -465,7 +501,7 @@ msgstr ""
 # important that THIS substitution not fail, otherwise there will be an
 # infinite loop - it is caught, but does not yield a particularly
 # helpful message, nor will it impress the users.)
-# This +++ message works with the other messages marked +++ above.
+# This +++ message works with the other messages marked "See (+++)".
 #
 # 	$File_Name	The filename containg the message
 # 	$Line_Number	The line number of the message
@@ -475,13 +511,13 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "$filename: $linenumber: substitution $${$name} failed: $message"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub.cc:624
+#: libaegis/sub.cc:474
 msgid "$filename: $linenumber: substitution $${$name} failed: $message"
 msgstr "$filename: $linenumber: Ersetzung $${$name} fehlgeschlagen: $message"
 
 #
 # This error message is issued when a substitution function is formed
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 # 	$File_Name	The filename containg the message
 # 	$Line_Number	The line number of the message
@@ -489,13 +525,13 @@ msgstr "$filename: $linenumber: Ersetzung $${$name} fehlgeschlagen: $message"
 #. For consistent translation, here is the English text:
 #. msgstr "$filename: $linenumber: unterminated $${} \\ sequence"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub.cc:1138
+#: libaegis/sub.cc:811
 msgid "$filename: $linenumber: unterminated $${} \\ sequence"
 msgstr "$filename: $linenumber: unabgeschlossene $${} \\ Sequenz"
 
 #
 # This error message is issued when a substitution function is formed
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 # 	$File_Name	The filename containg the message
 # 	$Line_Number	The line number of the message
@@ -503,18 +539,18 @@ msgstr "$filename: $linenumber: unabgeschlossene $${} \\ Sequenz"
 #. For consistent translation, here is the English text:
 #. msgstr "$filename: $linenumber: unterminated $${} quotes"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub.cc:1087
+#: libaegis/sub.cc:772
 msgid "$filename: $linenumber: unterminated $${} quotes"
 msgstr "$filename: $linenumber: unabgeschlossene $${} Anführungszeichen"
 
 #
 # This error message is issued when a substitution function is formed
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 #. For consistent translation, here is the English text:
 #. msgstr "$filename: $linenumber: unterminated $${} substitution"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub.cc:1042
+#: libaegis/sub.cc:739
 msgid "$filename: $linenumber: unterminated $${} substitution"
 msgstr "$filename: $linenumber: unabgeschlossene $${} Ersetzung"
 
@@ -529,7 +565,7 @@ msgstr "$filename: $linenumber: unabgeschlossene $${} Ersetzung"
 #. Please translate the English msgstr, not the msgid.
 #: aeimport/format/rcs/lex.cc:117 aeimport/format/sccs/lex.cc:72
 #: libaegis/aer/pos.cc:120 libaegis/input/fatal_error.cc:37
-#: libaegis/meta_lex.cc:691
+#: libaegis/meta_lex.cc:692
 msgid "$filename: $message"
 msgstr "$filename: $message"
 
@@ -543,7 +579,7 @@ msgstr "$filename: $message"
 #. msgstr ""
 #. "$filename: architectures must be specified as both a name and a pattern"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/pconf/get.cc:632
+#: libaegis/change/pconf/get.cc:648
 msgid "$filename: arch needs name and pattern"
 msgstr ""
 "$filename: Architekturen müssen sowohl als Name als auch als Muster "
@@ -566,17 +602,17 @@ msgstr ""
 #: libaegis/change/build/run_dev_com.cc:56
 #: libaegis/change/build/run_int_com.cc:57 libaegis/change/cstate/get.cc:219
 #: libaegis/change/cstate/get.cc:241 libaegis/change/cstate/get.cc:263
-#: libaegis/change/diff/run_diff.cc:105 libaegis/change/diff/run_diff3.cc:95
+#: libaegis/change/diff/run_diff.cc:109 libaegis/change/diff/run_diff3.cc:95
 #: libaegis/change/diff/run_merge.cc:94 libaegis/change/file/fstate.cc:140
 #: libaegis/change/file/fstate.cc:157 libaegis/change/file/fstate.cc:174
 #: libaegis/change/history/create_comma.cc:107
-#: libaegis/change/history/get_command.cc:105
+#: libaegis/change/history/get_command.cc:104
 #: libaegis/change/history/put_command.cc:103
-#: libaegis/change/history/query_comman.cc:75 libaegis/change/pconf/get.cc:60
-#: libaegis/change/pconf/get.cc:157 libaegis/change/pconf/get.cc:172
-#: libaegis/change/pconf/get.cc:189 libaegis/change/pconf/get.cc:204
-#: libaegis/change/pconf/get.cc:219 libaegis/change/pconf/get.cc:234
-#: libaegis/change/pconf/get.cc:266 libaegis/change/pconf/get.cc:281
+#: libaegis/change/history/query_comman.cc:75 libaegis/change/pconf/get.cc:62
+#: libaegis/change/pconf/get.cc:159 libaegis/change/pconf/get.cc:174
+#: libaegis/change/pconf/get.cc:191 libaegis/change/pconf/get.cc:206
+#: libaegis/change/pconf/get.cc:221 libaegis/change/pconf/get.cc:236
+#: libaegis/change/pconf/get.cc:268 libaegis/change/pconf/get.cc:283
 msgid "$filename: contains no \"$field_name\" field"
 msgstr "$filename: enthält kein \"$field_name\" Feld"
 
@@ -591,16 +627,15 @@ msgstr "$filename: enthält kein \"$field_name\" Feld"
 #. For consistent translation, here is the English text:
 #. msgstr "$filename: corrupted \"$field_name\" field"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeip.cc:1394 libaegis/change/cstate/get.cc:83
+#: aegis/aeip.cc:1386 libaegis/change/cstate/get.cc:83
 #: libaegis/change/cstate/get.cc:161 libaegis/change/cstate/get.cc:178
 #: libaegis/change/cstate/get.cc:195 libaegis/change/file/metrics/get.cc:43
-#: libaegis/change/file/metrics/get.cc:55 libaegis/change/pconf/get.cc:296
-#: libaegis/change/test/batch.cc:286 libaegis/project.cc:256
-#: libaegis/project.cc:684
+#: libaegis/change/file/metrics/get.cc:55 libaegis/change/pconf/get.cc:298
+#: libaegis/change/test/batch.cc:282 libaegis/project.cc:256
+#: libaegis/project.cc:686
 msgid "$filename: corrupted \"$field_name\" field"
 msgstr "$filename: unbrauchbares \"$field_name\" Feld"
 
-# TRANSLATION REQUIRED
 #
 # This warning is issued when an obsolete field is used.
 #
@@ -612,10 +647,10 @@ msgstr "$filename: unbrauchbares \"$field_name\" Feld"
 #. "$filename: the \"$name1\" field is obsolete, use the \"$name2\" field instead"
 #. Please translate the English msgstr, not the msgid.
 #: libaegis/change/warning_obso.cc:39
-#, fuzzy
 msgid "$filename: field \"$name1\" obsolete, use \"$name2\" instead"
 msgstr ""
-"$filename: the \"$name1\" field is obsolete, use the \"$name2\" field instead"
+"$filename: Feld \"$name1\" ist überholt, verwenden Sie stattdessen das Feld "
+"\"$name2\" "
 
 #
 # This fatal error message is issued when Aegis is checking a project's
@@ -629,7 +664,7 @@ msgstr ""
 #. "command to fix it, for some suitable <group> name.  [You will need to be "
 #. "root.]"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/project.cc:638
+#: libaegis/project.cc:640
 msgid "$filename: gid $number1 invalid, must be >= $number2"
 msgstr ""
 "$filename: die Gruppen-ID ($number1) dieser Datei ist zu klein, sie muss "
@@ -649,7 +684,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "$filename: group is $number1, should be $number2"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/os/become.cc:179
+#: libaegis/os/become.cc:181
 msgid "$filename: group is $number1, should be $number2"
 msgstr "$filename: Gruppe ist $number1, sollte $number2 sein"
 
@@ -662,7 +697,7 @@ msgstr "$filename: Gruppe ist $number1, sollte $number2 sein"
 #. For consistent translation, here is the English text:
 #. msgstr "$filename: has been tampered with (fatal)"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/os/become.cc:199
+#: libaegis/os/become.cc:201
 msgid "$filename: has been tampered with (fatal)"
 msgstr "$filename: wurde unerlaubt verändert (fatal)"
 
@@ -694,7 +729,7 @@ msgstr "$filename: $number fatal${plural $number e} Fehler gefunden"
 #. For consistent translation, here is the English text:
 #. msgstr "$filename: mode is $number1, should be $number2"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/os/become.cc:121
+#: libaegis/os/become.cc:123
 msgid "$filename: mode is $number1, should be $number2"
 msgstr "$filename: Modus ist $number1, sollte $number2 sein"
 
@@ -709,7 +744,7 @@ msgstr "$filename: Modus ist $number1, sollte $number2 sein"
 #. For consistent translation, here is the English text:
 #. msgstr "$filename: owner is $number1, should be $number2"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/os/become.cc:141 libaegis/os/become.cc:163
+#: libaegis/os/become.cc:143 libaegis/os/become.cc:165
 msgid "$filename: owner is $number1, should be $number2"
 msgstr "$filename: Besitzer ist $number1, sollte $number2 sein"
 
@@ -723,7 +758,7 @@ msgstr "$filename: Besitzer ist $number1, sollte $number2 sein"
 #. msgstr "$filename: too many fatal errors, aborted"
 #. Please translate the English msgstr, not the msgid.
 #: aeimport/format/rcs/lex.cc:124 aeimport/format/sccs/lex.cc:79
-#: libaegis/aer/lex.cc:784 libaegis/aer/lex.cc:808 libaegis/meta_lex.cc:697
+#: libaegis/aer/lex.cc:784 libaegis/aer/lex.cc:808 libaegis/meta_lex.cc:698
 msgid "$filename: too many errors"
 msgstr "$filename: zu viele fatale Fehler, abgebrochen"
 
@@ -739,7 +774,7 @@ msgstr "$filename: zu viele fatale Fehler, abgebrochen"
 #. "command to fix it, for some suitable <user> name.  [You will need to be "
 #. "root.]"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/project.cc:622
+#: libaegis/project.cc:624
 msgid "$filename: uid $number1 invalid, must be >= $number2"
 msgstr ""
 "$filename: die User-ID ($number1) dieser Datei ist zu klein, sie muss größer "
@@ -758,7 +793,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "$function: argument $number: $message"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/aer/func/substitute.cc:201
+#: libaegis/aer/func/substitute.cc:174
 msgid "$function: argument $number: $message"
 msgstr "$function: Argument $number: $message"
 
@@ -789,7 +824,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "$function: argument $number: integer value required (was given $name)"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/aer/func/sprintf.cc:231 libaegis/aer/func/substitute.cc:171
+#: libaegis/aer/func/sprintf.cc:231 libaegis/aer/func/substitute.cc:144
 #: libaegis/aer/func/substr.cc:93 libaegis/aer/func/substr.cc:119
 #: libaegis/aer/func/wrap.cc:136 libaegis/aer/func/wrap.cc:298
 msgid "$function: argument $number: integer value required (was given $name)"
@@ -807,7 +842,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "$function: argument $number: precision of $value is out of range"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/aer/func/sprintf.cc:508 libaegis/aer/func/sprintf.cc:561
+#: libaegis/aer/func/sprintf.cc:507 libaegis/aer/func/sprintf.cc:560
 msgid "$function: argument $number: precision of $value is out of range"
 msgstr "$function: Argument $number: Präzisionsangabe $value ungültig"
 
@@ -849,12 +884,12 @@ msgstr ""
 #: libaegis/aer/func/dirname.cc:139 libaegis/aer/func/downcase.cc:64
 #: libaegis/aer/func/getenv.cc:70 libaegis/aer/func/gettime.cc:81
 #: libaegis/aer/func/length.cc:62 libaegis/aer/func/mtime.cc:77
-#: libaegis/aer/func/quote.cc:65 libaegis/aer/func/quote.cc:201
-#: libaegis/aer/func/quote.cc:278 libaegis/aer/func/quote.cc:381
+#: libaegis/aer/func/quote.cc:57 libaegis/aer/func/quote.cc:110
+#: libaegis/aer/func/quote.cc:161 libaegis/aer/func/quote.cc:214
 #: libaegis/aer/func/split.cc:68 libaegis/aer/func/split.cc:94
 #: libaegis/aer/func/sprintf.cc:187 libaegis/aer/func/strftime.cc:69
-#: libaegis/aer/func/substitute.cc:80 libaegis/aer/func/substitute.cc:109
-#: libaegis/aer/func/substitute.cc:138 libaegis/aer/func/substr.cc:67
+#: libaegis/aer/func/substitute.cc:62 libaegis/aer/func/substitute.cc:88
+#: libaegis/aer/func/substitute.cc:114 libaegis/aer/func/substr.cc:67
 #: libaegis/aer/func/upcase.cc:64 libaegis/aer/func/wrap.cc:112
 #: libaegis/aer/func/wrap.cc:274
 msgid "$function: argument $number: string value required (was given $name)"
@@ -905,7 +940,7 @@ msgstr "$function: Argument $number: Wert $name kann nicht ausgegeben werden"
 #. For consistent translation, here is the English text:
 #. msgstr "$function: argument $number: width $value out of range"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/aer/func/sprintf.cc:408 libaegis/aer/func/sprintf.cc:462
+#: libaegis/aer/func/sprintf.cc:407 libaegis/aer/func/sprintf.cc:461
 #: libaegis/aer/func/wrap.cc:157 libaegis/aer/func/wrap.cc:319
 msgid "$function: argument $number: width $value out of range"
 msgstr "$function: Argument $number: Breite $value ungültig"
@@ -946,7 +981,7 @@ msgstr "$function: zu wenig Argumente"
 #. For consistent translation, here is the English text:
 #. msgstr "$function: too many arguments ($number1 given, only $number2 used)"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/aer/func/print.cc:78 libaegis/aer/func/sprintf.cc:787
+#: libaegis/aer/func/print.cc:78 libaegis/aer/func/sprintf.cc:784
 msgid "$function: too many arguments ($number1 given, only $number2 used)"
 msgstr ""
 "$function: zu viele Argumente ($number1 angegeben, nur $number2 verwendet)"
@@ -961,7 +996,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "$function: unknown format specifier '$name'"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/aer/func/sprintf.cc:603
+#: libaegis/aer/func/sprintf.cc:600
 msgid "$function: unknown format specifier '$name'"
 msgstr "$function: unbekannte Formatangabe '$name'"
 
@@ -973,11 +1008,11 @@ msgstr "$function: unbekannte Formatangabe '$name'"
 #. For consistent translation, here is the English text:
 #. msgstr "$message"
 #. Please translate the English msgstr, not the msgid.
-#: aefind/cmdline.y:203 aegis/aede.cc:456 aegis/aenf.cc:596 aegis/aent.cc:588
+#: aefind/cmdline.y:203 aegis/aede.cc:456 aegis/aenf.cc:586 aegis/aent.cc:583
 #: libaegis/aer/pos.cc:116 libaegis/aer/value/error.cc:104
 #: libaegis/change/error.cc:60 libaegis/change/fatal.cc:60
 #: libaegis/change/verbose.cc:60 libaegis/change/warning.cc:68
-#: libaegis/undo.cc:290 libaegis/undo.cc:351
+#: libaegis/undo/item/message.cc:45
 msgid "$message"
 msgstr "$message"
 
@@ -994,7 +1029,7 @@ msgstr "$message"
 #. "the $name $number option is out of range, the $name option requires a small "
 #. "positive integer as its argument"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aet.cc:546
+#: aegis/aet.cc:546 aegis/aet.cc:594
 msgid "$name $number must be pos"
 msgstr ""
 "Die Option $name $number hat einen ungültigen Wert, die Option $name "
@@ -1090,7 +1125,7 @@ msgstr "$name Lock nicht verfügbar"
 #. For consistent translation, here is the English text:
 #. msgstr "the $name option must be followed by a directory path"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/help.cc:435
+#: libaegis/help.cc:413
 msgid "$name needs dir"
 msgstr "Die Option $name braucht einen Verzeichnisnamen als nächstes Argument"
 
@@ -1103,7 +1138,7 @@ msgstr "Die Option $name braucht einen Verzeichnisnamen als nächstes Argument"
 #. For consistent translation, here is the English text:
 #. msgstr "the $name option must be followed by a file name"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/help.cc:421
+#: libaegis/help.cc:401
 msgid "$name needs file"
 msgstr "Die Option $name braucht einen Dateinamen als nächstes Argument"
 
@@ -1116,7 +1151,7 @@ msgstr "Die Option $name braucht einen Dateinamen als nächstes Argument"
 #. For consistent translation, here is the English text:
 #. msgstr "the $name option must be followed by one or more file names"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/help.cc:449
+#: libaegis/help.cc:425
 msgid "$name needs files"
 msgstr ""
 "Die Option $name braucht einen oder mehrere Dateinamen als nächstes Argument"
@@ -1130,7 +1165,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "the $name option must be followed by a name"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/help.cc:407
+#: libaegis/help.cc:389
 msgid "$name needs name"
 msgstr "Die Option $name braucht einen Namen als nächstes Argument"
 
@@ -1143,7 +1178,7 @@ msgstr "Die Option $name braucht einen Namen als nächstes Argument"
 #. For consistent translation, here is the English text:
 #. msgstr "the $name option must be followed by a number"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/help.cc:379
+#: libaegis/help.cc:365
 msgid "$name needs number"
 msgstr "Die Option $name braucht eine Zahl als nächstes Argument"
 
@@ -1156,7 +1191,7 @@ msgstr "Die Option $name braucht eine Zahl als nächstes Argument"
 #. For consistent translation, here is the English text:
 #. msgstr "the $name option must be followed by a string"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/help.cc:393
+#: libaegis/help.cc:377
 msgid "$name needs string"
 msgstr "Die Option $name braucht einen Text als nächstes Argument"
 
@@ -1184,7 +1219,7 @@ msgstr "$name1 und $name2"
 #. For consistent translation, here is the English text:
 #. msgstr "the $name1 option must be accompanied the $name2 option"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecp.cc:1151
+#: aegis/aecp.cc:1107
 msgid "$name1 needs $name2"
 msgstr "Die Option $name1 braucht die Option $name2"
 
@@ -1239,7 +1274,7 @@ msgstr "$value1 ** $value2: $errno"
 #. "Warning: the -TRace option is only effective when Aegis is compiled using "
 #. "the DEBUG define in the common/main.h include file."
 #. Please translate the English msgstr, not the msgid.
-#: aefind/cmdline.y:1127 libaegis/help.cc:255
+#: aefind/cmdline.y:1127 libaegis/help.cc:249
 msgid "-TRace needs DEBUG"
 msgstr ""
 "Warnung: die Option -TRace ist nur efektiv, wenn Aegis mit dem  DEBUG Flag "
@@ -1309,7 +1344,7 @@ msgstr "Neue Release abgeleitet von $name."
 #. For consistent translation, here is the English text:
 #. msgstr "Project \"$name\""
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aenc.cc:390
+#: aegis/aenc.cc:387
 msgid "Project $name"
 msgstr "Projekt \"$name\""
 
@@ -1324,12 +1359,11 @@ msgstr "Projekt \"$name\""
 #. For consistent translation, here is the English text:
 #. msgstr "Project \"$name\", Change $number"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeca.cc:813
+#: aegis/aeca.cc:649
 msgid "Project $name, Change $number"
 msgstr "Projekt \"$name\", Change $number"
 
 #
-# TRANSLATION REQUIRED
 # This text is used when a project name, change number and file name are
 # inserted at the top of a file or listing.  Usually in the C locale,
 # so avoid non-ascii characters if at all possible.
@@ -1341,19 +1375,18 @@ msgstr "Projekt \"$name\", Change $number"
 #. For consistent translation, here is the English text:
 #. msgstr "Project \"$name\", Change $number, File \"$filename\""
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aefa.cc:713
-#, fuzzy
+#: aegis/aefa.cc:574
 msgid "Project $name, Change $number, File $filename"
-msgstr "Project \"$name\", Change $number, File \"$filename\""
+msgstr "Projekt \"$name\", Change $number, Datei \"$filename\""
 
 #
 # This error message is issued when the ${read_file} substitution is
-# called incorrectly.  See (+++) below.
+# called incorrectly.  See (+++) above.
 #
 #. For consistent translation, here is the English text:
 #. msgstr "absolute path required"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub/read_file.cc:67
+#: libaegis/sub/read_file.cc:66
 msgid "absolute path required"
 msgstr "Absolute Pfadangabe notwendig"
 
@@ -1364,7 +1397,7 @@ msgstr "Absolute Pfadangabe notwendig"
 #. For consistent translation, here is the English text:
 #. msgstr "adjusting file modification times"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeip.cc:1847
+#: aegis/aeip.cc:1836
 msgid "adjust file modification times"
 msgstr "anpassen der Datei-Änderungszeiten"
 
@@ -1419,18 +1452,18 @@ msgstr "Alias-Loop gefunden"
 #. For consistent translation, here is the English text:
 #. msgstr "it appears that all test numbers have been consumed"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aent.cc:514
+#: aegis/aent.cc:509
 msgid "all test numbers used"
 msgstr "Es scheint, daß alle Testnummern bereits in Benutzung sind"
 
 #
 # This error message is issued when an unknown substitution is
-# referenced.  See (+++) below.
+# referenced.  See (+++) above.
 #
 #. For consistent translation, here is the English text:
 #. msgstr "ambiguous substitution name"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub.cc:591
+#: libaegis/sub.cc:448
 msgid "ambiguous substitution name"
 msgstr "Mehrdeutiger Ersetzungsname"
 
@@ -1441,7 +1474,7 @@ msgstr "Mehrdeutiger Ersetzungsname"
 #. For consistent translation, here is the English text:
 #. msgstr "anticipated merge complete"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aed.cc:540
+#: aegis/aed.cc:533
 msgid "anticipated merge complete"
 msgstr "Vorweggenommener Merge beendet"
 
@@ -1465,7 +1498,7 @@ msgstr "füge Log an \"$filename\""
 #. For consistent translation, here is the English text:
 #. msgstr "applying the change to the integration directory"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeib.cc:1124
+#: aegis/aeib.cc:1126
 msgid "apply change to integration directory"
 msgstr "kopiere den Change in das Integrationsverzeichnis"
 
@@ -1533,7 +1566,7 @@ msgstr ""
 #. "archive member $filename changed size during processing, corrupting the "
 #. "result"
 #. Please translate the English msgstr, not the msgid.
-#: aedist/output/cpio_child.cc:56 aetar/output/tar_child.cc:60
+#: aedist/output/cpio_child.cc:78 aetar/output/tar_child.cc:85
 msgid "archive member $filename changed size"
 msgstr ""
 "Größe der Archiv-Datei $filename veränderte sich während Verarbeitung, "
@@ -1569,7 +1602,7 @@ msgstr "Arithmetischer Typ für Inkrement (angegeben wurde $name) benötigt"
 #. For consistent translation, here is the English text:
 #. msgstr "attributes modified"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeca.cc:526 aegis/aeca.cc:1048
+#: aegis/aeca.cc:424 aegis/aeca.cc:875
 msgid "attributes changed"
 msgstr "Attribute geändert"
 
@@ -1584,7 +1617,7 @@ msgstr "Attribute geändert"
 #. For consistent translation, here is the English text:
 #. msgstr "attributes text left in the \"$filename\" file"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aefa.cc:405 libaegis/change/attributes/edit.cc:58
+#: aegis/aefa.cc:321 libaegis/change/attributes/edit.cc:58
 #: libaegis/project/pattr/edit.cc:54
 msgid "attributes in $filename"
 msgstr "Attributstext in Datei \"$filename\" belassen"
@@ -1613,7 +1646,7 @@ msgstr ""
 #. "this change is in the '$state' state, it must be in the 'being developed' "
 #. "state to list file information"
 #. Please translate the English msgstr, not the msgid.
-#: aels/main.cc:316
+#: aels/main.cc:315
 msgid "bad aels state"
 msgstr ""
 "Dieser Change ist im Status '$state', er muß im 'being developed' Status "
@@ -1643,7 +1676,7 @@ msgstr "Projekt-Alias \"$name\" ist ungültig"
 #. "reviewed', 'awaiting integration' or 'being integrated' states to be "
 #. "anticipated"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aed.cc:205
+#: aegis/aed.cc:203
 msgid "bad anticipate diff"
 msgstr ""
 "Dieser Change ist im Status '$state', er muß in einem der 'being reviewed', "
@@ -1659,7 +1692,7 @@ msgstr ""
 #. "this branch may not be built directly in the '$state' state, it must be in "
 #. "the 'being integrated' state to do this"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeb.cc:297
+#: aegis/aeb.cc:270
 msgid "bad branch build"
 msgstr ""
 "Dieser Branch kann nicht direkt im Status '$state' gebuildet werden, er muß "
@@ -1675,7 +1708,7 @@ msgstr ""
 #. "you may not copy files into a branch directly, you must create a change to "
 #. "modify files"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecp.cc:1245 aegis/aemv.cc:441
+#: aegis/aecp.cc:1203 aegis/aemv.cc:434
 msgid "bad branch cp"
 msgstr ""
 "Sie können Dateien nicht direkt in einen Branch kopieren, Sie müssen einen "
@@ -1690,7 +1723,7 @@ msgstr ""
 #. "this branch is in the '$state' state, it must be in the 'being integrated' "
 #. "state to do a difference"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aed.cc:189 aegis/aed.cc:875
+#: aegis/aed.cc:187 aegis/aed.cc:865
 msgid "bad branch diff"
 msgstr ""
 "Dieser Branch ist im Status '$state', er muß im Status 'being integrated' "
@@ -1705,7 +1738,7 @@ msgstr ""
 #. "this branch may not be tested directly in the '$state' state, it must be in "
 #. "the 'being integrated' state to do this"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aet.cc:691
+#: aegis/aet.cc:717
 msgid "bad branch test"
 msgstr ""
 "Dieser Branch kann nicht direkt im Status '$state' getestet werden, er muß "
@@ -1720,7 +1753,7 @@ msgstr ""
 #. "this change is in the '$state' state, it must be in the 'being developed' or "
 #. "'being integrated' state to do a build"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeb.cc:292
+#: aegis/aeb.cc:265
 msgid "bad build state"
 msgstr ""
 "Dieser Change ist im Status '$state', er muß im Status 'being developed' "
@@ -1733,7 +1766,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "you may not do a partial build in the \"$state\" state"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeb.cc:308
+#: aegis/aeb.cc:295
 msgid "bad build, partial"
 msgstr "Sie können keinen partiellen Build im Status \"$state\" durchführen"
 
@@ -1744,7 +1777,7 @@ msgstr "Sie können keinen partiellen Build im Status \"$state\" durchführen"
 #. For consistent translation, here is the English text:
 #. msgstr "only a project administrator may grant architecture exemptions"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeca.cc:973 aegis/aenc.cc:527
+#: aegis/aeca.cc:798 aegis/aenc.cc:524
 msgid "bad ca, no arch exempt"
 msgstr ""
 "Nur ein Projekt-Administrator kann Ausnahmen für Architekturen erlauben"
@@ -1756,7 +1789,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "only project administrators may exempt changes from testing"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeca.cc:901 aegis/aenc.cc:514
+#: aegis/aeca.cc:737 aegis/aenc.cc:511
 msgid "bad ca, no test exempt"
 msgstr "Nur Projekt-Administratoren können Tests für Changes abschalten"
 
@@ -1770,7 +1803,7 @@ msgstr "Nur Projekt-Administratoren können Tests für Changes abschalten"
 #. "be modified by a project administrator, or by the developer during "
 #. "development"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeca.cc:223 aegis/aeca.cc:461
+#: aegis/aeca.cc:182 aegis/aeca.cc:359
 msgid "bad ca, not auth"
 msgstr ""
 "Benutzer \"$user\" kann die Attribute des Changes nicht ändern; Attribute "
@@ -1786,27 +1819,24 @@ msgstr ""
 #. msgstr ""
 #. "architecture contains variations not listed in the project configuration file"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeca.cc:955 aegis/aenc.cc:546
+#: aegis/aeca.cc:783 aegis/aenc.cc:541
 msgid "bad ca, unknown architecture"
 msgstr ""
 "Architektur-Feld enthält Variationen, die nicht in der ``config'' Datei des "
 "Projektes enthalten sind"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a user attempts to set a change's
 # UUID when the change already has a UUID.
 #
 #. For consistent translation, here is the English text:
 #. msgstr "the UUID of this change has already been set"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeca.cc:470
-#, fuzzy
+#: aegis/aeca.cc:368
 msgid "bad ca, uuid already set"
-msgstr "the UUID of this change has already been set"
+msgstr "Die UUID dieses Changes wurde bereits festgelegt"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a user attempts to set a change's
 # UUID and the given UUID has already be used by another change.
 #
@@ -1816,10 +1846,9 @@ msgstr "the UUID of this change has already been set"
 #. For consistent translation, here is the English text:
 #. msgstr "the UUID specified is already is use by $other"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeca.cc:485 aegis/aenf.cc:402 aegis/aent.cc:346
-#, fuzzy
+#: aegis/aeca.cc:383 aegis/aenf.cc:399 aegis/aent.cc:344
 msgid "bad ca, uuid duplicate"
-msgstr "the UUID specified is already is use by $other"
+msgstr "Die angegebene UUID wird bereits von $other verwendet"
 
 #
 # This error message is issued when an aecd is requested for a change
@@ -1828,7 +1857,7 @@ msgstr "the UUID specified is already is use by $other"
 #. For consistent translation, here is the English text:
 #. msgstr "this change is in the '$state' state, there is no directory to go to"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecd.cc:330
+#: aegis/aecd.cc:172
 msgid "bad cd, no dir"
 msgstr ""
 "Dieser Change ist im '$state' Status, es gibt kein Verzeichnis, in das "
@@ -1859,7 +1888,7 @@ msgstr ""
 #. "this change is in the '$state' state, it must be in the 'being developed' "
 #. "state to be cleaned"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeclean.cc:448
+#: aegis/aeclean.cc:442
 msgid "bad clean state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'being developed' Status "
@@ -1874,7 +1903,7 @@ msgstr ""
 #. "this change is in the '$state' state, it must be in the 'being developed' "
 #. "state to modify files with it"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecp.cc:1237
+#: aegis/aecp.cc:1195
 msgid "bad cp state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'being developed' Status "
@@ -1891,7 +1920,7 @@ msgstr ""
 #. "file \"$filename\" was not added to this change using the 'aegis -CoPy_file' "
 #. "command"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecpu.cc:481 aegis/aed.cc:356 aegis/aed.cc:389 aegis/aemtu.cc:478
+#: aegis/aecpu.cc:479 aegis/aed.cc:347 aegis/aed.cc:380 aegis/aemtu.cc:476
 msgid "bad cp undo $filename"
 msgstr ""
 "Datei \"$filename\" wurde nicht mit dem 'aegis -CoPy_file' Kommando in "
@@ -1906,7 +1935,7 @@ msgstr ""
 #. "you may not remove files from a branch directly, you must create a change to "
 #. "remove files"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecpu.cc:274 aegis/aemtu.cc:279 aegis/aemvu.cc:268 aegis/aermu.cc:326
+#: aegis/aecpu.cc:275 aegis/aemtu.cc:280 aegis/aemvu.cc:266 aegis/aermu.cc:324
 msgid "bad cp undo branch"
 msgstr ""
 "Sie können Dateien nicht direkt in einem Branch entfernen, Sie müssen einen "
@@ -1921,7 +1950,7 @@ msgstr ""
 #. "this change is in the '$state' state, it must be in the 'being developed' "
 #. "state to be able to remove a copied file from it"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecpu.cc:272 aegis/aemtu.cc:277 aegis/aemvu.cc:266
+#: aegis/aecpu.cc:273 aegis/aemtu.cc:278 aegis/aemvu.cc:264
 msgid "bad cp undo state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'being developed' Status "
@@ -1939,7 +1968,7 @@ msgstr ""
 #. "file \"$filename\" is already in the change, it will not be overwritten; use "
 #. "the -OverWriting option if you want to overwrite it"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecp.cc:1484
+#: aegis/aecp.cc:1490
 msgid "bad cp, file $filename dup"
 msgstr ""
 "Datei \"$filename\" ist bereits im Change, sie wird nicht überschrieben; "
@@ -2016,14 +2045,13 @@ msgstr ""
 #. "this change is in the '$state' state, it must be in the 'being developed' "
 #. "state to do a difference"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aed.cc:191
+#: aegis/aed.cc:189
 msgid "bad diff state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'being developed' Status "
 "sein, um einen Diff zu erstellen"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a user without sufficient
 # authorization attempts to modify a change file's attributes.
 #
@@ -2032,12 +2060,11 @@ msgstr ""
 #. "user \"$user\" may not modify the change's attributes; attributes may only "
 #. "be modified by the developer during development"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aefa.cc:375
-#, fuzzy
+#: aegis/aefa.cc:291 aegis/aefa.cc:754 aegis/aefa.cc:781
 msgid "bad fa, not auth"
 msgstr ""
-"user \"$user\" may not modify the change's attributes; attributes may only "
-"be modified by the developer during development"
+"Benutzer \"$user\" kann die Change-Attribute nicht verändern; Attribute "
+"können vom Entwickler nur während der Entwicklung verändert werden"
 
 #
 # This error message is issued when an aeib command is used on a change
@@ -2048,7 +2075,7 @@ msgstr ""
 #. "this change is in the '$state' state, it must be in the 'awaiting "
 #. "integration' state to begin integration"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeib.cc:854
+#: aegis/aeib.cc:855
 msgid "bad ib state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'awaiting integration' "
@@ -2075,7 +2102,7 @@ msgstr ""
 #. "this change is in the '$state' state, it must be in the 'being developed' or "
 #. "'being integrated' state to do a difference"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aed.cc:882
+#: aegis/aed.cc:872
 msgid "bad idiff state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'being developed' oder "
@@ -2105,7 +2132,7 @@ msgstr ""
 #. "this change is in the '$state' state, it must be in the 'being integrated' "
 #. "state to pass integration"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeip.cc:455
+#: aegis/aeip.cc:449
 msgid "bad ip state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'being integrated' Status "
@@ -2123,7 +2150,7 @@ msgstr ""
 #. "this change must successfully complete an 'aegis -Build' $outstanding before "
 #. "it can pass integration"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeip.cc:1112
+#: aegis/aeip.cc:1106
 msgid "bad ip, build required"
 msgstr ""
 "Dieser Change muß einen erfolgreichen 'aegis -Build' $outstanding "
@@ -2141,7 +2168,7 @@ msgstr ""
 #. "this change must successfully complete an 'aegis -Test -BaseLine' "
 #. "$outstanding before it can pass integration"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeip.cc:1144
+#: aegis/aeip.cc:1138
 msgid "bad ip, test -bl required"
 msgstr ""
 "Dieser Change muß einen erfolgreichen 'aegis -Test -BaseLine' $outstanding "
@@ -2159,7 +2186,7 @@ msgstr ""
 #. "this change must successfully complete an 'aegis -Test -REGression' "
 #. "$outstanding before it can pass integration"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeip.cc:1164
+#: aegis/aeip.cc:1158
 msgid "bad ip, test -reg required"
 msgstr ""
 "Dieser Change muß einen erfolgreichen 'aegis -Test REGression' $outstanding "
@@ -2177,7 +2204,7 @@ msgstr ""
 #. "this change must successfully complete an 'aegis -Test' $outstanding before "
 #. "it can pass integration"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeip.cc:1128
+#: aegis/aeip.cc:1122
 msgid "bad ip, test required"
 msgstr ""
 "Dieser Change muß einen erfolgreichen 'aegis -Test  $outstanding "
@@ -2192,7 +2219,7 @@ msgstr ""
 #. "this change is in the '$state' state, it must be in the 'being developed' "
 #. "state to rename files with it"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aemv.cc:439
+#: aegis/aemv.cc:432
 msgid "bad mv state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'being developed' Status "
@@ -2209,7 +2236,7 @@ msgstr ""
 #. "file \"$filename\" was not added to this change using the 'aegis -MoVe_file' "
 #. "command"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aemvu.cc:462
+#: aegis/aemvu.cc:457
 msgid "bad mv undo $filename"
 msgstr ""
 "Datei \"$filename\" wurde nicht mit dem 'aegis -MoVe_file' Kommando in "
@@ -2240,7 +2267,7 @@ msgstr ""
 #. "you may not add files into a branch directly, you must create a change to "
 #. "create new files"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aemt.cc:325 aegis/aenf.cc:383 aegis/aent.cc:327 aegis/aerm.cc:335
+#: aegis/aemt.cc:322 aegis/aenf.cc:380 aegis/aent.cc:325 aegis/aerm.cc:331
 msgid "bad nf branch"
 msgstr ""
 "Sie können keine Dateien direkt in einen Branch erstellen, Sie müssen einen "
@@ -2255,7 +2282,7 @@ msgstr ""
 #. "this change is in the '$state' state, it must be in the 'being developed' "
 #. "state to create new files with it"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aenf.cc:381
+#: aegis/aenf.cc:378
 msgid "bad nf state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'being developed' Status "
@@ -2288,7 +2315,7 @@ msgstr ""
 #. "you may not remove files from a branch directly, you must create a change to "
 #. "remove files"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aenfu.cc:291 aegis/aentu.cc:307
+#: aegis/aenfu.cc:294 aegis/aentu.cc:310
 msgid "bad nfu branch"
 msgstr ""
 "Sie können keine Dateien direkt in einem Branch entfernen, Sie müssen einen "
@@ -2303,7 +2330,7 @@ msgstr ""
 #. "this change is in the '$state' state, it must be in the 'being developed' "
 #. "state to remove new files with it"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aenfu.cc:289
+#: aegis/aenfu.cc:292
 msgid "bad nfu state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'being developed' Status "
@@ -2337,7 +2364,7 @@ msgstr ""
 #. "this change is in the '$state' state, it must be in the 'being developed' "
 #. "state to create a new test with it"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aent.cc:325
+#: aegis/aent.cc:323
 msgid "bad nt state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'being developed' Status "
@@ -2369,7 +2396,7 @@ msgstr ""
 #. "this change is in the '$state' state, it must be in the 'being developed' "
 #. "state to undo new tests"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aentu.cc:305
+#: aegis/aentu.cc:308
 msgid "bad ntu state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'being developed' Status "
@@ -2395,7 +2422,7 @@ msgstr ""
 #. msgstr ""
 #. "this change is in the $state state; it must be in a later state to be sent"
 #. Please translate the English msgstr, not the msgid.
-#: aediff/change_id.cc:376 aepatch/send.cc:509
+#: aediff/diff.cc:62 aepatch/send.cc:509
 msgid "bad patch send state"
 msgstr ""
 "Dieser Change ist im Status $state; er muß in einem späteren Status sein um "
@@ -2480,7 +2507,7 @@ msgstr ""
 #. "this change is in the '$state' state, it must be in the 'being developed' "
 #. "state to remove a file with it"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aerm.cc:333
+#: aegis/aerm.cc:329
 msgid "bad rm state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'being developed' Status "
@@ -2497,7 +2524,7 @@ msgstr ""
 #. "file \"$filename\" was not added to this change using the 'aegis -"
 #. "ReMove_file' command"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aermu.cc:521
+#: aegis/aermu.cc:516
 msgid "bad rm undo $filename"
 msgstr ""
 "Datei \"$filename\" wurde nicht mit dem 'aegis -ReMove_file Kommando in "
@@ -2512,7 +2539,7 @@ msgstr ""
 #. "this change is in the '$state' state, it must be in the 'being developed' "
 #. "state to undo remove files"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aermu.cc:324
+#: aegis/aermu.cc:322
 msgid "bad rmu state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'being developed' Status "
@@ -2527,7 +2554,7 @@ msgstr ""
 #. "this change is in the '$state' state, it must be in the 'being reviewed' "
 #. "state to pass review"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aerp.cc:129
+#: aegis/aerp.cc:130
 msgid "bad rp state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'being reviewed' Status "
@@ -2538,7 +2565,7 @@ msgstr ""
 #. "this change is in the '$state' state, it must be in the 'awaiting "
 #. "integration' state to undo a review pass"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aerpu.cc:204
+#: aegis/aerpu.cc:239
 msgid "bad rpu state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'awaiting integration' "
@@ -2551,7 +2578,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "there are no files to distribute"
 #. Please translate the English msgstr, not the msgid.
-#: aedist/send.cc:1039 aepatch/send.cc:720 aetar/send.cc:532
+#: aedist/send.cc:1127 aepatch/send.cc:716 aetar/send.cc:625
 msgid "bad send no files"
 msgstr "Keine Dateien für die Distribution vorhanden"
 
@@ -2563,7 +2590,7 @@ msgstr "Keine Dateien für die Distribution vorhanden"
 #. msgstr ""
 #. "this change is in the $state state; it must be in a later state to be sent"
 #. Please translate the English msgstr, not the msgid.
-#: aedist/send.cc:724 aetar/send.cc:440
+#: aedist/send.cc:729 aetar/send.cc:472
 msgid "bad send state"
 msgstr ""
 "Dieser Change ist im Status $state; er muß in einem späteren Status sein um "
@@ -2578,7 +2605,7 @@ msgstr ""
 #. "this change is in the '$state' state, it must be in the 'being developed' or "
 #. "'being integrated' state to run tests"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aet.cc:735
+#: aegis/aet.cc:767
 msgid "bad test state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'being developed' oder "
@@ -2593,8 +2620,8 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "version number \"$number\" is invalid"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aenpr.cc:401 aegis/aenrls.cc:465 aeimport/import.cc:282
-#: libaegis/project.cc:993
+#: aegis/aenpr.cc:401 aegis/aenrls.cc:465 aeimport/import.cc:281
+#: libaegis/project.cc:995
 msgid "bad version $number"
 msgstr "Versionsnumber \"$number\" ist ungültig"
 
@@ -2650,7 +2677,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "baseline read lock not available"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/project.cc:747
+#: libaegis/project.cc:749
 msgid "baseline read lock not available"
 msgstr "Baseline read lock nicht verfügbar"
 
@@ -2660,7 +2687,7 @@ msgstr "Baseline read lock nicht verfügbar"
 #. For consistent translation, here is the English text:
 #. msgstr "baseline write lock not available"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/project.cc:786
+#: libaegis/project.cc:788
 msgid "baseline write lock not available"
 msgstr "Baseline write lock nicht verfügbar"
 
@@ -2675,7 +2702,7 @@ msgstr "Baseline write lock nicht verfügbar"
 #. For consistent translation, here is the English text:
 #. msgstr "tests $current-$last of $total, ${date %H:%M}"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/test/batch.cc:214
+#: libaegis/change/test/batch.cc:210
 msgid "batch test from $current to $last of $total"
 msgstr "Batch Test von $current bis $last von $total"
 
@@ -2763,7 +2790,7 @@ msgstr "Bool'scher Wert für ``if''-Anweisung  benötigt (angegeben wurde $name)"
 #. For consistent translation, here is the English text:
 #. msgstr "branch $number out of range, it must be a small positive number"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/arglex/change.cc:184
+#: libaegis/arglex/change.cc:190
 msgid "branch $number out of range"
 msgstr "Branch $number ungültig, es muß eine kleine positive Zahl sein"
 
@@ -2795,7 +2822,7 @@ msgstr ""
 #. "you may only create changes and branches on branches which are active, this "
 #. "branch is not in the 'being developed' state"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeclone.cc:318 aegis/aenbr.cc:213 aegis/aenc.cc:340
+#: aegis/aeclone.cc:311 aegis/aenbr.cc:213 aegis/aenc.cc:337
 msgid "branch completed"
 msgstr ""
 "Sie können Changes und Branches nur in Branches erzeugen, die aktiv sind, "
@@ -2834,7 +2861,7 @@ msgstr ""
 #. "change you need to change the build configuration, or ``aerm $filename'', or "
 #. "``aerm $filename'' and then ``aenf -build $filename'' in a following change."
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeip.cc:931
+#: aegis/aeip.cc:925
 msgid "build trashed $filename"
 msgstr ""
 "Die Source-Datei \"$filename\" scheint durch den Build verändert worden zu "
@@ -2910,9 +2937,9 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "change $number out of range, it must be a small positive number"
 #. Please translate the English msgstr, not the msgid.
-#: aefind/cmdline.y:1176 aegis/aeca.cc:393 aegis/aeca.cc:629 aegis/aecp.cc:269
-#: aegis/aecp.cc:1007 aegis/aed.cc:696 aegis/aentu.cc:235
-#: libaegis/arglex/change.cc:186 libaegis/arglex/change.cc:347
+#: aefind/cmdline.y:1176 aegis/aecp.cc:259 aegis/aecp.cc:965 aegis/aed.cc:686
+#: aegis/aentu.cc:233 libaegis/arglex/change.cc:192
+#: libaegis/arglex/change.cc:356
 msgid "change $number out of range"
 msgstr "Change $number ungültig, es muss eine kleine positive Zahl sein"
 
@@ -2928,7 +2955,7 @@ msgstr "Change $number ungültig, es muss eine kleine positive Zahl sein"
 #. "change number $number has already been used, please choose another; or do "
 #. "not specify one if you want one to be allocated automatically"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeclone.cc:366 aegis/aenc.cc:420
+#: aegis/aeclone.cc:359 aegis/aenc.cc:417
 msgid "change $number used"
 msgstr ""
 "Change-Nummer $number wurde bereits verwendet, bitte verwenden Sie eine "
@@ -2944,7 +2971,7 @@ msgstr ""
 #. "This change has been cancelled because the change set is already present in "
 #. "the repository."
 #. Please translate the English msgstr, not the msgid.
-#: aedist/receive.cc:460 aedist/receive.cc:1495 aepatch/receive.cc:1184
+#: aedist/receive.cc:582 aedist/receive.cc:1970 aepatch/receive.cc:1188
 msgid "change already present"
 msgstr ""
 "Dieser Change wurde abgebrochen, weil das Changeset bereits vorhanden ist."
@@ -2957,7 +2984,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "$filename"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecd.cc:376 aegis/aecd.cc:379
+#: aegis/aecd.cc:224
 msgid "change directory $filename complete"
 msgstr "$filename"
 
@@ -2969,7 +2996,7 @@ msgstr "$filename"
 #. For consistent translation, here is the English text:
 #. msgstr "chdir \"$filename\": $errno"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/os/chdir.cc:43
+#: libaegis/os/chdir.cc:40
 msgid "chdir $filename: $errno"
 msgstr "chdir (Verzeichniswechsel) \"$filename\": $errno"
 
@@ -2982,7 +3009,7 @@ msgstr "chdir (Verzeichniswechsel) \"$filename\": $errno"
 #. For consistent translation, here is the English text:
 #. msgstr "chgrp(\"$filename\", $arg): $errno"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/os/mkdir.cc:74
+#: libaegis/os/mkdir.cc:67
 msgid "chgrp(\"$filename\", $arg): $errno"
 msgstr "chgrp(\"$filename\", $arg) (Ändern der Gruppe): $errno"
 
@@ -2995,7 +3022,7 @@ msgstr "chgrp(\"$filename\", $arg) (Ändern der Gruppe): $errno"
 #. For consistent translation, here is the English text:
 #. msgstr "chmod(\"$filename\", $arg): $errno"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/os/chmod/chmod.cc:50 libaegis/os/mkdir.cc:94
+#: libaegis/os/chmod/chmod.cc:54 libaegis/os/mkdir.cc:84
 msgid "chmod(\"$filename\", $arg): $errno"
 msgstr "chmod(\"$filename\", $arg) (Ändern der Zugriffsberechtigung): $errno"
 
@@ -3018,7 +3045,7 @@ msgstr "Besitz geändert von Benutzer \"$original\" zu Benutzer \"$target\""
 #. For consistent translation, here is the English text:
 #. msgstr "clean completed"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeclean.cc:768
+#: aegis/aeclean.cc:756
 msgid "clean complete"
 msgstr "Aufräumen abgeschlossen"
 
@@ -3030,7 +3057,7 @@ msgstr "Aufräumen abgeschlossen"
 #. For consistent translation, here is the English text:
 #. msgstr "copy of change $original completed"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeclone.cc:882
+#: aegis/aeclone.cc:870
 msgid "clone complete"
 msgstr "Kopie von Change $original abgeschlossen"
 
@@ -3042,7 +3069,7 @@ msgstr "Kopie von Change $original abgeschlossen"
 #. For consistent translation, here is the English text:
 #. msgstr "close \"$filename\": $errno"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/input/file.cc:66 libaegis/output/file.cc:62
+#: libaegis/input/file.cc:67 libaegis/output/file.cc:50
 msgid "close $filename: $errno"
 msgstr "close (schließen) \"$filename\": $errno"
 
@@ -3134,7 +3161,7 @@ msgstr "Kommando \"$command\" beendet durch $signal (core dumped)"
 #. For consistent translation, here is the English text:
 #. msgstr "command line too short"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/help.cc:303
+#: libaegis/help.cc:297
 msgid "command line too short"
 msgstr "Kommandozeile zu kurz"
 
@@ -3152,7 +3179,7 @@ msgstr "Kommandozeile zu kurz"
 #. "for examples of how to configure your build tool.\tYou may want to browse "
 #. "some other files in the same directory for more hints."
 #. Please translate the English msgstr, not the msgid.
-#: aeimport/config_file.cc:98
+#: aeimport/config_file.cc:100
 msgid "configuration file hint"
 msgstr ""
 "Diese Datei muß für dieses Projekt angepaßt werden.  Siehe aepconf(5) für "
@@ -3183,7 +3210,7 @@ msgstr "Content Transfer Encoding \"$name\" unbekannt"
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" copied"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecp.cc:777 aegis/aecp.cc:1970
+#: aegis/aecp.cc:746 aegis/aecp.cc:1977
 msgid "copied $filename"
 msgstr "Datei \"$filename\" kopiert"
 
@@ -3205,7 +3232,7 @@ msgstr "Kopiere Baseline"
 #. For consistent translation, here is the English text:
 #. msgstr "copying baseline to integration directory"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeib.cc:1112
+#: aegis/aeib.cc:1114
 msgid "copy baseline to integration directory"
 msgstr "Kopiere Baseline ins Integrations-Verzeichnis"
 
@@ -3216,7 +3243,7 @@ msgstr "Kopiere Baseline ins Integrations-Verzeichnis"
 #. For consistent translation, here is the English text:
 #. msgstr "copying change source files"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aechown.cc:338 aegis/aeclone.cc:475
+#: aegis/aechown.cc:338 aegis/aeclone.cc:468
 msgid "copy change source files"
 msgstr "Kopiere Change Source-Dateien"
 
@@ -3230,7 +3257,7 @@ msgstr "Kopiere Change Source-Dateien"
 #. For consistent translation, here is the English text:
 #. msgstr "copied $number ${plural $number files file}"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecp.cc:2016
+#: aegis/aecp.cc:2022
 msgid "copy file complete"
 msgstr "$number ${plural $number Dateien Datei} kopiert"
 
@@ -3245,7 +3272,7 @@ msgstr "$number ${plural $number Dateien Datei} kopiert"
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" no longer being modified"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecpu.cc:765
+#: aegis/aecpu.cc:753
 msgid "copy file undo $filename complete"
 msgstr "Datei \"$filename\" ist nicht mehr im Change"
 
@@ -3257,7 +3284,7 @@ msgstr "Datei \"$filename\" ist nicht mehr im Change"
 #. msgstr ""
 #. "Copying history files from external repository into project history tree..."
 #. Please translate the English msgstr, not the msgid.
-#: aeimport/import.cc:528
+#: aeimport/import.cc:527
 msgid "copy history files"
 msgstr ""
 "Kopiere History-Dateien aus dem externen Repository in den Projekt-History-"
@@ -3297,7 +3324,7 @@ msgstr "erzeuge \"$filename\": $errno"
 #. For consistent translation, here is the English text:
 #. msgstr "creating symbolic links to baseline"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/build/symlinks.cc:908
+#: libaegis/change/build/symlinks.cc:931
 msgid "creating symbolic links to baseline"
 msgstr "erstelle symbolische Links zur Baseline"
 
@@ -3313,7 +3340,7 @@ msgstr "erstelle symbolische Links zur Baseline"
 #. "change $number is the currently active integration, only one integration may "
 #. "be performed at a time"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeib.cc:881
+#: aegis/aeib.cc:882
 msgid "currently integrating $number"
 msgstr ""
 "Change $number ist die momentan aktive Integration, es kann nur einen "
@@ -3328,7 +3355,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "the string \"$name\" does not look like a date"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecp.cc:977 libaegis/help/date_unknown.cc:34
+#: aegis/aecp.cc:936 libaegis/help/date_unknown.cc:34
 msgid "date $name unknown"
 msgstr "der Text \"$name\" sieht nicht wie eine Datumsangabe aus"
 
@@ -3342,8 +3369,8 @@ msgstr "der Text \"$name\" sieht nicht wie eine Datumsangabe aus"
 #. "Warning: The delta date specified is in the future.  This same command may "
 #. "yield different results when re-run in the future."
 #. Please translate the English msgstr, not the msgid.
-#: aediff/change_id.cc:329 aedist/send.cc:678 aegis/aecp.cc:440
-#: aegis/aecp.cc:1269 aepatch/send.cc:468 aetar/send.cc:405
+#: aedist/send.cc:683 aegis/aecp.cc:426 aegis/aecp.cc:1227 aepatch/send.cc:468
+#: aetar/send.cc:434 libaegis/change/identifi_sub/set_change.cc:74
 msgid "date in the future"
 msgstr ""
 "Warnung: die Datumsangabe liegt in der Zukunft.  Das gleiche Kommando kann "
@@ -3380,8 +3407,9 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "delta $number out of range, it must be a small positive number"
 #. Please translate the English msgstr, not the msgid.
-#: aediff/change_id.cc:176 aedist/send.cc:404 aegis/aecp.cc:218
-#: aegis/aecp.cc:952 aegis/aedn.cc:202 aepatch/send.cc:298 aetar/send.cc:252
+#: aedist/send.cc:404 aegis/aecp.cc:211 aegis/aecp.cc:912 aegis/aedn.cc:202
+#: aepatch/send.cc:298 aetar/send.cc:251
+#: libaegis/change/identifi_sub/cmd_lin_par.cc:86
 msgid "delta $number out of range"
 msgstr "Delta $number ist ungültig, es muß eine kleine positive Zahl sein"
 
@@ -3449,7 +3477,7 @@ msgstr "Bearbeitung wieder aufgenommen"
 #. For consistent translation, here is the English text:
 #. msgstr "the developer of a change may not also integrate it"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeib.cc:861
+#: aegis/aeib.cc:862
 msgid "developer may not integrate"
 msgstr "Der Entwickler eines Changes darf diesen nicht auch integrieren"
 
@@ -3460,7 +3488,7 @@ msgstr "Der Entwickler eines Changes darf diesen nicht auch integrieren"
 #. For consistent translation, here is the English text:
 #. msgstr "the developer of a change may not also review it"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aerb.cc:256 aegis/aerbu.cc:210 aegis/aerf.cc:155 aegis/aerp.cc:150
+#: aegis/aerb.cc:256 aegis/aerbu.cc:210 aegis/aerf.cc:155 aegis/aerp.cc:154
 msgid "developer may not review"
 msgstr "Der Entwickler eines Changes darf diesen nicht auch reviewen"
 
@@ -3470,7 +3498,7 @@ msgstr "Der Entwickler eines Changes darf diesen nicht auch reviewen"
 #. For consistent translation, here is the English text:
 #. msgstr "development build complete ${date %H:%M}"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeb.cc:542
+#: aegis/aeb.cc:537
 msgid "development build complete"
 msgstr "Development Build beendet ${date %H:%M}"
 
@@ -3480,7 +3508,7 @@ msgstr "Development Build beendet ${date %H:%M}"
 #. For consistent translation, here is the English text:
 #. msgstr "development build started ${date %H:%M}"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeb.cc:536
+#: aegis/aeb.cc:526
 msgid "development build started"
 msgstr "Development Build gestartet ${date %H:%M}"
 
@@ -3505,7 +3533,7 @@ msgstr "Bearbeitung abgeschlossen"
 #. For consistent translation, here is the English text:
 #. msgstr "development directory \"$filename\""
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aechown.cc:313 aegis/aeclone.cc:437 aegis/aedb.cc:317
+#: aegis/aechown.cc:313 aegis/aeclone.cc:430 aegis/aedb.cc:317
 #: libaegis/project/new_branch.cc:136
 msgid "development directory \"$filename\""
 msgstr "Bearbeitungs-Verzeichnis \"$filename\""
@@ -3520,7 +3548,7 @@ msgstr "Bearbeitungs-Verzeichnis \"$filename\""
 #. For consistent translation, here is the English text:
 #. msgstr "found $number error${plural $number s}, no files were differenced"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aed.cc:406 aegis/aed.cc:1060
+#: aegis/aed.cc:397 aegis/aed.cc:1046
 msgid "diff fail"
 msgstr "$number Fehler gefunden, es wurden keine Dateien für Diff bearbeitet"
 
@@ -3534,7 +3562,7 @@ msgstr "$number Fehler gefunden, es wurden keine Dateien für Diff bearbeitet"
 #. "this change must successfully complete an 'aegis -Diff' before it can leave "
 #. "the '$state' state"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aede.cc:548 aegis/aeip.cc:565
+#: aegis/aede.cc:548 aegis/aeip.cc:559
 msgid "diff required"
 msgstr ""
 "Dieser Change muß einen 'aegis -Diff' erfolgreich durchlaufen, bevor er den "
@@ -3546,7 +3574,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "difference complete"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aed.cc:1961
+#: aegis/aed.cc:2040
 msgid "difference complete"
 msgstr "Difference beendet"
 
@@ -3557,7 +3585,7 @@ msgstr "Difference beendet"
 #. For consistent translation, here is the English text:
 #. msgstr "directory must be relative (must not start with /)"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecd.cc:156
+#: aegis/aecd.cc:142
 msgid "dir must be rel"
 msgstr "Verzeichnis muß relativ sein (darf nicht mit / beginnen)"
 
@@ -3576,9 +3604,10 @@ msgstr "Verzeichnis muß relativ sein (darf nicht mit / beginnen)"
 #. "file}, however ${plural $number 'none of them are' 'it is not a'} suitable "
 #. "${plural $number arguments argument} for this command"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecp.cc:1434 aegis/aecpu.cc:415 aegis/aemt.cc:450 aegis/aemtu.cc:412
-#: aegis/aemvu.cc:390 aegis/aenf.cc:542 aegis/aenfu.cc:418 aegis/aentu.cc:436
-#: aegis/aerm.cc:465 aegis/aermu.cc:453 aegis/aet.cc:877 aegis/aet.cc:1622
+#: aegis/aecp.cc:1297 aegis/aecp.cc:1446 aegis/aecpu.cc:416 aegis/aemt.cc:448
+#: aegis/aemtu.cc:413 aegis/aemvu.cc:388 aegis/aenf.cc:536 aegis/aenfu.cc:421
+#: aegis/aentu.cc:439 aegis/aerm.cc:462 aegis/aermu.cc:451 aegis/aet.cc:909
+#: aegis/aet.cc:1658
 msgid "directory $filename contains no relevant files"
 msgstr ""
 "Verzeichnis \"$filename\" enthält $number mögliche ${plural $number Dateien "
@@ -3592,7 +3621,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "discarding old directories"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeip.cc:1973
+#: aegis/aeip.cc:1962
 msgid "discard old directories"
 msgstr "alte Verzeichnisse werden entfernt"
 
@@ -3631,9 +3660,21 @@ msgstr ""
 #. Please translate the English msgstr, not the msgid.
 #: libaegis/change/develop_direct/set.cc:64
 #: libaegis/change/integra_direct/set.cc:58 libaegis/change/top_path/set.cc:65
-#: libaegis/help.cc:358 libaegis/project.cc:1173
+#: libaegis/help.cc:346 libaegis/project.cc:1175
 msgid "duplicate $name option"
 msgstr "doppelte Option $name, es darf nur eine angegeben werden"
+
+#
+# This error message is issued when the aerpass command detects that a
+# user has already reviewed this change once since the last develop end.
+# (This can occur when the review_policy_command is being used.)
+#
+#. For consistent translation, here is the English text:
+#. msgstr "you may not review the same change twice"
+#. Please translate the English msgstr, not the msgid.
+#: aegis/aerp.cc:145
+msgid "duplicate review"
+msgstr "Sie können den gleichen Change nicht zweimal reviewen"
 
 #
 # This error message is issued when an unterminated comment is seen.
@@ -3642,7 +3683,7 @@ msgstr "doppelte Option $name, es darf nur eine angegeben werden"
 #. For consistent translation, here is the English text:
 #. msgstr "end-of-file within comment"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/aer/lex.cc:662 libaegis/meta_lex.cc:639
+#: libaegis/aer/lex.cc:662 libaegis/meta_lex.cc:640
 msgid "end-of-file within comment"
 msgstr "Dateiende im Kommentar"
 
@@ -3653,7 +3694,7 @@ msgstr "Dateiende im Kommentar"
 #. For consistent translation, here is the English text:
 #. msgstr "end-of-file within string"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/aer/lex.cc:393 libaegis/meta_lex.cc:322
+#: libaegis/aer/lex.cc:393 libaegis/meta_lex.cc:323
 msgid "end-of-file within string"
 msgstr "Dateiende im Text"
 
@@ -3664,7 +3705,7 @@ msgstr "Dateiende im Text"
 #. For consistent translation, here is the English text:
 #. msgstr "end-of-line within string"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/aer/lex.cc:398 libaegis/meta_lex.cc:327
+#: libaegis/aer/lex.cc:398 libaegis/meta_lex.cc:328
 msgid "end-of-line within string"
 msgstr "Zeilenende im Text"
 
@@ -3677,7 +3718,7 @@ msgstr "Zeilenende im Text"
 #. For consistent translation, here is the English text:
 #. msgstr "environment variable ``$name'' not set"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/user.cc:2867
+#: libaegis/user.cc:2849
 msgid "environment variable $name not set"
 msgstr "Umgebungsvariable ``$name'' nicht gesetzt"
 
@@ -3691,7 +3732,7 @@ msgstr "Umgebungsvariable ``$name'' nicht gesetzt"
 #. msgstr "exec \"$filename\": $errno"
 #. Please translate the English msgstr, not the msgid.
 #: aeget/get/command.cc:47 libaegis/os/execute_retc.cc:210
-#: libaegis/output/pager.cc:142
+#: libaegis/output/pager.cc:129
 msgid "exec \"$filename\": $errno"
 msgstr "exec (ausführen) \"$filename\": $errno"
 
@@ -3703,7 +3744,7 @@ msgstr "exec (ausführen) \"$filename\": $errno"
 #. For consistent translation, here is the English text:
 #. msgstr "failed $number test${plural $number s}"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aet.cc:368 aegis/aet.cc:370
+#: aegis/aet.cc:369 aegis/aet.cc:371
 msgid "failed $number tests"
 msgstr "$number Test${plural $number s} fehlgeschlagen"
 
@@ -3717,7 +3758,7 @@ msgstr "$number Test${plural $number s} fehlgeschlagen"
 #. "error.  Some Aegis data may have been corrupted.  Inform the nearest Aegis "
 #. "guru immediately."
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/undo.cc:308
+#: libaegis/undo.cc:235
 msgid "fatal error during fatal error recovery"
 msgstr ""
 "Ein fataler Fehler trat auf während versucht wurde, einen vorangegangenen "
@@ -3837,7 +3878,7 @@ msgstr "Feld \"$name\" undefiniert"
 #. "file \"$filename\" is not acceptable to the filename pattern filters (see "
 #. "the project configuration file)"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/file/name_check.cc:668
+#: libaegis/change/file/name_check.cc:667
 msgid "file \"$filename\" bombs filters"
 msgstr ""
 "Datei \"$filename\" ist nicht akzeptabel für die Dateinamenmuster (siehe "
@@ -3852,7 +3893,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" does not exist, and yet is a change source file"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeclean.cc:584
+#: aegis/aeclean.cc:577
 msgid "file \"$filename\" does not exist"
 msgstr ""
 "Datei \"$filename\" existiert nicht, obwohl sie eine Change-Source-Datei ist"
@@ -3866,7 +3907,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" duplicates log file name"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/file/name_check.cc:580
+#: libaegis/change/file/name_check.cc:579
 msgid "file \"$filename\" is log file"
 msgstr "Datei \"$filename\" dupliziert den Namen der Log-Datei"
 
@@ -3900,7 +3941,7 @@ msgstr ""
 #. "file \"$filename\" path element \"$part\" is not acceptable to the filename "
 #. "pattern filters (see the project configuration file)"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/file/name_check.cc:677
+#: libaegis/change/file/name_check.cc:676
 msgid "file \"$filename\" part \"$part\" bombs filters"
 msgstr ""
 "Pfadelement \"$part\" im Dateinamen \"$filename\" ist nicht akzeptabel für "
@@ -3916,7 +3957,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" path element \"$part\" contains illegal characters"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/file/name_check.cc:621
+#: libaegis/change/file/name_check.cc:620
 msgid "file \"$filename\" part \"$part\" contains illegal characters"
 msgstr ""
 "Pfadelement \"$part\" im Dateinamen \"$filename\" enthält ungültige Zeichen"
@@ -3932,7 +3973,7 @@ msgstr ""
 #. msgstr ""
 #. "file \"$filename\" path element \"$part\" contains shell special characters"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/file/name_check.cc:653
+#: libaegis/change/file/name_check.cc:652
 msgid "file \"$filename\" part \"$part\" contains shell special characters"
 msgstr ""
 "Pfadelement \"$part\" im Dateinamen \"$filename\" enthält shell-"
@@ -3948,7 +3989,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" path element \"$part\" duplicates log file name"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/file/name_check.cc:589
+#: libaegis/change/file/name_check.cc:588
 msgid "file \"$filename\" part \"$part\" is log file"
 msgstr ""
 "Pfadelement \"$part\" im Dateinamen \"$filename\" dupliziert den Namen der "
@@ -3967,7 +4008,7 @@ msgstr ""
 #. "file \"$filename\" path element \"$part\" not suitable for DOS, suggest "
 #. "\"$suggest\" instead"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/file/name_check.cc:486
+#: libaegis/change/file/name_check.cc:485
 msgid "file \"$filename\" part \"$part\" not suitable for DOS"
 msgstr ""
 "Pfadelement \"$part\" im Dateinamen \"$filename\" ist nicht für DOS "
@@ -3983,7 +4024,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" path element \"$part\" not suitable for Windows"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/file/name_check.cc:515
+#: libaegis/change/file/name_check.cc:514
 msgid "file \"$filename\" part \"$part\" not suitable for Windows"
 msgstr ""
 "Pfadelement \"$part\" im Dateinamen \"$filename\" ist nicht für Windows "
@@ -4004,7 +4045,7 @@ msgstr ""
 #. "file \"$filename\" path element \"$part\" too long (by $number), suggest "
 #. "\"$suggest\" instead"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/file/name_check.cc:560
+#: libaegis/change/file/name_check.cc:559
 msgid ""
 "file \"$filename\" part \"$part\" too long, suggest \"$suggest\" instead"
 msgstr ""
@@ -4023,7 +4064,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" too long (by $number), suggest \"$suggest\" instead"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/file/name_check.cc:550
+#: libaegis/change/file/name_check.cc:549
 msgid "file \"$filename\" too long, suggest \"$suggest\" instead"
 msgstr ""
 "Dateiname \"$filename\" ist um $number zu lang, schlage \"$suggest\" "
@@ -4041,7 +4082,7 @@ msgstr ""
 #. "file \"$filename\" is illegal, because it would result in a directory name "
 #. "conflict with the \"$filename2\" file"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aenf.cc:646 aegis/aenf.cc:665 aegis/aent.cc:552 aegis/aent.cc:571
+#: aegis/aenf.cc:635 aegis/aenf.cc:654 aegis/aent.cc:547 aegis/aent.cc:566
 msgid "file $filename directory name conflict"
 msgstr ""
 "Datei \"$filename\" ist nicht erlaubt, weil er einen Verzeichnisnamen-"
@@ -4056,8 +4097,8 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" already in change"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aemt.cc:492 aegis/aemv.cc:144 aegis/aemv.cc:202 aegis/aenf.cc:690
-#: aegis/aent.cc:469 aegis/aerm.cc:534
+#: aegis/aemt.cc:487 aegis/aemv.cc:143 aegis/aemv.cc:201 aegis/aenf.cc:679
+#: aegis/aent.cc:464 aegis/aerm.cc:528
 msgid "file $filename dup"
 msgstr "Datei \"$filename\" ist bereits im Change"
 
@@ -4070,7 +4111,7 @@ msgstr "Datei \"$filename\" ist bereits im Change"
 #. For consistent translation, here is the English text:
 #. msgstr "file name \"$filename\" contains illegal characters"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/file/name_check.cc:611
+#: libaegis/change/file/name_check.cc:610
 msgid "file name \"$filename\" contains illegal characters"
 msgstr "Dateiname \"$filename\" enthält ungültige Zeichen"
 
@@ -4083,7 +4124,7 @@ msgstr "Dateiname \"$filename\" enthält ungültige Zeichen"
 #. For consistent translation, here is the English text:
 #. msgstr "file name \"$filename\" contains shell special characters"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/file/name_check.cc:643
+#: libaegis/change/file/name_check.cc:642
 msgid "file name \"$filename\" contains shell special characters"
 msgstr "Dateiname \"$filename\" enthält shell-Spezialzeichen"
 
@@ -4098,7 +4139,7 @@ msgstr "Dateiname \"$filename\" enthält shell-Spezialzeichen"
 #. msgstr ""
 #. "file name \"$filename\" not suitable for DOS, suggest \"$suggest\" instead"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/file/name_check.cc:476
+#: libaegis/change/file/name_check.cc:475
 msgid "file name \"$filename\" not suitable for DOS"
 msgstr ""
 "Dateiname \"$filename\" ist nicht für DOS geeignet, schlage \"$suggest\" "
@@ -4113,22 +4154,20 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "file name \"$filename\" not suitable for Windows "
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/file/name_check.cc:505
+#: libaegis/change/file/name_check.cc:504
 msgid "file name \"$filename\" not suitable for Windows"
 msgstr "Dateiname \"$filename\" ist nicht für Windows geeignet"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a file qualifier in a substitution
-# is an unknown name.  See (+++) below.
+# is an unknown name.  See (+++) above.
 #
 #. For consistent translation, here is the English text:
 #. msgstr "file qualifier unknown"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub/change/files.cc:114
-#, fuzzy
+#: libaegis/sub/change/files.cc:112
 msgid "file qualifier unknown"
-msgstr "file qualifier unknown"
+msgstr "Datei-Qualifier unbekannt"
 
 #
 # This error message is issued when an unknown file type name is given
@@ -4177,7 +4216,7 @@ msgstr ""
 #. "Looking for clusters of changes to files in order to interpolate the change "
 #. "sets..."
 #. Please translate the English msgstr, not the msgid.
-#: aeimport/import.cc:338
+#: aeimport/import.cc:337
 msgid "find change sets"
 msgstr ""
 "Suche nach Clustern von Veränderungen an Dateien, um die Change Sets zu "
@@ -4321,7 +4360,7 @@ msgstr "Gid $number unbekannt"
 #. For consistent translation, here is the English text:
 #. msgstr "global state lock not available"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/gonzo.cc:1036
+#: libaegis/gonzo.cc:1028
 msgid "global state lock not available"
 msgstr "Globaler Status-Lock nicht verfügbar"
 
@@ -4334,7 +4373,7 @@ msgstr "Globaler Status-Lock nicht verfügbar"
 #. For consistent translation, here is the English text:
 #. msgstr "group \"$name\" unknown"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/aer/value/group.cc:143 libaegis/user.cc:2220
+#: libaegis/aer/value/group.cc:143 libaegis/user.cc:2217
 msgid "group \"$name\" unknown"
 msgstr "Gruppe \"$name\" unbekannt"
 
@@ -4378,7 +4417,7 @@ msgstr "beim dekomprimieren der Eingabedaten aus Datei \"$filename\": $errno"
 #. For consistent translation, here is the English text:
 #. msgstr "while compressing output for the \"$filename\" file: $errno"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/output/gzip.cc:65
+#: libaegis/output/gzip.cc:45
 msgid "gzip $filename: $errno"
 msgstr "beim komprimieren der Ausgabedaten für Datei \"$filename\": $errno"
 
@@ -4390,7 +4429,7 @@ msgstr "beim komprimieren der Ausgabedaten für Datei \"$filename\": $errno"
 #. For consistent translation, here is the English text:
 #. msgstr "this change requires tests before this command may be used"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aet.cc:1123 aegis/aet.cc:1714
+#: aegis/aet.cc:1151 aegis/aet.cc:1746
 msgid "has no tests"
 msgstr ""
 "Dieser Change benötigt Tests, bevor dieses Kommando benutzt werden kann"
@@ -4414,7 +4453,7 @@ msgstr "History-Format \"$name\" unbekannt"
 #. For consistent translation, here is the English text:
 #. msgstr "history lock not available"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/project.cc:808
+#: libaegis/project.cc:810
 msgid "history lock not available"
 msgstr "History-Lock nicht verfügbar"
 
@@ -4686,8 +4725,8 @@ msgstr "Bool'scher Wert benötigt für logisches ``not'' (angegeben wurde $name)"
 #. msgstr "illegal lookup ($name1[$name2])"
 #. Please translate the English msgstr, not the msgid.
 #: libaegis/aer/value.cc:124 libaegis/aer/value/group.cc:157
-#: libaegis/aer/value/gstate.cc:187 libaegis/aer/value/list.cc:114
-#: libaegis/aer/value/passwd.cc:195 libaegis/aer/value/struct.cc:106
+#: libaegis/aer/value/gstate.cc:188 libaegis/aer/value/list.cc:114
+#: libaegis/aer/value/passwd.cc:195 libaegis/aer/value/struct.cc:107
 #: libaegis/aer/value/uconf.cc:148
 msgid "illegal lookup ($name1[$name2])"
 msgstr "ungültige Referenz ($name1[$name2])"
@@ -4858,7 +4897,7 @@ msgstr "Versionsinformationsname \"$name\" mehrdeutig ($name_list)"
 #. "when differencing a change in the 'being integrated' state you may not name "
 #. "files on the command line"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aed.cc:971
+#: aegis/aed.cc:961
 msgid "int must diff all"
 msgstr ""
 "Beim Diff eines Changes im Status 'being integrated' können Sie keine "
@@ -4874,7 +4913,7 @@ msgstr ""
 #. "when testing a change in the 'being integrated' state you may not name files "
 #. "on the command line"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aet.cc:749
+#: aegis/aet.cc:782
 msgid "int must test all"
 msgstr ""
 "Beim Testen eines Changes im Status 'being integrated' können Sie keine "
@@ -4939,7 +4978,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "integration has begun"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeib.cc:1264
+#: aegis/aeib.cc:1266
 msgid "integrate begin complete"
 msgstr "Integration hat begonnen"
 
@@ -4950,7 +4989,7 @@ msgstr "Integration hat begonnen"
 #. For consistent translation, here is the English text:
 #. msgstr "integrate begin undo complete, change returned to the '$state' state"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeibu.cc:310
+#: aegis/aeibu.cc:315
 msgid "integrate begin undo complete"
 msgstr ""
 "Integrations-Beginn rückgängig gemacht, Change ist wieder im Status '$state'"
@@ -4961,7 +5000,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "failed integration, returned to developer"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeif.cc:538
+#: aegis/aeif.cc:539
 msgid "integrate fail complete"
 msgstr "Integration fehlgeschlagen, zurück zum Entwickler"
 
@@ -4971,7 +5010,7 @@ msgstr "Integration fehlgeschlagen, zurück zum Entwickler"
 #. For consistent translation, here is the English text:
 #. msgstr "integrate pass"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeip.cc:1988
+#: aegis/aeip.cc:1977
 msgid "integrate pass complete"
 msgstr "Integration abgeschlossen"
 
@@ -4986,7 +5025,7 @@ msgstr "Integration abgeschlossen"
 #. "found $number error${plural $number s}, this change remains in the '$state' "
 #. "state"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeip.cc:1179
+#: aegis/aeip.cc:1173
 msgid "integrate pass fail"
 msgstr "$number Fehler gefunden, dieser Change bleibt im Status '$state'"
 
@@ -4996,7 +5035,7 @@ msgstr "$number Fehler gefunden, dieser Change bleibt im Status '$state'"
 #. For consistent translation, here is the English text:
 #. msgstr "integration build complete ${date %H:%M}"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeb.cc:491
+#: aegis/aeb.cc:474
 msgid "integration build complete"
 msgstr "Integrations-Build beendet ${date %H:%M}"
 
@@ -5006,7 +5045,7 @@ msgstr "Integrations-Build beendet ${date %H:%M}"
 #. For consistent translation, here is the English text:
 #. msgstr "integration build started ${date %H:%M}"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeb.cc:489
+#: aegis/aeb.cc:472
 msgid "integration build started"
 msgstr "Integrations-Build gestartet ${date %H:%M}"
 
@@ -5030,7 +5069,8 @@ msgstr "unterbrochen durch $signal"
 #. For consistent translation, here is the English text:
 #. msgstr "this function call has the wrong number or type of arguments"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/aer/expr/func.cc:75
+#: libaegis/aer/expr/func.cc:75 libaegis/sub/change/number.cc:394
+#: libaegis/sub/change/number.cc:415
 msgid "invalid function arguments"
 msgstr ""
 "Dieser Funktionsaufruf hat eine falsche Anzahl oder Typen von Argumenten"
@@ -5058,7 +5098,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "please leave the baseline directory"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeip.cc:1249
+#: aegis/aeip.cc:1243
 msgid "leave baseline"
 msgstr "Bitte verlassen Sie das Baseline-Verzeichnis"
 
@@ -5071,7 +5111,7 @@ msgstr "Bitte verlassen Sie das Baseline-Verzeichnis"
 #. For consistent translation, here is the English text:
 #. msgstr "please leave the development directory"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeip.cc:1245
+#: aegis/aeip.cc:1239
 msgid "leave dev dir"
 msgstr "Bitte verlassen Sie das Bearbeitungs-Verzeichnis"
 
@@ -5084,7 +5124,7 @@ msgstr "Bitte verlassen Sie das Bearbeitungs-Verzeichnis"
 #. For consistent translation, here is the English text:
 #. msgstr "please leave the integration directory"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeibu.cc:278 aegis/aeif.cc:142 aegis/aeip.cc:1247
+#: aegis/aeibu.cc:283 aegis/aeif.cc:142 aegis/aeip.cc:1241
 msgid "leave int dir"
 msgstr "Bitte verlassen Sie das Integrations-Verzeichnis"
 
@@ -5095,7 +5135,7 @@ msgstr "Bitte verlassen Sie das Integrations-Verzeichnis"
 #. For consistent translation, here is the English text:
 #. msgstr "linking baseline to integration directory"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeib.cc:1102
+#: aegis/aeib.cc:1104
 msgid "link baseline to integration directory"
 msgstr "Linke Baseline ins Integrations-Verzeichnis"
 
@@ -5108,7 +5148,7 @@ msgstr "Linke Baseline ins Integrations-Verzeichnis"
 #. For consistent translation, here is the English text:
 #. msgstr "link(\"$filename1\", \"$filename2\"): $errno"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/build/symlinks.cc:200 libaegis/os/link.cc:49
+#: libaegis/change/build/symlinks.cc:201 libaegis/os/link.cc:49
 msgid "link(\"$filename1\", \"$filename2\"): $errno"
 msgstr "link(\"$filename1\", \"$filename2\"): $errno"
 
@@ -5121,7 +5161,7 @@ msgstr "link(\"$filename1\", \"$filename2\"): $errno"
 #. For consistent translation, here is the English text:
 #. msgstr "list name \"$name\" is ambiguous ($name_list)"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/ael.cc:409 aexml/main.cc:188
+#: aegis/ael.cc:405 aexml/main.cc:188
 msgid "list $name ambiguous"
 msgstr "Listen-Name \"$name\" ist mehrdeutig ($name_list)"
 
@@ -5143,7 +5183,7 @@ msgstr "Listenwert benötigt (angegeben wurde $name)"
 #. For consistent translation, here is the English text:
 #. msgstr "lock not available"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/cstate/lock_prepare.cc:41 libaegis/project.cc:708
+#: libaegis/change/cstate/lock_prepare.cc:41 libaegis/project.cc:710
 #: libaegis/user.cc:1506
 msgid "lock not available"
 msgstr "Lock nicht verfügbar"
@@ -5183,7 +5223,7 @@ msgstr "Schleifenbedingung muss Typ Bool sein (angegeben wurde $name)"
 #. For consistent translation, here is the English text:
 #. msgstr "$filename: $errno"
 #. Please translate the English msgstr, not the msgid.
-#: aefind/descend.cc:79 aegis/aeip.cc:311 aels/list.cc:139 libaegis/dir.cc:59
+#: aefind/descend.cc:79 aegis/aeip.cc:311 aels/list.cc:139 libaegis/dir.cc:58
 #: libaegis/dir_stack.cc:117
 msgid "lstat $filename: $errno"
 msgstr "$filename: $errno"
@@ -5200,7 +5240,7 @@ msgstr "$filename: $errno"
 #. "it is not possible to make $filename transparent because it is not present "
 #. "in the branch, but is present in a deeper ancestor branch"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aemt.cc:525
+#: aegis/aemt.cc:520
 msgid "make $filename transparent, fail, too deep"
 msgstr ""
 "Datei $filename kann nicht transparent gemacht werden, weil sie nicht im "
@@ -5218,7 +5258,7 @@ msgstr ""
 #. "it is not possible to make $filename transparent because it is not also "
 #. "present in a deeper ancestor branch"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aemt.cc:585
+#: aegis/aemt.cc:580
 msgid "make $filename transparent, fail, too shallow"
 msgstr ""
 "Datei $filename kann nicht transparent gemacht werden, weil sie nicht auch "
@@ -5235,7 +5275,7 @@ msgstr ""
 #. "it is not possible to make $filename transparent because it is in the trunk, "
 #. "you probably want to use the aerm command instead"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aemt.cc:563
+#: aegis/aemt.cc:558
 msgid "make $filename transparent, fail, trunk"
 msgstr ""
 "Datei $filename kann nicht transparent gemacht werden, weil sie im Stamm "
@@ -5251,7 +5291,7 @@ msgstr ""
 #. "this change is in the '$state' state, it must be in the 'being developed' "
 #. "state to make a file transparent with it"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aemt.cc:323
+#: aegis/aemt.cc:320
 msgid "make transparent bad state"
 msgstr ""
 "Dieser Change ist im Status '$state', er muß im 'being developed' Status "
@@ -5266,7 +5306,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "making $number ${plural $number files file} transparent"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aemt.cc:770
+#: aegis/aemt.cc:765
 msgid "make transparent complete"
 msgstr "$number ${plural $number Dateien Datei} wurden transparent gemacht"
 
@@ -5281,7 +5321,7 @@ msgstr "$number ${plural $number Dateien Datei} wurden transparent gemacht"
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" no longer being made transparent"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aemtu.cc:638
+#: aegis/aemtu.cc:611
 msgid "make transparent undo $filename complete"
 msgstr "Datei \"$filename\" ist nicht mehr im Change"
 
@@ -5315,7 +5355,7 @@ msgstr "Bearbeitungsverzeichnis wird wieder schreibbar gemacht"
 #. For consistent translation, here is the English text:
 #. msgstr "malformed exponent"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/aer/lex.cc:362 libaegis/meta_lex.cc:301
+#: libaegis/aer/lex.cc:362 libaegis/meta_lex.cc:302
 msgid "malformed exponent"
 msgstr "unbrauchbarer Exponent"
 
@@ -5354,7 +5394,7 @@ msgstr "ein Listenelement darf nicht zugewiesen werden ($name1[$name2])"
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" may not be removed"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aerm.cc:513
+#: aegis/aerm.cc:507
 msgid "may not remove $filename"
 msgstr "Datei \"$filename\" darf nicht entfernt werden"
 
@@ -5368,7 +5408,7 @@ msgstr "Datei \"$filename\" darf nicht entfernt werden"
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" may not be a test"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aent.cc:535
+#: aegis/aent.cc:530
 msgid "may not test $filename"
 msgstr "Datei \"$filename\" darf kein Test sein"
 
@@ -5393,7 +5433,7 @@ msgstr "$name kann nicht im Hintergrund verwendet werden"
 #. For consistent translation, here is the English text:
 #. msgstr "merged $number file${plural $number s}, new 'aegis -Build' required"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aed.cc:1532
+#: aegis/aed.cc:1520
 msgid "merge complete"
 msgstr ""
 "$number Datei${plural $number en} gemergt, erneutes 'aegis -Build' notwendig"
@@ -5407,7 +5447,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "misplaced \"$name\" option on the command line"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/help.cc:309
+#: libaegis/help.cc:303
 msgid "misplaced \"$name\" option"
 msgstr "Option \"$name\" an falscher Stelle in Kommandozeile"
 
@@ -5420,7 +5460,7 @@ msgstr "Option \"$name\" an falscher Stelle in Kommandozeile"
 #. For consistent translation, here is the English text:
 #. msgstr "misplaced file name (\"$filename\") on command line"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/help.cc:284
+#: libaegis/help.cc:278
 msgid "misplaced file name (\"$filename\")"
 msgstr "Dateiname (\"$filename\") an falscher Stelle in Kommandozeile"
 
@@ -5433,7 +5473,7 @@ msgstr "Dateiname (\"$filename\") an falscher Stelle in Kommandozeile"
 #. For consistent translation, here is the English text:
 #. msgstr "misplaced number ($number) on the command line"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/help.cc:291
+#: libaegis/help.cc:285
 msgid "misplaced number ($number)"
 msgstr "Zahl ($number) an falscher Stelle in Kommandozeile"
 
@@ -5446,7 +5486,7 @@ msgstr "Zahl ($number) an falscher Stelle in Kommandozeile"
 #. For consistent translation, here is the English text:
 #. msgstr "mkdir(\"$filename\", $arg): $errno"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/os/mkdir.cc:54
+#: libaegis/os/mkdir.cc:47
 msgid "mkdir(\"$filename\", $arg): $errno"
 msgstr "mkdir(\"$filename\", $arg) (Verzeichnis erstellen): $errno"
 
@@ -5521,7 +5561,7 @@ msgstr "Modulo mit Null"
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename1\" moved to \"$filename2\""
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aemv.cc:683
+#: aegis/aemv.cc:673
 msgid "move $filename1 to $filename2 complete"
 msgstr "Datei \"$filename1\" umbenannt in \"$filename2\""
 
@@ -5536,7 +5576,7 @@ msgstr "Datei \"$filename1\" umbenannt in \"$filename2\""
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" no longer being moved"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aemvu.cc:663
+#: aegis/aemvu.cc:630
 msgid "move file undo $filename complete"
 msgstr "Datei \"$filename\" ist nicht mehr im Change"
 
@@ -5553,7 +5593,7 @@ msgstr "Datei \"$filename\" ist nicht mehr im Change"
 #. "Hint: deleting everything below the \"cause\" field will set\n"
 #. "the defaults appropriately for the cause you have chosen."
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aenc.cc:391
+#: aegis/aenc.cc:388
 msgid "nc dflt hint"
 msgstr ""
 " \n"
@@ -5640,7 +5680,7 @@ msgstr "Benutzer \"$name\" ist jetzt Entwickler"
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" added"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aenf.cc:825
+#: aegis/aenf.cc:814
 msgid "new file $filename completed"
 msgstr "Datei \"$filename\" hinzugefügt"
 
@@ -5666,7 +5706,7 @@ msgstr "die Datei \"$filename\" wurde nicht erzeugt"
 #. For consistent translation, here is the English text:
 #. msgstr "new file \"$filename\" removed"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aenfu.cc:578
+#: aegis/aenfu.cc:596
 msgid "new file undo $filename complete"
 msgstr "Neue Datei \"$filename\" entfernt"
 
@@ -5740,7 +5780,7 @@ msgstr "Benutzer \"$name\" ist jetzt Reviewer"
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" new test"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aent.cc:738
+#: aegis/aent.cc:725
 msgid "new test $filename complete"
 msgstr "Datei \"$filename\" neuer Test"
 
@@ -5758,7 +5798,7 @@ msgstr "Datei \"$filename\" neuer Test"
 #. "found $number fatal error${plural $number s}, no new tests were added to the "
 #. "change"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aent.cc:601
+#: aegis/aent.cc:596
 msgid "new test failed"
 msgstr ""
 "$number ${plural $number fatale fataler} Fehler gefunden, es wurden keine "
@@ -5772,7 +5812,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" new test undo"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aentu.cc:596
+#: aegis/aentu.cc:614
 msgid "new test undo $filename complete"
 msgstr "Datei \"$filename\" neuer Test entfernt"
 
@@ -5806,7 +5846,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "you may not move the \"$filename\" file on top of itself"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aemv.cc:188
+#: aegis/aemv.cc:187
 msgid "nil move $filename"
 msgstr "Sie können die Datei \"$filename\" nicht in sich selbst umbenennen"
 
@@ -5822,7 +5862,7 @@ msgstr "Sie können die Datei \"$filename\" nicht in sich selbst umbenennen"
 #. Please translate the English msgstr, not the msgid.
 #: aefind/function.cc:116 libaegis/aer/expr/name.cc:166
 #: libaegis/meta_parse.cc:276 libaegis/meta_parse.cc:376
-#: libaegis/sub/change/number.cc:325 libaegis/sub/project.cc:96
+#: libaegis/sub/change/number.cc:374 libaegis/sub/project.cc:96
 #: libaegis/sub/user.cc:92
 msgid "no \"$name\", guessing \"$guess\""
 msgstr ""
@@ -5839,11 +5879,12 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" is unknown"
 #. Please translate the English msgstr, not the msgid.
-#: aeannotate/annotate.cc:142 aediff/change_id.cc:441 aegis/aecp.cc:612
-#: aegis/aecp.cc:1535 aegis/aecpu.cc:465 aegis/aed.cc:335 aegis/aed.cc:368
-#: aegis/aed.cc:1041 aegis/aefa.cc:110 aegis/aemt.cc:530 aegis/aemtu.cc:462
-#: aegis/aemv.cc:173 aegis/aemvu.cc:440 aegis/aenfu.cc:476 aegis/aentu.cc:494
-#: aegis/aerm.cc:559 aegis/aermu.cc:509 aegis/aet.cc:967 aegis/aet.cc:1643
+#: aeannotate/annotate.cc:142 aegis/aecp.cc:584 aegis/aecp.cc:1540
+#: aegis/aecpu.cc:463 aegis/aed.cc:326 aegis/aed.cc:359 aegis/aed.cc:1029
+#: aegis/aefa.cc:113 aegis/aemt.cc:525 aegis/aemtu.cc:460 aegis/aemv.cc:172
+#: aegis/aemvu.cc:435 aegis/aenfu.cc:476 aegis/aentu.cc:494 aegis/aerm.cc:553
+#: aegis/aermu.cc:504 aegis/aet.cc:997 aegis/aet.cc:1677
+#: libaegis/change/identifi_sub/file_revisio.cc:126
 msgid "no $filename"
 msgstr "Datei \"$filename\" it unbekannt"
 
@@ -5857,7 +5898,7 @@ msgstr "Datei \"$filename\" it unbekannt"
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" no longer in baseline"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aed.cc:1287 aegis/aed.cc:1826 aegis/aede.cc:594 aegis/aede.cc:696
+#: aegis/aed.cc:1273 aegis/aed.cc:1836 aegis/aede.cc:594 aegis/aede.cc:696
 msgid "no $filename in baseline"
 msgstr "Datei \"$filename\" ist nicht mehr in der Baseline"
 
@@ -5873,10 +5914,10 @@ msgstr "Datei \"$filename\" ist nicht mehr in der Baseline"
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" is unknown, closest is the \"$guess\" file"
 #. Please translate the English msgstr, not the msgid.
-#: aediff/change_id.cc:437 aegis/aecp.cc:608 aegis/aecp.cc:1531
-#: aegis/aecpu.cc:462 aegis/aefa.cc:105 aegis/aemt.cc:506 aegis/aemtu.cc:459
-#: aegis/aemv.cc:163 aegis/aemvu.cc:437 aegis/aenfu.cc:467 aegis/aentu.cc:485
-#: aegis/aerm.cc:550 aegis/aermu.cc:500 aegis/aet.cc:958
+#: aegis/aecp.cc:580 aegis/aecp.cc:1536 aegis/aecpu.cc:460 aegis/aefa.cc:108
+#: aegis/aemt.cc:501 aegis/aemtu.cc:457 aegis/aemv.cc:162 aegis/aemvu.cc:432
+#: aegis/aenfu.cc:467 aegis/aentu.cc:485 aegis/aerm.cc:544 aegis/aermu.cc:495
+#: aegis/aet.cc:988 libaegis/change/identifi_sub/file_revisio.cc:122
 msgid "no $filename, closest is $guess"
 msgstr ""
 "Datei \"$filename\" ist unbekannt, am dichtesten dran ist die Datei \"$guess"
@@ -5891,7 +5932,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "list name \"$name\" unknown"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/ael.cc:388 aexml/main.cc:157
+#: aegis/ael.cc:384 aexml/main.cc:157
 msgid "no $name list"
 msgstr "Listen-Name \"$name\" unbekannt"
 
@@ -5904,7 +5945,7 @@ msgstr "Listen-Name \"$name\" unbekannt"
 #. For consistent translation, here is the English text:
 #. msgstr "project \"$name\" unknown"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/project.cc:1119 libaegis/project/bind/existing.cc:170
+#: libaegis/project.cc:1121 libaegis/project/bind/existing.cc:170
 msgid "no $name project"
 msgstr "Projekt \"$name\" unbekannt"
 
@@ -5944,8 +5985,8 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "you must give the change number explicitly to this command"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aechown.cc:192 aegis/aeclone.cc:259 aegis/aedb.cc:265
-#: libaegis/user.cc:1791
+#: aegis/aechown.cc:192 aegis/aeclone.cc:252 aegis/aedb.cc:265
+#: libaegis/change/identifi_sub/erro_no_chan.cc:31 libaegis/user.cc:1790
 msgid "no change number"
 msgstr "Sie müssen für dieses Kommando die Changenummer explizit angeben"
 
@@ -5957,7 +5998,7 @@ msgstr "Sie müssen für dieses Kommando die Changenummer explizit angeben"
 #. msgstr ""
 #. "you may not perform a cross branch merge on a change in the '$state' state"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aed.cc:919
+#: aegis/aed.cc:909
 msgid "no cross branch int merge"
 msgstr ""
 "Sie können keinen Merge zwischen Branches für einen Change im Status "
@@ -5971,7 +6012,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "delta name \"$name\" unknown"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecp.cc:456 aegis/aecp.cc:1283
+#: aegis/aecp.cc:440 aegis/aecp.cc:1241
 #: libaegis/change/history/delta_name/by.cc:92
 #: libaegis/change/history/delta_name/to_change.cc:92
 #: libaegis/project/delta2change.cc:60
@@ -6057,7 +6098,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "may not name directories and use the $name option"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecp.cc:562 aegis/aecp.cc:1394
+#: aegis/aecp.cc:541 aegis/aecp.cc:1408
 msgid "no dir with $name"
 msgstr "für die Option $name dürfen keine Verzeichnisse angegeben werden"
 
@@ -6068,11 +6109,11 @@ msgstr "für die Option $name dürfen keine Verzeichnisse angegeben werden"
 #. For consistent translation, here is the English text:
 #. msgstr "no file names were specified on the command line"
 #. Please translate the English msgstr, not the msgid.
-#: aeannotate/annotate.cc:724 aegis/aecp.cc:327 aegis/aecp.cc:1088
-#: aegis/aecpu.cc:235 aegis/aecpu.cc:494 aegis/aefa.cc:241 aegis/aefa.cc:570
-#: aegis/aemt.cc:284 aegis/aemtu.cc:240 aegis/aemtu.cc:491 aegis/aemvu.cc:229
-#: aegis/aenf.cc:332 aegis/aenfu.cc:250 aegis/aentu.cc:266 aegis/aerm.cc:294
-#: aegis/aermu.cc:285
+#: aeannotate/annotate.cc:719 aegis/aecp.cc:316 aegis/aecp.cc:1045
+#: aegis/aecpu.cc:236 aegis/aecpu.cc:492 aegis/aefa.cc:210 aegis/aefa.cc:464
+#: aegis/aefa.cc:718 aegis/aemt.cc:281 aegis/aemtu.cc:241 aegis/aemtu.cc:489
+#: aegis/aemvu.cc:227 aegis/aenf.cc:329 aegis/aenfu.cc:253 aegis/aentu.cc:269
+#: aegis/aerm.cc:290 aegis/aermu.cc:283
 msgid "no file names"
 msgstr "es wurden keine Dateiname auf der Kommandozeile angegeben"
 
@@ -6085,8 +6126,8 @@ msgstr "es wurden keine Dateiname auf der Kommandozeile angegeben"
 #. For consistent translation, here is the English text:
 #. msgstr "may not name files and use the $name option"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aet.cc:598 aegis/aet.cc:611 aegis/aet.cc:632 aegis/aet.cc:1451
-#: aegis/aet.cc:1466
+#: aegis/aet.cc:624 aegis/aet.cc:637 aegis/aet.cc:658 aegis/aet.cc:1487
+#: aegis/aet.cc:1502
 msgid "no file with $name"
 msgstr "für die Option $name dürfen keine Dateien angegeben werden"
 
@@ -6097,7 +6138,7 @@ msgstr "für die Option $name dürfen keine Dateien angegeben werden"
 #. For consistent translation, here is the English text:
 #. msgstr "this change has no files, you must add some before you may proceed"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeb.cc:301 aegis/aed.cc:947 aegis/aede.cc:246
+#: aegis/aeb.cc:281 aegis/aed.cc:937 aegis/aede.cc:246
 msgid "no files"
 msgstr ""
 "dieser Change hat noch keine Dateien, Sie müssen zunächst einige hinzufügen, "
@@ -6115,7 +6156,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "found $number fatal error${plural $number s}, no files copied"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecp.cc:625 aegis/aecp.cc:1565
+#: aegis/aecp.cc:594 aegis/aecp.cc:1570
 msgid "no files copied"
 msgstr ""
 "$number ${plural $number fatale fataler} Fehler gefunden, es wurden keine "
@@ -6135,7 +6176,7 @@ msgstr ""
 #. "found $number fatal error${plural $number s}, no files were removed from the "
 #. "change"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecpu.cc:502 aegis/aemtu.cc:499 aegis/aemvu.cc:478
+#: aegis/aecpu.cc:500 aegis/aemtu.cc:497 aegis/aemvu.cc:473
 msgid "no files uncopied"
 msgstr ""
 "$number ${plural $number fatale fataler} Fehler gefunden, es wurden keine "
@@ -6148,7 +6189,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "no history files found below the directory specified"
 #. Please translate the English msgstr, not the msgid.
-#: aeimport/import.cc:316
+#: aeimport/import.cc:315
 msgid "no history files found"
 msgstr ""
 "Keine History-Dateien unterhalb des angegebenen Verzeichnisses gefunden"
@@ -6188,7 +6229,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "a change in the 'being integrated' state may not be merged"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aed.cc:931
+#: aegis/aed.cc:921
 msgid "no int merge"
 msgstr "Ein Change im Status 'being integrated' kann nicht gemergt werden"
 
@@ -6198,7 +6239,7 @@ msgstr "Ein Change im Status 'being integrated' kann nicht gemergt werden"
 #. For consistent translation, here is the English text:
 #. msgstr "no list name specified"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/ael.cc:375 aexml/main.cc:315
+#: aegis/ael.cc:371 aexml/main.cc:315
 msgid "no list"
 msgstr "Kein Listenname angegeben"
 
@@ -6210,7 +6251,7 @@ msgstr "Kein Listenname angegeben"
 #. For consistent translation, here is the English text:
 #. msgstr "this change is in the '$state' state, there is no log file"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/logfile/get.cc:44
+#: libaegis/change/logfile/get.cc:51
 msgid "no log file"
 msgstr "Dieser Change ist im Status '$state', es gibt keine Log-Datei"
 
@@ -6221,7 +6262,7 @@ msgstr "Dieser Change ist im Status '$state', es gibt keine Log-Datei"
 #. For consistent translation, here is the English text:
 #. msgstr "you may not specify a merge option with -ANticipate"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aed.cc:817
+#: aegis/aed.cc:807
 msgid "no merge anticipate"
 msgstr "Sie können keine Merge-Option mit -ANticipate angeben"
 
@@ -6237,7 +6278,7 @@ msgstr "Sie können keine Merge-Option mit -ANticipate angeben"
 #. For consistent translation, here is the English text:
 #. msgstr "found $number fatal error${plural $number s}, no new files added"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aenf.cc:326 aegis/aenf.cc:615 aegis/aenf.cc:718
+#: aegis/aenf.cc:323 aegis/aenf.cc:605 aegis/aenf.cc:707
 msgid "no new files"
 msgstr ""
 "$number ${plural $number fatale fataler} Fehler gefunden, es wurden keine "
@@ -6250,9 +6291,9 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "you must give the project name explicitly to this command"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aenbr.cc:204 aegis/aenc.cc:331 aegis/aenpa.cc:127 aegis/aenpr.cc:322
+#: aegis/aenbr.cc:204 aegis/aenc.cc:328 aegis/aenpa.cc:127 aegis/aenpr.cc:322
 #: aegis/aenrls.cc:323 aegis/aermpr.cc:127 aegis/aerpa.cc:130
-#: aeimport/import.cc:251 libaegis/user.cc:1992
+#: aeimport/import.cc:250 libaegis/user.cc:1989
 msgid "no project name"
 msgstr "Sie müssen für dieses Kommando den Projektnamen explizit angeben"
 
@@ -6264,7 +6305,7 @@ msgstr "Sie müssen für dieses Kommando den Projektnamen explizit angeben"
 #. For consistent translation, here is the English text:
 #. msgstr "report name \"$name\" is unknown"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/aer/parse.cc:196
+#: libaegis/aer/parse.cc:195
 msgid "no report $name"
 msgstr "Berichtsname \"$name\" ist unbekannt"
 
@@ -6275,7 +6316,7 @@ msgstr "Berichtsname \"$name\" ist unbekannt"
 #. For consistent translation, here is the English text:
 #. msgstr "no report name specified"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aer.cc:198 aereport/main.cc:191
+#: aegis/aer.cc:193 aereport/main.cc:186
 msgid "no report name"
 msgstr "Kein Berichtsname angegeben"
 
@@ -6290,7 +6331,7 @@ msgstr "Kein Berichtsname angegeben"
 #. "there ${plural $number were was} $number test${plural $number s} which "
 #. "returned no result"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aet.cc:350 aegis/aet.cc:352 aegis/aet.cc:357 aegis/aet.cc:359
+#: aegis/aet.cc:351 aegis/aet.cc:353 aegis/aet.cc:358 aegis/aet.cc:360
 msgid "no result $number tests"
 msgstr ""
 "es gab $number Test${plural $number s} ${plural $number die der} kein "
@@ -6314,7 +6355,7 @@ msgstr "Keine Größe angegeben"
 #. For consistent translation, here is the English text:
 #. msgstr "no suitable files in common"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aed.cc:262
+#: aegis/aed.cc:258
 msgid "no suitable files in common"
 msgstr "keine passenden gemeinsamen Dateien"
 
@@ -6336,8 +6377,8 @@ msgstr "Sie müssen den Benutzernamen explizit für dieses Kommando angeben"
 #. For consistent translation, here is the English text:
 #. msgstr "no user names specified"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aena.cc:257 aegis/aend.cc:256 aegis/aeni.cc:257 aegis/aenrv.cc:265
-#: aegis/aera.cc:254 aegis/aerd.cc:235 aegis/aeri.cc:237 aegis/aerrv.cc:238
+#: aegis/aena.cc:256 aegis/aend.cc:255 aegis/aeni.cc:256 aegis/aenrv.cc:264
+#: aegis/aera.cc:253 aegis/aerd.cc:234 aegis/aeri.cc:236 aegis/aerrv.cc:232
 msgid "no user names"
 msgstr "Keine Benutzernamen angegeben"
 
@@ -6354,7 +6395,7 @@ msgstr "Keine Benutzernamen angegeben"
 #. "the $name1 and $name2 and $name3 options are mutually exclusive, only one "
 #. "may be specified"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/help.cc:344
+#: libaegis/help.cc:334
 msgid "not $name1 and $name2 and $name3 together"
 msgstr ""
 "Die Optionen $name1 und $name2 und $name3 schließen sich gegenseitig aus. Es "
@@ -6372,7 +6413,7 @@ msgstr ""
 #. "the $name1 and $name2 options are mutually exclusive, only one may be "
 #. "specified"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/help.cc:328
+#: libaegis/help.cc:320
 msgid "not $name1 and $name2 together"
 msgstr ""
 "Die Optionen $name1 und $name2 schließen sich gegenseitig aus. Es darf nur "
@@ -6409,7 +6450,7 @@ msgstr "Benutzer \"$user\" ist kein Entwickler"
 #. msgstr "user \"$user\" is not a reviewer"
 #. Please translate the English msgstr, not the msgid.
 #: aegis/aerb.cc:249 aegis/aerbu.cc:203 aegis/aerf.cc:147 aegis/aerp.cc:142
-#: aegis/aet.cc:718
+#: aegis/aet.cc:744
 msgid "not a reviewer"
 msgstr "Benutzer \"$user\" ist kein Reviewer"
 
@@ -6437,8 +6478,7 @@ msgstr "Benutzer \"$user\" ist kein Administrator"
 #. For consistent translation, here is the English text:
 #. msgstr "you must give an even number of files to this command"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aemv.cc:401
-#, fuzzy
+#: aegis/aemv.cc:394
 msgid "not an even number of args"
 msgstr "you must give an even number of files to this command"
 
@@ -6449,7 +6489,7 @@ msgstr "you must give an even number of files to this command"
 #. For consistent translation, here is the English text:
 #. msgstr "user \"$user\" is not an integrator"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeib.cc:852
+#: aegis/aeib.cc:853
 msgid "not an integrator"
 msgstr "Benutzer \"$user\" ist kein Integrator"
 
@@ -6463,11 +6503,11 @@ msgstr "Benutzer \"$user\" ist kein Integrator"
 #. "user \"$user\" is not the developer, only user \"$developer\" may work on "
 #. "this change"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeb.cc:299 aegis/aeclean.cc:450 aegis/aecp.cc:1247 aegis/aecpu.cc:276
-#: aegis/aed.cc:208 aegis/aed.cc:892 aegis/aedbu.cc:274 aegis/aede.cc:244
-#: aegis/aemt.cc:327 aegis/aemtu.cc:281 aegis/aemv.cc:443 aegis/aemvu.cc:270
-#: aegis/aenf.cc:385 aegis/aenfu.cc:293 aegis/aent.cc:329 aegis/aentu.cc:309
-#: aegis/aerm.cc:337 aegis/aermu.cc:328 aegis/aet.cc:694
+#: aegis/aeb.cc:279 aegis/aeclean.cc:444 aegis/aecp.cc:1205 aegis/aecpu.cc:277
+#: aegis/aed.cc:206 aegis/aed.cc:882 aegis/aedbu.cc:274 aegis/aede.cc:244
+#: aegis/aemt.cc:324 aegis/aemtu.cc:282 aegis/aemv.cc:436 aegis/aemvu.cc:268
+#: aegis/aenf.cc:382 aegis/aenfu.cc:296 aegis/aent.cc:327 aegis/aentu.cc:312
+#: aegis/aerm.cc:333 aegis/aermu.cc:326 aegis/aet.cc:720
 msgid "not developer"
 msgstr ""
 "Benutzer \"$user\" ist nicht der Entwickler, nur Benutzer \"$developer\" "
@@ -6495,8 +6535,8 @@ msgstr "Es muß immer mindestens einen Administrator geben"
 #. "user \"$user\" is not the integrator, only user \"$integrator\" may work on "
 #. "this change"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeb.cc:306 aegis/aed.cc:887 aegis/aeibu.cc:223 aegis/aeif.cc:160
-#: aegis/aeip.cc:457 aegis/aet.cc:725
+#: aegis/aeb.cc:293 aegis/aed.cc:877 aegis/aeibu.cc:223 aegis/aeif.cc:160
+#: aegis/aeip.cc:451 aegis/aet.cc:751
 msgid "not integrator"
 msgstr ""
 "Benutzer \"$user\" ist nicht der Integrator, nur Benutzer \"$developer\" "
@@ -6513,7 +6553,7 @@ msgstr ""
 #. "user \"$user\" is not the reviewer, only user \"$reviewer\" may work on this "
 #. "change"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aerbu.cc:215 aegis/aerf.cc:138 aegis/aerp.cc:135 aegis/aet.cc:713
+#: aegis/aerbu.cc:215 aegis/aerf.cc:138 aegis/aerp.cc:136 aegis/aet.cc:739
 msgid "not reviewer"
 msgstr ""
 "Benutzer \"$user\" ist nicht der Reviewer, nur Benutzer \"$reviewer\" darf "
@@ -6521,25 +6561,27 @@ msgstr ""
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 #. For consistent translation, here is the English text:
 #. msgstr "not valid in current context"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub/architecture.cc:79 libaegis/sub/base_relativ.cc:85
-#: libaegis/sub/base_relativ.cc:106 libaegis/sub/change/delta.cc:70
-#: libaegis/sub/change/develo_direc.cc:72 libaegis/sub/change/developer.cc:69
-#: libaegis/sub/change/files.cc:74 libaegis/sub/change/integr_direc.cc:72
-#: libaegis/sub/change/integrator.cc:69 libaegis/sub/change/number.cc:366
-#: libaegis/sub/change/number.cc:406 libaegis/sub/change/reviewer.cc:69
-#: libaegis/sub/change/state.cc:63 libaegis/sub/change/version.cc:76
-#: libaegis/sub/copyri_years.cc:95 libaegis/sub/histo_direc.cc:67
-#: libaegis/sub/project.cc:136 libaegis/sub/project/adminis_list.cc:72
-#: libaegis/sub/project/baseline.cc:67 libaegis/sub/project/develop_list.cc:72
-#: libaegis/sub/project/integra_list.cc:72
-#: libaegis/sub/project/reviewe_list.cc:72 libaegis/sub/project/specific.cc:90
-#: libaegis/sub/search_path.cc:84 libaegis/sub/source.cc:91
-#: libaegis/sub/source.cc:141
+#: libaegis/sub/architecture.cc:79 libaegis/sub/base_relativ.cc:73
+#: libaegis/sub/base_relativ.cc:98 libaegis/sub/change/attribute.cc:37
+#: libaegis/sub/change/delta.cc:70 libaegis/sub/change/develo_direc.cc:70
+#: libaegis/sub/change/develop_list.cc:39 libaegis/sub/change/developer.cc:69
+#: libaegis/sub/change/files.cc:72 libaegis/sub/change/integr_direc.cc:72
+#: libaegis/sub/change/integrator.cc:69 libaegis/sub/change/number.cc:448
+#: libaegis/sub/change/number.cc:500 libaegis/sub/change/reviewer.cc:69
+#: libaegis/sub/change/reviewr_list.cc:39 libaegis/sub/change/state.cc:63
+#: libaegis/sub/change/version.cc:85 libaegis/sub/change/version.cc:97
+#: libaegis/sub/copyri_years.cc:87 libaegis/sub/histo_direc.cc:67
+#: libaegis/sub/project.cc:136 libaegis/sub/project/adminis_list.cc:67
+#: libaegis/sub/project/baseline.cc:67 libaegis/sub/project/develop_list.cc:67
+#: libaegis/sub/project/integra_list.cc:67
+#: libaegis/sub/project/reviewe_list.cc:67 libaegis/sub/project/specific.cc:86
+#: libaegis/sub/search_path.cc:84 libaegis/sub/source.cc:86
+#: libaegis/sub/source.cc:132
 msgid "not valid in current context"
 msgstr "ungültig in aktuellem Kontext"
 
@@ -6551,11 +6593,36 @@ msgstr "ungültig in aktuellem Kontext"
 #. For consistent translation, here is the English text:
 #. msgstr "open \"$filename\": $errno"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/gif/open.cc:483 libaegis/input/file.cc:230 libaegis/lock.cc:576
+#: libaegis/gif/open.cc:483 libaegis/input/file.cc:246 libaegis/lock.cc:576
 #: libaegis/lock.cc:1203 libaegis/os/edit/string.cc:52
-#: libaegis/output/file.cc:220
+#: libaegis/output/file.cc:180
 msgid "open $filename: $errno"
 msgstr "öffnen von \"$filename\": $errno"
+
+#
+# TRANSLATION REQUIRED
+# This error message is issued when a file open fails because there was
+# no curl library available when ./configure was run.
+#
+# 	$File_Name	The name of the offending file.
+#
+#. For consistent translation, here is the English text:
+#. msgstr ""
+#. "unable to open \"$filename\" because there was no -lcurl library available "
+#. "when Aegis was built.  The curl library is used to read many different style "
+#. "of URL.  If you are using a package manager, it may usually be found in the "
+#. "curl-devel package.  You will need to reconfigure and rebuild Aegis once it "
+#. "is installed."
+#. Please translate the English msgstr, not the msgid.
+#: libaegis/input/file.cc:228
+#, fuzzy
+msgid "open $filename: no curl library"
+msgstr ""
+"unable to open \"$filename\" because there was no -lcurl library available "
+"when Aegis was built.  The curl library is used to read many different style "
+"of URL.  If you are using a package manager, it may usually be found in the "
+"curl-devel package.  You will need to reconfigure and rebuild Aegis once it "
+"is installed."
 
 #
 # This error message is issued by aede when attempting to end the
@@ -6670,7 +6737,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "partial build complete ${date %H:%M}"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeb.cc:540
+#: aegis/aeb.cc:535
 msgid "partial build complete"
 msgstr "Partieller Build beendet ${date %H:%M}"
 
@@ -6680,7 +6747,7 @@ msgstr "Partieller Build beendet ${date %H:%M}"
 #. For consistent translation, here is the English text:
 #. msgstr "partial build started ${date %H:%M}"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeb.cc:534
+#: aegis/aeb.cc:524
 msgid "partial build started"
 msgstr "Partieller Build gestartet ${date %H:%M}"
 
@@ -6693,7 +6760,7 @@ msgstr "Partieller Build gestartet ${date %H:%M}"
 #. For consistent translation, here is the English text:
 #. msgstr "passed $number test${plural $number s}"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aet.cc:338 aegis/aet.cc:340
+#: aegis/aet.cc:339 aegis/aet.cc:341
 msgid "passed $number tests"
 msgstr "$number Test${plural $number s} erfolgreich"
 
@@ -6742,7 +6809,7 @@ msgstr "Projektverzeichnis \"$filename\""
 #. For consistent translation, here is the English text:
 #. msgstr "this project requires relevant tests before this command may be used"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aet.cc:1122
+#: aegis/aet.cc:1150
 msgid "proj has no tests"
 msgstr ""
 "Dieses Projekt braucht passende Tests, bevor dieses Kommando verwendet "
@@ -6755,7 +6822,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "project \"$project\": $message"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/project.cc:1348 libaegis/project.cc:1382 libaegis/project.cc:1416
+#: libaegis/project.cc:1350 libaegis/project.cc:1384 libaegis/project.cc:1418
 msgid "project \"$project\": $message"
 msgstr "Projekt \"$project\": $message"
 
@@ -6846,9 +6913,9 @@ msgstr "Attribute geändert"
 #. For consistent translation, here is the English text:
 #. msgstr "read \"$filename\": $errno"
 #. Please translate the English msgstr, not the msgid.
-#: aefind/descend.cc:137 aegis/aeip.cc:292 aels/list.cc:207 libaegis/dir.cc:89
+#: aefind/descend.cc:137 aegis/aeip.cc:292 aels/list.cc:207 libaegis/dir.cc:90
 #: libaegis/dir_stack.cc:214 libaegis/gif/open.cc:84
-#: libaegis/input/curl.cc:330 libaegis/input/file.cc:97
+#: libaegis/input/curl.cc:341 libaegis/input/file.cc:98
 #: libaegis/input/stdin.cc:89
 msgid "read $filename: $errno"
 msgstr "Lesen von \"$filename\": $errno"
@@ -6876,7 +6943,7 @@ msgstr "Lesen von \"$filename\": Formatfehler"
 #. msgstr ""
 #. "reading history files to learn when each file was changed and by whom..."
 #. Please translate the English msgstr, not the msgid.
-#: aeimport/import.cc:305
+#: aeimport/import.cc:304
 msgid "read history files"
 msgstr ""
 "Lese History-Dateien um herauszufinden, welche Dateien wann und vom wem "
@@ -6890,7 +6957,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "readlink \"$filename\": $errno"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/os/pathname.cc:801 libaegis/os/pathname.cc:823
+#: libaegis/os/pathname.cc:796 libaegis/os/pathname.cc:818
 #: libaegis/os/readlink.cc:59
 msgid "readlink $filename: $errno"
 msgstr "readlink \"$filename\": $errno"
@@ -6922,7 +6989,7 @@ msgstr ""
 #. "begin'' command as soon as possible.  This ensures that other reviewers "
 #. "don't waste any of their valuable time."
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecd.cc:342
+#: aegis/aecd.cc:186
 msgid "remember to use the aerb command"
 msgstr ""
 "Wenn Sie diesen Change reviewen, verwenden Sie das ``aegis -review-begin'' "
@@ -6972,7 +7039,7 @@ msgstr "entferne Bearbeitungs-Verzeichnis"
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" being removed"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aerm.cc:656
+#: aegis/aerm.cc:649
 msgid "remove file $filename complete"
 msgstr "Datei \"$filename\" wird durch diesen Change entfernt"
 
@@ -6990,7 +7057,7 @@ msgstr "Datei \"$filename\" wird durch diesen Change entfernt"
 #. "found $number fatal error${plural $number s}, no files were added to the "
 #. "change"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aemt.cc:664 aegis/aerm.cc:594
+#: aegis/aemt.cc:659 aegis/aerm.cc:588
 msgid "remove file fail"
 msgstr ""
 "$number ${plural $number fatale fataler} Fehler gefunden, es wurden keine "
@@ -7004,7 +7071,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" no longer being removed"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aermu.cc:650
+#: aegis/aermu.cc:622
 msgid "remove file undo $filename complete"
 msgstr "Datei \"$filename\" wird nicht mehr durch diesen Change entfernt"
 
@@ -7022,7 +7089,7 @@ msgstr "Datei \"$filename\" wird nicht mehr durch diesen Change entfernt"
 #. "found $number fatal error${plural $number s}, no files were removed from the "
 #. "change"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aermu.cc:535
+#: aegis/aermu.cc:530
 msgid "remove file undo fail"
 msgstr ""
 "$number ${plural $number fatale fataler} Fehler gefunden, es wurden keine "
@@ -7035,7 +7102,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "removing integration directory"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeibu.cc:286
+#: aegis/aeibu.cc:291
 msgid "remove integration directory"
 msgstr "entferne Integrations-Verzeichnis"
 
@@ -7112,7 +7179,7 @@ msgstr "Benutzer \"$name\" ist kein Reviewer mehr"
 #. For consistent translation, here is the English text:
 #. msgstr "removing symbolic links to baseline"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/build/symlinks.cc:1097
+#: libaegis/change/build/symlinks.cc:1137
 msgid "removing symbolic links to baseline"
 msgstr "Entferne symbolische Links in die Baseline"
 
@@ -7125,7 +7192,7 @@ msgstr "Entferne symbolische Links in die Baseline"
 #. For consistent translation, here is the English text:
 #. msgstr "rename(\"$filename1\", \"$filename2\"): $errno"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/os/rename.cc:48
+#: libaegis/os/rename.cc:43
 msgid "rename(\"$filename1\", \"$filename2\"): $errno"
 msgstr "rename(\"$filename1\", \"$filename2\") (umbenennen): $errno"
 
@@ -7139,7 +7206,7 @@ msgstr "rename(\"$filename1\", \"$filename2\") (umbenennen): $errno"
 #. For consistent translation, here is the English text:
 #. msgstr "report name \"$name\" is ambiguous ($name_list)"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/aer/parse.cc:219
+#: libaegis/aer/parse.cc:215
 msgid "report $name ambig"
 msgstr "Berichtsname \"$name\" ist mehrdeutig ($name_list)"
 
@@ -7156,34 +7223,35 @@ msgstr "Bericht abgebrochen"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 #. For consistent translation, here is the English text:
 #. msgstr "requires at least one argument"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub/addpathsuffi.cc:46 libaegis/sub/expr.cc:45
+#: libaegis/sub/addpathsuffi.cc:45 libaegis/sub/change/number.cc:389
+#: libaegis/sub/expr.cc:45
 msgid "requires at least one argument"
 msgstr "benötigt mindestens ein Argument"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 #. For consistent translation, here is the English text:
 #. msgstr "requires one argument"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub/base_relativ.cc:96 libaegis/sub/capitalize.cc:60
-#: libaegis/sub/change/developer.cc:109 libaegis/sub/change/integrator.cc:109
-#: libaegis/sub/change/number.cc:398 libaegis/sub/change/reviewer.cc:109
-#: libaegis/sub/dirname.cc:60 libaegis/sub/dirname_rel.cc:60
-#: libaegis/sub/downcase.cc:60 libaegis/sub/getenv.cc:61
-#: libaegis/sub/identifier.cc:61 libaegis/sub/length.cc:37
-#: libaegis/sub/namemax.cc:39 libaegis/sub/project.cc:156
-#: libaegis/sub/project/adminis_list.cc:81
-#: libaegis/sub/project/develop_list.cc:81
-#: libaegis/sub/project/integra_list.cc:81
-#: libaegis/sub/project/reviewe_list.cc:81 libaegis/sub/project/specific.cc:96
-#: libaegis/sub/read_file.cc:60 libaegis/sub/source.cc:104
+#: libaegis/sub/base_relativ.cc:86 libaegis/sub/capitalize.cc:60
+#: libaegis/sub/change/attribute.cc:44 libaegis/sub/change/developer.cc:109
+#: libaegis/sub/change/integrator.cc:109 libaegis/sub/change/number.cc:407
+#: libaegis/sub/change/reviewer.cc:109 libaegis/sub/dirname.cc:59
+#: libaegis/sub/dirname_rel.cc:60 libaegis/sub/downcase.cc:60
+#: libaegis/sub/getenv.cc:61 libaegis/sub/identifier.cc:61
+#: libaegis/sub/length.cc:37 libaegis/sub/namemax.cc:37
+#: libaegis/sub/project.cc:156 libaegis/sub/project/adminis_list.cc:76
+#: libaegis/sub/project/develop_list.cc:76
+#: libaegis/sub/project/integra_list.cc:76
+#: libaegis/sub/project/reviewe_list.cc:76 libaegis/sub/project/specific.cc:92
+#: libaegis/sub/read_file.cc:58 libaegis/sub/source.cc:98
 #: libaegis/sub/trim_directo.cc:44 libaegis/sub/trim_extensi.cc:40
 #: libaegis/sub/upcase.cc:60 libaegis/sub/user.cc:157
 msgid "requires one argument"
@@ -7191,7 +7259,7 @@ msgstr "benötigt ein Argument"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 #. For consistent translation, here is the English text:
 #. msgstr "requires one or two arguments"
@@ -7202,66 +7270,68 @@ msgstr "benötigt ein oder zwei Argumente"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 #. For consistent translation, here is the English text:
 #. msgstr "requires three arguments"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub/substr.cc:41
+#: libaegis/sub/change/number.cc:413 libaegis/sub/substr.cc:41
 msgid "requires three arguments"
 msgstr "benötigt drei Argumente"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 #. For consistent translation, here is the English text:
 #. msgstr "requires two arguments"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub/change/number.cc:390 libaegis/sub/left.cc:39
-#: libaegis/sub/right.cc:40 libaegis/sub/split.cc:42
-#: libaegis/sub/unsplit.cc:42 libaegis/sub/zero_pad.cc:40
+#: libaegis/sub/change/number.cc:410 libaegis/sub/left.cc:35
+#: libaegis/sub/right.cc:35 libaegis/sub/split.cc:41
+#: libaegis/sub/unsplit.cc:41 libaegis/sub/zero_pad.cc:37
 msgid "requires two arguments"
 msgstr "benötigt zwei Argumente"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 #. For consistent translation, here is the English text:
 #. msgstr "requires two or more arguments"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub/substitute.cc:59 libaegis/sub/switch.cc:44
+#: libaegis/sub/change/number.cc:392 libaegis/sub/substitute.cc:41
+#: libaegis/sub/switch.cc:37
 msgid "requires two or more arguments"
 msgstr "benötigt zwei oder mehr Argumente"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 #. For consistent translation, here is the English text:
 #. msgstr "requires two or three arguments"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub/plural.cc:41 libaegis/sub/plural_forms.cc:155
+#: libaegis/sub/plural.cc:41 libaegis/sub/plural_forms.cc:144
 msgid "requires two or three arguments"
 msgstr "benötigt zwei oder drei Argumente"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 #. For consistent translation, here is the English text:
 #. msgstr "requires zero arguments"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub.cc:284 libaegis/sub/architecture.cc:61
+#: libaegis/sub.cc:219 libaegis/sub/architecture.cc:61
 #: libaegis/sub/binary_direc.cc:58 libaegis/sub/change/delta.cc:60
 #: libaegis/sub/change/develo_direc.cc:61
-#: libaegis/sub/change/integr_direc.cc:61 libaegis/sub/change/version.cc:68
-#: libaegis/sub/common_direc.cc:60 libaegis/sub/copyri_years.cc:89
-#: libaegis/sub/data_directo.cc:60 libaegis/sub/dollar.cc:58
-#: libaegis/sub/histo_direc.cc:60 libaegis/sub/librar_direc.cc:58
+#: libaegis/sub/change/integr_direc.cc:61 libaegis/sub/change/number.cc:404
+#: libaegis/sub/change/version.cc:75 libaegis/sub/common_direc.cc:60
+#: libaegis/sub/copyri_years.cc:79 libaegis/sub/data_directo.cc:60
+#: libaegis/sub/diff.cc:35 libaegis/sub/dollar.cc:58
+#: libaegis/sub/histo_direc.cc:60 libaegis/sub/librar_direc.cc:56
 #: libaegis/sub/perl.cc:60 libaegis/sub/project/baseline.cc:60
-#: libaegis/sub/search_path.cc:71 libaegis/sub/shell.cc:61
+#: libaegis/sub/search_path.cc:71 libaegis/sub/shell.cc:59
 msgid "requires zero arguments"
 msgstr "benötigt kein Argument"
 
@@ -7277,7 +7347,7 @@ msgstr "benötigt kein Argument"
 #. "file state is not available, please use ``aegis -ibu'' and then ``aegis -"
 #. "ib'' on this change to restart the integration"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeip.cc:834
+#: aegis/aeip.cc:828
 msgid "restart integration after upgrade"
 msgstr ""
 "Es sollten keine Changes im Status $state sein, wenn eine neue Version von "
@@ -7321,7 +7391,7 @@ msgstr "Review fehlgeschlagen, zurück zum Entwickler"
 #. For consistent translation, here is the English text:
 #. msgstr "passed review"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aerp.cc:495
+#: aegis/aerp.cc:543
 msgid "review pass complete"
 msgstr "Review-Pass abgeschlossen"
 
@@ -7331,7 +7401,7 @@ msgstr "Review-Pass abgeschlossen"
 #. For consistent translation, here is the English text:
 #. msgstr "review pass rescinded"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aerpu.cc:231
+#: aegis/aerpu.cc:266
 msgid "review pass undo complete"
 msgstr "Review-Pass zurückgenommen"
 
@@ -7342,7 +7412,7 @@ msgstr "Review-Pass zurückgenommen"
 #. For consistent translation, here is the English text:
 #. msgstr "the reviewer of a change may not also integrate it"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeib.cc:868
+#: aegis/aeib.cc:869
 msgid "reviewer may not integrate"
 msgstr "Der Reviewer eines Changes darf diesen nicht auch integrieren"
 
@@ -7353,7 +7423,7 @@ msgstr "Der Reviewer eines Changes darf diesen nicht auch integrieren"
 #. For consistent translation, here is the English text:
 #. msgstr "removing the integration directory"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeif.cc:503
+#: aegis/aeif.cc:504
 msgid "rm int dir"
 msgstr "entferne das Integrations-Verzeichnis"
 
@@ -7365,18 +7435,18 @@ msgstr "entferne das Integrations-Verzeichnis"
 #. For consistent translation, here is the English text:
 #. msgstr "rmdir \"$filename\": $errno"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/os/rmdir/rmdir.cc:46
+#: libaegis/os/rmdir/rmdir.cc:43
 msgid "rmdir $filename: $errno"
 msgstr "rmdir (Verzeichnis löschen) \"$filename\": $errno"
 
 #
 # This error message is issued when a substitution function is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 #. For consistent translation, here is the English text:
 #. msgstr "second argument must be \"Absolute\" or \"Relative\""
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub/source.cc:127
+#: libaegis/sub/source.cc:121
 msgid "second argument must be \"Absolute\" or \"Relative\""
 msgstr "zweites Argument muss \"Absolute\" oder \"Relative\" sein"
 
@@ -7388,7 +7458,7 @@ msgstr "zweites Argument muss \"Absolute\" oder \"Relative\" sein"
 #. For consistent translation, here is the English text:
 #. msgstr "setgid $arg: $errno"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/os/become.cc:71
+#: libaegis/os/become.cc:73
 msgid "setgid $arg: $errno"
 msgstr "setgid (Gruppen-Id setzen) $arg: $errno"
 
@@ -7416,7 +7486,7 @@ msgstr "setuid (User-Id setzen) $arg: $errno"
 #. "exactly one source file may be specified when the -Output option is used "
 #. "(you gave $number)"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecp.cc:377 aegis/aecp.cc:1166
+#: aegis/aecp.cc:364 aegis/aecp.cc:1121
 msgid "single file with -Output"
 msgstr ""
 "Genau eine Quell-Datei darf angegeben werden, wenn die -Output Option "
@@ -7450,12 +7520,12 @@ msgstr "sort benötigt genau 1 Argument (angegeben wurde $number)"
 
 #
 # This error message is issued when the ${source} substitution is called
-# incorrectly.  See (+++) below.
+# incorrectly.  See (+++) above.
 #
 #. For consistent translation, here is the English text:
 #. msgstr "source file unknown"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub/source.cc:154
+#: libaegis/sub/source.cc:144
 msgid "source file unknown"
 msgstr "Source-Datei unbekannt"
 
@@ -7477,7 +7547,7 @@ msgstr "die Standardeingabe"
 #. For consistent translation, here is the English text:
 #. msgstr "the standard output"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/output/stdout.cc:52
+#: libaegis/output/stdout.cc:43
 msgid "standard output"
 msgstr "die Standardausgabe"
 
@@ -7490,14 +7560,15 @@ msgstr "die Standardausgabe"
 #. msgstr "$filename: $errno"
 #. Please translate the English msgstr, not the msgid.
 #: aefind/descend.cc:94 aefind/descend.cc:103 aels/list.cc:151
-#: aels/list.cc:160 libaegis/change/build/symlinks.cc:309 libaegis/dir.cc:72
+#: aels/list.cc:160 libaegis/change/build/symlinks.cc:310 libaegis/dir.cc:71
 #: libaegis/dir_stack.cc:137 libaegis/dir_stack.cc:175
-#: libaegis/os/become.cc:107 libaegis/os/chmod/query.cc:57
-#: libaegis/os/executable.cc:56 libaegis/os/exists.cc:57
+#: libaegis/os/become.cc:109 libaegis/os/chmod/query.cc:57
+#: libaegis/os/executable.cc:56 libaegis/os/exists.cc:51
 #: libaegis/os/isa/directory.cc:58 libaegis/os/isa/special_file.cc:58
-#: libaegis/os/mtime/actual.cc:58 libaegis/os/mtime/range.cc:58
-#: libaegis/os/owner_query.cc:50 libaegis/os/size.cc:57
-#: libaegis/os/unlink/errok.cc:70 libaegis/os/unlink/unlink.cc:69
+#: libaegis/os/isa/symlink.cc:52 libaegis/os/mtime/actual.cc:58
+#: libaegis/os/mtime/range.cc:58 libaegis/os/owner_query.cc:50
+#: libaegis/os/size.cc:57 libaegis/os/unlink/errok.cc:64
+#: libaegis/os/unlink/unlink.cc:63
 msgid "stat $filename: $errno"
 msgstr "$filename: $errno"
 
@@ -7509,7 +7580,7 @@ msgstr "$filename: $errno"
 #. For consistent translation, here is the English text:
 #. msgstr "strftime output too large"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub/date.cc:93
+#: libaegis/sub/date.cc:91
 msgid "strftime output too large"
 msgstr "strftime Ausgabedaten zu groß"
 
@@ -7522,7 +7593,7 @@ msgstr "strftime Ausgabedaten zu groß"
 #. For consistent translation, here is the English text:
 #. msgstr "symlink(\"$filename1\", \"$filename2\"): $errno"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/build/symlinks.cc:236 libaegis/os/symlink/symlink.cc:55
+#: libaegis/change/build/symlinks.cc:238 libaegis/os/symlink/symlink.cc:55
 msgid "symlink(\"$filename1\", \"$filename2\"): $errno"
 msgstr ""
 "symlink(\"$filename1\", \"$filename2\") (symbolischen Link erstellen): $errno"
@@ -7556,7 +7627,7 @@ msgstr "Es ist unklar, was Sie ausdrücken wollen"
 #. For consistent translation, here is the English text:
 #. msgstr "unable to work out what you meant to say"
 #. Please translate the English msgstr, not the msgid.
-#: /usr/share/bison/bison.simple:177 libaegis/meta_lex.cc:706
+#: /usr/share/bison/bison.simple:177 libaegis/meta_lex.cc:707
 msgid "syntax error: cannot back up"
 msgstr "Es ist unklar, was Sie ausdrücken wollen"
 
@@ -7568,7 +7639,7 @@ msgstr "Es ist unklar, was Sie ausdrücken wollen"
 #. "unable to work out what you meant to say, because it was too complicated to "
 #. "fit in memory"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/meta_lex.cc:707
+#: libaegis/meta_lex.cc:708
 msgid "syntax error; also virtual memory exhausted"
 msgstr ""
 "Es ist unklar, was Sie ausdrücken wollen; zu kompliziert für den verfügbaren "
@@ -7596,7 +7667,7 @@ msgstr "Eine Tab-Breite von $number ist ungültig"
 #. For consistent translation, here is the English text:
 #. msgstr "test $current of $total, ${date %H:%M}"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/test/batch.cc:206 libaegis/change/test/batch_fake.cc:119
+#: libaegis/change/test/batch.cc:202 libaegis/change/test/batch_fake.cc:120
 msgid "test $current of $total"
 msgstr "Test $current von $total"
 
@@ -7608,7 +7679,7 @@ msgstr "Test $current von $total"
 #. For consistent translation, here is the English text:
 #. msgstr "$number $filename"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aet.cc:313
+#: aegis/aet.cc:311
 msgid "test $filename scored $number"
 msgstr "$number $filename"
 
@@ -7658,7 +7729,7 @@ msgstr ""
 #. msgstr ""
 #. "There was no $name option specified.  This is mandatory in \"test\" mode."
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/gonzo.cc:424
+#: libaegis/gonzo.cc:423
 msgid "test mode needs $name"
 msgstr ""
 "Es wurde keine $name Option angegeben. Diese ist im \"test\"-Modus "
@@ -7785,7 +7856,7 @@ msgstr "der Name \"$name\" ist nicht definiert"
 #. "sleeping $number second${plural $number s} to allow file modifications times "
 #. "to be consistent"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeip.cc:1930 libaegis/os/throttle.cc:76
+#: aegis/aeip.cc:1919 libaegis/os/throttle.cc:76
 msgid "throttling $number seconds"
 msgstr ""
 "Warte $number Sekunde${plural $number n}, damit die Änderungszeiten der "
@@ -7806,7 +7877,6 @@ msgstr ""
 "die throw-Anweisung benötigt ein string-Argument (angegeben wurde $name)"
 
 #
-# TRANSLATION REQUIRED
 # This warning is issed when a delta date is specified which falls before
 # the start of a branch.  This is not meaningful when recreating the
 # contents of a branch.
@@ -7818,15 +7888,13 @@ msgstr ""
 #. "warning: the time \"$number\" is after the branch finished, this is not "
 #. "meaningful when recreating the contents of the branch"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/project/file/roll_forward.cc:665
-#, fuzzy
+#: libaegis/project/file/roll_forward.cc:667
 msgid "time $number after branch"
 msgstr ""
-"warning: the time \"$number\" is after the branch finished, this is not "
-"meaningful when recreating the contents of the branch"
+"Warnung: die Zeitangabe \"$number\" liegt nach dem Ende des Branches, sie "
+"ist sinnlos, wenn der Inhalt des Branches wiederhergestellt werden soll"
 
 #
-# TRANSLATION REQUIRED
 # This warning is issed when a delta date is specified which falls before
 # the start of a branch.  This is not meaningful when recreating the
 # contents of a branch.
@@ -7838,12 +7906,11 @@ msgstr ""
 #. "warning: the time \"$number\" is before the branch started, this is not "
 #. "meaningful when recreating the contents of the branch"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/project/file/roll_forward.cc:649
-#, fuzzy
+#: libaegis/project/file/roll_forward.cc:651
 msgid "time $number before branch"
 msgstr ""
-"warning: the time \"$number\" is before the branch started, this is not "
-"meaningful when recreating the contents of the branch"
+"Warnung: die Zeitangabe \"$number\" liegt vor dem Beginn des Branches, sie "
+"ist sinnlos, wenn der Inhalt des Branches wiederhergestellt werden soll"
 
 #
 # This error message is issued when too few files names are specified on
@@ -7852,7 +7919,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "too few files named"
 #. Please translate the English msgstr, not the msgid.
-#: aediff/diff.cc:181 aegis/aemv.cc:394
+#: aediff/diff.cc:210 aegis/aemv.cc:387
 msgid "too few files named"
 msgstr "Zu viele Dateien angegeben"
 
@@ -7865,13 +7932,13 @@ msgstr "Zu viele Dateien angegeben"
 #. For consistent translation, here is the English text:
 #. msgstr "file \"$filename\" named more than once"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeb.cc:413 aegis/aecp.cc:1410 aegis/aecp.cc:1446 aegis/aecpu.cc:384
-#: aegis/aecpu.cc:427 aegis/aed.cc:648 aegis/aemt.cc:428 aegis/aemt.cc:462
-#: aegis/aemtu.cc:380 aegis/aemtu.cc:424 aegis/aemvu.cc:366 aegis/aemvu.cc:402
-#: aegis/aenf.cc:482 aegis/aenfu.cc:394 aegis/aenfu.cc:432 aegis/aent.cc:429
-#: aegis/aentu.cc:412 aegis/aentu.cc:450 aegis/aerm.cc:435 aegis/aerm.cc:485
-#: aegis/aermu.cc:429 aegis/aermu.cc:467 aegis/aet.cc:849 aegis/aet.cc:936
-#: aegis/aet.cc:998 aegis/aet.cc:1592 aegis/aet.cc:1674
+#: aegis/aeb.cc:399 aegis/aecp.cc:1423 aegis/aecp.cc:1457 aegis/aecpu.cc:385
+#: aegis/aecpu.cc:428 aegis/aed.cc:638 aegis/aemt.cc:426 aegis/aemt.cc:460
+#: aegis/aemtu.cc:381 aegis/aemtu.cc:425 aegis/aemvu.cc:364 aegis/aemvu.cc:400
+#: aegis/aenf.cc:479 aegis/aenfu.cc:397 aegis/aenfu.cc:435 aegis/aent.cc:426
+#: aegis/aentu.cc:415 aegis/aentu.cc:453 aegis/aerm.cc:432 aegis/aerm.cc:482
+#: aegis/aermu.cc:427 aegis/aermu.cc:465 aegis/aet.cc:881 aegis/aet.cc:966
+#: aegis/aet.cc:1028 aegis/aet.cc:1628 aegis/aet.cc:1708
 msgid "too many $filename"
 msgstr "Datei \"$filename\" mehr als einmal angegeben"
 
@@ -7893,7 +7960,7 @@ msgstr "Zu viele Delta-Namen angegeben"
 #. For consistent translation, here is the English text:
 #. msgstr "too many directories specified"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aecd.cc:153
+#: aegis/aecd.cc:139
 msgid "too many dir"
 msgstr "Zu viele Verzeichnisse angegeben"
 
@@ -7904,7 +7971,7 @@ msgstr "Zu viele Verzeichnisse angegeben"
 #. For consistent translation, here is the English text:
 #. msgstr "too many file names specified"
 #. Please translate the English msgstr, not the msgid.
-#: aeannotate/annotate.cc:651 aegis/aenf.cc:342 aegis/aent.cc:283
+#: aeannotate/annotate.cc:646 aegis/aenf.cc:339 aegis/aent.cc:281
 #: libaegis/help/toomanyfiles.cc:30
 msgid "too many files"
 msgstr "zu viele Dateinamen angegeben"
@@ -7927,7 +7994,7 @@ msgstr "Zu viele Versions-Informations-Namen angegeben"
 #. For consistent translation, here is the English text:
 #. msgstr "too many list names specified"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/ael.cc:350 aexml/main.cc:308
+#: aegis/ael.cc:346 aexml/main.cc:308
 msgid "too many lists"
 msgstr "Zu viele Listen-Namen angegeben"
 
@@ -7961,8 +8028,8 @@ msgstr "Zu viele Größen angegeben"
 #. For consistent translation, here is the English text:
 #. msgstr "user \"$name\" named more than once"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aena.cc:235 aegis/aend.cc:234 aegis/aeni.cc:235 aegis/aenrv.cc:234
-#: aegis/aera.cc:232 aegis/aerd.cc:213 aegis/aeri.cc:215 aegis/aerrv.cc:216
+#: aegis/aena.cc:234 aegis/aend.cc:233 aegis/aeni.cc:234 aegis/aenrv.cc:233
+#: aegis/aera.cc:231 aegis/aerd.cc:212 aegis/aeri.cc:214 aegis/aerrv.cc:209
 msgid "too many user $name"
 msgstr "Benutzer \"$name\" mehr als einmal angegeben"
 
@@ -8014,7 +8081,7 @@ msgstr "uname: $errno"
 #. For consistent translation, here is the English text:
 #. msgstr "unfinished recovery: chmod $arg $filename"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/undo.cc:329
+#: libaegis/undo/item/chmod.cc:55 libaegis/undo/item/chmod_errok.cc:55
 msgid "unfinished: chmod $arg $filename"
 msgstr "unvollständige Wiederherstellung: chmod $arg $filename"
 
@@ -8028,7 +8095,7 @@ msgstr "unvollständige Wiederherstellung: chmod $arg $filename"
 #. For consistent translation, here is the English text:
 #. msgstr "unfinished recovery: mv $filename1 $filename2"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/undo.cc:320
+#: libaegis/undo/item/rename.cc:55
 msgid "unfinished: mv $filename1 $filename2"
 msgstr "unvollständige Wiederherstellung: mv $filename1 $filename2"
 
@@ -8041,7 +8108,7 @@ msgstr "unvollständige Wiederherstellung: mv $filename1 $filename2"
 #. For consistent translation, here is the English text:
 #. msgstr "unfinished recovery: rm $filename"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/undo.cc:336
+#: libaegis/undo/item/unlink_errok.cc:53
 msgid "unfinished: rm $filename"
 msgstr "unvollständige Wiederherstellung: rm $filename"
 
@@ -8054,7 +8121,7 @@ msgstr "unvollständige Wiederherstellung: rm $filename"
 #. For consistent translation, here is the English text:
 #. msgstr "unfinished recovery: rmdir $filename"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/undo.cc:344
+#: libaegis/undo/item/rmdir_bg.cc:53 libaegis/undo/item/rmdir_errok.cc:53
 msgid "unfinished: rmdir $filename"
 msgstr "unvollständige Wiederherstellung: rmdir $filename"
 
@@ -8067,7 +8134,7 @@ msgstr "unvollständige Wiederherstellung: rmdir $filename"
 #. For consistent translation, here is the English text:
 #. msgstr "unknown \"$name\" option on the command line"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/help.cc:298
+#: libaegis/help.cc:292
 msgid "unknown \"$name\" option"
 msgstr "unbekannte Option \"$name\" auf der Kommandozeile"
 
@@ -8079,7 +8146,7 @@ msgstr "unbekannte Option \"$name\" auf der Kommandozeile"
 #. For consistent translation, here is the English text:
 #. msgstr "unknown '$name' escape"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/aer/lex.cc:411 libaegis/meta_lex.cc:340
+#: libaegis/aer/lex.cc:411 libaegis/meta_lex.cc:341
 msgid "unknown '$name' escape"
 msgstr "unbekannte '$name' Ersatzdarstellung"
 
@@ -8108,29 +8175,29 @@ msgstr ""
 
 #
 # This error message is issued when an unknown substitution is
-# referenced.  See (+++) below.
+# referenced.  See (+++) above.
 #
 #. For consistent translation, here is the English text:
 #. msgstr "unknown substitution name"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/sub.cc:567
+#: libaegis/sub.cc:421
 msgid "unknown substitution name"
 msgstr "unbekannter Ersetzungsname"
 
 #
 # This error message is issued when an unknown substitution variant
-# is referenced.  See (+++) below.
+# is referenced.  See (+++) above.
 #
 #. For consistent translation, here is the English text:
 #. msgstr "unknown substitution variant"
 #. Please translate the English msgstr, not the msgid.
 #: libaegis/sub/change/developer.cc:91 libaegis/sub/change/integrator.cc:91
-#: libaegis/sub/change/number.cc:382 libaegis/sub/change/reviewer.cc:91
-#: libaegis/sub/project.cc:148 libaegis/sub/project/adminis_list.cc:97
-#: libaegis/sub/project/develop_list.cc:97
-#: libaegis/sub/project/integra_list.cc:97
-#: libaegis/sub/project/reviewe_list.cc:97
-#: libaegis/sub/project/specific.cc:107 libaegis/sub/user.cc:143
+#: libaegis/sub/change/number.cc:468 libaegis/sub/change/reviewer.cc:91
+#: libaegis/sub/project.cc:148 libaegis/sub/project/adminis_list.cc:90
+#: libaegis/sub/project/develop_list.cc:90
+#: libaegis/sub/project/integra_list.cc:90
+#: libaegis/sub/project/reviewe_list.cc:90
+#: libaegis/sub/project/specific.cc:103 libaegis/sub/user.cc:143
 msgid "unknown substitution variant"
 msgstr "unbekannte Ersetzungsvariante"
 
@@ -8142,7 +8209,7 @@ msgstr "unbekannte Ersetzungsvariante"
 #. For consistent translation, here is the English text:
 #. msgstr "unlink \"$filename\": $errno"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/os/unlink/unlink.cc:79 libaegis/os/unlink/unlink.cc:91
+#: libaegis/os/unlink/unlink.cc:71 libaegis/os/unlink/unlink.cc:80
 msgid "unlink $filename: $errno"
 msgstr "unlink (löschen) \"$filename\": $errno"
 
@@ -8247,7 +8314,7 @@ msgstr "Benutzer \"$name\" hat zu hohe Privilegien"
 #. msgstr "user \"$name\" unknown"
 #. Please translate the English msgstr, not the msgid.
 #: libaegis/aer/value/passwd.cc:182 libaegis/aer/value/uconf.cc:135
-#: libaegis/user.cc:421 libaegis/user.cc:2177
+#: libaegis/user.cc:421 libaegis/user.cc:2174
 msgid "user $name unknown"
 msgstr "Benutzer \"$name\" unbekannt"
 
@@ -8325,7 +8392,7 @@ msgstr "Wert vom Typ $name benötigt"
 #. For consistent translation, here is the English text:
 #. msgstr "version ``$number'' is not a branch"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/project.cc:1015
+#: libaegis/project.cc:1017
 msgid "version $number not a branch"
 msgstr "Version ``$number'' ist kein Branch"
 
@@ -8351,7 +8418,7 @@ msgstr "warte auf $name Lock"
 #. "waiting for shared baseline lock; this is because there is an ``aegis -"
 #. "Integrate_PASS'' command in progress"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/project.cc:745
+#: libaegis/project.cc:747
 msgid "waiting for baseline read lock"
 msgstr ""
 "warte auf shared Baseline Lock; im Moment läuft ein ``aegis -"
@@ -8366,7 +8433,7 @@ msgstr ""
 #. "waiting for exclusive baseline lock; this is because there is one or more "
 #. "``aegis -Build'' commands in progress"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/project.cc:784
+#: libaegis/project.cc:786
 msgid "waiting for baseline write lock"
 msgstr ""
 "warte auf exklusiven Baseline Lock; im Moment läuft ein ``aegis -Build'' "
@@ -8379,7 +8446,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "waiting for project location index lock"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/gonzo.cc:1034
+#: libaegis/gonzo.cc:1026
 msgid "waiting for global state lock"
 msgstr "warte auf Lock für den Index der Projektorte"
 
@@ -8392,7 +8459,7 @@ msgstr "warte auf Lock für den Index der Projektorte"
 #. "waiting for history lock; this is because there is an ``aegis -"
 #. "Integrate_PASS'' command in progress on another branch"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/project.cc:806
+#: libaegis/project.cc:808
 msgid "waiting for history lock"
 msgstr ""
 "warte auf history Lock; im Moment läuft ein ``aegis -Integrate_PASS'' "
@@ -8405,7 +8472,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "waiting for lock"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/cstate/lock_prepare.cc:39 libaegis/project.cc:706
+#: libaegis/change/cstate/lock_prepare.cc:39 libaegis/project.cc:708
 #: libaegis/user.cc:1504
 msgid "waiting for lock"
 msgstr "warte auf Lock"
@@ -8423,7 +8490,7 @@ msgstr "warte auf Lock"
 #. "warning: file \"$filename\" already exists in the project, action "
 #. "automatically changed from \"create\" to \"modify\""
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aed.cc:1731
+#: aegis/aed.cc:1716
 msgid "warning: $filename in baseline, copying"
 msgstr ""
 "Warnung: Datei \"$filename\" existiert bereits im Projekt, Aktion "
@@ -8457,7 +8524,7 @@ msgstr "Warnung: das History Tool hat die Source-Datei \"$filename\" verändert"
 #. "source for this file has been used; you may need to resolve conflicts "
 #. "manually"
 #. Please translate the English msgstr, not the msgid.
-#: aedist/receive.cc:1167 aedist/receive.cc:1219
+#: aedist/receive.cc:1601 aedist/receive.cc:1659
 msgid "warning: $filename patch not used"
 msgstr ""
 "Warnung: der Patch für \"$filename\" konnte nicht verwendet werden, deshalb "
@@ -8477,7 +8544,7 @@ msgstr ""
 #. "warning: the $name1 environment variable is obsolete, please use $name2 "
 #. "instead"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/gonzo.cc:391
+#: libaegis/gonzo.cc:390
 msgid "warning: $name1 is obsolete, use $name2 environment variable"
 msgstr ""
 "Warnung: die Umgebungsvariable $name1 ist überholt, bitte verwenden Sie "
@@ -8509,7 +8576,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "warning: chmod(\"$filename\", $arg): $errno"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/os/chmod/errok.cc:51
+#: libaegis/os/chmod/errok.cc:55
 msgid "warning: chmod(\"$filename\", $arg): $errno"
 msgstr "Warnung: chmod(\"$filename\", $arg) (Zugriffsrechte ändern): $errno"
 
@@ -8540,7 +8607,7 @@ msgstr "Warnung: Kommando \"$command\" exit-Status $number"
 #. "warning: there ${plural $number 'are $number files which need' 'is a file "
 #. "which needs' } to be differenced"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeclean.cc:649
+#: aegis/aeclean.cc:642
 msgid "warning: diffable files"
 msgstr ""
 "Warnung: es gibt $number ${plural $number Dateien Datei}, die einen Diff "
@@ -8570,7 +8637,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "warning: file \"$filename\" needs to be differenced"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeclean.cc:628
+#: aegis/aeclean.cc:621
 msgid "warning: file \"$filename\" needs diff"
 msgstr "Warnung: Datei \"$filename\" muß gedifft werden"
 
@@ -8583,7 +8650,7 @@ msgstr "Warnung: Datei \"$filename\" muß gedifft werden"
 #. For consistent translation, here is the English text:
 #. msgstr "warning: file \"$filename\" needs to be merged"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeclean.cc:536
+#: aegis/aeclean.cc:529
 msgid "warning: file \"$filename\" needs merge"
 msgstr "Warnung: Datei \"$filename\" muß gemerged werden"
 
@@ -8600,7 +8667,7 @@ msgstr "Warnung: Datei \"$filename\" muß gemerged werden"
 #. "warning: file modification times extend $number second${plural $number s} "
 #. "into the future"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeip.cc:1959
+#: aegis/aeip.cc:1948
 msgid "warning: file times in future"
 msgstr ""
 "Warnung: Datei-Änderungszeiten reichen $number Sekunde${plural $number n} in "
@@ -8646,7 +8713,7 @@ msgstr ""
 #. "warning: there ${plural $number 'are $number files which need' 'is a file "
 #. "which needs' } merging"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeclean.cc:641 aegis/aed.cc:1546
+#: aegis/aeclean.cc:634 aegis/aed.cc:1533
 msgid "warning: mergable files"
 msgstr ""
 "Warnung: es gibt $number ${plural $number Dateien Datei}, die gemergt werden "
@@ -8665,7 +8732,7 @@ msgstr ""
 #. "warning: file \"$filename\" is no longer in the baseline, action "
 #. "automatically changed from \"modify\" to \"create\""
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aed.cc:1883
+#: aegis/aed.cc:1930
 msgid "warning: no $filename in baseline, creating"
 msgstr ""
 "Warnung: Datei \"$filename\" ist nicht mehr in der Baseline, Aktion "
@@ -8681,7 +8748,7 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "warning: no $name1 specified, assuming $name2 desired"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeca.cc:745 aegis/aefa.cc:595 aegis/aeif.cc:335 aegis/aenc.cc:322
+#: aegis/aeca.cc:603 aegis/aefa.cc:489 aegis/aeif.cc:333 aegis/aenc.cc:319
 #: aegis/aepa.cc:314 aegis/aerf.cc:329
 msgid "warning: no $name1, assuming $name2"
 msgstr "Warnung: kein $name1 angegeben, nehme an, daß $name2 gewünscht ist"
@@ -8712,7 +8779,7 @@ msgstr ""
 #. "Because you specified the --no-trojan option, the development will proceed "
 #. "despite this."
 #. Please translate the English msgstr, not the msgid.
-#: aedist/receive.cc:1508 aepatch/receive.cc:1197
+#: aedist/receive.cc:1983 aepatch/receive.cc:1201
 msgid "warning: potential trojan, proceeding anyway"
 msgstr ""
 "Warnung: dieser Change enthält Dateien, die einen Trojaner-Angriff "
@@ -8729,8 +8796,8 @@ msgstr ""
 #. "You should review it before building it or testing it or completing "
 #. "development.  This change remains in the being_developed state."
 #. Please translate the English msgstr, not the msgid.
-#: aedist/receive.cc:1526 aedist/receive.cc:1571 aepatch/receive.cc:1215
-#: aepatch/receive.cc:1272
+#: aedist/receive.cc:2001 aedist/receive.cc:2063 aepatch/receive.cc:1219
+#: aepatch/receive.cc:1278
 msgid "warning: potential trojan, review before completing development"
 msgstr ""
 "Warnung: dieser Change enthält Dateien, die einen Trojaner-Angriff "
@@ -8746,8 +8813,8 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "warning: rmdir \"$filename\": $errno"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeclean.cc:180 libaegis/glue/rmdir.cc:62 libaegis/os/rmdir/bg.cc:45
-#: libaegis/os/rmdir/errok.cc:46 libaegis/os/rmdir/tree.cc:45
+#: aegis/aeclean.cc:180 libaegis/glue/rmdir.cc:62 libaegis/os/rmdir/bg.cc:42
+#: libaegis/os/rmdir/errok.cc:43 libaegis/os/rmdir/tree.cc:42
 msgid "warning: rmdir $filename: $errno"
 msgstr "Warnung: rmdir (Verzeichnis löschen) \"$filename\": $errno"
 
@@ -8759,7 +8826,7 @@ msgstr "Warnung: rmdir (Verzeichnis löschen) \"$filename\": $errno"
 #. For consistent translation, here is the English text:
 #. msgstr "warning: setgid $arg: $errno"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/os/become.cc:68
+#: libaegis/os/become.cc:70
 msgid "warning: setgid $arg: $errno"
 msgstr "Warnung: setgid (Gruppen-Id setzen) $arg: $errno"
 
@@ -8771,7 +8838,7 @@ msgstr "Warnung: setgid (Gruppen-Id setzen) $arg: $errno"
 #. For consistent translation, here is the English text:
 #. msgstr "warning: stat \"$filename\": $errno"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/os/unlink/errok.cc:71
+#: libaegis/os/unlink/errok.cc:65
 msgid "warning: stat $filename: $errno"
 msgstr "Warnung: stat \"$filename\": $errno"
 
@@ -8784,7 +8851,7 @@ msgstr "Warnung: stat \"$filename\": $errno"
 #. "due to reduced privileges.  This mode is provided solely for testing, and is "
 #. "not a recommended operating mode."
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/os/become.cc:282
+#: libaegis/os/become.cc:290
 msgid "warning: test mode"
 msgstr ""
 "Warnung: dieses Programm läuft im \"test\" Modus.  Es hat beschränkte "
@@ -8800,8 +8867,8 @@ msgstr ""
 #. For consistent translation, here is the English text:
 #. msgstr "warning: unlink \"$filename\": $errno"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/glue/rmdir.cc:81 libaegis/os/unlink/errok.cc:81
-#: libaegis/os/unlink/errok.cc:93
+#: libaegis/glue/rmdir.cc:81 libaegis/os/unlink/errok.cc:73
+#: libaegis/os/unlink/errok.cc:82
 msgid "warning: unlink $filename: $errno"
 msgstr "Warnung: unlink (löschen) \"$filename\": $errno"
 
@@ -8818,7 +8885,7 @@ msgstr "Warnung: unlink (löschen) \"$filename\": $errno"
 #. "warning: please use the $name option when specifying an attributes file, the "
 #. "unadorned form is now obsolescent"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aeca.cc:576 aegis/aeif.cc:206 aegis/aenc.cc:196 aegis/aepa.cc:215
+#: aegis/aeca.cc:465 aegis/aeif.cc:204 aegis/aenc.cc:193 aegis/aepa.cc:215
 #: aegis/aerf.cc:200
 msgid "warning: use $name option"
 msgstr ""
@@ -8861,7 +8928,7 @@ msgstr ""
 #. "user \"$user\" was not the reviewer of this change, only user \"$reviewer\" "
 #. "may undo the review pass"
 #. Please translate the English msgstr, not the msgid.
-#: aegis/aerpu.cc:206
+#: aegis/aerpu.cc:205
 msgid "was not reviewer"
 msgstr ""
 "Benutzer \"$user\" ist nicht der Reviewer dieses Changes, nur Benutzer "
@@ -8876,8 +8943,8 @@ msgstr ""
 #. msgstr "write \"$filename\": $errno"
 #. Please translate the English msgstr, not the msgid.
 #: libaegis/gif/close.cc:66 libaegis/gif/close.cc:504
-#: libaegis/output/file.cc:107 libaegis/output/pager.cc:187
-#: libaegis/output/stdout.cc:94
+#: libaegis/output/file.cc:83 libaegis/output/pager.cc:171
+#: libaegis/output/stdout.cc:90
 msgid "write $filename: $errno"
 msgstr "write (schreiben) \"$filename\": $errno"
 
@@ -8901,6 +8968,6 @@ msgstr "unklar, was Sie meinen: zu kompliziert"
 #. For consistent translation, here is the English text:
 #. msgstr "you must create a \"$filename\" file"
 #. Please translate the English msgstr, not the msgid.
-#: libaegis/change/pconf/get.cc:890
+#: libaegis/change/pconf/get.cc:906
 msgid "you must create a \"$filename\" file"
 msgstr "sie müssen die Datei \"$filename\" erstellen"

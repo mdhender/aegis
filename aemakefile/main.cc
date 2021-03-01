@@ -30,7 +30,7 @@
 #include <env.h>
 #include <error.h>
 #include <language.h>
-#include <nstring_list.h>
+#include <nstring/list.h>
 #include <printer/stdout.h>
 #include <printer/wrap.h>
 #include <process/body.h>

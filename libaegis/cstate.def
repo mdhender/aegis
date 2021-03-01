@@ -95,6 +95,15 @@ given_regression_test_exemption = boolean hide_if_default;
 delta_number = integer;
 
 /*
+ * This field records a universally unique identifier for this
+ * configuration.  It is supplements the delta_number field in that
+ * it is unique across all replicas of the project, whereas the delta
+ * number is ambiguous across replicas.  It is only present in the
+ * 'being_integrated' and 'completed' states.
+ */
+delta_uuid = string;
+
+/*
  * This field records whether the change was placed into the
  * 'being_integrated'  state using the -minimum option (or that option was
  * implicitly set due to a file being removed).  It is
@@ -223,20 +232,130 @@ history =
 	what =
 	(
 		new_change,
+
+		/*
+                 * The change is advanced from awaiting_development to
+                 * being_developed.
+		 */
 		develop_begin,
+
+		/*
+                 * The change is un-advanced from being_developed to
+                 * awaiting_development.
+		 */
 		develop_begin_undo,
+
+		/*
+                 * The change is advanced from being_developed
+                 * to being_reviewed.  The project is in
+                 * goto_being_reviewed (the default).  The absence of
+                 * the "_2br" suffix is an historical accident.
+		 */
 		develop_end,
+
+		/*
+                 * The change is advanced from being_developed
+                 * to awaiting_review.  The project is in
+                 * goto_awaiting_review.
+		 */
 		develop_end_2ar,
+
+		/*
+                 * The change is advanced from being_developed
+                 * to awaiting_integration.  The project is in
+                 * goto_awaiting_integration.
+		 */
 		develop_end_2ai,
+
+		/*
+                 * The change is un-advanced from one of
+                 * { awating_review, being_reviewed or
+                 * awaiting_integration } to being_developed.
+		 */
 		develop_end_undo,
+
+		/*
+                 * The change is advanced from awaiting_review
+                 * to being_reviewed.  The project was in
+                 * goto_awaiting_review.
+		 */
 		review_begin,
+
+		/*
+                 * The change is un-advanced from being_reviewed
+                 * to awaiting_review.  The project was in
+                 * goto_awaiting_review.
+		 */
 		review_begin_undo,
+
+		/*
+                 * The change advanced from being_reviewed
+                 * to being_integrated.  The project is in
+                 * goto_being_reviewed or goto_awaiting_review.
+		 */
 		review_pass,
+
+		/*
+                 * The change DID NOT advance from being_reviewed to being_
+                 * integrated.  The project is in goto_awaiting_review.
+                 *
+                 * This will only happen if the review_policy command
+                 * returns a non-zero exit status.
+		 */
+		review_pass_2ar,
+
+		/*
+                 * The change DID NOT advance from being_reviewed to being_
+                 * integrated.  The project is in goto_being_reviewed.
+                 *
+                 * This will only happen if the review_policy command
+                 * returns a non-zero exit status.
+		 */
+		review_pass_2br,
+
+		/*
+                 * The change un-advanced from awaiting_integration
+                 * to being_reviewed.  The project is in
+                 * goto_being_reviewed.  (The absence of the "_2br"
+                 * suffix is an historical accident.)
+		 */
 		review_pass_undo,
+
+		/*
+                 * The change un-advanced from awaiting_integration
+                 * to awaiting_review.  The project is in
+                 * goto_awaiting_review.
+		 */
+		review_pass_undo_2ar,
+
+		/*
+                 * The change is un-advanced from being_reviewed to
+                 * being_developed.
+		 */
 		review_fail,
+
+		/*
+                 * The change is advanced from awaiting_integration to
+                 * being_integrated.
+		 */
 		integrate_begin,
+
+		/*
+                 * The change is un-advanced from being_integrated to
+                 * awaiting_intergation.
+		 */
 		integrate_begin_undo,
+
+		/*
+                 * The change is advanced from being_integrated to
+                 * completed.
+		 */
 		integrate_pass,
+
+		/*
+                 * The change is un-advanced from being_integrated to
+                 * being_developed.
+		 */
 		integrate_fail
 	);
 

@@ -55,7 +55,7 @@ reap(void *p)
 #ifdef DEBUG
 
 static void
-func(symtab_ty *stp, string_ty *key, void *data, void *arg)
+func(const symtab_ty *stp, string_ty *key, void *data, void *arg)
 {
     trace(("key=\"%s\", data=%08lX\n", key->str_text, (long)data));
 }
@@ -72,9 +72,10 @@ destruct(rpt_value_ty *vp)
     this_thing = (rpt_value_struct_ty *)vp;
     assert(this_thing->method->type == rpt_value_type_structure);
 #ifdef DEBUG
-    symtab_walk(this_thing->value, func, (void *)0);
+    this_thing->value->walk(func, (void *)0);
 #endif
-    symtab_free(this_thing->value);
+    delete this_thing->value;
+    this_thing->value = 0;
     trace(("}\n"));
 }
 
@@ -111,8 +112,7 @@ lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lvalue)
     }
     trace(("find the datum\n"));
     data =
-	(rpt_value_ty *)
-	symtab_query(this_thing->value, rpt_value_string_query(rhs2));
+	(rpt_value_ty *)this_thing->value->query(rpt_value_string_query(rhs2));
     trace(("data = %08lX;\n", (long)data));
     if (!data)
     {
@@ -123,9 +123,7 @@ lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lvalue)
 	    data = rpt_value_reference(result);
 	    // reference takes a copy
 	    rpt_value_free(result);
-	    symtab_assign(this_thing->value,
-                          rpt_value_string_query(rhs2),
-                          data);
+	    this_thing->value->assign(rpt_value_string_query(rhs2), data);
 	    result = rpt_value_copy(data);
 	}
 	else
@@ -167,7 +165,7 @@ lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lvalue)
 
 
 static void
-keys_callback(symtab_ty *stp, string_ty *key, void *data, void *arg)
+keys_callback(const symtab_ty *stp, string_ty *key, void *data, void *arg)
 {
     rpt_value_ty    *vlp;
     rpt_value_ty    *s;
@@ -188,7 +186,7 @@ keys(rpt_value_ty *vp)
     this_thing = (rpt_value_struct_ty *)vp;
     assert(this_thing->method->type == rpt_value_type_structure);
     result = rpt_value_list();
-    symtab_walk(this_thing->value, keys_callback, result);
+    this_thing->value->walk(keys_callback, result);
     return result;
 }
 
@@ -200,7 +198,7 @@ count(rpt_value_ty *vp)
 
     this_thing = (rpt_value_struct_ty *)vp;
     assert(this_thing->method->type == rpt_value_type_structure);
-    return rpt_value_integer(this_thing->value->hash_load);
+    return rpt_value_integer(this_thing->value->size());
 }
 
 
@@ -229,8 +227,8 @@ rpt_value_struct(symtab_ty *stp)
 
     this_thing = (rpt_value_struct_ty *)rpt_value_alloc(&method);
     if (!stp)
-	stp = symtab_alloc(5);
-    stp->reap = reap;
+	stp = new symtab_ty(5);
+    stp->set_reap(reap);
     this_thing->value = stp;
     return (rpt_value_ty *)this_thing;
 }
@@ -254,7 +252,7 @@ rpt_value_struct_lookup(rpt_value_ty *vp, string_ty *name)
 
     this_thing = (rpt_value_struct_ty *)vp;
     assert(this_thing->method == &method);
-    return (rpt_value_ty *)symtab_query(this_thing->value, name);
+    return (rpt_value_ty *)this_thing->value->query(name);
 }
 
 
@@ -271,6 +269,6 @@ rpt_value_struct__set(rpt_value_ty *vp, string_ty *name, rpt_value_ty *value)
 	value = rpt_value_copy(value);
     else
 	value = rpt_value_reference(value);
-    symtab_assign(this_thing->value, name, value);
+    this_thing->value->assign(name, value);
     trace(("}\n"));
 }

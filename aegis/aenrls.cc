@@ -23,7 +23,7 @@
 #include <ac/ctype.h>
 #include <ac/stdio.h>
 #include <ac/string.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <ael/project/projects.h>

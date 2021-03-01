@@ -36,7 +36,6 @@
 #include <project.h>
 #include <str_list.h>
 #include <symtab.h>
-#include <symtab/keys.h>
 
 
 struct row_ty
@@ -103,7 +102,6 @@ get_file_metrics(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     size_t          j;
     size_t          num_files;
     size_t          total_files;
-    symtab_ty       *stp;
     string_list_ty  key;
 
     pp = cp->pp;
@@ -132,7 +130,7 @@ get_file_metrics(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     // We make two passes over the project files.  The first pass collects
     // all the names of the availiable metrics.
     //
-    stp = symtab_alloc(8);
+    symtab_ty *stp = new symtab_ty(8);
     num_files = 0;
     for (j = 0; ; ++j)
     {
@@ -157,7 +155,7 @@ get_file_metrics(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 		metric_ty       *mp;
 
 		mp = mlp->list[k];
-		symtab_assign(stp, mp->name, &yes);
+		stp->assign(mp->name, &yes);
 	    }
 	}
     }
@@ -165,9 +163,9 @@ get_file_metrics(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     //
     // Extract the metric names and sort them.
     //
-    symtab_keys(stp, &key);
-    symtab_free(stp);
-    string_list_sort(&key);
+    stp->keys(&key);
+    delete stp;
+    key.sort();
 
     row = (row_ty **)mem_alloc(sizeof(row_ty *) * num_files);
     for (j = 0; j < num_files; ++j)
@@ -231,7 +229,7 @@ get_file_metrics(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	printf("File Name");
     else
     {
-	emit_project_href(pp, "file@metrics");
+	emit_project_href(pp, "file+metrics");
 	printf("File Name</a>");
     }
     printf("</th><th>Edit</th>\n");
@@ -244,11 +242,11 @@ get_file_metrics(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	printf("<th>\n");
 	if (j + 1 != (size_t)sort_col)
 	{
-	    s = str_format("file@metrics@%d", (int)(j + 1));
+	    s = str_format("file+metrics+%d", (int)(j + 1));
 	    emit_change_href(cp, s->str_text);
 	    str_free(s);
 	}
-	str2wl(&sl, key.string[j], "_", 1);
+	sl.split(key.string[j], "_", true);
 	if (sl.nstrings)
 	{
 	    s = str_capitalize(sl.string[0]);

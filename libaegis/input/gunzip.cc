@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -285,7 +285,7 @@ input_gunzip_name(input_ty *fp)
 	else if (end_with(s, ".tgz"))
 	{
 	    this_thing->filename =
-		str_format("%.*s.tar", s->str_length - 4, s->str_text);
+		str_format("%.*s.tar", (int)s->str_length - 4, s->str_text);
 	}
 	else
 	    this_thing->filename = str_copy(s);
@@ -368,14 +368,14 @@ check_header(input_ty *deeper)
     if (flags & EXTRA_FIELD)
     {
 	// skip the extra field
-	len = input_getc(deeper);
-	if (len < 0)
+	int elen = input_getc(deeper);
+	if (elen < 0)
 	    input_fatal_error(deeper, "gunzip: invalid character value");
 	c = input_getc(deeper);
 	if (c < 0)
 	    input_fatal_error(deeper, "gunzip: short file");
-	len += (c << 8);
-	while (len-- > 0)
+	elen += (c << 8);
+	while (elen-- > 0)
 	{
 	    if (input_getc(deeper) < 0)
 		input_fatal_error(deeper, "gunzip: short file");

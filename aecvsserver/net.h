@@ -69,17 +69,165 @@ enum response_code_ty
   * The net_ty class is used to remember the state of a network connection
   * to a client.
   */
-struct net_ty
+class net_ty
 {
+public:
+    /**
+      * The destructor.
+      */
+    virtual ~net_ty();
+
+    /**
+      * The default constructor.
+      */
+    net_ty();
+
+    /**
+      * The getline method is used to read one line from the input (up
+      * to the next newline character or end of input).  The newline
+      * is not included in the returned string.  Returns NULL if
+      * end-of-file is reached.
+      */
+    string_ty *getline();
+
+    /**
+      * The printf method is used to write output to the client.
+      */
+    void printf(const char *, ...)                            ATTR_PRINTF(2, 3);
+
+    /**
+      * The response_queue method is used to enqueue a response to be
+      * transmitted at the next response_flush.
+      */
+    void response_queue(struct response_ty *rp);
+
+    /**
+      * The response_flush method is used to flush any pending responses
+      * (if any) to the client.
+      */
+    void response_flush(void);
+
+    /**
+      * The log_to_file method is used to enable logging of all requests
+      * and responses.  This is for debugging.
+      */
+    void log_to_file(string_ty *);
+
+    /**
+      * The log_by_env method is used to enable logging if the given
+      * environment variable has been set.  The value of the environment
+      * variable is the name of the log file to use.
+      */
+    void log_by_env(const char *);
+
+    /**
+      * The argument method is used to append the given string to the
+      * argument list.
+      */
+    void argument(string_ty *);
+
+    /**
+      * The argumentx method is used to append the given string to the
+      * end of the last string on the argument list.
+      */
+    void argumentx(string_ty *);
+
+    /**
+      * The accumulator_reset method is used to discard the most
+      * recently accumulated lists of directories, entries and arguments.
+      */
+    void accumulator_reset(void);
+
+    /**
+      * The file_info_find method is used to locate the file info
+      * structure for a particular root-relative file name.
+      *
+      * @param server_side
+      *     The server-side name of the file, including the module name,
+      *     but excluding ROOT_PATH/
+      * @param auto_alloc
+      *     True if the name should be allocated if not foind, false if it
+      *     should not.
+      * @returns
+      *     The corresponding file_info_ty data structure.  Returns NULL if
+      *     auto_alloc was false, and the necessary data was not found.
+      */
+    struct file_info_ty *file_info_find(string_ty *server_side, int auto_alloc);
+
+    /**
+      * The directory_set method may be used to set the directory,
+      * as given in in a Directory request.
+      */
+    void directory_set(string_ty *cs, string_ty *ss);
+
+    /**
+      * The directory_find_client_side method is used to search the
+      * existing Directory names, looking for the given client-side directory.
+      * Returns NULL if not found.  Do not free the result.
+      */
+    directory_ty *directory_find_client_side(string_ty *);
+
+    /**
+      * The directory_find_server_side method is used to search the
+      * existing Directory names, looking for the given server-side directory.
+      * Returns NULL if not found.  Do not free the result.
+      */
+    directory_ty *directory_find_server_side(string_ty *);
+
+    /**
+      * The get_is_rooted method is used to find out if we have seet a
+      * Root request yet.
+      */
+    bool get_is_rooted() const { return rooted; }
+
+    /**
+      * The set_is_rooted method is used by the Root request to indicate
+      * that a valid Root request has been processed.
+      */
+    void set_is_rooted() { rooted = true; }
+
+    /**
+      * The set_respose_valid method is used the the Valid-Response
+      * request to indicate those responses which are valid for this
+      * client.
+      */
+    void set_response_valid(int n) { response_valid[n] = true; }
+
+    /**
+      * The get_updating_verbose method is used to obtain the last
+      * client-side directory we claimed to be updating.
+      */
+    string_ty *get_updating_verbose() const { return updating_verbose; }
+
+    /**
+      * The get_updating_verbose method is used to set the
+      * client-side directory we are currently updating.
+      */
+    void set_updating_verbose(string_ty *);
+
+    struct input_ty *in_crop(long length);
+
+    directory_ty *get_curdir() const { return curdir; }
+    bool curdir_is_set() const { return (curdir != 0); }
+
+    size_t argument_count() const { return argument_list.size(); }
+    string_ty *argument_nth(size_t n) const { return argument_list[n]; }
+
+private:
     struct input_ty *in;
     struct output_ty *out;
     struct output_ty *log_client;
-    int             rooted;
+
+    /**
+      * The rooted instance variable is used to remeber whether we have
+      * seet a Root request yet, or not.
+      */
+    bool rooted;
 
     /**
       * The set of responses which are currently valid.
       */
-    char response_valid[response_code_MAX];
+    bool response_valid[response_code_MAX];
 
     //
     // The response queue, the list of responses yet to be sent to
@@ -120,116 +268,20 @@ struct net_ty
 
     /**
       * The updating_verbose instance variable is used to remember the
-      * last client-side dirdctory we claimed to be updating.
+      * last client-side directory we claimed to be updating.
       */
     string_ty *updating_verbose;
+
+private:
+    /**
+      * The copy constructor.  Do not use.
+      */
+    net_ty(const net_ty &);
+
+    /**
+      * The assignment operator.  Do not use.
+      */
+    net_ty &operator=(const net_ty &);
 };
-
-/**
-  * The net_new function is used to allocate and initialize a new network
-  * instance (using stdin and stdout).
-  */
-net_ty *net_new(void);
-
-/**
-  * The net_delete function is used to release the resources held by a
-  * net instance when you are done with it.
-  */
-void net_delete(net_ty *);
-
-/**
-  * The net_getline function is used to read one line from the input
-  * (up to the next newline character or end of input).  The newline is
-  * not included in the returned string.  Returns NULL if end-of-file
-  * is reached.
-  */
-string_ty *net_getline(net_ty *);
-
-/**
-  * The net_printf function is used to write output to the client.
-  */
-void net_printf(net_ty *, const char *, ...)                  ATTR_PRINTF(2, 3);
-
-/**
-  * The net_response_queue function is used to enqueue a response to be
-  * transmaitted at the next net_response_flush.
-  */
-void net_response_queue(net_ty *, struct response_ty *);
-
-/**
-  * The net_response_flush function is used to flush any pending responses
-  * (if any) to the client.
-  */
-void net_response_flush(net_ty *);
-
-/**
-  * The net_log_to_file function is used to enable logging of all requests
-  * and responses.  This is for debugging.
-  */
-void net_log_to_file(net_ty *, string_ty *);
-
-/**
-  * The net_log_by_env function is used to enable logging if the given
-  * environment variable has been set.  The value of the environment
-  * variable is the name of the log file to use.
-  */
-void net_log_by_env(net_ty *, const char *);
-
-/**
-  * The net_argument function is used to append the given string to the
-  * argument list.
-  */
-void net_argument(net_ty *, string_ty *);
-
-/**
-  * The net_argumentx function is used to append the given string to the
-  * end of the last string on the argument list.
-  */
-void net_argumentx(net_ty *, string_ty *);
-
-/**
-  * The net_accumulator_reset function is used to discard the most
-  * recently accumulated lists of directories, entries and arguments.
-  */
-void net_accumulator_reset(net_ty *);
-
-/**
-  * The net_file_info_find command is used to locate the file info
-  * structure for a particular root-relative file name.
-  *
-  * @param np
-  *     The network endpoint to operate on.
-  * @param server_side
-  *     The server-side name of the file, including the module name,
-  *     but excluding ROOT_PATH/
-  * @param auto_alloc
-  *     True if the name should be allocated if not foind, false if it
-  *     should not.
-  * @returns
-  *     The corresponding file_unfo_ty data structure.  Returns NULL if
-  *     auto_alloc was false, and the necessary data was not found.
-  */
-struct file_info_ty *net_file_info_find(net_ty *np, string_ty *server_side,
-    int auto_alloc);
-
-/**
-  * The net_directory_set function may be used to set the directory,
-  * as given in in a Directory request.
-  */
-void net_directory_set(net_ty *, string_ty *, string_ty *);
-
-/**
-  * The net_directory_find_client_side function is used to search the
-  * existing Directory names, looking for the given client-side directory.
-  * Returns NULL if not found.  Do not free the result.
-  */
-directory_ty *net_directory_find_client_side(net_ty *, string_ty *);
-
-/**
-  * The net_directory_find_server_side function is used to search the
-  * existing Directory names, looking for the given server-side directory.
-  * Returns NULL if not found.  Do not free the result.
-  */
-directory_ty *net_directory_find_server_side(net_ty *, string_ty *);
 
 #endif // AE_CVS_SERVER_NET_H

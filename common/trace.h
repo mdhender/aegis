@@ -1,25 +1,24 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1999, 2002 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for common/trace.c
- */
-
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1991-1994, 1999, 2002 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for common/trace.c
+//
 
 #ifndef TRACE_H
 #define TRACE_H
@@ -27,6 +26,8 @@
 #include <ac/stddef.h>
 
 #include <main.h>
+
+struct string_ty; // forward
 
 /** \addtogroup Trace
   * \brief Trace capability support
@@ -55,13 +56,13 @@
 #define trace_if() 0
 #endif
 
-/*
- * This variable is static to each file which
- * includes the "trace.h" file.
- * Tracing is file-by-file, but need only test this once.
- * Files will fail to trace if a trace call is executed in them
- * prior to a call to trace_enable turning it on.
- */
+//
+// This variable is static to each file which
+// includes the "trace.h" file.
+// Tracing is file-by-file, but need only test this once.
+// Files will fail to trace if a trace call is executed in them
+// prior to a call to trace_enable turning it on.
+//
 #ifdef DEBUG
 static int trace_pretest_result;
 #endif
@@ -69,6 +70,7 @@ static int trace_pretest_result;
 int trace_pretest(const char *file, int *result);
 void trace_where(const char *file, int line);
 void trace_printf(const char *, ...) ATTR_PRINTF(1, 2);
+const char * trace_args();
 void trace_enable(const char *);
 void trace_indent_reset(void);
 
@@ -79,6 +81,7 @@ void trace_indent_reset(void);
 #define trace_stringize(x) "x"
 #endif
 
+void trace_bool_real(const char *name, const bool &value);
 void trace_char_real(const char *, const char *);
 void trace_char_unsigned_real(const char *, const unsigned char *);
 void trace_int_real(const char *, const int *);
@@ -88,132 +91,184 @@ void trace_long_unsigned_real(const char *, const unsigned long *);
 void trace_pointer_real(const char *, const void *);
 void trace_short_real(const char *, const short *);
 void trace_short_unsigned_real(const char *, const unsigned short *);
+void trace_string_real(const char *, const string_ty *);
 void trace_string_real(const char *, const char *);
+void trace_time_real(const char *, long);
+void trace_double_real(const char *, const double &);
 
 #ifdef DEBUG
 
-#define trace_char(x)						\
-	(void)							\
+#define trace_bool(x)						\
+    (void)							\
+    (								\
+	trace_pretest_						\
+    &&								\
 	(							\
-		trace_pretest_					\
-	&&							\
-		(						\
-			trace_where_,				\
-			trace_char_real(trace_stringize(x), &x), \
-			0					\
-		)						\
-	)
+	    trace_where_,					\
+	    trace_bool_real(trace_stringize(x), (x)),		\
+	    0							\
+	)							\
+    )
+
+#define trace_char(x)						\
+    (void)							\
+    (								\
+	trace_pretest_						\
+    &&								\
+	(							\
+	    trace_where_,					\
+	    trace_char_real(trace_stringize(x), &(x)),		\
+	    0							\
+	)							\
+    )
 
 #define trace_char_unsigned(x)					\
-	(void)							\
+    (void)							\
+    (								\
+	trace_pretest_						\
+    &&								\
 	(							\
-		trace_pretest_					\
-	&&							\
-		(						\
-			trace_where_,				\
-			trace_char_unsigned_real(trace_stringize(x), &x), \
-			0					\
-		)						\
-	)
+	    trace_where_,					\
+	    trace_char_unsigned_real(trace_stringize(x), &(x)), \
+	    0							\
+	)							\
+    )
 
 #define trace_int(x)						\
-	(void)							\
-	(							\
-		trace_pretest_					\
-	&&							\
-		(						\
-			trace_where_,				\
-			trace_int_real(trace_stringize(x), &x),	\
-			0					\
-		)						\
-	)
+    (void)							\
+    (								\
+       	trace_pretest_						\
+    &&								\
+       	(							\
+    	    trace_where_,					\
+    	    trace_int_real(trace_stringize(x), &(x)),		\
+    	    0							\
+	)							\
+    )
 
 #define trace_int_unsigned(x)					\
-	(void)							\
-	(							\
-		trace_pretest_					\
-	&&							\
-		(						\
-			trace_where_,				\
-			trace_int_unsigned_real(trace_stringize(x), &x), \
-			0					\
-		)						\
-	)
+    (void)							\
+    (								\
+       	trace_pretest_						\
+    &&								\
+       	(							\
+	    trace_where_,					\
+    	    trace_int_unsigned_real(trace_stringize(x), &(x)),	\
+    	    0							\
+	)							\
+    )
 
 #define trace_long(x)						\
-	(void)							\
-	(							\
-		trace_pretest_					\
-	&&							\
-		(						\
-			trace_where_,				\
-			trace_long_real(trace_stringize(x), &x), \
-			0					\
-		)						\
-	)
+    (void)							\
+    (								\
+       	trace_pretest_						\
+    &&								\
+       	(							\
+    	    trace_where_,					\
+    	    trace_long_real(trace_stringize(x), &(x)),		\
+    	    0							\
+       	)							\
+    )
 
 #define trace_long_unsigned(x)					\
-	(void)							\
+    (void)							\
+    (								\
+	trace_pretest_						\
+    &&								\
 	(							\
-		trace_pretest_					\
-	&&							\
-		(						\
-			trace_where_,				\
-			trace_long_unsigned_real(trace_stringize(x), &x), \
-			0					\
-		)						\
-	)
+	    trace_where_,					\
+	    trace_long_unsigned_real(trace_stringize(x), &(x)), \
+	    0							\
+	)							\
+    )
 
 #define trace_pointer(x)					\
-	(void)							\
+    (void)							\
+    (								\
+	trace_pretest_						\
+    &&								\
 	(							\
-		trace_pretest_					\
-	&&							\
-		(						\
-			trace_where_,				\
-			trace_pointer_real(trace_stringize(x), &x), \
-			0					\
-		)						\
-	)
+	    trace_where_,					\
+	    trace_pointer_real(trace_stringize(x), &(x)),	\
+	    0							\
+	)							\
+    )
 
 #define trace_short(x)						\
-	(void)							\
+    (void)							\
+    (								\
+	trace_pretest_						\
+    &&								\
 	(							\
-		trace_pretest_					\
-	&&							\
-		(						\
-			trace_where_,				\
-			trace_short_real(trace_stringize(x), &x), \
-			0					\
-		)						\
-	)
+	    trace_where_,					\
+	    trace_short_real(trace_stringize(x), &(x)),		\
+	    0							\
+	)							\
+    )
 
 #define trace_short_unsigned(x)					\
-	(void)							\
-	(							\
-		trace_pretest_					\
-	&&							\
-		(						\
-			trace_where_,				\
-			trace_short_unsigned_real(trace_stringize(x), &x), \
-			0					\
-		)						\
-	)
+    (void)							\
+    (								\
+       	trace_pretest_						\
+    &&								\
+       	(							\
+    	    trace_where_,					\
+    	    trace_short_unsigned_real(trace_stringize(x), &(x)), \
+    	    0							\
+       	)							\
+    )
 
 #define trace_string(x)						\
-	(void)							\
-	(							\
-		trace_pretest_					\
-	&&							\
-		(						\
-			trace_where_,				\
-			trace_string_real(trace_stringize(x), x), \
-			0					\
-		)						\
-	)
+    (void)							\
+    (								\
+       	trace_pretest_						\
+    &&								\
+       	(							\
+    	    trace_where_,					\
+    	    trace_string_real(trace_stringize(x), (x)), 	\
+    	    0							\
+       	)							\
+    )
+
+#define trace_nstring(x)					\
+    (void)							\
+    (								\
+       	trace_pretest_						\
+    &&								\
+       	(							\
+    	    trace_where_,					\
+    	    trace_string_real(trace_stringize(x), (x).c_str()), \
+    	    0							\
+       	)							\
+    )
+
+#define trace_time(x)						\
+    (void)							\
+    (								\
+       	trace_pretest_						\
+    &&								\
+       	(							\
+    	    trace_where_,					\
+    	    trace_time_real(trace_stringize(x), (long)(x)),	\
+    	    0							\
+       	)							\
+    )
+
+#define trace_double(x)						\
+    (void)							\
+    (								\
+       	trace_pretest_						\
+    &&								\
+       	(							\
+    	    trace_where_,					\
+    	    trace_time_real(trace_stringize(x), (x)),		\
+    	    0							\
+       	)							\
+    )
 
 #else
 
+#define trace_bool(x)
 #define trace_char(x)
 #define trace_char_unsigned(x)
 #define trace_int(x)
@@ -224,6 +279,9 @@ void trace_string_real(const char *, const char *);
 #define trace_short(x)
 #define trace_short_unsigned(x)
 #define trace_string(x)
+#define trace_nstring(x)
+#define trace_time(x)
+#define trace_double(x)
 
 #endif
 
@@ -234,4 +292,4 @@ void trace_string_real(const char *, const char *);
 const char *unctrl(int);
 
 /** @} */
-#endif /* TRACE_H */
+#endif // TRACE_H

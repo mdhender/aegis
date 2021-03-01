@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2004 Peter Miller;
+//	Copyright (C) 1991-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
-#include <sys/types.h>
+#include <ac/sys/types.h>
 #include <sys/stat.h>
 
 #include <aeif.h>
@@ -170,8 +170,6 @@ integrate_fail_main(void)
     cstate_history_ty *history_data;
     string_ty	    *comment =	    0;
     const char      *reason =	    0;
-    string_ty	    *rev_name;
-    string_ty	    *int_name;
     string_ty	    *dir;
     int		    j;
     string_ty	    *project_name;
@@ -403,9 +401,12 @@ integrate_fail_main(void)
     history_data->what = cstate_history_what_integrate_fail;
     history_data->why = comment;
     change_build_times_clear(cp);
-    rev_name = change_reviewer_name(cp);
-    int_name = change_integrator_name(cp);
     cstate_data->delta_number = 0;
+    if (cstate_data->delta_uuid)
+    {
+	str_free(cstate_data->delta_uuid);
+	cstate_data->delta_uuid = 0;
+    }
     dir = str_copy(change_integration_directory_get(cp, 1));
     change_integration_directory_clear(cp);
     cstate_data->state = cstate_state_being_developed;

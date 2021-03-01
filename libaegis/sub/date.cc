@@ -27,7 +27,7 @@
 #include <sub/date.h>
 #include <trace.h>
 #include <wstr.h>
-#include <wstr_list.h>
+#include <wstr/list.h>
 
 
 //
@@ -66,16 +66,14 @@ sub_date(sub_context_ty *scp, wstring_list_ty *arg)
     time(&when);
 
     wstring_ty *result = 0;
-    if (arg->nitems < 2)
+    if (arg->size() < 2)
     {
-	char		*time_string;
-
-	time_string = ctime(&when);
+	char *time_string = ctime(&when);
 	result = wstr_n_from_c(time_string, 24);
     }
     else
     {
-	wstring_ty *wfmt = wstring_list_to_wstring(arg, 1, 32767, (char *)0);
+	wstring_ty *wfmt = arg->unsplit(1, arg->size());
 	string_ty *fmt = wstr_to_str(wfmt);
 	wstr_free(wfmt);
 	struct tm *theTm = localtime(&when);

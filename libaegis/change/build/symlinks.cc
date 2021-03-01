@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -49,6 +49,7 @@ struct slink_info_ty
     const work_area_style_ty *style;
     int             umask;
 
+    ~slink_info_ty() { }
     slink_info_ty() : cp(0), pconf_data(0), up(0), style(0), umask(022) { }
 };
 
@@ -199,6 +200,7 @@ try_to_make_hard_link_to_baseline(const nstring &dst, const nstring &src)
     sub_var_set_string(scp, "File_Name2", dst.get_ref());
     fatal_intl(scp, i18n("link(\"$filename1\", \"$filename2\"): $errno"));
     // NOTREACHED
+    return false;
 }
 
 
@@ -235,9 +237,8 @@ try_to_make_symbolic_link_to_baseline(const nstring &dst, const nstring &src)
     sub_var_set_string(scp, "File_Name2", dst.get_ref());
     fatal_intl(scp, i18n("symlink(\"$filename1\", \"$filename2\"): $errno"));
     // NOTREACHED
-#else
-    return false;
 #endif
+    return false;
 }
 
 
@@ -271,9 +272,9 @@ os_symlink_repair(string_ty *value, string_ty *filename)
 
     //
     // Most of the time, this results in one system call, because the
-    // symlinks already exist.
+    // symlink already exists.
     //
-    // Only rarely will it result in 3 system calls.
+    // Only rarely will it result in three system calls.
     //
     // The case for creating new links takes a different code path, and
     // never enters this function.  It, too, only uses one system call.
@@ -399,20 +400,20 @@ is_an_aegis_symlink(string_ty *path_rel, string_list_ty *stack, int start)
 //
 
 static void
-maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
+maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
     struct stat *st, int depth, int ignore_symlinks)
 {
-    trace(("maintain(path = \"%s\", depth = %d)\n{\n", path->str_text,
+    trace(("maintain(path_rel = \"%s\", depth = %d)\n{\n", path_rel->str_text,
 	depth & ~TOP_LEVEL_SYMLINK));
     bool top_level_symlink = !!(depth & TOP_LEVEL_SYMLINK);
     trace(("top_level_symlink = %d\n", top_level_symlink));
     depth &= ~TOP_LEVEL_SYMLINK;
     slink_info_ty *sip = (slink_info_ty *)p;
-    nstring path_abs(os_path_cat(sip->stack.string[0], path));
+    nstring path_abs(os_path_cat(sip->stack.string[0], path_rel));
     change_ty *cp = sip->cp;
 
     user_become_undo();
-    fstate_src_ty *c_src = change_file_find(cp, path, view_path_first);
+    fstate_src_ty *c_src = change_file_find(cp, path_rel, view_path_first);
     project_ty *pp = cp->pp;
     project_ty *ppp = pp->parent;
     if (change_is_being_integrated(cp))
@@ -420,16 +421,25 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 	if (!c_src)
 	{
 	    c_src =
-		change_file_find(project_change_get(pp), path, view_path_first);
+		change_file_find
+		(
+		    project_change_get(pp),
+		    path_rel,
+		    view_path_first
+		);
 	}
 	pp = ppp;
     }
-    fstate_src_ty *p_src = project_file_find(pp, path, view_path_simple);
+    fstate_src_ty *p_src = project_file_find(pp, path_rel, view_path_simple);
     user_become(sip->up);
 
     switch (msg)
     {
     case dir_stack_walk_dir_before:
+	//
+        // We don't do anything here, because we want to create as few
+        // directories as possible.  See the os_mkdir_between calls, below.
+	//
 	trace(("dir before\n"));
 	break;
 
@@ -441,7 +451,7 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 	trace(("symlink\n"));
 
         //
-        // The dir_stack_walk functional was told to ignore symlinks,
+        // The dir_stack_walk function was told to ignore symlinks,
         // so if it returns a symlink it is a derived file, or a
         // symlink maintained by this function in a deeper branch.
         //
@@ -456,16 +466,19 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
             break;
         if (top_level_symlink)
             break;
-        if (!is_an_aegis_symlink(path, &sip->stack, depth))
+        if (!is_an_aegis_symlink(path_rel, &sip->stack, depth))
         {
-            nstring src_abs(os_path_cat(sip->stack.string[depth], path));
+            nstring src_abs(os_path_cat(sip->stack.string[depth], path_rel));
             nstring path_target(os_readlink(src_abs.get_ref()));
             if (!os_exists(path_abs.get_ref()))
+	    {
+		os_mkdir_between(sip->stack.string[0], path_rel, 02755);
                 os_symlink(path_target.get_ref(), path_abs.get_ref());
+	    }
             if (sip->style->during_build_only)
             {
                 assert(derived_symlinks);
-                derived_symlinks->assign(path, path_target);
+                derived_symlinks->assign(path_rel, path_target);
             }
         }
         break;
@@ -490,6 +503,7 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 		{
 		case file_action_remove:
 		    trace(("file_action_remove\n"));
+		    trace(("rm %s\n", path_abs.c_str()));
 		    os_unlink(path_abs.get_ref());
 		    break;
 
@@ -498,7 +512,7 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 			trace(("transparent\n"));
 			if (!ppp)
 			{
-			    trace(("mark\n"));
+			    trace(("rm %s\n", path_abs.c_str()));
 			    os_unlink(path_abs.get_ref());
 			    break;
 			}
@@ -507,14 +521,15 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 			// stale files too early in the stack.
 			//
 			user_become_undo();
-			nstring origin = project_file_path(ppp, path);
+			nstring origin = project_file_path(ppp, path_rel);
 			user_become(sip->up);
 			if (origin.empty())
 			{
-			    trace(("mark\n"));
+			    trace(("rm %s\n", path_abs.c_str()));
 			    os_unlink(path_abs.get_ref());
 			    break;
 			}
+			os_mkdir_between(sip->stack.string[0], path_rel, 02755);
 			os_symlink_repair(origin.get_ref(), path_abs.get_ref());
 		    }
 		    break;
@@ -540,28 +555,29 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 		trace(("project file\n"));
 		if (p_src->action == file_action_remove)
 		{
-		    trace(("mark\n"));
+		    trace(("rm %s\n", path_abs.c_str()));
 		    os_unlink(path_abs.get_ref());
 		}
 		else
 		{
 		    user_become_undo();
-		    nstring origin = project_file_path(pp, path);
+		    nstring origin = project_file_path(pp, path_rel);
 		    user_become(sip->up);
 		    assert(!origin.empty());
+		    os_mkdir_between(sip->stack.string[0], path_rel, 02755);
 		    os_symlink_repair(origin.get_ref(), path_abs.get_ref());
 		}
 		goto done;
 	    }
 	    trace(("check symbolic link to baseline\n"));
-	    switch (check_symbolic_link_to_baseline(path, &sip->stack, 1))
+	    switch (check_symbolic_link_to_baseline(path_rel, &sip->stack, 1))
 	    {
 	    case file_status_not_related:
 	    case file_status_up_to_date:
 		goto done;
 
 	    case file_status_out_of_date:
-		trace(("mark\n"));
+		trace(("rm %s\n", path_abs.c_str()));
 		os_unlink(path_abs.get_ref());
 		depth = 666;
 		break;
@@ -569,6 +585,11 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 	}
 	if (depth == 0)
 	{
+	    //
+            // Note: there is no os_mkdir_between call required, because
+            // the file exists at the top level (in the development
+            // directory or integration directory).
+	    //
 	    trace(("file at top\n"));
 	    if (c_src)
 	    {
@@ -589,7 +610,8 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 		    if (ppp)
 		    {
 			user_become_undo();
-			p_src = project_file_find(ppp, path, view_path_extreme);
+			p_src =
+			    project_file_find(ppp, path_rel, view_path_extreme);
 			user_become(sip->up);
 		    }
 		    if (!p_src)
@@ -621,7 +643,7 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 		// stale files too early in the stack.
 		//
 		user_become_undo();
-		nstring origin = project_file_path(pp, path);
+		nstring origin = project_file_path(pp, path_rel);
 		user_become(sip->up);
 		assert(!origin.empty());
 		struct stat st1;
@@ -651,7 +673,8 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 		// Not an accurate reflection of the baseline,
 		// get rid of it and start again.
 		//
-		os_unlink(path);
+		trace(("rm %s\n", path_abs.c_str()));
+		os_unlink(path_abs.get_ref());
 
 		if
 		(
@@ -729,15 +752,15 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 		// stale files too early in the stack.
 		//
 		user_become_undo();
-		nstring origin = project_file_path(ppp, path);
+		nstring origin = project_file_path(ppp, path_rel);
 		fstate_src_ty *ppp_src =
-		    project_file_find(ppp, path, view_path_extreme);
+		    project_file_find(ppp, path_rel, view_path_extreme);
 		assert(ppp_src);
 		user_become(sip->up);
 		if (origin.empty())
 		    break;
 
-		os_mkdir_between(sip->stack.string[0], path, 02755);
+		os_mkdir_between(sip->stack.string[0], path_rel, 02755);
 		if
 		(
 		    !try_to_make_hard_link_to_baseline(path_abs, origin)
@@ -764,14 +787,14 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 	    trace(("project file not at top\n"));
 	    if (p_src->action == file_action_remove)
 		break;
-	    os_mkdir_between(sip->stack.string[0], path, 02755);
+	    os_mkdir_between(sip->stack.string[0], path_rel, 02755);
 
 	    //
 	    // Note: we don't use dir_stack_find, there could be
 	    // stale files too early in the stack.
 	    //
 	    user_become_undo();
-	    nstring origin = project_file_path(pp, path);
+	    nstring origin = project_file_path(pp, path_rel);
 	    user_become(sip->up);
 	    assert(!origin.empty());
 	    if
@@ -798,7 +821,7 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 		os_chmod(path_abs.get_ref(), file_mode & ~sip->umask);
 	    }
 	}
-	else if (change_is_being_developed(sip->cp) && comma_d(path))
+	else if (change_is_being_developed(sip->cp) && comma_d(path_rel))
 	{
 	    //
             // Do not make links or symlinks or copies of the difference
@@ -806,7 +829,7 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
             // busier for no good reason.
 	    //
 	}
-	else if (!is_a_symlink_exception(path, sip))
+	else if (!is_a_symlink_exception(path_rel, sip))
 	{
 	    //
 	    // There is no file in the development directory, there is
@@ -820,8 +843,8 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
             // since generalised to cover hard links and cipies as well.
 	    //
 	    trace(("derived file not at top\n"));
-	    os_mkdir_between(sip->stack.string[0], path, 02755);
-	    nstring origin(os_path_cat(sip->stack.string[depth], path));
+	    os_mkdir_between(sip->stack.string[0], path_rel, 02755);
+	    nstring origin(os_path_cat(sip->stack.string[depth], path_rel));
 	    if
 	    (
 		(
@@ -910,7 +933,6 @@ change_create_symlinks_to_baseline(change_ty *cp, user_ty *up,
     //
     // Work out the search path.
     //
-    string_list_constructor(&si.stack);
     change_search_path_get(cp, &si.stack, 0);
 #ifdef DEBUG
     {
@@ -936,7 +958,6 @@ change_create_symlinks_to_baseline(change_ty *cp, user_ty *up,
     user_become(up);
     dir_stack_walk(&si.stack, dot, maintain, &si, 1);
     user_become_undo();
-    string_list_destructor(&si.stack);
     trace(("}\n"));
 }
 
@@ -961,14 +982,14 @@ unmaintain(void *p, dir_stack_walk_message_t msg,
     {
     case dir_stack_walk_dir_before:
     case dir_stack_walk_dir_after:
-	trace(("mark\n"));
+	trace(("is a directory\n"));
 	break;
 
     case dir_stack_walk_special:
         break;
 
     case dir_stack_walk_symlink:
-	trace(("mark\n"));
+	trace(("is a symlink\n"));
         if
         (
             top_level_symlink
@@ -1005,13 +1026,13 @@ unmaintain(void *p, dir_stack_walk_message_t msg,
                     break;
             }
 
-            trace(("mark\n"));
+            trace(("rm %s\n", path_abs.c_str()));
             os_unlink(path_abs.get_ref());
         }
 	break;
 
     case dir_stack_walk_file:
-	trace(("mark\n"));
+	trace(("is a file\n"));
 	{
 	    // scope for c_src:
 	    user_become_undo();
@@ -1035,7 +1056,7 @@ unmaintain(void *p, dir_stack_walk_message_t msg,
 	    nstring dest_rel(dir_stack_relative(&sip->stack, dest.get_ref()));
 	    if (!dest_rel.empty() && nstring(path) == dest_rel)
 	    {
-		trace(("mark\n"));
+		trace(("rm %s\n", path_abs.c_str()));
 		os_unlink(path_abs.get_ref());
 	    }
 	}
@@ -1047,15 +1068,34 @@ unmaintain(void *p, dir_stack_walk_message_t msg,
             // necessarily the right one, and the link could have been
             // broken).
 	    //
+            // Watch out for integration builds, which need to check for
+            // grandparent files BUT not nuke project files from this branch.
+	    //
 	    trace(("mark\n"));
+	    project_ty *pp = sip->cp->pp;
 	    user_become_undo();
+	    if (change_is_being_integrated(sip->cp))
+	    {
+		change_ty *branch_p = project_change_get(sip->cp->pp);
+		if (change_file_find(branch_p, path, view_path_first))
+		{
+		    user_become(sip->up);
+		    break;
+		}
+		pp = pp->parent;
+		if (!pp)
+		{
+		    user_become(sip->up);
+		    break;
+		}
+	    }
 	    fstate_src_ty *p_src =
-		project_file_find(sip->cp->pp, path, view_path_simple);
+		project_file_find(pp, path, view_path_simple);
 	    user_become(sip->up);
 	    if (p_src)
 	    {
 		nstring path_abs(os_path_join(sip->stack.string[0], path));
-		trace(("mark\n"));
+		trace(("rm %s\n", path_abs.c_str()));
 		os_unlink(path_abs.get_ref());
 	    }
 	}
@@ -1099,7 +1139,6 @@ change_remove_symlinks_to_baseline(change_ty *cp, user_ty *up,
     //
     // Work out the search path.
     //
-    string_list_constructor(&si.stack);
     change_search_path_get(cp, &si.stack, 0);
 
     //
@@ -1114,7 +1153,6 @@ change_remove_symlinks_to_baseline(change_ty *cp, user_ty *up,
 	dot = str_from_c(".");
     dir_stack_walk(&si.stack, dot, unmaintain, &si, 0);
     user_become_undo();
-    string_list_destructor(&si.stack);
     delete(derived_symlinks);
     derived_symlinks = NULL;
     trace(("}\n"));

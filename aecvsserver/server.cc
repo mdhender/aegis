@@ -57,21 +57,21 @@ server_delete(server_ty *sp)
 void
 server_response_queue(server_ty *sp, response_ty *rp)
 {
-    net_response_queue(sp->np, rp);
+    sp->np->response_queue(rp);
 }
 
 
 void
 server_response_flush(server_ty *sp)
 {
-    net_response_flush(sp->np);
+    sp->np->response_flush();
 }
 
 
 string_ty *
 server_getline(server_ty *sp)
 {
-    return net_getline(sp->np);
+    return sp->np->getline();
 }
 
 
@@ -129,7 +129,7 @@ server_root_required(server_ty *sp, const char *caption)
 
     assert(sp);
     assert(caption);
-    root_required = !sp->np->rooted;
+    root_required = !sp->np->get_is_rooted();
     if (root_required)
 	server_error(sp, "%s: must send Root request first", caption);
     return root_required;
@@ -139,11 +139,9 @@ server_root_required(server_ty *sp, const char *caption)
 int
 server_directory_required(server_ty *sp, const char *caption)
 {
-    int             bad;
-
     assert(sp);
     assert(caption);
-    bad = (sp->np->curdir == 0);
+    bool bad = !sp->np->curdir_is_set();
     if (bad)
 	server_error(sp, "%s: must send Directory request first", caption);
     return bad;
@@ -155,7 +153,7 @@ server_argument(server_ty *sp, string_ty *arg)
 {
     assert(sp);
     assert(sp->np);
-    net_argument(sp->np, arg);
+    sp->np->argument(arg);
 }
 
 
@@ -164,41 +162,40 @@ server_argumentx(server_ty *sp, string_ty *arg)
 {
     assert(sp);
     assert(sp->np);
-    net_argumentx(sp->np, arg);
+    sp->np->argumentx(arg);
 }
 
 
 void
 server_accumulator_reset(server_ty *sp)
 {
-    net_accumulator_reset(sp->np);
+    sp->np->accumulator_reset();
 }
 
 
 file_info_ty *
 server_file_info_find(server_ty *sp, string_ty *server_side, int auto_alloc)
 {
-    return net_file_info_find(sp->np, server_side, auto_alloc);
+    return sp->np->file_info_find(server_side, auto_alloc);
 }
 
 
 void
 server_updating_verbose(server_ty *sp, string_ty *client_side)
 {
-    string_ty       *dir;
-
-    dir = os_dirname_relative(client_side);
-    if (sp->np->updating_verbose)
+    string_ty *dir = os_dirname_relative(client_side);
+    if
+    (
+	// this is a string, not a bool
+	!sp->np->get_updating_verbose()
+    ||
+	!str_equal(dir, sp->np->get_updating_verbose())
+    )
     {
-	if (str_equal(dir, sp->np->updating_verbose))
-	{
-	    str_free(dir);
-	    return;
-	}
-	str_free(sp->np->updating_verbose);
+	server_e(sp, "Updating %s", dir->str_text);
+	sp->np->set_updating_verbose(dir);
     }
-    server_e(sp, "Updating %s", dir->str_text);
-    sp->np->updating_verbose = dir;
+    str_free(dir);
 }
 
 
@@ -221,7 +218,7 @@ server_directory_calc_client_side(server_ty *sp, string_ty *server_side)
 	    directory_ty    *dp;
 
 	    ss = str_n_from_c(start, end - start);
-	    dp = net_directory_find_server_side(sp->np, ss);
+	    dp = sp->np->directory_find_server_side(ss);
 	    str_free(ss);
 	    if (dp)
 	    {

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,7 @@
 #include <list.h>
 #include <os.h>
 #include <progname.h>
+#include <quit.h>
 #include <receive.h>
 #include <send.h>
 #include <version.h>
@@ -46,7 +47,7 @@ usage(void)
     fprintf(stderr, "       %s --receive [ <option>... ]\n", progname);
     fprintf(stderr, "       %s --list [ <option>... ]\n", progname);
     fprintf(stderr, "       %s --help\n", progname);
-    exit(1);
+    quit(1);
 }
 
 
@@ -88,6 +89,6 @@ main(int argc, char **argv)
     language_init();
     os_become_init_mortal();
     arglex_dispatch(dispatch, SIZEOF(dispatch), usage);
-    exit(0);
+    quit(0);
     return 0;
 }

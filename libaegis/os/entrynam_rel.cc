@@ -29,16 +29,30 @@
 string_ty *
 os_entryname_relative(string_ty *path)
 {
-	char		*cp;
+    trace(("os_entryname_relative(path = %08lX)\n{\n", (long)path));
+    trace_string(path->str_text);
+    const char *cp = strrchr(path->str_text, '/');
+    if (cp)
+	path = str_from_c(cp + 1);
+    else
+	path = str_copy(path);
+    trace_string(path->str_text);
+    trace(("}\n"));
+    return path;
+}
 
-	trace(("os_entryname_relative(path = %08lX)\n{\n", (long)path));
-	trace_string(path->str_text);
-	cp = strrchr(path->str_text, '/');
-	if (cp)
-		path = str_from_c(cp + 1);
-	else
-		path = str_copy(path);
-	trace_string(path->str_text);
-	trace(("}\n"));
+
+nstring
+os_entryname_relative(const nstring &path)
+{
+    trace(("os_entryname_relative(path = \"%s\")\n{\n", path.c_str()));
+    const char *cp = strrchr(path.c_str(), '/');
+    if (!cp)
+    {
+	trace(("return \"%s\";\n}\n", path.c_str()));
 	return path;
+    }
+    nstring result(cp + 1);
+    trace(("return \"%s\";\n}\n", result.c_str()));
+    return result;
 }
