@@ -25,7 +25,6 @@
 
 #include <arglex2.h>
 #include <env.h>
-#include <error.h>
 #include <gonzo.h>
 #include <help.h>
 #include <libdir.h>
@@ -33,6 +32,7 @@
 #include <os.h>
 #include <output/pager.h>
 #include <progname.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <str_list.h>

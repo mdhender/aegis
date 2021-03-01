@@ -24,11 +24,11 @@
 #include <ac/stdio.h>
 
 #include <arglex2.h>
-#include <error.h>
 #include <help.h>
 #include <output/pager.h>
 #include <output/wrap.h>
 #include <progname.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <version.h>

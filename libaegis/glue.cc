@@ -1296,7 +1296,7 @@ glue_getcwd(char *buf, int max)
 	else
 	{
 		s = (char *)get_string(pp->reply);
-		strcpy(buf, s);
+		strlcpy(buf, s, max);
 		s = buf;
 		trace(("return \"%s\";\n", s));
 	}

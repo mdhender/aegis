@@ -21,6 +21,7 @@
 .so ../man1/aedbu.1
 .so ../man1/aede.1
 .so ../man1/aedeu.1
+.so ../man1/aediff.1
 .so ../man1/aedist.1
 .so ../man1/aedn.1
 .so ../man1/aeedit.1
@@ -60,6 +61,7 @@
 .so ../man1/aentu.1
 .so ../man1/aepa.1
 .so ../man1/aepatch.1
+.so ../man1/aepromptcmd.1
 .so ../man1/aer.1
 .so ../man1/aera.1
 .so ../man1/aerb.1

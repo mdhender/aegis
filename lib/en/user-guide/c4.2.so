@@ -23,10 +23,10 @@
 .nh 2 "Using Cook"
 .LP
 The
-.I cook
+.I Cook
 program is the only dependency maintenance tool,
 known to the author,
-which is sufficiently capable to supply aegis' needs.\**
+which is sufficiently capable to supply Aegis' needs.\**
 .FS
 The version in use when writing this section was 1.5.
 All versions from 1.3 onwards are known to work with
@@ -78,7 +78,7 @@ build_command =
    project=$p change=$c version=$v";
 .E)
 .LP
-This command tells cook
+This command tells Cook
 where to find the recipes.
 The \f(CW${s Howto.cook}\fR expands to a path into the baseline
 during development
@@ -101,11 +101,11 @@ cease to be self-consistent.
 .LP
 The file containing the recipes is called
 .I Howto.cook
-and is given to cook on the command line.
+and is given to Cook on the command line.
 .LP
 The following items are preamble to the rest of the file;
-they ask aegis for the source files of the project and change
-so that cook can determine what needs to be compiled and linked.
+they ask Aegis for the source files of the project and change
+so that Cook can determine what needs to be compiled and linked.
 .E(
 project_files =
   [collect aegis -l pf -terse
@@ -135,7 +135,7 @@ object_files =
 It is necessary to determine if this is a development build,
 and thus has the baseline for additional ingredients searches,
 or an integration build, which does not.
-The version supplied by aegis will tell us this information,
+The version supplied by Aegis will tell us this information,
 because it will be \fImajor.minor.\fRC\fIchange\fR for development builds and
 \fImajor.minor.\fRD\fIdelta\fR for integration builds.
 .E(
@@ -149,12 +149,12 @@ if [match_mask %1C%2 [version]] then
 .LP
 The
 .I search_list
-variable in cook is the list of directories to search for dependencies;
+variable in Cook is the list of directories to search for dependencies;
 it defaults to only the current directory.
 The
 .I resolve
-builtin function of cook
-may be used to ask cook for the name of the file
+builtin function of Cook
+may be used to ask Cook for the name of the file
 actually used to resolve dependencies,
 so that recipe bodies may reference the appropriate file:
 .E(
@@ -166,7 +166,7 @@ example: [object_files]
 }
 .E)
 .LP
-This recipe says that to cook the example program,
+This recipe says that to Cook the example program,
 you need the object files determined earlier,
 and them link them together.
 Object files which were up to date in the baseline are used wherever possible,
@@ -174,7 +174,7 @@ but files which were out of date are constructed in the current directory
 and those will be linked.
 .nh 3 "The Recipe for C"
 .LP
-Next we need to tell cook how to manage C sources.
+Next we need to tell Cook how to manage C sources.
 On the surface, this is a simple recipe:
 .E(
 %.o: %.c
@@ -185,7 +185,7 @@ On the surface, this is a simple recipe:
 .E)
 .LP
 Unfortunately it has forgotten about finding the include file dependencies.
-The cook package includes a program called
+The Cook package includes a program called
 .I c_incl
 which is used to find them.
 The recipe now becomes
@@ -210,7 +210,7 @@ so the remove is mangled to look like this:
 }
 .E)
 .LP
-The "set clearstat" clause tells cook that the command will
+The "set clearstat" clause tells Cook that the command will
 invalidate parts of its
 .I stat
 cache,
@@ -237,11 +237,11 @@ See the
 for a description of the
 .I prepost
 builtin function,
-and other cook details.
+and other Cook details.
 .LP
 There is one last change that must be made to this recipe,
 it must use the resolve function to reference the appropriate file
-once cook has found it on the search list:
+once Cook has found it on the search list:
 .E(
 %.o: %.c: [collect c_incl -eia
   [prepost "-I" "" [search_list]]
@@ -265,8 +265,8 @@ The semantics of C include directives make the
 .E(
 #include "\fIfilename\fP"
 .E)
-directive dangerous in a project developed with the aegis program
-and cook.
+directive dangerous in a project developed with the Aegis program
+and Cook.
 .LP
 Depending on the age of your compiler,
 whether it is AT&T traditional C or newer ANSI C,
@@ -288,7 +288,7 @@ Always use the
 .E)
 form of the include directive,
 and set the include search path explicitly on the command line
-used by cook.
+used by Cook.
 .LP
 Cook is able to dynamically adapt
 to include file dependencies,
@@ -349,7 +349,7 @@ pick up the generated .c file and construct the necessary .o file.
 .nh 3 "Recipes for Documents"
 .LP
 You can format documents,
-such as user guides and manual entries with aegis and cook,
+such as user guides and manual entries with Aegis and Cook,
 and the recipes are similar
 to the ones above.
 .E(
@@ -379,7 +379,7 @@ macro package,
 to produce PostScript output.
 The
 .I roffpp
-program comes with cook,
+program comes with Cook,
 and is like
 .I soelim (1)
 but it accepts include search path options on the command line.

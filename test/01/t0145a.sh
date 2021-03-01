@@ -103,7 +103,7 @@ unset LANGUAGE
 # make a new project
 #
 activity="new project 129"
-$bin/aegis -npr foo  -dir $workproj -LIB $work/lib > log 2>&1
+$bin/aegis -npr foo -dir $workproj -LIB $work/lib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="new branch 133"
@@ -126,14 +126,14 @@ activity="aenrv 147"
 $bin/aegis -nrv $USER -Descend_Project_Tree -p foo.1 -lib $work/lib
 if test $? -ne 0 ; then cat log; fail; fi
 
-$bin/aegis -list developers  -p foo -lib $work/lib     -ter > $work/file
+$bin/aegis -list developers -p foo -lib $work/lib -ter > $work/file
 if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="check dev 154"
 test ! -s $work/file
 if test $? -ne 0 ; then cat log; fail; fi
 
-$bin/aegis -list developers  -p foo.1 -lib $work/lib   -ter > $work/file
+$bin/aegis -list developers -p foo.1 -lib $work/lib -ter > $work/file
 if test $? -ne 0 ; then cat log; no_result; fi
 
 diff $work/file - << EOF
@@ -141,7 +141,7 @@ $USER
 EOF
 if test $? -ne 0 ; then cat log; fail; fi
 
-$bin/aegis -list developers  -p foo.1.0 -lib $work/lib -ter > $work/file
+$bin/aegis -list developers -p foo.1.0 -lib $work/lib -ter > $work/file
 if test $? -ne 0 ; then cat log; no_result; fi
 diff $work/file - << EOF
 $USER
@@ -149,13 +149,13 @@ EOF
 if test $? -ne 0 ; then cat log; fail; fi
 
 activity="check int 177"
-$bin/aegis -list integrators  -p foo     -lib $work/lib  -ter > $work/file
+$bin/aegis -list integrators -p foo -lib $work/lib -ter > $work/file
 if test $? -ne 0 ; then cat log; no_result; fi
 
 test ! -s $work/file
 if test $? -ne 0 ; then cat log; fail; fi
 
-$bin/aegis -list integrators  -p foo.1   -lib $work/lib  -ter > $work/file
+$bin/aegis -list integrators -p foo.1 -lib $work/lib -ter > $work/file
 if test $? -ne 0 ; then cat log; no_result; fi
 
 diff $work/file - << EOF
@@ -163,7 +163,7 @@ $USER
 EOF
 if test $? -ne 0 ; then cat log; fail; fi
 
-$bin/aegis -list integrators  -p foo.1.0 -lib $work/lib  -ter > $work/file
+$bin/aegis -list integrators -p foo.1.0 -lib $work/lib -ter > $work/file
 if test $? -ne 0 ; then cat log; no_result; fi
 
 diff $work/file - <<EOF
@@ -172,7 +172,7 @@ EOF
 if test $? -ne 0 ; then cat log; fail; fi
 
 activity="check admins 203"
-$bin/aegis -list administrators  -p foo     -lib $work/lib  -ter > $work/file
+$bin/aegis -list administrators -p foo -lib $work/lib -ter > $work/file
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #Just the guy who created the project
@@ -181,7 +181,7 @@ $USER
 EOF
 if test $? -ne 0 ; then cat log; fail; fi
 
-$bin/aegis -list administrators  -p foo.1   -lib $work/lib  -ter > $work/file
+$bin/aegis -list administrators -p foo.1 -lib $work/lib -ter > $work/file
 if test $? -ne 0 ; then cat log; no_result; fi
 
 diff $work/file - << EOF
@@ -189,7 +189,7 @@ $USER
 EOF
 if test $? -ne 0 ; then cat log; fail; fi
 
-$bin/aegis -list administrators  -p foo.1.0 -lib $work/lib  -ter > $work/file
+$bin/aegis -list administrators -p foo.1.0 -lib $work/lib -ter > $work/file
 if test $? -ne 0 ; then cat log; no_result; fi
 
 diff $work/file - << EOF
@@ -197,14 +197,14 @@ $USER
 EOF
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="check  reveiwers 242"
-$bin/aegis -list reviewers  -p foo     -lib $work/lib  -ter > $work/file
+activity="check reveiwers 242"
+$bin/aegis -list reviewers -p foo -lib $work/lib -ter > $work/file
 if test $? -ne 0 ; then cat log; no_result; fi
 
 test ! -s $work/file
 if test $? -ne 0 ; then cat log; fail; fi
 
-$bin/aegis -list reviewers  -p foo.1   -lib $work/lib  -ter > $work/file
+$bin/aegis -list reviewers -p foo.1 -lib $work/lib -ter > $work/file
 if test $? -ne 0 ; then cat log; no_result; fi
 
 diff $work/file - << EOF
@@ -212,7 +212,7 @@ $USER
 EOF
 if test $? -ne 0 ; then cat log; fail; fi
 
-$bin/aegis -list reviewers -p foo.1.0 -lib $work/lib  -ter > $work/file
+$bin/aegis -list reviewers -p foo.1.0 -lib $work/lib -ter > $work/file
 if test $? -ne 0 ; then cat log; no_result; fi
 
 diff $work/file - << EOF
@@ -263,60 +263,72 @@ $bin/aegis -ri $USER -dpt -p foo.1 -lib $work/lib
 if test $? -ne 0 ; then cat log; fail; fi
 
 activity="check integrators 321"
-$bin/aegis -list integrators  -p foo.1     -lib $work/lib  -ter > $work/file
+$bin/aegis -list integrators -p foo.1 -lib $work/lib -ter > $work/file
 if test $? -ne 0 ; then cat log; no_result; fi
 
-diff $work/file - << EOF
-EOF
+cp /dev/null ok
+if test $? -ne 0 ; then no_result; fi
+
+diff ok $work/file
 if test $? -ne 0 ; then cat log; fail; fi
 
 activity="check integrators 330"
-$bin/aegis -list integrators  -p foo.1.0   -lib $work/lib  -ter > $work/file
+$bin/aegis -list integrators -p foo.1.0 -lib $work/lib -ter > $work/file
 if test $? -ne 0 ; then cat log; no_result; fi
 
-diff $work/file - << EOF
-EOF
-if test $? -ne 0 ; then cat log; fail; fi
+cp /dev/null ok
+if test $? -ne 0 ; then no_result; fi
+
+diff ok $work/file
+if test $? -ne 0 ; then fail; fi
 
 activity="aerd 336"
 $bin/aegis -rd $USER -dpt -p foo.1 -lib $work/lib
 if test $? -ne 0 ; then cat log; fail; fi
 
 activity="check developers 341"
-$bin/aegis -list developers  -p foo.1     -lib $work/lib  -ter > $work/file
+$bin/aegis -list developers -p foo.1 -lib $work/lib -ter > $work/file
 if test $? -ne 0 ; then cat log; no_result; fi
 
-diff $work/file - << EOF
-EOF
-if test $? -ne 0 ; then cat log; fail; fi
+cp /dev/null ok
+if test $? -ne 0 ; then no_result; fi
+
+diff ok $work/file
+if test $? -ne 0 ; then fail; fi
 
 activity="check developers 351"
-$bin/aegis -list developers  -p foo.1.0   -lib $work/lib  -ter > $work/file
+$bin/aegis -list developers -p foo.1.0 -lib $work/lib -ter > $work/file
 if test $? -ne 0 ; then cat log; no_result; fi
 
-diff $work/file - << EOF
-EOF
-if test $? -ne 0 ; then cat log; fail; fi
+cp /dev/null ok
+if test $? -ne 0 ; then no_result; fi
+
+diff ok $work/file
+if test $? -ne 0 ; then fail; fi
 
 activity="aerrv 362"
 $bin/aegis -rrv $USER -dpt -p foo.1 -lib $work/lib
 if test $? -ne 0 ; then cat log; fail; fi
 
 activity="check reviewers 364"
-$bin/aegis -list reviewers  -p foo.1     -lib $work/lib  -ter > $work/file
+$bin/aegis -list reviewers -p foo.1 -lib $work/lib -ter > $work/file
 if test $? -ne 0 ; then cat log; no_result; fi
 
-diff $work/file - << EOF
-EOF
-if test $? -ne 0 ; then cat log; fail; fi
+cp /dev/null ok
+if test $? -ne 0 ; then no_result; fi
+
+diff ok $work/file
+if test $? -ne 0 ; then fail; fi
 
 activity="check reviewers 373"
-$bin/aegis -list reviewers  -p foo.1.0   -lib $work/lib  -ter > $work/file
+$bin/aegis -list reviewers -p foo.1.0 -lib $work/lib -ter > $work/file
 if test $? -ne 0 ; then cat log; no_result; fi
 
-diff $work/file - << EOF
-EOF
-if test $? -ne 0 ; then cat log; fail; fi
+cp /dev/null ok
+if test $? -ne 0 ; then no_result; fi
+
+diff ok $work/file
+if test $? -ne 0 ; then fail; fi
 
 # can't test aera, because then there would be done, and that's an error
 # activity="aera 312"
@@ -334,13 +346,14 @@ if test $? -ne 0 ; then cat log; fail; fi
 # if test $? -ne 0 ; then cat log; fail; fi
 
 activity="check admins 330"
-$bin/aegis -list administrators  -p foo.1.0     -lib $work/lib  -ter > $work/file
+$bin/aegis -list administrators -p foo.1.0 -lib $work/lib -ter > $work/file
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #Just the guy who created the project
-diff $work/file - << EOF
-$USER
-EOF
+echo $USER > ok
+if test $? -ne 0 ; then no_result; fi
+
+diff ok $work/file
 if test $? -ne 0 ; then cat log; fail; fi
 
 pass

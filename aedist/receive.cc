@@ -22,6 +22,7 @@
 
 #include <ac/stdlib.h>
 #include <ac/string.h>
+#include <ac/unistd.h>
 
 #include <arglex3.h>
 #include <arglex/change.h>
@@ -134,7 +135,6 @@ receive_main(void (*usage)(void))
     string_list_ty  files_test_auto;
     string_list_ty  files_test_manual;
     move_list_ty    files_moved;
-    int             need_to_test;
     int             could_have_a_trojan;
     int             config_seen;
     int             uncopy;
@@ -145,6 +145,7 @@ receive_main(void (*usage)(void))
     int             exec_mode;
     int             non_exec_mode;
     string_list_ty  batch_moved;
+    int             ignore_uuid;
 
     project_name = 0;
     change_number = 0;
@@ -153,6 +154,7 @@ receive_main(void (*usage)(void))
     delta = 0;
     devdir = 0;
     use_patch = -1;
+    ignore_uuid = -1;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -267,8 +269,30 @@ receive_main(void (*usage)(void))
 	        goto too_many_patchs;
 	    use_patch = 0;
 	    break;
-	}
-	arglex();
+        case arglex_token_ignore_uuid:
+            if (ignore_uuid > 0)
+                duplicate_option(usage);
+            if (ignore_uuid >= 0)
+            {
+                too_many_ignore_uuid:
+                mutually_exclusive_options
+                (
+                    arglex_token_ignore_uuid,
+                    arglex_token_ignore_uuid_not,
+                    usage
+                );
+            }
+            ignore_uuid = 1;
+            break;
+        case arglex_token_ignore_uuid_not:
+            if (ignore_uuid == 0)
+                duplicate_option(usage);
+            if (ignore_uuid >= 0)
+                goto too_many_ignore_uuid;
+            ignore_uuid = 0;
+            break;
+        }
+        arglex();
     }
 
     //
@@ -414,6 +438,31 @@ receive_main(void (*usage)(void))
     }
 
     //
+    // We refuse to receive a change we already have because that can
+    // undo changes.  If the local repository is the source of the
+    // change set, then the patch will fail to apply and the full
+    // source will be used, thus successive changes will be removed.
+    // The -ignore-uuid option is here to handle UUID clash, if any.
+    //
+    if (ignore_uuid <= 0 && change_set->uuid)
+    {
+        assert(universal_unique_identifier_valid(change_set->uuid));
+        change_ty *c = project_uuid_find(pp, change_set->uuid);
+        if (c)
+        {
+            assert(c->uuid);
+            assert(universal_unique_identifier_valid(c->uuid));
+            assert(str_equal(change_set->uuid, c->uuid));
+
+	    //
+	    // run away, run away!
+	    //
+	    error_intl(0, i18n("change already present"));
+	    return;
+        }
+    }
+
+    //
     // construct change attributes from the change_set
     //
     // Be careful when copying across the testing exemptions, to
@@ -432,11 +481,10 @@ receive_main(void (*usage)(void))
     pconf_data = project_pconf_get(pp);
     change_attributes_default(dflt, pp, pconf_data);
     os_become_orig();
-    cattr_data->test_exempt = (boolean_ty)(change_set->test_exempt &&
-        dflt->test_exempt);
-    cattr_data->test_baseline_exempt = (boolean_ty)
+    cattr_data->test_exempt = (change_set->test_exempt && dflt->test_exempt);
+    cattr_data->test_baseline_exempt =
 	(change_set->test_baseline_exempt && dflt->test_baseline_exempt);
-    cattr_data->regression_test_exempt = (boolean_ty)
+    cattr_data->regression_test_exempt =
 	(change_set->regression_test_exempt && dflt->regression_test_exempt);
     if (change_set->attribute)
 	cattr_data->attribute = attributes_list_copy(change_set->attribute);
@@ -496,7 +544,7 @@ receive_main(void (*usage)(void))
     // Adjust the file actions to reflect the current state of
     // the project.
     //
-    need_to_test = 0;
+    bool need_to_test = false;
     could_have_a_trojan = 0;
     for (j = 0; j < change_set->src->length; ++j)
     {
@@ -695,7 +743,7 @@ receive_main(void (*usage)(void))
 
 	    case file_usage_test:
 	    case file_usage_manual_test:
-		need_to_test = 1;
+		need_to_test = true;
 		// fall through...
 
 	    case file_usage_source:
@@ -746,7 +794,6 @@ receive_main(void (*usage)(void))
     //
     // add the new files to the change
     //
-    need_to_test = 0;
     for (j = 0; j < change_set->src->length; ++j)
     {
 	cstate_src_ty   *src_data;
@@ -800,12 +847,12 @@ receive_main(void (*usage)(void))
 
 	case file_usage_test:
 	    string_list_append_unique(&files_test_auto, src_data->file_name);
-	    need_to_test = 1;
+	    need_to_test = true;
 	    break;
 
 	case file_usage_manual_test:
 	    string_list_append_unique(&files_test_manual, src_data->file_name);
-	    need_to_test = 1;
+	    need_to_test = true;
 	    break;
 	}
     }
@@ -1070,9 +1117,70 @@ receive_main(void (*usage)(void))
 	    switch (src_data->action)
 	    {
 	    case file_action_create:
-		break;
+                if (!use_patch)
+                    break;
 
-	    case file_action_modify:
+                //
+                // We handle only the create half of the rename.
+                //
+                if (!src_data->move)
+                    break;
+
+                assert(plp);
+                assert(plp->length >= 0);
+                if (plp->length > 0)
+                {
+                    patch_ty    *p;
+                    string_ty   *orig;
+                    int         ok;
+
+                    //
+		    // Apply the patch.
+		    //
+		    // The input file (to which the patch is applied)
+		    // is in the change.
+		    //
+		    p = plp->item[0];
+		    os_become_undo();
+		    assert(pp);
+                    trace_string(src_data->file_name->str_text);
+		    orig = project_file_path(pp, src_data->move);
+		    os_become_orig();
+		    ok = patch_apply(p, orig, src_data->file_name);
+		    str_free(orig);
+		    if (ok)
+			need_whole_source = 0;
+		    else
+		    {
+			sub_context_ty  *scp;
+
+			scp = sub_context_new();
+			sub_var_set_string
+			(
+			    scp,
+			    "File_Name",
+			    src_data->file_name
+			);
+			error_intl
+			(
+			    scp,
+			    i18n("warning: $filename patch not used")
+			);
+			sub_context_delete(scp);
+		    }
+                }
+                else
+		{
+                    //
+                    // The patch does not contains info, so this is a
+                    // "clean" rename without changes to the new
+                    // file.  Thus the whole source is not needed.
+                    //
+                    need_whole_source = 0;
+		}
+                break;
+
+            case file_action_modify:
 		if (use_patch && plp->length == 1)
 		{
 		    patch_ty	*p;
@@ -1272,8 +1380,6 @@ receive_main(void (*usage)(void))
     }
     change_free(cp);
     cp = 0;
-    project_free(pp);
-    pp = 0;
 
     //
     // should be at end of input
@@ -1287,10 +1393,46 @@ receive_main(void (*usage)(void))
     os_become_undo();
 
     //
+    // Now that all the files have been unpacked,
+    // set the change's UUID.
+    //
+    // It is vaguely possible you have already downloaded this change
+    // before, so we don't complain (OS_EXEC_FLAG_ERROK) if the command
+    // fails.
+    //
+    // We intentionally set the UUID before the aecpu -unch.  The aechu
+    // -unch will clear the UUID if the chnage's file inventory changes,
+    // because it is no longer the same change set.
+    //
+    if (change_set->uuid)
+    {
+	string_ty       *quoted_uuid;
+
+	quoted_uuid = str_quote_shell(change_set->uuid);
+	s =
+	    str_format
+	    (
+		"aegis --change-attr --uuid %s -change=%ld --project=%s",
+		quoted_uuid->str_text,
+		change_number,
+		project_name->str_text
+	    );
+	str_free(quoted_uuid);
+	os_become_orig();
+	os_execute(s, OS_EXEC_FLAG_INPUT | OS_EXEC_FLAG_ERROK, dd);
+	os_become_undo();
+	str_free(s);
+    }
+
+    //
     // Un-copy any files which did not change.
     //
     // The idea is, if there are no files left, there is nothing
     // for this change to do, so cancel it.
+    //
+    // We intentionally set the UUID before the aecpu -unch.  The aechu
+    // -unch will clear the UUID if the chnage's file inventory changes,
+    // because it is no longer the same change set.
     //
     if (uncopy)
     {
@@ -1369,34 +1511,6 @@ receive_main(void (*usage)(void))
     }
 
     //
-    // Now that all the files have been unpacked,
-    // set the change's UUID.
-    //
-    // It is vaguely possible you have already downloaded this change
-    // before, so we don't complain (OS_EXEC_FLAG_ERROK) if the command
-    // fails.
-    //
-    if (change_set->uuid)
-    {
-	string_ty       *quoted_uuid;
-
-	quoted_uuid = str_quote_shell(change_set->uuid);
-	s =
-	    str_format
-	    (
-		"aegis --change-attr --uuid %s -change=%ld --project=%s",
-		quoted_uuid->str_text,
-		change_number,
-		project_name->str_text
-	    );
-	str_free(quoted_uuid);
-	os_become_orig();
-	os_execute(s, OS_EXEC_FLAG_INPUT | OS_EXEC_FLAG_ERROK, dd);
-	os_become_undo();
-	str_free(s);
-    }
-
-    //
     // If the change could have a trojan horse in the project config
     // file, stop here with a warning.  Don't even difference the
     // change, because the trojan could be embedded in the diff
@@ -1460,6 +1574,14 @@ receive_main(void (*usage)(void))
     }
 
     //
+    // Sleep for a second to make sure the derived files will have
+    // mod-times strictly later than the source files, and that the aeb
+    // timestamp will also be strictly later then the mod times for the
+    // source files.
+    //
+    sleep(1);
+
+    //
     // now build the change
     //
     s =
@@ -1475,9 +1597,22 @@ receive_main(void (*usage)(void))
     str_free(s);
 
     //
+    // Sleep for a second to make sure the aet timestamps will be
+    // strictly later then the aeb timestamp.
+    //
+    sleep(1);
+
+    //
+    // re-read the change state data.
+    //
+    cp = change_alloc(pp, change_number);
+    change_bind_existing(cp);
+    cstate_ty *cstate_data = change_cstate_get(cp);
+
+    //
     // now test the change
     //
-    if (need_to_test)
+    if (need_to_test && !cstate_data->test_exempt)
     {
 	s =
 	    str_format
@@ -1488,8 +1623,11 @@ receive_main(void (*usage)(void))
 	    );
 	os_become_orig();
 	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+	os_become_undo();
 	str_free(s);
-
+    }
+    if (need_to_test && !cstate_data->test_baseline_exempt)
+    {
 	s =
 	    str_format
 	    (
@@ -1497,12 +1635,32 @@ receive_main(void (*usage)(void))
 		change_number,
 		project_name->str_text
 	    );
+	os_become_orig();
 	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
 	os_become_undo();
 	str_free(s);
     }
 
     // always to a regession test?
+    if (!cstate_data->regression_test_exempt)
+    {
+	s =
+	    str_format
+	    (
+		"aegis --test --regression --change=%ld --project=%s --verbose",
+		change_number,
+		project_name->str_text
+	    );
+	os_become_orig();
+	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+	os_become_undo();
+	str_free(s);
+    }
+
+    change_free(cp);
+    cp = 0;
+    project_free(pp);
+    pp = 0;
 
     //
     // end development (if we got this far!)

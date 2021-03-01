@@ -37,7 +37,12 @@ and discussion of the alternatives (SunOS make, BSD 4.3 make, etc),
 would not be universally applicable.
 "Plain vanilla" make
 (with no transitive closure, no pattern rules, no functions)
-is not sufficiently capable to satisfy the demands placed on it by aegis.
+is not sufficiently capable to satisfy the demands placed on it by Aegis.
+.LP
+With the introduction of the \fIdevelopment_\%directory_\%style\fP field of
+the project configuration file, any project which is currently using
+a "plain vanilla" make may continue to use it, and still manage the
+project using Aegis.
 .LP
 As mentioned earlier in this chapter,
 .I make
@@ -57,17 +62,17 @@ has functionality called
 .I VPATH ,
 the implementation leaves something to be desired,
 and can't be used for the search path functionality
-required by aegis.
+required by Aegis.
 Because of this,
 the
-.I create_symlinks_before_build
+.I development_\%directory_\%style.\%source_\%file_\%symlink
 field of the project
 configuration
 file is set to
 .I true
-so that aegis will arrange for the development
+so that Aegis will arrange for the development
 directory to be full of symbolic links,
-making it appear that the entire project
+making it appear that the entire project source
 is in each change's development directory.
 .nh 3 "Invoking Make"
 .LP
@@ -100,20 +105,24 @@ file:
 link_integration_directory = true;
 .E)
 .LP
-The files must be removed first,
-otherwise the baseline would cease to be self-consistent.
+The files must be removed first, otherwise the baseline would be
+corrupted by integration builds (or even by developer builds, if your
+aren't using a separate user for the project owner).
+.LP
+\fBNote:\fP if you are migrating an existing project \fBdo not set this
+field\fP; only set it \fIafter\fP you have changed \fIall\fP of the Make
+rules.  If in doubt, \fBdon't\fP set this field.
 .LP
 Another field to be set in this file is
 .E(
-create_symlinks_before_build =
-  true;
+development_directory_style =
+{
+    source_file_symlink = true;
+};
 .E)
-which tells aegis to maintain symbolic links between the development directory
-and the baseline.
-This also requires that rules remove their targets before
-constructing them,
-to ensure that rules do not attempt to write their results onto
-the read-only versions in the baseline.
+which tells Aegis to maintain symbolic links between the development
+directory and the baseline for source files (but not derived files).
+See \fIaepconf\fP(5) for more information.
 .nh 3 "The Rule File"
 .LP
 The file containing the rules is called
@@ -121,7 +130,7 @@ The file containing the rules is called
 and is given to make on the command line.
 .LP
 The following items are preamble to the rest of the file;
-they ask aegis for the source files of the project and change
+they ask Aegis for the source files of the project and change
 so that make can determine what needs to be compiled and linked.
 .E(
 project_files := \e
@@ -302,7 +311,7 @@ make them precious:
 .nh 3 "Rules for Documents"
 .LP
 You can format documents,
-such as user guides and manual entries with aegis and GNU Make,
+such as user guides and manual entries with Aegis and GNU Make,
 and the rules are similar
 to the ones above.
 .E(

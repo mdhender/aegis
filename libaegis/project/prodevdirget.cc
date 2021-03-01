@@ -25,11 +25,9 @@
 #include <project.h>
 
 
-int
+bool
 project_protect_development_directory_get(project_ty *pp)
 {
-    change_ty       *cp;
-
-    cp = project_change_get(pp);
+    change_ty *cp = project_change_get(pp);
     return change_branch_protect_development_directory_get(cp);
 }

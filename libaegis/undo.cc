@@ -23,9 +23,13 @@
 #include <error.h>
 #include <mem.h>
 #include <os.h>
+#include <quit/action/undo.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
+
+
+quit_action_undo undo_quitter;
 
 
 enum what_ty
@@ -91,6 +95,53 @@ undo_rename(string_ty *from, string_ty *to)
     trace(("}\n"));
 }
 
+void
+undo_rename_cancel(string_ty *from, string_ty *to)
+{
+    action_ty       *ap = head;
+    action_ty       *ap1 = NULL;
+
+    trace(("undo_rename_cancel(\"%s\", \"%s\")\n{\n",
+          from->str_text, to->str_text));
+    while (ap)
+    {
+        if (ap->what == what_rename
+            && str_equal(ap->path1, from)
+            && str_equal(ap->path2, to))
+            break;
+        else
+        {
+            ap1 = ap;
+            ap = ap->next;
+        }
+    }
+
+    //
+    // It is an bug if we try to cancel a rename never requested.
+    //
+    if (NULL == ap)
+        this_is_a_bug();
+
+    if (ap == head)
+    {
+        assert(ap1 == NULL);
+        head = ap->next;
+    }
+    else
+    {
+        assert(ap1 != NULL);
+        ap1->next = ap->next;
+    }
+
+    //
+    // Free the list element.
+    //
+    str_free(ap->path1);
+    if (ap->path2)
+        str_free(ap->path2);
+    mem_free((char *)ap);
+    trace(("}\n"));
+}
 
 void
 undo_chmod(string_ty *path, int mode)
@@ -318,14 +369,6 @@ undo()
     }
     --count;
     trace(("}\n"));
-}
-
-
-void
-undo_quitter(int n)
-{
-    if (n)
-        undo();
 }
 
 

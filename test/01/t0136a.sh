@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001, 2002 Peter Miller;
+#	Copyright (C) 2001, 2002, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,15 @@ unset AEGIS
 unset LINES
 unset COLS
 umask 022
+
+if test -z "`diff -v 2>&1 | grep GNU`"
+then
+	echo ''
+	echo '	This test depends on GNU Diff, which you do not seem to'
+	echo '	have installed.  This test is declared to pass by default.'
+	echo ''
+	exit 0
+fi
 
 USER=${USER:-${LOGNAME:-`whoami`}}
 

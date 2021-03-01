@@ -66,10 +66,12 @@ get_file_activity(change_ty *master_cp, string_ty *filename,
 	    ++conflict;
 
     pp = master_cp->pp;
-    html_header(pp);
+    html_header(pp, master_cp);
     printf("<title>Project ");
     html_encode_string(project_name_get(pp));
-    printf(", Activity</title></head>\n<body><h1 align=center>");
+    printf(", Activity</title></head><body>\n");
+    html_header_ps(pp, master_cp);
+    printf("<h1 align=center>");
     emit_project(pp);
     printf(",<br>\nFile Activity</h1>\n");
 
@@ -82,7 +84,7 @@ get_file_activity(change_ty *master_cp, string_ty *filename,
     {
 	change_list_ty  *clp;
 
-	clp = change_list_new();
+	clp = new change_list_ty();
 	symtab_assign(stp, filename, clp);
     }
 
@@ -159,10 +161,10 @@ get_file_activity(change_ty *master_cp, string_ty *filename,
 		clp = (change_list_ty *)symtab_query(stp, src->file_name);
 		if (!clp)
 		{
-		    clp = change_list_new();
+		    clp = new change_list_ty();
 		    symtab_assign(stp, src->file_name, clp);
 		}
-		change_list_append(clp, cp);
+		clp->append(cp);
 	    }
 
 	    //
@@ -285,5 +287,5 @@ get_file_activity(change_ty *master_cp, string_ty *filename,
     printf("Change List</a>\n");
     printf("]</p>\n");
 
-    html_footer();
+    html_footer(pp, master_cp);
 }

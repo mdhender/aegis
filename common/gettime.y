@@ -729,15 +729,15 @@ yyerror(const char *s)
 static void
 yytrace(const char *s, ...)
 {
-    va_list		ap;
-    static char	line[1024];
-    string_ty	*buffer;
-    char		*cp;
+    va_list         ap;
+    static char     line[1024];
+    string_ty       *buffer;
+    char            *cp;
 
     va_start(ap, s);
     buffer = str_vformat(s, ap);
     va_end(ap);
-    strcat(line, buffer->str_text);
+    strlcat(line, buffer->str_text, sizeof(line));
     str_free(buffer);
     cp = line + strlen(line) - 1;
     if (cp > line && *cp == '\n')

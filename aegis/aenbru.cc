@@ -47,6 +47,7 @@
 #include <project.h>
 #include <project/active.h>
 #include <project/history.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>

@@ -35,6 +35,7 @@
 #include <error.h>
 #include <mprintf.h>
 #include <progname.h>
+#include <quit.h>
 
 
 //
@@ -167,7 +168,7 @@ wrap(const char *s)
 	if (first_line)
 	    snprintf(tmp, sizeof(tmp), "%s: ", progname);
 	else
-	    strcpy(tmp, "\t");
+	    strlcpy(tmp, "\t", sizeof(tmp));
 	tp = tmp + strlen(tmp);
 	while (s < ep)
 	{
@@ -244,17 +245,16 @@ double_jeopardy(void)
 static char *
 copy_string(const char *s)
 {
-    char	    *cp;
-
     errno = 0;
-    cp = (char *)malloc(strlen(s) + 1);
+    size_t nbytes = strlen(s) + 1;
+    char *cp = (char *)malloc(nbytes);
     if (!cp)
     {
 	if (!errno)
     	    errno = ENOMEM;
 	double_jeopardy();
     }
-    strcpy(cp, s);
+    memcpy(cp, s, nbytes);
     return cp;
 }
 
@@ -431,51 +431,10 @@ fatal_raw(const char *fmt, ...)
 //
 //
 
-int
+void
 assert_failed(const char *s, const char *file, int line)
 {
     error_raw("%s: %d: assertion \"%s\" failed (bug)", file, line, s);
     abort();
     exit(1); // incase abort() comes back
-}
-
-
-static	quit_ty	quit_list[10];
-static	int	quit_list_len;
-static	int	quitting;
-
-
-void
-quit_register(quit_ty func)
-{
-    int		    j;
-
-    if (quitting)
-	return;
-    assert((size_t)quit_list_len < SIZEOF(quit_list));
-    assert(func);
-    for (j = 0; j < quit_list_len; ++j)
-	if (quit_list[j] == func)
-    	    return;
-    quit_list[quit_list_len++] = func;
-}
-
-
-void
-quit(int n)
-{
-    if (quitting > 4)
-    {
-	fprintf
-	(
-    	    stderr,
-    	    "%s: incorrectly handled error while quitting (bug)\n",
-    	    progname_get()
-	);
-	exit(1);
-    }
-    ++quitting;
-    while (quit_list_len > 0)
-	quit_list[--quit_list_len](n);
-    exit(n);
 }

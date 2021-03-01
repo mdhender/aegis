@@ -37,4 +37,7 @@ link_integration_directory = true;
  * to ensure that development builds do not attempt to write their results onto
  * the read-only versions in the baseline.
  */
-create_symlinks_before_build = true;
+development_directory_style =
+{
+    source_file_symlink = true;
+};

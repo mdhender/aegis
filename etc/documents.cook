@@ -58,7 +58,7 @@ lib/%3/cat%1/%2.%1: lib/%3/man%1/%2.%1
 		[prepost -I /[arch]/etc [search_list]]
 		[prepost "-I" "/etc" [search_list]]
 		[resolve lib/%3/man%1/%2.%1]
-	| groff -Tascii -P-ch -t -man
+	| GROFF_NO_SGR\=-c groff -Tascii -P-h -t -man
 	> [target];
 }
 
@@ -160,7 +160,7 @@ lib/%1/%2/%2.txt: lib/%1/%2/main.roff: etc/ssp.awk
 		[prepost "-I" /[arch]/etc [search_list]]
 		[prepost "-I" "/etc" [search_list]]
 		[resolve lib/%1/%2/main.roff]
-	| groff -Tascii -t -P-bchu
+	| GROFF_NO_SGR\=-c groff -Tascii -t -P-bhu
 	| [awk] -f [resolve etc/ssp.awk]
 	> [target];
 }
@@ -275,7 +275,7 @@ lib/%1/%2/%2.txt: lib/%1/%2/main.man: etc/ssp.awk
 		[prepost "-I" "/etc" [search_list]]
 		[prepost "-I" "/lib/%1/readme" [search_list]] /* for changes */
 		[resolve lib/%1/%2/main.man]
-	| groff -Tascii -t -P-bchu -man
+	| GROFF_NO_SGR\=-c groff -Tascii -t -P-bhu -man
 	| [awk] -f [resolve etc/ssp.awk]
 	> [target];
 }

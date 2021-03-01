@@ -20,9 +20,9 @@
 // MANIFEST: lexical analysis of RCS files
 //
 
-#include <error.h>
 #include <format/rcs/lex.h>
 #include <input/file.h>
+#include <quit.h>
 #include <str_list.h>
 #include <sub.h>
 #include <symtab.h>

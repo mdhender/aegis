@@ -47,23 +47,20 @@ project_pattr_get(project_ty *pp, pattr_ty *a)
 
     if (!(a->mask & pattr_developer_may_review_mask))
     {
-	a->developer_may_review =
-            (boolean_ty)project_developer_may_review_get(pp);
+	a->developer_may_review = project_developer_may_review_get(pp);
     }
     if (!(a->mask & pattr_developer_may_integrate_mask))
     {
-	a->developer_may_integrate =
-            (boolean_ty)project_developer_may_integrate_get(pp);
+	a->developer_may_integrate = project_developer_may_integrate_get(pp);
     }
     if (!(a->mask & pattr_reviewer_may_integrate_mask))
     {
-	a->reviewer_may_integrate =
-            (boolean_ty)project_reviewer_may_integrate_get(pp);
+	a->reviewer_may_integrate = project_reviewer_may_integrate_get(pp);
     }
     if (!(a->mask & pattr_developers_may_create_changes_mask))
     {
 	a->developers_may_create_changes =
-	    (boolean_ty)project_developers_may_create_changes_get(pp);
+	    project_developers_may_create_changes_get(pp);
     }
     if (!(a->mask & pattr_umask_mask))
     {
@@ -71,16 +68,15 @@ project_pattr_get(project_ty *pp, pattr_ty *a)
     }
     if (!(a->mask & pattr_default_test_exemption_mask))
     {
-	a->default_test_exemption =
-            (boolean_ty)project_default_test_exemption_get(pp);
+	a->default_test_exemption = project_default_test_exemption_get(pp);
     }
     if (!(a->mask & pattr_skip_unlucky_mask))
     {
-	a->skip_unlucky = (boolean_ty)project_skip_unlucky_get(pp);
+	a->skip_unlucky = project_skip_unlucky_get(pp);
     }
     if (!(a->mask & pattr_compress_database_mask))
     {
-	a->compress_database = (boolean_ty)project_compress_database_get(pp);
+	a->compress_database = project_compress_database_get(pp);
     }
     if (!(a->mask & pattr_develop_end_action_mask))
     {
@@ -163,8 +159,7 @@ project_pattr_get(project_ty *pp, pattr_ty *a)
     }
     if (!(a->mask & pattr_reuse_change_numbers_mask))
     {
-	a->reuse_change_numbers =
-            (boolean_ty)project_reuse_change_numbers_get(pp);
+	a->reuse_change_numbers = project_reuse_change_numbers_get(pp);
 	a->mask |= pattr_reuse_change_numbers_mask;
     }
     if (!a->minimum_branch_number)
@@ -174,6 +169,6 @@ project_pattr_get(project_ty *pp, pattr_ty *a)
     if (!(a->mask & pattr_protect_development_directory_mask))
     {
 	a->protect_development_directory =
-	    (boolean_ty)project_protect_development_directory_get(pp);
+	    project_protect_development_directory_get(pp);
     }
 }

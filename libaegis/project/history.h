@@ -28,7 +28,7 @@
 struct change_ty; /* existence */
 struct string_list_ty; /* existence */
 
-int project_history_delta_validate(project_ty *, long);
+bool project_history_delta_validate(project_ty *, long);
 time_t project_history_delta_to_timestamp(project_ty *, long);
 long project_history_timestamp_to_delta(project_ty *, time_t);
 long project_history_delta_latest(project_ty *);
@@ -52,19 +52,19 @@ int project_history_nth(project_ty *pp, long n, long *cn, long *dn,
 	struct string_list_ty *name);
 long project_last_change_integrated(project_ty *);
 
-int project_administrator_query(project_ty *, string_ty *);
+bool project_administrator_query(project_ty *, string_ty *);
 void project_administrator_add(project_ty *, string_ty *);
 void project_administrator_remove(project_ty *, string_ty *);
 string_ty *project_administrator_nth(project_ty *, long);
-int project_developer_query(project_ty *, string_ty *);
+bool project_developer_query(project_ty *, string_ty *);
 void project_developer_add(project_ty *, string_ty *);
 void project_developer_remove(project_ty *, string_ty *);
 string_ty *project_developer_nth(project_ty *, long);
-int project_reviewer_query(project_ty *, string_ty *);
+bool project_reviewer_query(project_ty *, string_ty *);
 void project_reviewer_add(project_ty *, string_ty *);
 void project_reviewer_remove(project_ty *, string_ty *);
 string_ty *project_reviewer_nth(project_ty *, long);
-int project_integrator_query(project_ty *, string_ty *);
+bool project_integrator_query(project_ty *, string_ty *);
 void project_integrator_add(project_ty *, string_ty *);
 void project_integrator_remove(project_ty *, string_ty *);
 string_ty *project_integrator_nth(project_ty *, long);
@@ -81,14 +81,14 @@ string_ty *project_version_previous_get(project_ty *);
 
 void project_umask_set(project_ty *, int);
 int project_umask_get(project_ty *);
-void project_developer_may_review_set(project_ty *, int);
-int project_developer_may_review_get(project_ty *);
-void project_developer_may_integrate_set(project_ty *, int);
-int project_developer_may_integrate_get(project_ty *);
-void project_reviewer_may_integrate_set(project_ty *, int);
-int project_reviewer_may_integrate_get(project_ty *);
-void project_developers_may_create_changes_set(project_ty *, int);
-int project_developers_may_create_changes_get(project_ty *);
+void project_developer_may_review_set(project_ty *, bool);
+bool project_developer_may_review_get(project_ty *);
+void project_developer_may_integrate_set(project_ty *, bool);
+bool project_developer_may_integrate_get(project_ty *);
+void project_reviewer_may_integrate_set(project_ty *, bool);
+bool project_reviewer_may_integrate_get(project_ty *);
+void project_developers_may_create_changes_set(project_ty *, bool);
+bool project_developers_may_create_changes_get(project_ty *);
 void project_forced_develop_begin_notify_command_set(project_ty *,
 	string_ty *);
 string_ty *project_forced_develop_begin_notify_command_get(project_ty *);
@@ -113,7 +113,7 @@ void project_integrate_fail_notify_command_set(project_ty *, string_ty *);
 string_ty *project_integrate_fail_notify_command_get(project_ty *);
 void project_default_development_directory_set(project_ty *, string_ty *);
 string_ty *project_default_development_directory_get(project_ty *);
-void project_default_test_exemption_set(project_ty *, int);
-int project_default_test_exemption_get(project_ty *);
+void project_default_test_exemption_set(project_ty *, bool);
+bool project_default_test_exemption_get(project_ty *);
 
 #endif /* AEGIS_PROJECT_HISTORY_H */

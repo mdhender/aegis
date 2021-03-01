@@ -119,47 +119,56 @@ list_change_files(string_ty *project_name, long change_number,
 	edit_col = col_create(colp, left, left + EDIT_WIDTH, "Edit\n-------");
 	left += EDIT_WIDTH + 1;
 
-	attr_col_stp = symtab_alloc(5);
-	attr_col_stp->reap = output_reaper;
-	for (j = 0;; ++j)
+	if (option_verbose_get())
 	{
-	    fstate_src_ty   *src_data;
-
-	    src_data = change_file_nth(cp, j, view_path_first);
-	    if (!src_data)
-		break;
-	    assert(src_data->file_name);
-	    if (src_data->attribute)
+	    //
+            // Only print the file attributes in the verbose listing.
+            // This is because the number of columns can vary depending
+            // on which changes have which attributes.  This is not good
+            // for scripting.
+	    //
+	    attr_col_stp = symtab_alloc(5);
+	    attr_col_stp->reap = output_reaper;
+	    for (j = 0;; ++j)
 	    {
-		size_t          k;
+		fstate_src_ty   *src_data;
 
-		for (k = 0; k < src_data->attribute->length; ++k)
+		src_data = change_file_nth(cp, j, view_path_first);
+		if (!src_data)
+		    break;
+		assert(src_data->file_name);
+		if (src_data->attribute)
 		{
-		    attributes_ty   *ap;
+		    size_t          k;
 
-		    ap = src_data->attribute->list[k];
-		    if (ael_attribute_listable(ap))
+		    for (k = 0; k < src_data->attribute->length; ++k)
 		    {
-			void            *p;
+			attributes_ty   *ap;
 
-			p = symtab_query(attr_col_stp, ap->name);
-			if (!p)
+			ap = src_data->attribute->list[k];
+			if (ael_attribute_listable(ap))
 			{
-			    string_ty       *s;
-			    output_ty       *op;
+			    void            *p;
 
-			    s = ael_build_header(ap->name);
-			    op =
-				col_create
-				(
-				    colp,
-				    left,
-				    left + ATTR_WIDTH,
-				    s->str_text
-				);
-			    str_free(s);
-			    symtab_assign(attr_col_stp, ap->name, op);
-			    left += ATTR_WIDTH + 1;
+			    p = symtab_query(attr_col_stp, ap->name);
+			    if (!p)
+			    {
+				string_ty       *s;
+				output_ty       *op;
+
+				s = ael_build_header(ap->name);
+				op =
+				    col_create
+				    (
+					colp,
+					left,
+					left + ATTR_WIDTH,
+					s->str_text
+				    );
+				str_free(s);
+				symtab_assign(attr_col_stp, ap->name, op);
+				left += ATTR_WIDTH + 1;
+			    }
 			}
 		    }
 		}

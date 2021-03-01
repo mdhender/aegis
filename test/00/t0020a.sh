@@ -262,6 +262,9 @@ test()
 end
 if test $? -ne 0 ; then no_result; fi
 cat > $workchan/Makefile << 'end'
+# SGImake doesn't have .cc in its default suffix list
+.SUFFIXES: .cc
+
 .cc.o:
 	rm -f $*.o
 	c++ $(CFLAGS) -D'VERSION="$(VERSION)"' -c $*.cc

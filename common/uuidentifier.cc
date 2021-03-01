@@ -74,7 +74,7 @@ make_uuid_random(void)
 }
 
 
-#if defined(UUID_IS_OSSP)
+#if HAVE_UUID_CREATE && HAVE_UUID_MAKE && HAVE_UUID_EXPORT
 
 static string_ty *
 make_uuid(void)
@@ -103,7 +103,7 @@ make_uuid(void)
     return s;
 }
 
-#elif defined(UUID_IS_E2FS)
+#elif HAVE_UUID_GENERATE && HAVE_UUID_UNPARSE
 
 static string_ty *
 make_uuid(void)
@@ -120,7 +120,7 @@ make_uuid(void)
     return str_n_from_c(uu, 36);
 }
 
-#elif defined(UUID_IS_DCE)
+#elif HAVE_DCE_UUID_H && HAVE_UUID_CREATE && HAVE_UUID_TO_STRING
 
 static string_ty *
 make_uuid(void)
@@ -160,7 +160,8 @@ make_uuid(void)
 	// memory, the application calls the rpc_string_free()
 	// routine.
 	//
-	rpc_string_free(&uu, &status);
+	int ignore;
+	rpc_string_free(&uu, &ignore);
     }
 
     return ret;

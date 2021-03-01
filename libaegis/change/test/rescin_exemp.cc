@@ -31,7 +31,7 @@ change_rescind_test_exemption(change_ty *cp)
 
     assert(cp->reference_count >= 1);
     cstate_data = change_cstate_get(cp);
-    cstate_data->test_exempt = (boolean_ty)0;
+    cstate_data->test_exempt = false;
 }
 
 

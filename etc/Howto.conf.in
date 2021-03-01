@@ -27,7 +27,11 @@
  */
 c++ = @CXX@;
 
-c++_flags = @CPPFLAGS@ @CXXFLAGS@;
+/*
+ * Some flags could have = symbols in them,
+ * which will confuse Cook's parser.
+ */
+c++_flags = [split " " "@CPPFLAGS@ @CXXFLAGS@"];
 
 /*
  * prefix for installation path

@@ -4668,9 +4668,9 @@ done
 fi
 
 
-echo "$as_me:$LINENO: checking for uuid_load in -luuid" >&5
-echo $ECHO_N "checking for uuid_load in -luuid... $ECHO_C" >&6
-if test "${ac_cv_lib_uuid_uuid_load+set}" = set; then
+echo "$as_me:$LINENO: checking for main in -luuid" >&5
+echo $ECHO_N "checking for main in -luuid... $ECHO_C" >&6
+if test "${ac_cv_lib_uuid_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -4682,17 +4682,11 @@ cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char uuid_load ();
+
 int
 main ()
 {
-uuid_load ();
+main ();
   ;
   return 0;
 }
@@ -4719,168 +4713,20 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_lib_uuid_uuid_load=yes
+  ac_cv_lib_uuid_main=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_cv_lib_uuid_uuid_load=no
+ac_cv_lib_uuid_main=no
 fi
 rm -f conftest.err conftest.$ac_objext \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_uuid_uuid_load" >&5
-echo "${ECHO_T}$ac_cv_lib_uuid_uuid_load" >&6
-if test $ac_cv_lib_uuid_uuid_load = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBUUID 1
-_ACEOF
-
-  LIBS="-luuid $LIBS"
-
-fi
-
-
-echo "$as_me:$LINENO: checking for uuid_generate in -luuid" >&5
-echo $ECHO_N "checking for uuid_generate in -luuid... $ECHO_C" >&6
-if test "${ac_cv_lib_uuid_uuid_generate+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-luuid  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char uuid_generate ();
-int
-main ()
-{
-uuid_generate ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"
-			 || test ! -s conftest.err'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; } &&
-	 { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_uuid_uuid_generate=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-ac_cv_lib_uuid_uuid_generate=no
-fi
-rm -f conftest.err conftest.$ac_objext \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_uuid_uuid_generate" >&5
-echo "${ECHO_T}$ac_cv_lib_uuid_uuid_generate" >&6
-if test $ac_cv_lib_uuid_uuid_generate = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBUUID 1
-_ACEOF
-
-  LIBS="-luuid $LIBS"
-
-fi
-
-
-echo "$as_me:$LINENO: checking for uuid_hash in -luuid" >&5
-echo $ECHO_N "checking for uuid_hash in -luuid... $ECHO_C" >&6
-if test "${ac_cv_lib_uuid_uuid_hash+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-luuid  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char uuid_hash ();
-int
-main ()
-{
-uuid_hash ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"
-			 || test ! -s conftest.err'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; } &&
-	 { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_uuid_uuid_hash=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-ac_cv_lib_uuid_uuid_hash=no
-fi
-rm -f conftest.err conftest.$ac_objext \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_uuid_uuid_hash" >&5
-echo "${ECHO_T}$ac_cv_lib_uuid_uuid_hash" >&6
-if test $ac_cv_lib_uuid_uuid_hash = yes; then
+echo "$as_me:$LINENO: result: $ac_cv_lib_uuid_main" >&5
+echo "${ECHO_T}$ac_cv_lib_uuid_main" >&6
+if test $ac_cv_lib_uuid_main = yes; then
   cat >>confdefs.h <<_ACEOF
 #define HAVE_LIBUUID 1
 _ACEOF
@@ -5677,11 +5523,13 @@ fi
 
 
 
-for ac_header in curl/curl.h dce/rpc.h dce/uuid.h fcntl.h iso646.h     \
-        libgettext.h libintl.h limits.h locale.h magic.h memory.h      \
-        mntent.h regex.h rxposix.h shadow.h stddef.h stdlib.h string.h \
-        unistd.h wchar.h wctype.h widec.h zlib.h sys/clu.h sys/ioctl.h \
-        sys/prctl.h uuid/uuid.h uuid.h                                 \
+
+
+for ac_header in crypt.h curl/curl.h dce/rpc.h dce/uuid.h fcntl.h      \
+        iso646.h libgettext.h libintl.h limits.h locale.h magic.h      \
+        memory.h mntent.h regex.h rxposix.h shadow.h stddef.h stdlib.h \
+        string.h unistd.h wchar.h wctype.h widec.h zlib.h sys/clu.h    \
+        sys/ioctl.h sys/prctl.h sys/uuid.h uuid/uuid.h uuid.h          \
 
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
@@ -6556,13 +6404,23 @@ fi
 
 
 
+
+
+
+
+
+
+
+
 for ac_func in clu_info crypt curl_easy_strerror curl_multi_strerror   \
         getpgrp igetspnam initgroups gettext gettimeofday iswctype     \
         magic_file mbrtowc pathconf prctl regcomp rpc_string_free      \
         seteuid setlocale setresuid setreuid sighold sigprocmask       \
-        snprintf strcasecmp strncasecmp strerror strftime strsignal    \
-        strtoul strverscmp symlink tcgetpgrp uuid_hash uuid_load       \
-        uuid_generate vsnprintf wcrtomb wcslen wcwidth                 \
+        snprintf strcasecmp strlcat strlcpy strncasecmp strerror       \
+        strftime strsignal strtoul strverscmp symlink tcgetpgrp        \
+        uuid_create uuid_export uuid_generate uuid_hash uuid_load      \
+        uuid_make uuid_to_string uuid_unparse vsnprintf wcrtomb wcslen \
+        wcswidth wcwidth                                               \
 
 do
 as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`
@@ -6663,6 +6521,456 @@ _ACEOF
 
 fi
 done
+
+echo "$as_me:$LINENO: checking whether crypt is declared" >&5
+echo $ECHO_N "checking whether crypt is declared... $ECHO_C" >&6
+if test "${ac_cv_have_decl_crypt+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#if HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#if HAVE_CRYPT_H
+#include <crypt.h>
+#endif
+
+
+int
+main ()
+{
+#ifndef crypt
+  char *p = (char *) crypt;
+#endif
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_have_decl_crypt=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_have_decl_crypt=no
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+echo "$as_me:$LINENO: result: $ac_cv_have_decl_crypt" >&5
+echo "${ECHO_T}$ac_cv_have_decl_crypt" >&6
+
+echo "$as_me:$LINENO: checking whether mbrtowc is declared" >&5
+echo $ECHO_N "checking whether mbrtowc is declared... $ECHO_C" >&6
+if test "${ac_cv_have_decl_mbrtowc+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#define _GNU_SOURCE
+#if HAVE_WCHAR_H
+#include <wchar.h>
+#endif
+
+
+int
+main ()
+{
+#ifndef mbrtowc
+  char *p = (char *) mbrtowc;
+#endif
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_have_decl_mbrtowc=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_have_decl_mbrtowc=no
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+echo "$as_me:$LINENO: result: $ac_cv_have_decl_mbrtowc" >&5
+echo "${ECHO_T}$ac_cv_have_decl_mbrtowc" >&6
+if test $ac_cv_have_decl_mbrtowc = yes; then
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_MBRTOWC 1
+_ACEOF
+
+
+else
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_MBRTOWC 0
+_ACEOF
+
+
+fi
+echo "$as_me:$LINENO: checking whether wcrtomb is declared" >&5
+echo $ECHO_N "checking whether wcrtomb is declared... $ECHO_C" >&6
+if test "${ac_cv_have_decl_wcrtomb+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#define _GNU_SOURCE
+#if HAVE_WCHAR_H
+#include <wchar.h>
+#endif
+
+
+int
+main ()
+{
+#ifndef wcrtomb
+  char *p = (char *) wcrtomb;
+#endif
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_have_decl_wcrtomb=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_have_decl_wcrtomb=no
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+echo "$as_me:$LINENO: result: $ac_cv_have_decl_wcrtomb" >&5
+echo "${ECHO_T}$ac_cv_have_decl_wcrtomb" >&6
+if test $ac_cv_have_decl_wcrtomb = yes; then
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_WCRTOMB 1
+_ACEOF
+
+
+else
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_WCRTOMB 0
+_ACEOF
+
+
+fi
+echo "$as_me:$LINENO: checking whether wcwidth is declared" >&5
+echo $ECHO_N "checking whether wcwidth is declared... $ECHO_C" >&6
+if test "${ac_cv_have_decl_wcwidth+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#define _GNU_SOURCE
+#if HAVE_WCHAR_H
+#include <wchar.h>
+#endif
+
+
+int
+main ()
+{
+#ifndef wcwidth
+  char *p = (char *) wcwidth;
+#endif
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_have_decl_wcwidth=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_have_decl_wcwidth=no
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+echo "$as_me:$LINENO: result: $ac_cv_have_decl_wcwidth" >&5
+echo "${ECHO_T}$ac_cv_have_decl_wcwidth" >&6
+if test $ac_cv_have_decl_wcwidth = yes; then
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_WCWIDTH 1
+_ACEOF
+
+
+else
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_WCWIDTH 0
+_ACEOF
+
+
+fi
+echo "$as_me:$LINENO: checking whether wcswidth is declared" >&5
+echo $ECHO_N "checking whether wcswidth is declared... $ECHO_C" >&6
+if test "${ac_cv_have_decl_wcswidth+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#define _GNU_SOURCE
+#if HAVE_WCHAR_H
+#include <wchar.h>
+#endif
+
+
+int
+main ()
+{
+#ifndef wcswidth
+  char *p = (char *) wcswidth;
+#endif
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_have_decl_wcswidth=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_have_decl_wcswidth=no
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+echo "$as_me:$LINENO: result: $ac_cv_have_decl_wcswidth" >&5
+echo "${ECHO_T}$ac_cv_have_decl_wcswidth" >&6
+if test $ac_cv_have_decl_wcswidth = yes; then
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_WCSWIDTH 1
+_ACEOF
+
+
+else
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_WCSWIDTH 0
+_ACEOF
+
+
+fi
+
+
+echo "$as_me:$LINENO: checking whether strsignal is declared" >&5
+echo $ECHO_N "checking whether strsignal is declared... $ECHO_C" >&6
+if test "${ac_cv_have_decl_strsignal+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#define _GNU_SOURCE
+#if HAVE_STRING_H
+#include <string.h>
+#include <unistd.h>
+#endif
+
+
+int
+main ()
+{
+#ifndef strsignal
+  char *p = (char *) strsignal;
+#endif
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_have_decl_strsignal=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_have_decl_strsignal=no
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+echo "$as_me:$LINENO: result: $ac_cv_have_decl_strsignal" >&5
+echo "${ECHO_T}$ac_cv_have_decl_strsignal" >&6
+if test $ac_cv_have_decl_strsignal = yes; then
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_STRSIGNAL 1
+_ACEOF
+
+
+else
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_STRSIGNAL 0
+_ACEOF
+
+
+fi
+
 
 
 echo "$as_me:$LINENO: checking for wint_t" >&5
@@ -7096,7 +7404,7 @@ echo $ECHO_N "checking for owner of aegis library files... $ECHO_C" >&6
     if test "$OSTYPE" != "cygwin32" -a "$OSTYPE" != "cygwin" ; then
     if test -f ${sharedstatedir}/lockfile -o -f ${libdir}/lockfile ; then
 	cat > conftest.$ac_ext << 'EOF'
-#line 7099 "configure"
+#line 7407 "configure"
 #include <sys/types.h>
 #include <sys/stat.h>
 main(ac,av)int ac; char **av;{struct stat st;
@@ -7132,54 +7440,6 @@ EOF
 echo "${ECHO_T}$AEGIS_UID, $AEGIS_GID" >&6
 fi
 
-echo "$as_me:$LINENO: checking for enums of int size" >&5
-echo $ECHO_N "checking for enums of int size... $ECHO_C" >&6
-if test "$cross_compiling" = yes; then
-  echo "$as_me:$LINENO: result: cross" >&5
-echo "${ECHO_T}cross" >&6
-else
-  cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-int main(argc, argv) int argc; char **argv; {
-enum foo { bar, baz } fubar;
-exit(sizeof(fubar) != sizeof(int));
-}
-_ACEOF
-rm -f conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && { ac_try='./conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-
-cat >>confdefs.h <<\_ACEOF
-#define CONF_enum_is_int 1
-_ACEOF
-
-echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6
-else
-  echo "$as_me: program exited with status $ac_status" >&5
-echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-( exit $ac_status )
-echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
-rm -f core *.core gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
-fi
-
 if test "$ac_cv_lib_z_main" != "yes" -o "$ac_cv_header_zlib_h" != "yes"
 then
   echo "$as_me:$LINENO: result:
@@ -7192,22 +7452,37 @@ echo "${ECHO_T}
 	Remember to use \`\`rm config.cache'' before you do." >&6
 fi
 
-if test "$ac_cv_header_dce_uuid_h" != "yes" -a "$ac_cv_header_uuid_h" != "yes"
+UUID_ok=no
+if test "$ac_cv_func_uuid_generate" = "yes" \
+    -a "$ac_cv_func_uuid_unparse" = "yes"
 then
-if test "$ac_cv_lib_uuid_load" != "yes"   -a "$ac_cv_lib_uuid_xxx" != "yes" \
-    -a "$ac_cv_lib_uuid_uuid_hash" != "yes" -a "$ac_cv_lib_c_uuid_hash" != "yes"
+    UUID_ok=yes
+fi
+if test "$ac_cv_func_uuid_create" = "yes" \
+    -a "$ac_sv_func_uuid_make" = "yes" \
+    -a "$ac_sv_func_uuid_export" = "yes"
+then
+    UUID_ok=yes
+fi
+if test "$ac_cv_func_uuid_create" = "yes" \
+    -a "$ac_sv_func_uuid_to_string" = "yes"
+then
+    UUID_ok=yes
+fi
+if test "$UUID_ok" != "yes"
 then
   echo "$as_me:$LINENO: result:
 	You may wish to install one of the following UUID
 	library flavors:
-	* e2fsprogs implementation
-	* OSSP implementation" >&5
+	 * e2fsprogs implementation
+	 * OSSP implementation
+	Don't Panic: this library is optional, nothing will break." >&5
 echo "${ECHO_T}
 	You may wish to install one of the following UUID
 	library flavors:
-	* e2fsprogs implementation
-	* OSSP implementation" >&6
-fi
+	 * e2fsprogs implementation
+	 * OSSP implementation
+	Don't Panic: this library is optional, nothing will break." >&6
 fi
 
 if test "$ac_cv_func_gettext" = "yes"
@@ -7260,6 +7535,23 @@ echo "${ECHO_T}
 	The Aegis documentation set and manual pages will
 	be formatted and installed if you first install
 	GNU Groff 1.15 or later and then re-run this ./configure script.
+	Remember to use \`\`rm config.cache'' before you do.
+" >&6
+fi
+if test "$HAVE_GNU_DIFF" != "yes"
+then
+  echo "$as_me:$LINENO: result:
+        Some of the tests in the Aegis test suite (133, 136, 167, 168,
+        180, 195) assume the presence of GNU diff.  Some functionality
+        will be more limited without it.  You may wish to install GNU
+        Diff 2.8 or later and then re-run this ./configure script.
+	Remember to use \`\`rm config.cache'' before you do.
+" >&5
+echo "${ECHO_T}
+        Some of the tests in the Aegis test suite (133, 136, 167, 168,
+        180, 195) assume the presence of GNU diff.  Some functionality
+        will be more limited without it.  You may wish to install GNU
+        Diff 2.8 or later and then re-run this ./configure script.
 	Remember to use \`\`rm config.cache'' before you do.
 " >&6
 fi

@@ -81,4 +81,10 @@ typedef void (*lock_walk_callback)(lock_walk_found *);
 void lock_walk(lock_walk_callback);
 void lock_release_child(void);
 
+/**
+  * The lock_quitetr function releases all locks.  This function shall
+  * only be called by the quit_action_lock class.
+  */
+void lock_quitter(void);
+
 #endif // LOCK_H

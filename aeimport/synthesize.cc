@@ -127,9 +127,9 @@ synthesize(string_ty *project_name, change_set_ty *csp)
     cstate_data->description = str_copy(csp->description);
     cstate_data->brief_description = first_line(csp->description);
     cstate_data->cause = change_cause_internal_enhancement;
-    cstate_data->test_exempt = (boolean_ty)1;
-    cstate_data->test_baseline_exempt = (boolean_ty)1;
-    cstate_data->regression_test_exempt = (boolean_ty)1;
+    cstate_data->test_exempt = true;
+    cstate_data->test_baseline_exempt = true;
+    cstate_data->regression_test_exempt = true;
     change_copyright_year_append(cp, extract_year(csp->when));
 
     //

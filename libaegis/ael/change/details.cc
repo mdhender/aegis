@@ -147,7 +147,13 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
     {
 	output_fprintf(body_col, ", Change %ld", magic_zero_decode(cp->number));
     }
-    output_fputc(body_col, '.');
+    if (cstate_data->uuid && option_verbose_get())
+    {
+	output_fputs(body_col, ",\n");
+	output_put_str(body_col, cstate_data->uuid);
+    }
+    else
+	output_fputc(body_col, '.');
     col_eoln(colp);
 
     //

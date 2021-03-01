@@ -26,16 +26,13 @@
 
 
 void
-change_branch_developer_may_review_set(change_ty *cp, int n)
+change_branch_developer_may_review_set(change_ty *cp, bool n)
 {
-    cstate_ty       *cstate_data;
-    cstate_branch_ty *bp;
-
     trace(("change_branch_developer_may_review(cp = %8.8lX, n = %d)\n{\n",
 	(long)cp, n));
-    cstate_data = change_cstate_get(cp);
-    bp = cstate_data->branch;
+    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_branch_ty *bp = cstate_data->branch;
     assert(bp);
-    bp->developer_may_review = (boolean_ty)n;
+    bp->developer_may_review = n;
     trace(("}\n"));
 }

@@ -1,67 +1,78 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 2003 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for aeget/http.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 2003, 2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for aeget/http.c
+//
 
 #ifndef AEGET_HTTP_H
 #define AEGET_HTTP_H
 
 #include <main.h>
 
-struct change_ty; /* forward */
-struct project_ty; /* forward */
-struct string_ty; /* forward */
+struct change_ty; // forward
+struct project_ty; // forward
+struct string_ty; // forward
+struct string_list_ty; // forward
 
 void http_fatal(const char *, ...)			      ATTR_PRINTF(1, 2);
 const char *http_getenv(const char *);
-void html_escape_string(struct string_ty *);
+void html_escape_string(string_ty *);
 void html_escape_charstar(const char *);
-void html_encode_string(struct string_ty *);
+void html_encode_string(string_ty *);
 void html_encode_charstar(const char *);
-void http_content_type_header(struct string_ty *);
+void http_content_type_header(string_ty *);
 
 /**
   * The html_header function is used to emit the initial portion of a HTML
   * file, for the necessary meta attrributes and style sheet information.
+  *
+  * The "html:meta" attributes are inserted at this point.
   */
-void html_header(struct project_ty *);
+void html_header(project_ty *, change_ty *);
+
+/**
+  * The html_header_os function is used to emit the "html:body-begin"
+  * attributes.
+  */
+void html_header_ps(project_ty *, change_ty *);
 
 /**
   * The html_footer function is used to emit the final page footer,
   * including date and version.
+  *
+  * The "html:body-end" attributes are inserted at this point.
   */
-void html_footer(void);
+void html_footer(project_ty *, change_ty *);
 
 /**
   * The emit_change function is used to emit the project name and change
   * number cross linked to all of the relevant pages.  This is used in
   * web page headings.
   */
-void emit_change(struct change_ty *);
+void emit_change(change_ty *);
 
 /**
   * The emit_change function is used to emit the project name and change
   * number cross linked to all of the relevant pages, except the last
   * element.  This is used in web page headings.
   */
-void emit_change_but1(struct change_ty *);
+void emit_change_but1(change_ty *);
 
 /**
   * The http_script_name is used to obtainb the value sof the SCRIPT_NAME
@@ -74,26 +85,26 @@ const char *http_script_name(void);
   * The emit_project_href function is used to print the leading <a>
   * portion of a project reference.
   */
-void emit_project_href(struct project_ty *pp, const char *modifier);
+void emit_project_href(project_ty *pp, const char *modifier);
 
 /**
   * The emit_change_href function is used to print the leading <a>
   * portion of a change reference.
   */
-void emit_change_href(struct change_ty *cp, const char *modifier);
+void emit_change_href(change_ty *cp, const char *modifier);
 
 /**
   * The emit_change_href_n function is used to print the leading <a>
   * portion of a change reference, with an explict change number.
   */
-void emit_change_href_n(struct project_ty *pp, long change_number,
+void emit_change_href_n(project_ty *pp, long change_number,
     const char *modifier);
 
 /**
   * The emit_file_href function is used to print the leading <a> portion
   * of a file reference.
   */
-void emit_file_href(struct change_ty *cp, struct string_ty *filename,
+void emit_file_href(change_ty *cp, string_ty *filename,
     const char *modifier);
 
 /**
@@ -102,7 +113,34 @@ void emit_file_href(struct change_ty *cp, struct string_ty *filename,
   */
 void emit_rect_image(int width, int height, const char *label);
 
+/**
+  * The modifier_test_and_clear function may be used to look for the
+  * named modifier in the modifier list.
+  *
+  * \param modifiers
+  *     The modifiers specified for this web page GET.
+  * \param name
+  *     The name of the modifier to look for.
+  * \returns
+  *     true if the modifier is present, false if not
+  */
+bool modifier_test(string_list_ty *modifiers, const char *name);
+
+/**
+  * The modifier_test_and_clear function may be used to look for the
+  * named modifier in the modifier list.  The modifier will be premoved
+  * if it is found.
+  *
+  * \param modifiers
+  *     The modifiers specified for this web page GET.
+  * \param name
+  *     The name of the modifier to look for.
+  * \returns
+  *     true if the modifier is present, false if not
+  */
+bool modifier_test_and_clear(string_list_ty *modifiers, const char *name);
+
 #define HISTOGRAM_HEIGHT 12
 #define HISTOGRAM_WIDTH 120
 
-#endif /* AEGET_HTTP_H */
+#endif // AEGET_HTTP_H

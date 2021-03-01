@@ -99,13 +99,13 @@ unset LANGUAGE
 $bin/aegis -np foo -dir  $work/proj -lib $work/lib
 if test $? -ne 0 ; then no_result; fi
 
-$bin/aesub -bl '${user email}' -p foo -lib $work/lib > $work/file1
+$bin/aesub -bl 'X${user email}X' -p foo -lib $work/lib > $work/file1
 if test $? -ne 0 ; then no_result; fi
 
 
 $bin/aereport -unf -f - > $work/file2 <<EOF
 columns(1000);
-print(user["$USER"].email_address);
+print("X" ## user["$USER"].email_address ## "X");
 EOF
 if test $? -ne 0 ; then no_result; fi
 

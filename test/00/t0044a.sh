@@ -120,7 +120,7 @@ unset LANGUAGE
 # test the aenfu directory functionality
 #
 activity="new project 124"
-$bin/aegis -npr $AEGIS_PROJECT -vers "" -v > log 2>&1
+$bin/aegis -npr $AEGIS_PROJECT -vers "" -v -dir $work/test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="project attributes 128"

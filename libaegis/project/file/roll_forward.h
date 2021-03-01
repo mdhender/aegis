@@ -23,9 +23,16 @@
 #ifndef LIBAEGIS_PROJECT_FILE_ROLL_FORWARD_H
 #define LIBAEGIS_PROJECT_FILE_ROLL_FORWARD_H
 
+#pragma interface "project_file_roll_forward"
+
 #include <ac/time.h>
+
+#include <change/list.h>
 #include <project.h>
 #include <fstate.h>
+
+struct symtab_ty; // forward
+struct string_list_ty; // forward
 
 struct file_event_ty
 {
@@ -40,58 +47,91 @@ struct file_event_list_ty
     file_event_ty   *item;
 };
 
-/**
-  * The project_file_roll_forward function is used to recapitilate
-  * the project's history, constructing information about the state
-  * of all files as it goes.  The project_file_roll_forward_get
-  * function is used to extract the results.
-  *
-  * \param pp
-  *     The project to apply the listing to.
-  *     All parent branches will be visited, too.
-  * \param limit
-  *     The time limit for changes.  Changes on or before this
-  *     time will be included.
-  * \param detailed
-  *     If this is false, only the parent branches and the
-  *     project itself are visited.  If this is true, all branches
-  *     completed within the limt will be visited.
-  *
-  * \caveat
-  *	This function is one really big memory leak.
-  *	You can't do this to two projects at the same time.
-  */
-void project_file_roll_forward(project_ty *pp, time_t limit, int detailed);
+class project_file_roll_forward
+{
+public:
+    /**
+      * The destructor.
+      */
+    virtual ~project_file_roll_forward();
 
-/**
-  * The project_file_roll_forward_get function is used to obtain the
-  * events for a given file, once project_file_roll_forward has been
-  * called to construct the information.
-  *
-  * \caveat
-  *    Do not free the change pointed to, as it may be referenced by
-  *    other files' histories.
-  */
-file_event_list_ty *project_file_roll_forward_get(string_ty *);
+    /**
+      * The default constructor.
+      */
+    project_file_roll_forward();
 
-/**
-  * The project_file_roll_forward_get_last function is used to get the
-  * last file event, used by most functions which deal with deltas.
-  */
-file_event_ty *project_file_roll_forward_get_last(string_ty *);
+    /**
+      * See the set() method for documentation.
+      */
+    project_file_roll_forward(project_ty *pp, time_t limit, int detailed);
 
-/**
-  * The project_file_roll_forward_get_older function is used to get the
-  * last-but-one file event, used by aecp -rescind to roll back a change.
-  */
-file_event_ty *project_file_roll_forward_get_older(string_ty *);
+    /**
+      * The set method is used to recapitilate
+      * the project's history, constructing information about the state
+      * of all files as it goes.  The project_file_roll_forward_get
+      * function is used to extract the results.
+      *
+      * \param pp
+      *     The project to apply the listing to.
+      *     All parent branches will be visited, too.
+      * \param limit
+      *     The time limit for changes.  Changes on or before this
+      *     time will be included.
+      * \param detailed
+      *     If this is false, only the parent branches and the
+      *     project itself are visited.  If this is true, all branches
+      *     completed within the limt will be visited.
+      *
+      * \caveat
+      *	This function is one really big memory leak.
+      *	You can't do this to two projects at the same time.
+      */
+    void set(project_ty *pp, time_t limit, int detailed);
 
-struct string_list_ty; // forward
+    /**
+      * The project_file_roll_forward_get function is used to obtain the
+      * events for a given file, once project_file_roll_forward has been
+      * called to construct the information.
+      *
+      * \caveat
+      *    Do not free the change pointed to, as it may be referenced by
+      *    other files' histories.
+      */
+    file_event_list_ty *get(string_ty *);
 
-/**
-  * The project_file_roll_forward_keys function is used to get a list
-  * of filenames for which file event lists are available.
-  */
-void project_file_roll_forward_keys(struct string_list_ty *);
+    /**
+      * The project_file_roll_forward_get_last function is used to get the
+      * last file event, used by most functions which deal with deltas.
+      */
+    file_event_ty *get_last(string_ty *);
+
+    /**
+      * The project_file_roll_forward_get_older function is used to get the
+      * last-but-one file event, used by aecp -rescind to roll back a change.
+      */
+    file_event_ty *get_older(string_ty *);
+
+    /**
+      * The project_file_roll_forward_keys function is used to get a list
+      * of filenames for which file event lists are available.
+      */
+    void keys(struct string_list_ty *);
+
+private:
+    symtab_ty *stp;
+    time_t stp_time;
+
+    time_t recapitulate(project_ty *pp, time_t limit, int detailed);
+
+    /**
+      * The copy constructor.  Do not use.
+      */
+    project_file_roll_forward(const project_file_roll_forward &);
+
+    /**
+      * The assignment operator.  Do not use.
+      */
+    project_file_roll_forward &operator=(const project_file_roll_forward &);
+};
 
 #endif // LIBAEGIS_PROJECT_FILE_ROLL_FORWARD_H

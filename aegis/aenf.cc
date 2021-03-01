@@ -45,6 +45,7 @@
 #include <progname.h>
 #include <project.h>
 #include <project/file.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>

@@ -143,6 +143,10 @@ development of branches.  For normal changes in this situation, use the
 .IR aechown (1)
 command.
 .PP
+If the project configuration file has specified the presence of
+\f[CW]Signed-off-by:\fP lines, a suitable line containing the current
+user's email address will be appended to the change description.
+.PP
 The change is no longer considered assigned to the developer.
 .SS Branches
 If you get an error message telling you that you can't end a branch
@@ -165,6 +169,7 @@ The following options are understood:
 .so o_help.so
 .so o_list.so
 .so o_project.so
+.so o_sob.so
 .so o_terse.so
 .so o_verbose.so
 .so o_wait.so

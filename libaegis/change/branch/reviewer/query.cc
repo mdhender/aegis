@@ -25,16 +25,12 @@
 #include <trace.h>
 
 
-int
+bool
 change_branch_reviewer_query(change_ty *cp, string_ty *name)
 {
-    cstate_ty       *cstate_data;
-    cstate_branch_reviewer_list_ty *lp;
-    size_t		j;
-
     trace(("change_branch_reviewer_query(cp = %8.8lX, name = \"%s\")\n{\n",
 	(long)cp, name->str_text));
-    cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = change_cstate_get(cp);
     assert(cstate_data->branch);
     if (!cstate_data->branch->reviewer)
     {
@@ -42,17 +38,17 @@ change_branch_reviewer_query(change_ty *cp, string_ty *name)
 	    (cstate_branch_reviewer_list_ty *)
     	    cstate_branch_reviewer_list_type.alloc();
     }
-    lp = cstate_data->branch->reviewer;
-    for (j = 0; j < lp->length; ++j)
+    cstate_branch_reviewer_list_ty *lp = cstate_data->branch->reviewer;
+    for (size_t j = 0; j < lp->length; ++j)
     {
 	if (str_equal(lp->list[j], name))
 	{
-    	    trace(("return 1;\n"));
+    	    trace(("return true;\n"));
     	    trace(("}\n"));
-    	    return 1;
+    	    return true;
 	}
     }
     trace(("return 0;\n"));
     trace(("}\n"));
-    return 0;
+    return false;
 }

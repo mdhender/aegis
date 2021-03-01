@@ -33,7 +33,6 @@
 #include <progname.h>
 #include <receive.h>
 #include <send.h>
-#include <str.h>
 #include <version.h>
 
 
@@ -85,7 +84,6 @@ main(int argc, char **argv)
 #endif
 
     arglex3_init(argc, argv);
-    str_initialize();
     env_initialize();
     language_init();
     os_become_init_mortal();

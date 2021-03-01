@@ -42,6 +42,17 @@ else
     exit 0
 fi
 
+CVSversion=`cvs --version |
+awk 'NR==2{split($5,a,"[.]");printf("%02d.%02d.%02d\n",a[1],a[2],a[3]);}'`
+if expr "$CVSversion" "<" "01.11.00" > /dev/null 2>&1
+then
+    echo ''
+    echo '	You do not have CVS 1.11 or later installed on this machine.'
+    echo '	This test is assumed to pass by default.'
+    echo ''
+    exit 0
+fi
+
 LINES=24
 export LINES
 COLS=80

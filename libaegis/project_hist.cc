@@ -28,7 +28,7 @@
 #include <zero.h>
 
 
-int
+bool
 project_history_delta_validate(project_ty *pp, long delta_number)
 {
     change_ty       *cp;
@@ -225,16 +225,13 @@ project_history_nth(project_ty *pp, long n, long *cnp, long *dnp,
 }
 
 
-int
+bool
 project_administrator_query(project_ty *pp, string_ty *user_name)
 {
-    change_ty       *cp;
-    int             result;
-
     trace(("project_administrator_query(pp = %8.8lX, user_name = \"%s\")\n{\n",
 	(long)pp, user_name->str_text));
-    cp = project_change_get(pp);
-    result = change_branch_administrator_query(cp, user_name);
+    change_ty *cp = project_change_get(pp);
+    bool result = change_branch_administrator_query(cp, user_name);
     trace(("return %d;\n", result));
     trace(("}\n"));
     return result;
@@ -283,16 +280,13 @@ project_administrator_nth(project_ty *pp, long n)
 }
 
 
-int
+bool
 project_developer_query(project_ty *pp, string_ty *user_name)
 {
-    change_ty       *cp;
-    int             result;
-
     trace(("project_developer_query(pp = %8.8lX, user_name = \"%s\")\n{\n",
 	(long)pp, user_name->str_text));
-    cp = project_change_get(pp);
-    result = change_branch_developer_query(cp, user_name);
+    change_ty *cp = project_change_get(pp);
+    bool result = change_branch_developer_query(cp, user_name);
     trace(("return %d;\n", result));
     trace(("}\n"));
     return result;
@@ -341,16 +335,13 @@ project_developer_nth(project_ty *pp, long n)
 }
 
 
-int
+bool
 project_reviewer_query(project_ty *pp, string_ty *user_name)
 {
-    change_ty       *cp;
-    int             result;
-
     trace(("project_reviewer_query(pp = %8.8lX, user_name = \"%s\")\n{\n",
 	(long)pp, user_name->str_text));
-    cp = project_change_get(pp);
-    result = change_branch_reviewer_query(cp, user_name);
+    change_ty *cp = project_change_get(pp);
+    bool result = change_branch_reviewer_query(cp, user_name);
     trace(("return %d;\n", result));
     trace(("}\n"));
     return result;
@@ -399,16 +390,13 @@ project_reviewer_nth(project_ty *pp, long n)
 }
 
 
-int
+bool
 project_integrator_query(project_ty *pp, string_ty *user_name)
 {
-    change_ty       *cp;
-    int             result;
-
     trace(("project_integrator_query(pp = %8.8lX, user_name = \"%s\")\n{\n",
 	(long)pp, user_name->str_text));
-    cp = project_change_get(pp);
-    result = change_branch_integrator_query(cp, user_name);
+    change_ty *cp = project_change_get(pp);
+    bool result = change_branch_integrator_query(cp, user_name);
     trace(("return %d;\n", result));
     trace(("}\n"));
     return result;
@@ -611,13 +599,13 @@ project_umask_get(project_ty *pp)
 
 
 void
-project_developer_may_review_set(project_ty *pp, int n)
+project_developer_may_review_set(project_ty *pp, bool n)
 {
     change_branch_developer_may_review_set(project_change_get(pp), n);
 }
 
 
-int
+bool
 project_developer_may_review_get(project_ty *pp)
 {
     return change_branch_developer_may_review_get(project_change_get(pp));
@@ -625,13 +613,13 @@ project_developer_may_review_get(project_ty *pp)
 
 
 void
-project_developer_may_integrate_set(project_ty *pp, int n)
+project_developer_may_integrate_set(project_ty *pp, bool n)
 {
     change_branch_developer_may_integrate_set(project_change_get(pp), n);
 }
 
 
-int
+bool
 project_developer_may_integrate_get(project_ty *pp)
 {
     return change_branch_developer_may_integrate_get(project_change_get(pp));
@@ -639,13 +627,13 @@ project_developer_may_integrate_get(project_ty *pp)
 
 
 void
-project_reviewer_may_integrate_set(project_ty *pp, int n)
+project_reviewer_may_integrate_set(project_ty *pp, bool n)
 {
     change_branch_reviewer_may_integrate_set(project_change_get(pp), n);
 }
 
 
-int
+bool
 project_reviewer_may_integrate_get(project_ty *pp)
 {
     return change_branch_reviewer_may_integrate_get(project_change_get(pp));
@@ -653,13 +641,13 @@ project_reviewer_may_integrate_get(project_ty *pp)
 
 
 void
-project_developers_may_create_changes_set(project_ty *pp, int n)
+project_developers_may_create_changes_set(project_ty *pp, bool n)
 {
     change_branch_developers_may_create_changes_set(project_change_get(pp), n);
 }
 
 
-int
+bool
 project_developers_may_create_changes_get(project_ty *pp)
 {
     return
@@ -820,13 +808,13 @@ project_default_development_directory_get(project_ty *pp)
 
 
 void
-project_default_test_exemption_set(project_ty *pp, int n)
+project_default_test_exemption_set(project_ty *pp, bool n)
 {
     change_branch_default_test_exemption_set(project_change_get(pp), n);
 }
 
 
-int
+bool
 project_default_test_exemption_get(project_ty *pp)
 {
     return change_branch_default_test_exemption_get(project_change_get(pp));

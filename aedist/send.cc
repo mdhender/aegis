@@ -29,6 +29,7 @@
 #include <arglex/project.h>
 #include <change/branch.h>
 #include <change/file.h>
+#include <change/signedoffby.h>
 #include <change.h>
 #include <error.h>	// for assert
 #include <gettime.h>
@@ -36,6 +37,7 @@
 #include <input/file.h>
 #include <mem.h>
 #include <now.h>
+#include <option.h>
 #include <os.h>
 #include <output/conten_encod.h>
 #include <output/cpio.h>
@@ -144,6 +146,7 @@ send_main(void (*usage)(void))
     int		    use_patch;
     int		    use_change_number;
     int             use_config;
+    int             use_rename_patch;
     string_ty       *project_name;
     long            change_number;
     const char      *branch;
@@ -499,6 +502,11 @@ send_main(void (*usage)(void))
 		// NOTREACHED
 	    }
 	    break;
+
+	case arglex_token_signed_off_by:
+	case arglex_token_signed_off_by_not:
+	    option_signed_off_by_argument(usage);
+	    break;
 	}
 	arglex();
     }
@@ -513,6 +521,7 @@ send_main(void (*usage)(void))
     use_change_number = 1;
     use_config = 1;
     use_attributes = 1; // implies UUIDs as well
+    use_rename_patch = 1;
     if (compatibility)
     {
 	//
@@ -546,6 +555,12 @@ send_main(void (*usage)(void))
 	// aedist -send in Peter's 4.16.D089, publicly in 4.17
 	//
 	use_attributes = use_config;
+
+        //
+        // The patch for renamed files were added to aedist -send in
+        // Peter's 4.18.D004, publicly in 4.19
+        //
+        use_rename_patch = (strverscmp(compatibility, "4.19") >= 0);
     }
 
     //
@@ -688,9 +703,18 @@ send_main(void (*usage)(void))
     }
 
     //
+    // If the use asked for one, append a Signed-off-by line to this
+    // change's description.  (Since we don't write the cstate back out,
+    // it is safe to change the change's description.)
+    //
+    if (option_signed_off_by_get(false))
+	change_signed_off_by(cp, up);
+
+    //
     // Check the change state.
     //
     cstate_data = change_cstate_get(cp);
+    project_file_roll_forward historian;
     switch (cstate_data->state)
     {
     case cstate_state_awaiting_development:
@@ -700,11 +724,18 @@ send_main(void (*usage)(void))
 	change_fatal(cp, 0, i18n("bad send state"));
 	// NOTREACHED
 
+    case cstate_state_being_integrated:
+    case cstate_state_awaiting_integration:
+    case cstate_state_being_reviewed:
+    case cstate_state_awaiting_review:
+    case cstate_state_being_developed:
     case cstate_state_completed:
 	//
-	// Need to reconstruct the appropriate file histories.
+	// Need to reconstruct the appropriate file histories even for
+	// outstanding changes because some file may be renamed and we
+	// need to extract the old file from the baseline.
 	//
-	project_file_roll_forward
+	historian.set
 	(
 	    pp,
 	    (
@@ -716,13 +747,6 @@ send_main(void (*usage)(void))
 	    ),
 	    0
 	);
-	break;
-
-    case cstate_state_being_integrated:
-    case cstate_state_awaiting_integration:
-    case cstate_state_being_reviewed:
-    case cstate_state_awaiting_review:
-    case cstate_state_being_developed:
 	break;
     }
 
@@ -931,7 +955,7 @@ send_main(void (*usage)(void))
 		    if (s)
 		    {
 			os_become_orig();
-			src_data->executable = (boolean_ty)os_executable(s);
+			src_data->executable = os_executable(s);
 			os_become_undo();
 			str_free(s);
 		    }
@@ -1098,7 +1122,7 @@ send_main(void (*usage)(void))
 	// the diff_command.  It's historical.
 	//
 	ifp = 0;
-	switch (cstate_data->state)
+        switch (cstate_data->state)
 	{
 	case cstate_state_awaiting_development:
 	    assert(0);
@@ -1115,7 +1139,49 @@ send_main(void (*usage)(void))
 	    switch (csrc->action)
 	    {
 	    case file_action_create:
-		original_filename = str_copy(dev_null);
+                if (use_rename_patch && csrc->move)
+                {
+                    file_event_list_ty  *orig_felp;
+                    file_event_ty       *orig_fep;
+                    fstate_src_ty       *orig_src;
+
+                    orig_felp = historian.get(csrc->move);
+
+                    //
+                    // It's tempting to say
+                    //     assert(felp);
+                    // but file file may not yet exist at this point in
+                    // time, so there is no need (or ability) to create a
+                    // patch for it.
+                    //
+                    if (!orig_felp)
+                    {
+                        original_filename = str_copy(dev_null);
+                        break;
+                    }
+
+                    assert(orig_felp->length >= 1);
+
+                    orig_fep = &orig_felp->item[orig_felp->length - 1];
+                    orig_src =
+                        change_file_find
+                        (
+                            orig_fep->cp,
+                            csrc->move,
+                            view_path_first
+                        );
+                    assert(orig_src);
+                    original_filename =
+                        project_file_version_path
+                        (
+                            pp,
+                            orig_src,
+                            &original_filename_unlink
+                        );
+                    fstate_src_type.free(orig_src);
+                }
+                else
+                    original_filename = str_copy(dev_null);
 		break;
 
 	    case file_action_modify:
@@ -1162,14 +1228,14 @@ send_main(void (*usage)(void))
 	    // Both the versions to be diffed come out
 	    // of history.
 	    //
-	    switch (csrc->action)
+            switch (csrc->action)
 	    {
 		file_event_list_ty *felp;
 		file_event_ty  *fep;
 		fstate_src_ty  *old_src;
 
 	    case file_action_create:
-		felp = project_file_roll_forward_get(csrc->file_name);
+		felp = historian.get(csrc->file_name);
 
 		//
 		// It's tempting to say
@@ -1188,9 +1254,52 @@ send_main(void (*usage)(void))
 		assert(felp->length >= 1);
 
 		//
-		// Get the orginal file.
+		// Get the orginal file.  We handle the creation half
+		// of a file rename.
 		//
-		original_filename = str_copy(dev_null);
+                if (use_rename_patch && csrc->move)
+                {
+                    file_event_list_ty  *orig_felp;
+                    file_event_ty       *orig_fep;
+                    fstate_src_ty       *orig_src;
+
+                    orig_felp = historian.get(csrc->move);
+
+                    //
+                    // It's tempting to say
+                    //     assert(felp);
+                    // but file file may not yet exist at this point in
+                    // time, so there is no need (or ability) to create a
+                    // patch for it.
+                    //
+                    if (!orig_felp)
+                    {
+                        original_filename = str_copy(dev_null);
+                        break;
+                    }
+                    assert(orig_felp->length >= 2);
+
+                    orig_fep = &orig_felp->item[orig_felp->length - 2];
+                    assert(orig_fep);
+                    orig_src =
+                        change_file_find
+                        (
+                            orig_fep->cp,
+                            csrc->move,
+                            view_path_first
+                        );
+                    assert(orig_src);
+                    original_filename =
+                        project_file_version_path
+                        (
+                            pp,
+                            orig_src,
+                            &original_filename_unlink
+                        );
+                    fstate_src_type.free(orig_src);
+                }
+                else
+                    original_filename = str_copy(dev_null);
 
 		//
 		// Get the input file.
@@ -1209,7 +1318,17 @@ send_main(void (*usage)(void))
 		break;
 
 	    case file_action_remove:
-		felp = project_file_roll_forward_get(csrc->file_name);
+                //
+                // We ignore the remove half or a file rename.
+                //
+                if (use_rename_patch && csrc->move)
+                {
+                    input_filename = str_copy(dev_null);
+                    original_filename = str_copy(dev_null);
+                    break;
+                }
+
+		felp = historian.get(csrc->file_name);
 
 		//
 		// It's tempting to say
@@ -1268,7 +1387,7 @@ send_main(void (*usage)(void))
 		break;
 
 	    case file_action_modify:
-		felp = project_file_roll_forward_get(csrc->file_name);
+		felp = historian.get(csrc->file_name);
 
 		//
 		// It's tempting to say
@@ -1348,16 +1467,22 @@ send_main(void (*usage)(void))
 	    // We don't bother with a patch for created files, because
 	    // we simply include the whole source in the next section.
 	    //
+	    bool is_a_rename = false;
 	    assert(original_filename);
 	    assert(input_filename);
 	    switch (csrc->action)
 	    {
-	    case file_action_create:
 	    case file_action_remove:
 	    case file_action_transparent:
 		break;
 
-	    case file_action_modify:
+            case file_action_create:
+                if (!use_rename_patch || !csrc->move)
+                    break;
+		is_a_rename = true;
+                // fall through
+
+            case file_action_modify:
 	    case file_action_insulate:
 		if (entire_source)
 		    break;
@@ -1394,17 +1519,23 @@ send_main(void (*usage)(void))
 		assert(ifp);
 		input_file_unlink_on_close(ifp);
 		len = input_length(ifp);
-		if (len > 0)
+                assert(len >= 0);
+		if (len > 0 || is_a_rename)
 		{
 		    s = str_format("patch/%s", csrc->file_name->str_text);
-		    ofp = output_cpio_child(cpio_p, s, len);
+                    ofp = output_cpio_child(cpio_p, s, len);
 		    str_free(s);
 		    input_to_output(ifp, ofp);
 		    output_delete(ofp);
 		}
 		input_delete(ifp);
 		os_become_undo();
-		str_free(diff_output_filename);
+
+                // It's tempting to say:
+		//
+		// str_free(diff_output_filename);
+		//
+		// but this must really be freed once: out of the loop.
 		break;
 	    }
 	}
@@ -1449,8 +1580,8 @@ send_main(void (*usage)(void))
 	if (input_filename_unlink)
 	    os_unlink_errok(input_filename);
 	os_become_undo();
-	str_free(original_filename);
-	str_free(input_filename);
+        str_free(original_filename);
+        str_free(input_filename);
     }
     cstate_type.free(change_set);
 

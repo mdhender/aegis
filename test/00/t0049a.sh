@@ -121,7 +121,7 @@ unset LANGUAGE
 # test the cross-branch merge functionality
 #
 activity="new project 124"
-$bin/aegis -npr $AEGIS_PROJECT -vers "" > log 2>&1
+$bin/aegis -npr $AEGIS_PROJECT -vers "" -dir $work/test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="project attributes 128"

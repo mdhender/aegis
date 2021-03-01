@@ -25,11 +25,9 @@
 #include <project.h>
 
 
-int
+bool
 project_compress_database_get(project_ty *pp)
 {
-    change_ty       *cp;
-
-    cp = project_change_get(pp);
+    change_ty *cp = project_change_get(pp);
     return change_branch_compress_database_get(cp);
 }

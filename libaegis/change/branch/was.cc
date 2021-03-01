@@ -23,11 +23,9 @@
 #include <change/branch.h>
 
 
-int
+bool
 change_was_a_branch(change_ty *cp)
 {
-    cstate_ty       *cstate_data;
-
-    cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = change_cstate_get(cp);
     return (cstate_data->branch != 0);
 }

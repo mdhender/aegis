@@ -76,10 +76,10 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     // Create the file contents.
     //
     pconf_data = (pconf_ty *)pconf_type.alloc();
-    pconf_data->create_symlinks_before_build = (boolean_ty)1;
-    pconf_data->remove_symlinks_after_build = (boolean_ty)0;
-    pconf_data->create_symlinks_before_integration_build = (boolean_ty)1;
-    pconf_data->remove_symlinks_after_integration_build = (boolean_ty)0;
+    pconf_data->create_symlinks_before_build = true;
+    pconf_data->remove_symlinks_after_build = false;
+    pconf_data->create_symlinks_before_integration_build = true;
+    pconf_data->remove_symlinks_after_integration_build = false;
     pconf_data->build_command = str_from_c("exit 0");
     pconf_data->history_put_command = format_history_put(format);
     pconf_data->history_create_command =
@@ -117,9 +117,9 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     cstate_data->brief_description =
 	str_format("%s file", the_config_file->str_text);
     cstate_data->cause = change_cause_internal_enhancement;
-    cstate_data->test_exempt = (boolean_ty)1;
-    cstate_data->test_baseline_exempt = (boolean_ty)1;
-    cstate_data->regression_test_exempt = (boolean_ty)1;
+    cstate_data->test_exempt = true;
+    cstate_data->test_baseline_exempt = true;
+    cstate_data->regression_test_exempt = true;
     change_copyright_years_now(cp);
 
     //

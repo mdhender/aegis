@@ -28,7 +28,6 @@
 #include <arglex/project.h>
 #include <change.h>
 #include <commit.h>
-#include <error.h>
 #include <gonzo.h>
 #include <help.h>
 #include <lock.h>
@@ -37,6 +36,7 @@
 #include <project.h>
 #include <project/active.h>
 #include <project/history.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>

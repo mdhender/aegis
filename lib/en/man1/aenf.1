@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1996, 1998-2000, 2002, 2003 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1996, 1998-2000, 2002-2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -72,7 +72,7 @@ will be set by subsequent \fIaecp\fP(1) commands.
 .so z_intuit.so
 .so z_retype.so
 .SS Notification
-The \fInew_file_command\fP in the project \fIconfig\fP file is run,
+The \fInew_file_command\fP in the project configuration file is run,
 if set.  The \fIproject_\%file_\%command\fP is also run, if set, and
 if there has been an integration recently.  See \fIaepconf\fP(5) for
 more information.
@@ -94,6 +94,13 @@ Avoid using files of this type,
 if at all possible.
 .so o_baserel.so
 .so o_change.so
+.TP 8n
+\fB\-CONFIGured\fP
+This option may be used to specify that the file is an Aegis project
+configuration file.  The default project configuration file is called
+\fIaegis.conf\fP, however any file name may be used.  You may also use
+more than one file, splitting the content across several files, all of
+which must be of this type.
 .so o_help.so
 .so o_list.so
 .so o_nolog.so

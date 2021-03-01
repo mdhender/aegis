@@ -39,8 +39,9 @@
 #include <project/pattr/get.h>
 #include <project/pattr/set.h>
 #include <project/history.h>
-#include <sub.h>
+#include <quit.h>
 #include <str_list.h>
+#include <sub.h>
 #include <trace.h>
 #include <undo.h>
 #include <user.h>

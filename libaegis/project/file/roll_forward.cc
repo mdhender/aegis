@@ -20,6 +20,8 @@
 // MANIFEST: functions to manipulate roll_forwards
 //
 
+#pragma implementation "project_file_roll_forward"
+
 #include <change.h>
 #include <change/branch.h>
 #include <change/file.h>
@@ -35,6 +37,16 @@
 #include <symtab/keys.h>
 #include <trace.h>
 #include <zero.h>
+
+
+project_file_roll_forward::~project_file_roll_forward()
+{
+    if (stp)
+    {
+	symtab_free(stp);
+	stp = 0;
+    }
+}
 
 
 static file_event_list_ty *
@@ -163,7 +175,7 @@ change_list_get(project_ty *pp, time_t limit)
     trace(("change_list_get(pp = %08lX, limit = %ld \"%.24s\")\n{\n",
 	(long)pp, (long)limit, ctime(&limit)));
     trace(("project \"%s\"\n", project_name_get(pp)->str_text));
-    clp = change_list_new();
+    clp = new change_list_ty();
 
     pcp = project_change_get(pp);
     cstate_data = change_cstate_get(pcp);
@@ -254,7 +266,7 @@ change_list_get(project_ty *pp, time_t limit)
 	    }
 
 	    trace(("keep this one\n"));
-	    change_list_append(clp, cp);
+	    clp->append(cp);
 	}
     }
 
@@ -277,7 +289,7 @@ change_list_get(project_ty *pp, time_t limit)
 	trace(("same = %d\n", str_equal(project_name_get(cp->pp),
 	    project_name_get(pp))));
 	if (str_equal(project_name_get(cp->pp), project_name_get(pp)))
-	    change_list_append(clp, cp);
+	    clp->append(cp);
     }
 
     trace(("return %08lX;\n", (long)clp));
@@ -315,7 +327,7 @@ playback_destructor(playback_ty *pbp)
 {
     trace(("playback_destructor(pbp = %08lX)\n{\n", (long)pbp));
     if (pbp->clp)
-	change_list_delete(pbp->clp);
+	delete pbp->clp;
     if (pbp->files)
 	symtab_free(pbp->files);
     pbp->pp = 0;
@@ -442,7 +454,7 @@ playback_list_recinit(playback_list_ty *pblp, time_t limit, project_ty *pp)
 	// be added to this list.
 	//
 	cp = project_change_get(pp);
-	change_list_append(&walk_these_branches, cp);
+	walk_these_branches.append(cp);
 	pp = pp->parent;
     }
     playback_list_push(pblp, limit, pp);
@@ -602,12 +614,9 @@ branch_finish_time(project_ty *pp)
 }
 
 
-static symtab_ty *stp;
-static time_t	stp_time;
-
-
-static time_t
-recapitulate(project_ty *pp, time_t limit, int detailed)
+time_t
+project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
+    int detailed)
 {
     playback_list_ty stack;
     size_t	    j;
@@ -696,7 +705,7 @@ recapitulate(project_ty *pp, time_t limit, int detailed)
 		(
 		    (detailed && change_is_completed(cp))
 		||
-		    change_list_member_p(&walk_these_branches, cp)
+		    walk_these_branches.member_p(cp)
 		)
 		{
 		    project_ty      *pp2;
@@ -935,12 +944,29 @@ recapitulate(project_ty *pp, time_t limit, int detailed)
 }
 
 
+project_file_roll_forward::project_file_roll_forward() :
+    stp(0),
+    stp_time(0)
+{
+}
+
+
+project_file_roll_forward::project_file_roll_forward(project_ty *pp,
+	time_t limit, int detailed) :
+    stp(0),
+    stp_time(0)
+{
+    set(pp, limit, detailed);
+}
+
+
 void
-project_file_roll_forward(project_ty *pp, time_t limit, int detailed)
+project_file_roll_forward::set(project_ty *pp, time_t limit, int detailed)
 {
     trace(("project_file_roll_forward(pp = %08lX, limit = %ld \"%.24s\", "
 	"detailed = %d)\n{\n", (long)pp, (long)limit, ctime(&limit), detailed));
     assert(!stp);
+    walk_these_branches.clear();
     stp = symtab_alloc(1000);
     stp_time = recapitulate(pp, limit, !!detailed);
     trace(("}\n"));
@@ -948,8 +974,11 @@ project_file_roll_forward(project_ty *pp, time_t limit, int detailed)
 
 
 file_event_list_ty *
-project_file_roll_forward_get(string_ty *filename)
+project_file_roll_forward::get(string_ty *filename)
 {
+    assert(stp);
+    if (!stp)
+	return 0;
     file_event_list_ty *result;
 
     trace(("project_file_roll_forward_get(%s)\n{\n", filename->str_text));
@@ -978,8 +1007,11 @@ project_file_roll_forward_get(string_ty *filename)
 
 
 file_event_ty *
-project_file_roll_forward_get_last(string_ty *filename)
+project_file_roll_forward::get_last(string_ty *filename)
 {
+    assert(stp);
+    if (!stp)
+	return 0;
     file_event_list_ty *felp;
     file_event_ty   *result;
 
@@ -995,8 +1027,11 @@ project_file_roll_forward_get_last(string_ty *filename)
 
 
 file_event_ty *
-project_file_roll_forward_get_older(string_ty *filename)
+project_file_roll_forward::get_older(string_ty *filename)
 {
+    assert(stp);
+    if (!stp)
+	return 0;
     file_event_list_ty *felp;
     file_event_ty   *result;
 
@@ -1035,8 +1070,11 @@ project_file_roll_forward_get_older(string_ty *filename)
 
 
 void
-project_file_roll_forward_keys(string_list_ty *result)
+project_file_roll_forward::keys(string_list_ty *result)
 {
+    assert(stp);
+    if (!stp)
+	return;
     symtab_keys(stp, result);
     string_list_sort(result);
 }

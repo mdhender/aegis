@@ -32,6 +32,14 @@ export LINES
 COLS=80
 export COLS
 
+#
+# The working days calculations depend on the results of the localtime()
+# function, so the timezone will affect the results.  By setting TZ we
+# get consistent behaviour.
+#
+TZ=GMT0
+export TZ
+
 USER=${USER:-${LOGNAME:-`whoami`}}
 
 work=${AEGIS_TMP:-/tmp}/$$

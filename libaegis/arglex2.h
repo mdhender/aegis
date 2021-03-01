@@ -134,6 +134,8 @@ enum
 	arglex_token_review_fail,
 	arglex_token_review_pass,
 	arglex_token_review_pass_undo,
+	arglex_token_signed_off_by,
+	arglex_token_signed_off_by_not,
 	arglex_token_suggest,
 	arglex_token_suggest_noise,
 	arglex_token_symbolic_links,

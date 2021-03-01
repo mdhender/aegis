@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998, 1999, 2001-2003 Peter Miller;
+ *	Copyright (C) 1998, 1999, 2001-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -113,6 +113,22 @@
 #if defined(SOURCE_FORGE_HACK) ||  defined(__CYGWIN__) || \
 	defined(__CYGWIN32__) || defined(__NUTC__)
 #define SINGLE_USER
+#endif
+
+/*
+ * Cope with parts of libmagic being missing
+ * (or being something else, e.g. on HP/UX)
+ */
+#if !HAVE_MAGIC_H || !HAVE_LIBMAGIC || !HAVE_MAGIC_FILE
+# ifdef HAVE_MAGIC_H
+#  undef HAVE_MAGIC_H
+# endif
+# ifdef HAVE_LIBMAGIC
+#  undef HAVE_LIBMAGIC
+# endif
+# ifdef HAVE_MAGIC_FILE
+#  undef HAVE_MAGIC_FILE
+# endif
 #endif
 
 #endif /* COMMON_CONFIG_MESSY_H */

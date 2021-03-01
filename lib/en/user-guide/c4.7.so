@@ -1,0 +1,309 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2004 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide, The Dependency Maintenance Tool, GNU Autoconf
+.\"
+.nh 2 "GNU Autoconf"
+.LP
+If your projects uses GNU Make, GNU Autoconf and GNU Automake,
+here is a quick and simple method to import your project into Aegis
+and have it running fairly quickly.
+.nh 3 "The Sources"
+.LP
+Once you have create and Aegis project to, your first change set should
+simply contain all of the source files, without removing or adding
+anything.  The only additonal file is the Aegis project configuration
+file, usually called \fIaegis.conf\fP and usually located in the
+top-level directory.
+.LP
+Follow the directions in the section, above, on \fIusing Make\fP for how
+to fill out this file.
+.LP
+Note that if you are working from a tarball, they usually contain
+several \fIderived\fP file.  That is, files which are not primary sourec
+files, but are instead derived from other files.
+This is a convenience for the end-user but a nuisance at this point.
+Exanple of derived files in source tarballs include
+\f[CW]configure\fP,
+\f[CW]Makefile.in\fP,
+\f[CW]config.h.in\fP,
+\fIetc\fP.
+You will need to exclude them form the first change set.
+.LP
+In this first change set, you don't even try to build anything.
+.E(
+build_command = "exit 0";
+.E)
+Which will allow the Aegis process to complete.
+.nh 3 "Building"
+.LP
+You actually get your project to buld in the second change set.
+Once you have started development, you will see all of the source files
+in the development directory (well, symlinks to them).
+.LP
+In order to get you build to work, you have to bootstrap the
+\f[CW]Makefile\fP.
+Using the usual GNU tool chain, this file is generated
+from \f[CW]Makefile.in\fP which is in turn generated from
+\f[CW]Makefile.am\fP, and this is not presently in the development
+directory.
+.LP
+This is done by creating a new primary source file called
+\f[CW]makefile\fP at the top level
+.E(
+$ \f[CB]aenf makefile\fP
+$
+.E)
+and setting its contents to be
+.E(
+include Makefile
+
+ifndef srcdir
+
+bogus-default-target: Makefile
+	$(MAKE) $(MAKEFLAGS) $(MAKECMDGOALS)
+.E)
+.E(
+Makefile: configure Makefile.in config.h.in
+	rm -f config.cache
+	./configure
+.E)
+.E(
+configure: configure.ac
+	autoconf
+.E)
+.E(
+config.h.in: configure.ac
+	autoheader
+.E)
+.E(
+Makefile.in: Makefile.am
+	automake
+
+endif
+.E)
+This works because \fImake\fP(1) looks for \f[CW]makefile\fP before
+\f[CW]Makefile\fP, but also because our bootstrapping \f[CW]makefile\fP
+includes the real \f[CW]Makefile\fP if it exists, and the real file's
+rules will take precedence.  At this point, GNU Make has a very useful
+feature: it will rebuild include files which are out-of-date before it
+does anything else.  In oue new development directory, this will result
+in the necessary files being automagically generated and then acted
+upon.
+.LP
+Things that can go wrong: many projects include files such as
+\fIinstall-sh\fP and \fImissing\fP and \fImkinstalldirs\fP in the
+directibution.  You will need to include rules for these files in the
+conditonal part of your bootstrapping \f[CW]makefile\fP rules.
+.E(
+AUTOMAKE_DIR=/usr/share/automake-1.7
+
+install-sh: $(AUTOMAKE_DIR)/install-sh
+	cp $^ $@
+
+missing: $(AUTOMAKE_DIR)/missing
+	cp $^ $@
+
+mkinstalldirs: $(AUTOMAKE_DIR)/mkinstalldirs
+	cp $^ $@
+.E)
+You will have to tell the \fIconfigure\fP rule that it depends on these
+files as well.
+.LP
+Other
+things that can go wrong: some projects use different rules for
+constructing the \f[CW]config.h\fP file.  You should read the generated
+\f[CW]Makefile.in\fP file for how, and duplicate into the bootstrapping
+\f[CW]makefile\fP file.  You may also need a rule for the
+\f[CW]aclocal.m4\fP file, and tell the \fIconfigure\fP rule it depends
+on it.
+.LP
+There is a template \f[CW]makefile\fP installed in the
+\fI\*(D)/config.example\fP directory.
+.LP
+Now you can set the build command field of the project configuration file:
+.E(
+build_command =
+	"make "
+	"project=$project "
+	"change=$change "
+	"version=$version";
+.E)
+Aegis watches the eist status of the build command.  Be aware that many
+build systems which use recursive make report false positives, because
+the exist status of the sub-make is often ignored by the top-level
+Makefile.  This means that Aegis may think your project compiles when,
+in fact, it does not.
+.LP
+If, while trying to get it to build, you discover more derived files
+which should not be primary source files, simply use the \fIaerm\fP(1)
+command.  The \fIaeclean\fP(1) command may come in handly, too.
+.LP
+Once this second change set builds, integrate it via the usual Aegis process.
+.nh 3 "Tesing"
+.LP
+If the project you are importing has tests, they are probably executed
+by saying
+.E(
+$ \f[CB]make check\fP
+\fIlots of output\fP
+$
+.E)
+or something similar.
+Aegis expects each test to be in a separate shell script.
+Usually this is simple enough to arrange.
+See the chapter on \fITesting\fP for some hints.
+.nh 3 "An Optimization"
+.LP
+The first build in a new development directory can be quite time
+consuming.  It is possible to short-ciruit this by using the pre-built
+object files in the baseline.  To do this, use the following setting in
+the project configuration file:
+.E(
+development_directory_style =
+{
+    source_file_symlink = true;
+    derived_file_copy = true;
+    derived_at_start_only = true;
+};
+.E)
+This causes Aegis to copy all of the derived file into your development
+directory at \fIaedb\fP time.  This is usually much faster than
+compiling and linking all over again.
+.nh 3 "Signed-off-by"
+.LP
+It is possible to get the Aegis process to automatically append
+\f[CW]Signed-off-by\fP lines to the change description.
+Set the following field in the project configuration file:
+.E(
+signed_off_by = true;
+.E)
+Only open source projects should use this field.
+The OSDL definition of the Developer's Certificate of Origin 1.0
+can be found at
+http://www.osdl.org/newsroom/press_releases/2004/2004_05_24_dco.html
+and is defined to mean:
+.LP
+"By making a contribution to this project, I certify that:
+.LP
+(a) The contribution was created in whole or in part by me and I have
+the right to submit it under the open source license indicated in the
+file; or
+.LP
+(b) The contribution is based upon previous work that, to the best
+of my knowledge, is covered under an appropriate open source license
+and I have the right under that license to submit that work with
+modifications, whether created in whole or in part by me, under the same
+open source license (unless I am permitted to submit under a different
+license), as indicated in the file; or
+.LP
+(c) The contribution was provided directly to me by some other person
+who certified (a), (b) or (c) and I have not modified it."
+.nh 3 "Importing the Next Upstream Tarball"
+.LP
+If you are using Aegis to track your local changes, but the master
+sourecs are elsewhere, you will need to track upstream changes when they
+are released.
+.LP
+It is tempting to use the \fIaetar\fP(1) command, but it will not be able to
+detect derived files which have been added to the tarball.
+You will need to uppack the tarball and remove them manually.
+.LP
+Create a change set in the usual way, and \fIaecd\fP(1) into it.
+Copy the entire project into your change set, because you don't yet know
+what the tarball will want to change (and it will include unchanged
+files).
+.E(
+$ \f[CB]aecd\fP
+$ \f[CB]aecp .\fP
+$
+.E)
+(Yes, that dot is part of the command.)
+Now you can unpack the tarball.
+You need to strip off the leading directory somehow (most polite
+projects use a prefix).
+The author uses the \fItardy\fP(1) command, like this:
+.E(
+$ \f[CB]zcat \fP\fIproject-x.y\fP\f[CB].tar.gz | \e
+  tardy -rp \fP\fIproject-x.y\fP\f[CB] -now | \e
+  tar xf -
+$
+.E)
+It pays to change that the tarball is the shape you expect \fIbefore\fP
+running this command.
+.LP
+At this point you have to once again remove all of the files which
+are in the tarball, but which are not primary source files, such as
+\fIconfigure\fP and \fIMakefile.in\fP and the like.
+.E(
+$ \f[CB]rm -f configure Makefile.in config.h.in\fP \fIetc\fP
+$ \f[CB]rm -f aegis.log\fP
+$
+.E)
+It is useful if you place the \fIrm\fP(1) command in a shell script, and
+tell Aegis it is a source file, because you will have to do this every
+time.
+.LP
+Now you can have Aegis add any new files by using the follwoing command:
+.E(
+$ \f[CB]aenf .\fP
+$
+.E)
+(Yes, that dot is part of the command.)
+Note that if there are no new files, this command will give you an error,
+this is expected.
+.LP
+You will have to work out moved and removed files for yourself, and use the
+\fIaemv\fP(1) and \fIaerm\fP(1) commands.
+.LP
+At this point you should remove all the files which were present in the tarball
+but which dod not actually change from the change set.
+The follwoing command does this quickly and simply:
+.E(
+$ \f[CB]aecpu -unchanged\fP
+$
+.E)
+You change set now contains the minimum set of differences.
+Go ahead and complete it using the usual Aegis process.
+.nh 3 "Importing the Next Upstream Patch"
+.LP
+In contrast to tarballs, patches tend to be far easier to cope with.
+In general, all that is necessary is to use the \fIaepatch\fP(1) command,
+something like this:
+.E(
+$ \f[CB]aepatch -receive -file \fP\fIproject-x.y\fP\f[CB].diff\fP
+$
+.E)
+which will create a change set, check-out only those file the patch alters,
+and copes with creates and removes automagically.
+.LP
+There are two problems with this method.
+The largest problem is patches whicg contains diff for derived fiels as well.
+This is unfortunately \fIvery\fP common.
+.LP
+The simplest way of coping with this is to add the \fIaepatch
+\-trojan\fP option, which will leave the change in the \fIbeing
+developed\fP state, where you can examine it and use the \fIaenfu\fP(1)
+command for any derived files it insisted on creating as primary source
+files.
+.LP
+The second problem is much simpler: if a patch only contains new files,
+Aegis can't work out how much of the leading path it should ignore
+on the filenames in the patch.  You will need to use the \fIaepatch
+\-remove-prefix\fP option in this case.

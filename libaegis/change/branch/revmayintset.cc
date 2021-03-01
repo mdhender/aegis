@@ -25,13 +25,11 @@
 
 
 void
-change_branch_reviewer_may_integrate_set(change_ty *cp, int n)
+change_branch_reviewer_may_integrate_set(change_ty *cp, bool n)
 {
-    cstate_ty       *cstate_data;
-    cstate_branch_ty *bp;
-
-    cstate_data = change_cstate_get(cp);
-    bp = cstate_data->branch;
+    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_branch_ty *bp = cstate_data->branch;
     assert(bp);
-    bp->reviewer_may_integrate = (boolean_ty)n;
+    bp->reviewer_may_integrate = n;
+    bp->mask |= cstate_branch_reviewer_may_integrate_mask;
 }

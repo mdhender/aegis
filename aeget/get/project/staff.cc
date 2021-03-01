@@ -138,10 +138,12 @@ get_project_staff(project_ty *pp, string_ty *fn, string_list_ty *modifier)
     staff_member_ty *smp;
     size_t          j;
 
-    html_header(pp);
+    html_header(pp, 0);
     printf("<title>Project ");
     html_encode_string(project_name_get(pp));
-    printf(" Staff</title></head>\n<body><h1 align=center>\n");
+    printf(" Staff</title></head><body>\n");
+    html_header_ps(pp, 0);
+    printf("<h1 align=center>\n");
     emit_project(pp);
     printf(",<br>\nList of Staff</h1>\n");
     printf("<div class=\"information\">\n");
@@ -372,5 +374,5 @@ get_project_staff(project_ty *pp, string_ty *fn, string_list_ty *modifier)
     printf("Project Menu</a>\n");
     printf("]</p>\n");
 
-    html_footer();
+    html_footer(pp, 0);
 }

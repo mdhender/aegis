@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -47,6 +47,9 @@
 #define INDENT_WIDTH	8	/* used for change_details */
 #define PROJECT_WIDTH	15
 #define DIRECTORY_WIDTH 23
-#define ATTR_WIDTH      8	/* used for file and change attributes */
+#define ATTR_WIDTH      15	/* used for file and change attributes */
+#define UUID_WIDTH      36
+#define FILENAME_WIDTH  42	/* FILENAME_WIDTH + 1 + UUID_WIDTH < 80 */
+#define VERSION_WIDTH   10       /* strlen("1.234.D567") = 10 */
 
 #endif /* LIBAEGIS_AEL_COLUMN_WIDTH_H */

@@ -355,7 +355,7 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
 	if (need_to_unlink)
 	    input_file_unlink_on_close(ip);
 	if (is_local && os_executable(path))
-	    src->executable = (boolean_ty)1;
+	    src->executable = true;
 	if (is_local)
 	    version = fake_version(os_mtime_actual(path));
 	os_become_undo();
@@ -701,7 +701,7 @@ checkin(module_ty *mp, server_ty *sp, string_ty *client_side,
 	path = change_file_path(mcp->cp, filename);
 	os_become_orig();
 	if (os_executable(path))
-	    src->executable = (boolean_ty)1;
+	    src->executable = true;
 	os_become_undo();
 	str_free(path);
     }
@@ -902,7 +902,7 @@ add(module_ty *mp, server_ty *sp, string_ty *client_side,
 	path = change_file_path(mcp->cp, filename);
 	os_become_orig();
 	if (os_executable(path))
-	    src->executable = (boolean_ty)1;
+	    src->executable = true;
 	os_become_undo();
 	str_free(path);
     }

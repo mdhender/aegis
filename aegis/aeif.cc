@@ -45,6 +45,7 @@
 #include <project.h>
 #include <project/file.h>
 #include <project/history.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -408,7 +409,7 @@ integrate_fail_main(void)
     dir = str_copy(change_integration_directory_get(cp, 1));
     change_integration_directory_clear(cp);
     cstate_data->state = cstate_state_being_developed;
-    cstate_data->minimum_integration = (boolean_ty)0;
+    cstate_data->minimum_integration = false;
 
     //
     // Complain if they are in the integration directory,
@@ -507,13 +508,13 @@ integrate_fail_main(void)
     //
     // Make the development directory writable again.
     //
-    if
-    (
-	!change_was_a_branch(cp)
-    &&
-	project_protect_development_directory_get(pp)
-    )
-	change_development_directory_chmod_read_write(cp);
+    // This is actually conditional upon project_protect_development_
+    // directory_get(pp) but the test is inside the change_
+    // development_directory_chmod_read_write(cp) function, because it
+    // also makes sure the source files are readable and writable by the
+    // developer.
+    //
+    change_development_directory_chmod_read_write(cp);
 
     //
     // write out the data and release the locks

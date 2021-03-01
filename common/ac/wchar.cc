@@ -21,6 +21,7 @@
 //
 
 #include <ac/stddef.h>
+#include <ac/stdlib.h>
 #include <ac/wchar.h>
 
 
@@ -146,17 +147,14 @@ wcslen(const wchar_t *wcs)
 //	have glibc).
 //
 
-#ifndef HAVE_WCWIDTH
-
-#ifdef HAVE_ISWCTYPE
-#ifdef HAVE_WCTYPE_H
+#include <ac/wchar.h>
 #include <ac/wctype.h>
-#endif
-#endif
 
 
-int
-wcwidth(wint_t wc)
+#if !HAVE_WCWIDTH
+
+extern "C" int
+wcwidth(wchar_t wc)
 {
 #ifdef HAVE_ISWCTYPE
 #ifdef HAVE_WCTYPE_H
@@ -175,9 +173,11 @@ wcwidth(wint_t wc)
     return 1;
 }
 
+#endif // HAVE_WCWIDTH
+#if !HAVE_WCSWIDTH
 
-int
-wcswidth(wchar_t *wcs, size_t n)
+extern "C" int
+wcswidth(const wchar_t *wcs, size_t n)
 {
     int		    result;
 
@@ -190,22 +190,22 @@ wcswidth(wchar_t *wcs, size_t n)
     return result;
 }
 
-#endif
-#ifndef HAVE_MBRTOWC
+#endif // HAVE_WCSWIDTH
+#if !HAVE_MBRTOWC
 
-size_t
+extern "C" size_t
 mbrtowc(wchar_t *pwc, const char *s, size_t n, mbstate_t *ps)
 {
     return mbtowc(pwc, s, n);
 }
 
-#endif
-#ifndef HAVE_WCRTOMB
+#endif // HAVE_WCSWIDTH
+#if !HAVE_WCRTOMB
 
-size_t
+extern "C" size_t
 wcrtomb(char *s, wchar_t wc, mbstate_t *ps)
 {
     return wctomb(s, wc);
 }
 
-#endif
+#endif // HAVE_WCRTOMB

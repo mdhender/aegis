@@ -35,6 +35,7 @@
 #include <send.h>
 #include <gettime.h>
 #include <now.h>
+#include <nstring.h>
 #include <os.h>
 #include <output/file.h>
 #include <output/gzip.h>
@@ -101,6 +102,7 @@ tar_send(void)
     delta_date = NO_TIME_SET;
     delta_number = -1;
     delta_name = 0;
+    nstring path_prefix;
     arglex();
     while (arglex_token != arglex_token_eoln)
     {
@@ -271,6 +273,17 @@ tar_send(void)
 	    if (delta_date == NO_TIME_SET)
 		fatal_date_unknown(arglex_value.alv_string);
 	    break;
+
+	case arglex_token_path_prefix_add:
+	    if (!path_prefix.empty())
+		duplicate_option(usage);
+	    if (arglex() != arglex_token_string)
+	    {
+		option_needs_string(arglex_token_delta_date, usage);
+		// NOTREACHED
+	    }
+	    path_prefix = arglex_value.alv_string;
+	    break;
 	}
 	arglex();
     }
@@ -420,6 +433,7 @@ tar_send(void)
     // Check the change state.
     //
     cstate_data = change_cstate_get(cp);
+    project_file_roll_forward historian;
     switch (cstate_data->state)
     {
     default:
@@ -429,7 +443,7 @@ tar_send(void)
 	//
 	// Need to reconstruct the appropriate file histories.
 	//
-	project_file_roll_forward
+	historian.set
 	(
 	    pp,
 	    (
@@ -525,6 +539,8 @@ tar_send(void)
     //
     // add each of the relevant source files to the archive
     //
+    if (!path_prefix.empty() && path_prefix[path_prefix.size() - 1] != '/')
+	path_prefix = path_prefix + "/";
     for (j = 0; j < wl.nstrings; ++j)
     {
 	string_ty	*filename;
@@ -593,7 +609,7 @@ tar_send(void)
 	    // for changes which are not yet in the completed state.
 	    //
 	    os_become_orig();
-	    csrc->executable = (boolean_ty)os_executable(abs_filename);
+	    csrc->executable = os_executable(abs_filename);
 	    os_become_undo();
 	    break;
 
@@ -601,7 +617,7 @@ tar_send(void)
 	    //
 	    // Extract the file from history.
 	    //
-	    fep = project_file_roll_forward_get_last(filename);
+	    fep = historian.get_last(filename);
 	    if (!fep)
 		continue;
 	    csrc = change_file_find(fep->cp, filename, view_path_first);
@@ -653,15 +669,25 @@ tar_send(void)
 	case file_action_create:
 	case file_action_modify:
 	case file_action_insulate:
-	    os_become_orig();
-	    ifp = input_file_open(abs_filename);
-	    assert(ifp);
-	    len = input_length(ifp);
-	    ofp = output_tar_child(tar_p, filename, len, csrc->executable);
-	    input_to_output(ifp, ofp);
-	    input_delete(ifp);
-	    output_delete(ofp);
-	    os_become_undo();
+	    {
+		os_become_orig();
+		ifp = input_file_open(abs_filename);
+		assert(ifp);
+		len = input_length(ifp);
+		nstring tar_name = path_prefix + nstring(str_copy(filename));
+		ofp =
+		    output_tar_child
+		    (
+			tar_p,
+			tar_name.get_ref(),
+			len,
+			csrc->executable
+		    );
+		input_to_output(ifp, ofp);
+		input_delete(ifp);
+		output_delete(ofp);
+		os_become_undo();
+	    }
 	    break;
 	}
 

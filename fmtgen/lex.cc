@@ -24,6 +24,7 @@
 #include <ac/stdarg.h>
 #include <ac/stdlib.h>
 #include <ac/errno.h>
+#include <ac/string.h>
 
 #include <error.h>
 #include <lex.h>
@@ -63,7 +64,6 @@ static symtab_ty    *keyword;
 //
 //  CAVEAT
 //	The keywords are intentionally case sensitive.
-//      Assumes that str_initialize has already been called.
 //
 
 static void
@@ -77,15 +77,18 @@ lex_initialize(void)
 
     static keyword_ty table[] =
     {
+	{ "boolean", BOOLEAN, },
+	{ "false", BOOLEAN_CONSTANT, },
+	{ "hide_if_default", HIDE_IF_DEFAULT, },
 	{ "include", INCLUDE, },
 	{ "integer", INTEGER, },
 	{ "real", REAL, },
+	{ "redefinition_ok", REDEFINITION_OK, },
+	{ "show_if_default", SHOW_IF_DEFAULT, },
 	{ "string", STRING, },
 	{ "time", TIME, },
+	{ "true", BOOLEAN_CONSTANT, },
 	{ "type", TYPE, },
-	{ "show_if_default", SHOW_IF_DEFAULT, },
-	{ "hide_if_default", HIDE_IF_DEFAULT, },
-	{ "redefinition_ok", REDEFINITION_OK, },
     };
     keyword_ty	*kp;
 
@@ -505,3 +508,58 @@ lex_include_path(const char *s)
 {
     string_list_append_unique(&include_path, str_from_c(s));
 }
+
+
+#ifdef DEBUG
+
+static char lex_debug_buffer[3000];
+
+
+void
+lex_debug_vprintf(const char *s, va_list ap)
+{
+    char buffer[1000];
+    vsnprintf(buffer, sizeof(buffer), s, ap);
+
+    strlcat(lex_debug_buffer, buffer, sizeof(lex_debug_buffer));
+    const char *ep = strchr(lex_debug_buffer, '\n');
+    if (ep)
+    {
+	error_raw
+	(
+	    "%s: %d: %.*s",
+	    file->file_name,
+	    file->line_number,
+	    (ep - lex_debug_buffer),
+	    lex_debug_buffer
+	);
+	memmove
+	(
+	    lex_debug_buffer,
+	    ep + 1,
+	    lex_debug_buffer + strlen(lex_debug_buffer) - ep
+	);
+    }
+}
+
+
+void
+lex_debug_printf(const char *s, ...)
+{
+    va_list ap;
+    va_start(ap, s);
+    lex_debug_vprintf(s, ap);
+    va_end(ap);
+}
+
+
+void
+lex_debug_fprintf(void *ignore, const char *s, ...)
+{
+    va_list ap;
+    va_start(ap, s);
+    lex_debug_vprintf(s, ap);
+    va_end(ap);
+}
+
+#endif // DEBUG

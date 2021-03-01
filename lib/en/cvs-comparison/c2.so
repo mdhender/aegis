@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001, 2002 Peter Miller;
+.\"	Copyright (C) 1999, 2001, 2002, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -119,7 +119,7 @@ _
 T{
 Show the differences between the work area and the repository.
 T};T{
-aed
+aediff
 T};T{
 cvs diff
 T}

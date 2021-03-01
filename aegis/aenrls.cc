@@ -45,6 +45,7 @@
 #include <project.h>
 #include <project/file.h>
 #include <project/history.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -758,8 +759,8 @@ new_release_main(void)
 	subst_intl(scp, i18n("New release derived from $name."));
     sub_context_delete(scp);
     cstate_data->cause = change_cause_internal_enhancement;
-    cstate_data->test_exempt = (boolean_ty)1;
-    cstate_data->test_baseline_exempt = (boolean_ty)1;
+    cstate_data->test_exempt = true;
+    cstate_data->test_baseline_exempt = true;
     project_change_append(ppp, change_number, 0);
 
     //

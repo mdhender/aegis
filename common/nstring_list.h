@@ -123,6 +123,12 @@ public:
       */
     nstring operator[](int n) const;
 
+    /**
+      * The unsplit method is used to form a single string by gluing all
+      * of the string list members together.
+      */
+    nstring unsplit(const char *separator) const;
+
 private:
     /**
       * The content instance variable is used to remember the contents

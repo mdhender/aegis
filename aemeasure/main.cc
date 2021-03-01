@@ -27,7 +27,6 @@
 #include <count.h>
 #include <error.h>
 #include <progname.h>
-#include <str.h>
 
 
 enum
@@ -62,7 +61,6 @@ main(int argc, char **argv)
     const char	    *outfile;
 
     arglex_init(argc, argv, argtab);
-    str_initialize();
     arglex();
 
     infile = 0;

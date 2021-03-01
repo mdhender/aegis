@@ -56,6 +56,8 @@ project_file_version_path(project_ty *pp, fstate_src_ty *src, int *unlink_p)
     for (ppp = pp; ppp; ppp = ppp->parent)
     {
 	cp = project_change_get(ppp);
+	if (change_is_completed(cp))
+	    continue;
 	old_src = change_file_find(cp, src->file_name, view_path_first);
 	if (!old_src)
 	    continue;

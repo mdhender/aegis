@@ -23,6 +23,28 @@
 #ifndef COMMIT_H
 #define COMMIT_H
 
+/** \defgroup Transaction
+  * \ingroup AegisLibrary
+  * \brief Functions to handle commit and rollback.
+  *
+  * Aegis implements transactions defining two operation
+  * queues, one is used to store operations to be run at commit time
+  * and the other is used to store operations to be run at rollback
+  * time.
+  *
+  * Operations to be run at commit time must be requested calling
+  * commit_* functions, while operations to be run at rollback time
+  * must be requested with undo_* functions.
+  *
+  * Note that operation requested with commit_/undo_ functions are not
+  * executed immediatly but are delayed until the proper event (commit
+  * or undo) is issued.  Also note that it is possible that the
+  * operation you request (e.g. commit_rename) will not be executed
+  * because an undo event is triggered, the same holds for undo_ operation.
+  *
+  * @{
+  */
+
 #include <str.h>
 
 /**
@@ -101,4 +123,5 @@ void commit_rmdir_tree_errok(string_ty *path);
   */
 void commit(void);
 
+/** @} */
 #endif /* COMMIT_H */

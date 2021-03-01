@@ -54,7 +54,7 @@
  * <wchar.h> and <wctype.h>.  The GNU people also define it in <stddef.h>,
  * but this is incorrect.
  */
-#if !HAVE_WINT_T
+#ifndef HAVE_WINT_T
 #define HAVE_WINT_T 1
 typedef wchar_t wint_t;
 #endif

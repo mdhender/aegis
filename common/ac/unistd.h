@@ -43,4 +43,11 @@
 #include <unistd.h>
 #endif
 
+#ifndef CONF_NO_seteuid
+#ifndef HAVE_SETEUID
+int seteuid(int);
+int setegid(int);
+#endif
+#endif
+
 #endif /* COMMON_AC_UNISTD_H */

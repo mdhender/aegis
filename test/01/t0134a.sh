@@ -177,8 +177,8 @@ activity="new test 190"
 $bin/aegis -nt -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $changedir/test/00/t0001a.sh << 'fubar'
-here=`pwd`;
-if [ $here = $projdir/baseline ] ; then
+if pwd | grep "$projdir/baseline" > /dev/null
+then
     exit 1 ;
 else
     exit 0 ;
@@ -255,8 +255,8 @@ activity="new test 275"
 $bin/aegis -nt -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $changedir/test/00/t0002a.sh << 'fubar'
-here=`pwd`;
-if [ $here = $projdir/baseline ] ; then
+if pwd | grep "$projdir/baseline" > /dev/null
+then
     exit 1 ;
 else
     exit 0 ;

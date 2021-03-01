@@ -39,6 +39,7 @@
 #include <project/history.h>
 #include <project/file.h>
 #include <project/file/roll_forward.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>
@@ -374,7 +375,7 @@ delta_name_main(void)
 	size_t          j;
 
 	delta_date = project_history_delta_to_timestamp(pp, delta_number);
-	project_file_roll_forward(pp, delta_date, 0);
+	project_file_roll_forward historian(pp, delta_date, 0);
 	for (j = 0;; j++)
 	{
 	    fstate_src_ty   *src;
@@ -383,7 +384,7 @@ delta_name_main(void)
 	    src = project_file_nth(pp, j, view_path_simple);
 	    if (!src)
 		break;
-	    fep = project_file_roll_forward_get_last(src->file_name);
+	    fep = historian.get_last(src->file_name);
 	    if (!fep)
 	    {
 		//

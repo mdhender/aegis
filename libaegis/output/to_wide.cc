@@ -22,6 +22,7 @@
 
 #include <ac/stdlib.h>
 #include <ac/string.h>
+#include <ac/wchar.h>
 
 #include <error.h> // for assert
 #include <language.h>

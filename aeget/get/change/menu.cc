@@ -33,18 +33,17 @@
 void
 get_change_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 {
-    cstate_ty       *cstate_data;
-
-    html_header(cp->pp);
-
+    html_header(0, cp);
     printf("<title>Project\n");
     html_encode_string(project_name_get(cp->pp));
     printf(", Change %ld\n", magic_zero_decode(cp->number));
-    printf("</title></head>\n<body><h1 align=center>\n");
+    printf("</title></head><body>\n");
+    html_header_ps(0, cp);
+    printf("<h1 align=center>\n");
     emit_change_but1(cp);
     printf("</h1>\n");
 
-    cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = change_cstate_get(cp);
     if (cstate_data->brief_description)
     {
 	printf("<div class=\"brief-description\">\n");
@@ -64,6 +63,13 @@ get_change_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     printf("<div class=\"information\">\n");
     printf("<h2>Information Available</h2>\n");
     printf("<dl>\n");
+
+    if (cstate_data->uuid)
+    {
+	printf("<dt>UUID<dd><tt>");
+	html_encode_string(cstate_data->uuid);
+	printf("</tt><p>\n");
+    }
 
     printf("<dt>State<dd>This change is in the ");
     printf("<dfn>%s</dfn> state.\n", cstate_state_ename(cstate_data->state));
@@ -100,6 +106,16 @@ get_change_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	printf("<p>\n");
     }
 
+    if (cstate_data->state >= cstate_state_being_developed)
+    {
+	printf("<dt>");
+	emit_change_href(cp, "file-inventory");
+	printf("File Inventory</a><dd>\n");
+        printf("This item will provide you with a listing of files\n");
+        printf("in this change along with their UUIDs.\n");
+	printf("<p>\n");
+    }
+
     if
     (
 	cstate_data->state >= cstate_state_being_developed
@@ -117,7 +133,7 @@ get_change_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	printf("<p>\n");
         printf("If you wish to download the sources using\n");
 	printf("&ldquo;wget -r&rdquo; or similar, use the\n<i>");
-	emit_change_href(cp, "noindex@nolinks@noderived");
+	emit_change_href(cp, "file@contents@noindex@nolinks@noderived");
         printf("no navigation links</a></i> variant.\n");
 	printf("<p>\n");
     }
@@ -183,53 +199,6 @@ get_change_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     printf("transitions of this change, when they were performed, and\n");
     printf("who performed them.\n");
     printf("<p>\n");
-
-    if (c.state >= being_developed)
-    {
-	printf("<dt>Download<dd>\n");
-	printf("There are three ways to download this change.\n");
-	printf("<br><table align=center>\n");
-
-	printf("<tr><td valign=top>\n");
-	href = script_name ## "/" ## quote_url(pn) ## ".C" ## cn
-	    ## ".patch?file@aepatch+project@" ## quote_url(pn)
-	    ## "+change@" ## cn;
-	printf("<a href=\"" ## href ## "\"><code>patch</code></a>\n");
-	printf("</td><td valign=top>\n");
-	printf("This link will download a compressed patch familiar to Open\n");
-	printf("Source developers.\n");
-	printf("Unlike the <i>aedist</i> link, below, the change meta-data\n");
-	printf("is not preserved, only the change description endures.\n");
-	printf("</td></tr>\n");
-
-	printf("<tr><td valign=top>\n");
-	href = script_name ## "/" ## quote_url(pn) ## ".C" ## cn
-	    ## ".tar.gz?file@aetar+project@" ## quote_url(pn)
-	    ## "+change@" ## cn;
-	printf("<a href=\"" ## href ## "\"><code>tar.gz</code></a>\n");
-	printf("</td><td valign=top>\n");
-	printf("This link will download a complete project source tarball\n");
-	printf("up to this change.  <strong>Note:</strong> These tarballs\n");
-	printf("do not contain derived or generated files.  Unlike the\n");
-	printf("<i>aedist</i> link, below, the change meta-data is not\n");
-	printf("preserved.\n");
-	printf("</td></tr>\n");
-
-	printf("<tr><td valign=top>\n");
-	href = script_name ## "/" ## quote_url(pn) ## ".C" ## cn
-	    ## ".ae?file@aedist+project@" ## quote_url(pn)
-	    ## "+change@" ## cn;
-	printf("<a href=\"" ## href ## "\"><code>aedist</code></a>\n");
-	printf("</td><td valign=top>\n");
-	printf("The <em>aedist</em>(1) program packages changes so\n");
-	printf("that they may be reproduced exactly on the remote\n");
-	printf("site.  Changes packaged in this way require the\n");
-	printf("<em>aedist</em>(1) program from Aegis 4.23 or later to\n");
-	printf("apply them.\n");
-	printf("</td></tr>\n");
-
-	printf("</table>\n");
-    }
 #endif
 
     printf("</dl></div>\n");
@@ -243,5 +212,5 @@ get_change_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     printf("Change List</a>\n");
     printf("]</p>\n");
 
-    html_footer();
+    html_footer(0, cp);
 }

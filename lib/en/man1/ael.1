@@ -80,9 +80,21 @@ This listing shows the history of each file in the change.  It includes
 each delta number (so that you may reproduce it) and brief description,
 of each change which affected each file.
 .TP 8n
+Change_File_INventory
+.br
+This listing shows the filenames and their corresponding UUIDs.
+When a file is renamed, its UUID remains constant.
+(If the UUID column has the filename in it, this is a backwards
+compatibility value, for accessing the file history.)
+.\" with a nod to GNU Arch
+.TP 8n
 Change_History
 .br
 List the history of a change.
+.TP 8n
+Change_INventory
+.br
+List the changes of a project with their UUIDs.
 .TP 8n
 Changes
 .br
@@ -147,6 +159,13 @@ The terse version only lists the files names (and omits removed files),
 this is useful for shell scripts and interfacing with build tools.
 If a change number is given, files included in the change are omitted from
 the list (giving the change's perspective on what the project files are).
+.TP 8n
+Project_File_INventory
+.br
+This listing shows the filenames and their corresponding UUIDs.
+When a file is renamed, its UUID remains constant.
+(If the UUID column has the filename in it, this is a backwards
+compatibility value, for accessing the file history.)
 .TP 8n
 Project_History
 .br

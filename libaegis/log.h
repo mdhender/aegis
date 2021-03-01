@@ -23,7 +23,7 @@
 #ifndef AEGIS_LOG_H
 #define AEGIS_LOG_H
 
-#include <main.h>
+#include <quit/action/log.h>
 
 enum log_style_ty
 {
@@ -42,6 +42,6 @@ struct user_ty;
 
 void log_open(struct string_ty *, struct user_ty *, log_style_ty);
 void log_close(void);
-void log_quitter(int);
+extern quit_action_log log_quitter;
 
 #endif // AEGIS_LOG_H

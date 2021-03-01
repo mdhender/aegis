@@ -1096,7 +1096,6 @@ user_full_name(string_ty *name)
 {
     struct passwd   *pw;
     const char      *result;
-    char	    *comma;
     static char	    *trimmed;
     static size_t   trimmed_max;
 
@@ -1117,7 +1116,7 @@ user_full_name(string_ty *name)
     // Some systems add lots of other stuff to the full name field
     // in the passwd file.  We are only interested in the name.
     //
-    comma = strchr(result, ',');
+    const char *comma = strchr(result, ',');
     if (comma)
     {
 	size_t		len;
@@ -2600,18 +2599,24 @@ user_whiteout_argument(void (*usage)(void))
 
 
 int
-user_whiteout(user_ty *up)
+user_whiteout(user_ty *up, int dflt)
 {
     if (uconf_whiteout_option < 0)
     {
-	uconf_ty	*uconf_data;
-	uconf_whiteout_preference_ty result;
-
-	if (!up)
-	    up = user_executing((project_ty *)0);
-	uconf_data = user_uconf_get(up);
-	result = uconf_data->whiteout_preference;
-	uconf_whiteout_option = (result == uconf_whiteout_preference_always);
+	if (dflt >= 0)
+	{
+	    uconf_whiteout_option = dflt;
+	}
+	else
+	{
+	    if (!up)
+		up = user_executing((project_ty *)0);
+	    uconf_ty *uconf_data = user_uconf_get(up);
+	    uconf_whiteout_preference_ty result =
+		uconf_data->whiteout_preference;
+	    uconf_whiteout_option =
+		(result == uconf_whiteout_preference_always);
+	}
     }
     return uconf_whiteout_option;
 }

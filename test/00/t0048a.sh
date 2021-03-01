@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996, 1997, 1998, 2000 Peter Miller;
+#	Copyright (C) 1996-1998, 2000, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -120,7 +120,7 @@ unset LANGUAGE
 # test the aet directory functionality
 #
 activity="new project 124"
-$bin/aegis -npr $AEGIS_PROJECT -vers "" -v > log 2>&1
+$bin/aegis -npr $AEGIS_PROJECT -vers "" -v -dir $work/proj.dir > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="project attributes 128"

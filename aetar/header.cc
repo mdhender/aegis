@@ -253,7 +253,7 @@ void
 header_uname_set(header_ty *hp, string_ty *arg)
 {
     string_field_set(hp->uname, sizeof(hp->uname), arg);
-    strcpy(hp->magic, TMAGIC);
+    strlcpy(hp->magic, TMAGIC, sizeof(hp->magic));
 }
 
 
@@ -271,7 +271,7 @@ void
 header_gname_set(header_ty *hp, string_ty *arg)
 {
     string_field_set(hp->gname, sizeof(hp->gname), arg);
-    strcpy(hp->magic, TMAGIC);
+    strlcpy(hp->magic, TMAGIC, sizeof(hp->magic));
 }
 
 

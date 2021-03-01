@@ -208,11 +208,9 @@ type_enumeration_ty::gen_code()
     indent_printf("}\n");
 
     indent_putchar('\n');
-    indent_printf("static int\n");
-    indent_printf("%s_parse(string_ty *name)\n", def_name().c_str());
+    indent_printf("static bool\n");
+    indent_printf("%s_parse(string_ty *name, void *ptr)\n", def_name().c_str());
     indent_printf("{\n");
-    indent_printf("size_t\1j;\n");
-    indent_putchar('\n');
     indent_printf
     (
 	"slow_to_fast(%s_s, %s_f, SIZEOF(%s_s));\n",
@@ -222,17 +220,19 @@ type_enumeration_ty::gen_code()
     );
     indent_printf
     (
-	"for (j = 0; j < SIZEOF(%s_f); ++j)\n",
+	"for (size_t j = 0; j < SIZEOF(%s_f); ++j)\n",
 	def_name().c_str()
     );
     indent_printf("{\n");
     indent_printf("if (str_equal(name, %s_f[j]))\n",
-                  def_name().c_str());
-    indent_more();
-    indent_printf("return j;\n");
-    indent_less();
+	def_name().c_str());
+    indent_printf("{\n");
+    indent_printf("*(%s_ty *)ptr = (%s_ty)j;\n", def_name().c_str(),
+	def_name().c_str());
+    indent_printf("return true;\n");
     indent_printf("}\n");
-    indent_printf("return -1;\n");
+    indent_printf("}\n");
+    indent_printf("return false;\n");
     indent_printf("}\n");
 
     indent_putchar('\n');
@@ -275,11 +275,18 @@ type_enumeration_ty::gen_code()
     indent_more();
     indent_printf("generic_enum_convert\n");
     indent_printf("(\n");
-    indent_printf("this_thing,\n");
+    indent_printf("(int)*(%s_ty *)this_thing,\n", def_name().c_str());
     indent_printf("%s_f,\n", def_name().c_str());
     indent_printf("SIZEOF(%s_f)\n", def_name().c_str());
     indent_printf(");\n");
     indent_less();
+    indent_printf("}\n");
+
+    indent_putchar('\n');
+    indent_printf("static bool\n");
+    indent_printf("%s_is_set(void *this_thing)\n", def_name().c_str());
+    indent_printf("{\n");
+    indent_printf("return (*(%s_ty *)this_thing != 0);\n", def_name().c_str());
     indent_printf("}\n");
 
     indent_putchar('\n');
@@ -293,7 +300,7 @@ type_enumeration_ty::gen_code()
     indent_printf("0, // struct_parse\n");
     indent_printf("%s_fuzzy,\n", def_name().c_str());
     indent_printf("%s_convert,\n", def_name().c_str());
-    indent_printf("generic_enum_is_set,\n");
+    indent_printf("%s_is_set,\n", def_name().c_str());
     indent_printf("};\n");
 }
 

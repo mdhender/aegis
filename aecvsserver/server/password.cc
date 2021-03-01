@@ -20,6 +20,7 @@
 // MANIFEST: functions to manipulate passwords
 //
 
+#include <ac/crypt.h>
 #include <ac/errno.h>
 #include <ac/grp.h>
 #include <ac/pwd.h>

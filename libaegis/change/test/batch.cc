@@ -110,6 +110,7 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
 	sub_var_set_string(scp, "Search_Path_Executable", s);
 	str_free(s);
 	sub_var_override(scp, "Search_Path_Executable");
+	sub_var_optional(scp, "Search_Path_Executable");
 	string_list_destructor(&spbl);
     }
     sub_var_set_long(scp, "Current", current);

@@ -21,18 +21,56 @@
 //
 
 #include <ac/stdio.h>
+#include <ac/string.h>
 
 #include <change.h>
 #include <change/env_set.h>
 #include <env.h>
+#include <nstring.h>
 #include <project.h>
+#include <sub.h>
 
 
 void
 change_env_set(change_ty *cp, int with_arch)
 {
-    string_ty       *s;
+    //
+    // Set environment variables based on project_specific attributes,
+    // if specified.
+    //
+    pconf_ty *pconf_data = change_pconf_get(cp, 0);
+    if (pconf_data->project_specific)
+    {
+	for (size_t j = 0; j < pconf_data->project_specific->length; ++j)
+	{
+	    attributes_ty *ap =
+		pconf_data->project_specific->list[j];
+	    if
+	    (
+		ap->name
+	    &&
+		ap->name->str_length > 7
+	    &&
+		0 == memcmp(ap->name->str_text, "setenv:", 7)
+	    )
+	    {
+		const char *name = ap->name->str_text + 7;
+		if (ap->value && ap->value->str_length)
+                {
+                    sub_context_ty *scp = sub_context_new();
+                    nstring env_value = substitute(scp, cp, ap->value);
+                    env_set(name, env_value.c_str());
+                    sub_context_delete(scp);
+                }
+		else
+		    env_unset(name);
+	    }
+	}
+    }
 
+    //
+    // Set the LINES and COLS environment variables.
+    //
     env_set_page();
 
     //
@@ -51,7 +89,7 @@ change_env_set(change_ty *cp, int with_arch)
     //
     // set the AEGIS_ARCH environment variable
     //
-    s = change_architecture_name(cp, with_arch);
+    string_ty *s = change_architecture_name(cp, with_arch);
     if (s)
 	env_set("AEGIS_ARCH", s->str_text);
     else

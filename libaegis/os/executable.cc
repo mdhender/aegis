@@ -30,7 +30,7 @@
 #include <sub.h>
 
 
-int
+bool
 os_executable(string_ty *path)
 {
     struct stat     st;
@@ -56,9 +56,9 @@ os_executable(string_ty *path)
             fatal_intl(scp, i18n("stat $filename: $errno"));
             // NOTREACHED
         }
-        return 0;
+        return false;
     }
     if (!S_ISREG(st.st_mode))
-	return 0;
+	return false;
     return ((st.st_mode & 0111) != 0);
 }

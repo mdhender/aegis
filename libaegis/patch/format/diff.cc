@@ -169,6 +169,8 @@ diff_header(patch_context_ty *context)
     // This may be the only clue we get as to the file names.
     //
     line = patch_context_getline(context, idx);
+    if (!line)
+	goto oops;
     if (starts_with(line, "diff"))
     {
 	string_list_ty	wl;
@@ -186,10 +188,15 @@ diff_header(patch_context_ty *context)
 	    //
 	    // Get next line, we've used this one.
 	    //
+	    ++idx;
 	    line = patch_context_getline(context, idx);
+	    if (!line)
+		goto oops;
 	}
 	string_list_destructor(&wl);
     }
+    if (result->name.nstrings == 0)
+	goto oops;
 
     //
     // Look for a line which contains one of our commands
@@ -360,7 +367,6 @@ diff_hunk(patch_context_ty *context)
     // We have a viable hunk, take them out of the context because
     // we won't need to backtrack them any more.
     //
-    trace(("mark\n"));
     patch_context_discard(context, idx);
 
     trace(("return %08lX\n", (long)php));

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2002 Peter Miller;
+#	Copyright (C) 2002, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -119,7 +119,7 @@ export AEGIS_PATH
 # test the configdir functionality
 #
 activity="new project 121"
-$bin/aegis -npr test -version '' -v > log 2>&1
+$bin/aegis -npr test -version '' -v -dir $work/proj.dir > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="project attributes 125"

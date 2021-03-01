@@ -120,7 +120,7 @@ export AEGIS_PATH
 # test the aecp -ro functionality
 #
 activity="new project 123"
-$bin/aegis -npr test -version '' -v > log 2>&1
+$bin/aegis -npr test -version '' -v -dir $work/test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="project attributes 127"

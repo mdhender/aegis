@@ -148,7 +148,7 @@ strncasecmp(const char *s1, const char *s2, size_t len)
 
 #ifndef HAVE_STRSIGNAL
 
-char *
+extern "C" const char *
 strsignal(int n)
 {
     static char     buffer[16];
@@ -391,3 +391,58 @@ strverscmp(const char *s1, const char *s2)
 }
 
 #endif // !HAVE_STRVERSCMP
+#if !HAVE_STRLCPY
+
+//
+// http://www.courtesan.com/todd/papers/strlcpy.html
+//
+// Like strncpy but does not 0 fill the buffer and always null
+// terminates.
+//
+// @param bufsize is the size of the destination buffer.
+//
+// @return index of the terminating byte.
+//
+size_t
+strlcpy(char *d, const char *s, size_t bufsize)
+{
+    if (bufsize <= 0)
+	return 0;
+    size_t len = strlen(s);
+    size_t ret = len;
+    if (len >= bufsize)
+	len = bufsize - 1;
+    memcpy(d, s, len);
+    d[len] = 0;
+    return ret;
+}
+
+#endif // !HAVE_STRLCPY
+#if !HAVE_STRLCAT
+
+//
+// http://www.courtesan.com/todd/papers/strlcpy.html
+//
+// Like strncat() but does not 0 fill the buffer and always null
+// terminates.
+//
+// @param bufsize length of the buffer, which should be one more than
+// the maximum resulting string length.
+//
+size_t
+strlcat(char *d, const char *s, size_t bufsize)
+{
+    size_t len1 = strlen(d);
+    size_t len2 = strlen(s);
+    size_t ret = len1 + len2;
+    if (len1 + len2 >= bufsize)
+	len2 = bufsize - len1 - 1;
+    if (len2 > 0)
+    {
+	memcpy(d + len1, s, len2);
+	d[len1 + len2] = 0;
+    }
+    return ret;
+}
+
+#endif // !HAVE_STRLCAT

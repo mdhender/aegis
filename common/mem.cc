@@ -170,19 +170,18 @@ mem_free(void *cp)
 
 
 char *
+mem_copy_string(const char *s, size_t len)
+{
+    char *cp = (char *)mem_alloc(len + 1);
+    if (len)
+	memcpy(cp, s, len);
+    cp[len] = 0;
+    return cp;
+}
+
+
+char *
 mem_copy_string(const char *s)
 {
-    char            *cp;
-
-    if (s)
-    {
-	cp = (char *)mem_alloc(strlen(s) + 1);
-	strcpy(cp, s);
-    }
-    else
-    {
-	cp = (char *)mem_alloc(1);
-	*cp = 0;
-    }
-    return cp;
+    return mem_copy_string(s, (s ? strlen(s) : 0));
 }

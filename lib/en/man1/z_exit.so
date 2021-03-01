@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1995, 1997 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1995, 1997, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,8 @@ The
 .I \*(n)
 command will only exit with a status of 0 if there are no errors.
 .SH ENVIRONMENT VARIABLES
-See
-.IR aegis (1)
-for a list of environment variables
-which may affect this command.
+See \fIaegis\fP(1) for a list of environment variables which may affect
+this command.
+See \fIaepconf\fP(5) for the project configuration file's
+\fIproject_\%specific\fP field for how to set environment variables for
+all commands executed by Aegis.

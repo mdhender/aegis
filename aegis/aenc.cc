@@ -47,6 +47,7 @@
 #include <progname.h>
 #include <project.h>
 #include <project/history.h>
+#include <quit.h>
 #include <str_list.h>
 #include <sub.h>
 #include <trace.h>
@@ -447,9 +448,9 @@ new_change_main(void)
 	// about it.
 	//
 	cattr_data->cause = change_cause_internal_enhancement;
-	cattr_data->test_baseline_exempt = (boolean_ty)1;
+	cattr_data->test_baseline_exempt = true;
 	cattr_data->mask |= cattr_test_baseline_exempt_mask;
-	cattr_data->regression_test_exempt = (boolean_ty)1;
+	cattr_data->regression_test_exempt = true;
 	cattr_data->mask |= cattr_regression_test_exempt_mask;
     }
     change_attributes_default(cattr_data, pp, pconf_data);

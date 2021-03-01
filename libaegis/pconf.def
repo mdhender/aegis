@@ -30,6 +30,189 @@
 
 #include <common.def>
 
+/**
+  * The work_area_style type encapsulates a set of parameters
+  * controlling the appearance of the development directory and the
+  * integration directory.
+  */
+type work_area_style =
+{
+    /*
+     * The source_file_link field is true if hard links are to be
+     * used for project source files (which are not part of the change) so
+     * that the work area has a complete set of source files.
+     *
+     * Defaults to false if not set.
+     *
+     * If the host system does not have hard links, this field will be ignored.
+     *
+     * Maintaining the hard links can be time consuming for large
+     * projects, and add quite a noticeable delay before builds start
+     * doing anything.  If possible change your build system to use the
+     * $search_path instead and avoid links.
+     */
+    source_file_link = boolean;
+
+    /*
+     * The source_file_symlink field is true if symbolic links are to be
+     * used for project source files (which are not part of the change)
+     * so that the work area has a complete set of source files.
+     *
+     * Defaults to false if not set.
+     *
+     * If (source_file_link == true AND hard links are available) this
+     * field will be ignored.  If the host system does not have symbolic
+     * links, this field will be ignored.
+     *
+     * Maintaining the symbolic links can be time consuming for large
+     * projects, and add quite a noticeable delay before builds start
+     * doing anything.  If possible change your build system to use the
+     * $search_path instead and avoid symbolic links.
+     */
+    source_file_symlink = boolean;
+
+    /*
+     * The source_file_copy field is true if copies are to be used for
+     * project source files (which are not part of the change) so that
+     * the work area has a complete set of source files.  File
+     * modification time attributes will be preserved.
+     *
+     * Defaults to false if not set.
+     *
+     * If ((source_file_link == true AND hard links are available)
+     * OR (source_file_symlink == true AND symbolic links are available))
+     * this field will be ignored.
+     *
+     * Maintaining the copies can be time consuming (and space
+     * consuming) for large projects, and add quite a noticeable delay
+     * before builds start doing anything.  If possible change your
+     * build system to use the $search_path instead and avoid copies.
+     */
+    source_file_copy = boolean;
+
+    /*
+     * The source_file_whiteout field mat be used to sprecify the
+     * presence (true) or absence (false) of white out files, used to
+     * "cover up" files being removed by a change set.  These files
+     * contain 1KB of random data, intended to cause a syntax error
+     * should be build reference them.
+     *
+     * It is rarely necessary to explicitly set this field.  It
+     * defaults to false if you set any of the "source_file_link",
+     * "source_file_symlink" or "source_file_copy" to true; it defaults
+     * to false if none of them are true.
+     *
+     * Not meaningful (always false) for integration builds.
+     */
+    source_file_whiteout = boolean;
+
+    /*
+     * The derived_file_link field is true if hard links are to
+     * be used for non-source files which are present in the project
+     * baseline(s) but which are not present in the work area, so that
+     * the work area has a complete set of derived files.  This allows
+     * work areas to take advantage of "precompiled" object files (etc)
+     * in the baseline(s).
+     *
+     * Defaults to false if not set.
+     *
+     * If the host system does not have hard links, this field will be ignored.
+     *
+     * Maintaining the links can be time consuming for large projects,
+     * and add quite a noticeable delay before builds start doing
+     * anything.  If possible, change your build system to use the
+     * $search_path instead and avoid hard links.  Alternatively, set
+     * derived_at_start_only = true and your work area will get a "head
+     * start" but the derived files will not be checked for every build,
+     * but this will occasionally result in long build times after
+     * integrations.
+     *
+     * See also the integrate_begin_exceptions and symlink_exceptions
+     * fields (they apply to hard links as well as symbolic links).
+     */
+    derived_file_link = boolean;
+
+    /*
+     * The derived_file_symlink field is true if symbolic links are to
+     * be used for non-source files which are present in the project
+     * baseline(s) but which are not present in the work area, so that
+     * the work area has a complete set of derived files.  This allows
+     * work areas to take advantage of "precompiled" object files (etc)
+     * in the baseline(s).
+     *
+     * Defaults to false if not set.
+     *
+     * If (derived_file_link == true AND hard links are available) this
+     * field will be ignored.  If the host system does not have symbolic
+     * links, this field will be ignored.
+     *
+     * Maintaining the symbolic links can be time consuming for large
+     * projects, and add quite a noticeable delay before builds start
+     * doing anything.  If possible, change your build system to use the
+     * $search_path instead and avoid symbolic links.  Alternatively,
+     * set derived_at_start_only = true and your work area will get a
+     * "head start" but the derived files will not be checked for every
+     * build, occasionally resulting in long build times after integrations.
+     *
+     * See also the integrate_begin_exceptions and symlink_exceptions fields.
+     */
+    derived_file_symlink = boolean;
+
+    /*
+     * The derived_file_copy field is true if copies are to be used for
+     * non-source files which are present in the project baseline(s) but
+     * which are not present in the work area, so that the work area has
+     * a complete set of derived files.  This allows work areas to take
+     * advantage of "precompiled" object files (etc) in the baseline(s).
+     *
+     * Defaults to false if not set.
+     *
+     * If ((derived_file_link == true AND hard links are available)
+     * OR (derived_file_symlink == true AND symbolic links are available))
+     * this field will be ignored.
+     *
+     * Maintaining the copies can be time consuming (and space
+     * consuming) for large projects, and add quite a noticeable delay
+     * before builds start doing anything.  If possible, change your
+     * build system to use the $search_path instead and avoid symbolic
+     * links.  Alternatively, set derived_at_start_only = true and your
+     * work area will get a "head start" but the derived files will not
+     * be checked for every build, occasionally resulting in long build
+     * times after integrations.
+     *
+     * See also the integrate_begin_exceptions and symlink_exceptions
+     * fields (they apply to copies as well as symbolic links).
+     */
+    derived_file_copy = boolean;
+
+    /*
+     * The during_build_only field is set to true if you want the
+     * symbolic links, hard links and/or copies removed again after each
+     * build.  This allows the user to maintain the illusion of using
+     * a search path, without actually doing so.  This option is not
+     * especially efficient.
+     *
+     * Defaults to false if not set.
+     *
+     * If this field is false, the development directory will be
+     * populated by the develeop begin (edb) command, and the integratin
+     * directory will be populated by the integrate begin (aeib)
+     * command.
+     */
+    during_build_only = boolean;
+
+    /*
+     * The derived_at_start_only field controls whether the above fields
+     * controling the appearance of derived files are acted upon before
+     * every build (false) or only when the work area is created (true).
+     *
+     * Defaults to false if not set.
+     *
+     * This field is ignored if during_build_only is true.
+     */
+    derived_at_start_only = boolean;
+};
+
 /*
  * The configuration_directory field names a directory which will
  * be searched for additional configuration files.  (This directive is
@@ -65,6 +248,48 @@ configuration_directory = string;
  *	and a subsequent successful (exit zero) build will be required.
  */
 build_command = string;
+
+/*
+ * The integration_directory_style field controls the appearance of the
+ * integration directory.
+ *
+ * If integration_directory_style is not set, it defaults to values
+ * based on OBSOLETE fields.  Defaults are shown on the right.
+ *
+ * integration_directory_style =
+ * {
+ *     source_file_symlink = create_symlinks_before_integration_build;  (false)
+ *     source_file_link = false;                                        (false)
+ *     source_file_copy = false;                                        (false)
+ *     derived_file_symlink = create_symlinks_before_integration_build; (false)
+ *     derived_file_link = link_integration_directory;                  (false)
+ *     derived_file_copy = !link_integration_directory;                 (false)
+ *     during_build_only = remove_symlinks_after_integration_build;     (false)
+ *     derived_at_start_only = true;                                    (false)
+ * };
+ */
+integration_directory_style = work_area_style;
+
+/*
+ * The development_directory_style field controls the appearance of the
+ * development directory.
+ *
+ * If integration_directory_style is not set, it defaults to values
+ * based on OBSOLETE fields (all of which default to false if not set):
+ *
+ * development_directory_style =
+ * {
+ *     source_file_symlink = create_symlinks_before_build;              (false)
+ *     source_file_hard_link = false;                                   (false)
+ *     source_file_copy = false;                                        (false)
+ *     derived_file_symlink = create_symlinks_before_build;             (false)
+ *     derived_file_hard_link = false;                                  (false)
+ *     derived_file_copy = false;                                       (false)
+ *     during_build_only = false;                                       (false)
+ *     derived_at_start_only = false;                                   (false)
+ * };
+ */
+development_directory_style = work_area_style;
 
 /*
  * how to do a development build
@@ -368,6 +593,8 @@ integrate_begin_undo_command = string;
  * into the integration directory, rther than copy them (the default).
  * This has risks, as the build script (e.g. Howto.cook or Makefile, etc)
  * must unlink targets before rebuilding them.
+ *
+ * Defaults to false if not uset.
  */
 link_integration_directory = boolean;
 
@@ -379,6 +606,8 @@ link_integration_directory = boolean;
 integrate_begin_exceptions = [ string ];
 
 /*
+ * This field is OBSOLETE.
+ *
  * This flag is true if aegis should create symlinks from the
  * development directory to the baseline for all files in the baseline
  * not in the development directory immediately before a
@@ -393,6 +622,8 @@ integrate_begin_exceptions = [ string ];
 create_symlinks_before_build = boolean;
 
 /*
+ * This field is OBSOLETE.
+ *
  * This flag is true if aegis should create symlinks from the integration
  * directory to the baseline for all files in the baseline not in the
  * integration directory immediately before a build_command is issued.
@@ -407,6 +638,8 @@ create_symlinks_before_build = boolean;
 create_symlinks_before_integration_build = boolean;
 
 /*
+ * This field is OBSOLETE.
+ *
  * This flag is true if aegis should remove symlinks which point from
  * the development directory to the baseline directory immediately
  * after a development_build_command is issued.  Only consulted if
@@ -418,6 +651,8 @@ create_symlinks_before_integration_build = boolean;
 remove_symlinks_after_build = boolean;
 
 /*
+ * This field is OBSOLETE.
+ *
  * This flag is true if aegis should remove symlinks which point
  * from the integration directory to the baseline directory
  * immediately after a build_command is issued.  Only consulted
@@ -522,6 +757,51 @@ history_put_command = string;
  *	(the integrate pass will fail).
  */
 history_query_command = string;
+
+/*
+ * The history_transaction_begin_command field is used to specify a
+ * command to be run by aeipass(1) before any history create or history
+ * put commands are run.  The default is to do nothing.
+ *
+ * All of the substitutions described in aesub(5) are available.
+ * If you need a transaction ID, use the $version substitution.
+ *
+ * Executed as: the project owner
+ * Current directory: the base of the history tree
+ * Exit status: zero indicates succes, all non-zero exits indicate failure
+ *	(the integrate pass will fail).
+ */
+history_transaction_begin_command = string;
+
+/*
+ * The history_transaction_end_command field is used to specify a
+ * command to be run by aeipass(1) after any history create or history
+ * put commands are run, but before any history query commands are run.
+ * The default is to do nothing.
+ *
+ * All of the substitutions described in aesub(5) are available.
+ * If you need a transaction ID, use the $version substitution.
+ *
+ * Executed as: the project owner
+ * Current directory: the base of the history tree
+ * Exit status: zero indicates succes, all non-zero exits indicate failure
+ *	(the integrate pass will fail).
+ */
+history_transaction_end_command = string;
+
+/*
+ * The history_transaction_abort_command field is used to specify a
+ * command to be run by aeipass(1) to indicate that a transaction has
+ * been abandoned.  The default is to do nothing.
+ *
+ * All of the substitutions described in aesub(5) are available.
+ * If you need a transaction ID, use the $version substitution.
+ *
+ * Executed as: the project owner
+ * Current directory: the base of the history tree
+ * Exit status: ignored.
+ */
+history_transaction_abort_command = string;
 
 /*
  * Many history tools (e.g. RCS) can modify the contents of the file
@@ -1080,3 +1360,33 @@ project_specific = attributes
  * See also the build_time_adjust_notify_command field.
  */
 build_time_adjust = (adjust_and_sleep, adjust_only, dont_adjust);
+
+/*
+ * If this field is set, each aedb, aechown, aede and aerpass will
+ * append a Signed-off-by: line to the change description.  This should
+ * only be set to true for open source projects.
+ *
+ * For a description of Signed-off-by see
+ * http://www.ussg.iu.edu/hypermail/linux/kernel/0405.2/1301.html
+ * http://www.osdl.org/newsroom/press_releases/2004/2004_05_24_dco.html
+ *
+ *
+ * Developer's Certificate of Origin 1.0
+ *
+ * By making a contribution to this project, I certify that:
+ *
+ * (a) The contribution was created in whole or in part by me and I have
+ *     the right to submit it under the open source license indicated in
+ *     the file; or
+ *
+ * (b) The contribution is based upon previous work that, to the best
+ *     of my knowledge, is covered under an appropriate open source
+ *     license and I have the right under that license to submit that
+ *     work with modifications, whether created in whole or in part by
+ *     me, under the same open source license (unless I am permitted to
+ *     submit under a different license), as indicated in the file; or
+ *
+ * (c) The contribution was provided directly to me by some other person
+ *     who certified (a), (b) or (c) and I have not modified it.
+ */
+signed_off_by = boolean;

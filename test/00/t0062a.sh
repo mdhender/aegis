@@ -297,8 +297,9 @@ diff $workproj/baseline/config $workchan/config
 if test $? -ne 0 ; then fail; fi
 diff $workproj/branch.4/baseline/second $workchan/second
 if test $? -ne 0 ; then fail; fi
-diff $workproj/branch.4/baseline/second,D $workchan/second,D
-if test $? -ne 0 ; then fail; fi
+
+# symlinks to ,D file should not be present
+test -L $workproj/branch.4/baseline/second,D && fail
 
 #
 # Only definite negatives are possible.

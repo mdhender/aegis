@@ -52,7 +52,9 @@
 #include <project.h>
 #include <project/file.h>
 #include <project/history.h>
+#include <quit/action/histtransabt.h>
 #include <str_list.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -1314,6 +1316,9 @@ integrate_pass_main(void)
     ncmds = 0;
     hp = project_history_path_get(pp);
     string_list_constructor(&trashed);
+    change_run_history_transaction_begin_command(cp);
+    quit_action_history_transaction_abort aborter(cp);
+    quit_register(aborter);
     for (j = 0;; ++j)
     {
 	fstate_src_ty   *c_src_data;
@@ -1393,6 +1398,7 @@ integrate_pass_main(void)
 	}
 	p_src_data->locked_by = 0;
 	p_src_data->about_to_be_copied_by = 0;
+	int read_only_mode = 0444;
 	switch (c_src_data->action)
 	{
 	case file_action_create:
@@ -1411,13 +1417,22 @@ integrate_pass_main(void)
 	    //
 	    // Remember the last-modified-time, so we can
 	    // restore it if the history tool messes with it.
+	    // Remember whether the file is executable.
+	    // (It is allowed to change with every edit.)
 	    //
 	    absfn = change_file_path(cp, c_src_data->file_name);
 	    if (!absfn)
 		absfn = os_path_join(id, c_src_data->file_name);
 	    project_become(pp);
 	    mtime = os_mtime_actual(absfn);
+	    p_src_data->executable = os_executable(absfn);
+	    c_src_data->executable = p_src_data->executable;
 	    project_become_undo();
+
+	    read_only_mode = 0444;
+	    if (c_src_data->executable)
+		read_only_mode |= 0111;
+	    read_only_mode &= ~change_umask(cp);
 
 	    //
 	    // create the history
@@ -1437,12 +1452,12 @@ integrate_pass_main(void)
 		    history_version_copy(p_src_data->edit);
 
 	    //
-	    // Remember whether the file is executable.
-	    // (It is allowed to change with every edit.)
+            // Some history commands change the mode of the file, in
+            // particular making read-only source files read-write,
+            // which is a Bad Thing in the baseline.
 	    //
 	    project_become(pp);
-	    p_src_data->executable = (boolean_ty)os_executable(absfn);
-	    c_src_data->executable = (boolean_ty)p_src_data->executable;
+	    os_chmod(absfn, read_only_mode);
 
 	    //
 	    // Set the last-modified-time, just in case the
@@ -1503,15 +1518,28 @@ integrate_pass_main(void)
 	    }
 
 	    //
-	    // Remember the last-modified-time, so we can
+	    // 1. Remember the last-modified-time, so we can
 	    // restore it if the history tool messes with it.
+	    // 2. Remember whether the file is executable.  The
+	    // executable flag must be saved before updating the
+	    // history because some setup (the RCS setup in the
+	    // manual) cause the history tool to modify the file's
+	    // permissions.
+	    // (It is allowed to change with every edit.)
 	    //
-	    absfn = change_file_path(cp, c_src_data->file_name);
+            absfn = change_file_path(cp, c_src_data->file_name);
 	    if (!absfn)
 		absfn = os_path_join(id, c_src_data->file_name);
 	    project_become(pp);
 	    mtime = os_mtime_actual(absfn);
+ 	    p_src_data->executable = os_executable(absfn);
+	    c_src_data->executable = p_src_data->executable;
 	    project_become_undo();
+
+	    read_only_mode = 0444;
+	    if (c_src_data->executable)
+		read_only_mode |= 0111;
+	    read_only_mode &= ~change_umask(cp);
 
 	    //
 	    // update the history
@@ -1531,13 +1559,12 @@ integrate_pass_main(void)
 		    history_version_copy(p_src_data->edit);
 
 	    //
-	    // Remember whether the file is executable.
-	    // (It is allowed to change with every edit.)
+            // Some history commands change the mode of the file, in
+            // particular making read-only source files read-write,
+            // which is a Bad Thing in the baseline.
 	    //
 	    project_become(pp);
-	    p_src_data->executable = (boolean_ty)os_executable(absfn);
-	    c_src_data->executable = p_src_data->executable;
-	    project_become_undo();
+	    os_chmod(absfn, read_only_mode);
 
 	    //
 	    // Set the last-modified-time, just in case the
@@ -1550,7 +1577,6 @@ integrate_pass_main(void)
 	    // fingerprint, but it also gets the fingerprint
 	    // right in the project file's attributes.
 	    //
-	    project_become(pp);
 	    os_mtime_set_errok(absfn, mtime);
 
 	    //
@@ -1686,6 +1712,8 @@ integrate_pass_main(void)
 	    }
 	}
     }
+    quit_unregister(aborter);
+    change_run_history_transaction_end_command(cp);
 
     pconf_data = change_pconf_get(cp, 0);
     if (pconf_data->history_label_command)
@@ -1834,8 +1862,8 @@ integrate_pass_main(void)
 	    char		buf1[30];
 	    char		buf2[30];
 
-	    strcpy(buf1, ctime(&tml.list[0].old));
-	    strcpy(buf2, ctime(&tml.list[tml.len - 1].old));
+	    strlcpy(buf1, ctime(&tml.list[0].old), sizeof(buf1));
+	    strlcpy(buf2, ctime(&tml.list[tml.len - 1].old), sizeof(buf2));
 	    error_raw
 	    (
 		"original times range from %.24s to %.24s = %d seconds",
@@ -1857,8 +1885,8 @@ integrate_pass_main(void)
 	    char		buf1[30];
 	    char		buf2[30];
 
-	    strcpy(buf1, ctime(&tml.list[0].becomes));
-	    strcpy(buf2, ctime(&tml.list[tml.len - 1].becomes));
+	    strlcpy(buf1, ctime(&tml.list[0].becomes), sizeof(buf1));
+	    strlcpy(buf2, ctime(&tml.list[tml.len - 1].becomes), sizeof(buf2));
 	    error_raw
 	    (
 		"adjusted times range from %.24s to %.24s = %d seconds",

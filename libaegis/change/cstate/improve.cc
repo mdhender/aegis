@@ -37,7 +37,6 @@ change_cstate_improve(cstate_ty *d)
     if (!(d->mask & cstate_regression_test_exempt_mask))
     {
 	d->regression_test_exempt =
-	    (boolean_ty)
     	    (
        		d->cause != change_cause_internal_improvement
     	    &&
@@ -72,7 +71,7 @@ change_cstate_improve(cstate_ty *d)
 
 	if (!(d->branch->mask & cstate_branch_reuse_change_numbers_mask))
 	{
-	    d->branch->reuse_change_numbers = (boolean_ty)1;
+	    d->branch->reuse_change_numbers = true;
 	    d->branch->mask |= cstate_branch_reuse_change_numbers_mask;
 	}
     }

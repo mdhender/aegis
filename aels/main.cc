@@ -35,6 +35,7 @@
 #include <os.h>
 #include <progname.h>
 #include <project.h>
+#include <quit.h>
 #include <r250.h>
 #include <stack.h>
 #include <sub.h>
@@ -123,7 +124,6 @@ main(int argc, char **argv)
     r250_init();
     os_become_init_mortal();
     arglex2_init3(argc, argv, argtab);
-    str_initialize();
     env_initialize();
     language_init();
 

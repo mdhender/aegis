@@ -46,6 +46,7 @@
 #include <project/file.h>
 #include <project/file/roll_forward.h>
 #include <project/history.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -629,8 +630,9 @@ copy_file_independent(void)
     // Copy each file into the destination directory.
     // Create any necessary directories along the way.
     //
+    project_file_roll_forward historian;
     if (delta_date != NO_TIME_SET)
-	project_file_roll_forward(pp2, delta_date, 0);
+	historian.set(pp2, delta_date, 0);
     for (j = 0; j < wl.nstrings; ++j)
     {
 	string_ty       *from;
@@ -644,7 +646,7 @@ copy_file_independent(void)
 	    file_event_ty  *fep;
 	    fstate_src_ty  *old_src;
 
-	    fep = project_file_roll_forward_get_last(s1);
+	    fep = historian.get_last(s1);
 	    if (!fep)
 	    {
 		//
@@ -1572,8 +1574,9 @@ copy_file_main(void)
     // or update the edit number.
     //
     dd = change_development_directory_get(cp, 0);
+    project_file_roll_forward historian;
     if (delta_date != NO_TIME_SET)
-	project_file_roll_forward(pp2, delta_date, 0);
+	historian.set(pp2, delta_date, 0);
     for (j = 0; j < wl.nstrings; ++j)
     {
 	string_ty       *from = 0;
@@ -1588,7 +1591,7 @@ copy_file_main(void)
 	    file_event_ty   *fep;
 	    int             from_unlink = 0;
 
-	    fep = project_file_roll_forward_get_last(s1);
+	    fep = historian.get_last(s1);
 	    if (!fep)
 	    {
 		//
@@ -1609,7 +1612,7 @@ copy_file_main(void)
 		old_src = change_file_find(fep->cp, s1, view_path_first);
 		if (rescind)
 		{
-		    fep = project_file_roll_forward_get_older(s1);
+		    fep = historian.get_older(s1);
 		    trace(("fep = %lX\n", (long)fep));
 		    if (fep)
 		    {

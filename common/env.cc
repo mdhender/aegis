@@ -69,12 +69,10 @@ env_initialize(void)
     environ = (char **)mem_alloc((nenvirons + 1) * sizeof(char *));
     for (j = 0; j < nenvirons; ++j)
     {
-	char		*cp;
-	char		*was;
-
-	was = old[j];
-	cp = (char *)mem_alloc(strlen(was) + 1);
-	strcpy(cp, was);
+	char *was = old[j];
+	size_t nbytes = strlen(was) + 1;
+	char *cp = (char *)mem_alloc(nbytes);
+	strlcpy(cp, was, nbytes);
 	environ[j] = cp;
     }
     environ[nenvirons] = 0;
@@ -117,7 +115,8 @@ env_set(const char *name, const char *value)
 	env_initialize();
     cp = 0;
     name_len = strlen(name);
-    nbytes = name_len + strlen(value) + 2;
+    size_t value_len = strlen(value);
+    nbytes = name_len + value_len + 2;
     for (j = 0; j < nenvirons; ++j)
     {
 	cp = environ[j];
@@ -146,7 +145,7 @@ env_set(const char *name, const char *value)
     }
     memcpy(cp, name, name_len);
     cp[name_len] = '=';
-    strcpy(cp + name_len + 1, value);
+    memcpy(cp + name_len + 1, value, value_len + 1);
     trace(("}\n"));
 }
 

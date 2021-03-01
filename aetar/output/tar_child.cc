@@ -91,7 +91,7 @@ header(output_tar_child_ty *this_thing, int executable)
     {
 	memset(buffer, 0, sizeof(buffer));
 	hp = (header_ty *)buffer;
-	strcpy(hp->name, "././@LongLink");
+	strlcpy(hp->name, "././@LongLink", sizeof(hp->name));
 	header_size_set(hp, this_thing->name->str_length + 1);
 	header_mode_set(hp, 0);
 	header_uid_set(hp, 0);

@@ -115,28 +115,28 @@ convert_to_new_format(project_ty *pp)
 	pp->pcp,
 	pstate_data->developer_may_review
     );
-    pstate_data->developer_may_review = (boolean_ty)0;
+    pstate_data->developer_may_review = false;
 
     change_branch_developer_may_integrate_set
     (
 	pp->pcp,
 	pstate_data->developer_may_integrate
     );
-    pstate_data->developer_may_integrate = (boolean_ty)0;
+    pstate_data->developer_may_integrate = false;
 
     change_branch_reviewer_may_integrate_set
     (
 	pp->pcp,
 	pstate_data->reviewer_may_integrate
     );
-    pstate_data->reviewer_may_integrate = (boolean_ty)0;
+    pstate_data->reviewer_may_integrate = false;
 
     change_branch_developers_may_create_changes_set
     (
 	pp->pcp,
 	pstate_data->developers_may_create_changes
     );
-    pstate_data->developers_may_create_changes = (boolean_ty)0;
+    pstate_data->developers_may_create_changes = false;
 
     change_branch_forced_develop_begin_notify_command_set
     (
@@ -206,7 +206,7 @@ convert_to_new_format(project_ty *pp)
 	pp->pcp,
 	pstate_data->default_test_exemption
     );
-    pstate_data->default_test_exemption = (boolean_ty)0;
+    pstate_data->default_test_exemption = false;
 
     if (!pstate_data->copyright_years)
     {
@@ -1645,22 +1645,18 @@ project_minimum_change_number_set(project_ty *pp, long n)
 }
 
 
-int
+bool
 project_reuse_change_numbers_get(project_ty *pp)
 {
-    change_ty	    *cp;
-
-    cp = project_change_get(pp);
+    change_ty *cp = project_change_get(pp);
     return change_branch_reuse_change_numbers_get(cp);
 }
 
 
 void
-project_reuse_change_numbers_set(project_ty *pp, int n)
+project_reuse_change_numbers_set(project_ty *pp, bool n)
 {
-    change_ty	    *cp;
-
-    cp = project_change_get(pp);
+    change_ty *cp = project_change_get(pp);
     change_branch_reuse_change_numbers_set(cp, n);
 }
 
@@ -1685,22 +1681,18 @@ project_minimum_branch_number_set(project_ty *pp, long n)
 }
 
 
-int
+bool
 project_skip_unlucky_get(project_ty *pp)
 {
-    change_ty	    *cp;
-
-    cp = project_change_get(pp);
+    change_ty *cp = project_change_get(pp);
     return change_branch_skip_unlucky_get(cp);
 }
 
 
 void
-project_skip_unlucky_set(project_ty *pp, int n)
+project_skip_unlucky_set(project_ty *pp, bool n)
 {
-    change_ty	    *cp;
-
-    cp = project_change_get(pp);
+    change_ty *cp = project_change_get(pp);
     change_branch_skip_unlucky_set(cp, n);
 }
 

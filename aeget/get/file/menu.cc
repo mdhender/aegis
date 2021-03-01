@@ -40,14 +40,16 @@ get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     int             baseline_file_exists;
     int             hold_bogus;
 
-    html_header(cp->pp);
+    html_header(0, cp);
     printf("<title>Project\n");
     html_encode_string(project_name_get(cp->pp));
     if (!cp->bogus)
 	printf(", Change %ld\n", magic_zero_decode(cp->number));
     printf(", File ");
     html_encode_string(filename);
-    printf("</title></head>\n<body><h1 align=center>\n");
+    printf("</title></head><body>\n");
+    html_header_ps(0, cp);
+    printf("<h1 align=center>\n");
     emit_change(cp);
     printf(",<br>File &ldquo;");
     html_encode_string(filename);
@@ -76,7 +78,7 @@ get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 		emit_file_href(cp, filename, 0);
 		printf("if it exists</a> it is unmanaged.");
 	    }
-	    html_footer();
+	    html_footer(0, cp);
 	    return;
 	}
     }
@@ -86,10 +88,10 @@ get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	if (!src)
 	{
 	    printf("This file is not controlled by Aegis.\n");
-	    printf("It may be created by the build; ");
+	    printf("It may have been created by the build; ");
 	    emit_file_href(cp, filename, 0);
 	    printf("if it exists</a> it is unmanaged.");
-	    html_footer();
+	    html_footer(0, cp);
 	    return;
 	}
     }
@@ -97,6 +99,12 @@ get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 
     printf("<div class=\"information\">\n");
     printf("<dl>\n");
+    if (src->uuid)
+    {
+	printf("<td>UUID<dd><tt>");
+	html_escape_string(src->uuid);
+	printf("</tt><p>\n");
+    }
 
     if (!cp->bogus)
     {
@@ -536,5 +544,5 @@ get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     printf("File List</a>\n");
     printf("]</p>\n");
 
-    html_footer();
+    html_footer(0, cp);
 }

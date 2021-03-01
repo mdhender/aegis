@@ -53,12 +53,12 @@ magic_file(magic_t cookie, const char *filename)
 
     static table_t table[] =
     {
-	{ "c",    "text/plain" },
-	{ "c++",  "text/plain" },
-	{ "cc",   "text/plain" },
-	{ "cpp",  "text/plain" },
+	{ "c",    "text/plain; charset=us-ascii" },
+	{ "c++",  "text/plain; charset=us-ascii" },
+	{ "cc",   "text/plain; charset=us-ascii" },
+	{ "cpp",  "text/plain; charset=us-ascii" },
 	{ "gif",  "image/gif"  },
-	{ "h",    "text/plain" },
+	{ "h",    "text/plain; charset=us-ascii" },
 	{ "htm",  "text/html"  },
 	{ "html", "text/html"  },
 	{ "ico",  "image/x-icon" },
@@ -66,7 +66,7 @@ magic_file(magic_t cookie, const char *filename)
 	{ "jpg",  "image/jpeg" },
 	{ "pdf",  "application/pdf" },
 	{ "png",  "image/png"  },
-	{ "txt",  "text/plain" },
+	{ "txt",  "text/plain; charset=us-ascii" },
     };
 
     const char      *base;
@@ -105,7 +105,7 @@ magic_file(magic_t cookie, const char *filename)
 	}
     }
     fclose(fp);
-    return "text/plain";
+    return "text/plain; charset=us-ascii";
 }
 
 

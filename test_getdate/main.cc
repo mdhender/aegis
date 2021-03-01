@@ -28,7 +28,6 @@
 #include <error.h>
 #include <gettime.h>
 #include <progname.h>
-#include <str.h>
 
 
 static void
@@ -54,14 +53,13 @@ main(int argc, char **argv)
     char            buffer[2000];
 
     arglex_init(argc, argv, 0);
-    str_initialize();
 
     buffer[0] = 0;
     while (arglex_get_string() == arglex_token_string)
     {
 	if (buffer[0])
-	    strcat(buffer, " ");
-	strcat(buffer, arglex_value.alv_string);
+	    strlcat(buffer, " ", sizeof(buffer));
+	strlcat(buffer, arglex_value.alv_string, sizeof(buffer));
     }
     if (!buffer[0])
 	usage();

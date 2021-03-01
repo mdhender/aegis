@@ -1,24 +1,24 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1996-1999, 2001, 2002, 2004 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: insulate against <wchar.h> presence or absence
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1996-1999, 2001, 2002, 2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: insulate against <wchar.h> presence or absence
+//
 
 #ifndef COMMON_AC_WCHAR_H
 #define COMMON_AC_WCHAR_H
@@ -55,27 +55,50 @@ typedef int mbstate_t;
 int mbsinit(const mbstate_t *);
 size_t wcslen(const wchar_t *);
 size_t mbrlen(const char *, size_t, mbstate_t *);
-size_t mbrtowc(wchar_t *, const char *, size_t, mbstate_t *);
-size_t wcrtomb(char *, wchar_t, mbstate_t *);
 size_t mbsrtowcs(wchar_t *, const char **, size_t, mbstate_t *);
 size_t wcsrtombs(char *, const wchar_t **, size_t, mbstate_t *);
 
 #endif
 
-/* Solaris bug 1250837: include wchar.h before widec.h */
+
+#if !HAVE_DECL_WCWIDTH
+extern "C" {
+int wcwidth(wchar_t);
+}
+#endif
+
+#if !HAVE_DECL_WCSWIDTH
+extern "C" {
+int wcswidth(const wchar_t *, size_t);
+}
+#endif
+
+#if !HAVE_DECL_MBRTOWC
+extern "C" {
+size_t mbrtowc(wchar_t *, const char *, size_t, mbstate_t *);
+}
+#endif
+
+#if !HAVE_DECL_WCRTOMB
+extern "C" {
+size_t wcrtomb(char *, wchar_t, mbstate_t *);
+}
+#endif
+
+// Solaris bug 1250837: include wchar.h before widec.h
 #if HAVE_WIDEC_H
 #include <widec.h>
 #endif
 
 
-/*
- * HAVE_ISWPRINT is only set if (a) there is a have_iswprint function,
- * and (b) it works for ascii.  It is assumed that if iswprint is absent
- * or brain-dead, then so are the rest.
- *
- * This code copes with the case where (a) it exists, (b) it is broken,
- * and (c) it is defined in <wchar.h>, of all places!
- */
+//
+// HAVE_ISWPRINT is only set if (a) there is an iswprint function,
+// and (b) it works for ascii.  It is assumed that if iswprint is absent
+// or brain-dead, then so are the rest.
+//
+// This code copes with the case where (a) it exists, (b) it is broken,
+// and (c) it is defined in <wchar.h>, of all places!
+//
 #if HAVE_ISWPRINT
 
 #ifdef iswprint
@@ -114,16 +137,16 @@ size_t wcsrtombs(char *, const wchar_t **, size_t, mbstate_t *);
 #undef towlower
 #endif
 
-#endif /* !HAVE_ISWPRINT */
+#endif // !HAVE_ISWPRINT
 
-/*
- * The ANSI C standard states that wint_t symbol shall be defined by
- * <wchar.h> and <wctype.h>.  The GNU people also define it in <stddef.h>,
- * but this is incorrect.
- */
+//
+// The ANSI C standard states that wint_t symbol shall be defined by
+// <wchar.h> and <wctype.h>.  The GNU people also define it in <stddef.h>,
+// but this is incorrect.
+//
 #ifndef HAVE_WINT_T
 #define HAVE_WINT_T
 typedef wchar_t wint_t;
 #endif
 
-#endif /* COMMON_AC_WCHAR_H */
+#endif // COMMON_AC_WCHAR_H

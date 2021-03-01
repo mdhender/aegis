@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2002, 2003 Peter Miller;
+.\"	Copyright (C) 2002-2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -76,6 +76,11 @@ The following options are understood by the send variant:
 \fB\-BaseLine\fP
 This option may be used to specify the source of a project,
 rather than a change.
+.TP 8n
+\fB\-Add_Path_Prefix\fP \fIstring\fP
+This option may be used to specify a path prefix to be added to every
+filename in the archive.  This means that when the archive is unpacked,
+it will all be placed in the one directory.
 .so o_change.so
 .TP 8n
 \fB\-COmpress
@@ -139,6 +144,7 @@ You may also use a delta name instead of a delta number.
 .so o_dir.so
 .so o_file_cs.so
 .so o_project.so
+.so o_trojan.so
 .SS Security
 Downloading a tarball and automatically committing it to the
 baseline without checking it would be a recipe for disaster.

@@ -14,7 +14,7 @@
 # already been set appropriately.
 #
 # This script is expected to be run as by integrate_pass_notify_command
-# and as such the baseline has already assumed the shape asked fro by
+# and as such the baseline has already assumed the shape asked for by
 # the change.
 #
 #	integrate_pass_notify_command =
@@ -25,7 +25,7 @@
 # and the use the following:
 #
 #	integrate_pass_notify_command =
-#    	    "$sh $bin/ae-cvs-ci $project $change";
+#    	    "$sh ${s etc/ae-cvs-ci} $project $change";
 #
 case $# in
 2)

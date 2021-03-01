@@ -57,10 +57,10 @@
  * the history_create_command for branching to work correctly.
  */
 history_create_command =
-	"ci -u -d -M -m${quote ($version) ${change description}} \
--w$developer \
--t/dev/null ${quote $input} ${quote $history,v}; \
-rcs -U ${quote $history,v}";
+	"ci -u -d -M -m${quote ($version) ${change description}} "
+	"-w$developer "
+	"-t/dev/null ${quote $input} ${quote $history,v}; "
+	"rcs -U ${quote $history,v}";
 
 
 /*
@@ -112,10 +112,10 @@ history_get_command =
  * the history_create_command for branching to work correctly.
  */
 history_put_command =
-	"ci -u -d -M -m${quote ($version) ${change description}} \
--w$developer \
--t/dev/null ${quote $input} ${quote $history,v}; \
-rcs -U ${quote $history,v}";
+	"ci -u -d -M -m${quote ($version) ${change description}} "
+	"-w$developer "
+	"-t/dev/null ${quote $input} ${quote $history,v}; "
+	"rcs -U ${quote $history,v}";
 
 /*
  * This command is used to query what the history mechanism calls the top-most

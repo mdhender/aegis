@@ -40,9 +40,9 @@
  * It is essential that the history_put_command be identical to the
  * the history_create_command for branching to work correctly.
  */
-history_create_command = "\
-ae-sccs-put -s -y${quote ($version) ${change description}} \
--G${quote $input} ${quote ${dirname $history}/s.${basename $history}}";
+history_create_command =
+	"ae-sccs-put -s -y${quote ($version) ${change description}} "
+	"-G${quote $input} ${quote ${dirname $history}/s.${basename $history}}";
 
 /*
  * This command is used to get a specific edit back from history.
@@ -61,9 +61,9 @@ ae-sccs-put -s -y${quote ($version) ${change description}} \
  * get -p	use stdout
  * get -k	suppress keywords
  */
-history_get_command = "\
-sccs get -r${quote $edit} -s -k -G${quote $output} \
-${quote ${dirname $history}/s.${basename $history}}";
+history_get_command =
+	"sccs get -r${quote $edit} -s -k -G${quote $output} "
+	"${quote ${dirname $history}/s.${basename $history}}";
 
 /*
  * This command is used to add a new "top-most" entry to the history file.
@@ -83,9 +83,9 @@ ${quote ${dirname $history}/s.${basename $history}}";
  * It is essential that the history_put_command be identical to the
  * the history_create_command for branching to work correctly.
  */
-history_put_command = "\
-ae-sccs-put -s -y${quote ($version) ${change description}} \
--G${quote $input} ${quote ${dirname $history}/s.${basename $history}}";
+history_put_command =
+	"ae-sccs-put -s -y${quote ($version) ${change description}} "
+	"-G${quote $input} ${quote ${dirname $history}/s.${basename $history}}";
 
 /*
  * This command is used to query what the history mechanism calls the top-most
@@ -103,6 +103,6 @@ ae-sccs-put -s -y${quote ($version) ${change description}} \
  * get -g	no input
  * get -t	include branches
  */
-history_query_command = "\
-sccs get -t -g ${quote ${dirname $history}/s.${basename $history}} \
-2> /dev/null";
+history_query_command =
+	"sccs get -t -g ${quote ${dirname $history}/s.${basename $history}} "
+	"2> /dev/null";

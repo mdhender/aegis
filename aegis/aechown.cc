@@ -43,6 +43,7 @@
 #include <project.h>
 #include <project/history.h>
 #include <pstate.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -421,13 +422,12 @@ change_owner_main(void)
     // This will present a more uniform interface to the developer.
     //
     pconf_data = change_pconf_get(cp, 0);
-    if
-    (
-	pconf_data->create_symlinks_before_build
-    &&
-	!pconf_data->remove_symlinks_after_build
-    )
-	change_create_symlinks_to_baseline(cp, pp, up2, 0);
+    assert(pconf_data->development_directory_style);
+    if (!pconf_data->development_directory_style->during_build_only)
+    {
+	work_area_style_ty style = *pconf_data->development_directory_style;
+       	change_create_symlinks_to_baseline(cp, up2, style);
+    }
 
     //
     // verbose success message

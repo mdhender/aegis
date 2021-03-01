@@ -91,20 +91,6 @@ struct string_ty
 
 /**
   * \brief
-  *	start up string table
-  *
-  * The str_initialize function is used to create the hash table and
-  * initialize it to empty.
-  *
-  * This function must be called before any other defined in this file.
-  *
-  * \return
-  *	void
-  */
-void str_initialize(void);
-
-/**
-  * \brief
   *	make string from C string
   *
   * The str_from_c function is used to make a string from a null
@@ -538,9 +524,60 @@ int str_validate(const string_ty *str);
   *	The substring to be tested for.
   *
   * \return
-  *	Non-zero if is a leadinf prefix, zero if not.
+  *	Non-zero if is a leading prefix, zero if not.
   */
 int str_leading_prefix(string_ty *haystack, string_ty *needle);
 
+/**
+  * \brief
+  *	look for a trailing suffix
+  *
+  * The str_trailing_suffix function is used to test whether the \a needle
+  * argument is a trailing suffix of the \a haystack argument.
+  *
+  * \param haystack
+  *	The large string which allegedly contains the \a needle.
+  * \param needle
+  *	The substring to be tested for.
+  *
+  * \return
+  *	Non-zero if is a trailing suffix, zero if not.
+  */
+int str_trailing_suffix(string_ty *haystack, string_ty *needle);
+
+/**
+  * The str_identifier function is used to generate another string,
+  * replaceing all non-C-identifier characters with underscore.  The
+  * intention is to generate a valid C identifier from the string.
+  *
+  * @param str
+  *     The string to be converted.
+  */
+string_ty *str_identifier(string_ty *str);
+
+/**
+  * The str_replace function may be used to alter a string by replacing
+  * one constant substring with another.
+  *
+  * @note
+  *     The replacement is <i>not</b> done <i>in situ</i>.  The original
+  *     \a str is unaltered.
+  *
+  * @param str
+  *     The string to be altered.
+  * @param lhs
+  *     The substring to look for within \a str
+  * @param rhs
+  *     The substring to replace \a lhs if found within \a str
+  * @param maximum
+  *     The maximum number of times to perform the replacement.
+  *     Defaults to "infinity".
+  * @returns
+  *     A new string with the replacements made.
+  */
+string_ty *str_replace(string_ty *str, string_ty *lhs, string_ty *rhs,
+    int maximum = -1);
+
 /** @} */
+
 #endif // STR_H

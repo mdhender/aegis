@@ -24,13 +24,12 @@
 
 #include <arglex3.h>
 #include <env.h>
-#include <error.h>
 #include <import.h>
 #include <language.h>
 #include <log.h>
 #include <os.h>
+#include <quit.h>
 #include <r250.h>
-#include <str.h>
 #include <undo.h>
 
 
@@ -53,7 +52,6 @@ main(int argc, char **argv)
 	r250_init();
 	os_become_init();
 	arglex3_init(argc, argv);
-	str_initialize();
 	env_initialize();
 	language_init();
 	quit_register(log_quitter);

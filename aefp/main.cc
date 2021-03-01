@@ -76,7 +76,6 @@ main(int argc, char **argv)
     string_ty	    *s;
 
     arglex_init(argc, argv, argtab);
-    str_initialize();
     arglex();
 
     method = 0;

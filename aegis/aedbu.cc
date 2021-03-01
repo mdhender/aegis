@@ -39,13 +39,13 @@
 #include <commit.h>
 #include <common.h>
 #include <dir.h>
-#include <error.h>
 #include <help.h>
 #include <lock.h>
 #include <os.h>
 #include <progname.h>
 #include <project.h>
 #include <project/history.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>

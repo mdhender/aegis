@@ -23,6 +23,11 @@
 #ifndef OS_H
 #define OS_H
 
+/** \addtogroup OS
+  * \brief Access OS services
+  * \ingroup AegisLibrary
+  * @{
+  */
 #include <ac/time.h>
 
 #include <main.h>
@@ -62,6 +67,19 @@ string_ty *os_path_cat(string_ty *, string_ty *);
 
 string_ty *os_path_rel2abs(string_ty *, string_ty *);
 string_ty *os_pathname(string_ty *, int);
+
+/**
+  * The os_basename function strip directory and suffix from
+  * filenames.  (see basename(1))
+  *
+  * \param name
+  *     the filename to process
+  * \param ext
+  *     the (optional) suffix to be stripped
+  *
+  */
+string_ty *os_basename(string_ty *name, string_ty *ext = NULL);
+
 string_ty *os_dirname(string_ty *);
 string_ty *os_dirname_relative(string_ty *);
 string_ty *os_entryname(string_ty *);
@@ -118,7 +136,7 @@ void os_become_must_not_be_active_gizzards(const char *, int);
 int os_background(void);
 
 int os_readable(string_ty *);
-int os_executable(string_ty *);
+bool os_executable(string_ty *);
 int os_waitpid(int child, int *status);
 int os_waitpid_status(int child, const char *cmd);
 
@@ -175,4 +193,5 @@ int os_interrupt_has_occurred(void);
 int os_isa_directory(string_ty *);
 int os_isa_special_file(string_ty *); // !S_IFREG
 
+/** @} */
 #endif // OS_H

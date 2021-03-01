@@ -31,6 +31,7 @@
 #include <forkandwatch.h>
 #include <http.h>
 #include <os.h>
+#include <quit.h>
 #include <trace.h>
 
 
@@ -176,8 +177,10 @@ fork_and_watch(void)
 	//
 	// process dies from unhandled condition
 	//
-	html_header(0);
-	printf("<title>Error</title></head><body><h1>Error</h1>\n");
+	html_header(0, 0);
+	printf("<title>Error</title></head><body>\n");
+	html_header_ps(0, 0);
+	printf("<h1>Error</h1>\n");
 	printf("The request failed because:\n<em>");
 	printf("command terminated by %s", strsignal(c));
 	if (b)
@@ -186,7 +189,7 @@ fork_and_watch(void)
 	printf("The following error message was produced:\n<blockquote><tt>");
 	html_encode_file(stderr_filename);
 	printf("</tt></blockquote>\n");
-	html_footer();
+	html_footer(0, 0);
 	quit(0);
     }
 
@@ -195,13 +198,15 @@ fork_and_watch(void)
 	//
 	// For errors, we wrap up stderr and send it to them.
 	//
-	html_header(0);
-	printf("<title>Error</title></head><body><h1>Error</h1>\n");
+	html_header(0, 0);
+	printf("<title>Error</title></head><body>\n");
+	html_header_ps(0, 0);
+	printf("<h1>Error</h1>\n");
 	printf("The request failed with exit status %d.\n", a);
 	printf("The following error message was produced:\n<blockquote><tt>");
 	html_encode_file(stderr_filename);
 	printf("</tt></blockquote>\n");
-	html_footer();
+	html_footer(0, 0);
     }
     else
     {

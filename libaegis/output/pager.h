@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1992, 1993, 1995, 1997, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1992, 1993, 1995, 1997, 1999, 2002, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,5 +28,12 @@
 void option_pager_set(int, void(*)(void));
 
 output_ty *output_pager_open(void);
+
+/**
+  * The pager_cleanup function is called au quit() time to cleanup any
+  * output pager than may still be running.  This function shall only be
+  * called by the quit_action_pager class.
+  */
+void output_pager_cleanup(void);
 
 #endif /* OUTPUT_PAGER_H */

@@ -24,14 +24,11 @@
 #include <error.h> // for assert
 
 
-int
+bool
 change_branch_developers_may_create_changes_get(change_ty *cp)
 {
-    cstate_ty       *cstate_data;
-    cstate_branch_ty *bp;
-
-    cstate_data = change_cstate_get(cp);
-    bp = cstate_data->branch;
+    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_branch_ty *bp = cstate_data->branch;
     assert(bp);
     return bp->developers_may_create_changes;
 }

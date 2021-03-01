@@ -35,7 +35,7 @@
 #include <change/file.h>
 #include <cmdline.h>
 #include <descend.h>
-#include <error.h>
+#include <error.h> // for assert
 #include <function.h>
 #include <function/execute.h>
 #include <gonzo.h>
@@ -45,6 +45,7 @@
 #include <progname.h>
 #include <project.h>
 #include <project/file.h>
+#include <quit.h>
 #include <shorthand/name.h>
 #include <shorthand/path.h>
 #include <shorthand/print.h>

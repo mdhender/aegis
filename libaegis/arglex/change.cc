@@ -26,11 +26,13 @@
 
 #include <arglex2.h>
 #include <arglex/change.h>
+#include <change.h>
 #include <help.h>
 #include <mem.h>
 #include <project/history.h>
 #include <sub.h>
 #include <user.h>
+#include <uuidentifier.h>
 #include <zero.h>
 
 
@@ -127,6 +129,32 @@ is_a_branch_number(string_ty *s)
 
 
 static void
+no_such_uuid(project_ty *pp, string_ty *uuid)
+{
+    //
+    // Build the message we actually want to send.
+    //
+    sub_context_ty *scp = sub_context_new();
+    string_ty *msg = subst_intl(scp, i18n("unknown change"));
+
+    //
+    // Get ready to pass the message to the project error function.
+    // We are going to re-use the substitution context.
+    //
+    sub_var_set_string(scp, "Message", msg);
+    str_free(msg);
+
+    //
+    // Wrap the project name and chnage "number" around the error message.
+    //
+    sub_var_set_string(scp, "Change", uuid);
+    sub_var_override(scp, "Change");
+    project_fatal(pp, scp, i18n("change $change: $message"));
+    // NOTREACHED
+}
+
+
+static void
 arglex_parse_change_tok(string_ty **project_name_p, long *change_number_p,
     int token, void (*usage)(void))
 {
@@ -162,6 +190,34 @@ arglex_parse_change_tok(string_ty **project_name_p, long *change_number_p,
 
     case arglex_token_string:
 	s = str_from_c(arglex_value.alv_string);
+	if (universal_unique_identifier_valid(s))
+	{
+	    //
+            // Hunt for the change set with the given UUID within the project.
+	    // Complain if there is no change set with the given UUID.
+	    //
+	    if (!project_name)
+		project_name = user_default_project();
+	    project_ty *pp = project_alloc(project_name);
+	    project_bind_existing(pp);
+	    change_ty *cp = project_uuid_find(pp, s);
+	    if (!cp)
+	    {
+		no_such_uuid(pp, s);
+		// NOTREACHED
+	    }
+	    if (!*project_name_p)
+		*project_name_p = str_copy(project_name_get(cp->pp));
+	    else if (pp != cp->pp)
+		duplicate_option_by_name(arglex_token_project, usage);
+	    change_number = cp->number;
+	    if (change_number == 0)
+		change_number = MAGIC_ZERO;
+	    change_free(cp);
+	    project_free(pp);
+	    project_name = *project_name_p;
+	    break;
+	}
 	if (extract_change_number(&s, &change_number))
 	{
 	    if (is_a_branch_number(s) && !project_name)

@@ -71,6 +71,7 @@ ls $baseline/$arch/bin |
 while read f
 do
     case $f in
+    aemakefile | \
     aefp | aemanifest | ae-symlinks | cklinlen | find_sizes | fmtgen | test_* )
 	# don't install these ones.
 	;;

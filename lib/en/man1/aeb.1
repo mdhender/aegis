@@ -124,32 +124,34 @@ partial build.
 .so o_list.so
 .TP 8n
 \fB\-MINImum\fP
-This option may be used to request a minimum set of symbolic links,
-when the \fIcreate_symlinks_to_baseline\fP functions are being used.
-This is useful if you want to simulate something like \fIaeib -minimum\fP
-in the development directory.  This option is not meaningful if symbolic
-links are not being used.
-If the change is in the
-.I "being integrated"
-state, and the developer specified \fB\-MINImum\fP when issuing the
-.I \*(n)
-.I -Integrate_Begin
-command, then this option is set by default.
+This option may be used to request a source-only
+\fIdevelopment_\%directory_\%style\fP.  This is useful if you
+want to simulate something like \fIaeib \-minimum\fP in the
+development directory.  This option is only meaningful if
+\fIdevelopment_\%directory_\%style\fP is being used.  If the change
+is in the \fIbeing integrated\fP state, and the developer specified
+\fB\-MINImum\fP when issuing the \fI\*(n) \-Integrate_Begin\fP command,
+then this option is set by default.
 .so o_nolog.so
 .so o_project.so
 .TP 8n
 \fB\-Verify_Symbolic_Links\fP
 This option may be used to request a scan for up-to-date symbolic links
-before and after the build.  This is the default.
+before and after the build.  (Actually, this does the updating for all
+\fIdevelopment_\%directory_\%style\fP variants.)  This is the default.
 See also the ``symbolic_links_preference'' field of \fIaeuconf\fP(5).
-This option is not meaningful if symbolic links are not being used.
+This option is not meaningful if \fIdevelopment_\%directory_\%style\fP
+is not being used.
 .TP 8n
 \fB\-Assume_Symbolic_Links\fP
-This option may be used to request no scan for up-to-date symbolic links
-before and after the build, this is useful when you have just done a
-build and you know they are already up-to-date.
-See also the ``symbolic_links_preference'' field of \fIaeuconf\fP(5).
-This option is not meaningful if symbolic links are not being used.
+This option may be used to request no scan for up-to-date
+symbolic links before and after the build, this is useful
+when you have just done a build and you know they are already
+up-to-date.  (Actually, this suppresses all updating for all
+\fIdevelopment_\%directory_\%style\fP variants.)  See also the
+``symbolic_links_preference'' field of \fIaeuconf\fP(5).  This option
+is not meaningful if \fIdevelopment_\%directory_\%style\fP is not being
+used.
 .so o_terse.so
 .so o_verbose.so
 .so o_wait.so

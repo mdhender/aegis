@@ -83,14 +83,13 @@
 #include <arglex2.h>
 #include <configured.h>
 #include <env.h>
-#include <error.h>
 #include <help.h>
 #include <language.h>
 #include <log.h>
 #include <os.h>
 #include <progname.h>
+#include <quit.h>
 #include <r250.h>
-#include <str.h>
 #include <trace.h>
 #include <undo.h>
 #include <version.h>
@@ -206,7 +205,6 @@ main(int argc, char **argv)
     r250_init();
     os_become_init();
     arglex2_init(argc, argv);
-    str_initialize();
     env_initialize();
     language_init();
     quit_register(log_quitter);

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2002 Peter Miller;
+.\"	Copyright (C) 2002, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,7 @@
 .\"
 .\" MANIFEST: document describing lib/en/user-guide/c4.5s
 .\"
+.bp
 .nh 2 "Building Executable Scripts"
 .LP
 Aegis treats source files as, well, source files.
@@ -66,7 +67,7 @@ bin/%: script/%.tcl
     procheck -nologo bin/%;
 }
 .E)
-The \fIprocheck\fP(1) command ios part of the TclPro package.
+The \fIprocheck\fP(1) command is part of the TclPro package.
 .LP
 Many tools have a similar options.
 .LP

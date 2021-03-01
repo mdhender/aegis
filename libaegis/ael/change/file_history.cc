@@ -94,7 +94,7 @@ list_change_file_history(string_ty *project_name, long change_number,
     // Reconstruct the project file history.
     //
     when = change_completion_timestamp(cp);
-    project_file_roll_forward(pp, when, option_verbose_get());
+    project_file_roll_forward historian(pp, when, option_verbose_get());
 
     //
     // create the columns
@@ -160,7 +160,7 @@ list_change_file_history(string_ty *project_name, long change_number,
 	usage_track = -1;
 	action_track = -1;
 
-	felp = project_file_roll_forward_get(src_data->file_name);
+	felp = historian.get(src_data->file_name);
 	if (felp)
 	{
 	    for (k = 0; k < felp->length; ++k)

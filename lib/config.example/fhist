@@ -40,8 +40,8 @@
  * branches.
  */
 history_create_command =
-	"fhist ${quote ${basename $input}} -create -cu -i ${quote $input} \
--p ${quote ${dirname $history}} -r";
+	"fhist ${quote ${basename $history}} -create -cu -i ${quote $input} "
+	"-p ${quote ${dirname $history}} -r";
 
 /*
  * This command is used to get a specific edit back from history.  The
@@ -59,8 +59,8 @@ history_create_command =
  * history source filename, so the -p is essential.
  */
 history_get_command =
-	"fhist ${quote ${basename $history}} -e ${quote $e} \
--o ${quote $output} -p ${quote ${dirname $history}}";
+	"fhist ${quote ${basename $history}} -e ${quote $e} "
+	"-o ${quote $output} -p ${quote ${dirname $history}}";
 
 /*
  * This command is used to add a new "top-most" entry to the history
@@ -78,8 +78,8 @@ history_get_command =
  * branches.
  */
 history_put_command =
-	"fhist ${quote ${basename $input}} -create -cu -i ${quote $input} \
--p ${quote ${dirname $history}} -r";
+	"fhist ${quote ${basename $history}} -create -cu -i ${quote $input} "
+	"-p ${quote ${dirname $history}} -r";
 
 /*
  * This command is used to query what the history mechanism calls the
@@ -94,8 +94,8 @@ history_put_command =
  *	absolute path of the history file
  */
 history_query_command =
-	"fhist ${quote ${basename $history}} -l 0 \
--p ${quote ${dirname $history}} -q";
+	"fhist ${quote ${basename $history}} -l 0 "
+	"-p ${quote ${dirname $history}} -q";
 
 /*
  * Compare two files using fcomp.  The -w option produces an output of
@@ -162,5 +162,5 @@ diff_command =
  * is wrong.
  */
 merge_command =
-	"fmerge ${quote $original} ${quote $MostRecent} ${quote $input} \
--o ${quote $output} -c /dev/null";
+	"fmerge ${quote $original} ${quote $MostRecent} ${quote $input} "
+	"-o ${quote $output} -c /dev/null";

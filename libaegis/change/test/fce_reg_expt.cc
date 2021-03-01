@@ -31,7 +31,7 @@ change_force_regression_test_exemption(change_ty *cp)
 
     assert(cp->reference_count >= 1);
     cstate_data = change_cstate_get(cp);
-    cstate_data->regression_test_exempt = (boolean_ty)1;
+    cstate_data->regression_test_exempt = true;
 }
 
 

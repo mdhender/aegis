@@ -30,7 +30,7 @@
     if (dir == "libaegis" || dir == "common")
     {
 	fn2 = filename
-	sub(/^[^/]*\//, "", fn2)
+	sub(/^[^\/]*\//, "", fn2)
 	lib[fn2] = filename;
     }
     else
@@ -45,7 +45,7 @@ END {
 	dir = filename
 	sub(/\/.*/, "", dir)
 	fn2 = filename
-	sub(/^[^/]*\//, "", fn2)
+	sub(/^[^\/]*\//, "", fn2)
 
 	if (lib[fn2] != "")
 	{

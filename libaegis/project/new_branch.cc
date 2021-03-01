@@ -178,25 +178,20 @@ project_new_branch(project_ty *ppp, user_ty *up, long change_number,
     cstate_data->description = branch_description_invent(pp);
     cstate_data->brief_description = str_copy(cstate_data->description);
     cstate_data->cause = change_cause_internal_enhancement;
-    cstate_data->test_exempt = (boolean_ty)1;
-    cstate_data->test_baseline_exempt = (boolean_ty)1;
-    cstate_data->regression_test_exempt = (boolean_ty)1;
+    cstate_data->test_exempt = true;
+    cstate_data->test_baseline_exempt = true;
+    cstate_data->regression_test_exempt = true;
 
     //
-    // Create symbolic links from the nre branch's baseline into the
+    // Create symbolic links from the the branch's baseline into the
     // branch's parent's baseline.  This is similar to what happens
     // at develop begin.
     //
     pconf_data = change_pconf_get(cp, 0);
-    if
-    (
-	pconf_data->create_symlinks_before_integration_build
-    &&
-	!pconf_data->remove_symlinks_after_integration_build
-    )
-    {
-	change_create_symlinks_to_baseline(cp, ppp, project_user(ppp), 0);
-    }
+    assert(pconf_data->integration_directory_style);
+    work_area_style_ty style = *pconf_data->integration_directory_style;
+    if (!style.during_build_only)
+	change_create_symlinks_to_baseline(cp, project_user(ppp), style);
 
     //
     // Clear the time fields.

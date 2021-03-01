@@ -20,6 +20,8 @@
 // MANIFEST: functions to manipulate lists
 //
 
+#pragma implementation "change_list_ty"
+
 #include <change.h>
 #include <change/list.h>
 #include <error.h>
@@ -28,77 +30,75 @@
 #include <trace.h>
 
 
-change_list_ty *
-change_list_new(void)
+change_list_ty::change_list_ty()
 {
-    change_list_ty *result;
-
-    trace(("change_list_new()\n{\n"));
-    result = (change_list_ty *)mem_alloc(sizeof(change_list_ty));
-    result->length = 0;
-    result->maximum = 0;
-    result->item = 0;
-    trace(("return %08lX;\n", (long)result));
+    trace(("change_list_ty::change_list_ty()\n{\n"));
+    length = 0;
+    maximum = 0;
+    item = 0;
     trace(("}\n"));
-    return result;
 }
 
 
-void
-change_list_delete(change_list_ty *clp)
+change_list_ty::~change_list_ty()
 {
-    trace(("change_list_delete(clp = %08lX)\n{\n", (long)clp));
-    if (clp->item)
-	mem_free(clp->item);
-    clp->length = 0;
-    clp->maximum = 0;
-    clp->item = 0;
-    mem_free(clp);
+    trace(("change_list_ty::~change_list_ty(this = %08lX)\n{\n", (long)this));
+    if (item)
+	mem_free(item);
+    length = 0;
+    maximum = 0;
+    item = 0;
     trace(("}\n"));
 }
 
 
 void
-change_list_append(change_list_ty *clp, change_ty *cp)
+change_list_ty::clear()
 {
-    trace(("change_list_append(clp = %08lX, cp = %08lX)\n{\n", (long)clp,
+    trace(("change_list::clear(this = %08lX)\n{\n", (long)this));
+    length = 0;
+    trace(("}\n"));
+}
+
+
+void
+change_list_ty::append(change_ty *cp)
+{
+    trace(("change_list_ty::append(this = %08lX, cp = %08lX)\n{\n", (long)this,
 	(long)cp));
     assert(cp);
     trace(("project \"%s\", change %ld, delta %ld\n",
 	project_name_get(cp->pp)->str_text, magic_zero_decode(cp->number),
 	change_delta_number_get(cp)));
-    if (clp->length >= clp->maximum)
+    if (length >= maximum)
     {
-	size_t          nbytes;
-
-	clp->maximum = clp->maximum * 2 + 8;
-	nbytes = clp->maximum * sizeof(clp->item[0]);
-	clp->item = (change_ty **)mem_change_size(clp->item, nbytes);
+	maximum = maximum * 2 + 8;
+	size_t nbytes = maximum * sizeof(item[0]);
+	item = (change_ty **)mem_change_size(item, nbytes);
     }
-    clp->item[clp->length++] = cp;
+    item[length++] = cp;
     trace(("}\n"));
 }
 
 
-int
-change_list_member_p(change_list_ty *clp, change_ty *cp1)
+bool
+change_list_ty::member_p(change_ty *cp1)
+    const
 {
     size_t          j;
 
-    for (j = 0; j < clp->length; ++j)
+    for (j = 0; j < length; ++j)
     {
-	change_ty       *cp2;
-
-	cp2 = clp->item[j];
+	change_ty *cp2 = item[j];
 	if (cp1 == cp2)
-	    return 1;
+	    return true;
 	if
 	(
 	    cp1->number == cp2->number
 	&&
 	    str_equal(project_name_get(cp1->pp), project_name_get(cp2->pp))
 	)
-	    return 1;
+	    return true;
     }
-    return 0;
+    return false;
 }

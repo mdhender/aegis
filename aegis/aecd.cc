@@ -31,11 +31,11 @@
 #include <arglex/project.h>
 #include <change.h>
 #include <change/branch.h>
-#include <error.h>
 #include <help.h>
 #include <os.h>
 #include <progname.h>
 #include <project.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>

@@ -44,6 +44,7 @@
 #include <project.h>
 #include <project/file.h>
 #include <project/history.h>
+#include <quit.h>
 #include <r250.h>
 #include <str_list.h>
 #include <sub.h>
@@ -736,11 +737,17 @@ test_main(void)
     assert(dir);
 
     //
-    // when integrating, must do all the files,
-    // may not name any on the command line
+    // When integrating, you must run all of the tests to satisfy the
+    // aeipass pre-conditions, you may not name a sub-set on the command
+    // line.  This was once a fatal error, but when integrators are
+    // acting like second reviewers, it helps if they, like reviewers,
+    // can run additonal tests.
     //
-    if (integrating && wl.nstrings)
-	change_fatal(cp, 0, i18n("int must test all"));
+    if (integrating && (wl.nstrings || suggest))
+    {
+	reviewing = 1;
+	change_warning(cp, 0, i18n("int must test all"));
+    }
 
     //
     // see if this is a complete change test.

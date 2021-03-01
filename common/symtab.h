@@ -55,9 +55,10 @@ string_ty *symtab_query_fuzzy(symtab_ty *, string_ty *);
 void symtab_assign(symtab_ty *, string_ty *, void *);
 void symtab_assign_push(symtab_ty *, string_ty *, void *);
 void symtab_delete(symtab_ty *, string_ty *);
-void symtab_dump(symtab_ty *, char *);
+void symtab_dump(symtab_ty *, const char *);
 void symtab_walk(symtab_ty *stp, void (*func)(symtab_ty *stp,
     string_ty *key, void *data, void *arg), void *arg);
 
 /** @} */
+
 #endif // FMTGEN_SYMTAB_H

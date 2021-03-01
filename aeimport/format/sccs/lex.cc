@@ -23,10 +23,11 @@
 #include <ac/ctype.h>
 #include <ac/stdio.h>
 
-#include <error.h>
+#include <error.h> // for assert
 #include <fopen_nfs.h>
 #include <format/sccs/lex.h>
 #include <input/file_text.h>
+#include <quit.h>
 #include <str.h>
 #include <stracc.h>
 #include <sub.h>

@@ -38,6 +38,9 @@ It will probably come as no surprise that Aegis is developed using Aegis
 Aegis and become familiar with using it.  You will need Aegis \*(v) or later.
 .IP \(bu 2n
 You will need a C++ compiler.
+If your compiler is installed in an uncommon directory or has an
+uncommon name, you can set the appropriate attribute by editing the
+\fIaegis.conf.d/site.conf\fP file.
 .IP \(bu 2n
 You will need to install Cook,
 in order to build things.
@@ -48,6 +51,10 @@ http://www.canb.auug.org.au/~millerp/cook/
 GNU Autoconf 2.53 or later.
 .br
 http://ftp.gnu.org/pub/gnu/autoconf/
+.br
+If your tools are installed in an uncommon directory or have an
+uncommon name, you can set the appropriate attribute by editing the
+\fIaegis.conf.d/site.conf\fP file.
 .IP \(bu 2n
 GNU Automake.
 .br

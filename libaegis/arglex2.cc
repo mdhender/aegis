@@ -143,6 +143,8 @@ static arglex_table_ty argtab[] =
     { "-Review_PASS", arglex_token_review_pass, },
     { "-Review_Pass_Undo", arglex_token_review_pass_undo, },
     { "-Roll_Back", arglex_token_rescind, },
+    { "-Signed_Off_By", arglex_token_signed_off_by, },
+    { "-Not_Signed_Off_By", arglex_token_signed_off_by_not, },
     { "-SUGgest", arglex_token_suggest, },
     { "-SUGgest_Noise", arglex_token_suggest_noise, },
     { "-Verify_Symbolic_Links", arglex_token_symbolic_links, },

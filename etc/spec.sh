@@ -79,13 +79,6 @@ Group: Development/Version Control
 %description psdocs
 Aegis documentation in PostScript format.
 
-%package dvidocs
-Summary: aegis documentation, DVI format
-Group: Development/Version Control
-
-%description dvidocs
-Aegis documentation in DVI format.
-
 %prep
 fubar
 
@@ -105,7 +98,6 @@ files_ro=
 files_rx=
 txtdocs=
 psdocs=
-dvidocs=
 dirs=$prefix/com/aegis
 name=`echo dir_${prefix} | sed 's/[^a-zA-Z0-9]/_/g'`
 eval "${name}=yes"
@@ -155,7 +147,7 @@ do
 
 	aefp/* | etc/* | common/* | find_sizes/* | fmtgen/* | \
 	fstrcmp/* | libaegis/* | test/* | test_* | cklinlen/* | \
-	simp_file_stat/* | aemanifest/* )
+	aemanifest/* | aemakefile/* )
 		;;
 
 	*/main.cc)
@@ -208,7 +200,6 @@ do
 	lib/*/*/main.*)
 		stem=`echo $file | sed 's|^lib/\(.*\)/main.*$|\1|'`
 		psdocs="$psdocs $prefix/share/aegis/$stem.ps"
-		dvidocs="$dvidocs $prefix/share/aegis/$stem.dvi"
 		txtdocs="$txtdocs $prefix/share/aegis/$stem.txt"
 		;;
 
@@ -288,15 +279,6 @@ grumble
 echo '%files psdocs'
 echo "%attr(0755,root,bin) %dir $prefix/share/aegis"
 for file in $psdocs
-do
-	echo "%attr(0644,root,bin) $file"
-done
-
-echo ''
-grumble
-echo '%files dvidocs'
-echo "%attr(0755,root,bin) %dir $prefix/share/aegis"
-for file in $dvidocs
 do
 	echo "%attr(0644,root,bin) $file"
 done

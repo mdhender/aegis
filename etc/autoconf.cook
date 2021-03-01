@@ -20,13 +20,15 @@
  * MANIFEST: autoconf.cook
  */
 
-if [not [defined autoconf]]
-then
-	autoconf=autoconf;
+if [not [defined autoconf]] then
+    autoconf = autoconf;
+if [not [autoconf]] then
+    autoconf = autoconf;
 
-if [not [defined autoheader]]
-then
-	autoheader=autoheader;
+if [not [defined autoheader]] then
+    autoheader = autoheader;
+if [not [autoheader]] then
+    autoheader = autoheader;
 
 [arch]/bin/%: script/%.in: [arch]/config.status
 	set ['if' [not [defined baseline]] 'then' shallow]
@@ -70,7 +72,7 @@ configured_files =
 	];
 configured_files: [configured_files];
 
-configure: etc/configure.ac install-sh
+configure: aegis.conf.d/site.conf etc/configure.ac install-sh
 {
 	/*
 	 * unfortunately,
@@ -117,8 +119,10 @@ install-sh: [install-sh]
 
 	[unsplit " "
 	    CXX\=[quote [unsplit " " [c++]]]
+	    /*
 	    CXXFLAGS\=[quote [unsplit " " [c++_flags]]]
 	    LDFLAGS\=[quote [unsplit " " [ld_flags]]]
+	    */
 
 	    [pathname [resolve configure]] --cache-file\=/dev/null --verbose
 	    --no-create --srcdir\=. --sysconfdir\=/etc

@@ -136,6 +136,7 @@ Please use the \fB\-COMPATibility\fP option instead.
 This option is deprecated.
 Please use the \fB\-COMPATibility=4.6\fP option instead.
 .so o_project.so
+.so o_sob.so
 .SH RECEIVE
 The receive variant takes a change package created by the send variant
 and creates an Aegis change (see \fIaenc\fP(1)) to implement the change
@@ -176,20 +177,19 @@ This is the default.
 \fB\-No_PATch\fP
 This option may be used to ignore patches in the input, if any are present.
 .TP 8n
+\fB\-Ignore_UUID\fP
+This option may be used to ignore the UUID, if present, of the
+incoming change set.
+.TP 8n
+\fB\-No_Ignore_UUID\fP
+This option force the \fIaedist\fP command to use the change set's UUID.
+This is the default.
+.TP 8n
 \fB\-Project\fP \fIname\fP
 This option may be used to set the project name.
 If not specified, the project name in the input package will be used,
 rather than the usual project name defaulting mechanism.
-.TP 8n
-\fB\-Trojan\fP
-This option may be used to treat the change set as if it had a Trojan
-horse attack in it.
-.TP 8n
-\fB\-No_Trojan\fP
-This option may be used to treat the change set as if it definitely does
-not have a Trojan horse attack in it.  \fIUse with extreme care.\fP  You
-need to have authenticated the message with something like PGP first
-\fBand\fP know the the author well.
+.so o_trojan.so
 .SS Security
 Receiving changes by e-mail, and automatically committing them to the
 baseline without checking them, would be a recipe for disaster.

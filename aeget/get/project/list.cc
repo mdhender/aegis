@@ -44,9 +44,10 @@ get_project_list(void)
     //
     project_list_get(&name);
 
-    html_header(0);
-    printf("<title>Project List</title></head>\n");
-    printf("<body><h1 align=center>Project List</h1>\n");
+    html_header(0, 0);
+    printf("<title>Project List</title></head><body>\n");
+    html_header_ps(0, 0);
+    printf("<h1 align=center>Project List</h1>\n");
     printf("<div class=\"information\">\n");
     printf("<table align=center>\n");
     printf("<tr class=\"even-group\"><th>Project</th>");
@@ -90,6 +91,6 @@ get_project_list(void)
     printf("A similar report may be obtained from the command line, with\n");
     printf("<blockquote><pre>ael p</pre></blockquote>\n");
 
-    html_footer();
+    html_footer(0, 0);
     trace(("}\n"));
 }

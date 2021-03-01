@@ -65,13 +65,15 @@ get_change_files(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     }
     string_list_sort(&attr_name);
 
-    html_header(cp->pp);
+    html_header(0, cp);
     printf("<title>Project\n");
     html_encode_string(project_name_get(cp->pp));
     if (!cp->bogus)
 	printf(", Change %ld", magic_zero_decode(cp->number));
     printf(", Files\n");
-    printf("</title></head>\n<body><h1 align=center>\n");
+    printf("</title></head><body>\n");
+    html_header_ps(0, cp);
+    printf("<h1 align=center>\n");
     emit_change(cp);
     printf(",<br>\nList of Files</h1>\n");
     printf("<div class=\"information\">\n");
@@ -230,5 +232,5 @@ get_change_files(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     }
     printf("]</p>\n");
 
-    html_footer();
+    html_footer(0, cp);
 }

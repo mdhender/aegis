@@ -31,11 +31,11 @@
 #include <net.h>
 #include <os.h>
 #include <progname.h>
+#include <quit.h>
 #include <r250.h>
 #include <server/kerberos.h>
 #include <server/password.h>
 #include <server/simple.h>
-#include <str.h>
 #include <version.h>
 
 
@@ -83,7 +83,6 @@ main(int argc, char **argv)
     r250_init();
     os_become_init_mortal();
     arglex2_init3(argc, argv, argtab);
-    str_initialize();
     env_initialize();
     language_init();
 

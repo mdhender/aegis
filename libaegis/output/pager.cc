@@ -38,12 +38,16 @@
 #include <output/pager.h>
 #include <output/private.h>
 #include <output/stdout.h>
+#include <quit.h>
+#include <quit/action/pager.h>
 #include <str.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
 #include <user.h>
 
+
+static quit_action_pager cleanup;
 
 struct output_pager_ty
 {
@@ -154,10 +158,10 @@ pipe_open(output_pager_ty *this_thing)
 }
 
 
-static void
-cleanup(int n)
+void
+output_pager_cleanup()
 {
-    trace(("output_pager::cleanup(n = %d)\n{\n", n));
+    trace(("output_pager::cleanup()\n{\n"));
     if (singleton)
     {
 	output_ty	*p;

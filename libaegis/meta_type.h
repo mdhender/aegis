@@ -17,7 +17,7 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 //
-// MANIFEST: interface definition for aegis/type.c
+// MANIFEST: interface definition for aegis/meta_type.cc
 //
 
 #ifndef LIBAEGIS_META_TYPE_H
@@ -44,13 +44,13 @@ struct type_ty
 
     void *(*alloc)(void);
     void (*free)(void *this_thing);
-    int (*enum_parse)(string_ty *name);
+    bool (*enum_parse)(string_ty *name, void *);
     void *(*list_parse)(void *this_thing, type_ty **type_pp);
     void *(*struct_parse)(void *this_thing, string_ty *name, type_ty **type_pp,
 	unsigned long *maskp, int *redefinition_ok_p);
     string_ty *(*fuzzy)(string_ty *name);
     struct rpt_value_ty *(*convert)(void *this_thing);
-    int (*is_set)(void *);
+    bool (*is_set)(void *);
 };
 
 struct generic_struct_ty
@@ -60,6 +60,9 @@ struct generic_struct_ty
     string_ty       *errpos;
 };
 
+extern type_ty boolean_type;
+#define boolean_copy(x) (x)
+const char *boolean_ename(bool);
 extern type_ty integer_type;
 #define integer_copy(x) (x)
 extern type_ty real_type;
@@ -72,12 +75,11 @@ extern type_ty time_type;
 void *generic_struct_parse(void *, string_ty *, type_ty **, unsigned long *,
     int *, type_table_ty *, size_t);
 string_ty *generic_struct_fuzzy(string_ty *, type_table_ty *, size_t);
-int generic_struct_is_set(void *);
+bool generic_struct_is_set(void *);
 string_ty *generic_enum_fuzzy(string_ty *, string_ty **, size_t);
 struct rpt_value_ty *generic_struct_convert(void *, type_table_ty *,
     size_t);
-struct rpt_value_ty *generic_enum_convert(void *, string_ty **, size_t);
-int generic_enum_is_set(void *);
+struct rpt_value_ty *generic_enum_convert(int, string_ty **, size_t);
 void generic_enum__init(const char *const *, size_t);
 
 void type_enum_option_set(void);

@@ -28,13 +28,13 @@
 #include <arglex2.h>
 #include <arglex/project.h>
 #include <commit.h>
-#include <error.h>
 #include <help.h>
 #include <lock.h>
 #include <os.h>
 #include <progname.h>
 #include <project.h>
 #include <project/history.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>

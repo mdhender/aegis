@@ -39,14 +39,6 @@
 
 #ifdef HAVE_LIBCURL
 
-//
-// Requires libcurl 7.9.7 or later.
-//
-#if (LIBCURL_VERSION_NUM < 0x070907)
-#error "your version of libcurl is too old"
-#endif
-
-
 #define FATAL(function, reason) \
 	fatal_raw("%s: %d: " function ": %s", __FILE__, __LINE__, reason);
 

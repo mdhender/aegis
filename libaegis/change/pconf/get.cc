@@ -64,13 +64,74 @@ pconf_improve(change_ty *cp)
     }
     if (!d->development_build_command)
 	d->development_build_command = str_copy(d->build_command);
-    if (!(d->mask & pconf_create_symlinks_before_integration_build_mask))
+
+    // This field is obsolete.
+    if (d->mask & pconf_create_symlinks_before_build_mask)
+    {
+	if (change_is_being_developed(cp))
+	{
+	    change_warning_obsolete_field
+	    (
+		cp,
+		d->errpos,
+		"create_symlinks_before_build",
+		"development_directory_style.source_file_symlink"
+	    );
+	}
+    }
+
+    // This field is obsolete.
+    if (d->mask & pconf_remove_symlinks_after_build_mask)
+    {
+	if (change_is_being_developed(cp))
+	{
+	    change_warning_obsolete_field
+	    (
+		cp,
+		d->errpos,
+		"remove_symlinks_after_build",
+		"development_directory_style.during_build_only"
+	    );
+	}
+    }
+
+    // This field is obsolete.
+    if (d->mask & pconf_create_symlinks_before_integration_build_mask)
+    {
+	if (change_is_being_developed(cp))
+	{
+	    change_warning_obsolete_field
+	    (
+		cp,
+		d->errpos,
+		"create_symlinks_before_integration_build",
+		"integration_directory_style.source_file_symlink"
+	    );
+	}
+    }
+    else
     {
 	d->create_symlinks_before_integration_build =
 	    d->create_symlinks_before_build;
-	d->mask |= pconf_create_symlinks_before_integration_build_mask;
+	if (d->mask & pconf_create_symlinks_before_build_mask)
+	    d->mask |= pconf_create_symlinks_before_integration_build_mask;
     }
-    if (!(d->mask & pconf_remove_symlinks_after_integration_build_mask))
+
+    // This field is obsolete.
+    if (d->mask & pconf_remove_symlinks_after_integration_build_mask)
+    {
+	if (change_is_being_developed(cp))
+	{
+	    change_warning_obsolete_field
+	    (
+		cp,
+		d->errpos,
+		"remove_symlinks_after_integration_build",
+		"integration_directory_style.during_build_only"
+	    );
+	}
+    }
+    else
     {
 	//
 	// Integration builds always remove the symlinks
@@ -79,7 +140,7 @@ pconf_improve(change_ty *cp)
 	// becoming stale if there are deeper baseline
 	// integrations.
 	//
-	d->remove_symlinks_after_integration_build = (boolean_ty)1;
+	d->remove_symlinks_after_integration_build = true;
     }
     if (!d->history_create_command && d->history_put_command)
 	d->history_create_command = str_copy(d->history_put_command);
@@ -177,7 +238,7 @@ pconf_improve(change_ty *cp)
     }
     if (!(d->mask & pconf_shell_safe_filenames_mask))
     {
-	d->shell_safe_filenames = (boolean_ty)1;
+	d->shell_safe_filenames = true;
 	d->mask |= pconf_shell_safe_filenames_mask;
     }
     if (d->file_template)
@@ -265,6 +326,8 @@ pconf_improve(change_ty *cp)
 	if (!d->remove_file_undo_command)
 	    d->remove_file_undo_command = str_copy(d->change_file_undo_command);
     }
+
+    // See also pconf_improve_more(), below.
 }
 
 
@@ -523,13 +586,15 @@ pconf_improve_more(change_ty *cp)
     //
     // set the architecture default
     //
-    if (!cp->pconf_data->architecture)
+    pconf_ty *d = cp->pconf_data;
+    assert(d);
+    if (!d->architecture)
     {
-	cp->pconf_data->architecture =
+	d->architecture =
 	    (pconf_architecture_list_ty *)
 	    pconf_architecture_list_type.alloc();
     }
-    if (!cp->pconf_data->architecture->length)
+    if (!d->architecture->length)
     {
 	type_ty         *type_p;
 	pconf_architecture_ty **app;
@@ -539,7 +604,7 @@ pconf_improve_more(change_ty *cp)
 	    (pconf_architecture_ty **)
 	    pconf_architecture_list_type.list_parse
 	    (
-		cp->pconf_data->architecture,
+		d->architecture,
 		&type_p
 	    );
 	assert(type_p == &pconf_architecture_type);
@@ -548,11 +613,11 @@ pconf_improve_more(change_ty *cp)
 	ap->name = str_from_c("unspecified");
 	ap->pattern = str_from_c("*");
     }
-    for (j = 0; j < cp->pconf_data->architecture->length; ++j)
+    for (j = 0; j < d->architecture->length; ++j)
     {
 	pconf_architecture_ty *ap;
 
-	ap = cp->pconf_data->architecture->list[j];
+	ap = d->architecture->list[j];
 	if (!ap->name || !ap->pattern)
 	{
 	    sub_context_ty *scp;
@@ -579,26 +644,26 @@ pconf_improve_more(change_ty *cp)
     //
     // set the maximum_filename_length default
     //
-    if (cp->pconf_data->mask & pconf_maximum_filename_length_mask)
+    if (d->mask & pconf_maximum_filename_length_mask)
     {
-	if (cp->pconf_data->maximum_filename_length < 9)
-	    cp->pconf_data->maximum_filename_length = 9;
-	if (cp->pconf_data->maximum_filename_length > 255)
-	    cp->pconf_data->maximum_filename_length = 255;
+	if (d->maximum_filename_length < 9)
+	    d->maximum_filename_length = 9;
+	if (d->maximum_filename_length > 255)
+	    d->maximum_filename_length = 255;
     }
     else
-	cp->pconf_data->maximum_filename_length = 255;
+	d->maximum_filename_length = 255;
 
     //
     // set the filename_pattern_accept default
     //
-    if (!cp->pconf_data->filename_pattern_accept)
+    if (!d->filename_pattern_accept)
     {
-	cp->pconf_data->filename_pattern_accept =
+	d->filename_pattern_accept =
 	    (pconf_filename_pattern_accept_list_ty *)
 	    pconf_filename_pattern_accept_list_type.alloc();
     }
-    if (!cp->pconf_data->filename_pattern_accept->length)
+    if (!d->filename_pattern_accept->length)
     {
 	type_ty         *type_p;
 	string_ty       **addr_p;
@@ -607,7 +672,7 @@ pconf_improve_more(change_ty *cp)
 	    (string_ty **)
 	    pconf_filename_pattern_accept_list_type.list_parse
 	    (
-		cp->pconf_data->filename_pattern_accept,
+		d->filename_pattern_accept,
 		&type_p
 	    );
 	assert(type_p == &string_type);
@@ -615,25 +680,25 @@ pconf_improve_more(change_ty *cp)
     }
     if (!star_comma_d)
 	star_comma_d = str_from_c("*,D");
-    if (!cp->pconf_data->filename_pattern_reject)
+    if (!d->filename_pattern_reject)
     {
-	cp->pconf_data->filename_pattern_reject =
+	d->filename_pattern_reject =
 	    (pconf_filename_pattern_reject_list_ty *)
 	    pconf_filename_pattern_reject_list_type.alloc();
     }
-    for (j = 0; j < cp->pconf_data->filename_pattern_reject->length; ++j)
+    for (j = 0; j < d->filename_pattern_reject->length; ++j)
     {
 	if
 	(
 	    str_equal
 	    (
 		star_comma_d,
-		cp->pconf_data->filename_pattern_reject->list[j]
+		d->filename_pattern_reject->list[j]
 	    )
 	)
 	    break;
     }
-    if (j >= cp->pconf_data->filename_pattern_reject->length)
+    if (j >= d->filename_pattern_reject->length)
     {
 	type_ty         *type_p;
 	string_ty       **addr_p;
@@ -642,7 +707,7 @@ pconf_improve_more(change_ty *cp)
 	    (string_ty **)
 	    pconf_filename_pattern_reject_list_type.list_parse
 	    (
-		cp->pconf_data->filename_pattern_reject,
+		d->filename_pattern_reject,
 		&type_p
 	    );
 	assert(type_p == &string_type);
@@ -652,23 +717,23 @@ pconf_improve_more(change_ty *cp)
     //
     // make sure symlink_exceptions is there, even if empty
     //
-    set_pconf_symlink_exceptions_defaults(cp->pconf_data);
+    set_pconf_symlink_exceptions_defaults(d);
 
     //
     // set the test_command default
     //
-    if (!cp->pconf_data->test_command)
-	cp->pconf_data->test_command = str_from_c("$shell $file_name");
-    if (!cp->pconf_data->development_test_command)
-	cp->pconf_data->development_test_command =
-	    str_copy(cp->pconf_data->test_command);
+    if (!d->test_command)
+	d->test_command = str_from_c("$shell $file_name");
+    if (!d->development_test_command)
+	d->development_test_command =
+	    str_copy(d->test_command);
 
     //
     // set the development directory template default
     //
-    if (!cp->pconf_data->development_directory_template)
+    if (!d->development_directory_template)
     {
-	cp->pconf_data->development_directory_template =
+	d->development_directory_template =
 	    str_from_c
 	    (
 		"$ddd/${left $project ${expr ${namemax $ddd} - ${length "
@@ -679,9 +744,9 @@ pconf_improve_more(change_ty *cp)
     //
     // Set the test filename template
     //
-    if (!cp->pconf_data->new_test_filename)
+    if (!d->new_test_filename)
     {
-	cp->pconf_data->new_test_filename =
+	d->new_test_filename =
 	    str_from_c
 	    (
 		"test/${zpad $hundred 2}/t${zpad $number 4}${left $type 1}.sh"
@@ -691,10 +756,110 @@ pconf_improve_more(change_ty *cp)
     //
     // Make sure the report generator can see the enums.
     //
-    cp->pconf_data->mask |=
+    d->mask |=
 	pconf_history_put_trashes_file_mask |
 	pconf_history_content_limitation_mask
 	;
+
+    //
+    // Default settings for the work area styles.
+    //
+    if (!d->development_directory_style)
+    {
+	d->development_directory_style =
+	    (work_area_style_ty *)work_area_style_type.alloc();
+	d->development_directory_style->source_file_link = false;
+	d->development_directory_style->source_file_symlink =
+	    d->create_symlinks_before_build;
+	d->development_directory_style->source_file_copy = false;
+	d->development_directory_style->derived_file_link = false;
+	d->development_directory_style->derived_file_symlink =
+	    d->create_symlinks_before_build;
+	d->development_directory_style->derived_file_copy = false;
+	d->development_directory_style->during_build_only =
+	    d->remove_symlinks_after_build;
+	if (d->mask & pconf_create_symlinks_before_build_mask)
+	{
+	    d->development_directory_style->mask |=
+	    	work_area_style_source_file_symlink_mask |
+	    	work_area_style_derived_file_symlink_mask
+	    	;
+	}
+	if (d->mask & pconf_remove_symlinks_after_build_mask)
+	{
+	    d->development_directory_style->mask |=
+	    	work_area_style_during_build_only_mask
+	    	;
+	}
+    }
+    if
+    (
+	!(
+	    d->development_directory_style->mask
+	&
+	    work_area_style_source_file_whiteout_mask
+	)
+    )
+    {
+	//
+        // You only need whiteout files if you don't have some kind of
+        // mirror in the development directory.
+	//
+	d->development_directory_style->source_file_whiteout =
+	    !(
+		d->development_directory_style->source_file_link
+	    ||
+		d->development_directory_style->source_file_symlink
+	    ||
+		d->development_directory_style->source_file_copy
+	    );
+	d->development_directory_style->mask |=
+	    work_area_style_source_file_whiteout_mask;
+    }
+
+    if (!d->integration_directory_style)
+    {
+	//
+        // We want the integration directory to behave the same as the
+        // development directory.
+	//
+	d->integration_directory_style =
+	    work_area_style_copy(d->development_directory_style);
+
+	//
+        // Unless they have explicity used obsolete fields to change
+        // things around.
+	//
+	if (d->mask & pconf_create_symlinks_before_integration_build_mask)
+	{
+	    d->integration_directory_style->source_file_symlink =
+		d->create_symlinks_before_integration_build;
+	    d->integration_directory_style->derived_file_symlink =
+		d->create_symlinks_before_integration_build;
+	}
+	if (d->mask & pconf_remove_symlinks_after_integration_build_mask)
+	{
+	    d->integration_directory_style->during_build_only =
+		d->remove_symlinks_after_integration_build;
+	}
+    }
+    if
+    (
+	!(
+	    d->integration_directory_style->mask
+	&
+	    work_area_style_source_file_whiteout_mask
+	)
+    )
+    {
+	//
+        // Omit whiteout from the integration directory.  The developer
+        // is supposed to have removed all sign of it already.
+	//
+	d->integration_directory_style->source_file_whiteout = false;
+	d->integration_directory_style->mask |=
+	    work_area_style_source_file_whiteout_mask;
+    }
 }
 
 
@@ -729,7 +894,7 @@ change_pconf_get(change_ty *cp, int required)
 	    }
 	    cp->pconf_data = (pconf_ty *)pconf_type.alloc();
 	    cp->pconf_data->errpos = str_from_c(THE_CONFIG_FILE_NEW);
-	    cp->pconf_data->shell_safe_filenames = (boolean_ty)1;
+	    cp->pconf_data->shell_safe_filenames = true;
 	}
 
 	if (required)

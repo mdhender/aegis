@@ -36,7 +36,6 @@
 #include <output/quoted_print.h>
 #include <output/uuencode.h>
 #include <progname.h>
-#include <str.h>
 
 
 enum
@@ -253,7 +252,6 @@ main(int argc, char **argv)
     ifunc = test_input_base64;
     ofunc = test_output_base64;
     arglex_init(argc, argv, argtab);
-    str_initialize();
     arglex();
     os_become_init_mortal();
 

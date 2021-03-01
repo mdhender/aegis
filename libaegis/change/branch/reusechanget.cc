@@ -24,20 +24,17 @@
 #include <error.h>
 
 
-int
+bool
 change_branch_reuse_change_numbers_get(change_ty *cp)
 {
-    cstate_ty       *cstate_data;
-    cstate_branch_ty *bp;
-
-    cstate_data = change_cstate_get(cp);
-    bp = cstate_data->branch;
+    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_branch_ty *bp = cstate_data->branch;
     assert(bp);
     if (!bp)
-	return 1;
+	return true;
     if (!(bp->mask & cstate_branch_reuse_change_numbers_mask))
     {
-	bp->reuse_change_numbers = (boolean_ty)1;
+	bp->reuse_change_numbers = true;
 	bp->mask |= cstate_branch_reuse_change_numbers_mask;
     }
     return bp->reuse_change_numbers;

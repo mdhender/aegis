@@ -105,7 +105,7 @@ archive/%.html: etc/%.html: etc/ssp.awk
 		[prepost "-I" /[arch]/etc [search_list]]
 		[prepost "-I" "/etc" [search_list]]
 		[resolve etc/%.html]
-	| groff -Tascii -t -P-hubc -man
+	| GROFF_NO_SGR\=-c groff -Tascii -t -P-bhu -man
 	| [awk] -f [resolve etc/ssp.awk]
 	> [target];
 }
@@ -117,7 +117,7 @@ archive/%.txt: etc/%.man
 	[prepost "-I" "/etc" [search_list]]
 	[prepost "-I" "/lib/en/readme" [search_list]]
 	[resolve etc/%.man]
-    | groff -Tascii -t -P-bchu -man
+    | GROFF_NO_SGR\=-c groff -Tascii -t -P-bhu -man
     | [awk] -f [resolve etc/ssp.awk]
     > [target];
 }

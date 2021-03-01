@@ -39,6 +39,7 @@
 #include <progname.h>
 #include <project/file.h>
 #include <project.h>
+#include <quit.h>
 #include <str_list.h>
 #include <sub.h>
 #include <trace.h>

@@ -29,7 +29,6 @@
 #include <arglex/project.h>
 #include <col.h>
 #include <env.h>
-#include <error.h>
 #include <help.h>
 #include <language.h>
 #include <option.h>
@@ -37,6 +36,7 @@
 #include <output/file.h>
 #include <output/gzip.h>
 #include <progname.h>
+#include <quit.h>
 #include <r250.h>
 #include <str_list.h>
 #include <sub.h>
@@ -336,7 +336,6 @@ main(int argc, char **argv)
     r250_init();
     os_become_init_mortal();
     arglex2_init(argc, argv);
-    str_initialize();
     env_initialize();
     language_init();
     switch (arglex())

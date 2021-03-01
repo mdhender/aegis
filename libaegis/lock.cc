@@ -34,10 +34,21 @@
 #include <mem.h>
 #include <now.h>
 #include <os.h>
+#include <quit.h>
+#include <quit/action/lock.h>
 #include <r250.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>
+
+//
+// The HURD does not yet have POSIX semantics for its locks.  You can
+// lock the whole file (and our lock file has zero length) but not parts
+// of the file.
+//
+#ifdef __hurd__
+#define WHOLE_FILE_LOCKS_ONLY
+#endif
 
 //
 // Define this symbol if you want the lock poriority scheme, so
@@ -53,6 +64,8 @@
 #define BITS 16
 #define BITS_SIZE (1L << BITS)
 #define BITS_MASK (BITS_SIZE - 1)
+
+static quit_action_lock quitter;
 
 enum lock_ty
 {
@@ -114,8 +127,21 @@ flock_construct(struct flock *p, int type, long start, long length)
     assert(length > 0);
     p->l_type = type;
     p->l_whence = SEEK_SET;
+#ifdef WHOLE_FILE_LOCKS_ONLY
+    //
+    // The HURD does not yet have POSIX semantics for its locks.  You
+    // can lock the whole file (and our lock file has zero length) but
+    // not parts of the file... and, I assume, not parts of the file
+    // past the end of the file.
+    //
+    if (type != F_UNLCK)
+	p->l_type = F_WRLCK;
+    p->l_start = 0;
+    p->l_len = 0;
+#else
     p->l_start = start;
     p->l_len = length;
+#endif
     p->l_pid = 0;
 }
 
@@ -146,6 +172,13 @@ lock_prepare(long start, long length, int exclusive, lock_callback_ty callback,
     //
     trace(("lock_prepare(start = %ld, length = %ld, excl = %d)\n{\n",
 	start, length, exclusive));
+#ifdef WHOLE_FILE_LOCKS_ONLY
+    if (exclusive & LOCK_PREP_PRIORITY);
+    {
+	trace(("}\n"));
+	return;
+    }
+#endif
     assert(start > lock_master);
     assert(length > 0);
     flock_construct
@@ -456,8 +489,8 @@ lock_description(struct flock *p)
 }
 
 
-static void
-quitter(int n)
+void
+lock_quitter()
 {
     if (fd >= 0)
     {
@@ -609,6 +642,7 @@ lock_take(void)
 	// it should never be held for long)
 	//
 	trace(("mark\n"));
+#ifndef WHOLE_FILE_LOCKS_ONLY
 	flock_construct(&p, F_WRLCK, (long)lock_master, 1L);
 	if (glue_fcntl(fd, F_SETLKW, &p))
 	{
@@ -630,6 +664,7 @@ lock_take(void)
 	    // NOTREACHED
 	    sub_context_delete(scp);
 	}
+#endif
 
 	//
 	// get each of the locks we really wanted
@@ -637,6 +672,9 @@ lock_take(void)
 	for (j = 0; j < nplaces; ++j)
 	{
 	    trace(("mark\n"));
+#ifdef WHOLE_FILE_LOCKS_ONLY
+	    assert(!place[j].release_immediately);
+#endif
 	    p = place[j].location;	// yes, copy it
 	    if (glue_fcntl(fd, F_SETLK, &p))
 	    {
@@ -668,6 +706,7 @@ lock_take(void)
 	if (j >= nplaces)
 	{
 	    trace(("mark\n"));
+#ifndef WHOLE_FILE_LOCKS_ONLY
 	    flock_construct(&p, F_UNLCK, (long)lock_master, 1L);
 	    if (glue_fcntl(fd, F_SETLKW, &p))
 	    {
@@ -718,6 +757,7 @@ lock_take(void)
 		    sub_context_delete(scp);
 		}
 	    }
+#endif // WHOLE_FILE_LOCKS_ONLY
 	    break;
 	}
 

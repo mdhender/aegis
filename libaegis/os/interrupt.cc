@@ -22,6 +22,7 @@
 
 #include <ac/signal.h>
 #include <ac/string.h>
+#include <ac/unistd.h>
 
 #include <os.h>
 #include <os/interrupt.h>

@@ -93,6 +93,15 @@ supported are:
 \fBpref(diff_command)\fP
 This is the tool used to visually display the difference between a
 changes modified or moved file and the baseline version.
+The default setting is
+.RS
+set pref(diff_command) "tkdiff"
+.RE
+You can change it to
+.RS
+set pref(diff_command) "mgdiff"
+.RE
+If you have the \fImgdiff\fP(1) command installed.
 .TP 8n
 \fBpref(view_command)\fP
 This is the tool used to visually display a new file or a removed files,

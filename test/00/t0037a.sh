@@ -327,7 +327,8 @@ aegis: project "foo": change 10: test 3 of 3
 aegis: project "foo": change 10: test/00/t0003a.sh pass
 aegis: project "foo": change 10: passed 3 tests
 end
-if ! diff $tmp.log $tmp.log.ideal > log 2>&1 ; then cat log; fail; fi
+diff $tmp.log $tmp.log.ideal > log 2>&1
+if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # build the change again to reset test results
@@ -353,7 +354,8 @@ aegis: project "foo": change 10: test/00/t0002a.sh pass
 aegis: project "foo": change 10: test/00/t0003a.sh pass
 aegis: project "foo": change 10: passed 3 tests
 end
-if ! diff $tmp.log $tmp.log.ideal > log 2>&1; then cat log; fail; fi
+diff $tmp.log $tmp.log.ideal > log 2>&1
+if test $? -ne 0; then cat log; fail; fi
 
 
 #

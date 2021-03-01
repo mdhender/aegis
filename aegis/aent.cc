@@ -44,6 +44,7 @@
 #include <project.h>
 #include <project/file.h>
 #include <project/history.h>
+#include <quit.h>
 #include <str_list.h>
 #include <sub.h>
 #include <trace.h>
@@ -667,9 +668,9 @@ new_test_main(void)
     // exemption.  (Cancel the baseline test exemption if this is
     // not the first change on this branch.)
     //
-    cstate_data->test_exempt = (boolean_ty)0;
+    cstate_data->test_exempt = false;
     if (project_change_nth(pp, 0L, &n) && n != change_number)
-	cstate_data->test_baseline_exempt = (boolean_ty)0;
+	cstate_data->test_baseline_exempt = false;
 
     //
     // update the copyright years

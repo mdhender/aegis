@@ -91,10 +91,6 @@ It needs to be able to be run by \fIcron\fP(8).
 Submitted: PMiller, 1-Jun-2004
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
-Enhance \fIaedist -receive\fP to run tests on changes which require it.
-Submitted: Jerry Pendergraft, May-2004
-.\" ------------------------------------------------------------------------
-.IP \(bu 2n
 Enhance \fIaedist\fP to preserve change history
 (both send and receive will need work).
 Don't forget backwards compatibility.
@@ -353,11 +349,23 @@ Should also put user name under change state, as in change lists.
 .\" ========================================================================
 .nh 3 "Core Enhancements"
 .IP \(bu 2n
-There is a need for an \fIaediff\fP(1) command to show the difference
-between two changes (be they the current change, the baseline, the
-baseline of some other branch, an historical change or an active
-change).
-Submitted: PMiller, 2-Jun-2004
+Use the per-file attributes to record the encoding of the text
+(e.g. UTF-8) and the line termination.  Provide a way (via the iconv(3)
+function? via recode(1) command?) to change the encoding.
+Submitted: PMiller, 23-Jun-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+"I have determined that one reason [that aedeu is used in preference
+to aerfail] is the reviewer is afraid they don't understand the change
+and once explained they would not fail it.  Now the fact that the
+description, comments etc did not do the job to explain the change is
+reason enough to fail it notwithstanding...  They are saying if they had
+an aerfu command they would be willing to aerf changes. How difficult
+would that be?"
+Not very difficult at all.  Provided, of course, that nothing has been
+changed in the mean time (and Aegis has everything it needs to check
+that).
+Submitted: Jerry Pendergraft, 23-Jun-2004
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 The project_file_roll_forward function needs to be enhanced to

@@ -46,12 +46,14 @@ get_change_download(change_ty *cp, string_ty *fn, string_list_ty *modifier)
 {
     int             ok;
 
-    html_header(cp->pp);
+    html_header(0, cp);
     printf("<title>Project\n");
     html_encode_string(project_name_get(cp->pp));
     if (!cp->bogus)
 	printf(", Change %ld\n", magic_zero_decode(cp->number));
-    printf("</title></head>\n<body><h1 align=center>\n");
+    printf("</title></head><body>\n");
+    html_header_ps(0, cp);
+    printf("<h1 align=center>\n");
     emit_change(cp);
     printf(",<br>\nDownload</h1>\n");
     printf("<dl>\n");
@@ -72,6 +74,12 @@ get_change_download(change_ty *cp, string_ty *fn, string_list_ty *modifier)
     printf("in Aegis' own transfer format.  It preserves most\n");
     printf("meta-data for the change set.  You unpack this format\n");
     printf("using the &ldquo;<i>aedist -receive</i>&rdquo; command.\n");
+    printf("<p>\n");
+    printf("For the terminally curious, the term &ldquo;Aegis'\n");
+    printf("own transfer format&rdquo; means an optionally BASE64\n");
+    printf("encoded, optionally gzipped, CPIO archive.  The\n");
+    printf("top-level directory indicates whether the archive file\n");
+    printf("is a source file, meta-data, <em>etc</em>.\n");
     printf("<p>\n");
 
     if (ok)
@@ -99,7 +107,14 @@ get_change_download(change_ty *cp, string_ty *fn, string_list_ty *modifier)
         printf("it).  You unpack this format using one of the\n");
         printf("&ldquo;<i>tar xzf</i>&rdquo; or &ldquo;<i>aetar\n");
         printf("-receive</i>&rdquo; commands.\n");
-	printf("<p>\n");
+        printf("<p>All the files in the tarball have the project\n");
+        printf("name and version added as a default path prefix, so\n");
+        printf("they unpack into a single directory.  If you don't\n");
+        printf("want the extra top-level directory, use these links:\n");
+	emit_change_href(cp, "aetar@noprefix");
+	printf("tar.gz</a> (");
+	emit_change_href(cp, "aetar@noprefix@es");
+	printf("entire source</a>).<p>\n");
     }
 
     printf("<dt> ");
@@ -145,7 +160,9 @@ get_change_download(change_ty *cp, string_ty *fn, string_list_ty *modifier)
 
     printf("</dl>\n");
     printf("<p>\n");
-    printf("The <em>entire source</em> options include the rest of\n");
-    printf("the project source files in the downloaded change set.\n");
-    html_footer();
+    printf("A downloaded change set usually contains only the files\n");
+    printf("in the changset itself.  The <em>entire source</em>\n");
+    printf("options, above, include the rest of the project source\n");
+    printf("files in the downloaded change set.\n");
+    html_footer(0, cp);
 }

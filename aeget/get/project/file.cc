@@ -20,6 +20,8 @@
 // MANIFEST: functions to manipulate files
 //
 
+#include <ac/stdio.h> // HACK
+
 #include <change.h>
 #include <get/file.h>
 #include <get/project/file.h>
@@ -30,9 +32,9 @@
 void
 get_project_file(project_ty *pp, string_ty *filename, string_list_ty *modifier)
 {
-    change_ty       *cp;
-
-    cp = change_bogus(pp);
+    fprintf(stderr, "%s: %d: get_project_file {\n", __FILE__, __LINE__);
+    change_ty *cp = change_bogus(pp);
     get_file(cp, filename, modifier);
     change_free(cp);
+    fprintf(stderr, "%s: %d: get_project_file }\n", __FILE__, __LINE__);
 }

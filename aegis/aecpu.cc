@@ -42,6 +42,7 @@
 #include <progname.h>
 #include <project.h>
 #include <project/file.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -141,7 +142,7 @@ copy_file_undo_main(void)
     log_style_ty    log_style;
     user_ty	    *up;
     int		    config_seen;
-    int		    unchanged;
+    int             unchanged;
     int		    number_of_errors;
     string_list_ty  search_path;
     int		    mend_symlinks;
@@ -716,25 +717,36 @@ copy_file_undo_main(void)
     }
 
     //
-    // the number of files changed,
-    // so stomp on the validation fields.
+    // Only clear the various timestamps if we actually did something.
     //
-    change_build_times_clear(cp);
+    // This is especially important for aedist -receive, which
+    // automagtically calls aecpu -unch to make sure it supresses change
+    // sets we already have.  But we don't want to clear the UUID if we
+    // didn't remove any files from the change set.
+    //
+    if (wl.nstrings > 0)
+    {
+	//
+	// the number of files changed,
+	// so stomp on the validation fields.
+	//
+	change_build_times_clear(cp);
 
-    //
-    // If the file manifest of the change is altered (e.g. by aenf, aenfu,
-    // aecp, aecpu, etc), or the contents of any file is changed, the
-    // UUID is cleared.  This is because it is no longer the same change
-    // as was received by aedist or aepatch, and the UUID is invalidated.
-    //
-    change_uuid_clear(cp);
+	//
+	// If the file manifest of the change is altered (e.g. by aenf, aenfu,
+	// aecp, aecpu, etc), or the contents of any file is changed, the
+	// UUID is cleared.  This is because it is no longer the same change
+	// as was received by aedist or aepatch, and the UUID is invalidated.
+	//
+	change_uuid_clear(cp);
 
-    //
-    // run the change file command
-    // and the project file command if necessary
-    //
-    change_run_copy_file_undo_command(cp, &wl, up);
-    change_run_project_file_command(cp, up);
+	//
+	// run the change file command
+	// and the project file command if necessary
+	//
+	change_run_copy_file_undo_command(cp, &wl, up);
+	change_run_project_file_command(cp, up);
+    }
 
     //
     // release the locks

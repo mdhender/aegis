@@ -249,8 +249,9 @@ sem_enum(string_ty *s)
     trace(("sem_enum(s = %08lX)\n{\n", (long)s));
     trace_string(s->str_text);
     if (!sem_root->type)
+    {
 	// do nothing
-;
+    }
     else if (!sem_root->type->enum_parse)
     {
 	sub_context_ty	*scp;
@@ -260,43 +261,28 @@ sem_enum(string_ty *s)
 	lex_error(scp, i18n("value of type $name required"));
 	sub_context_delete(scp);
     }
-    else
+    else if (!sem_root->type->enum_parse(s, sem_root->addr))
     {
-	int		n;
+	sub_context_ty  *scp;
+	string_ty       *suggest;
 
-	n = sem_root->type->enum_parse(s);
-	if (n < 0)
+	assert(sem_root->type->fuzzy);
+	suggest = sem_root->type->fuzzy(s);
+	if (suggest)
 	{
-	    sub_context_ty  *scp;
-	    string_ty	    *suggest;
-
-	    assert(sem_root->type->fuzzy);
-	    suggest = sem_root->type->fuzzy(s);
-	    if (suggest)
-	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "Name", s);
-		sub_var_set_string(scp, "Guess", suggest);
-		lex_error(scp, i18n("no \"$name\", guessing \"$guess\""));
-		sub_context_delete(scp);
-		n = sem_root->type->enum_parse(suggest);
-		assert(n >= 0);
-		goto use_suggestion;
-	    }
+	    scp = sub_context_new();
+	    sub_var_set_string(scp, "Name", s);
+	    sub_var_set_string(scp, "Guess", suggest);
+	    lex_error(scp, i18n("no \"$name\", guessing \"$guess\""));
+	    sub_context_delete(scp);
+	    sem_root->type->enum_parse(suggest, sem_root->addr);
+	}
+	else
+	{
 	    scp = sub_context_new();
 	    sub_var_set_string(scp, "Name", s);
 	    lex_error(scp, i18n("the name \"$name\" is undefined"));
 	    sub_context_delete(scp);
-	}
-	else
-	{
-	    //
-	    // This is a portability problem: if the C
-	    // implementation does not always store enums in ints
-	    // this will break.
-	    //
-	    use_suggestion:
-	    *(int *)sem_root->addr = n;
 	}
     }
     trace(("}\n"));

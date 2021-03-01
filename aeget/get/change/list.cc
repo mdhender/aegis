@@ -50,11 +50,9 @@ calculate_state_mask(string_list_ty *modifier)
     invert = 0;
     for (j = 1; j < modifier->nstrings; ++j)
     {
-	int             bit;
-
-	bit = cstate_state_type.enum_parse(modifier->string[j]);
-	if (bit >= 0)
-	    state_mask |= (1 << bit);
+	cstate_state_ty bit;
+	if (cstate_state_type.enum_parse(modifier->string[j], &bit))
+	    state_mask |= (1 << (int)bit);
 	else if (str_equal(not_string, modifier->string[j]))
 	    invert = 1;
     }
@@ -119,10 +117,12 @@ get_change_list(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     //
     state_mask = calculate_state_mask(modifier);
 
-    html_header(pp);
+    html_header(pp, 0);
     printf("<title>Project ");
     html_encode_string(project_name_get(pp));
-    printf(",\nList of Changes</title></head>\n<body><h1 align=center>");
+    printf(",\nList of Changes</title></head><body>\n");
+    html_header_ps(pp, 0);
+    printf("<h1 align=center>");
     emit_project(pp);
     printf(",<br>\nList of Changes");
     bit = single_bit(state_mask);
@@ -261,7 +261,7 @@ get_change_list(project_ty *pp, string_ty *filename, string_list_ty *modifier)
 	printf("</td>\n<td valign=top>\n");
 	emit_change_href(cp, "download");
 	printf("Download</a>\n");
-	printf("</td></tr>\n");
+	printf("</td>\n</tr>\n");
 	change_free(cp);
     }
     string_list_destructor(&attr_name);
@@ -282,5 +282,5 @@ get_change_list(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     printf("Project Menu</a>\n");
     printf("]</p>\n");
 
-    html_footer();
+    html_footer(pp, 0);
 }

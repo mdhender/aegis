@@ -44,6 +44,7 @@
 #include <os.h>
 #include <progname.h>
 #include <project/file.h>
+#include <quit.h>
 #include <str_list.h>
 #include <sub.h>
 #include <trace.h>
@@ -113,12 +114,19 @@ clean_list(void)
 
 struct clean_info_ty
 {
-    string_ty	    *dd;
-    change_ty	    *cp;
-    int		    minimum;
-    user_ty	    *up;
-    int		    verbose;
-    int             touch;
+    string_ty       *dd;
+    change_ty       *cp;
+    bool            minimum;
+    user_ty         *up;
+    bool            verbose;
+    bool            touch;
+    const work_area_style_ty *style;
+
+    clean_info_ty() :
+	dd(0), cp(0), minimum(false), up(0),
+	verbose(false), touch(false), style(0)
+    {
+    }
 };
 
 
@@ -128,8 +136,8 @@ clean_out_the_garbage(void *p, dir_walk_message_ty msg, string_ty *path,
 {
     clean_info_ty   *sip;
     string_ty	    *s1;
-    int		    delete_me;
-    int             touch_me;
+    bool            delete_me;
+    bool            touch_me;
 
     sip = (clean_info_ty *)p;
     switch (msg)
@@ -177,16 +185,38 @@ clean_out_the_garbage(void *p, dir_walk_message_ty msg, string_ty *path,
     case dir_walk_special:
     case dir_walk_symlink:
 	//
+	// Find the pathname relative to the development directory.
+	//
+	s1 = os_below_dir(sip->dd, path);
+
+	//
+        // Try not to delete anything the user's development directory
+        // style wants to keep around.
+	//
+	delete_me = true;
+	user_become_undo();
+	if
+	(
+	    !sip->style->during_build_only
+	&&
+	    sip->style->source_file_symlink
+	&&
+	    project_file_find(sip->cp->pp, s1, view_path_extreme)
+	)
+	{
+	    delete_me = false;
+	}
+
+	//
 	// This can't be a change source file, so always
 	// delete it.
 	//
 	// Taking notice of their delete file preference, of course.
 	//
-	s1 = os_below_dir(sip->dd, path);
-	user_become_undo();
 	if (sip->verbose)
 	    error_raw("rm %S", s1);
-	delete_me = user_delete_file_query(sip->up, s1, 0);
+	if (delete_me)
+	    delete_me = user_delete_file_query(sip->up, s1, 0);
 	user_become(sip->up);
 	if (delete_me)
 	    os_unlink_errok(path);
@@ -216,13 +246,35 @@ clean_out_the_garbage(void *p, dir_walk_message_ty msg, string_ty *path,
 	//
 	// don't delete change files
 	//
-	delete_me = 1;
-	touch_me = 0;
+	delete_me = true;
+	touch_me = false;
 	user_become_undo();
 	if (change_file_find(sip->cp, s1, view_path_first))
 	{
-	    delete_me = 0;
+	    delete_me = false;
 	    touch_me = sip->touch;
+	}
+
+	//
+	// Take note of the development directory style.
+	//
+	if
+	(
+	    delete_me
+	&&
+	    sip->style->during_build_only
+	&&
+	    (
+		sip->style->source_file_link
+	    ||
+		sip->style->source_file_copy
+	    )
+	&&
+	    project_file_find(sip->cp->pp, s1, view_path_extreme)
+	)
+	{
+	    delete_me = false;
+	    touch_me = false;
 	}
 
 	//
@@ -232,11 +284,13 @@ clean_out_the_garbage(void *p, dir_walk_message_ty msg, string_ty *path,
 	//
 	if
 	(
+	    delete_me
+	&&
 	    sip->minimum
 	&&
 	    project_file_find(sip->cp->pp, s1, view_path_extreme)
 	)
-	    delete_me = 0;
+	    delete_me = false;
 
 	//
 	// Take notice of their delete file preference.
@@ -284,8 +338,6 @@ clean_main(void)
     string_list_ty  wl_mt;
     fstate_src_ty   *p_src_data;
     fstate_src_ty   *c_src_data;
-    pconf_ty        *pconf_data;
-    int		    minimum;
     clean_info_ty   info;
     int             touch;
 
@@ -294,9 +346,9 @@ clean_main(void)
     project_name = 0;
     change_number = 0;
     log_style = log_style_snuggle_default;
-    minimum = 0;
+    bool minimum = false;
     touch = -1;
-    info.verbose = 0;
+    info.verbose = false;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -332,11 +384,11 @@ clean_main(void)
 	case arglex_token_minimum:
 	    if (minimum)
 		duplicate_option(clean_usage);
-	    minimum = 1;
+	    minimum = true;
 	    break;
 
 	case arglex_token_keep:
-	    info.verbose = 1;
+	    info.verbose = true;
 	    // fall through...
 
 	case arglex_token_interactive:
@@ -602,11 +654,21 @@ clean_main(void)
     // now walk the change directory tree,
     // looking for files to throw away
     //
+    pconf_ty *pconf_data = change_pconf_get(cp, 0);
+    assert(pconf_data->development_directory_style);
+    work_area_style_ty style = *pconf_data->development_directory_style;
+    if (minimum)
+    {
+	style.derived_file_link = false;
+	style.derived_file_symlink = false;
+	style.derived_file_copy = false;
+    }
     info.cp = cp;
     info.minimum = minimum;
     info.touch = (touch != 0);
     info.up = up;
     info.dd = change_development_directory_get(cp, 1);
+    info.style = &style;
     user_become(up);
     dir_walk(info.dd, clean_out_the_garbage, &info);
     user_become_undo();
@@ -614,14 +676,10 @@ clean_main(void)
     //
     // create the symbolic links again, if required
     //
-    pconf_data = change_pconf_get(cp, 0);
-    if
-    (
-	pconf_data->create_symlinks_before_build
-    &&
-	!pconf_data->remove_symlinks_after_build
-    )
-	change_create_symlinks_to_baseline(cp, pp, up, minimum);
+    if (!pconf_data->development_directory_style->during_build_only)
+    {
+	change_create_symlinks_to_baseline(cp, up, style);
+    }
 
     //
     // Re-run the change file command and the project file command,

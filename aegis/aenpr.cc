@@ -45,6 +45,7 @@
 #include <project/pattr/set.h>
 #include <project/verbose.h>
 #include <project/history.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -438,7 +439,7 @@ new_project_main(void)
 	    str_format("The \"%s\" program.", project_name->str_text);
     if (!(pattr_data->mask & pattr_reuse_change_numbers_mask))
     {
-	pattr_data->reuse_change_numbers = (boolean_ty)1;
+	pattr_data->reuse_change_numbers = true;
 	pattr_data->mask |= pattr_reuse_change_numbers_mask;
     }
     if (edit != edit_not_set)
@@ -457,7 +458,7 @@ new_project_main(void)
 		str_format("The \"%s\" program.", project_name->str_text);
 	if (!(pattr_data->mask & pattr_reuse_change_numbers_mask))
 	{
-	    pattr_data->reuse_change_numbers = (boolean_ty)1;
+	    pattr_data->reuse_change_numbers = true;
 	    pattr_data->mask |= pattr_reuse_change_numbers_mask;
 	}
     }

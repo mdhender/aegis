@@ -21,6 +21,7 @@
 //
 
 #include <aer/expr/name.h>
+#include <aer/value/boolean.h>
 #include <aer/value/enum.h>
 #include <aer/value/integer.h>
 #include <aer/value/real.h>
@@ -34,6 +35,72 @@
 #include <zero.h>
 
 
+static const char *boolean_s[] =
+{
+    "false",
+    "true",
+};
+static string_ty *boolean_f[SIZEOF(boolean_s)];
+
+
+const char *
+boolean_ename(bool this_thing)
+{
+    return (this_thing ? boolean_s[1] : boolean_s[0]);
+}
+
+
+static bool
+boolean_parse(string_ty *name, void *ptr)
+{
+    slow_to_fast(boolean_s, boolean_f, SIZEOF(boolean_s));
+    for (size_t j = 0; j < SIZEOF(boolean_f); ++j)
+    {
+	if (str_equal(name, boolean_f[j]))
+	{
+	    *(bool *)ptr = (bool)j;
+	    return true;
+	}
+    }
+    return false;
+}
+
+
+static string_ty *
+boolean_fuzzy(string_ty *name)
+{
+    return generic_enum_fuzzy(name, boolean_f, SIZEOF(boolean_f));
+}
+
+
+static rpt_value_ty *
+boolean_convert(void *this_thing)
+{
+    return rpt_value_boolean(*(bool *)this_thing);
+}
+
+
+static bool
+boolean_is_set(void *this_thing)
+{
+    return (*(bool *)this_thing);
+}
+
+
+type_ty boolean_type =
+{
+    "boolean",
+    0, // alloc
+    0, // free
+    boolean_parse,
+    0, // list_parse
+    0, // struct_parse
+    boolean_fuzzy,
+    boolean_convert,
+    boolean_is_set,
+};
+
+
 static rpt_value_ty *
 integer_convert(void *this_thing)
 {
@@ -41,7 +108,7 @@ integer_convert(void *this_thing)
 }
 
 
-static int
+static bool
 integer_is_set(void *this_thing)
 {
     return (*(long *)this_thing != 0);
@@ -69,7 +136,7 @@ time_convert(void *this_thing)
 }
 
 
-static int
+static bool
 time_is_set(void *this_thing)
 {
     return (*(time_t *)this_thing != 0);
@@ -97,7 +164,7 @@ real_convert(void *this_thing)
 }
 
 
-static int
+static bool
 real_is_set(void *this_thing)
 {
     return (*(double *)this_thing != 0);
@@ -125,7 +192,7 @@ string_convert(void *this_thing)
 }
 
 
-static int
+static bool
 string_is_set(void *this_thing)
 {
     return (*(string_ty **)this_thing != 0);
@@ -249,7 +316,7 @@ generic_struct_convert(void *that, type_table_ty *table, size_t table_length)
 }
 
 
-int
+bool
 generic_struct_is_set(void *this_thing)
 {
     return (*(generic_struct_ty **)this_thing != 0);
@@ -282,36 +349,22 @@ generic_enum_fuzzy(string_ty *name, string_ty **table, size_t table_length)
 
 
 rpt_value_ty *
-generic_enum_convert(void *this_thing, string_ty **table, size_t table_length)
+generic_enum_convert(int n, string_ty **table, size_t table_length)
 {
-    long            n;
-
-    n = *(int *)this_thing;
-    if (n < 0 || n >= (long)table_length)
+    if (n < 0 || n >= (int)table_length)
         return rpt_value_integer(n);
     assert(table[n]);
     return rpt_value_enumeration(n, table[n]);
 }
 
 
-int
-generic_enum_is_set(void *this_thing)
-{
-    return (*(int *)this_thing != 0);
-}
-
-
 void
 generic_enum__init(const char *const *table, size_t table_length)
 {
-    long            j;
-    string_ty       *name;
-    rpt_value_ty    *value;
-
-    for (j = 0; j < (long)table_length; ++j)
+    for (size_t j = 0; j < table_length; ++j)
     {
-        name = str_from_c(table[j]);
-        value = rpt_value_enumeration(j, name);
+        string_ty *name = str_from_c(table[j]);
+        rpt_value_ty *value = rpt_value_enumeration(j, name);
         rpt_expr_name__init(name, value);
         str_free(name);
     }

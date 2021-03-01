@@ -97,11 +97,11 @@ ARCHIVE	SITE
 
 		URL:	http://www.canb.auug.org.au/~millerp/
 		File:	aegis.html	    # the Aegis	page
-		File:	aegis.4.18.README   # Description, from	tar file
-		File:	aegis.4.18.lsm	    # Description, in LSM format
-		File:	aegis.4.18.ae	    # the complete source, aedist format
-		File:	aegis.4.18.spec	    # RedHat package specification
-		File:	aegis.4.18.tar.gz   # the complete source
+		File:	aegis.4.19.README   # Description, from	tar file
+		File:	aegis.4.19.lsm	    # Description, in LSM format
+		File:	aegis.4.19.ae	    # the complete source, aedist format
+		File:	aegis.4.19.spec	    # RedHat package specification
+		File:	aegis.4.19.tar.gz   # the complete source
 
 	This directory also contains a few other pieces	of software written by
 	me.  Some are referred to in the Aegis documentation.  Please have a
@@ -114,11 +114,11 @@ ARCHIVE	SITE
 	will be	able to	find Aegis on any of its mirrors.
 
 		URL:	ftp://metalab.unc.edu/pub/Linux/devel/vc/
-		File:	aegis.4.18.README   # Description, from	tar file
-		File:	aegis.4.18.lsm	    # Description, in LSM format
-		File:	aegis.4.18.spec	    # RedHat package specification
-		File:	aegis.4.18.ae	    # the complete source, aedist format
-		File:	aegis.4.18.tar.gz   # the complete source
+		File:	aegis.4.19.README   # Description, from	tar file
+		File:	aegis.4.19.lsm	    # Description, in LSM format
+		File:	aegis.4.19.spec	    # RedHat package specification
+		File:	aegis.4.19.ae	    # the complete source, aedist format
+		File:	aegis.4.19.tar.gz   # the complete source
 	This site is extensively mirrored around the world, so look for	a copy
 	near you (you will get much better response).
 
@@ -250,6 +250,142 @@ RELEASE	NOTES
 	same release of	Aegis.	While the database format is backwards
 	compatible, it is rarely forwards compatible in	the face of new
 	capabilities.
+
+   Version 4.19	(30-Sep-2004)
+	* There	is a new development_directory_style field of the project
+	configuration file.  This allows CVS-style and Arch-style work areas,
+	in addition to the BCS-style and viewpath work areas already
+	supported.  These new work area	styles permit many existing projects
+	to use Aegis with no change to their build systems.  The libsndfile
+	and OpenLDAP projects, for example, have been imported and built
+	without	modification.  See aepconf(5) and the Dependency Maintenance
+	Tool chapter of	the User Guide for more	information.
+
+	* There	is a new aediff(1) command, which may be used to obtain	a
+	diff(1)	listing	of a file for different	deltas.
+
+	* There	is a new aepromptcmd(1)	command, used with bash's
+	PROMPT_COMMAND environment variable.  It can be	used to	obtain a
+	colored	prompt,	simulating the process described in Kent Beck's	book
+	Test Driven Development.
+
+	* There	is a new signed_off_by field of	the project configuration
+	file.  Set it to true if you want "Signed-off-by" lines	appended to
+	change set descriptions	as the changes pass through the	Aegis process.
+	The aede(1) and	aerpass(1) commands now	understand two new -signed-
+	off-by and -no-signed-off-by options, to override the project setting.
+	The aedist -send and aepatch -send commands also understand the	new
+	-signed-off-by option, to add the "Signed-off-by" line to the outgoing
+	change set description.	 Conforming to:	http://www.ussg.iu.edu/-
+	hypermail/linux/kernel/0405.2/1301.html	and http://www.osdl.org/-
+	newsroom/press_releases/2004/2004_05_24_dco.html
+
+	* The aet(1) command has been enhanced to allow	integrators to run
+	specific tests.
+
+	* The aesub(1) command can now read the	text to	be substituted from a
+	file or	standard input.
+
+	* It is	now possible to	use the	project-specific attributes to specify
+	environment variables to be set	for commands executed by Aegis.	 This
+	can be used to set a predictable PATH, for example.
+
+	* It is	now possible to	customize the aeget(1) web interface using
+	project	specific attributes.
+
+	* The ael(1) command and the aeget(1) web interface now	have file
+	inventory pages, for the project file inventory	and the	change file
+	inventory.
+
+	* There	is a new "change set inventory"	listing	available via the
+	ael(1) command and the aeget(1)	web interface, which lists changes and
+	their corresponding UUIDs, and links to	an aedist download for each
+	change.	The idea is that the aeget(1) pages may	be used	to automate
+	downloading change set your repository does not	yet have.
+
+	* There	are two	new history commands in	the project configuration
+	file, the history_transaction_begin and	history_transaction_end
+	fields.	 It is not an error if these fields are	absent.	 If you	need a
+	transaction key, use the $version substitution.
+
+	* The aedist(1)	command	now runs all tests required for	the change
+	set, and honors	test exemptions.
+
+	* The aedist(1)	command	now sleeps for a second	to ensure that the
+	last-time-modified of derived files will be strictly later than	source
+	files, and that	the aeb(1) timestamp will also be strictly later then
+	the last-time-modified for the source files.
+
+	* The tkdiff(1)	man page has been updated to say how to	use mgdiff(1)
+	instead	of tkdiff(1).
+
+	* All commands which accept the	-change	option may now be given	a
+	change set UUID.  You can discover a change's UUID using the ael cd
+	(list change details) or ael inventory listings.
+
+	* The aed(1) command now restores source file from backups (,B)	when a
+	merge fails.  Previously this was not the case and subsquent aed
+	invocations failed because the source file was missing.
+
+	* The aetar -send command now has an -add-path-prefix option, so that
+	you can	add a path prefix to all of the	files in a tarball.  The
+	aeget(1) CGI interface now adds	a path prefix to generated tarballs by
+	default.
+
+	* Whenever you edit file attributes, there is a	Content-Type attribute
+	added automagically if none was	there already.	The idea is that this
+	could be used by scripts to differentiate file types.
+
+	* The aepatch(1) command now uses diff -u by default.
+
+	* A number of build problems on	different systems have been fixed.
+
+	* A number of minor problems with tests	on different systems have been
+	fixed.
+
+	* A bug	has been fixed in the aepatch command; it was not parsing
+	simple diff patches correctly.
+
+	* The example history commands have been updated to work better	with
+	the new	UUID code.
+
+	* A bug	has been fixed in aecp -delta, where it	would fetch the	wrong
+	version	of a file in some cases.
+
+	* A bug	has been fixed in the handling of the executable bit.
+
+	* A bug	has been fixed in aede(1), where is did	not permit branches to
+	end when they had a removed file (without a UUID) which	has been
+	subsequently recreated (with a UUID).
+
+	* A bug	has been fixed in the aeget(1) command for file	contents.  It
+	was giving a "multiple permissions set (bug)" error message.
+
+	* A bug	in the aedist -receive command,	where it was not accurately
+	manipulating the incoming change set UUID.
+
+	* A bug	has been fixed in aed(1) which caused it to SEGFAULT.
+
+	* A bug	has been fixed in the aede(1) command, where it	failed to copy
+	the UUID when it promoted a file from "create" to "modify"
+	automatically.
+
+	* A bug	has been fixed in the $date substitution, it was not advancing
+	properly when used in progress messages.
+
+	* A bug	has been fixed in the command line processing of the aefa(1)
+	command.
+
+	* A bug	has been fixed in the aegis -review-begin command; it was not
+	operating correctly when the change was	in awaiting_review but the
+	project	was in goto_being_reviewed.
+
+	* A bug	has been fixed in the $basename	substitution; it now functions
+	exactly	like basename(1) command.
+
+	* A bug	has been fixed in the aet -bl command; it erroneously stated
+	that the $Search_Path_Executable substitution was mandatory, when it
+	actually optional.
 
    Version 4.18	(10-Jun-2004)
 	* A number of build problems have been fixed, particularly concerning

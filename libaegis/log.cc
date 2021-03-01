@@ -36,12 +36,14 @@
 #include <log.h>
 #include <now.h>
 #include <os.h>
+#include <quit/action/log.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
 #include <user.h>
 
 
+quit_action_log log_quitter;
 static int      pid;
 
 
@@ -333,15 +335,4 @@ log_close(void)
 	fclose(stderr);
 	os_waitpid(old_pid, &status);
     }
-}
-
-
-void
-log_quitter(int n)
-{
-    //
-    // Skip the close (and the wait) if we were interrupted.
-    //
-    if (!os_interrupt_has_occurred())
-	log_close();
 }

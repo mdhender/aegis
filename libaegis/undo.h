@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 2002 Peter Miller.
+ *	Copyright (C) 1991-1994, 2002, 2004 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,17 +23,59 @@
 #ifndef UNDO_H
 #define UNDO_H
 
+#include <quit/action/undo.h>
 #include <str.h>
 
+/** \addtogroup Transaction
+  * \ingroup AegisLibrary
+  * @{
+  */
+
+/** The undo_rename funtion is used to submit an undo request
+  * (rollback) to rename a file.
+  *
+  * \param from
+  *      path of file now
+  * \param to
+  *      path of file after rollback.
+  */
 void undo_rename(string_ty *from, string_ty *to);
+
+/** The undo_rename_cancel function is used to cancel an undo request
+  * submitted with undo_rename().
+  *
+  * \param from
+  *     path of file now
+  * \param to
+  *     path of file_after rollback.
+  */
+void undo_rename_cancel(string_ty *from, string_ty *to);
+
+/** Put a chmod operation in the undo queue.
+ */
 void undo_chmod(string_ty *path, int mode);
 void undo_chmod_errok(string_ty *path, int mode);
+
+/** Put an unlink operation in the undo queue.
+ */
 void undo_unlink_errok(string_ty *path);
+
+/** Put a rmdir operation in the undo queue.
+ */
 void undo_rmdir_bg(string_ty *path);
 void undo_rmdir_errok(string_ty *path);
+
 void undo_message(string_ty *);
+
+/** Run all pending operation in the undo queue.
+ */
 void undo(void);
-void undo_quitter(int);
+
+extern quit_action_undo undo_quitter;
+
+/** Cancel any pending operation from the undo queue.
+ */
 void undo_cancel(void);
 
+/** @} */
 #endif /* UNDO_H */

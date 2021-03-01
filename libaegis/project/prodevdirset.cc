@@ -26,10 +26,8 @@
 
 
 void
-project_protect_development_directory_set(project_ty *pp, int n)
+project_protect_development_directory_set(project_ty *pp, bool n)
 {
-    change_ty       *cp;
-
-    cp = project_change_get(pp);
+    change_ty *cp = project_change_get(pp);
     change_branch_protect_development_directory_set(cp, n);
 }

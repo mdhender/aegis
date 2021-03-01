@@ -32,7 +32,6 @@
 #include <change/file.h>
 #include <commit.h>
 #include <dir.h>
-#include <error.h>
 #include <file.h>
 #include <help.h>
 #include <lock.h>
@@ -42,6 +41,7 @@
 #include <project.h>
 #include <project/file.h>
 #include <project/history.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>

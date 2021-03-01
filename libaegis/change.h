@@ -106,6 +106,23 @@ void change_cstate_lock_prepare(change_ty *);
 void change_error(change_ty *, struct sub_context_ty *, const char *);
 void change_fatal(change_ty *, struct sub_context_ty *, const char *) NORETURN;
 void change_verbose(change_ty *, struct sub_context_ty *, const char *);
+
+/**
+  * The change_warning function is used to issue a warning message
+  * specific to a change.  The message will be substituted accouring
+  * to aesub(5) and any additional substitutions provided in the
+  * substitution context.
+  */
+void change_warning(change_ty *, struct sub_context_ty *, const char *);
+
+/**
+  * The change_warning_obsolete_field function is used to warn about the
+  * use of obsolete fields (in user suppied files, Aegis will take care
+  * of quietly cleaning up the meta-data files all by itself).
+  */
+void change_warning_obsolete_field(change_ty *cp, string_ty *errpos,
+    const char *old_field, const char *new_field);
+
 pconf_ty *change_pconf_get(change_ty *, int);
 void change_run_new_file_command(change_ty *, struct string_list_ty *,
 	struct user_ty *);
@@ -161,6 +178,40 @@ string_ty *change_run_history_query_command(change_ty *cp, fstate_src_ty *src);
 
 void change_run_history_label_command(change_ty *cp, fstate_src_ty *,
 	string_ty *label);
+
+/**
+  * The change_run_history_transaction_begin_command function is
+  * used to run the history_transaction_begin_command in the project
+  * configuration file.  This is used by the aeipass(1) command before
+  * any history put or create commands.
+  *
+  * @param cp
+  *     The change to operate within.
+  */
+void change_run_history_transaction_begin_command(change_ty *cp);
+
+/**
+  * The change_run_history_transaction_end_command function is
+  * used to run the history_transaction_end_command in the project
+  * configuration file.  This is used by the aeipass(1) command after
+  * any history put or create commands.
+  *
+  * @param cp
+  *     The change to operate within.
+  */
+void change_run_history_transaction_end_command(change_ty *cp);
+
+/**
+  * The change_run_history_transaction_abort_command function is
+  * used to run the history_transaction_abort_command in the project
+  * configuration file.  This is used by the aeipass(1) command if
+  * a history transaction needs to be aborted.
+  *
+  * @param cp
+  *     The change to operate within.
+  */
+void change_run_history_transaction_abort_command(change_ty *cp);
+
 void change_history_trashed_fingerprints(change_ty *,
     struct string_list_ty *);
 void change_run_diff_command(change_ty *cp, struct user_ty *up,
@@ -222,10 +273,10 @@ const char *change_outstanding_tests_regression(change_ty *, time_t);
 int change_pathconf_name_max(change_ty *);
 string_ty *change_filename_check(change_ty *, string_ty *);
 
-void change_create_symlinks_to_baseline(change_ty *, struct project_ty *,
-    struct user_ty *, int);
-void change_remove_symlinks_to_baseline(change_ty *, struct project_ty *,
-    struct user_ty *);
+void change_create_symlinks_to_baseline(change_ty *, struct user_ty *,
+    const struct work_area_style_ty &);
+void change_remove_symlinks_to_baseline(change_ty *, struct user_ty *,
+    const struct work_area_style_ty &);
 
 void change_rescind_test_exemption(change_ty *);
 string_ty *change_cstate_filename_get(change_ty *);

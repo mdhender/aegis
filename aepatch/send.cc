@@ -31,6 +31,7 @@
 #include <change.h>
 #include <change/branch.h>
 #include <change/file.h>
+#include <change/signedoffby.h>
 #include <error.h>
 #include <gettime.h>
 #include <help.h>
@@ -334,6 +335,11 @@ patch_send(void)
 		// NOTREACHED
 	    }
 	    break;
+
+	case arglex_token_signed_off_by:
+	case arglex_token_signed_off_by_not:
+	    option_signed_off_by_argument(usage);
+	    break;
 	}
 	arglex();
     }
@@ -482,9 +488,18 @@ patch_send(void)
     change_bind_existing(cp);
 
     //
+    // If the user asked for one, append a Signed-off-by line to this
+    // change's description.  (Since we don't write the cstate back out,
+    // it is safe to change the change's description.)
+    //
+    if (option_signed_off_by_get(false))
+	change_signed_off_by(cp, up);
+
+    //
     // Check the change state.
     //
     cstate_data = change_cstate_get(cp);
+    project_file_roll_forward historian;
     switch (cstate_data->state)
     {
 #ifndef DEBUG
@@ -498,7 +513,7 @@ patch_send(void)
 	// Need to reconstruct the appropriate file histories.
 	//
 	trace(("project = \"%s\"\n", project_name_get(pp)->str_text));
-	project_file_roll_forward
+	historian.set
 	(
 	    pp,
 	    (
@@ -651,7 +666,7 @@ patch_send(void)
 			if (s)
 			{
 			    os_become_orig();
-			    src_data->executable = (boolean_ty)os_executable(s);
+			    src_data->executable = os_executable(s);
 			    os_become_undo();
 			    str_free(s);
 			}
@@ -840,7 +855,7 @@ patch_send(void)
 		break;
 
 	    case file_action_remove:
-		felp = project_file_roll_forward_get(csrc->file_name);
+		felp = historian.get(csrc->file_name);
 
 		//
 		// It's tempting to say
@@ -898,7 +913,7 @@ patch_send(void)
 	    case file_action_modify:
 	    case file_action_insulate:
 	    case file_action_transparent:
-		felp = project_file_roll_forward_get(csrc->file_name);
+		felp = historian.get(csrc->file_name);
 
 		//
 		// It's tempting to say

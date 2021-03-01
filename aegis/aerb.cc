@@ -34,7 +34,6 @@
 #include <change/file.h>
 #include <commit.h>
 #include <dir.h>
-#include <error.h>
 #include <file.h>
 #include <help.h>
 #include <lock.h>
@@ -45,6 +44,7 @@
 #include <project.h>
 #include <project/file.h>
 #include <project/history.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -260,12 +260,9 @@ review_begin_main(void)
     // remember who reviewed it
     // add to the change's history
     //
-    if
-    (
-	project_develop_end_action_get(pp)
-    ==
-	pattr_develop_end_action_goto_awaiting_review
-    )
+    // Don't do anything if the change is already in the being_reviewed state.
+    //
+    if (cstate_data->state != cstate_state_being_reviewed)
     {
 	cstate_data->state = cstate_state_being_reviewed;
 	history_data = change_history_new(cp, up);

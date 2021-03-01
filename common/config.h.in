@@ -33,10 +33,6 @@
    functions. */
 #undef CONF_SHELL
 
-/* Define this symbol if your compiler makes all enums the same size as ints.
-   */
-#undef CONF_enum_is_int
-
 /* Set this to a suitable argument for the getpgrp function to discover the
    process group of the current process. */
 #undef CONF_getpgrp_arg
@@ -46,6 +42,9 @@
 
 /* Define to 1 if you have the `crypt' function. */
 #undef HAVE_CRYPT
+
+/* Define to 1 if you have the <crypt.h> header file. */
+#undef HAVE_CRYPT_H
 
 /* Define to 1 if you have the <curl/curl.h> header file. */
 #undef HAVE_CURL_CURL_H
@@ -61,6 +60,26 @@
 
 /* Define to 1 if you have the <dce/uuid.h> header file. */
 #undef HAVE_DCE_UUID_H
+
+/* Define to 1 if you have the declaration of `mbrtowc', and to 0 if you
+   don't. */
+#undef HAVE_DECL_MBRTOWC
+
+/* Define to 1 if you have the declaration of `strsignal', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STRSIGNAL
+
+/* Define to 1 if you have the declaration of `wcrtomb', and to 0 if you
+   don't. */
+#undef HAVE_DECL_WCRTOMB
+
+/* Define to 1 if you have the declaration of `wcswidth', and to 0 if you
+   don't. */
+#undef HAVE_DECL_WCSWIDTH
+
+/* Define to 1 if you have the declaration of `wcwidth', and to 0 if you
+   don't. */
+#undef HAVE_DECL_WCWIDTH
 
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
    */
@@ -141,7 +160,7 @@
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
-/* Define this symbol if your sistem has /proc/sys/kernel/random/uuid */
+/* Define this symbol if your system has /proc/sys/kernel/random/uuid */
 #undef HAVE_LINUX_UUID
 
 /* Define this symbol if your system has the locale-gen(8) program. */
@@ -250,6 +269,12 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
+/* Define to 1 if you have the `strlcat' function. */
+#undef HAVE_STRLCAT
+
+/* Define to 1 if you have the `strlcpy' function. */
+#undef HAVE_STRLCPY
+
 /* Define to 1 if you have the `strncasecmp' function. */
 #undef HAVE_STRNCASECMP
 
@@ -288,11 +313,20 @@
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
 
+/* Define to 1 if you have the <sys/uuid.h> header file. */
+#undef HAVE_SYS_UUID_H
+
 /* Define to 1 if you have the `tcgetpgrp' function. */
 #undef HAVE_TCGETPGRP
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
+
+/* Define to 1 if you have the `uuid_create' function. */
+#undef HAVE_UUID_CREATE
+
+/* Define to 1 if you have the `uuid_export' function. */
+#undef HAVE_UUID_EXPORT
 
 /* Define to 1 if you have the `uuid_generate' function. */
 #undef HAVE_UUID_GENERATE
@@ -305,6 +339,15 @@
 
 /* Define to 1 if you have the `uuid_load' function. */
 #undef HAVE_UUID_LOAD
+
+/* Define to 1 if you have the `uuid_make' function. */
+#undef HAVE_UUID_MAKE
+
+/* Define to 1 if you have the `uuid_to_string' function. */
+#undef HAVE_UUID_TO_STRING
+
+/* Define to 1 if you have the `uuid_unparse' function. */
+#undef HAVE_UUID_UNPARSE
 
 /* Define to 1 if you have the <uuid/uuid.h> header file. */
 #undef HAVE_UUID_UUID_H
@@ -320,6 +363,9 @@
 
 /* Define to 1 if you have the `wcslen' function. */
 #undef HAVE_WCSLEN
+
+/* Define to 1 if you have the `wcswidth' function. */
+#undef HAVE_WCSWIDTH
 
 /* Define to 1 if you have the <wctype.h> header file. */
 #undef HAVE_WCTYPE_H

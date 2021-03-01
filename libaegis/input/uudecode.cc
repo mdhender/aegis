@@ -171,8 +171,8 @@ input_uudecode_read(input_ty *fp, void *data, size_t len)
 		// forwarders rip of trailing spaces).
 		//
 		if (this_thing->etab[0] == ' ' &&
-                    this_thing->itab['`'] == NOT_DECODABLE)
-		    this_thing->itab['`'] = 0;
+                    this_thing->itab[(unsigned char)'`'] == NOT_DECODABLE)
+		    this_thing->itab[(unsigned char)'`'] = 0;
 	    }
 	    continue;
 

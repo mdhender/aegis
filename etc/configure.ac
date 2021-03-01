@@ -94,13 +94,21 @@ dnl
 dnl Try to detect a library with the UUID functions.
 dnl
 dnl The OSSP variant has uuid_load in -luuid
-dnl The e2fsprogs variant has uuid_generate in -luuid
-dnl The BSD variant has uuid_has in libc (no -l required)
-dnl The DCE compliant variant has uuid_hash in -luuid
+dnl     and which include file?
+dnl     *** later we check for uuid_create, uuid_make and uuid_export
 dnl
-AC_CHECK_LIB(uuid, uuid_load)
-AC_CHECK_LIB(uuid, uuid_generate)
-AC_CHECK_LIB(uuid, uuid_hash)
+dnl The e2fsprogs variant has uuid_generate in -luuid
+dnl     and which include file?
+dnl	*** later we check for uuid_generate and uuid_unparse
+dnl
+dnl The DCE compliant variant has uuid_hash in -luuid
+dnl     The include file is <dce/uuid.h>
+dnl     *** later we check for uuid_create and uuid_to_string
+dnl
+dnl The BSD variant has uuid_has in libc (no -l required)
+dnl     and which include file?
+dnl     *** it is supposed to be the same as the DCE variant.  Is it?
+AC_CHECK_LIB(uuid, main)
 
 dnl
 dnl If there are no UUID libraries we can roll our own, but first we
@@ -111,7 +119,7 @@ HAVE_LINUX_UUID=no
 if test -f "/proc/sys/kernel/random/uuid"
 then
         AC_DEFINE(HAVE_LINUX_UUID, 1,
-                  [Define this symbol if your sistem has
+                  [Define this symbol if your system has
 /proc/sys/kernel/random/uuid])
         AC_DEFINE(LINUX_UUID_FILENAME,["/proc/sys/kernel/random/uuid"],
                 [Define this symbol if your system has
@@ -299,11 +307,11 @@ AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no),
 AC_MSG_RESULT(cross))
 
-AC_CHECK_HEADERS(curl/curl.h dce/rpc.h dce/uuid.h fcntl.h iso646.h     \
-        libgettext.h libintl.h limits.h locale.h magic.h memory.h      \
-        mntent.h regex.h rxposix.h shadow.h stddef.h stdlib.h string.h \
-        unistd.h wchar.h wctype.h widec.h zlib.h sys/clu.h sys/ioctl.h \
-        sys/prctl.h uuid/uuid.h uuid.h                                 \
+AC_CHECK_HEADERS(crypt.h curl/curl.h dce/rpc.h dce/uuid.h fcntl.h      \
+        iso646.h libgettext.h libintl.h limits.h locale.h magic.h      \
+        memory.h mntent.h regex.h rxposix.h shadow.h stddef.h stdlib.h \
+        string.h unistd.h wchar.h wctype.h widec.h zlib.h sys/clu.h    \
+        sys/ioctl.h sys/prctl.h sys/uuid.h uuid/uuid.h uuid.h          \
 	)
 AC_HEADER_DIRENT
 AC_TYPE_SIGNAL
@@ -315,10 +323,35 @@ AC_CHECK_FUNCS(clu_info crypt curl_easy_strerror curl_multi_strerror   \
         getpgrp igetspnam initgroups gettext gettimeofday iswctype     \
         magic_file mbrtowc pathconf prctl regcomp rpc_string_free      \
         seteuid setlocale setresuid setreuid sighold sigprocmask       \
-        snprintf strcasecmp strncasecmp strerror strftime strsignal    \
-        strtoul strverscmp symlink tcgetpgrp uuid_hash uuid_load       \
-        uuid_generate vsnprintf wcrtomb wcslen wcwidth                 \
+        snprintf strcasecmp strlcat strlcpy strncasecmp strerror       \
+        strftime strsignal strtoul strverscmp symlink tcgetpgrp        \
+        uuid_create uuid_export uuid_generate uuid_hash uuid_load      \
+        uuid_make uuid_to_string uuid_unparse vsnprintf wcrtomb wcslen \
+        wcswidth wcwidth                                               \
 	)
+AC_CHECK_DECL(crypt,,, [
+#if HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#if HAVE_CRYPT_H
+#include <crypt.h>
+#endif
+])
+AC_CHECK_DECLS([mbrtowc, wcrtomb, wcwidth, wcswidth],,, [
+#define _GNU_SOURCE
+#if HAVE_WCHAR_H
+#include <wchar.h>
+#endif
+])
+dnl the strsignal function is usually defined in <string.h>
+dnl but is sometimes defined in <unistd.h>
+AC_CHECK_DECLS([strsignal],,, [
+#define _GNU_SOURCE
+#if HAVE_STRING_H
+#include <string.h>
+#include <unistd.h>
+#endif
+])
 
 dnl
 dnl	Check to see if wint_t is defined.
@@ -556,21 +589,6 @@ EOF
 fi
 
 dnl
-dnl	Test to see if enums are the same size as ints
-dnl
-AC_MSG_CHECKING([for enums of int size])
-AC_TRY_RUN([
-int main(argc, argv) int argc; char **argv; {
-enum foo { bar, baz } fubar;
-exit(sizeof(fubar) != sizeof(int));
-}], AC_DEFINE(CONF_enum_is_int,1,
-[Define this symbol if your compiler
-makes all enums the same size as ints.])
-AC_MSG_RESULT(yes),
-AC_MSG_RESULT(no),
-AC_MSG_RESULT(cross))
-
-dnl
 dnl	If the libz.h is not present, Aegis will fail to compile.
 dnl	If the -lz is not present, Aegis will fail to link.
 dnl
@@ -583,21 +601,33 @@ then
 fi
 
 dnl
-dnl     If the uuid.h is not present, Aegis will fail to compile.
-dnl     If the -luuid is not preset, Aegis will fail to link.
-dnl	Actually, this is just a warning.
+dnl	Warn them about UUID libraries.
 dnl
-if test "$ac_cv_header_dce_uuid_h" != "yes" -a "$ac_cv_header_uuid_h" != "yes"
+UUID_ok=no
+if test "$ac_cv_func_uuid_generate" = "yes" \
+    -a "$ac_cv_func_uuid_unparse" = "yes"
 then
-if test "$ac_cv_lib_uuid_load" != "yes"   -a "$ac_cv_lib_uuid_xxx" != "yes" \
-    -a "$ac_cv_lib_uuid_uuid_hash" != "yes" -a "$ac_cv_lib_c_uuid_hash" != "yes"
+    UUID_ok=yes
+fi
+if test "$ac_cv_func_uuid_create" = "yes" \
+    -a "$ac_sv_func_uuid_make" = "yes" \
+    -a "$ac_sv_func_uuid_export" = "yes"
+then
+    UUID_ok=yes
+fi
+if test "$ac_cv_func_uuid_create" = "yes" \
+    -a "$ac_sv_func_uuid_to_string" = "yes"
+then
+    UUID_ok=yes
+fi
+if test "$UUID_ok" != "yes"
 then
   AC_MSG_RESULT([
 	You may wish to install one of the following UUID
 	library flavors:
-	* e2fsprogs implementation
-	* OSSP implementation])
-fi
+	 * e2fsprogs implementation
+	 * OSSP implementation
+	Don't Panic: this library is optional, nothing will break.])
 fi
 
 dnl
@@ -645,6 +675,16 @@ else
 	The Aegis documentation set and manual pages will
 	be formatted and installed if you first install
 	GNU Groff 1.15 or later and then re-run this ./configure script.
+	Remember to use \`\`rm config.cache'' before you do.
+])
+fi
+if test "$HAVE_GNU_DIFF" != "yes"
+then
+  AC_MSG_RESULT([
+        Some of the tests in the Aegis test suite (133, 136, 167, 168,
+        180, 195) assume the presence of GNU diff.  Some functionality
+        will be more limited without it.  You may wish to install GNU
+        Diff 2.8 or later and then re-run this ./configure script.
 	Remember to use \`\`rm config.cache'' before you do.
 ])
 fi

@@ -57,10 +57,12 @@ get_project_statistics(project_ty *pp, string_ty *fn, string_list_ty *modifier)
     size_t          n;
     cstate_ty       *cstate_data;
 
-    html_header(pp);
+    html_header(pp, 0);
     printf("<title>Project ");
     html_encode_string(project_name_get(pp));
-    printf(" Statistics</title></head>\n<body><h1 align=center>\n");
+    printf(" Statistics</title></head><body>\n");
+    html_header_ps(pp, 0);
+    printf("<h1 align=center>\n");
     emit_project(pp);
     printf(",<br>\nStatistics</h1>\n");
     printf("<div class=\"information\">\n");
@@ -444,5 +446,5 @@ get_project_statistics(project_ty *pp, string_ty *fn, string_list_ty *modifier)
     printf("Project Menu</a>\n");
     printf("]</p>\n");
 
-    html_footer();
+    html_footer(pp, 0);
 }

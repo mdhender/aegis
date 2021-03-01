@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1993, 1995, 1997, 1999, 2002, 2003 Peter Miller;
+ *	Copyright (C) 1991-1993, 1995, 1997, 1999, 2002-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,5 +43,8 @@ int option_tab_width_get(void);
 
 void option_page_headers_set(int, void(*)(void));
 int option_page_headers_get(void);
+
+void option_signed_off_by_argument(void(*)(void));
+bool option_signed_off_by_get(bool dflt);
 
 #endif /* OPTION_H */

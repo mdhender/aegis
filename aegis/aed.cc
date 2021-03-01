@@ -42,6 +42,7 @@
 #include <progname.h>
 #include <project.h>
 #include <project/file.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -439,8 +440,9 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 	    input = str_format("%s,B", output->str_text);
 	    user_become(up);
 	    os_rename(output, input);
-	    user_become_undo();
-	}
+            undo_rename(input, output);
+            user_become_undo();
+        }
 	else
 	{
 	    input = change_file_path(cp, s1);
@@ -491,6 +493,7 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 		input,
 		output
 	    );
+            undo_rename_cancel(input, output);
 	}
 	else
 	{
@@ -1310,7 +1313,8 @@ difference_main(void)
 		trace_string(curfile->str_text);
 		user_become(diff_user_p);
 		os_rename(outname, curfile);
-		user_become_undo();
+                undo_rename(curfile, outname);
+                user_become_undo();
 	    }
 	    else
 	    {
@@ -1399,7 +1403,7 @@ difference_main(void)
 	    assert(most_recent);
 	    if (change_has_merge_command(cp))
 	    {
-		change_run_merge_command
+                change_run_merge_command
 		(
 		    cp,
 		    diff_user_p,
@@ -1408,7 +1412,8 @@ difference_main(void)
 		    curfile,
 		    outname
 		);
-	    }
+                undo_rename_cancel(curfile, outname);
+            }
 	    else
 	    {
 		change_run_diff3_command
@@ -1492,7 +1497,7 @@ difference_main(void)
 	    // Nuke the build times.
 	    //
 	    change_build_times_clear(cp);
-	    str_free(curfile);
+            str_free(curfile);
 	    str_free(outname);
 	}
 
@@ -1578,7 +1583,18 @@ difference_main(void)
                 {
                 case file_action_create:
                     if (src2_data)
+                    {
                         src1_data->action = file_action_modify;
+                        if (!src1_data->uuid && src2_data->uuid)
+                            src1_data->uuid = str_copy(src2_data->uuid);
+                        if (!str_equal(src1_data->uuid, src2_data->uuid))
+                        {
+                            // fixme: we come here if an UUID clash is
+                            // present (the previous test failed).
+                            // Must think a better way to handle it.
+                            assert(0);
+                        }
+                    }
                     break;
 
                 case file_action_modify:
@@ -1721,7 +1737,16 @@ difference_main(void)
 			src1_data->edit_origin =
 			    history_version_copy(src2_data->edit);
 		    }
-		    goto modifying_file;
+                    if (!src1_data->uuid && src2_data->uuid)
+                        src1_data->uuid = str_copy(src2_data->uuid);
+                    if (!str_equal(src1_data->uuid, src2_data->uuid))
+                    {
+                        // fixme: we come here if an UUID clash is
+                        // present (the previous test failed).  Must
+                        // think a better way to handle it.
+                        assert(0);
+                    }
+                    goto modifying_file;
 		}
 		if (src2_data && integrating)
 		    goto modifying_file;

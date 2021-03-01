@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1999 Peter Miller;
+#	Copyright (C) 1999, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -173,6 +173,8 @@ if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/config << 'fubar'
 build_command = "exit 0";
 link_integration_directory = true;
+/* I know this next field is obsolete, but I'm leaving it here to make
+   sure backwarsd compatibility always works. */
 create_symlinks_before_build = true;
 history_get_command =
 "co -u'$e' -p $h,v > $o";
@@ -253,13 +255,12 @@ activity="remove files 251"
 $bin/aegis -rm $workchan/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-# Aegis put a junk file there
-test -f $workchan/fred || fail
+# Aegis doesn't create whiteout files
+# if you are using the symlink farm
+test -f $workchan/fred && fail
 
-# get rid of it
-rm $workchan/fred || fail
-
-# and see if the build puts it back, or leave it gone
+# See if the build puts it back (actually, the symlink farm maintenance
+# function) or leaves it gone.
 activity="build 264"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0; then cat log; fail; fi

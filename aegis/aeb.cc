@@ -44,6 +44,7 @@
 #include <os.h>
 #include <progname.h>
 #include <project.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>
@@ -171,7 +172,7 @@ build_main(void)
     string_list_ty  partial;
     string_ty       *s1;
     string_ty       *s2;
-    int             minimum;
+    bool            minimum;
     int             based;
     string_ty       *base;
 
@@ -180,7 +181,7 @@ build_main(void)
     log_style = log_style_snuggle_default;
     project_name = 0;
     change_number = 0;
-    minimum = 0;
+    minimum = false;
     string_list_constructor(&partial);
     while (arglex_token != arglex_token_eoln)
     {
@@ -223,7 +224,7 @@ build_main(void)
 	case arglex_token_minimum:
 	    if (minimum)
 		duplicate_option(build_usage);
-	    minimum = 1;
+	    minimum = true;
 	    break;
 
 	case arglex_token_wait:
@@ -450,30 +451,10 @@ build_main(void)
     (
 	cstate_data->state == cstate_state_being_integrated
     &&
-	pconf_data->create_symlinks_before_build
-    &&
 	cstate_data->minimum_integration
     )
     {
-	minimum = 1;
-    }
-
-    //
-    // make sure the -MINIMum option means something
-    //
-    if (minimum && !pconf_data->create_symlinks_before_build)
-    {
-	sub_context_ty  *scp;
-
-	scp = sub_context_new();
-	sub_var_set_charstar
-	(
-	    scp,
-	    "Name",
-	    arglex_token_name(arglex_token_minimum)
-	);
-	change_fatal(cp, scp, i18n("$name option not meaningful"));
-	sub_context_delete(scp);
+	minimum = true;
     }
 
     //
@@ -495,42 +476,60 @@ build_main(void)
 	pup = project_user(pp);
 	log_open(change_logfile_get(cp), pup, log_style);
 
-	if (pp->parent && pconf_data->create_symlinks_before_integration_build)
-	    change_create_symlinks_to_baseline(cp, pp->parent, pup, minimum);
+	assert(pconf_data->integration_directory_style);
+	work_area_style_ty style = *pconf_data->integration_directory_style;
+	if (minimum || style.derived_at_start_only)
+	{
+	    style.derived_file_link = false;
+	    style.derived_file_symlink = false;
+	    style.derived_file_copy = false;
+	}
+	change_create_symlinks_to_baseline(cp, pup, style);
 
 	change_verbose(cp, 0, i18n("integration build started"));
 	change_run_build_command(cp);
 	change_verbose(cp, 0, i18n("integration build complete"));
 
-	if
-	(
-	    pp->parent
-	&&
-	    pconf_data->create_symlinks_before_integration_build
-	&&
-	    pconf_data->remove_symlinks_after_integration_build
-	)
-	{
-	    change_remove_symlinks_to_baseline(cp, pp->parent, pup);
-	}
+	change_remove_symlinks_to_baseline(cp, pup, style);
 	user_free(pup);
     }
     else
     {
 	log_open(change_logfile_get(cp), up, log_style);
-	if (pconf_data->create_symlinks_before_build)
-	{
-	    int             verify_dflt;
 
-	    verify_dflt =
+	assert(pconf_data->development_directory_style);
+	work_area_style_ty style = *pconf_data->development_directory_style;
+	if (minimum || style.derived_at_start_only)
+	{
+	    style.derived_file_link = false;
+	    style.derived_file_symlink = false;
+	    style.derived_file_copy = false;
+	}
+	if
+	(
+	    style.source_file_link
+	||
+	    style.source_file_symlink
+	||
+	    style.source_file_copy
+	||
+	    style.derived_file_link
+	||
+	    style.derived_file_symlink
+	||
+	    style.derived_file_copy
+	)
+	{
+	    int verify_dflt =
 		(
-		    pconf_data->remove_symlinks_after_build
+		    style.during_build_only
 		||
 		    change_run_project_file_command_needed(cp)
 		);
 	    if (user_symlink_pref(up, verify_dflt))
-		change_create_symlinks_to_baseline(cp, pp, up, minimum);
+		change_create_symlinks_to_baseline(cp, up, style);
 	}
+
 	if (partial.nstrings)
 	    change_verbose(cp, 0, i18n("partial build started"));
 	else
@@ -541,13 +540,12 @@ build_main(void)
 	    change_verbose(cp, 0, i18n("partial build complete"));
 	else
 	    change_verbose(cp, 0, i18n("development build complete"));
-	if
-	(
-	    pconf_data->create_symlinks_before_build
-	&&
-	    pconf_data->remove_symlinks_after_build
-	)
-	    change_remove_symlinks_to_baseline(cp, pp, up);
+
+	//
+        // This looks unconditional.  The conditional logic is within
+        // the function, rather than out here.
+	//
+	change_remove_symlinks_to_baseline(cp, up, style);
     }
 
     //

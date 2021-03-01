@@ -26,13 +26,13 @@
 #include <aenpa.h>
 #include <arglex2.h>
 #include <commit.h>
-#include <error.h>
 #include <gonzo.h>
 #include <help.h>
 #include <lock.h>
 #include <progname.h>
 #include <project.h>
 #include <project/history.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>

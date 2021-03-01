@@ -243,7 +243,7 @@ history_put_command = "ci -f -u -m$c -t/dev/null $i $h,v; rcs -U $h,v";
 history_query_command = "rlog -r $h,v | awk '/^head:/ {print $$2}'";
 diff_command =
     "set +e; "
-    "diff -U10 -a ${quote $original} ${quote $input} > ${quote $output}; "
+    "diff ${quote $original} ${quote $input} > ${quote $output}; "
     "test $? -le 1";
 merge_command =
 	"fmerge $original $MostRecent $input -o $output -c /dev/null";

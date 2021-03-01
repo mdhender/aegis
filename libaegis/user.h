@@ -110,7 +110,7 @@ void user_lock_wait_argument(void(*)(void));
 int user_lock_wait(user_ty *);
 
 void user_whiteout_argument(void(*)(void));
-int user_whiteout(user_ty *);
+int user_whiteout(user_ty *up, int dflt = -1);
 
 void user_symlink_pref_argument(void(*)(void));
 int user_symlink_pref(user_ty *, int);

@@ -28,7 +28,6 @@
 #include <lex.h>
 #include <parse.h>
 #include <progname.h>
-#include <str.h>
 #include <trace.h>
 
 
@@ -155,7 +154,6 @@ main(int argc, char **argv)
     size_t          j;
 
     arglex_init(argc, argv, argtab);
-    str_initialize();
     for (j = 0; j < SIZEOF(filename); ++j)
 	filename[j] = 0;
     if (arglex() == arglex_token_help)

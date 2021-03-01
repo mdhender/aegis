@@ -28,12 +28,13 @@
 #include <arglex/project.h>
 #include <change.h>
 #include <env.h>
-#include <error.h>
+#include <file.h>
 #include <help.h>
 #include <language.h>
 #include <os.h>
 #include <progname.h>
 #include <project.h>
+#include <quit.h>
 #include <r250.h>
 #include <str_list.h>
 #include <sub.h>
@@ -147,6 +148,35 @@ aesub_main(void)
 		duplicate_option(aesub_usage);
 	    baseline = 1;
 	    break;
+
+	case arglex_token_file:
+	    switch (arglex())
+	    {
+	    default:
+		option_needs_file(arglex_token_file, aesub_usage);
+		// NOTREACHED
+
+	    case arglex_token_string:
+		{
+		    string_ty *fn = str_from_c(arglex_value.alv_string);
+		    os_become_orig();
+		    s = read_whole_file(fn);
+		    os_become_undo();
+		    str_free(fn);
+		    string_list_append(&arg, s);
+		    str_free(s);
+		}
+		break;
+
+	    case arglex_token_stdio:
+		os_become_orig();
+		s = read_whole_file(0);
+		os_become_undo();
+		string_list_append(&arg, s);
+		str_free(s);
+		break;
+	    }
+	    break;
 	}
 	arglex();
     }
@@ -241,7 +271,6 @@ main(int argc, char **argv)
     r250_init();
     os_become_init_mortal();
     arglex2_init(argc, argv);
-    str_initialize();
     env_initialize();
     language_init();
     switch (arglex())

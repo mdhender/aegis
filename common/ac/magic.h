@@ -26,7 +26,9 @@
 #include <config.h>
 
 #if HAVE_MAGIC_H
+extern "C" {
 #include <magic.h>
+}
 #else
 typedef void *magic_t;
 magic_t magic_open(int flags);

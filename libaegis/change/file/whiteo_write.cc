@@ -30,6 +30,16 @@
 #include <user.h>
 
 
+static bool
+source_file_whiteout(change_ty *cp)
+{
+    pconf_ty *pconf_data = change_pconf_get(cp, 0);
+    work_area_style_ty *s = pconf_data->development_directory_style;
+    assert(s);
+    return (s && s->source_file_whiteout);
+}
+
+
 void
 change_file_whiteout_write(change_ty *cp, string_ty *filename, user_ty *up)
 {
@@ -48,7 +58,12 @@ change_file_whiteout_write(change_ty *cp, string_ty *filename, user_ty *up)
 	os_unlink(s2);
     user_become_undo();
 
-    if (user_whiteout(up))
+    //
+    // The whiteout is controlled by the development_directory_style's
+    // source_file_whiteout field, except if overridden by the command line.
+    //
+    int whiteout_default = source_file_whiteout(cp);
+    if (user_whiteout(up, whiteout_default))
     {
 	string_ty	*content;
 

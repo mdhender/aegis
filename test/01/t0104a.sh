@@ -322,7 +322,8 @@ cat > $tmp.log.ideal << 'end'
 aegis: project "foo": change 10: batch test from 1 to 100 of 200
 aegis: project "foo": change 10: batch test from 101 to 200 of 200
 end
-if ! diff $tmp.log $tmp.log.ideal > log 2>&1; then cat log; fail; fi
+diff $tmp.log $tmp.log.ideal > log 2>&1
+if test $? -ne 0; then cat log; fail; fi
 
 #
 # build the change again to reset test results

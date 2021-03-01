@@ -171,7 +171,7 @@ strftime(char *buf, size_t max, char *fmt, struct tm *tm)
 	    //
 	    // the full weekday name
 	    //
-	    strcpy(output, weekday[tm->tm_wday]);
+	    strlcpy(output, weekday[tm->tm_wday], sizeof(output));
 	    break;
 
 	case 'b':
@@ -186,7 +186,7 @@ strftime(char *buf, size_t max, char *fmt, struct tm *tm)
 	    //
 	    // the full month name
 	    //
-	    strcpy(output, month[tm->tm_mon]);
+	    strlcpy(output, month[tm->tm_mon], sizeof(output));
 	    break;
 
 	case 'c':
@@ -309,9 +309,9 @@ strftime(char *buf, size_t max, char *fmt, struct tm *tm)
 	    // meridian indicator
 	    //
 	    if (tm->tm_hour >= 12)
-		strcpy(output, "PM");
+		strlcpy(output, "PM", output);
 	    else
-		strcpy(output, "AM");
+		strlcpy(output, "AM", output);
 	    break;
 
 	case 'r':
@@ -422,12 +422,12 @@ strftime(char *buf, size_t max, char *fmt, struct tm *tm)
 	    //
 #ifndef HAVE_tm_zone
 	    if (tm->tm_isdst >= 0 && tm->tm_isdst <= 1)
-		strcpy(output, tzname[tm->tm_isdst]);
+		strlcpy(output, tzname[tm->tm_isdst], sizeof(output));
 	    else
 		output[0] = 0;
 #else
 	    // Berkeley derivatives have extra tm field
-	    strcpy(output, tm->tm_zone);
+	    strlcpy(output, tm->tm_zone, sizeof(output));
 #endif
 	    break;
 	}

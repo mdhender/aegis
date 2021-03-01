@@ -57,3 +57,11 @@ nstring_list::operator[](int n)
 	return nstring();
     return nstring(content.string[n]);
 }
+
+
+nstring
+nstring_list::unsplit(const char *separator)
+    const
+{
+    return nstring(wl2str(&content, 0, content.nstrings, separator));
+}

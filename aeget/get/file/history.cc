@@ -62,13 +62,15 @@ get_file_history(change_ty *master_cp, string_ty *filename,
     //
     when = change_completion_timestamp(master_cp);
     pp = master_cp->pp;
-    project_file_roll_forward(pp, when, detailed);
-    project_file_roll_forward_keys(&key);
+    project_file_roll_forward historian(pp, when, detailed);
+    historian.keys(&key);
 
-    html_header(pp);
+    html_header(pp, master_cp);
     printf("<title>Project ");
     html_encode_string(project_name_get(pp));
-    printf(", File History</title></head>\n<body><h1 align=center>");
+    printf(", File History</title></head><body>\n");
+    html_header_ps(pp, master_cp);
+    printf("<h1 align=center>");
     emit_change(master_cp);
     printf(",<br>\nFile History</h1>\n");
 
@@ -111,7 +113,7 @@ get_file_history(change_ty *master_cp, string_ty *filename,
 	usage_track = -1;
 	action_track = -1;
 
-	felp = project_file_roll_forward_get(the_file_name);
+	felp = historian.get(the_file_name);
 	if (felp)
 	{
 	    for (k = 0; k < felp->length; ++k)
@@ -247,6 +249,6 @@ get_file_history(change_ty *master_cp, string_ty *filename,
     printf(" file%s.</td></tr>\n", (num_files == 1 ? "" : "s"));
 
     printf("</table></div>\n");
-    html_footer();
+    html_footer(pp, master_cp);
     trace(("}\n"));
 }

@@ -36,6 +36,7 @@
 #include <change/branch.h>
 #include <change/develop_direct/read_only.h>
 #include <change/file.h>
+#include <change/signedoffby.h>
 #include <col.h>
 #include <commit.h>
 #include <common.h>
@@ -44,11 +45,13 @@
 #include <help.h>
 #include <lock.h>
 #include <progname.h>
+#include <option.h>
 #include <os.h>
 #include <project.h>
 #include <project/active.h>
 #include <project/file.h>
 #include <project/history.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -165,6 +168,11 @@ develop_end_main(void)
 	case arglex_token_wait:
 	case arglex_token_wait_not:
 	    user_lock_wait_argument(develop_end_usage);
+	    break;
+
+	case arglex_token_signed_off_by:
+	case arglex_token_signed_off_by_not:
+	    option_signed_off_by_argument(develop_end_usage);
 	    break;
 	}
 	arglex();
@@ -1044,13 +1052,33 @@ develop_end_main(void)
     //
     // Make the development directory read only.
     //
+    // This is actually conditional upon project_protect_development_
+    // directory_get(pp) but the test is inside the change_
+    // development_directory_chmod_read_only(cp) function, because it
+    // also makes sure the source files are readable by the reviewers.
+    //
+    change_development_directory_chmod_read_only(cp);
+
+    //
+    // If the project is configured to use Signed-off-by lines in
+    // change descriptions, append a Signed-off-line to this change's
+    // description.
+    //
+    // If the change has a UUID, it means that it almost certainly
+    // arrived via aedist or aepatch.  This means that the change
+    // (a) was signed off by the sender of the change set and (b)
+    // the receiver of the change set has not edited it in any way;
+    // therefore there is not need for *this* user to sign off.
+    //
     if
     (
-	!change_was_a_branch(cp)
-    &&
-	project_protect_development_directory_get(pp)
+	cstate_data->uuid
+    ?
+	option_signed_off_by_get(false)
+    :
+	change_signed_off_by_get(cp)
     )
-	change_development_directory_chmod_read_only(cp);
+	change_signed_off_by(cp, up);
 
     //
     // Write the change table row.

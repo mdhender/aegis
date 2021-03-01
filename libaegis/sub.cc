@@ -48,6 +48,7 @@
 #include <project.h>
 #include <project/file.h>
 #include <project/history.h>
+#include <quit.h>
 #include <str_list.h>
 #include <sub.h>
 #include <sub/addpathsuffi.h>
@@ -1907,11 +1908,11 @@ wrap(const wchar_t *s)
 	//
 	if (first_line)
 	{
-	    strcpy(tmp, progname);
-	    strcat(tmp, ": ");
+	    strlcpy(tmp, progname, sizeof(tmp));
+	    strlcat(tmp, ": ", sizeof(tmp));
 	}
 	else
-	    strcpy(tmp, "\t");
+	    strlcpy(tmp, "\t", sizeof(tmp));
 	tp = tmp + strlen(tmp);
 
 	//

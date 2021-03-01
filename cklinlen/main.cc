@@ -82,7 +82,6 @@
 #include <check.h>
 #include <error.h>
 #include <progname.h>
-#include <str.h>
 
 
 enum
@@ -109,7 +108,6 @@ int
 main(int argc, char **argv)
 {
     arglex_init(argc, argv, argtab);
-    str_initialize();
     while (arglex() != arglex_token_eoln)
     {
 	switch (arglex_token)

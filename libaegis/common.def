@@ -24,7 +24,6 @@
  *	man5/aepstate.5
  */
 
-type boolean = (false, true);
 type change_cause =
 (
 	/*

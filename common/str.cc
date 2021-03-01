@@ -88,7 +88,7 @@ hash_generate(const char *s, size_t n)
 }
 
 
-void
+static void
 str_initialize(void)
 {
     str_hash_ty     j;
@@ -190,10 +190,8 @@ str_n_from_c(const char *s, size_t length)
 
     hash = hash_generate(s, length);
 
-#ifdef DEBUG
     if (!hash_table)
-	fatal_raw("you have not called str_initialize from main");
-#endif
+	str_initialize();
     idx = hash & hash_mask;
 
     for (p = hash_table[idx]; p; p = p->str_next)

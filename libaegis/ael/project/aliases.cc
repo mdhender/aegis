@@ -51,6 +51,7 @@ list_project_aliases(string_ty *project_name, long change_number,
     // list the projects
     //
     gonzo_alias_list(&name);
+    string_list_sort(&name);
 
     //
     // create the columns

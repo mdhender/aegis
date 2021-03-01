@@ -33,8 +33,10 @@ int strcasecmp(const char *, const char *);
 int strncasecmp(const char *, const char *, size_t);
 #endif
 
-#if !HAVE_STRSIGNAL
-char *strsignal(int);
+#if !HAVE_DECL_STRSIGNAL
+extern "C" {
+const char *strsignal(int);
+}
 #endif
 
 #if !HAVE_STRVERSCMP
@@ -51,5 +53,17 @@ int strverscmp(const char *, const char *);
    /* memory.h and strings.h conflict on some systems.  */
 #  include <strings.h>
 #endif
+
+#if !HAVE_STRLCPY
+size_t strlcpy(char *dst, const char *src, size_t size);
+#endif
+#if !HAVE_STRLCAT
+size_t strlcat(char *dst, const char *src, size_t size);
+#endif
+
+#undef strcat
+#define strcat strcat_is_unsafe__use_strlcat_instead@
+#undef strcpy
+#define strcpy strcpy_is_unsafe__use_strlcpy_instead@
 
 #endif /* COMMON_AC_STRING_H */

@@ -530,9 +530,7 @@ arglex(void)
 	//
 	if (arg[0] == '-' && arg[1] != '=')
 	{
-	    char           *eqp;
-
-	    eqp = strchr(arg, '=');
+	    const char *eqp = strchr(arg, '=');
 	    if (eqp)
 	    {
 		pushback = eqp + 1;
@@ -541,7 +539,12 @@ arglex(void)
 		    incomplete = 0;
 		    is_inco = 0;
 		}
-		*eqp = 0;
+
+                //
+                // Crop the argument, so that we can figure out that the
+                // left hand side means.  It is often a memory leak.
+		//
+		arg = mem_copy_string(arg, eqp - arg);
 	    }
 	}
 
@@ -622,7 +625,7 @@ arglex(void)
         one:
 	arglex_token = hit[0]->t_token;
 	if (partial)
-	    arg = (char *)partial;	// const-ness hack
+	    arg = partial;	// const-ness hack
 	else
 	    arg = hit[0]->t_name;
 	break;

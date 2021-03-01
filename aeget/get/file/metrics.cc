@@ -107,11 +107,13 @@ get_file_metrics(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     string_list_ty  key;
 
     pp = cp->pp;
-    html_header(pp);
+    html_header(pp, cp);
 
     printf("<title>Project ");
     html_encode_string(project_name_get(pp));
-    printf(", File metrics</title></head>\n<body><h1 align=center>\n");
+    printf(", File metrics</title></head><body>\n");
+    html_header_ps(pp, cp);
+    printf("<h1 align=center>\n");
     emit_project(pp);
     printf(",<br>File metrics</h1>\n");
     printf("<div class=\"information\">\n");
@@ -378,5 +380,5 @@ get_file_metrics(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     printf("File List</a>\n");
     printf("]</p>\n");
 
-    html_footer();
+    html_footer(pp, cp);
 }

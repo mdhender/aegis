@@ -71,7 +71,9 @@ emit_path(string_ty *filename, string_ty *from)
     // highlighting, etc?
     //
     to = str_from_c("");
+    os_become_orig();
     copy_whole_file(from, to, 0);
+    os_become_undo();
     str_free(to);
 }
 
@@ -95,7 +97,9 @@ emit_file(string_ty *filename, struct stat *st)
     // highlighting, etc?
     //
     to = str_from_c("");
+    os_become_orig();
     copy_whole_file(filename, to, 0);
+    os_become_undo();
     str_free(to);
 }
 
@@ -214,7 +218,9 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
     //
     // Read the directory contents.
     //
+    os_become_orig();
     dir_stack_readdir(search_path, filename, &gizzards);
+    os_become_undo();
     string_list_sort(&gizzards);
 
     //
@@ -238,7 +244,9 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 	struct stat     st;
 
 	path = os_path_cat(filename, idx);
+	os_become_orig();
 	abs_path = dir_stack_find(search_path, 0, path, &st, 0, 1);
+	os_become_undo();
 	str_free(path);
 	if (abs_path)
 	{
@@ -287,7 +295,7 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
     (
 	modbuf,
 	sizeof(modbuf),
-	"%s@%s@%s",
+	"file@contents@%s@%s@%s",
 	(long_flag ? "long" : "nolong"),
 	(links_flag ? "links" : "nolinks"),
 	(derived_flag ? "derived" : "noderived")
@@ -296,14 +304,16 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
     //
     // Print the output header.
     //
-    html_header(cp->pp);
+    html_header(0, cp);
     printf("<title>Project ");
     html_encode_string(project_name_get(cp->pp));
     if (!cp->bogus)
 	printf(",\nChange %ld", magic_zero_decode(cp->number));
     printf(",\nDirectory ");
     html_encode_string(filename);
-    printf("</title></head>\n<body><h1 align=center>\n");
+    printf("</title></head><body>\n");
+    html_header_ps(0, cp);
+    printf("<h1 align=center>\n");
     if (links_flag)
 	emit_change(cp);
     else
@@ -319,13 +329,17 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
     printf("\"\n</h1>\n");
 
     printf("<table>\n");
-    printf("<tr>");
+    printf("<tr class=\"even-group\">");
     if (long_flag)
 	printf("<th>Mode</th><th colspan=2>Date</th><th>Size</th>");
-    printf("<th>Filename</th></tr>\n");
+    printf("<th>Filename</th>");
+    if (links_flag)
+	printf("<th>&nbsp;</th>");
+    printf("</tr>\n");
 
     time_split = now() - 6*30*24*60*60;
     nfiles = 0;
+    int rownum = 0;
     for (j = 0; j < gizzards.nstrings; ++j)
     {
 	string_ty       *deeper;
@@ -338,7 +352,9 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 	int             is_a_directory;
 
 	deeper = os_path_cat(filename, gizzards.string[j]);
+	os_become_orig();
 	abs_path = dir_stack_find(search_path, 0, deeper, &st, 0, 1);
+	os_become_undo();
 	if (!abs_path)
 	    continue;
 	str_free(abs_path);
@@ -379,7 +395,11 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 	)
 	    continue;
 
-	printf("<tr>\n");
+	printf
+	(
+	    "<tr class=\"%s-group\">\n",
+	    ((rownum++ % 6 < 3) ? "odd" : "even" )
+	);
 	if (!is_a_directory)
 	    ++nfiles;
 
@@ -465,12 +485,19 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 		cp->bogus = hold_bogus;
 		str_free(s);
 	    }
+	    else
+		printf("<td>&nbsp</td>");
 	}
 	printf("</tr>\n");
     }
+    printf
+    (
+	"<tr class=\"even-group\"><td colspan=%d>",
+	(long_flag ? 4 : 0) + 1 + (links_flag ? 1 : 0)
+    );
+    printf("Listed %lu files.</td></tr>\n", nfiles);
 
     printf("</table>\n");
-    printf("Listed %lu files.\n", nfiles);
     string_list_destructor(&gizzards);
 
     if (links_flag)
@@ -505,7 +532,7 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 	(
 	    modbuf,
 	    sizeof(modbuf),
-	    "%s@%s@%s",
+	    "file@contents@%s@%s@%s",
 	    (long_flag ? "nolong" : "long"),
 	    (links_flag ? "links" : "nolinks"),
 	    (derived_flag ? "derived" : "noderived")
@@ -516,7 +543,7 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 	(
 	    modbuf,
 	    sizeof(modbuf),
-	    "%s@%s@%s",
+	    "file@contents@%s@%s@%s",
 	    (long_flag ? "long" : "nolong"),
 	    (links_flag ? "nolinks" : "links"),
 	    (derived_flag ? "derived" : "noderived")
@@ -527,7 +554,7 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 	(
 	    modbuf,
 	    sizeof(modbuf),
-	    "%s@%s@%s",
+	    "file@contents@%s@%s@%s",
 	    (long_flag ? "long" : "nolong"),
 	    (links_flag ? "links" : "nolinks"),
 	    (derived_flag ? "noderived" : "derived")
@@ -537,7 +564,7 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 	printf("]</p>\n");
     }
 
-    html_footer();
+    html_footer(0, cp);
 }
 
 
@@ -589,11 +616,13 @@ get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 			no_such_file(filename);
 			return;
 		    }
-		    os_become_orig();
 		    emit_path(filename, s);
 		    if (delete_me)
+		    {
+			os_become_orig();
 			os_unlink_errok(s);
-		    os_become_undo();
+			os_become_undo();
+		    }
 		    str_free(s);
 		}
 		else
@@ -604,9 +633,7 @@ get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 		    // We can use the version in the development directory.
 		    //
 		    s = change_file_path(cp, filename);
-		    os_become_orig();
 		    emit_path(filename, s);
-		    os_become_undo();
 		    str_free(s);
 		}
 		break;
@@ -631,8 +658,8 @@ get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	    int             delete_me;
 
 	    when = change_completion_timestamp(cp);
-	    project_file_roll_forward(cp->pp, when, 0);
-	    fep = project_file_roll_forward_get_last(filename);
+	    project_file_roll_forward historian(cp->pp, when, 0);
+	    fep = historian.get_last(filename);
 	    if (!fep)
 	    {
 		//
@@ -652,11 +679,13 @@ get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 		no_such_file(filename);
 		return;
 	    }
-	    os_become_orig();
 	    emit_path(filename, s);
 	    if (delete_me)
+	    {
+		os_become_orig();
 		os_unlink_errok(s);
-	    os_become_undo();
+		os_become_undo();
+	    }
 	    str_free(s);
 	    return;
 	}
@@ -683,11 +712,13 @@ get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 
 		s = project_file_version_path(cp->pp, src, &delete_me);
 		assert(s);
-		os_become_orig();
 		emit_path(filename, s);
 		if (delete_me)
+		{
+		    os_become_orig();
 		    os_unlink_errok(s);
-		os_become_undo();
+		    os_become_undo();
+		}
 		str_free(s);
 	    }
 	    break;
@@ -710,6 +741,7 @@ get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 
     os_become_orig();
     absolute_path = dir_stack_find(&search_path, 0, filename, &st, 0, 1);
+    os_become_undo();
     if (!absolute_path)
 	no_such_file(filename);
     switch (st.st_mode & S_IFMT)
@@ -726,6 +758,5 @@ get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	http_fatal("Not an appropriate file.");
     }
     str_free(absolute_path);
-    os_become_undo();
     string_list_destructor(&search_path);
 }

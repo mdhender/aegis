@@ -20,8 +20,9 @@
 // MANIFEST: functions to manipulate dates
 //
 
+#include <ac/time.h>
+
 #include <language.h>
-#include <now.h>
 #include <sub.h>
 #include <sub/date.h>
 #include <trace.h>
@@ -53,11 +54,18 @@
 wstring_ty *
 sub_date(sub_context_ty *scp, wstring_list_ty *arg)
 {
-    wstring_ty	    *result;
-    time_t	    when;
-
     trace(("sub_date()\n{\n"));
-    when = now();
+
+    //
+    // We use the time() function directly, rather than the now()
+    // function.  This is because the now() function has a static time
+    // (for timestamps, etc) by the progress indicators need the correct
+    // time.
+    //
+    time_t when = 0;
+    time(&when);
+
+    wstring_ty *result = 0;
     if (arg->nitems < 2)
     {
 	char		*time_string;
@@ -67,22 +75,17 @@ sub_date(sub_context_ty *scp, wstring_list_ty *arg)
     }
     else
     {
-	struct tm	*theTm;
-	char		buf[1000];
-	size_t		nbytes;
-	wstring_ty	*wfmt;
-	string_ty	*fmt;
-
-	wfmt = wstring_list_to_wstring(arg, 1, 32767, (char *)0);
-	fmt = wstr_to_str(wfmt);
+	wstring_ty *wfmt = wstring_list_to_wstring(arg, 1, 32767, (char *)0);
+	string_ty *fmt = wstr_to_str(wfmt);
 	wstr_free(wfmt);
-	theTm = localtime(&when);
+	struct tm *theTm = localtime(&when);
 
 	//
 	// The strftime is locale dependent.
 	//
 	language_human();
-	nbytes = strftime(buf, sizeof(buf) - 1, fmt->str_text, theTm);
+	char buf[1000];
+	size_t nbytes = strftime(buf, sizeof(buf) - 1, fmt->str_text, theTm);
 	language_C();
 
 	if (!nbytes && fmt->str_length)

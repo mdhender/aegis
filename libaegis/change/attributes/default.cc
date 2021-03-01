@@ -43,17 +43,17 @@ change_attributes_default(cattr_ty *a, project_ty *pp, pconf_ty *pc)
     {
 	if (!(a->mask & cattr_test_exempt_mask))
 	{
-	    a->test_exempt = (boolean_ty)1;
+	    a->test_exempt = true;
 	    a->mask |= cattr_test_exempt_mask;
 	}
 	if (!(a->mask & cattr_test_baseline_exempt_mask))
 	{
-	    a->test_baseline_exempt = (boolean_ty)1;
+	    a->test_baseline_exempt = true;
 	    a->mask |= cattr_test_baseline_exempt_mask;
 	}
 	if (!(a->mask & cattr_regression_test_exempt_mask))
 	{
-	    a->regression_test_exempt = (boolean_ty)0;
+	    a->regression_test_exempt = false;
 	    a->mask |= cattr_regression_test_exempt_mask;
 	}
     }
@@ -61,19 +61,19 @@ change_attributes_default(cattr_ty *a, project_ty *pp, pconf_ty *pc)
     {
 	if (!(a->mask & cattr_regression_test_exempt_mask))
 	{
-	    a->regression_test_exempt = (boolean_ty)1;
+	    a->regression_test_exempt = true;
 	    a->mask |= cattr_regression_test_exempt_mask;
 	}
     }
     if (!(a->mask & cattr_test_exempt_mask))
     {
-	a->test_exempt = (boolean_ty)project_default_test_exemption_get(pp);
+	a->test_exempt = project_default_test_exemption_get(pp);
 	a->mask |= cattr_test_exempt_mask;
     }
     if (!(a->mask & cattr_test_baseline_exempt_mask))
     {
 	a->test_baseline_exempt =
-            (boolean_ty)project_default_test_exemption_get(pp);
+            project_default_test_exemption_get(pp);
 	a->mask |= cattr_test_baseline_exempt_mask;
     }
 

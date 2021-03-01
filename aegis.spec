@@ -5,11 +5,11 @@
 #
 Summary: project change supervisor
 Name: aegis
-Version: 4.18
+Version: 4.19
 Release: 1
 Copyright: GPL
 Group: Development/Version Control
-Source: http://www.canb.auug.org.au/~millerp/aegis-4.18.tar.gz
+Source: http://www.canb.auug.org.au/~millerp/aegis-4.19.tar.gz
 URL: http://www.canb.auug.org.au/~millerp/aegis.html
 BuildRoot: /tmp/aegis-build-root
 Icon: aegis.xpm
@@ -36,13 +36,6 @@ Group: Development/Version Control
 
 %description psdocs
 Aegis documentation in PostScript format.
-
-%package dvidocs
-Summary: aegis documentation, DVI format
-Group: Development/Version Control
-
-%description dvidocs
-Aegis documentation in DVI format.
 
 %prep
 %setup
@@ -97,6 +90,7 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0755,root,bin) /usr/bin/aeannotate
 %attr(0755,root,bin) /usr/bin/aecomplete
 %attr(0755,root,bin) /usr/bin/aecvsserver
+%attr(0755,root,bin) /usr/bin/aediff
 %attr(0755,root,bin) /usr/bin/aedist
 %attr(0755,root,bin) /usr/bin/aefind
 %attr(0755,root,bin) /usr/bin/aeget
@@ -105,6 +99,7 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0755,root,bin) /usr/bin/aels
 %attr(0755,root,bin) /usr/bin/aemeasure
 %attr(0755,root,bin) /usr/bin/aepatch
+%attr(0755,root,bin) /usr/bin/aepromptcmd
 %attr(0755,root,bin) /usr/bin/aerect
 %attr(0755,root,bin) /usr/bin/aereport
 %attr(0755,root,bin) /usr/bin/aesub
@@ -157,6 +152,7 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/share/aegis/config.example/diff3
 %attr(0644,root,bin) /usr/share/aegis/config.example/fhist
 %attr(0644,root,bin) /usr/share/aegis/config.example/make
+%attr(0644,root,bin) /usr/share/aegis/config.example/makefile
 %attr(0644,root,bin) /usr/share/aegis/config.example/rcs
 %attr(0644,root,bin) /usr/share/aegis/config.example/sccs
 %attr(0644,root,bin) /usr/lib/aegis/de/LC_MESSAGES/aegis.mo
@@ -232,6 +228,8 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/man/man1/aede.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aedeu.1*
 %attr(0644,root,bin) /usr/man/man1/aedeu.1*
+%attr(0644,root,bin) /usr/share/aegis/en/man1/aediff.1*
+%attr(0644,root,bin) /usr/man/man1/aediff.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aedist.1*
 %attr(0644,root,bin) /usr/man/man1/aedist.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aedn.1*
@@ -312,6 +310,8 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/man/man1/aepa.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aepatch.1*
 %attr(0644,root,bin) /usr/man/man1/aepatch.1*
+%attr(0644,root,bin) /usr/share/aegis/en/man1/aepromptcmd.1*
+%attr(0644,root,bin) /usr/man/man1/aepromptcmd.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aer.1*
 %attr(0644,root,bin) /usr/man/man1/aer.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aera.1*
@@ -496,31 +496,6 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/share/aegis/en/refman.ps
 %attr(0644,root,bin) /usr/share/aegis/en/release.ps
 %attr(0644,root,bin) /usr/share/aegis/en/user-guide.ps
-
-#
-# See the comment at the top of this file.  If you don't like
-# the file attributes, or there is a file missing, DO NOT send
-# the maintainer a patch to this file.  This file is GENERATED.
-# If you want different attributes, fix the etc/spec.sh file,
-# and send THAT patch to the maintainer.
-#
-%files dvidocs
-%attr(0755,root,bin) %dir /usr/share/aegis
-%attr(0644,root,bin) /usr/share/aegis/de/auug97.dvi
-%attr(0644,root,bin) /usr/share/aegis/en/aoss4.dvi
-%attr(0644,root,bin) /usr/share/aegis/en/auug93.dvi
-%attr(0644,root,bin) /usr/share/aegis/en/auug96.dvi
-%attr(0644,root,bin) /usr/share/aegis/en/auug97.dvi
-%attr(0644,root,bin) /usr/share/aegis/en/building.dvi
-%attr(0644,root,bin) /usr/share/aegis/en/change_log.dvi
-%attr(0644,root,bin) /usr/share/aegis/en/cvs-comparison.dvi
-%attr(0644,root,bin) /usr/share/aegis/en/faq.dvi
-%attr(0644,root,bin) /usr/share/aegis/en/howto.dvi
-%attr(0644,root,bin) /usr/share/aegis/en/lsm.dvi
-%attr(0644,root,bin) /usr/share/aegis/en/readme.dvi
-%attr(0644,root,bin) /usr/share/aegis/en/refman.dvi
-%attr(0644,root,bin) /usr/share/aegis/en/release.dvi
-%attr(0644,root,bin) /usr/share/aegis/en/user-guide.dvi
 
 #
 # This next bit is done because when using Aegis with NFS, these

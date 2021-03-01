@@ -31,9 +31,11 @@
 #include <ael/change/details.h>
 #include <ael/change/files.h>
 #include <ael/change/file_history.h>
+#include <ael/change/file_invento.h>
 #include <ael/change/history.h>
 #include <ael/change/inappropriat.h>
 #include <ael/change/incomplete.h>
+#include <ael/change/inventory.h>
 #include <ael/change/outstanding.h>
 #include <ael/change/outstand_all.h>
 #include <ael/change/user.h>
@@ -48,6 +50,7 @@
 #include <ael/project/details.h>
 #include <ael/project/developers.h>
 #include <ael/project/files.h>
+#include <ael/project/file_invento.h>
 #include <ael/project/history.h>
 #include <ael/project/inappropriat.h>
 #include <ael/project/integrators.h>
@@ -58,10 +61,10 @@
 #include <arglex/change.h>
 #include <arglex/project.h>
 #include <col.h>
-#include <error.h>
 #include <help.h>
 #include <option.h>
 #include <progname.h>
+#include <quit.h>
 #include <str_list.h>
 #include <sub.h>
 #include <trace.h>
@@ -107,9 +110,21 @@ static table_ty table[] =
         0,
     },
     {
+	"Change_File_INventory",
+	"List all files in a change with their UUID.",
+	list_change_file_inventory,
+        0,
+    },
+    {
 	"Change_History",
 	"List the history of a change",
 	list_change_history,
+        0,
+    },
+    {
+	"Change_INventory",
+	"List the changes of a project with their UUID.",
+	list_change_inventory,
         0,
     },
     {
@@ -188,6 +203,12 @@ static table_ty table[] =
 	"Project_Files",
 	"List all files in the baseline of a project",
 	list_project_files,
+        0,
+    },
+    {
+	"Project_File_INventory",
+	"List all files in the baseline of a project with their UUID.",
+	list_project_file_inventory,
         0,
     },
     {

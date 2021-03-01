@@ -31,11 +31,11 @@
 #include <arglex/change.h>
 #include <arglex/project.h>
 #include <env.h>
-#include <error.h>
 #include <help.h>
 #include <language.h>
 #include <os.h>
 #include <progname.h>
+#include <quit.h>
 #include <r250.h>
 #include <sub.h>
 #include <trace.h>
@@ -250,7 +250,6 @@ main(int argc, char **argv)
     r250_init();
     os_become_init_mortal();
     arglex2_init(argc, argv);
-    str_initialize();
     env_initialize();
     language_init();
     switch (arglex())

@@ -25,50 +25,44 @@
 
 #include <config.h>
 
-#if HAVE_DCE_UUID_H
+#if HAVE_DCE_UUID_H && HAVE_UUID_CREATE && HAVE_UUID_TO_STRING
 #include <dce/uuid.h>
-#else
-#if HAVE_UUID_H
-#include <uuid.h>
-#else
-#if HAVE_UUID_UUID_H
-#include <uuid/uuid.h>
-#endif
-#endif
-#endif
-
-#if HAVE_UUID_HASH
-#ifdef UUID_FLAVOR_SET
-#error Too many uuid library found
-#endif
-
 #define UUID_FLAVOR_SET 1
 #define UUID_IS_DCE 1
+
+#elif HAVE_UUID_H
+#include <uuid.h>
+
+#elif HAVE_UUID_UUID_H
+#include <uuid/uuid.h>
+
+#elif HAVE_SYS_UUID_H
+extern "C" {
+#include <sys/uuid.h>
+}
 #endif
 
-#if HAVE_UUID_LOAD
-#ifdef UUID_FLAVOR_SET
-#error Too many uuid library found
-#endif
-
+#if HAVE_UUID_CREATE && HAVE_UUID_MAKE && HAVE_UUID_EXPORT
+    #ifdef UUID_FLAVOR_SET
+    #error Too many uuid library found
+    #endif
 #define UUID_FLAVOR_SET 1
 #define UUID_IS_OSSP 1
 #endif
 
 
-#if HAVE_UUID_GENERATE
-#ifdef UUID_FLAVOR_SET
-#error Too many uuid library found
-#endif
-
+#if HAVE_UUID_GENERATE && HAVE_UUID_UNPARSE
+    #ifdef UUID_FLAVOR_SET
+    #error Too many uuid library found
+    #endif
 #define UUID_FLAVOR_SET 1
 #define UUID_IS_E2FS 1
 #endif
 
 #if HAVE_LINUX_UUID
-#ifndef UUID_FLAVOR_SET
-#define UUID_IS_LINUX 1
-#endif
+    #ifndef UUID_FLAVOR_SET
+    #define UUID_IS_LINUX 1
+    #endif
 #endif
 
 

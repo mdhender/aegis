@@ -1,0 +1,203 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2004 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide, The Dependency Maintenance Tool, Work Area Style
+.\"
+.nh 2 "Development Directory Style"
+.LP
+The project configuration file, usually called \fIaegis.conf\fP,
+contains a field called \fIdevelopment_\%directory_\%style\fP
+which controls how the project sources are presented to the DMT.
+.LP
+See \fIaepconf\fP(5) for a complete description of this field.
+.LP
+There is a corresponding \fIintegration_\%directory_\%style\fP
+field, which defaults to the same value as the
+\fIdevelopment_\%directory_\%style\fP.  It is usually a very bad idea if
+these two are different.
+.nh 3 "View Path"
+.LP
+By not setting \fIdevelopment_\%directory_\%style\fP at all
+the only source files present in the development directory are source
+files being create and/or modified.
+.LP
+By using information provided by the \fI$search_path\fP substitution,
+the build can access the unchanged source files in the branch baseline
+and deeper branch baselines.  The great thing about this approach is
+that there are also "precompiled" object files on the viewpath, so if
+an object file does not need to be compiled (there are no soure files
+in the development directory that have anything to do with it) then the
+build can simply link the unchanged object files in the baseline without
+recompiling.
+.LP
+This build method scales the best, and is the Aegis default.
+.LP
+The difficulties of finding a DMT which is capable of coping with a view
+path means that this is not the only work area style.  All other methods
+scale less well than a view path; some scale \fImuch\fP less well.
+.\" ------------------------------------------------------------------------
+.nh 3 "Link the Baseline"
+.LP
+The first two sub-fields of interest in the
+\fIdevelopment_\%directory_\%style\fP are \fIsource_\%file_\%link\fP and
+\fIsource_\%file_\%symlink\fP.
+.XP
+\fIsource_file_link = true;\fP
+This field is true if hard links are to be used for project source files
+(which are not part of the change) so that the work area has a complete
+set of source files.
+.XP
+\fIsource_file_symlink = true;\fP
+This field is true if symbolic links are to be used for project source
+files (which are not part of the change) so that the work area has a
+complete set of source files.
+.LP
+By using these settings, all source files are present in the development
+directory.  They will be read-only.  As you decide to modify files in
+the change set, the \fIaecp\fP command will remove the link and replace
+it with a read-write copy of the file.
+.LP
+You need both these sub-fields set, because hard links are not allowed
+to cross file system boundaries.  Aegis will use hard links in
+preference to soft links when it can.
+.LP
+Maintaining the hard links can be time consuming for large projects, and
+add quite a noticeable delay before builds start doing anything.  But
+see the \fI\-assume-symbolic-links\fP option of the \fIaeb\fP(1) command;
+use it sparingly.
+.LP
+The biggest penalty with this method is that the initial build for a
+change set for a large project can be \fIvery\fP time consuming.  Recall
+that the baseline has a complete "prebuild" already available.  To
+take advantage of these pre-built derived files, there are a few more
+sub-fields:
+.XP
+\fIderived_file_copy = true;\fP
+This field is true if copies are to be used for non-source files which
+are present in the project baseline but which are not present in the
+work area, so that the work area has a complete set of derived files.
+.XP
+\fIderived_at_start_only = true;\fP
+This settign causes the above fields controling the appearance of
+derived files to be acted upon only when the development directory is
+created (at \fIaedb\fP(1) time).
+.LP
+Copying files can be very time consuming and also eats a lot of disk space.
+If you are prepared to change your build slightly, it is possible
+to use the following fields:
+.XP
+\fIderived_file_link = true;\fP
+This field is true if hard links are to be used for non-source files
+which are present in the project baseline but which are not present
+in the work area, so that the work area has a complete set of derived
+files.
+.XP
+\fIderived_file_symlink = true;\fP
+This field is true if symbolic links are to be used for non-source files
+which are present in the project baseline but which are not present
+in the work area, so that the work area has a complete set of derived
+files.
+.LP
+Just as for source files, hard links will be used in preference to
+symbolic links if possible.
+.LP
+Note that \fIevery\fP rule in your Makefile (or whatever your DMT uses)
+\fBmust\fP remove its outputs before doing enything else, to break the
+links to the files in the baseline, otherwise you will corrupt the baseline.
+Aegis tries very hard to ensure that the baseline files (and thus the
+links) are read-only, so that you get an error from the build
+if you forget to break a link.
+.LP
+This development directory style is called "arch style" after Tom Lord's
+\fIarch\fP (tla) which does something very similar.
+.LP
+If you are placing an existing project under Aegis, do the above three
+things one step at a time.  First get the source files available and
+integrate that.  In a second change set get derived file copies working.
+In a third change set (if you do it at all) change the build and use
+derived file links.
+.\" ------------------------------------------------------------------------
+.nh 3 "Copy All Sources"
+.LP
+The sub-fields of interest in the
+\fIdevelopment_\%directory_\%style\fP is \fIsource_\%file_\%copy\fP.
+.XP
+\fIsource_file_copy = true;\fP
+This field says copies are to be used for project source files (which
+are not part of the change) so that the work area has a complete set of
+source files.  File modification time attributes will be preserved.
+.LP
+By using this setting, all source files are present in the development
+directory.  They will be read-only.  As you decide to modify files in
+the change set, the \fIaecp\fP command will remove the file and replace
+it with a read-write copy of the file.
+.LP
+Maintaining the copies can be time consuming for large projects, and
+add quite a noticeable delay before builds start doing anything.  But
+see the \fI\-assume-symbolic-links\fP option of the \fIaeb\fP(1) command;
+use it sparingly (yes, it applies to copies as well).
+.LP
+The biggest penalty with this method is that the initial build for a
+change set for a large project can be \fIvery\fP time consuming.  Recall
+that the baseline has a complete "prebuild" already available.  To
+take advantage of these pre-built derived files, there are a few more
+sub-fields:
+.XP
+\fIderived_file_copy = true;\fP
+This says copies are to be used for non-source files which
+are present in the project baseline but which are not present in the
+work area, so that the work area has a complete set of derived files.
+.XP
+\fIderived_at_start_only = true;\fP
+This setting causes the above fields controlling the appearance of
+derived files to be acted upon only when the development directory is
+created (at \fIaedb\fP(1) time).
+.LP
+This development directory style is called "CVS style" after GNU CVS
+which does something very similar.
+.\" ------------------------------------------------------------------------
+.nh 3 "Obsolete Features"
+.LP
+There are several fields in the \fIaegis.conf\fP file which are
+obsolete.  Aegis will automatically transfer these to create a
+\fIdevelopment_\%directory_\%style\fP if you haven't specified one.
+.XP
+\fIcreate_\%symlinks_\%before_\%build:\fP
+This is like setting both
+\fIdevelopment_\%directory_\%style.source_\%file_\%symlink\fP and
+\fIdevelopment_\%directory_\%style.derived_file_symlink\fP at the same
+time.
+.LP
+\fIremove_\%symlinks_\%after_\%build:\fP
+This is like setting the
+\fIdevelopment_\%directory_\%style.during_\%build_\%only\fP
+field.
+.XP
+\fIcreate_\%symlinks_\%before_\%integration_\%build:\fP
+This is like setting both
+\fIintegration_\%directory_\%style.source_\%file_\%symlink\fP and
+\fIintegration_\%directory_\%style.derived_file_symlink\fP at the same
+time.
+.LP
+\fIremove_\%symlinks_\%after_\%integration_\%build:\fP
+This is like setting the
+\fIintegration_\%directory_\%style.during_\%build_\%only\fP
+field.
+.LP
+Aegis will print a warning if you use any of these fields.

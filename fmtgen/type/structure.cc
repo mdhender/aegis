@@ -58,7 +58,8 @@ type_structure_ty::gen_include()
     indent_printf("#define %s_DEF\n", def_name().c_str());
     indent_printf("\n");
     int bit = 0;
-    for (size_t j = 0; j < nelements; ++j)
+    size_t j;
+    for (j = 0; j < nelements; ++j)
     {
 	indent_printf
 	(
@@ -84,7 +85,7 @@ type_structure_ty::gen_include()
     indent_printf("unsigned long\1mask;\n");
     indent_printf("string_ty\1*errpos;\n");
 
-    for (size_t j = 0; j < nelements; ++j)
+    for (j = 0; j < nelements; ++j)
     {
 	element_ty *ep = &element[j];
 	ep->type->gen_include_declarator(ep->name, false);
@@ -155,6 +156,7 @@ void
 type_structure_ty::gen_code()
     const
 {
+    size_t j;
     indent_putchar('\n');
     indent_printf("void\n");
     if (toplevel_flag)
@@ -217,7 +219,7 @@ type_structure_ty::gen_code()
 	indent_printf("}\n");
 	indent_printf("output_fputs(fp, \"{\\n\");\n");
     }
-    for (size_t j = 0; j < nelements; ++j)
+    for (j = 0; j < nelements; ++j)
     {
 	element_ty *ep = &element[j];
 	ep->type->gen_code_declarator(ep->name, false, ep->attributes);
@@ -297,7 +299,7 @@ type_structure_ty::gen_code()
     else
 	indent_printf("output_fputs(fp, \"<%s>\\n\");\n",
                       def_name().c_str());
-    for (size_t j = 0; j < nelements; ++j)
+    for (j = 0; j < nelements; ++j)
     {
 	element_ty *ep = &element[j];
 	ep->type->gen_code_call_xml(ep->name, ep->name, ep->attributes);
@@ -349,7 +351,7 @@ type_structure_ty::gen_code()
     // you spell it "0").  This is also true of floating point zero.
     // As a result, each element is assigned zero individually.
     //
-    for (size_t j = 0; j < nelements; ++j)
+    for (j = 0; j < nelements; ++j)
     {
 	element_ty *ep = &element[j];
         indent_printf
@@ -412,7 +414,7 @@ type_structure_ty::gen_code()
     indent_printf("this_thing->errpos = 0;\n");
     indent_printf("}\n");
 
-    for (size_t j = 0; j < nelements; ++j)
+    for (j = 0; j < nelements; ++j)
     {
 	element_ty *ep = &element[j];
 	ep->type->gen_free_declarator(ep->name, false);
@@ -428,7 +430,7 @@ type_structure_ty::gen_code()
 	def_name().c_str()
     );
     indent_printf("{\n");
-    for (size_t j = 0; j < nelements; ++j)
+    for (j = 0; j < nelements; ++j)
     {
 	element_ty *ep = &element[j];
 	indent_printf("{\n");

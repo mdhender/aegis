@@ -56,7 +56,7 @@
 # -------------------------------------------------------------------------
 #
 msgid	""
-msgstr	"PO-Revision-Date: 2004-05-26\n"
+msgstr	"PO-Revision-Date: 2004-07-16\n"
 	"MIME-Version: 1.0\n"
 	"Content-Type: text/plain; charset=ISO-8859-1\n"
 	"Content-Transfer-Encoding: 8bit\n"
@@ -406,6 +406,18 @@ msgstr	"$filename: no contiene ningn \"$field_name\" campo"
 #
 msgid	"$filename: corrupted \"$field_name\" field"
 msgstr	"$filename: \"$field_name\" campo corrompido"
+
+# TRANSLATION REQUIRED
+#
+# This warning is issued when an obsolete field is used.
+#
+#      $Name1          The name of the obsolete field.
+#      $Name2          The name of the preferred field.
+#
+#, fuzzy
+msgid	"$filename: field \"$name1\" obsolete, use \"$name2\" instead"
+msgstr	"$filename: the \"$name1\" field is obsolete, use the \"$name2\" "
+	"field instead"
 
 #
 # This fatal error message is issued when Aegis is checking a project's
@@ -771,15 +783,6 @@ msgstr	"$name la opcin se debe seguir por un nmero"
 #
 msgid	"$name needs string"
 msgstr	"$name la opcin se debe seguir por una secuencia"
-
-#
-# This error message is given when a command line option is not
-# meaningful, but could be at other times.
-#
-# 	$Name		The offending command line option.
-#
-msgid	"$name option not meaningful"
-msgstr	"la opcin del de \"$name\" no es significativa en este contexto"
 
 #
 # This format string is used to glue together the last two items in the

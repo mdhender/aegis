@@ -429,6 +429,8 @@ if test $? -ne 1; then fail; fi
 pass
 end
 
+sleep 1
+
 #
 # build the change
 # diff the change (no the variant we are testing)

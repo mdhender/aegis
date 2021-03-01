@@ -23,7 +23,7 @@
 #include <change/branch.h>
 
 
-int
+bool
 change_history_delta_validate(change_ty *cp, long delta_number)
 {
     cstate_ty       *cstate_data;
@@ -32,14 +32,14 @@ change_history_delta_validate(change_ty *cp, long delta_number)
 
     cstate_data = change_cstate_get(cp);
     if (!cstate_data->branch)
-	return 0;
+	return false;
     h = cstate_data->branch->history;
     if (!h)
-	return 0;
+	return false;
     for (j = 0; j < h->length; ++j)
     {
 	if (h->list[j]->delta_number == delta_number)
-    	    return 1;
+    	    return true;
     }
-    return 0;
+    return false;
 }

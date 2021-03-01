@@ -32,7 +32,6 @@
 #include <output/file.h>
 #include <output/gzip.h>
 #include <progname.h>
-#include <str.h>
 
 
 enum
@@ -102,7 +101,6 @@ main(int argc, char **argv)
     void            (*func)(string_ty *, string_ty *);
 
     arglex_init(argc, argv, argtab);
-    str_initialize();
     arglex();
     os_become_init_mortal();
 

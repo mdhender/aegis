@@ -41,7 +41,7 @@
 //
 
 void
-symtab_dump(symtab_ty *stp, char *caption)
+symtab_dump(symtab_ty *stp, const char *caption)
 {
     str_hash_ty     j;
     symtab_row_ty   *p;

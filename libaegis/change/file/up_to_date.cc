@@ -83,7 +83,16 @@ change_file_up_to_date(project_ty *pp, fstate_src_ty *c_src_data)
     assert(c_src_data->edit_origin->revision);
     result =
 	(
-	    str_equal(p_src_data->uuid, c_src_data->uuid)
+	    (
+		// backwards compatibility
+		!p_src_data->uuid
+	    ||
+		// backwards compatibility
+		!c_src_data->uuid
+	    ||
+		// make sure the file hasn't been renamed in the mean time
+		str_equal(p_src_data->uuid, c_src_data->uuid)
+	    )
 	&&
 	    str_equal
 	    (

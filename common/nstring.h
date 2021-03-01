@@ -142,24 +142,24 @@ public:
       * The str_catenate function is used to join two strings togther to
       * form a new string.  The are joined in the order given.
       *
-      * \param str1
-      *	A string to be joined.  Will not be modified.
-      * \param str2
-      *	A string to be joined.  Will not be modified.
+      * \param arg
+      *	    A string to be joined.  Will not be modified.
       *
       * \return
-      *	a pointer to a string in dynamic memory.  Use str_free() when
-      *	finished with.	The contents of the structure pointed to <b>shall
-      *	not</b> be altered.
+      *     a pointer to a string in dynamic memory.  Use str_free()
+      *     when finished with.  The contents of the structure pointed
+      *     to <b>shall not</b> be altered.
       */
     nstring
     catenate(const nstring &arg)
+	const
     {
 	return nstring(str_catenate(ref, arg.ref));
     }
 
     nstring
     operator+(const nstring &arg)
+	const
     {
 	return nstring(str_catenate(ref, arg.ref));
     }
@@ -183,20 +183,19 @@ public:
       * The str_cat_three function is used to join three strings together
       * to form a new string.  The are joined in the order given.
       *
-      * \param str1
-      *	A string to be joined.  Will not be modified.
       * \param str2
-      *	A string to be joined.  Will not be modified.
+      *	    A string to be joined.  Will not be modified.
       * \param str3
-      *	A string to be joined.  Will not be modified.
+      *	    A string to be joined.  Will not be modified.
       *
       * \return
-      *	a pointer to a string in dynamic memory.  Use str_free() when
-      *	finished with.	The contents of the structure pointed to <b>shall
-      *	not</b> be altered.
+      *	    a pointer to a string in dynamic memory.  Use str_free() when
+      *     finished with.  The contents of the structure pointed to
+      *     <b>shall not</b> be altered.
       */
     nstring
     cat_three(const nstring &str2, const nstring &str3)
+	const
     {
 	return nstring(str_cat_three(ref, str2.ref, str3.ref));
     }
@@ -209,13 +208,10 @@ public:
       * it contained a number.  If it doesn't contain a number, it is as if
       * the strings was "1".
       *
-      * \param str
-      *	The string to be tested.  Will not be modified.
-      *
       * \return
-      *	Zero if the numeric value in the strings was zero, or the empty
-      *	string.  One if the numeric value in the string was non-zero,
-      *	or the string was non-numeric.
+      *     False if the numeric value in the strings was zero, or the
+      *     empty string.  True if the numeric value in the string was
+      *     non-zero, or the string was non-numeric.
       */
     operator bool()
 	const
@@ -238,14 +234,10 @@ public:
       * lower case characters in the input string are converted to upper
       * case.
       *
-      * \param str
-      *	The string to be converted.  Will not be modified (the operation
-      *	is <b>not</b> performed <i>in situ</i>).
-      *
       * \return
-      *	a pointer to a string in dynamic memory.  Use str_free() when
-      *	finished with.	The contents of the structure pointed to <b>shall
-      *	not</b> be altered.
+      *     a pointer to a string in dynamic memory.  Use str_free()
+      *     when finished with.  The contents of the structure pointed
+      *     to <b>shall not</b> be altered.
       */
     nstring
     upcase()
@@ -262,14 +254,10 @@ public:
       * upper case characters in the input string are converted to lower
       * case.
       *
-      * \param str
-      *	The string to be converted.  Will not be modified (the operation
-      *	is <b>not</b> performed <i>in situ</i>).
-      *
       * \return
-      *	a pointer to a string in dynamic memory.  Use str_free() when
-      *	finished with.	The contents of the structure pointed to <b>shall
-      *	not</b> be altered.
+      *     a pointer to a string in dynamic memory.  Use str_free()
+      *     when finished with.  The contents of the structure pointed
+      *     to <b>shall not</b> be altered.
       */
     nstring
     downcase()
@@ -287,14 +275,8 @@ public:
       * the remaining letters in each word are lower case.  (Sometimes called
       * Title Case.)
       *
-      * \param str
-      *	The string to be converted.  Will not be modified (the operation
-      *	is <b>not</b> performed <i>in situ</i>).
-      *
-      * \return
-      *	a pointer to a string in dynamic memory.  Use str_free() when
-      *	finished with.	The contents of the structure pointed to <b>shall
-      *	not</b> be altered.
+      * \returns
+      *	    a pointer to a string in dynamic memory.
       */
     nstring
     capitalize()
@@ -310,22 +292,20 @@ public:
       * The str_field function is used to extract the \a nth field, where
       * each field is separated by the \a sep string.
       *
-      * \param str
-      *	The string from which the field is to be extracted.  Will not
-      *	be modified (the operation >not</b> performed <i>in situ</i>).
       * \param sep
-      *	The string which separates each field.
+      *	    The string which separates each field.
       * \param nth
-      *	The number of the field to be extracted.  Zero based.
-      *	If too high, the emtry string is returned.
+      *	    The number of the field to be extracted.  Zero based.
+      *	    If too high, the emtry string is returned.
       *
       * \return
-      *	a pointer to a string in dynamic memory.  Use str_free() when
-      *	finished with.	The contents of the structure pointed to <b>shall
-      *	not</b> be altered.
+      *	    a pointer to a string in dynamic memory.  Use str_free() when
+      *     finished with.  The contents of the structure pointed to
+      *     <b>shall not</b> be altered.
       */
     nstring
-    field(int sep, int nth)
+    field(char sep, int nth)
+	const
     {
 	return nstring(str_field(ref, sep, nth));
     }
@@ -341,13 +321,13 @@ public:
       * string_ty * </i> argument.
       *
       * \param fmt
-      *	The format string to be interpreted when constructing the
-      *	return value.
+      *	    The format string to be interpreted when constructing the
+      *	    return value.
       *
       * \return
-      *	a pointer to a string in dynamic memory.  Use str_free() when
-      *	finished with.	The contents of the structure pointed to <b>shall
-      *	not</b> be altered.
+      *     a pointer to a string in dynamic memory.  Use str_free()
+      *     when finished with.  The contents of the structure pointed
+      *     to <b>shall not</b> be altered.
       */
     static nstring format(const char *fmt, ...)               ATTR_PRINTF(1, 2);
 
@@ -355,22 +335,22 @@ public:
       * \brief
       *	format text
       *
-      * The str_vformat function is used to create a new string by interpreting
-      * the \a fmt string.  All formats understood by the ANSI C printf(3)
-      * are understodd by this function (but probably not your favorite
-      * proprietary extension).  In addition the '%S' specifier expects a <i>
-      * string_ty * </i> argument.
+      * The str_vformat function is used to create a new string by
+      * interpreting the \a fmt string.  All formats understood by the
+      * ANSI C printf(3) are understodd by this function (but probably
+      * not your favorite proprietary extension).  In addition the '%S'
+      * specifier expects a <i>string_ty *</i> argument.
       *
       * \param fmt
-      *	The format string to be interpreted when constructing the
-      *	return value.
+      *	    The format string to be interpreted when constructing the
+      *	    return value.
       * \param ap
-      *	Where to obtain additional arguments required by the \a fmt string.
+      *	    Where to obtain additional arguments required by the \a fmt string.
       *
       * \return
-      *	a pointer to a string in dynamic memory.  Use str_free() when
-      *	finished with.	The contents of the structure pointed to <b>shall
-      *	not</b> be altered.
+      *     a pointer to a string in dynamic memory.  Use str_free()
+      *     when finished with.  The contents of the structure pointed
+      *     to <b>shall not</b> be altered.
       */
     static nstring vformat(const char *fmt, va_list ap);
 
@@ -381,35 +361,36 @@ public:
       * The str_equal function is used to test to see if two strings are
       * exactly the same.
       *
-      * \param str1
-      *	A string to be compared.  Will not be modified.
-      * \param str2
-      *	A string to be compared.  Will not be modified.
+      * \param arg
+      *	    A string to be compared.  Will not be modified.
       *
       * \note
-      *	Users shall always write code as if they did not know that a
-      *	string equality test is a pointer equality test.
+      *     Users shall always write code as if they did not know that a
+      *     string equality test is a pointer equality test.
       *
       * \return
-      *	Non-zero if the strings are equal,
-      *	zero if the strings are unequal.
+      *	    Non-zero if the strings are equal,
+      *	    zero if the strings are unequal.
       */
     bool
     equal(const nstring &arg)
+	const
     {
 	return (ref == arg.ref);
     }
 
     bool
     operator==(const nstring &arg)
+	const
     {
 	return (ref == arg.ref);
     }
 
     bool
     operator!=(const nstring &arg)
+	const
     {
-	return (ref == arg.ref);
+	return (ref != arg.ref);
     }
 
     /**
@@ -419,14 +400,10 @@ public:
       * The str_quote_shell function is used to create a new string which
       * quotes the shell meta-characters in the input string.
       *
-      * \param str
-      *	The string to be converted.  Will not be modified (the operation
-      *	is <b>not</b> performed <i>in situ</i>).
-      *
       * \return
-      *	a pointer to a string in dynamic memory.  Use str_free() when
-      *	finished with.	The contents of the structure pointed to <b>shall
-      *	not</b> be altered.
+      *     a pointer to a string in dynamic memory.  Use str_free()
+      *     when finished with.  The contents of the structure pointed
+      *     to <b>shall not</b> be altered.
       */
     nstring
     quote_shell()
@@ -439,18 +416,14 @@ public:
       * \brief
       *	remove excess white space
       *
-      * The str_trim function is used to remove white space from the beginning
-      * and end of the string, and replace all other runs of one or more
-      * white space characters with a single space.
-      *
-      * \param str
-      *	The string to be converted.  Will not be modified (the operation
-      *	is <b>not</b> performed <i>in situ</i>).
+      * The str_trim function is used to remove white space from the
+      * beginning and end of the string, and replace all other runs of
+      * one or more white space characters with a single space.
       *
       * \return
-      *	a pointer to a string in dynamic memory.  Use str_free() when
-      *	finished with.	The contents of the structure pointed to <b>shall
-      *	not</b> be altered.
+      *     a pointer to a string in dynamic memory.  Use str_free()
+      *     when finished with.  The contents of the structure pointed
+      *     to <b>shall not</b> be altered.
       */
     nstring
     trim()
@@ -464,15 +437,12 @@ public:
       * \brief
       *	check is valid
       *
-      * The str_validate function is used to confirm that the given string
-      * pointer, \a str, points to a valid string.
-      * Usually used for debugging, often in assert()s.
-      *
-      * \param str
-      *	The string to be validated.  Willnot be modified.
+      * The str_validate function is used to confirm that the given
+      * string pointer, \a str, points to a valid string.  Usually used
+      * for debugging, often in assert()s.
       *
       * \return
-      *	Non-zero if valid, zero if invalid.
+      *	    Non-zero if valid, zero if invalid.
       */
     bool
     valid()
@@ -497,6 +467,94 @@ public:
 	return ref;
     }
 
+    /**
+      * The starts_with method is ised to test whether this string
+      * starts with the given prefix.
+      *
+      * @param prefix
+      *     The string to test for.
+      */
+    bool
+    starts_with(const nstring &prefix)
+	const
+    {
+	return !!str_leading_prefix(get_ref(), prefix.get_ref());
+    }
+
+    /**
+      * The ends_with method is ised to test whether this string
+      * ends with the given suffix.
+      *
+      * @param suffix
+      *     The string to test for.
+      */
+    bool
+    ends_with(const nstring &suffix)
+	const
+    {
+	return !!str_trailing_suffix(get_ref(), suffix.get_ref());
+    }
+
+    /**
+      * The gmatch function is used to match the string against a file
+      * globbing pattern.
+      */
+    bool gmatch(const char *pattern) const;
+
+    /**
+      * The identifier method is used to convert all non-C-identifier
+      * characters in the string to underscores.  The intention is to
+      * create a valid C identifier from the string.
+      */
+    nstring
+    identifier()
+	const
+    {
+	return str_identifier(get_ref());
+    }
+
+    /**
+      * The replace method may be used to alter a string by replacing
+      * one constant substring with another.
+      *
+      * @note
+      *     The replacement is <i>not</b> done <i>in situ</i>.  The original
+      *     string is unaltered.
+      *
+      * @param lhs
+      *     The substring to look for.
+      * @param rhs
+      *     The substring to replace \a lhs if found.
+      * @param maximum
+      *     The maximum number of times to perform the replacement.
+      *     Defaults to "infinity".
+      * @returns
+      *     A new string with the replacements made.
+      */
+    nstring
+    replace(const nstring &lhs, const nstring &rhs, int maximum = -1)
+    {
+	return str_replace(get_ref(), lhs.get_ref(), rhs.get_ref(), maximum);
+    }
+
+    /**
+      * The indexing operator is used to extract the nth character of a
+      * string.  Indexes out of range will result in the NUL character
+      * ('\0') being returned.
+      *
+      * @param n
+      *     The character to extract.  Zero based.
+      * @returns
+      *     The character requested, or NUL ('\0') if the index is out
+      *     of range.
+      */
+    char
+    operator[](size_t n)
+	const
+    {
+	return (n < size() ? ref->str_text[n] : '\0');
+    }
+
 private:
     /**
       * The ref instance variable is used to remember the location of
@@ -515,5 +573,17 @@ private:
 	return str_from_c("");
     }
 };
+
+inline nstring
+operator+(const char *lhs, const nstring &rhs)
+{
+    return nstring(lhs).catenate(rhs);
+}
+
+inline nstring
+operator+(const nstring &lhs, const char *rhs)
+{
+    return lhs.catenate(nstring(rhs));
+}
 
 #endif // COMMON_NSTRING_H

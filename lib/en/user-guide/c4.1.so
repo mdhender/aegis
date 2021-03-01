@@ -23,6 +23,8 @@
 When selecting a Dependency Maintenance Tool
 it is important to keep in mind that, ideally, it must be able to
 cope with a hierarchy of parallel source directory trees.
+These trees for a "view path", a list of directories that programs
+search below to find the files of interest.
 .LP
 The heart of any DMT is an \fIinference engine\fP.
 This inference engine accepts a \fIgoal\fP of what you want it to construct
@@ -31,7 +33,7 @@ and attempts to construct what you asked for given the rules you specified.
 This is exactly a description of an expert system,
 and the DMT needs to be an expert system for constructing files.
 .LP
-This perspective on what the aegis program needs from a DMT
+This perspective on what the Aegis program needs from a DMT
 reveals that the old-faithful \fImake\fP(1) distributed
 with so many flavours of
 .UX
@@ -59,20 +61,20 @@ no modification to the rules.
 .LP
 If your DMT of choice does not provide this functionality,
 the
-.I create_symlinks_before_build
+.I development_\%directory_\%style.\%source_\%file_\%symlink
 field of the project
 configuration
 file may be set to
 \fItrue\fP,
-which tells aegis to maintain symbolic links in the development directory
-for all files in the baseline which are not present in
+which tells Aegis to maintain symbolic links in the development directory
+for all source files in the baseline which are not present in
 the development directory.
 (See
 \fIaepconf\fP(5)
 and
 \fIaeb\fP(1)
 for more information.)
-This incurs a certain amount of overhead when aegis maintains these links,
+This incurs a certain amount of overhead when Aegis maintains these links,
 but a similar amount of work is done within DMTs which have search path
 functionality.
 .nh 3 "Dynamic Include File Dependencies"
@@ -154,10 +156,10 @@ old include file is missing,
 when it is actually no longer required.
 .LP
 If a DMT can only support this kind of include file dependencies,
-it is not suitable for use with aegis.
+it is not suitable for use with Aegis.
 .nh 4 "Dynamic"
 .LP
-In order for a DMT to be suitable for use with aegis,
+In order for a DMT to be suitable for use with Aegis,
 it is essential that rules for the DMT may be specified in such a way that
 include file dependencies are determined "on the fly"
 when the DMT is determining if a given rule is applicable,

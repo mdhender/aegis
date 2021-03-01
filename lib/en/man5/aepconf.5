@@ -122,7 +122,7 @@ Placing additional files in the physical directories will have
 no effect.
 .PP
 It is recommended that if you use this field at all, that your top level
-project \fIconfig\fP file should only contain this one field.  This is
+project \fIaegis.conf\fP file should only contain this one field.  This is
 to avoid overly-large re-reading of this file when it is joined to all
 the others.
 .RE
@@ -164,6 +164,240 @@ Current directory: the development directory of the change.
 Exit status: zero is considered success, non-zero is a failure
 and a subsequent successful (exit zero) build will be required.
 .RE
+.\" ------------------------------------------------------------------------
+.TP 8n
+development_directory_style = { ... };
+.RS
+This field encapsulates a set of parameters controlling the appearance
+of the development directory.  It has significant implications for the
+way the DMT is used, and the directory appearance presented to the DMT.
+.TP 8n
+source_file_link = boolean;
+.RS
+This field is true if hard links are to be used for project source files
+(which are not part of the change) so that the work area has a complete
+set of source files.
+.PP
+Defaults to false if not set.
+.PP
+If the host system does not have hard links, this field will be ignored.
+.PP
+Maintaining the hard links can be time consuming for large projects,
+and add quite a noticeable delay before builds start doing anything.
+If possible, change your build system to use the \fI$search_path\fP
+substitution instead and avoid links.
+.RE
+.TP 8n
+source_file_symlink = boolean;
+.RS
+This field is true if symbolic links are to be used for project source
+files (which are not part of the change) so that the work area has a
+complete set of source files.
+.PP
+Defaults to false if not set.
+[If the obsolete \fIcreate_\%symlinks_\%before_\%build\fP field is set,
+defaults to the value of that field, with a warning.]
+.PP
+If (\fIsource_file_link\fP == true \fBand\fP hard links are available)
+this field will be ignored.  If the host system does not have symbolic
+links, this field will be ignored.
+.PP
+Maintaining the symbolic links can be time consuming for large projects,
+and add quite a noticeable delay before builds start doing anything.  If
+possible, change your build system to use the \fI$search_path\fP
+substitution instead and avoid symbolic links.
+.RE
+.TP 8n
+source_file_copy = boolean;
+.RS
+This field is true if copies are to be used for project source files
+(which are not part of the change) so that the work area has a complete
+set of source files.  File modification time attributes will be
+preserved.
+.PP
+Defaults to false if not set.
+.PP
+If ((\fIsource_file_link\fP == true \fBand\fP hard links are available)
+OR (\fIsource_file_symlink\fP == true \fBand\fP symbolic links are available))
+this field will be ignored.
+.PP
+Maintaining the copies can be time consuming (and space consuming)
+for large projects, and add quite a noticeable delay before builds
+start doing anything.  If possible, change your build system to use the
+\fI$search_path\fP substitution instead and avoid file copies.
+.RE
+.TP 8n
+source_file_whiteout = boolean;
+.RS
+The \fIsource_file_whiteout\fP field mat be used to sprecify the
+presence (true) or absence (false) of white-out files, used to
+"cover up" files being removed by a change set.  These files
+contain 1KB of random data, intended to cause a syntax error
+should be build reference them.
+.PP
+It is rarely necessary to explicitly set this field.  It
+defaults to false if you set any of the \fIsource_file_link\fP,
+\fIsource_file_symlink\fP or \fIsource_file_copy\fP to true; it defaults
+to false only if none of them are true.
+.PP
+Not meaningful (always false) for integration builds.
+.RE
+.TP 8n
+derived_file_link = boolean;
+.RS
+This field is true if hard links are to be used for non-source files
+which are present in the project baseline(s) but which are not present
+in the work area, so that the work area has a complete set of derived
+files.  This allows work areas to take advantage of "precompiled" object
+files (\fIetc\fP) in the baseline(s).
+.PP
+Defaults to false if not set.
+.PP
+If the host system does not have hard links, this field will be ignored.
+.PP
+Maintaining the links can be time consuming for large projects, and
+add quite a noticeable delay before builds start doing anything.  If
+possible, change your build system to use the \fI$search_path\fP
+substitution instead and avoid hard links.  Alternatively, set
+\fIderived_at_start_only = true;\fP and your work area will get a "head
+start" but the derived files will not be checked for every build, but
+this will occasionally result in long build times after integrations.
+.PP
+See also the \fIintegrate_\%begin_\%exceptions\fP and
+\fIsymlink_\%exceptions\fP fields (they apply to hard links as well as
+symbolic links).
+.RE
+.TP 8n
+derived_file_symlink = boolean;
+.RS
+This field is true if symbolic links are to be used for non-source files
+which are present in the project baseline(s) but which are not present
+in the work area, so that the work area has a complete set of derived
+files.  This allows work areas to take advantage of "precompiled" object
+files (etc) in the baseline(s).
+.PP
+Defaults to false if not set.
+[If the obsolete \fIcreate_\%symlinks_\%before_\%build\fP field is set,
+defaults to the value of that field, with a warning.]
+.PP
+If (\fIderived_file_link\fP == true \fBand\fP hard links are available)
+this field will be ignored.  If the host system does not have symbolic
+links, this field will be ignored.
+.PP
+Maintaining the symbolic links can be time consuming for large projects,
+and add quite a noticeable delay before builds start doing anything.
+If possible, change your build system to use the \fI$search_path\fP
+substitution instead and avoid symbolic links.  Alternatively, set
+\fIderived_at_start_only = true;\fP and your work area will get a "head
+start" but the derived files will not be checked for every build,
+occasionally resulting in long build times after integrations.
+.PP
+See also the \fIintegrate_\%begin_\%exceptions\fP and
+\fIsymlink_\%exceptions\fP fields.
+.RE
+.TP 8n
+derived_file_copy = boolean;
+.RS
+This field is true if copies are to be used for non-source files which
+are present in the project baseline(s) but which are not present in the
+work area, so that the work area has a complete set of derived files.
+This allows work areas to take advantage of "precompiled" object files
+(\fIetc\fP) in the baseline(s).
+.PP
+Defaults to false if not set.
+.PP
+If ((\fIderived_file_link\fP == true \fBand\fP hard links are available)
+\fBor\fP (\fIderived_file_symlink\fP == true \fBand\fP symbolic links
+are available)) this field will be ignored.
+.PP
+Maintaining the copies can be time consuming (and space consuming)
+for large projects, and add quite a noticeable delay before builds
+start doing anything.  If possible, change your build system to use
+the \fI$search_path\fP substitution instead and avoid symbolic links.
+Alternatively, set \fIderived_at_start_only = true;\fP and your work
+area will get a "head start" but the derived files will not be checked
+for every build, occasionally resulting in long build times after
+integrations.
+.PP
+See also the integrate_begin_exceptions and symlink_exceptions
+fields (they apply to copies as well as symbolic links).
+.RE
+.TP 8n
+during_build_only = boolean;
+.RS
+This field is set to true if you want the symbolic links, hard links
+and/or copies removed again after each build.  This allows the user to
+maintain the illusion of using a search path, without actually doing so.
+This option is not especially efficient.
+.PP
+Defaults to false if not set.
+[If the obsolete \fIremove_\%symlinks_\%after_\%build\fP field is set,
+defaults to the value of that field, with a warning.]
+.PP
+If this field is false, the development directory will be populated by
+the develeop begin (\fIaedb\fP) command, and the integratin directory
+will be populated by the integrate begin (\fIaeib\fP) command.
+.RE
+.TP 8n
+derived_at_start_only = boolean;
+.RS
+This field controls whether the above fields controling the appearance
+of derived files are acted upon before every build (false) or only when
+the work area is created (true).
+.PP
+Defaults to false if not set.
+.PP
+This field is ignored if the \fIduring_build_only\fP field is true.
+.RE
+.PP
+This field can be complex.  Here are a few examples; but much, much more
+is possible.  The first example will get you a development directory
+very similar to one presented by CVS:
+.RS
+.nf
+development_directory_style =
+{
+    source_file_copy = true;
+};
+.fi
+.RE
+Note that this is hugely space inefficient, and can be quite slow.
+The second example will get you a development directory very similar to
+one presented by Tom Lord's \fIarch\fP:
+.RS
+.nf
+development_directory_style =
+{
+    source_file_link = true;
+    source_file_symlink = true;
+    source_file_copy = true;
+};
+.fi
+.RE
+Ideally, however, you should use the \fI$search_path\fP substitution of
+the \fIbuild_command\fP field.  This is because the view path scales
+better than any other method.  On the other hand, you need a DMT with an
+excellent view path implementation (and GNU \fImake\fP doesn't).
+.RE
+.\" ------------------------------------------------------------------------
+.TP 8n
+integration_directory_style = { ... };
+.RS
+This field encapsulates a set of parameters controlling the appearance
+of the integration directory.  It has significant implications for the
+way the DMT is used, and the directory appearance presented to the DMT.
+.PP
+Defaults to the value of the \fIdevelopment_directory_style\fP
+field if not set.  Note that the obsolete
+\fIcreate_\%symlinks_\%before_\%integration_\%build\fP and
+\fIremove_\%symlinks_\%after_\%integration_\%build\fP fields affect this
+default (with a warning) but only if they are \fIexplicitly\fP set.
+.PP
+Note that the \fIlink_integration_directory\fP field is still relevant.
+That field controls how the baseline is cloned to form the integration
+directory.  This field operates after that operation.
+.RE
+.\" ------------------------------------------------------------------------
 .TP 8n
 build_time_adjust_notify_command = string;
 .RS
@@ -198,64 +432,6 @@ This field is set to true if the build command, when executed on any
 architecture, results in all architectures being built.  This may be
 accomplished, for example, by using cross-compilation techniques, or
 Cook's ability to nominate hosts on which to execute each build rule.
-.RE
-.TP 8n
-create_symlinks_before_build = boolean;
-.RS
-This flag is true if Aegis should create symlinks from the
-development directory to the baseline for all files in the baseline
-not in the development directory immediately before a
-development_build_command is issued.
-Usually used to trick dumb DMTs
-into believing the development directory contains an entire copy of
-the project,
-though sometimes the DMT is smart enough, the tools it
-must work with are not.
-Symlinks in the development directory which
-point to nonexistent files will be removed.
-.PP
-Defaults to false if not set.
-.RE
-.TP 8n
-create_symlinks_before_integration_build = boolean;
-.RS
-This flag is true if Aegis should create symlinks from the integration
-directory to the ancestral baseline for all files in the ancestral not in
-the integration directory immediately before a build_command is issued.
-Usually used to trick dumb DMTs into believing the integration directory
-contains an entire copy of the project, though sometimes the DMT is
-smart enough, the tools it must work with are not.  Symlinks in the
-integration directory which point to nonexistent files will be removed.
-.PP
-Defaults to the same value as \fIcreate_\%symlinks_\%before_\%build\fP
-if not set.
-.RE
-.TP 8n
-remove_symlinks_after_build = boolean;
-.RS
-This flag is true if Aegis should remove symlinks which point from the
-development directory to the baseline directory immediately after a
-\fPdevelopment_\%build_\%command\fP is issued.  Only consulted if the
-\fIcreate_\%symlinks_\%before_\%build\fP field is true, for the purpose
-of reversing the actions of the \fIcreate_\%symlinks_\%before_\%build\fP
-field.
-.PP
-Defaults to false if not set.
-.RE
-.TP 8n
-remove_symlinks_after_integration_build = boolean;
-.RS
-This flag is true if Aegis should remove symlinks which point from
-the integration directory to the ancestral baseline directory
-immediately after a build_command is issued.  Only consulted
-if the \fIcreate_\%symlinks_\%before_\%integration_\%build\fP
-field is true, for the purpose of reversing the actions of the
-\fIcreate_\%symlinks_\%before_\%integration_\%build\fP field.
-.PP
-Defaults to \fBtrue\fP if not set.  This default is intentional.  It is
-important that there are no symlinks in the (new) baseline, because
-they could go stale between integrations.  If you set this field to
-false, \fIcaveat emptor\fP.
 .RE
 .TP 8n
 symlink_exceptions = [ string ];
@@ -725,6 +901,55 @@ Current directory: the base of the history tree.
 Exit status: zero indicates succes, all non-zero exits indicate failure
 (the integrate pass will fail).
 .RE
+.\" ------------------------------------------------------------------------
+.TP 8n
+history_transaction_begin_command = string;
+.RS
+The history_transaction_begin_command field is used to specify a command
+to be run by \fIaeipass\fP(1) before any history create or history put
+commands are run.  The default is to do nothing.
+.PP
+All of the substitutions described in \fIaesub\fP(5) are available.
+If you need a transaction ID, use the \fI$version\fP substitution.
+.PP
+Executed as: the project owner.
+Current directory: the base of the history tree.
+Exit status: zero indicates succes, all non-zero exits indicate failure
+(the integrate pass will fail).
+.RE
+.\" ------------------------------------------------------------------------
+.TP 8n
+history_transaction_end_command = string;
+.RS
+The history_transaction_end_command field is used to specify a
+command to be run by \fIaeipass\fP(1) after any history create or history
+put commands are run, but before any history query commands are run.
+The default is to do nothing.
+.PP
+All of the substitutions described in \fIaesub\fP(5) are available.
+If you need a transaction ID, use the \fI$version\fP substitution.
+.PP
+Executed as: the project owner.
+Current directory: the base of the history tree.
+Exit status: zero indicates succes, all non-zero exits indicate failure
+(the integrate pass will fail).
+.RE
+.\" ------------------------------------------------------------------------
+.TP 8n
+history_transaction_abort_command = string;
+.RS
+The history_transaction_abort_command field is used to specify a
+command to be run by \fIaeipass\fP(1) to indicate that a transaction has
+been abandoned.  The default is to do nothing.
+.PP
+All of the substitutions described in \fIaesub\fP(5) are available.
+If you need a transaction ID, use the \fI$version\fP substitution.
+.PP
+Executed as: the project owner.
+Current directory: the base of the history tree.
+Exit status: ignored (the integrate pass has already failed).
+.RE
+.\" ------------------------------------------------------------------------
 .TP 8n
 history_query_command = string;
 .RS 8n
@@ -1571,6 +1796,7 @@ The value to be substituted.
 .PP
 There are almost no limitations on the strings which may appear in either
 of these fields.
+.so ../man1/z_cmd_env.so
 .RE
 .TP 8n
 build_time_adjust = (...);
@@ -1606,6 +1832,18 @@ weeks to track down and lose you mucho productivity.
 You have been warned.
 .LP
 See also the \fIbuild_\%time_\%adjust_\%notify_\%command\fP field.
+.RE
+.TP 8n
+signed_off_by = boolean;
+.RS
+If this field is set each \fIaedb\fP(1), \fIaechown\fP(1), \fIaede\fP(1)
+and \fIaerpass\fP(1) will append a \f[CW]Signed-off-by\fP line to the
+change description.  This field should only be set to true for open
+source projects.
+.PP
+For a description of \f[CW]Signed-off-by\fP see
+http://www.ussg.iu.edu/hypermail/linux/kernel/0405.2/1301.html and
+http://www.osdl.org/newsroom/press_releases/2004/2004_05_24_dco.html
 .RE
 .SH OBSOLETE FIELDS
 There are some obsolete fields in the file.
@@ -1658,6 +1896,64 @@ commentary was misleading.  Use the ``merge_command'' field instead.
 It is almost identical, but Aegis will move the files around for you -
 so you get the good behavior by default (no lost merges) and the error
 message is consistent.
+.RE
+.TP 8n
+create_symlinks_before_build = boolean;
+.RS
+This flag is true if Aegis should create symlinks from the
+development directory to the baseline for all files in the baseline
+not in the development directory immediately before a
+development_build_command is issued.
+Usually used to trick dumb DMTs
+into believing the development directory contains an entire copy of
+the project,
+though sometimes the DMT is smart enough, the tools it
+must work with are not.
+Symlinks in the development directory which
+point to nonexistent files will be removed.
+.PP
+Defaults to false if not set.
+.RE
+.TP 8n
+create_symlinks_before_integration_build = boolean;
+.RS
+This flag is true if Aegis should create symlinks from the integration
+directory to the ancestral baseline for all files in the ancestral not in
+the integration directory immediately before a build_command is issued.
+Usually used to trick dumb DMTs into believing the integration directory
+contains an entire copy of the project, though sometimes the DMT is
+smart enough, the tools it must work with are not.  Symlinks in the
+integration directory which point to nonexistent files will be removed.
+.PP
+Defaults to the same value as \fIcreate_\%symlinks_\%before_\%build\fP
+if not set.
+.RE
+.TP 8n
+remove_symlinks_after_build = boolean;
+.RS
+This flag is true if Aegis should remove symlinks which point from the
+development directory to the baseline directory immediately after a
+\fPdevelopment_\%build_\%command\fP is issued.  Only consulted if the
+\fIcreate_\%symlinks_\%before_\%build\fP field is true, for the purpose
+of reversing the actions of the \fIcreate_\%symlinks_\%before_\%build\fP
+field.
+.PP
+Defaults to false if not set.
+.RE
+.TP 8n
+remove_symlinks_after_integration_build = boolean;
+.RS
+This flag is true if Aegis should remove symlinks which point from
+the integration directory to the ancestral baseline directory
+immediately after a build_command is issued.  Only consulted
+if the \fIcreate_\%symlinks_\%before_\%integration_\%build\fP
+field is true, for the purpose of reversing the actions of the
+\fIcreate_\%symlinks_\%before_\%integration_\%build\fP field.
+.PP
+Defaults to \fBtrue\fP if not set.  This default is intentional.  It is
+important that there are no symlinks in the (new) baseline, because
+they could go stale between integrations.  If you set this field to
+false, \fIcaveat emptor\fP.
 .RE
 .SH SEE ALSO
 .TP 8n

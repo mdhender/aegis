@@ -31,6 +31,15 @@ unset AEGIS_PATH
 unset AEGIS
 umask 022
 
+if test -z "`diff -v 2>&1 | grep GNU`"
+then
+	echo ''
+	echo '	This test depends on GNU Diff, which you do not seem to'
+	echo '	have installed.  This test is declared to pass by default.'
+	echo ''
+	exit 0
+fi
+
 LINES=24
 export LINES
 COLS=80

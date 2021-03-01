@@ -23,6 +23,7 @@
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/libintl.h>
+#include <ac/magic.h>
 
 #include <aefa.h>
 #include <arglex2.h>
@@ -38,9 +39,11 @@
 #include <io.h>
 #include <language.h>
 #include <lock.h>
+#include <nstring.h>
 #include <os.h>
 #include <progname.h>
 #include <project.h>
+#include <quit.h>
 #include <sub.h>
 #include <str_list.h>
 #include <trace.h>
@@ -112,48 +115,56 @@ change_fatal_unknown_file(change_ty *cp, string_ty *filename)
 
 
 static void
-fattr_assign(fattr_ty *fattr_data, const char *name_c, const char *value_c)
+fattr_assign(fattr_ty *fattr_data, const nstring &name, const nstring &value)
 {
-    attributes_list_ty *alp;
-    string_ty       *name;
-    string_ty       *value;
-    size_t          j;
-    type_ty         *type_p;
-    attributes_ty   *ap;
-    attributes_ty   **app;
-
-    alp = fattr_data->attribute;
-    name = str_from_c(name_c);
-    value = str_from_c(value_c);
-
-    for (j = 0; j < alp->length; ++j)
+    attributes_list_ty *alp = fattr_data->attribute;
+    for (size_t j = 0; j < alp->length; ++j)
     {
-	ap = alp->list[j];
-	if (ap->name && str_equal(ap->name, name))
+	attributes_ty *ap = alp->list[j];
+	if (ap->name && nstring(ap->name) == name)
 	{
 	    if (ap->value)
 		str_free(ap->value);
-	    ap->value = value;
-	    str_free(name);
+	    ap->value = str_copy(value.get_ref());
 	    return;
 	}
     }
 
-    app = (attributes_ty **)attributes_list_type.list_parse(alp, &type_p);
+    type_ty *type_p = 0;
+    attributes_ty **app =
+	(attributes_ty **)attributes_list_type.list_parse(alp, &type_p);
     assert(type_p == &attributes_type);
-    ap = (attributes_ty *)attributes_type.alloc();
+    attributes_ty *ap = (attributes_ty *)attributes_type.alloc();
     *app = ap;
-    ap->name = name;
-    ap->value = value;
+    ap->name = str_copy(name.get_ref());
+    ap->value = str_copy(value.get_ref());
+}
+
+
+static bool
+fattr_exists(fattr_ty *fattr_data, const nstring &name)
+{
+    attributes_list_ty *alp = fattr_data->attribute;
+    if (!alp)
+	return 0;
+    for (size_t j = 0; j < alp->length; ++j)
+    {
+	attributes_ty   *ap;
+
+	ap = alp->list[j];
+	if (!ap->name)
+	    continue;
+	if (nstring(ap->name) == name)
+	    return true;
+    }
+    return false;
 }
 
 
 static fattr_ty *
 fattr_construct(fstate_src_ty *src)
 {
-    fattr_ty        *fattr_data;
-
-    fattr_data = (fattr_ty *)fattr_type.alloc();
+    fattr_ty *fattr_data = (fattr_ty *)fattr_type.alloc();
     if (src->attribute)
 	fattr_data->attribute = attributes_list_copy(src->attribute);
     else
@@ -320,6 +331,24 @@ file_attributes_list(void)
     fattr_data = fattr_construct(src);
 
     //
+    // For changes which are still being developed, we also add the
+    // "Content-Type" attribute.
+    //
+    if
+    (
+	change_is_being_developed(cp)
+    &&
+	!fattr_exists(fattr_data, "Content-Type")
+    )
+    {
+	magic_t cookie = magic_open(MAGIC_MIME);
+	nstring path = change_file_path(cp, filename);
+	const char *content_type = magic_file(cookie, path.c_str());
+	fattr_assign(fattr_data, "Content-Type", content_type);
+	magic_close(cookie);
+    }
+
+    //
     // print the fattr data
     //
     language_human();
@@ -398,33 +427,24 @@ file_attributes_edit(fattr_ty **dp, edit_ty et)
 
 
 static attributes_ty *
-fattr_extract(fattr_ty *fattr_data, const char *name_c)
+fattr_extract(fattr_ty *fattr_data, const nstring &name)
 {
-    attributes_list_ty *alp;
-    string_ty       *name;
-    size_t          j;
-
-    alp = fattr_data->attribute;
+    attributes_list_ty *alp = fattr_data->attribute;
     if (!alp)
 	return 0;
-    name = str_from_c("usage");
-    for (j = 0; j < alp->length; ++j)
+    for (size_t j = 0; j < alp->length; ++j)
     {
-	attributes_ty   *ap;
-
-	ap = alp->list[j];
+	attributes_ty *ap = alp->list[j];
 	if (!ap->name)
 	    continue;
-	if (str_equal(ap->name, name))
+	if (nstring(ap->name) == name)
 	{
 	    alp->length--;
 	    if (j < alp->length)
 		alp->list[j] = alp->list[alp->length];
-	    str_free(name);
 	    return ap;
 	}
     }
-    str_free(name);
     return 0;
 }
 
@@ -472,7 +492,7 @@ file_attributes_main(void)
 	    break;
 
 	case arglex_token_string:
-	    if (filename)
+            if (filename)
 		fatal_too_many_files();
 	    filename = str_from_c(arglex_value.alv_string);
 	    break;
@@ -507,7 +527,7 @@ file_attributes_main(void)
 		&change_number,
 		file_attributes_usage
 	    );
-	    break;
+	    continue;
 
 	case arglex_token_project:
 	    arglex();
@@ -732,11 +752,7 @@ file_attributes_main(void)
 	{
 	    if (ap->value)
 	    {
-		file_usage_ty   tmp;
-
-		tmp = (file_usage_ty)file_usage_type.enum_parse(ap->value);
-		if (tmp != (file_usage_ty)(-1))
-		    src->usage = tmp;
+		file_usage_type.enum_parse(ap->value, &src->usage);
 	    }
 	    attributes_type.free(ap);
 	}

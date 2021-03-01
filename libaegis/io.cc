@@ -31,6 +31,36 @@
 
 
 void
+boolean_write(output_ty *fp, const char *name, bool this_thing, int show)
+{
+    if (!this_thing)
+    {
+	if (!show || type_enum_option_query())
+	    return;
+    }
+    if (name)
+	output_fprintf(fp, "%s = ", name);
+    output_fputs(fp, boolean_ename(this_thing));
+    if (name)
+	output_fputs(fp, ";\n");
+}
+
+
+void
+boolean_write_xml(output_ty *fp, const char *name, bool this_thing, int show)
+{
+    if (!this_thing)
+    {
+	if (!show || type_enum_option_query())
+	    return;
+    }
+    if (!name)
+	name = "boolean";
+    output_fprintf(fp, "<%s>%s</%s>\n", name, boolean_ename(this_thing), name);
+}
+
+
+void
 integer_write(output_ty *fp, const char *name, long this_thing, int show)
 {
     if (this_thing == INTEGER_NOT_SET && !show)
@@ -175,7 +205,7 @@ string_write(output_ty *fp, const char *name, string_ty *this_thing)
 	    // always in the C locale
 	    if (!isprint(c))
 	    {
-		char	*cp;
+		const char      *cp;
 
 		cp = strchr("\bb\ff\nn\rr\tt", c);
 		if (cp)

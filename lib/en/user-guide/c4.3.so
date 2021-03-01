@@ -73,14 +73,16 @@ link_integration_directory = true;
 .E)
 .LP
 The links must be removed first, otherwise the baseline would
-cease to be self-consistent.
+be corrupted by integration builds.
 .LP
 Another field to be set in this file is
 .E(
-create_symlinks_before_build =
-  true;
+development_directory_style =
+{
+    source_file_symlink = true;
+};
 .E)
-which tells aegis to maintain symbolic links between the development directory
+which tells Aegis to maintain symbolic links between the development directory
 and the baseline.
 This also requires that rules remove their targets before
 constructing them,
@@ -93,7 +95,7 @@ The file containing the rules is called
 and is given to cake on the command line.
 .LP
 The following items are preamble to the rest of the file;
-they ask aegis for the source files of the project and change
+they ask Aegis for the source files of the project and change
 so that cake can determine what needs to be compiled and linked.
 .E(
 #define project_files \e
@@ -226,7 +228,7 @@ pick up the generated \fI.c\fP file and construct the necessary \fI.o\fP file.
 .nh 3 "Rules for Documents"
 .LP
 You can format documents,
-such as user guides and manual entries with aegis and cake,
+such as user guides and manual entries with Aegis and cake,
 and the rules are similar
 to the ones above.
 .E(

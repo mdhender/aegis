@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1993, 1995, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1991-1993, 1995, 1999, 2002, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,18 +38,10 @@ void fatal_raw(const char *, ...) NORETURN;
 void nerror(const char *, ...);
 void nfatal(const char *, ...) NORETURN;
 
-typedef void (*quit_ty)(int);
-void quit_register(quit_ty);
-void quit(int) NORETURN;
-
-int assert_failed(const char *condition, const char *file, int line)
+void assert_failed(const char *condition, const char *file, int line)
     NORETURN;
 #ifdef DEBUG
-# if defined(__STDC__) || defined(__stdc__)
-#  define assert(c) ((void)((c) != 0 || assert_failed(#c, __FILE__, __LINE__)))
-# else
-#  define assert(c) ((void)((c) != 0 || assert_failed("c", __FILE__, __LINE__)))
-# endif
+# define assert(c) ((c) ? (void)0 : assert_failed(#c, __FILE__, __LINE__))
 #else
 # define assert(c)
 #endif

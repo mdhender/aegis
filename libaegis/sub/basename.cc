@@ -57,7 +57,6 @@ sub_basename(sub_context_ty *scp, wstring_list_ty *arg)
     string_ty	    *suffix;
     string_ty	    *s1;
     string_ty	    *s2;
-    long	    len;
 
     trace(("sub_basename()\n{\n"));
     switch (arg->nitems)
@@ -69,9 +68,7 @@ sub_basename(sub_context_ty *scp, wstring_list_ty *arg)
 
     case 2:
 	s1 = wstr_to_str(arg->item[1]);
-	os_become_orig();
-	s2 = os_entryname(s1);
-	os_become_undo();
+	s2 = os_basename(s1);
 	str_free(s1);
 	result = str_to_wstr(s2);
 	str_free(s2);
@@ -79,22 +76,11 @@ sub_basename(sub_context_ty *scp, wstring_list_ty *arg)
 
     case 3:
 	s1 = wstr_to_str(arg->item[1]);
-	os_become_orig();
-	s2 = os_entryname(s1);
-	os_become_undo();
-	str_free(s1);
-	suffix = wstr_to_str(arg->item[2]);
-	len = (long)s2->str_length - (long)suffix->str_length;
-	if
-	(
-	    len > 0
-	&&
-	    !memcmp(s2->str_text + len, suffix->str_text, suffix->str_length)
-	)
-	    result = wstr_n_from_c(s2->str_text, len);
-	else
-	    result = str_to_wstr(s2);
-	str_free(s2);
+        suffix = wstr_to_str(arg->item[2]);
+        s2 = os_basename(s1, suffix);
+        result = str_to_wstr(s2);
+        str_free(s1);
+        str_free(s2);
 	str_free(suffix);
 	break;
     }

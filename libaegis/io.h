@@ -35,6 +35,8 @@ struct output_ty; /* existence */
 #define REAL_NOT_SET 0.0
 #define TIME_NOT_SET (time_t)0
 
+void boolean_write(struct output_ty *, const char *, bool, int);
+void boolean_write_xml(struct output_ty *, const char *, bool, int);
 void string_write(struct output_ty *, const char *, string_ty *);
 void string_write_xml(struct output_ty *, const char *, string_ty *);
 void integer_write(struct output_ty *, const char *, long, int);

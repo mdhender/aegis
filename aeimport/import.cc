@@ -46,6 +46,7 @@
 #include <project/history.h>
 #include <project/pattr/set.h>
 #include <project/verbose.h>
+#include <quit.h>
 #include <reconstruct.h>
 #include <sub.h>
 #include <synthesize.h>
@@ -355,21 +356,21 @@ import_main(void)
     pattr_data = (pattr_ty *)pattr_type.alloc();
     pattr_data->description =
 	str_format("The \"%s\" program.", project_name->str_text);
-    pattr_data->reuse_change_numbers = (boolean_ty)1;
+    pattr_data->reuse_change_numbers = true;
     pattr_data->mask |= pattr_reuse_change_numbers_mask;
-    pattr_data->developers_may_create_changes = (boolean_ty)1;
+    pattr_data->developers_may_create_changes = true;
     pattr_data->mask |= pattr_developers_may_create_changes_mask;
-    pattr_data->developer_may_review = (boolean_ty)(staff.nstrings == 1);
+    pattr_data->developer_may_review = (staff.nstrings == 1);
     pattr_data->mask |= pattr_developer_may_review_mask;
-    pattr_data->developer_may_integrate = (boolean_ty)1;
+    pattr_data->developer_may_integrate = true;
     pattr_data->mask |= pattr_developer_may_integrate_mask;
-    pattr_data->reviewer_may_integrate = (boolean_ty)1;
+    pattr_data->reviewer_may_integrate = true;
     pattr_data->mask |= pattr_reviewer_may_integrate_mask;
     pattr_data->minimum_change_number = 10;
     pattr_data->mask |= pattr_minimum_change_number_mask;
     pattr_data->minimum_branch_number = 1;
     pattr_data->mask |= pattr_minimum_branch_number_mask;
-    pattr_data->default_test_exemption = (boolean_ty)1;
+    pattr_data->default_test_exemption = true;
     pattr_data->mask |= pattr_default_test_exemption_mask;
 
     //

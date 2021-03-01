@@ -176,6 +176,13 @@ T}	T{
 .ad l
 aedb
 T}
+aediff(1)	\*[Page*Of*aediff(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aediff - file differences between deltas
+T}
 aedir(5)	\*[Page*Of*aedir(5)]	T{
 .ad r
 
@@ -308,6 +315,13 @@ aepconf(5)	\*[Page*Of*aepconf(5)]	T{
 T}	T{
 .ad l
 aepconf - aegis project configuration file
+T}
+aepromptcmd(1)	\*[Page*Of*aepromptcmd(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aepromptcmd - change prompt color by change state
 T}
 ae_p(1)	\*[Page*Of*ae_p(1)]	T{
 .ad r
@@ -610,6 +624,13 @@ T}	T{
 .ad l
 between a change and the baseline
 T}
+aediff(1)	\*[Page*Of*aediff(1)]	T{
+.ad r
+aediff - file differences
+T}	T{
+.ad l
+between deltas
+T}
 aenbr(1)	\*[Page*Of*aenbr(1)]	T{
 .ad r
 aegis -New BRanch - create a new
@@ -897,6 +918,13 @@ T}	T{
 .ad l
 Change Owner - set change owner
 T}
+aepromptcmd(1)	\*[Page*Of*aepromptcmd(1)]	T{
+.ad r
+aepromptcmd -
+T}	T{
+.ad l
+change prompt color by change state
+T}
 aerb(1)	\*[Page*Of*aerb(1)]	T{
 .ad r
 aegis -Review Begin - begin a
@@ -974,6 +1002,13 @@ T}	T{
 .ad l
 changes into projects
 T}
+aepromptcmd(1)	\*[Page*Of*aepromptcmd(1)]	T{
+.ad r
+aepromptcmd - change prompt color by
+T}	T{
+.ad l
+change state
+T}
 aecstate(5)	\*[Page*Of*aecstate(5)]	T{
 .ad r
 aecstate - aegis
@@ -1050,6 +1085,13 @@ aegis -
 T}	T{
 .ad l
 clone - make an exact copy of a change
+T}
+aepromptcmd(1)	\*[Page*Of*aepromptcmd(1)]	T{
+.ad r
+aepromptcmd - change prompt
+T}	T{
+.ad l
+color by change state
 T}
 aeibu(1)	\*[Page*Of*aeibu(1)]	T{
 .ad r
@@ -1247,6 +1289,13 @@ T}	T{
 .ad l
 DELta NAme - assign a symbolic name to a project delta
 T}
+aediff(1)	\*[Page*Of*aediff(1)]	T{
+.ad r
+aediff - file differences between
+T}	T{
+.ad l
+deltas
+T}
 aedb(1)	\*[Page*Of*aedb(1)]	T{
 .ad r
 aegis -
@@ -1344,6 +1393,13 @@ aegis -DIFFerence - find
 T}	T{
 .ad l
 differences between a change and the baseline
+T}
+aediff(1)	\*[Page*Of*aediff(1)]	T{
+.ad r
+aediff - file
+T}	T{
+.ad l
+differences between deltas
 T}
 aecd(1)	\*[Page*Of*aecd(1)]	T{
 .ad r
@@ -1596,6 +1652,13 @@ aegis -CoPy
 T}	T{
 .ad l
 file - copy a file into a change
+T}
+aediff(1)	\*[Page*Of*aediff(1)]	T{
+.ad r
+aediff -
+T}	T{
+.ad l
+file differences between deltas
 T}
 aefp(1)	\*[Page*Of*aefp(1)]	T{
 .ad r
@@ -2899,6 +2962,13 @@ T}	T{
 .ad l
 project state file
 T}
+aepromptcmd(1)	\*[Page*Of*aepromptcmd(1)]	T{
+.ad r
+aepromptcmd - change
+T}	T{
+.ad l
+prompt color by change state
+T}
 aecvsserver(1)	\*[Page*Of*aecvsserver(1)]	T{
 .ad r
 aecvsserver - serve CVS client
@@ -3381,6 +3451,13 @@ aeannotate - annotated
 T}	T{
 .ad l
 source file listing
+T}
+aepromptcmd(1)	\*[Page*Of*aepromptcmd(1)]	T{
+.ad r
+aepromptcmd - change prompt color by change
+T}	T{
+.ad l
+state
 T}
 aecstate(5)	\*[Page*Of*aecstate(5)]	T{
 .ad r

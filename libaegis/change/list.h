@@ -23,39 +23,54 @@
 #ifndef LIBAEGIS_CHANGE_LIST_H
 #define LIBAEGIS_CHANGE_LIST_H
 
+#pragma interface "change_list_ty"
+
 #include <main.h>
 
-struct change_list_ty
+class change_list_ty
 {
+public:
     size_t          length;
     size_t          maximum;
     struct change_ty **item;
+
+    /**
+      * The destructor.
+      */
+    ~change_list_ty();
+
+    /**
+      * The constructor.
+      */
+    change_list_ty();
+
+    /**
+      * The change_list_append function is used to append a change to a
+      * change list.
+      */
+    void append(change_ty *cp);
+
+    /**
+      * The change_list_member_p function is used to determine if a
+      * given change is a member of the given change list.
+      */
+    bool member_p(change_ty *cp) const;
+
+    /**
+      * Empty the list of members.
+      */
+    void clear();
+
+private:
+    /**
+      * The copy constructor.  Do not use.
+      */
+    change_list_ty(const change_list_ty &);
+
+    /**
+      * The assignment operator.  Do not use.
+      */
+    change_list_ty &operator=(const change_list_ty &);
 };
-
-
-/**
-  * The change_list_new function is used to create a new change list is
-  * dynamic memory.
-  */
-change_list_ty *change_list_new(void);
-
-/**
-  * The change_list_delete function is used to release a change
-  * list dynamic memory resources.  The changes themselves are NOT
-  * change_free()ed.
-  */
-void change_list_delete(change_list_ty *clp);
-
-/**
-  * The change_list_append function is used to append a change to a
-  * change list.
-  */
-void change_list_append(change_list_ty *clp, change_ty *cp);
-
-/**
-  * The change_list_member_p function is used to determine if a given
-  * change is a member of the given change list.
-  */
-int change_list_member_p(change_list_ty *clp, change_ty *cp1);
 
 #endif // LIBAEGIS_CHANGE_LIST_H

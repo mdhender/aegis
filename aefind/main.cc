@@ -28,7 +28,6 @@
 #include <os.h>
 #include <progname.h>
 #include <r250.h>
-#include <str.h>
 #include <sub.h>
 
 
@@ -41,7 +40,6 @@ main(int argc, char **argv)
     progname_set(argv[0]);
     r250_init();
     os_become_init_mortal();
-    str_initialize();
     env_initialize();
     language_init();
 

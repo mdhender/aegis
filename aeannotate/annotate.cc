@@ -129,9 +129,9 @@ process(project_ty *pp, string_ty *filename, line_list_t *buffer)
     //
     // Reconstruct the file history.
     //
-    project_file_roll_forward(pp, when, 1);
+    project_file_roll_forward historian(pp, when, 1);
 
-    felp = project_file_roll_forward_get(filename);
+    felp = historian.get(filename);
     if (!felp)
     {
 	sub_context_ty  *scp;

@@ -49,6 +49,7 @@
 #include <project.h>
 #include <project/file.h>
 #include <project/history.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -732,8 +733,8 @@ integrate_begin_main(void)
     cstate_ty       *cstate_data;
     int		    j;
     cstate_history_ty *history_data;
-    int		    minimum;
-    int		    maximum;
+    bool	    minimum;
+    bool	    maximum;
     string_ty	    *project_name;
     project_ty	    *pp;
     long	    change_number;
@@ -751,8 +752,8 @@ integrate_begin_main(void)
 
     trace(("integrate_begin_main()\n{\n"));
     arglex();
-    minimum = 0;
-    maximum = 0;
+    minimum = false;
+    maximum = false;
     project_name = 0;
     change_number = 0;
     log_style = log_style_create_default;
@@ -780,13 +781,13 @@ integrate_begin_main(void)
 	case arglex_token_minimum:
 	    if (minimum)
 		duplicate_option(integrate_begin_usage);
-	    minimum = 1;
+	    minimum = true;
 	    break;
 
 	case arglex_token_maximum:
 	    if (maximum)
 		duplicate_option(integrate_begin_usage);
-	    maximum = 1;
+	    maximum = true;
 	    break;
 
 	case arglex_token_project:
@@ -963,7 +964,7 @@ integrate_begin_main(void)
 
 	    case file_action_remove:
 	    case file_action_transparent:
-		minimum = 1;
+		minimum = true;
 		break;
 	    }
 	}
@@ -973,7 +974,7 @@ integrate_begin_main(void)
     // Remember the minimum flag for the build command,
     // and also the aeipass command.
     //
-    cstate_data->minimum_integration = (boolean_ty)!!minimum;
+    cstate_data->minimum_integration = minimum;
 
     //
     // before creating the integration directory,

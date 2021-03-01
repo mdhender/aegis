@@ -34,4 +34,7 @@ int lex_in_include_file(void);
 void lex_list_include_files(void);
 void lex_include_path(const char *);
 
+void lex_debug_printf(const char *, ...)		ATTR_PRINTF(1, 2);
+void lex_debug_fprintf(void *, const char *, ...)	ATTR_PRINTF(2, 3);
+
 #endif /* LEX_H */

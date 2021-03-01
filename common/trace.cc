@@ -20,6 +20,7 @@
 // MANIFEST: functions for execution trace
 //
 
+#include <ac/ctype.h>
 #include <ac/stdio.h>
 #include <ac/string.h>
 #include <ac/stddef.h>
@@ -134,14 +135,14 @@ trace_putchar(int c)
     }
     if (!cp)
     {
-	strcpy(buffer, progname_get());
+	strlcpy(buffer, progname_get(), sizeof(buffer));
 	cp = buffer + strlen(buffer);
 	if (cp > buffer + 6)
 	    cp = buffer + 6;
 	*cp++ = ':';
 	*cp++ = '\t';
-	strcpy(cp, file_name->str_text);
-	cp += file_name->str_length;
+	strlcpy(cp, file_name->str_text, buffer + sizeof(buffer) - cp);
+	cp += strlen(cp);
 	*cp++ = ':';
 	*cp++ = '\t';
 	snprintf(cp, buffer + sizeof(buffer) - cp, "%d:\t", line_number);
@@ -268,11 +269,9 @@ void
 trace_char_real(const char *name, const char *vp)
 {
     trace_printf("%s = '", name);
-    if (*vp < ' ' || *vp > '~' || strchr("(){}[]", *vp))
+    if (!isprint((unsigned char)*vp) || strchr("(){}[]", *vp))
     {
-	char            *s;
-
-	s = strchr("\bb\nn\tt\rr\ff", *vp);
+	const char *s = strchr("\bb\nn\tt\rr\ff", *vp);
 	if (s)
 	{
 	    trace_putchar('\\');
@@ -295,11 +294,9 @@ void
 trace_char_unsigned_real(const char *name, const unsigned char *vp)
 {
     trace_printf("%s = '", name);
-    if (*vp < ' ' || *vp > '~' || strchr("(){}[]", *vp))
+    if (!isprint((unsigned char)*vp) || strchr("(){}[]", *vp))
     {
-	char	*s;
-
-	s = strchr("\bb\nn\tt\rr\ff", *vp);
+	const char *s = strchr("\bb\nn\tt\rr\ff", *vp);
 	if (s)
 	{
     	    trace_putchar('\\');
@@ -411,12 +408,10 @@ trace_string_real(const char *name, const char *vp)
 	count = 0;
     for (s = vp; *s; ++s)
     {
-	int             c;
-
-	c = *s;
-	if (c < ' ' || c > '~')
+	unsigned char c = *s;
+	if (!isprint(c))
 	{
-	    char            *cp;
+	    const char      *cp;
 
 	    cp = strchr("\bb\ff\nn\rr\tt", c);
 	    if (cp)
@@ -424,7 +419,7 @@ trace_string_real(const char *name, const char *vp)
 	    else
 	    {
 		escape:
-		trace_printf("\\%03o", (unsigned char)c);
+		trace_printf("\\%03o", c);
 	    }
 	}
 	else

@@ -33,6 +33,7 @@
 #include <change.h>
 #include <change/branch.h>
 #include <change/file.h>
+#include <change/signedoffby.h>
 #include <commit.h>
 #include <dir.h>
 #include <error.h>
@@ -40,12 +41,14 @@
 #include <help.h>
 #include <lock.h>
 #include <mem.h>
+#include <option.h>
 #include <os.h>
 #include <pattr.h>
 #include <progname.h>
 #include <project.h>
 #include <project/file.h>
 #include <project/history.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -265,6 +268,11 @@ review_pass_main(void)
 	case arglex_token_wait_not:
 	    user_lock_wait_argument(review_pass_usage);
 	    break;
+
+	case arglex_token_signed_off_by:
+	case arglex_token_signed_off_by_not:
+	    option_signed_off_by_argument(review_pass_usage);
+	    break;
 	}
 	arglex();
     }
@@ -460,6 +468,14 @@ review_pass_main(void)
 	str_free(path);
 	str_free(path_d);
     }
+
+    //
+    // If the project is configured to use Signed-off-by lines in
+    // change descriptions, append a Signed-off-line to this change's
+    // description.
+    //
+    if (change_signed_off_by_get(cp))
+	change_signed_off_by(cp, up);
 
     //
     // write out the data and release the locks

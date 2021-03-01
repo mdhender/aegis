@@ -25,6 +25,7 @@
 #include <ac/curl/curl.h>
 
 
+#ifdef HAVE_CURL_CURL_H
 #ifndef HAVE_CURL_EASY_STRERROR
 
 const char *
@@ -281,3 +282,4 @@ curl_multi_strerror(CURLMcode x)
 }
 
 #endif
+#endif // HAVE_CURL_CURL_H

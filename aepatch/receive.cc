@@ -23,6 +23,7 @@
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
+#include <ac/unistd.h>
 
 #include <arglex3.h>
 #include <arglex/change.h>
@@ -137,6 +138,8 @@ mangle_file_names(patch_list_ty *plp, project_ty *pp)
 		    );
 		if (s)
 		{
+		    trace(("\"%s\" -> \"%s\"\n", p->name.string[idx]->str_text,
+			s->str_text));
 		    str_free(p->name.string[idx]);
 		    p->name.string[idx] = s;
 		}
@@ -144,6 +147,8 @@ mangle_file_names(patch_list_ty *plp, project_ty *pp)
 	    if (path_prefix_add)
 	    {
 		s = os_path_cat(path_prefix_add, p->name.string[idx]);
+		trace(("\"%s\" -> \"%s\"\n", p->name.string[idx]->str_text,
+		    s->str_text));
 		str_free(p->name.string[idx]);
 		p->name.string[idx] = s;
 	    }
@@ -200,27 +205,33 @@ mangle_file_names(patch_list_ty *plp, project_ty *pp)
 	best.npaths = 0;
 	best.idx = 0;
     }
+    trace(("best.npaths = %d\n", best.npaths));
+    trace(("best.idx = %d\n", best.idx));
 
     //
     // Now adjust the file names, using the path information.
     //
     for (j = 0; j < plp->length; ++j)
     {
-	char		*cp2;
-
 	//
 	// Rip the right number of path elements from the
 	// "best" name.	 Note that we have to cope with the
 	// number of names in the patch being inconsistent.
 	//
+	trace(("%d of %d\n", j, plp->length));
 	p = plp->item[j];
+	trace(("nstrings = %d\n", (int)p->name.nstrings));
+	assert(p->name.nstrings);
+	if (p->name.nstrings == 0)
+	    continue;
 	s = p->name.string[0];
 	if (best.idx < (int)p->name.nstrings)
 	    s = p->name.string[best.idx];
+	trace(("\"%s\"\n", s->str_text));
 	cp = s->str_text;
 	for (npaths = best.npaths; npaths > 0; --npaths)
 	{
-	    cp2 = strchr(cp, '/');
+	    char *cp2 = strchr(cp, '/');
 	    if (!cp2)
 		break;
 	    cp = cp2 + 1;
@@ -1097,8 +1108,6 @@ receive(void)
     }
     change_free(cp);
     cp = 0;
-    project_free(pp);
-    pp = 0;
 
     if (change_set)
     {
@@ -1266,6 +1275,14 @@ receive(void)
     }
 
     //
+    // Sleep for a second to make sure the derived files will have
+    // mod-times strictly later than the source files, and that the aeb
+    // timestamp will also be strictly later then the mod times for the
+    // source files.
+    //
+    sleep(1);
+
+    //
     // now build the change
     //
     s =
@@ -1281,9 +1298,22 @@ receive(void)
     str_free(s);
 
     //
+    // Sleep for a second to make sure the aet timestamps will be
+    // strictly later then the aeb timestamp.
+    //
+    sleep(1);
+
+    //
+    // re-read the change state data.
+    //
+    cp = change_alloc(pp, change_number);
+    change_bind_existing(cp);
+    cstate_ty *cstate_data = change_cstate_get(cp);
+
+    //
     // now test the change
     //
-    if (need_to_test)
+    if (need_to_test && !cstate_data->test_exempt)
     {
 	s =
 	    str_format
@@ -1294,8 +1324,11 @@ receive(void)
 	    );
 	os_become_orig();
 	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+	os_become_undo();
 	str_free(s);
-
+    }
+    if (need_to_test && !cstate_data->test_baseline_exempt)
+    {
 	s =
 	    str_format
 	    (
@@ -1303,12 +1336,32 @@ receive(void)
 		change_number,
 		project_name->str_text
 	    );
+	os_become_orig();
 	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
 	os_become_undo();
 	str_free(s);
     }
 
     // always do a regession test?
+    if (!cstate_data->regression_test_exempt)
+    {
+	s =
+	    str_format
+	    (
+		"aegis --test --regression --change=%ld --project=%s --verbose",
+		change_number,
+		project_name->str_text
+	    );
+	os_become_orig();
+	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+	os_become_undo();
+	str_free(s);
+    }
+
+    change_free(cp);
+    cp = 0;
+    project_free(pp);
+    pp = 0;
 
     //
     // end development (if we got this far!)

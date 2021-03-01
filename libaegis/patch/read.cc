@@ -97,6 +97,7 @@ patch_read(input_ty *input, int required)
 			continue;
 		}
 		trace(("found header, type %s\n", fp->name));
+		assert(pp->name.nstrings);
 
 		//
 		// The first lot of "garbage" is kept as the change

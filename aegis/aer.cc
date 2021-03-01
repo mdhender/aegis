@@ -30,9 +30,9 @@
 #include <arglex2.h>
 #include <arglex/change.h>
 #include <arglex/project.h>
-#include <error.h>
 #include <help.h>
 #include <progname.h>
+#include <quit.h>
 #include <sub.h>
 #include <trace.h>
 #include <zero.h>

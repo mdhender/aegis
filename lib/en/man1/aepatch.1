@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001-2003 Peter Miller;
+.\"	Copyright (C) 2001-2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -131,6 +131,7 @@ By default, the latest feature set will be used.
 .so o_delta.so
 .so o_output.so
 .so o_project.so
+.so o_sob.so
 .SH RECEIVE
 The receive variant takes a patch
 and creates an Aegis change (see \fIaenc\fP(1)) to implement the change
@@ -192,6 +193,7 @@ You may also use a delta name instead of a delta number.
 This option may be used to set the project name.  If not specified the
 project name in the input package will be used (if present), otherwise
 the usual project name default will be used.
+.so o_trojan.so
 .SS Security
 Receiving changes by e-mail, and automatically committing them to the
 baseline without checking them, would be a recipe for disaster.

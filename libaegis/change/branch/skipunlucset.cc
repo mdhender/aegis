@@ -25,13 +25,10 @@
 
 
 void
-change_branch_skip_unlucky_set(change_ty *cp, int n)
+change_branch_skip_unlucky_set(change_ty *cp, bool n)
 {
-    cstate_ty       *cstate_data;
-    cstate_branch_ty *bp;
-
-    cstate_data = change_cstate_get(cp);
-    bp = cstate_data->branch;
+    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_branch_ty *bp = cstate_data->branch;
     assert(bp);
-    bp->skip_unlucky = (boolean_ty)!!n;
+    bp->skip_unlucky = n;
 }

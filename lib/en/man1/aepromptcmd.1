@@ -1,0 +1,89 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2004 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the lib/en/man1/aepromptcmd command.
+.\"
+.so z_name.so
+.ds n) aepromptcmd
+.TH "aepromptcmd" 1 \*(N) "Reference Manual" ""
+.SH NAME
+aepromptcmd \- change prompt color by change state
+.XX "aepromptcmd(1)" "change prompt color by change state"
+.SH SYNOPSIS
+PROMPT_COMMAND="aepromptcmd"
+.SH DESCRIPTION
+The \fIbash\fP(1) shell has an interesting property:  If the
+PROMPT_COMMAND vaiable is set, the value is executed as a command prior
+to issuing each primary prompt.  (Actually, it can be a seties of
+semicolon separated commands.)
+.PP
+In order to change the text back to normal, the PS1 variable needs to
+have "\e33[0m" somewhere near the end, otherwise things can get a little
+difficult to read.  If you are using \fIbash\fP(1), you need to let it
+know these are unprintable (like this: "\e[\e33[0m\e]") or it messes up
+command line editing.
+.PP
+The \fI\*(n)\fP command is used to set the color of the prompt, based on
+the state of the current change.
+This is an idea taken from Kent Beck's \fITest Driven Development\fP book.
+If the change is in the \fIbeing developed\fP or \fIbeing integrated\fP
+state and it needs to be built, the prompt is red; if it is built but it
+needs to be tested, the prompt is magenta, otherwise it is green.
+.SH Example
+Here is a short script you can put in your \f[CW].bashrc\fP file to turn
+on prompt coloring:
+.RS
+if [ "$PS1" ]
+then
+    case "$PROMPT_COMMAND" in
+    "" )
+	PROMPT_COMMAND="aepromptcmd"
+	PS1="$PS1^[[0m"
+	;;
+    *aepromptcmd*)
+	;;
+    *)
+	PROMPT_COMMAND="$PROMPT_COMMAND;aepromptcmd"
+	PS1="$PS1\e[\e33[0m\e]"
+	;;
+    esac
+    export PROMPT_COMMAND
+    export PS1
+fi
+.RE
+Note that this usually leaves your prompt default (black) when you are
+not somewhere inside a development directory.
+.SS Limitations
+The \fIaepromptcmd\fP command uses the ANSI color escape sequences.
+It really should to use the \fItigetstr\fP(3) function from
+\fIterminfo\fP(3) to do this in a terminal independent way.
+Code contributions welcome.
+.SH OPTIONS
+The following options are understood:
+.so o_change.so
+.so o_project.so
+.so o_help.so
+.TP 8n
+\fB\-Verbose\fP
+By default error messages are supressed, so that the prompt will be normal
+when you are outside an Aegis work area.
+Use this option to tuen error messages back on.
+.so o__rules.so
+.so z_exit.so
+.so z_cr.so

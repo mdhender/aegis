@@ -237,10 +237,10 @@ cc_include_flags = [prepost "-I" "" [search_list]];
 /*
  * How to use yacc sources.
  */
-if [find_command yacc] then
-	yacc = yacc;
-else if [find_command bison] then
+if [find_command bison] then
 	yacc = bison -y;
+else if [find_command yacc] then
+	yacc = yacc;
 else if [find_command byacc] then
 	yacc = byacc;
 else
@@ -258,10 +258,10 @@ yacc_flags = ;
 /*
  * How to use lex sources.
  */
-if [find_command lex] then
-	lex = lex;
-else if [find_command flex] then
+if [find_command flex] then
 	lex = flex;
+else if [find_command lex] then
+	lex = lex;
 else
 {
 	echo "'no lex command found on this machine'"

@@ -60,8 +60,8 @@ sub_change_files(sub_context_ty *scp, wstring_list_ty *arg)
     change_ty       *cp;
     unsigned        action_mask = 0;
     unsigned        usage_mask = 0;
-    boolean_ty      not_var = (boolean_ty)0;
-    boolean_ty      quote = (boolean_ty)0;
+    bool            not_var = false;
+    bool            quote = false;
     string_list_ty  sl;
     string_ty       *s;
     wstring_ty	    *result;
@@ -81,36 +81,33 @@ sub_change_files(sub_context_ty *scp, wstring_list_ty *arg)
     //
     for (n = 1; n < arg->nitems; ++n)
     {
-	unsigned        k;
-	int		ok;
-
-	ok = 0;
+	bool ok = false;
 	s = wstr_to_str(arg->item[n]);
-	for (k = 0; k < file_action_max; ++k)
+	for (unsigned k = 0; k < file_action_max; ++k)
 	{
 	    if (0 == strcmp(s->str_text, file_action_ename((file_action_ty)k)))
 	    {
 		action_mask |= 1 << k;
-		ok = 1;
+		ok = true;
 	    }
 	}
-	for (k = 0; k < file_usage_max; ++k)
+	for (unsigned k = 0; k < file_usage_max; ++k)
 	{
 	    if (0 == strcmp(s->str_text, file_usage_ename((file_usage_ty)k)))
 	    {
 		usage_mask |= 1 << k;
-		ok = 1;
+		ok = true;
 	    }
 	}
 	if (0 == strcmp(s->str_text, "not") || 0 == strcmp(s->str_text, "!"))
 	{
-	    not_var = (boolean_ty)!not_var;
-	    ok = 1;
+	    not_var = !not_var;
+	    ok = true;
 	}
 	if (0 == strcmp(s->str_text, "quote"))
 	{
-	    quote = (boolean_ty)1;
-	    ok = 1;
+	    quote = true;
+	    ok = true;
 	}
 	if (!ok)
 	{

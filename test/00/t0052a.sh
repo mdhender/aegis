@@ -121,7 +121,7 @@ unset LANGUAGE
 # test the branch diff functionality
 #
 activity="new project 124"
-$bin/aegis -npr test -v > log 2>&1
+$bin/aegis -npr test -v -dir $work/test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="project attributes 128"

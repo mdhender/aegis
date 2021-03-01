@@ -241,3 +241,55 @@ option_page_headers_get(void)
 	page_headers = 1;
     return page_headers;
 }
+
+
+static int signed_off_by = -1;
+
+
+void
+option_signed_off_by_argument(void (*usage)(void))
+{
+    switch (arglex_token)
+    {
+    case arglex_token_signed_off_by_not:
+	if (signed_off_by > 0)
+	{
+	    mutually_exclusive_options
+	    (
+		arglex_token_signed_off_by,
+		arglex_token_signed_off_by_not,
+		usage
+	    );
+	}
+	else if (signed_off_by == 0)
+	{
+	    duplicate_option_by_name(arglex_token_signed_off_by_not, usage);
+	}
+        signed_off_by = 0;
+        break;
+
+    case arglex_token_signed_off_by:
+	if (signed_off_by > 0)
+	{
+	    duplicate_option_by_name(arglex_token_signed_off_by, usage);
+	}
+	else if (signed_off_by == 0)
+	{
+	    mutually_exclusive_options
+	    (
+		arglex_token_signed_off_by,
+		arglex_token_signed_off_by_not,
+		usage
+	    );
+	}
+        signed_off_by = 1;
+	break;
+    }
+}
+
+
+bool
+option_signed_off_by_get(bool dflt)
+{
+    return (signed_off_by < 0 ? dflt : (signed_off_by != 0));
+}

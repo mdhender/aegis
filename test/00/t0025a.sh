@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994, 1995, 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1994-1998, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -104,7 +104,7 @@ if test $? -ne 0 ; then no_result; fi
 # test the aechown functionality
 #
 activity="new project 108"
-$bin/aegis -npr foo -vers "" > log 2>&1
+$bin/aegis -npr foo -vers "" -dir $work/proj.dir > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 AEGIS_PROJECT=foo

@@ -32,7 +32,6 @@
 #include <input/file.h>
 #include <progname.h>
 #include <r250.h>
-#include <str.h>
 #include <uuidentifier.h>
 
 enum
@@ -114,7 +113,6 @@ main(int argc, char **argv)
     int		    (*func)(string_ty *, string_ty *);
 
     arglex_init(argc, argv, argtab);
-    str_initialize();
     r250_init();
     arglex();
     os_become_init_mortal();

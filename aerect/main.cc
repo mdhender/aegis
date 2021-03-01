@@ -25,14 +25,13 @@
 
 #include <arglex2.h>
 #include <env.h>
-#include <error.h>
 #include <help.h>
 #include <language.h>
 #include <os.h>
 #include <progname.h>
+#include <quit.h>
 #include <r250.h>
 #include <rect.h>
-#include <str.h>
 #include <sub.h>
 #include <version.h>
 
@@ -146,7 +145,6 @@ main(int argc, char **argv)
     r250_init();
     os_become_init_mortal();
     arglex2_init3(argc, argv, argtab);
-    str_initialize();
     env_initialize();
     language_init();
 

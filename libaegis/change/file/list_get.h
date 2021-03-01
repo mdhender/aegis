@@ -29,8 +29,8 @@
 /**
   * The project_file_list_get function is used to obtain a list of file names.
   *
-  * @param pp
-  *     The project to be scanned.
+  * @param cp
+  *     The change to be scanned.
   * @param as_view_path
   *	How to interpret the search path from development directory,
   *     then branch baseline, and so on until the trunk baseline.

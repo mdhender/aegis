@@ -27,13 +27,14 @@
 #include <ac/stdlib.h>
 #include <ac/string.h>
 
-#include <error.h>
+#include <error.h> // for assert
 #include <input/crlf.h>
 #include <input/env.h>
 #include <input/file.h>
 #include <input/gunzip.h>
 #include <meta_lex.h>
 #include <mem.h>
+#include <quit.h>
 #include <str.h>
 #include <stracc.h>
 #include <gram.gen.h> // must be after <str.h>

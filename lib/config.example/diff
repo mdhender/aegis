@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	This file is in the Public Domain, 1999 Peter Miller.
+ *	This file is in the Public Domain, 2004, Peter Miller.
  *
  * MANIFEST: example use of diff in the project config file
  *
@@ -12,9 +12,9 @@
 
 
 /*
- * Compare two files using GNU diff.  The -U 10 option produces an output
- * with inserts and deletes shown line, with 10 lines of context before
- * and after.  This is usually superior to -c, as it shows what happened
+ * Compare two files using GNU diff.  The -U -1 option produces an output
+ * with inserts and deletes shown line, with the whole file as context.
+ * This is usually superior to -c, as it shows what happened
  * more clearly (and it takes less space).  The -b option could be added
  * to compare runs of white space as equal.
  *
@@ -45,5 +45,23 @@
  * be produced in addition to these extra tests.
  */
 diff_command =
-	"set +e; diff -U999999 -a ${quote $original} ${quote $input} "
+	"set +e; diff -U -1 -a ${quote $original} ${quote $input} "
 	"> ${quote $output}; test $? -le 1";
+
+/*
+ * Here is a possible diff_command that could be used if
+ * dealing with binary files is required.
+ *
+ * If the return code from the original diff is greater then 1, then
+ * make sure that diff spit out the 'Binary files differ message'
+ * and return 0, otherwise return 1
+ *
+diff_command =
+       "set +e; "
+       "diff -U -1 -a ${quote $original} ${quote $input} > ${quote $output}; "
+       "if test $? -gt 1; then "
+       "grep -q ^Binary ${quote $output}; "
+       "test $? -eq 0; "
+       "else; exit 0 ; fi";
+ *
+ */

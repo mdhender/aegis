@@ -60,6 +60,8 @@ int string_list_member(const string_list_ty *, string_ty *);
   * @param finish
   *	The index of the last string in the list to be joined (counting
   *	from one, or one past the end, counting from zero).
+  * @param sep
+  *     The separator characters.  Defaults to spaces if NULL.
   */
 string_ty *wl2str(const string_list_ty *slp, int start, int finish,
     const char *sep);

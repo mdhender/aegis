@@ -36,6 +36,7 @@
 #include <str.h>
 #include <symtab.h>
 #include <trace.h>
+#include <type/boolean.h>
 #include <type/enumeration.h>
 #include <type/integer.h>
 #include <type/list.h>
@@ -48,11 +49,14 @@
 #ifdef DEBUG
 #define YYDEBUG 1
 extern int yydebug;
-#define printf trace_where, trace_printf
+#define printf lex_debug_printf
+#define fprintf lex_debug_fprintf
 #endif
 
 %}
 
+%token	BOOLEAN
+%token	BOOLEAN_CONSTANT
 %token	HIDE_IF_DEFAULT
 %token	INCLUDE
 %token	INTEGER
@@ -173,7 +177,7 @@ base_name(const char *s)
 	++cp;
     else
 	cp = s;
-    strcpy(buffer, cp);
+    strlcpy(buffer, cp, sizeof(buffer));
     bp = strrchr(buffer, '.');
     if (bp)
 	*bp = 0;
@@ -507,6 +511,10 @@ type
     : STRING
 	{
 	    $$ = new type_string_ty();
+	}
+    | BOOLEAN
+	{
+	    $$ = new type_boolean();
 	}
     | INTEGER
 	{

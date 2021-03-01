@@ -37,11 +37,13 @@ get_project_menu(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     change_ty       *cp;
     cstate_ty       *cstate_data;
 
-    html_header(pp);
+    html_header(pp, 0);
 
     printf("<title>Project ");
     html_encode_string(project_name_get(pp));
-    printf("</title></head>\n<body><h1 align=center>\n");
+    printf("</title></head><body>\n");
+    html_header_ps(pp, 0);
+    printf("<h1 align=center>\n");
     emit_project_but1(pp);
     printf("\n</h1>\n");
 
@@ -96,9 +98,9 @@ get_project_menu(project_ty *pp, string_ty *filename, string_list_ty *modifier)
 	printf("\n<p>\n");
     }
 
-    printf("<dt><a href=\"%s/", http_script_name());
-    html_escape_string(project_name_get(pp));
-    printf("/\">Baseline</a><dd>\n");
+    printf("<dt>");
+    emit_project_href(pp, 0);
+    printf("Baseline</a><dd>\n");
     printf("This item will provide you with access to the files in\n");
     printf("the project baseline.\n");
     if (pp->parent)
@@ -109,7 +111,7 @@ get_project_menu(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     printf("<p>\n");
     printf("If you wish to download the sources using\n");
     printf("&ldquo;wget -r&rdquo; or similar, use the\n<i>");
-    emit_change_href(cp, "noindex@nolinks@noderived");
+    emit_project_href(pp, "file@contents@noindex@nolinks@noderived");
     printf("no navigation links</a></i> variant.\n");
     printf("<p>\n");
 
@@ -167,6 +169,14 @@ get_project_menu(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     printf("</ul>\n");
     printf("<p>\n");
 
+    printf("<dt>");
+    emit_project_href(pp, "inventory");
+    printf("Change Set Inventory</a><dd>\n");
+    printf("This item allows you to obtain a list of all available\n");
+    printf("change sets and their corresponding UUIDs.  This may be\n");
+    printf("used to automate downloading of change sets not yet in\n");
+    printf("your repository.<p>\n");
+
 #if 0
     href = http_script_name() ## "?file@proj_staff+project@" ## quote_url(pn);
     printf("<dt><a href=\"" ## href ## "\">");
@@ -214,11 +224,10 @@ get_project_menu(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     printf("<dt>\n");
     emit_project_href(pp, "file@metrics");
     printf("File Metrics</a><dd>");
-    printf("This item will provide you with a listing of the files with\n");
-    printf("file metrics.  (Each project defines its own metrics, none\n");
-    printf("by default.)");
-    printf("Links are provided to individual file information.");
-    printf("<p>\n");
+    printf("This item will provide you with a listing of the files\n");
+    printf("with file metrics.  There are no default metrics; each\n");
+    printf("project defines its own metrics.  Links are provided\n");
+    printf("to individual file information.<p>\n");
 
     printf("<dt>\n");
     emit_project_href(pp, "file@activity");
@@ -301,5 +310,5 @@ get_project_menu(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     printf("<a href=\"%s/\">Project List</a>\n", http_script_name());
     printf("]</p>\n");
 
-    html_footer();
+    html_footer(pp, 0);
 }

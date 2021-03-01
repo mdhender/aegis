@@ -30,7 +30,6 @@
 #include <language.h>
 #include <list.h>
 #include <os.h>
-#include <str.h>
 #include <usage.h>
 #include <version.h>
 
@@ -67,7 +66,6 @@ main(int argc, char **argv)
 #endif
 
     arglex3_init(argc, argv);
-    str_initialize();
     env_initialize();
     language_init();
     os_become_init_mortal();
