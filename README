@@ -111,11 +111,11 @@ ARCHIVE	SITE
 	The latest version of Aegis is available by HTTP from:
 		URL:	http://www.canb.auug.org.au/~millerp/
 		File:	aegis.html	   # the Aegis page
-		File:	aegis.4.7.README   # Description, from tar file
-		File:	aegis.4.7.lsm	   # Description, in LSM format
-		File:	aegis.4.7.ae	   # the complete source, aedist format
-		File:	aegis.4.7.spec	   # RedHat package specification
-		File:	aegis.4.7.tar.gz   # the complete source
+		File:	aegis.4.8.README   # Description, from tar file
+		File:	aegis.4.8.lsm	   # Description, in LSM format
+		File:	aegis.4.8.ae	   # the complete source, aedist format
+		File:	aegis.4.8.spec	   # RedHat package specification
+		File:	aegis.4.8.tar.gz   # the complete source
 
 	This directory also contains a few other pieces	of
 	software written by me.	 Some are referred to in the
@@ -130,11 +130,11 @@ ARCHIVE	SITE
 	archives.  You will be able to find Aegis on any of its
 	mirrors.
 		URL:	ftp://metalab.unc.edu/pub/Linux/devel/vc/
-		File:	aegis.4.7.README   # Description, from tar file
-		File:	aegis.4.7.lsm	   # Description, in LSM format
-		File:	aegis.4.7.spec	   # RedHat package specification
-		File:	aegis.4.7.ae	   # the complete source, aedist format
-		File:	aegis.4.7.tar.gz   # the complete source
+		File:	aegis.4.8.README   # Description, from tar file
+		File:	aegis.4.8.lsm	   # Description, in LSM format
+		File:	aegis.4.8.spec	   # RedHat package specification
+		File:	aegis.4.8.ae	   # the complete source, aedist format
+		File:	aegis.4.8.tar.gz   # the complete source
 	This site is extensively mirrored around the world, so
 	look for a copy	near you (you will get much better
 	response).
@@ -285,6 +285,29 @@ RELEASE	NOTES
 
 	A number of features have been added to	Aegis with this
 	release.  A few	of them	are detailed here:
+
+   Version 4.8
+	* A bugs has been fixed	in the aetar -receive command,
+	where it incorrectly complained	about shorty input files.
+
+	* Numerous changes have	been made to the web interface.
+	They now use cascading style sheets, have more navigation
+	links, and inclde tarball downloads.
+
+	* Several build	issues have been resolved.
+
+	* A bug	has been fixed in the aeimport(1) command.  The
+	symptom	was that the aecp -delta command misbehaved.  The
+	probelm	was that the first delta needed	a timestamp prior
+	to the first change set	taken from the import sets.
+
+	* A bug	has been fixed in the aepatch -send command,
+	where it would add Index lines for files with no
+	differences.
+
+	* A bug	has been fixed in the protect_development_-
+	directory = true; handling, where it would cause a
+	"multiple user permissions setting" error message.
 
    Version 4.7
 	* The aefind(1)	command	now has	-resolve as the	default.
@@ -561,6 +584,7 @@ RELEASE	NOTES
 	See aepfonf(5) for more	information.
 
    Version 4.2
+
 	* There	is a new ``--No-Page-Headers'' option which may
 	be used	to suppress page and column headers in listings
 	and reports.
@@ -720,7 +744,6 @@ RELEASE	NOTES
 	to the user, has been fixed.
 
    Version 3.29
-
 	* The aeimport(1) command can now import CVS repositories
 	which contain binary files.
 
@@ -758,6 +781,7 @@ RELEASE	NOTES
 	documentation.
 
    Version 3.28
+
 	* There	is a new aepatch(1) program, which may be used to
 	send an	receive	changes	using the classic open source
 	patch format.  See aepatch(1) for more information.
@@ -907,7 +931,6 @@ RELEASE	NOTES
 	aerfail(1).
 
    Version 3.25
-
 	* It is	now possible to	remove users who's accounts have
 	been removed (the affects the aera(1), aerd(1),	aeri(1)
 	and aerrv(1) commands).
@@ -965,7 +988,6 @@ RELEASE	NOTES
 	I am unable to confirm this.
 
    Version 3.24
-
 	* There	is a new aeimport(1) command, which may	be used
 	to import CVS archives into Aegis.
 
@@ -1029,7 +1051,6 @@ RELEASE	NOTES
 	``Howto'', in the Developer section.
 
    Version 3.23
-
 	* A bug	has been fixed which caused the	report generator
 	change_number function to give garbage answers for change
 	number zero (fortunalely, not very common).

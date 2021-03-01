@@ -20,7 +20,7 @@
  * MANIFEST: menu of change information
  */
 
-columns({width = 1000;});
+columns({width = 1000; });
 print("Content-Type: text/html");
 print("");
 
@@ -33,32 +33,80 @@ c = p.change[cn];
 auto script_name;
 script_name = getenv("SCRIPT_NAME");
 if (script_name == "")
-    script_name = "http://localhost/cgi-bin/aegis.cgi";
+	script_name = "http://localhost/cgi-bin/aegis.cgi";
 
-print("<html><head><title>");
+auto href;
+href = script_name ## "?file@proj_menu+project@" ## quote_url(pn);
+
+print("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\""
+	## "\"http://www.w3.org/TR/REC-html40/loose.dtd\">");
+print("<html><head>");
+print("<meta name=\"GENERATOR\" content=\"" ## script_name ## "\">");
+print("<meta http-equiv=\"Content-Type\" "
+	## "content=\"text/html; charset=ISO-8859-1\">");
+print("<style type=\"text/css\"> "
+	## "body { background-color: white; } "
+	## "</style>");
+/*
+ * Netscape 4.x has numerous CSS bugs, two of which need mentioning.
+ * 1. If a style sheet is nopt present Netscape says 404 Not found, when
+ * it should silently ignore it.  2. Style sheets who's media is not
+ * "screen" will be ignored.  Fortunately we can use (2) to get around (1).
+ */
+print("<link rel=\"stylesheet\" type=\"text/css\" href=\"/aedefault.css\" "
+	## "media=\"all\">");
+print("<link rel=\"stylesheet\" type=\"text/css\" href=\"/" ## pn ## ".css\" "
+	## "media=\"all\">");
+print("<title>");
+
 print("Project " ## quote_html(pn) ## ", Change " ## cn);
-print("</title></head><body bgcolor=\"#FFFFFF\"><h1 align=center>");
-print("Project ``" ## quote_html(pn) ## "'', Change " ## cn);
+print("</title></head><body><h1 align=center>");
+
+print("<a href=\"" ## script_name ## "\">Project</a>");
+auto long_project_name;
+auto prj_name_parts;
+prj_name_parts = split(pn, '.');
+href = script_name ## "?file@proj_menu+project@"
+	## quote_url(prj_name_parts[0]);
+long_project_name = "<a href=\"" ## href ## "\" >"
+	## quote_html(prj_name_parts[0]) ## "</a>";
+auto j;
+for (j = 1; j < count(prj_name_parts); j++)
+{
+    href ##= '.' ## prj_name_parts[j];
+    long_project_name ##= ".<a href=\"" ## href ## "\" >"
+    	## quote_html(prj_name_parts[j]) ## "</a>";
+};
+long_project_name = "``" ## long_project_name ## "'',";
+/* HTTP limits lines to 510 characters */
+for (j in wrap(long_project_name, 510))
+    print(j);
+
+print("Change " ## cn);
 print("</h1>");
 
+print("<div class=\"brief-description\">");
 print("<h2>Brief Description</h2>");
 auto part;
 for (part in wrap_html(quote_html(c.brief_description), 80))
     print(part);
+print("</div>");
 
+print("<div class=\"description\">");
 print("<h2>Description</h2>");
 for (part in wrap_html(quote_html(c.description), 80))
     print(part);
+print("</div>");
 
+print("<div class=\"information\">");
 print("<h2>Information Available</h2>");
 print("<dl>");
-auto href;
 
 auto ok;
 try { ok = count(keys(c.branch)); }
 catch(ok) { ok = 0; }
 
-print("<dt>State<dd>This change is in the <i>" ## c.state ## "</i> state.");
+print("<dt>State<dd>This change is in the <dfn>" ## c.state ## "</dfn> state.");
 
 if (ok)
 {
@@ -95,7 +143,7 @@ if (c.state >= being_developed && c.state <= being_integrated)
     print("File Activity");
     print("</a><dd>");
     print("This item will provide you with a listing of files which are");
-    print("being modified in this change <i>and also</i> in other changes.");
+    print("being modified in this change <em>and also</em> in other changes.");
     print("The list includes who is working on the changes, and a brief");
     print("description of each change.");
 
@@ -107,8 +155,9 @@ if (c.state >= being_developed && c.state <= being_integrated)
     print("<a href=\"" ## href ## "\">File Conflict</a>");
     print("<dd>");
     print("This item will provide you with a list of changes which are");
-    print("actively modifying files in common with this change <b>if</b> more");
-    print("than <i>one</i> change is modifying the file at the same time.");
+    print("actively modifying files in common with this change");
+    print("<strong>if</strong> more than <em>one</em> change is modifying the");
+    print("file at the same time.");
 }
 
 if (c.state >= being_developed)
@@ -137,38 +186,62 @@ if (c.state >= being_developed)
 {
     print("<p>");
     print("<dt>Download<dd>");
-    print("There are two ways to download this change.");
+    print("There are three ways to download this change.");
     print("<br><table align=center>");
-    print("<tr><td valign=top>");
-    href = script_name ## "/" ## quote_url(pn) ## ".C" ## cn
-	## ".ae?file@aedist+project@" ## quote_url(pn)
-	## "+change@" ## cn;
-    print("<a href=\"" ## href ## "\"><i>aedist</i></a>,");
-    print("</td><td valign=top>");
-    print("The <i>aedist</i>(1) program packages changes so that they may");
-    print("be reproduced exactly on the remote site.  Changes packaged in");
-    print("this way require the <i>aedist</i>(1) program from Aegis 4.23");
-    print("or later to apply them.");
-    print("</td></tr>");
 
     print("<tr><td valign=top>");
     href = script_name ## "/" ## quote_url(pn) ## ".C" ## cn
 	## ".patch?file@aepatch+project@" ## quote_url(pn)
 	## "+change@" ## cn;
-    print("<a href=\"" ## href ## "\"><i>aepatch</i></a>");
+    print("<a href=\"" ## href ## "\"><code>patch</code></a>");
     print("</td><td valign=top>");
-    print("The <i>aepatch</i>(1) program packages changes in a manner");
-    print("familiar to Open Source developers.  Unlike <i>aedist</i>(1),");
-    print("change sets are not able to be reproduced identically, however");
-    print("the patches are able be applied manually.  You can apply these");
-    print("patches (or, indeed, other patches not procuced by <i>aepatch</i>)");
-    print("with the <i>aepatch</i>(1) program from Aegis 3.28 or later.");
-    print("To apply this patch manually, you must first MIME64 decode and");
-    print("gunzip, before using the normal <i>patch</i>(1) program.");
+    print("This link will download a compressed patch familiar to Open");
+    print("Source developers.");
+    print("Unlike the <i>aedist</i> link, below, the change meta-data");
+    print("is not preserved, only the change description endures.");
     print("</td></tr>");
+
+    print("<tr><td valign=top>");
+    href = script_name ## "/" ## quote_url(pn) ## ".C" ## cn
+	## ".tar.gz?file@aetar+project@" ## quote_url(pn)
+	## "+change@" ## cn;
+    print("<a href=\"" ## href ## "\"><code>tar.gz</code></a>");
+    print("</td><td valign=top>");
+    print("This link will download a complete project source tarball up to");
+    print("this change.  <strong>Note:</strong> These tarballs do not");
+    print("contain derived or generated files.");
+    print("Unlike the <i>aedist</i> link, below, the change meta-data");
+    print("is not preserved.");
+    print("</td></tr>");
+
+    print("<tr><td valign=top>");
+    href = script_name ## "/" ## quote_url(pn) ## ".C" ## cn
+	## ".ae?file@aedist+project@" ## quote_url(pn)
+	## "+change@" ## cn;
+    print("<a href=\"" ## href ## "\"><code>aedist</code></a>");
+    print("</td><td valign=top>");
+    print("The <em>aedist</em>(1) program packages changes so that they");
+    print("may be reproduced exactly on the remote site.  Changes packaged in");
+    print("this way require the <em>aedist</em>(1) program from");
+    print("Aegis 4.23 or later to apply them.");
+    print("</td></tr>");
+
     print("</table>");
 }
 
-print("</dl><hr>");
+print("</dl>");
+print("</div>");
+
+print("<hr>");
+print("<p align=center class=\"navbar\">[");
+print("<a href=\"" ## script_name ## "\">Project List</a> |");
+href = script_name ## "?file@proj_menu+project@" ## quote_url(pn);
+print("<a href=\"" ## href ## "\">Project Menu</a> |");
+href = script_name ## "?file@chan_list+project@" ## quote_url(pn);
+print("<a href=\"" ## href ## "\">Change List</a>");
+print("]</p>");
+
+print("<hr>");
+
 print("This page was generated " ## now() ## ".");
 print("</body></html>");

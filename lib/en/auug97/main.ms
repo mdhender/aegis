@@ -58,28 +58,6 @@ Recursive Make Considered Harmful
 .ce 1
 \fBABSTRACT\fP
 .sp 0.5
-.\" For many years now,
-.\" we have been developing software on UNIX using
-.\" .I make.
-.\" As projects grow to a size which requires
-.\" subdivision into separate modules,
-.\" we usually separate them into separate directories,
-.\" and we give each directory its own \f(CWMakefile\fP.
-.\" The top-level \f(CWMakefile\fP then invokes the lower-level ones.
-.\" .LP
-.\" This methods of development has a number of well known problems,
-.\" but we all seem to accept these problems as some kind of universal constant,
-.\" as the cost of developing software.
-.\" This paper explores the possibility that this is not the case,
-.\" and that there may be an alternative.
-.\" .LP
-.\" By taking a close look at what
-.\" .I make
-.\" is, and what it does, this paper reveals that many of the well-known
-.\" build problems
-.\" which occur again and again when developing large UNIX projects
-.\" are symptoms of the one underlying problem,
-.\" and are all addressable with the same solution.
 For large UNIX projects, the traditional method of building the
 project is to use recursive
 .I make.
@@ -123,7 +101,7 @@ use are far more encouraging, with routine development performance
 improvements significantly faster than intuition may indicate, and
 without the intuitvely expected compromise of modularity.  The use of
 a whole project \fImake\fP is not as difficult to put into practice as
-it may first appear.
+it may at first appear.
 .sp 2
 .ll +0.5i
 .in -0.5i

@@ -21,6 +21,7 @@
  */
 
 #include <ac/unistd.h>
+#include <ac/sys/ioctl.h>
 #include <ac/termios.h>
 #include <ac/signal.h>
 
@@ -33,8 +34,7 @@
 #include <sys/termio.h>
 
 int
-tcgetpgrp(fd)
-    int             fd;
+tcgetpgrp(int fd)
 {
     int             result;
 
@@ -56,30 +56,10 @@ tcgetpgrp(fd)
 #endif /* SIGSTOP */
 
 
-/*
- *  NAME
- *	  background - test for backgroundness
- *
- *  SYNOPSIS
- *	  int background(void);
- *
- *  DESCRIPTION
- *	  The background function is used to determin e if the curent process is
- *	  in the background.
- *
- *  RETURNS
- *	  int: zero if process is not in the background, nonzero if the process
- *	  is in the background.
- *
- * CAVEAT:
- *	This function has a huge chance of being wrong for your system.
- *	If you need to modify this function, please let the author know.
- */
-
 int
-os_background()
+os_background(void)
 {
-    RETSIGTYPE      (*x)_((int));
+    RETSIGTYPE      (*x)(int);
 
     /*
      * C shell and Bash
@@ -89,7 +69,9 @@ os_background()
      * Only available on systems with job control.
      */
 #ifdef SIGSTOP
-    int             stdout_process_group = tcgetpgrp(0);
+    int             stdout_process_group;
+
+    stdout_process_group = tcgetpgrp(0);
     if (stdout_process_group < 0)
     {
 	/*
@@ -120,7 +102,7 @@ os_background()
      */
 
     /*
-     * probably forground
+     * probably foreground
      */
     return 0;
 }

@@ -243,7 +243,7 @@ nuke_unprintable(string_ty *s)
 	unsigned char   c;
 
 	c = *ip++;
-	if (isspace(c) || !isprint(c))
+	if (isspace((unsigned char)c) || !isprint((unsigned char)c))
 	    c = '_';
 	*op++ = c;
     }

@@ -85,7 +85,20 @@ void os_become_must_be_active_gizzards _((char *, int));
 	os_become_must_not_be_active_gizzards(__FILE__, __LINE__)
 void os_become_must_not_be_active_gizzards _((char *, int));
 
-int os_background _((void));
+
+/**
+  * \brief
+  *	test for backgroundness
+  *
+  * The background function is used to determine if the curent process
+  * is running in the background.
+  *
+  *\return
+  *	zero if process is not in the background, nonzero if the process
+  *	is in the background.
+  */
+int os_background(void);
+
 int os_readable _((string_ty *));
 int os_executable _((string_ty *));
 int os_waitpid _((int child, int *status));

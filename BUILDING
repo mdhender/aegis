@@ -197,7 +197,7 @@ SITE CONFIGURATION
 	when it, too, is using /usr/local as the prefix.
 
 	To cope	with this, you need to say
-		$ CFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib ./configure
+		$ CPPFLAGS=-I/usr/local/include	LDFLAGS=-L/usr/local/lib ./configure
 		...lots	of output...
 		$
 	when running configure.	 Substitute the	appropriate
@@ -670,7 +670,7 @@ GETTING	HELP
 	When reporting problems, please	include	the version
 	number given by	the
 		% aegis	-version
-		aegis version 4.7
+		aegis version 4.8
 		...
 		%
 	command.  Please run this command to get the exact
@@ -907,7 +907,7 @@ WINDOWS-NT
 	habit of
 		turning	all of the newlines into CRLFs.	 This
 		will confuse lots of utilities,	especially GNU
-		Groff.	Use the	``tar xzf aegis-4.7.tar.gz''
+		Groff.	Use the	``tar xzf aegis-4.8.tar.gz''
 		command	from within Cygwin.
 
 	Make sure the Cygwin you are using has GNU Groff 1.15 or

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1992, 1993 Peter Miller.
+ *	Copyright (C) 1992, 1993, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 
 struct string_ty;
 
-void generate_code__init _((struct string_ty *));
-void parse _((char *in, char *c_out, char *h_out));
+void generate_code__init(struct string_ty *);
+void parse(char *in, char *c_out, char *h_out);
 
 #endif /* PARSE_H */

@@ -92,9 +92,9 @@ change_development_directory_chmod_read_write(cp)
 
     change_verbose(cp, 0, i18n("making dev dir writable"));
 
-    change_developer_become(cp);
     dd = change_development_directory_get(cp, 0);
     mask = project_umask_get(cp->pp);
+    change_developer_become(cp);
     dir_walk(dd, func, &mask);
     change_developer_become_undo();
 }

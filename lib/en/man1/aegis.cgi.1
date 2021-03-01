@@ -57,8 +57,19 @@ by following this URL:
 http://localhost/cgi-bin/aegis.cgi?
 .RE
 You may need to replace \fIlocalhost\fP with the machine's exact name.
-.SS diff2html
-If you have the \fIdiff2html\fP(1) command installed somewhere in the
-$PATH, this will be used to generate the diff listings, otherwise a
-simple \fIdiff\fP(1) will be used.
+.PP
+The web interface uses Cascading Style Sheets.  You can give the
+web interface a personalised look and feel, by creating stylesheets
+in the web server's Document Root directory.
+The interface will use it's default styles, then styles from a global
+style sheet called \f[CW]aedefault.css\fP, and then styles from a project
+stylesheet called \fIprojectname\fP\f[CW].css\fP (replace \fIprojectname\fP
+with the name of the project).
+.PP
+There is an example style sheet in
+\f[CW]\*(B)/aedefault.css\fP which demonstrates the style elements used.
+This particular stylesheet is not designed to be aesthetically pleasing,
+but to exercise all of the elements.
+Using this stylesheet unmodified will give psychedelic results.
+Use it as a template.
 .so z_cr.so

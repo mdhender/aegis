@@ -171,7 +171,7 @@ AC_MSG_RESULT(cross))
 
 AC_CHECK_HEADERS(fcntl.h iso646.h libgettext.h libintl.h limits.h locale.h \
 	memory.h mntent.h regex.h rxposix.h stddef.h stdlib.h string.h \
-	unistd.h wchar.h wctype.h widec.h zlib.h sys/clu.h)
+	unistd.h wchar.h wctype.h widec.h zlib.h sys/clu.h sys/ioctl.h)
 AC_HEADER_DIRENT
 AC_TYPE_SIGNAL
 AC_TYPE_SIZE_T
@@ -419,7 +419,7 @@ dnl
 dnl	If the libz.h is not present, Aegis will fail to compile.
 dnl	If the -lz is not present, Aegis will fail to link.
 dnl
-if test "$ac_cv_lib_z" != "yes" -o "$ac_cv_header_zlib_h" != "yes"
+if test "$ac_cv_lib_z_main" != "yes" -o "$ac_cv_header_zlib_h" != "yes"
 then
   AC_MSG_RESULT([])
   AC_MSG_RESULT([	You need to install the GNU zlib compression])

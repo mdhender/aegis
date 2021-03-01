@@ -137,7 +137,7 @@ and always converts them to new style projects.
 .LP
 Planning you branch numbers is essential.
 If you want to use 3-level branch numbers (e.g. "aegis.2.3.1")
-at time time in the future, then
+at some time in the future, then
 you must use 3-level version numbers all the way through (e.g. "aegis.2.3.0").
 This is because change numbers and branch numbers come from the same
 common pool of numbers.

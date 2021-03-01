@@ -216,8 +216,9 @@ can be implemented.
 In addition two special hooks, \fBaeintegratq.end\fP and
 \fBaeintegratq.fail\fP, are recognized.  They are called when
 \fBaeintegratq\fP finishes a queue run.  They are called with 2 arguments
-like any other hook (\fBproject-name change-number\fP) although the
-change-number is given as 0.
+like any other hook (\fBproject-name change-number\fP) although both the
+project-name and change-number given are of the last change integrated
+and may be less than useful.
 .PP
 The \fB.end\fP hook is called if/when the queue run is finished and was
 successful.  Note that this does not mean that no changes failed, only that no

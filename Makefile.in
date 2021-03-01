@@ -1277,13 +1277,13 @@ aecomplete/complete/project/reviewer.$(OBJEXT): \
 	mv reviewer.$(OBJEXT) $@
 
 aecomplete/complete/user.$(OBJEXT): aecomplete/complete/user.c \
-		common/ac/pwd.h common/config.h common/config.messy.h \
-		aecomplete/complete/private.h aecomplete/complete.h \
-		common/main.h aecomplete/complete/user.h \
-		libaegis/project.h common/ac/time.h libaegis/pstate.h \
-		libaegis/type.h common/ac/stddef.h common/str.h \
-		common/ac/stdarg.h libaegis/parse.h libaegis/pattr.h \
-		aecomplete/shell.h
+		common/ac/pwd.h common/ac/stddef.h common/config.h \
+		common/config.messy.h aecomplete/complete/private.h \
+		aecomplete/complete.h common/main.h \
+		aecomplete/complete/user.h libaegis/project.h \
+		common/ac/time.h libaegis/pstate.h libaegis/type.h \
+		common/str.h common/ac/stdarg.h libaegis/parse.h \
+		libaegis/pattr.h aecomplete/shell.h
 	$(CC) $(CFLAGS) -Iaecomplete -Ilibaegis -Icommon -c \
 		aecomplete/complete/user.c
 	mv user.$(OBJEXT) $@
@@ -3079,12 +3079,12 @@ aeimport/format/version_list.$(OBJEXT): aeimport/format/version_list.c \
 	mv version_list.$(OBJEXT) $@
 
 aeimport/import.$(OBJEXT): aeimport/import.c common/ac/stdio.h \
-		common/config.h common/config.messy.h \
+		common/config.h common/config.messy.h common/ac/time.h \
 		libaegis/ael/project/projects.h common/main.h \
 		aeimport/arglex3.h libaegis/arglex2.h common/arglex.h \
 		aeimport/change_set/find.h aeimport/change_set/list.h \
-		aeimport/change_set.h common/ac/time.h common/str_list.h \
-		common/str.h common/ac/stddef.h common/ac/stdarg.h \
+		aeimport/change_set.h common/str_list.h common/str.h \
+		common/ac/stddef.h common/ac/stdarg.h \
 		aeimport/change_set/file_list.h \
 		aeimport/change_set/file.h libaegis/commit.h \
 		aeimport/config_file.h common/error.h common/noreturn.h \
@@ -4013,6 +4013,11 @@ fmtgen/type/time.$(OBJEXT): fmtgen/type/time.c fmtgen/indent.h \
 		common/ac/stdarg.h
 	$(CC) $(CFLAGS) -Ifmtgen -Ilibaegis -Icommon -c fmtgen/type/time.c
 	mv time.$(OBJEXT) $@
+
+$(RPM_BUILD_ROOT)$(datadir)/aedefault.css: lib/aedefault.css \
+		lib/.mkdir.datadir
+	$(INSTALL_DATA) lib/aedefault.css $@
+	-chown $(AEGIS_UID) $@ && chgrp $(AEGIS_GID) $@
 
 $(RPM_BUILD_ROOT)$(datadir)/aegis.icon: lib/aegis.icon \
 		lib/.mkdir.datadir
@@ -7182,97 +7187,7 @@ $(RPM_BUILD_ROOT)$(datadir)/en/notes/locale.man: lib/en/notes/locale.man \
 
 lib/en/readme.ps: lib/en/readme/main.man etc/version.so \
 		lib/en/readme/windows.so lib/en/readme/new.so \
-		lib/en/readme/new.4.7.so lib/en/readme/new.4.6.so \
-		lib/en/readme/new.4.5.so lib/en/readme/new.4.4.so \
-		lib/en/readme/new.4.3.so lib/en/readme/new.4.2.so \
-		lib/en/readme/new.4.1.so lib/en/readme/new.3.29.so \
-		lib/en/readme/new.3.28.so lib/en/readme/new.3.27.so \
-		lib/en/readme/new.3.26.so lib/en/readme/new.3.25.so \
-		lib/en/readme/new.3.24.so lib/en/readme/new.3.23.so \
-		lib/en/readme/new.3.22.so lib/en/readme/new.3.21.so \
-		lib/en/readme/new.3.20.so lib/en/readme/new.3.19.so \
-		lib/en/readme/new.3.18.so lib/en/readme/new.3.17.so \
-		lib/en/readme/new.3.16.so lib/en/readme/new.3.15.so \
-		lib/en/readme/new.3.12.so lib/en/readme/new.3.11.so \
-		lib/en/readme/new.3.10.so lib/en/readme/new.3.9.so \
-		lib/en/readme/new.3.8.so lib/en/readme/new.3.7.so \
-		lib/en/readme/new.3.6.so lib/en/readme/new.3.5.so \
-		lib/en/readme/new.3.4.so lib/en/readme/new.3.3.so \
-		lib/en/readme/new.3.2.so lib/en/readme/new.3.1.so \
-		lib/en/readme/new.3.0.so lib/en/readme/new.2.3.so \
-		lib/en/readme/new.2.2.so lib/en/readme/new.2.1.so \
-		lib/en/readme/new.2.0.so lib/en/readme/new.1.4.so
-	$(SOELIM) -Ilib/en/readme -Ietc -Ilib/en/man1 -Ilib/en/man5 \
-		-Ilib/en/readme lib/en/readme/main.man | $(GROFF) -R -t \
-		-p -man -mpic -mpspic > $@
-
-$(RPM_BUILD_ROOT)$(datadir)/en/readme.ps: lib/en/readme.ps \
-		lib/en/.mkdir.datadir
-	$(INSTALL_DATA) lib/en/readme.ps $@
-
-lib/en/readme.dvi: lib/en/readme/main.man etc/version.so \
-		lib/en/readme/windows.so lib/en/readme/new.so \
-		lib/en/readme/new.4.7.so lib/en/readme/new.4.6.so \
-		lib/en/readme/new.4.5.so lib/en/readme/new.4.4.so \
-		lib/en/readme/new.4.3.so lib/en/readme/new.4.2.so \
-		lib/en/readme/new.4.1.so lib/en/readme/new.3.29.so \
-		lib/en/readme/new.3.28.so lib/en/readme/new.3.27.so \
-		lib/en/readme/new.3.26.so lib/en/readme/new.3.25.so \
-		lib/en/readme/new.3.24.so lib/en/readme/new.3.23.so \
-		lib/en/readme/new.3.22.so lib/en/readme/new.3.21.so \
-		lib/en/readme/new.3.20.so lib/en/readme/new.3.19.so \
-		lib/en/readme/new.3.18.so lib/en/readme/new.3.17.so \
-		lib/en/readme/new.3.16.so lib/en/readme/new.3.15.so \
-		lib/en/readme/new.3.12.so lib/en/readme/new.3.11.so \
-		lib/en/readme/new.3.10.so lib/en/readme/new.3.9.so \
-		lib/en/readme/new.3.8.so lib/en/readme/new.3.7.so \
-		lib/en/readme/new.3.6.so lib/en/readme/new.3.5.so \
-		lib/en/readme/new.3.4.so lib/en/readme/new.3.3.so \
-		lib/en/readme/new.3.2.so lib/en/readme/new.3.1.so \
-		lib/en/readme/new.3.0.so lib/en/readme/new.2.3.so \
-		lib/en/readme/new.2.2.so lib/en/readme/new.2.1.so \
-		lib/en/readme/new.2.0.so lib/en/readme/new.1.4.so
-	$(SOELIM) -Ilib/en/readme -Ietc -Ilib/en/man1 -Ilib/en/man5 \
-		-Ilib/en/readme lib/en/readme/main.man | $(GROFF) -Tdvi \
-		-R -t -p -man -mpic > $@
-
-$(RPM_BUILD_ROOT)$(datadir)/en/readme.dvi: lib/en/readme.dvi \
-		lib/en/.mkdir.datadir
-	$(INSTALL_DATA) lib/en/readme.dvi $@
-
-lib/en/readme.txt: lib/en/readme/main.man etc/version.so \
-		lib/en/readme/windows.so lib/en/readme/new.so \
-		lib/en/readme/new.4.7.so lib/en/readme/new.4.6.so \
-		lib/en/readme/new.4.5.so lib/en/readme/new.4.4.so \
-		lib/en/readme/new.4.3.so lib/en/readme/new.4.2.so \
-		lib/en/readme/new.4.1.so lib/en/readme/new.3.29.so \
-		lib/en/readme/new.3.28.so lib/en/readme/new.3.27.so \
-		lib/en/readme/new.3.26.so lib/en/readme/new.3.25.so \
-		lib/en/readme/new.3.24.so lib/en/readme/new.3.23.so \
-		lib/en/readme/new.3.22.so lib/en/readme/new.3.21.so \
-		lib/en/readme/new.3.20.so lib/en/readme/new.3.19.so \
-		lib/en/readme/new.3.18.so lib/en/readme/new.3.17.so \
-		lib/en/readme/new.3.16.so lib/en/readme/new.3.15.so \
-		lib/en/readme/new.3.12.so lib/en/readme/new.3.11.so \
-		lib/en/readme/new.3.10.so lib/en/readme/new.3.9.so \
-		lib/en/readme/new.3.8.so lib/en/readme/new.3.7.so \
-		lib/en/readme/new.3.6.so lib/en/readme/new.3.5.so \
-		lib/en/readme/new.3.4.so lib/en/readme/new.3.3.so \
-		lib/en/readme/new.3.2.so lib/en/readme/new.3.1.so \
-		lib/en/readme/new.3.0.so lib/en/readme/new.2.3.so \
-		lib/en/readme/new.2.2.so lib/en/readme/new.2.1.so \
-		lib/en/readme/new.2.0.so lib/en/readme/new.1.4.so
-	-$(SOELIM) -Ilib/en/readme -Ietc -Ilib/en/man1 -Ilib/en/man5 \
-		-Ilib/en/readme lib/en/readme/main.man | $(GROFF) \
-		-Tascii -R -t -p -man -mpic > $@
-
-$(RPM_BUILD_ROOT)$(datadir)/en/readme.txt: lib/en/readme.txt \
-		lib/en/.mkdir.datadir
-	$(INSTALL_DATA) lib/en/readme.txt $@
-
-lib/en/refman.ps: lib/en/refman/main.man etc/toc.so etc/version.so \
-		lib/en/readme/main.man lib/en/readme/windows.so \
-		lib/en/readme/new.so lib/en/readme/new.4.7.so \
+		lib/en/readme/new.4.8.so lib/en/readme/new.4.7.so \
 		lib/en/readme/new.4.6.so lib/en/readme/new.4.5.so \
 		lib/en/readme/new.4.4.so lib/en/readme/new.4.3.so \
 		lib/en/readme/new.4.2.so lib/en/readme/new.4.1.so \
@@ -7292,46 +7207,139 @@ lib/en/refman.ps: lib/en/refman/main.man etc/toc.so etc/version.so \
 		lib/en/readme/new.3.1.so lib/en/readme/new.3.0.so \
 		lib/en/readme/new.2.3.so lib/en/readme/new.2.2.so \
 		lib/en/readme/new.2.1.so lib/en/readme/new.2.0.so \
-		lib/en/readme/new.1.4.so lib/en/building/main.man \
-		lib/en/building/windows-nt.so lib/en/refman/parts.so \
-		lib/en/man1/aegis.1 lib/en/man1/z_name.so \
-		lib/en/man1/o_help.so lib/en/man1/o_lib.so \
-		lib/en/man1/o_page.so lib/en/man1/o_verbose.so \
-		lib/en/man1/o_terse.so lib/en/man1/o_unforma.so \
-		lib/en/man1/o_change.so lib/en/man1/o_project.so \
-		lib/en/man1/o__rules.so lib/en/man1/z_cr.so \
-		lib/en/man1/ae-sccs-put.1 lib/en/man1/z_exit.so \
-		lib/en/man1/ae_c.1 lib/en/man1/ae_p.1 \
-		lib/en/man1/aeannotate.1 lib/en/man1/o_output.so \
-		lib/en/man1/aeb.1 lib/en/man1/z_intuit.so \
-		lib/en/man1/o_symlnk.so lib/en/man1/z_bl_lock.so \
-		lib/en/man1/z_metrics.so lib/en/man1/o_baserel.so \
-		lib/en/man1/o_list.so lib/en/man1/o_nolog.so \
-		lib/en/man1/o_wait.so lib/en/man1/aebuffy.1 \
-		lib/en/man1/aeca.1 lib/en/man1/o_edit.so \
-		lib/en/man1/o_file.so lib/en/man1/aecd.1 \
-		lib/en/man1/o_baselin.so lib/en/man1/o_branch.so \
-		lib/en/man1/o_devdir.so lib/en/man1/o_trunk.so \
-		lib/en/man1/aechown.1 lib/en/man1/z_filelocn.so \
-		lib/en/man1/o_dir.so lib/en/man1/o_interact.so \
-		lib/en/man1/o_keep.so lib/en/man1/o_user.so \
-		lib/en/man1/aeclean.1 lib/en/man1/aeclone.1 \
-		lib/en/man1/z_whiteout.so lib/en/man1/o_whiteout.so \
-		lib/en/man1/aecomp.1 lib/en/man1/aecomplete.1 \
-		lib/en/man1/aecp.1 lib/en/man1/z_test_corr.so \
-		lib/en/man1/o_delta.so lib/en/man1/o_overw.so \
-		lib/en/man1/aecpu.1 lib/en/man1/aed.1 \
-		lib/en/man1/o_anticip.so lib/en/man1/aedb.1 \
-		lib/en/man1/aedbu.1 lib/en/man1/aede.1 \
-		lib/en/man1/aedeu.1 lib/en/man1/aedist.1 \
-		lib/en/man1/o_cte.so lib/en/man1/aedn.1 \
-		lib/en/man1/aefind.1 lib/en/man1/aefp.1 \
-		lib/en/man1/aegis.cgi.1 etc/libdir.so lib/en/man1/aeib.1 \
-		lib/en/man1/o_min.so lib/en/man1/aeibu.1 \
-		lib/en/man1/aeifail.1 lib/en/man1/o_reason.so \
-		lib/en/man1/aeimport.1 lib/en/man1/aeintegratq.1 \
-		lib/en/man1/aeipass.1 lib/en/man1/ael.1 \
-		lib/en/man1/aelic.1 lib/en/man1/aels.1 \
+		lib/en/readme/new.1.4.so
+	$(SOELIM) -Ilib/en/readme -Ietc -Ilib/en/man1 -Ilib/en/man5 \
+		-Ilib/en/readme lib/en/readme/main.man | $(GROFF) -R -t \
+		-p -man -mpic -mpspic > $@
+
+$(RPM_BUILD_ROOT)$(datadir)/en/readme.ps: lib/en/readme.ps \
+		lib/en/.mkdir.datadir
+	$(INSTALL_DATA) lib/en/readme.ps $@
+
+lib/en/readme.dvi: lib/en/readme/main.man etc/version.so \
+		lib/en/readme/windows.so lib/en/readme/new.so \
+		lib/en/readme/new.4.8.so lib/en/readme/new.4.7.so \
+		lib/en/readme/new.4.6.so lib/en/readme/new.4.5.so \
+		lib/en/readme/new.4.4.so lib/en/readme/new.4.3.so \
+		lib/en/readme/new.4.2.so lib/en/readme/new.4.1.so \
+		lib/en/readme/new.3.29.so lib/en/readme/new.3.28.so \
+		lib/en/readme/new.3.27.so lib/en/readme/new.3.26.so \
+		lib/en/readme/new.3.25.so lib/en/readme/new.3.24.so \
+		lib/en/readme/new.3.23.so lib/en/readme/new.3.22.so \
+		lib/en/readme/new.3.21.so lib/en/readme/new.3.20.so \
+		lib/en/readme/new.3.19.so lib/en/readme/new.3.18.so \
+		lib/en/readme/new.3.17.so lib/en/readme/new.3.16.so \
+		lib/en/readme/new.3.15.so lib/en/readme/new.3.12.so \
+		lib/en/readme/new.3.11.so lib/en/readme/new.3.10.so \
+		lib/en/readme/new.3.9.so lib/en/readme/new.3.8.so \
+		lib/en/readme/new.3.7.so lib/en/readme/new.3.6.so \
+		lib/en/readme/new.3.5.so lib/en/readme/new.3.4.so \
+		lib/en/readme/new.3.3.so lib/en/readme/new.3.2.so \
+		lib/en/readme/new.3.1.so lib/en/readme/new.3.0.so \
+		lib/en/readme/new.2.3.so lib/en/readme/new.2.2.so \
+		lib/en/readme/new.2.1.so lib/en/readme/new.2.0.so \
+		lib/en/readme/new.1.4.so
+	$(SOELIM) -Ilib/en/readme -Ietc -Ilib/en/man1 -Ilib/en/man5 \
+		-Ilib/en/readme lib/en/readme/main.man | $(GROFF) -Tdvi \
+		-R -t -p -man -mpic > $@
+
+$(RPM_BUILD_ROOT)$(datadir)/en/readme.dvi: lib/en/readme.dvi \
+		lib/en/.mkdir.datadir
+	$(INSTALL_DATA) lib/en/readme.dvi $@
+
+lib/en/readme.txt: lib/en/readme/main.man etc/version.so \
+		lib/en/readme/windows.so lib/en/readme/new.so \
+		lib/en/readme/new.4.8.so lib/en/readme/new.4.7.so \
+		lib/en/readme/new.4.6.so lib/en/readme/new.4.5.so \
+		lib/en/readme/new.4.4.so lib/en/readme/new.4.3.so \
+		lib/en/readme/new.4.2.so lib/en/readme/new.4.1.so \
+		lib/en/readme/new.3.29.so lib/en/readme/new.3.28.so \
+		lib/en/readme/new.3.27.so lib/en/readme/new.3.26.so \
+		lib/en/readme/new.3.25.so lib/en/readme/new.3.24.so \
+		lib/en/readme/new.3.23.so lib/en/readme/new.3.22.so \
+		lib/en/readme/new.3.21.so lib/en/readme/new.3.20.so \
+		lib/en/readme/new.3.19.so lib/en/readme/new.3.18.so \
+		lib/en/readme/new.3.17.so lib/en/readme/new.3.16.so \
+		lib/en/readme/new.3.15.so lib/en/readme/new.3.12.so \
+		lib/en/readme/new.3.11.so lib/en/readme/new.3.10.so \
+		lib/en/readme/new.3.9.so lib/en/readme/new.3.8.so \
+		lib/en/readme/new.3.7.so lib/en/readme/new.3.6.so \
+		lib/en/readme/new.3.5.so lib/en/readme/new.3.4.so \
+		lib/en/readme/new.3.3.so lib/en/readme/new.3.2.so \
+		lib/en/readme/new.3.1.so lib/en/readme/new.3.0.so \
+		lib/en/readme/new.2.3.so lib/en/readme/new.2.2.so \
+		lib/en/readme/new.2.1.so lib/en/readme/new.2.0.so \
+		lib/en/readme/new.1.4.so
+	-$(SOELIM) -Ilib/en/readme -Ietc -Ilib/en/man1 -Ilib/en/man5 \
+		-Ilib/en/readme lib/en/readme/main.man | $(GROFF) \
+		-Tascii -R -t -p -man -mpic > $@
+
+$(RPM_BUILD_ROOT)$(datadir)/en/readme.txt: lib/en/readme.txt \
+		lib/en/.mkdir.datadir
+	$(INSTALL_DATA) lib/en/readme.txt $@
+
+lib/en/refman.ps: lib/en/refman/main.man etc/toc.so etc/version.so \
+		lib/en/readme/main.man lib/en/readme/windows.so \
+		lib/en/readme/new.so lib/en/readme/new.4.8.so \
+		lib/en/readme/new.4.7.so lib/en/readme/new.4.6.so \
+		lib/en/readme/new.4.5.so lib/en/readme/new.4.4.so \
+		lib/en/readme/new.4.3.so lib/en/readme/new.4.2.so \
+		lib/en/readme/new.4.1.so lib/en/readme/new.3.29.so \
+		lib/en/readme/new.3.28.so lib/en/readme/new.3.27.so \
+		lib/en/readme/new.3.26.so lib/en/readme/new.3.25.so \
+		lib/en/readme/new.3.24.so lib/en/readme/new.3.23.so \
+		lib/en/readme/new.3.22.so lib/en/readme/new.3.21.so \
+		lib/en/readme/new.3.20.so lib/en/readme/new.3.19.so \
+		lib/en/readme/new.3.18.so lib/en/readme/new.3.17.so \
+		lib/en/readme/new.3.16.so lib/en/readme/new.3.15.so \
+		lib/en/readme/new.3.12.so lib/en/readme/new.3.11.so \
+		lib/en/readme/new.3.10.so lib/en/readme/new.3.9.so \
+		lib/en/readme/new.3.8.so lib/en/readme/new.3.7.so \
+		lib/en/readme/new.3.6.so lib/en/readme/new.3.5.so \
+		lib/en/readme/new.3.4.so lib/en/readme/new.3.3.so \
+		lib/en/readme/new.3.2.so lib/en/readme/new.3.1.so \
+		lib/en/readme/new.3.0.so lib/en/readme/new.2.3.so \
+		lib/en/readme/new.2.2.so lib/en/readme/new.2.1.so \
+		lib/en/readme/new.2.0.so lib/en/readme/new.1.4.so \
+		lib/en/building/main.man lib/en/building/windows-nt.so \
+		lib/en/refman/parts.so lib/en/man1/aegis.1 \
+		lib/en/man1/z_name.so lib/en/man1/o_help.so \
+		lib/en/man1/o_lib.so lib/en/man1/o_page.so \
+		lib/en/man1/o_verbose.so lib/en/man1/o_terse.so \
+		lib/en/man1/o_unforma.so lib/en/man1/o_change.so \
+		lib/en/man1/o_project.so lib/en/man1/o__rules.so \
+		lib/en/man1/z_cr.so lib/en/man1/ae-sccs-put.1 \
+		lib/en/man1/z_exit.so lib/en/man1/ae_c.1 \
+		lib/en/man1/ae_p.1 lib/en/man1/aeannotate.1 \
+		lib/en/man1/o_output.so lib/en/man1/aeb.1 \
+		lib/en/man1/z_intuit.so lib/en/man1/o_symlnk.so \
+		lib/en/man1/z_bl_lock.so lib/en/man1/z_metrics.so \
+		lib/en/man1/o_baserel.so lib/en/man1/o_list.so \
+		lib/en/man1/o_nolog.so lib/en/man1/o_wait.so \
+		lib/en/man1/aebuffy.1 lib/en/man1/aeca.1 \
+		lib/en/man1/o_edit.so lib/en/man1/o_file.so \
+		lib/en/man1/aecd.1 lib/en/man1/o_baselin.so \
+		lib/en/man1/o_branch.so lib/en/man1/o_devdir.so \
+		lib/en/man1/o_trunk.so lib/en/man1/aechown.1 \
+		lib/en/man1/z_filelocn.so lib/en/man1/o_dir.so \
+		lib/en/man1/o_interact.so lib/en/man1/o_keep.so \
+		lib/en/man1/o_user.so lib/en/man1/aeclean.1 \
+		lib/en/man1/aeclone.1 lib/en/man1/z_whiteout.so \
+		lib/en/man1/o_whiteout.so lib/en/man1/aecomp.1 \
+		lib/en/man1/aecomplete.1 lib/en/man1/aecp.1 \
+		lib/en/man1/z_test_corr.so lib/en/man1/o_delta.so \
+		lib/en/man1/o_overw.so lib/en/man1/aecpu.1 \
+		lib/en/man1/aed.1 lib/en/man1/o_anticip.so \
+		lib/en/man1/aedb.1 lib/en/man1/aedbu.1 \
+		lib/en/man1/aede.1 lib/en/man1/aedeu.1 \
+		lib/en/man1/aedist.1 lib/en/man1/o_cte.so \
+		lib/en/man1/aedn.1 lib/en/man1/aefind.1 \
+		lib/en/man1/aefp.1 lib/en/man1/aegis.cgi.1 etc/libdir.so \
+		lib/en/man1/aeib.1 lib/en/man1/o_min.so \
+		lib/en/man1/aeibu.1 lib/en/man1/aeifail.1 \
+		lib/en/man1/o_reason.so lib/en/man1/aeimport.1 \
+		lib/en/man1/aeintegratq.1 lib/en/man1/aeipass.1 \
+		lib/en/man1/ael.1 lib/en/man1/aelic.1 lib/en/man1/aels.1 \
 		lib/en/man1/aemv.1 lib/en/man1/aemvu.1 \
 		lib/en/man1/aena.1 lib/en/man1/aenbr.1 \
 		lib/en/man1/aenbru.1 lib/en/man1/aenc.1 \
@@ -7378,66 +7386,66 @@ $(RPM_BUILD_ROOT)$(datadir)/en/refman.ps: lib/en/refman.ps \
 
 lib/en/refman.dvi: lib/en/refman/main.man etc/toc.so etc/version.so \
 		lib/en/readme/main.man lib/en/readme/windows.so \
-		lib/en/readme/new.so lib/en/readme/new.4.7.so \
-		lib/en/readme/new.4.6.so lib/en/readme/new.4.5.so \
-		lib/en/readme/new.4.4.so lib/en/readme/new.4.3.so \
-		lib/en/readme/new.4.2.so lib/en/readme/new.4.1.so \
-		lib/en/readme/new.3.29.so lib/en/readme/new.3.28.so \
-		lib/en/readme/new.3.27.so lib/en/readme/new.3.26.so \
-		lib/en/readme/new.3.25.so lib/en/readme/new.3.24.so \
-		lib/en/readme/new.3.23.so lib/en/readme/new.3.22.so \
-		lib/en/readme/new.3.21.so lib/en/readme/new.3.20.so \
-		lib/en/readme/new.3.19.so lib/en/readme/new.3.18.so \
-		lib/en/readme/new.3.17.so lib/en/readme/new.3.16.so \
-		lib/en/readme/new.3.15.so lib/en/readme/new.3.12.so \
-		lib/en/readme/new.3.11.so lib/en/readme/new.3.10.so \
-		lib/en/readme/new.3.9.so lib/en/readme/new.3.8.so \
-		lib/en/readme/new.3.7.so lib/en/readme/new.3.6.so \
-		lib/en/readme/new.3.5.so lib/en/readme/new.3.4.so \
-		lib/en/readme/new.3.3.so lib/en/readme/new.3.2.so \
-		lib/en/readme/new.3.1.so lib/en/readme/new.3.0.so \
-		lib/en/readme/new.2.3.so lib/en/readme/new.2.2.so \
-		lib/en/readme/new.2.1.so lib/en/readme/new.2.0.so \
-		lib/en/readme/new.1.4.so lib/en/building/main.man \
-		lib/en/building/windows-nt.so lib/en/refman/parts.so \
-		lib/en/man1/aegis.1 lib/en/man1/z_name.so \
-		lib/en/man1/o_help.so lib/en/man1/o_lib.so \
-		lib/en/man1/o_page.so lib/en/man1/o_verbose.so \
-		lib/en/man1/o_terse.so lib/en/man1/o_unforma.so \
-		lib/en/man1/o_change.so lib/en/man1/o_project.so \
-		lib/en/man1/o__rules.so lib/en/man1/z_cr.so \
-		lib/en/man1/ae-sccs-put.1 lib/en/man1/z_exit.so \
-		lib/en/man1/ae_c.1 lib/en/man1/ae_p.1 \
-		lib/en/man1/aeannotate.1 lib/en/man1/o_output.so \
-		lib/en/man1/aeb.1 lib/en/man1/z_intuit.so \
-		lib/en/man1/o_symlnk.so lib/en/man1/z_bl_lock.so \
-		lib/en/man1/z_metrics.so lib/en/man1/o_baserel.so \
-		lib/en/man1/o_list.so lib/en/man1/o_nolog.so \
-		lib/en/man1/o_wait.so lib/en/man1/aebuffy.1 \
-		lib/en/man1/aeca.1 lib/en/man1/o_edit.so \
-		lib/en/man1/o_file.so lib/en/man1/aecd.1 \
-		lib/en/man1/o_baselin.so lib/en/man1/o_branch.so \
-		lib/en/man1/o_devdir.so lib/en/man1/o_trunk.so \
-		lib/en/man1/aechown.1 lib/en/man1/z_filelocn.so \
-		lib/en/man1/o_dir.so lib/en/man1/o_interact.so \
-		lib/en/man1/o_keep.so lib/en/man1/o_user.so \
-		lib/en/man1/aeclean.1 lib/en/man1/aeclone.1 \
-		lib/en/man1/z_whiteout.so lib/en/man1/o_whiteout.so \
-		lib/en/man1/aecomp.1 lib/en/man1/aecomplete.1 \
-		lib/en/man1/aecp.1 lib/en/man1/z_test_corr.so \
-		lib/en/man1/o_delta.so lib/en/man1/o_overw.so \
-		lib/en/man1/aecpu.1 lib/en/man1/aed.1 \
-		lib/en/man1/o_anticip.so lib/en/man1/aedb.1 \
-		lib/en/man1/aedbu.1 lib/en/man1/aede.1 \
-		lib/en/man1/aedeu.1 lib/en/man1/aedist.1 \
-		lib/en/man1/o_cte.so lib/en/man1/aedn.1 \
-		lib/en/man1/aefind.1 lib/en/man1/aefp.1 \
-		lib/en/man1/aegis.cgi.1 etc/libdir.so lib/en/man1/aeib.1 \
-		lib/en/man1/o_min.so lib/en/man1/aeibu.1 \
-		lib/en/man1/aeifail.1 lib/en/man1/o_reason.so \
-		lib/en/man1/aeimport.1 lib/en/man1/aeintegratq.1 \
-		lib/en/man1/aeipass.1 lib/en/man1/ael.1 \
-		lib/en/man1/aelic.1 lib/en/man1/aels.1 \
+		lib/en/readme/new.so lib/en/readme/new.4.8.so \
+		lib/en/readme/new.4.7.so lib/en/readme/new.4.6.so \
+		lib/en/readme/new.4.5.so lib/en/readme/new.4.4.so \
+		lib/en/readme/new.4.3.so lib/en/readme/new.4.2.so \
+		lib/en/readme/new.4.1.so lib/en/readme/new.3.29.so \
+		lib/en/readme/new.3.28.so lib/en/readme/new.3.27.so \
+		lib/en/readme/new.3.26.so lib/en/readme/new.3.25.so \
+		lib/en/readme/new.3.24.so lib/en/readme/new.3.23.so \
+		lib/en/readme/new.3.22.so lib/en/readme/new.3.21.so \
+		lib/en/readme/new.3.20.so lib/en/readme/new.3.19.so \
+		lib/en/readme/new.3.18.so lib/en/readme/new.3.17.so \
+		lib/en/readme/new.3.16.so lib/en/readme/new.3.15.so \
+		lib/en/readme/new.3.12.so lib/en/readme/new.3.11.so \
+		lib/en/readme/new.3.10.so lib/en/readme/new.3.9.so \
+		lib/en/readme/new.3.8.so lib/en/readme/new.3.7.so \
+		lib/en/readme/new.3.6.so lib/en/readme/new.3.5.so \
+		lib/en/readme/new.3.4.so lib/en/readme/new.3.3.so \
+		lib/en/readme/new.3.2.so lib/en/readme/new.3.1.so \
+		lib/en/readme/new.3.0.so lib/en/readme/new.2.3.so \
+		lib/en/readme/new.2.2.so lib/en/readme/new.2.1.so \
+		lib/en/readme/new.2.0.so lib/en/readme/new.1.4.so \
+		lib/en/building/main.man lib/en/building/windows-nt.so \
+		lib/en/refman/parts.so lib/en/man1/aegis.1 \
+		lib/en/man1/z_name.so lib/en/man1/o_help.so \
+		lib/en/man1/o_lib.so lib/en/man1/o_page.so \
+		lib/en/man1/o_verbose.so lib/en/man1/o_terse.so \
+		lib/en/man1/o_unforma.so lib/en/man1/o_change.so \
+		lib/en/man1/o_project.so lib/en/man1/o__rules.so \
+		lib/en/man1/z_cr.so lib/en/man1/ae-sccs-put.1 \
+		lib/en/man1/z_exit.so lib/en/man1/ae_c.1 \
+		lib/en/man1/ae_p.1 lib/en/man1/aeannotate.1 \
+		lib/en/man1/o_output.so lib/en/man1/aeb.1 \
+		lib/en/man1/z_intuit.so lib/en/man1/o_symlnk.so \
+		lib/en/man1/z_bl_lock.so lib/en/man1/z_metrics.so \
+		lib/en/man1/o_baserel.so lib/en/man1/o_list.so \
+		lib/en/man1/o_nolog.so lib/en/man1/o_wait.so \
+		lib/en/man1/aebuffy.1 lib/en/man1/aeca.1 \
+		lib/en/man1/o_edit.so lib/en/man1/o_file.so \
+		lib/en/man1/aecd.1 lib/en/man1/o_baselin.so \
+		lib/en/man1/o_branch.so lib/en/man1/o_devdir.so \
+		lib/en/man1/o_trunk.so lib/en/man1/aechown.1 \
+		lib/en/man1/z_filelocn.so lib/en/man1/o_dir.so \
+		lib/en/man1/o_interact.so lib/en/man1/o_keep.so \
+		lib/en/man1/o_user.so lib/en/man1/aeclean.1 \
+		lib/en/man1/aeclone.1 lib/en/man1/z_whiteout.so \
+		lib/en/man1/o_whiteout.so lib/en/man1/aecomp.1 \
+		lib/en/man1/aecomplete.1 lib/en/man1/aecp.1 \
+		lib/en/man1/z_test_corr.so lib/en/man1/o_delta.so \
+		lib/en/man1/o_overw.so lib/en/man1/aecpu.1 \
+		lib/en/man1/aed.1 lib/en/man1/o_anticip.so \
+		lib/en/man1/aedb.1 lib/en/man1/aedbu.1 \
+		lib/en/man1/aede.1 lib/en/man1/aedeu.1 \
+		lib/en/man1/aedist.1 lib/en/man1/o_cte.so \
+		lib/en/man1/aedn.1 lib/en/man1/aefind.1 \
+		lib/en/man1/aefp.1 lib/en/man1/aegis.cgi.1 etc/libdir.so \
+		lib/en/man1/aeib.1 lib/en/man1/o_min.so \
+		lib/en/man1/aeibu.1 lib/en/man1/aeifail.1 \
+		lib/en/man1/o_reason.so lib/en/man1/aeimport.1 \
+		lib/en/man1/aeintegratq.1 lib/en/man1/aeipass.1 \
+		lib/en/man1/ael.1 lib/en/man1/aelic.1 lib/en/man1/aels.1 \
 		lib/en/man1/aemv.1 lib/en/man1/aemvu.1 \
 		lib/en/man1/aena.1 lib/en/man1/aenbr.1 \
 		lib/en/man1/aenbru.1 lib/en/man1/aenc.1 \
@@ -7484,66 +7492,66 @@ $(RPM_BUILD_ROOT)$(datadir)/en/refman.dvi: lib/en/refman.dvi \
 
 lib/en/refman.txt: lib/en/refman/main.man etc/toc.so etc/version.so \
 		lib/en/readme/main.man lib/en/readme/windows.so \
-		lib/en/readme/new.so lib/en/readme/new.4.7.so \
-		lib/en/readme/new.4.6.so lib/en/readme/new.4.5.so \
-		lib/en/readme/new.4.4.so lib/en/readme/new.4.3.so \
-		lib/en/readme/new.4.2.so lib/en/readme/new.4.1.so \
-		lib/en/readme/new.3.29.so lib/en/readme/new.3.28.so \
-		lib/en/readme/new.3.27.so lib/en/readme/new.3.26.so \
-		lib/en/readme/new.3.25.so lib/en/readme/new.3.24.so \
-		lib/en/readme/new.3.23.so lib/en/readme/new.3.22.so \
-		lib/en/readme/new.3.21.so lib/en/readme/new.3.20.so \
-		lib/en/readme/new.3.19.so lib/en/readme/new.3.18.so \
-		lib/en/readme/new.3.17.so lib/en/readme/new.3.16.so \
-		lib/en/readme/new.3.15.so lib/en/readme/new.3.12.so \
-		lib/en/readme/new.3.11.so lib/en/readme/new.3.10.so \
-		lib/en/readme/new.3.9.so lib/en/readme/new.3.8.so \
-		lib/en/readme/new.3.7.so lib/en/readme/new.3.6.so \
-		lib/en/readme/new.3.5.so lib/en/readme/new.3.4.so \
-		lib/en/readme/new.3.3.so lib/en/readme/new.3.2.so \
-		lib/en/readme/new.3.1.so lib/en/readme/new.3.0.so \
-		lib/en/readme/new.2.3.so lib/en/readme/new.2.2.so \
-		lib/en/readme/new.2.1.so lib/en/readme/new.2.0.so \
-		lib/en/readme/new.1.4.so lib/en/building/main.man \
-		lib/en/building/windows-nt.so lib/en/refman/parts.so \
-		lib/en/man1/aegis.1 lib/en/man1/z_name.so \
-		lib/en/man1/o_help.so lib/en/man1/o_lib.so \
-		lib/en/man1/o_page.so lib/en/man1/o_verbose.so \
-		lib/en/man1/o_terse.so lib/en/man1/o_unforma.so \
-		lib/en/man1/o_change.so lib/en/man1/o_project.so \
-		lib/en/man1/o__rules.so lib/en/man1/z_cr.so \
-		lib/en/man1/ae-sccs-put.1 lib/en/man1/z_exit.so \
-		lib/en/man1/ae_c.1 lib/en/man1/ae_p.1 \
-		lib/en/man1/aeannotate.1 lib/en/man1/o_output.so \
-		lib/en/man1/aeb.1 lib/en/man1/z_intuit.so \
-		lib/en/man1/o_symlnk.so lib/en/man1/z_bl_lock.so \
-		lib/en/man1/z_metrics.so lib/en/man1/o_baserel.so \
-		lib/en/man1/o_list.so lib/en/man1/o_nolog.so \
-		lib/en/man1/o_wait.so lib/en/man1/aebuffy.1 \
-		lib/en/man1/aeca.1 lib/en/man1/o_edit.so \
-		lib/en/man1/o_file.so lib/en/man1/aecd.1 \
-		lib/en/man1/o_baselin.so lib/en/man1/o_branch.so \
-		lib/en/man1/o_devdir.so lib/en/man1/o_trunk.so \
-		lib/en/man1/aechown.1 lib/en/man1/z_filelocn.so \
-		lib/en/man1/o_dir.so lib/en/man1/o_interact.so \
-		lib/en/man1/o_keep.so lib/en/man1/o_user.so \
-		lib/en/man1/aeclean.1 lib/en/man1/aeclone.1 \
-		lib/en/man1/z_whiteout.so lib/en/man1/o_whiteout.so \
-		lib/en/man1/aecomp.1 lib/en/man1/aecomplete.1 \
-		lib/en/man1/aecp.1 lib/en/man1/z_test_corr.so \
-		lib/en/man1/o_delta.so lib/en/man1/o_overw.so \
-		lib/en/man1/aecpu.1 lib/en/man1/aed.1 \
-		lib/en/man1/o_anticip.so lib/en/man1/aedb.1 \
-		lib/en/man1/aedbu.1 lib/en/man1/aede.1 \
-		lib/en/man1/aedeu.1 lib/en/man1/aedist.1 \
-		lib/en/man1/o_cte.so lib/en/man1/aedn.1 \
-		lib/en/man1/aefind.1 lib/en/man1/aefp.1 \
-		lib/en/man1/aegis.cgi.1 etc/libdir.so lib/en/man1/aeib.1 \
-		lib/en/man1/o_min.so lib/en/man1/aeibu.1 \
-		lib/en/man1/aeifail.1 lib/en/man1/o_reason.so \
-		lib/en/man1/aeimport.1 lib/en/man1/aeintegratq.1 \
-		lib/en/man1/aeipass.1 lib/en/man1/ael.1 \
-		lib/en/man1/aelic.1 lib/en/man1/aels.1 \
+		lib/en/readme/new.so lib/en/readme/new.4.8.so \
+		lib/en/readme/new.4.7.so lib/en/readme/new.4.6.so \
+		lib/en/readme/new.4.5.so lib/en/readme/new.4.4.so \
+		lib/en/readme/new.4.3.so lib/en/readme/new.4.2.so \
+		lib/en/readme/new.4.1.so lib/en/readme/new.3.29.so \
+		lib/en/readme/new.3.28.so lib/en/readme/new.3.27.so \
+		lib/en/readme/new.3.26.so lib/en/readme/new.3.25.so \
+		lib/en/readme/new.3.24.so lib/en/readme/new.3.23.so \
+		lib/en/readme/new.3.22.so lib/en/readme/new.3.21.so \
+		lib/en/readme/new.3.20.so lib/en/readme/new.3.19.so \
+		lib/en/readme/new.3.18.so lib/en/readme/new.3.17.so \
+		lib/en/readme/new.3.16.so lib/en/readme/new.3.15.so \
+		lib/en/readme/new.3.12.so lib/en/readme/new.3.11.so \
+		lib/en/readme/new.3.10.so lib/en/readme/new.3.9.so \
+		lib/en/readme/new.3.8.so lib/en/readme/new.3.7.so \
+		lib/en/readme/new.3.6.so lib/en/readme/new.3.5.so \
+		lib/en/readme/new.3.4.so lib/en/readme/new.3.3.so \
+		lib/en/readme/new.3.2.so lib/en/readme/new.3.1.so \
+		lib/en/readme/new.3.0.so lib/en/readme/new.2.3.so \
+		lib/en/readme/new.2.2.so lib/en/readme/new.2.1.so \
+		lib/en/readme/new.2.0.so lib/en/readme/new.1.4.so \
+		lib/en/building/main.man lib/en/building/windows-nt.so \
+		lib/en/refman/parts.so lib/en/man1/aegis.1 \
+		lib/en/man1/z_name.so lib/en/man1/o_help.so \
+		lib/en/man1/o_lib.so lib/en/man1/o_page.so \
+		lib/en/man1/o_verbose.so lib/en/man1/o_terse.so \
+		lib/en/man1/o_unforma.so lib/en/man1/o_change.so \
+		lib/en/man1/o_project.so lib/en/man1/o__rules.so \
+		lib/en/man1/z_cr.so lib/en/man1/ae-sccs-put.1 \
+		lib/en/man1/z_exit.so lib/en/man1/ae_c.1 \
+		lib/en/man1/ae_p.1 lib/en/man1/aeannotate.1 \
+		lib/en/man1/o_output.so lib/en/man1/aeb.1 \
+		lib/en/man1/z_intuit.so lib/en/man1/o_symlnk.so \
+		lib/en/man1/z_bl_lock.so lib/en/man1/z_metrics.so \
+		lib/en/man1/o_baserel.so lib/en/man1/o_list.so \
+		lib/en/man1/o_nolog.so lib/en/man1/o_wait.so \
+		lib/en/man1/aebuffy.1 lib/en/man1/aeca.1 \
+		lib/en/man1/o_edit.so lib/en/man1/o_file.so \
+		lib/en/man1/aecd.1 lib/en/man1/o_baselin.so \
+		lib/en/man1/o_branch.so lib/en/man1/o_devdir.so \
+		lib/en/man1/o_trunk.so lib/en/man1/aechown.1 \
+		lib/en/man1/z_filelocn.so lib/en/man1/o_dir.so \
+		lib/en/man1/o_interact.so lib/en/man1/o_keep.so \
+		lib/en/man1/o_user.so lib/en/man1/aeclean.1 \
+		lib/en/man1/aeclone.1 lib/en/man1/z_whiteout.so \
+		lib/en/man1/o_whiteout.so lib/en/man1/aecomp.1 \
+		lib/en/man1/aecomplete.1 lib/en/man1/aecp.1 \
+		lib/en/man1/z_test_corr.so lib/en/man1/o_delta.so \
+		lib/en/man1/o_overw.so lib/en/man1/aecpu.1 \
+		lib/en/man1/aed.1 lib/en/man1/o_anticip.so \
+		lib/en/man1/aedb.1 lib/en/man1/aedbu.1 \
+		lib/en/man1/aede.1 lib/en/man1/aedeu.1 \
+		lib/en/man1/aedist.1 lib/en/man1/o_cte.so \
+		lib/en/man1/aedn.1 lib/en/man1/aefind.1 \
+		lib/en/man1/aefp.1 lib/en/man1/aegis.cgi.1 etc/libdir.so \
+		lib/en/man1/aeib.1 lib/en/man1/o_min.so \
+		lib/en/man1/aeibu.1 lib/en/man1/aeifail.1 \
+		lib/en/man1/o_reason.so lib/en/man1/aeimport.1 \
+		lib/en/man1/aeintegratq.1 lib/en/man1/aeipass.1 \
+		lib/en/man1/ael.1 lib/en/man1/aelic.1 lib/en/man1/aels.1 \
 		lib/en/man1/aemv.1 lib/en/man1/aemvu.1 \
 		lib/en/man1/aena.1 lib/en/man1/aenbr.1 \
 		lib/en/man1/aenbru.1 lib/en/man1/aenc.1 \
@@ -8494,15 +8502,15 @@ libaegis/ael/formeditnum.$(OBJEXT): libaegis/ael/formeditnum.c \
 	mv formeditnum.$(OBJEXT) $@
 
 libaegis/ael/locks.$(OBJEXT): libaegis/ael/locks.c common/ac/pwd.h \
-		common/config.h common/config.messy.h \
+		common/ac/stddef.h common/config.h common/config.messy.h \
 		libaegis/ael/change/inappropriat.h common/main.h \
 		libaegis/ael/project/inappropriat.h libaegis/ael/locks.h \
 		libaegis/col.h libaegis/gonzo.h libaegis/gstate.h \
-		libaegis/type.h common/ac/stddef.h common/str.h \
-		common/ac/stdarg.h libaegis/parse.h common/itab.h \
-		libaegis/lock.h libaegis/output.h libaegis/project.h \
-		common/ac/time.h libaegis/pstate.h libaegis/pattr.h \
-		common/str_list.h common/trace.h libaegis/zero.h
+		libaegis/type.h common/str.h common/ac/stdarg.h \
+		libaegis/parse.h common/itab.h libaegis/lock.h \
+		libaegis/output.h libaegis/project.h common/ac/time.h \
+		libaegis/pstate.h libaegis/pattr.h common/str_list.h \
+		common/trace.h libaegis/zero.h
 	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c libaegis/ael/locks.c
 	mv locks.$(OBJEXT) $@
 
@@ -12853,7 +12861,7 @@ libaegis/fstate.c libaegis/fstate.h: libaegis/fstate.def \
 libaegis/getgr_cache.$(OBJEXT): libaegis/getgr_cache.c \
 		common/ac/string.h common/config.h common/config.messy.h \
 		libaegis/getgr_cache.h common/main.h common/ac/grp.h \
-		common/itab.h common/mem.h common/ac/stddef.h \
+		common/ac/stddef.h common/itab.h common/mem.h \
 		common/symtab.h common/str.h common/ac/stdarg.h
 	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c \
 		libaegis/getgr_cache.c
@@ -12862,7 +12870,7 @@ libaegis/getgr_cache.$(OBJEXT): libaegis/getgr_cache.c \
 libaegis/getpw_cache.$(OBJEXT): libaegis/getpw_cache.c \
 		common/ac/string.h common/config.h common/config.messy.h \
 		libaegis/getpw_cache.h common/main.h common/ac/pwd.h \
-		common/itab.h common/mem.h common/ac/stddef.h \
+		common/ac/stddef.h common/itab.h common/mem.h \
 		common/symtab.h common/str.h common/ac/stdarg.h
 	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c \
 		libaegis/getpw_cache.c
@@ -13313,11 +13321,11 @@ libaegis/input/to_output.$(OBJEXT): libaegis/input/to_output.c \
 
 libaegis/input/uudecode.$(OBJEXT): libaegis/input/uudecode.c \
 		common/ac/string.h common/config.h common/config.messy.h \
-		common/error.h common/main.h common/noreturn.h \
-		libaegis/input/uudecode.h libaegis/input.h \
-		common/ac/stddef.h libaegis/input/private.h \
-		common/stracc.h common/str.h common/ac/stdarg.h \
-		common/trace.h
+		common/ac/limits.h common/error.h common/main.h \
+		common/noreturn.h libaegis/input/uudecode.h \
+		libaegis/input.h common/ac/stddef.h \
+		libaegis/input/private.h common/stracc.h common/str.h \
+		common/ac/stdarg.h common/trace.h
 	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c \
 		libaegis/input/uudecode.c
 	mv uudecode.$(OBJEXT) $@
@@ -13402,20 +13410,21 @@ libaegis/metrics.c libaegis/metrics.h: libaegis/metrics.def \
 		libaegis/metrics.c libaegis/metrics.h
 
 libaegis/option.$(OBJEXT): libaegis/option.c common/ac/stdlib.h \
-		common/config.h common/config.messy.h \
-		common/ac/termios.h libaegis/arglex2.h common/arglex.h \
-		common/main.h common/error.h common/noreturn.h \
-		libaegis/help.h libaegis/option.h libaegis/sub.h \
-		common/str.h common/ac/stddef.h common/ac/stdarg.h \
-		common/trace.h
+		common/config.h common/config.messy.h common/ac/unistd.h \
+		common/ac/sys/ioctl.h common/ac/termios.h \
+		libaegis/arglex2.h common/arglex.h common/main.h \
+		common/error.h common/noreturn.h libaegis/help.h \
+		libaegis/option.h libaegis/sub.h common/str.h \
+		common/ac/stddef.h common/ac/stdarg.h common/trace.h
 	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c libaegis/option.c
 	mv option.$(OBJEXT) $@
 
 libaegis/os/background.$(OBJEXT): libaegis/os/background.c \
 		common/ac/unistd.h common/config.h common/config.messy.h \
-		common/ac/termios.h common/ac/signal.h libaegis/os.h \
-		common/ac/time.h common/main.h common/str.h \
-		common/ac/stddef.h common/ac/stdarg.h
+		common/ac/sys/ioctl.h common/ac/termios.h \
+		common/ac/signal.h libaegis/os.h common/ac/time.h \
+		common/main.h common/str.h common/ac/stddef.h \
+		common/ac/stdarg.h
 	$(CC) $(CFLAGS) -Ilibaegis -Ilibaegis -Icommon -c \
 		libaegis/os/background.c
 	mv background.$(OBJEXT) $@
@@ -13566,8 +13575,8 @@ libaegis/os/execute.$(OBJEXT): libaegis/os/execute.c libaegis/os.h \
 	mv execute.$(OBJEXT) $@
 
 libaegis/os/execute_retc.$(OBJEXT): libaegis/os/execute_retc.c \
-		common/ac/grp.h common/config.h common/config.messy.h \
-		common/ac/pwd.h common/ac/signal.h common/ac/stddef.h \
+		common/ac/grp.h common/ac/stddef.h common/config.h \
+		common/config.messy.h common/ac/pwd.h common/ac/signal.h \
 		common/ac/unistd.h common/error.h common/main.h \
 		common/noreturn.h libaegis/option.h libaegis/os.h \
 		common/ac/time.h common/str.h common/ac/stdarg.h \
@@ -17780,6 +17789,7 @@ LibFiles =
 
 DataFiles = $(RPM_BUILD_ROOT)/etc/profile.d/aegis.sh \
 		$(RPM_BUILD_ROOT)/etc/profile.d/aegis.csh \
+		$(RPM_BUILD_ROOT)$(datadir)/aedefault.css \
 		$(RPM_BUILD_ROOT)$(datadir)/aegis.icon \
 		$(RPM_BUILD_ROOT)$(datadir)/aegis.mask \
 		$(RPM_BUILD_ROOT)$(datadir)/aegis.pgm \

@@ -591,9 +591,6 @@ send()
 	trace(("fn = \"%s\"\n", csrc->file_name->str_text));
 	if (csrc->usage == file_usage_build)
 	    continue;
-	output_fputs(ofp, "Index: ");
-	output_put_str(ofp, csrc->file_name);
-	output_fputc(ofp, '\n');
 
 	/*
 	 * Find a source file.  Depending on the change state,
@@ -743,7 +740,15 @@ send()
 	os_become_orig();
 	ifp = input_file_open(output_file_name);
 	input_file_unlink_on_close(ifp);
-	input_to_output(ifp, ofp);
+	if (input_length(ifp) != 0)
+	{
+	    output_fputs(ofp, "Index: ");
+	    output_put_str(ofp, csrc->file_name);
+	    output_fputc(ofp, '\n');
+	    input_to_output(ifp, ofp);
+	}
+	input_delete(ifp);
+	ifp = 0;
 	os_become_undo();
 	str_free(output_file_name);
     }

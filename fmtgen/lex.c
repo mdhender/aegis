@@ -67,10 +67,8 @@ static symtab_ty	*keyword;
  *      Assumes that str_initialize has already been called.
  */
 
-static void lex_initialize _((void));
-
 static void
-lex_initialize()
+lex_initialize(void)
 {
 	typedef struct keyword_ty keyword_ty;
 	struct keyword_ty
@@ -107,8 +105,7 @@ lex_initialize()
 
 
 void
-lex_open(s)
-	char	*s;
+lex_open(char *s)
 {
 	file_ty	*f;
 
@@ -162,7 +159,7 @@ lex_open(s)
 
 
 void
-lex_close()
+lex_close(void)
 {
 	if (error_count)
 		exit(1);
@@ -172,10 +169,8 @@ lex_close()
 }
 
 
-static int lex_getc _((void));
-
 static int
-lex_getc()
+lex_getc(void)
 {
 	int	c;
 
@@ -202,11 +197,8 @@ lex_getc()
 }
 
 
-static void lex_getc_undo _((int));
-
 static void
-lex_getc_undo(c)
-	int	c;
+lex_getc_undo(int c)
 {
 	switch (c)
 	{
@@ -225,7 +217,7 @@ lex_getc_undo(c)
 
 
 int
-parse_lex()
+parse_lex(void)
 {
 	int	line_number_start;
 	char	buffer[1<<12];
@@ -511,15 +503,14 @@ parse_error(char *s, ...)
 
 
 int
-lex_in_include_file()
+lex_in_include_file(void)
 {
 	return !!file->next;
 }
 
 
 void
-lex_include_path(s)
-	char	*s;
+lex_include_path(char *s)
 {
 	string_list_append_unique(&include_path, str_from_c(s));
 }

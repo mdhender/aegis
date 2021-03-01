@@ -53,7 +53,7 @@ str_downcase(string_ty *s)
     for (cp1 = s->str_text, cp2 = tmp; *cp1; ++cp1, ++cp2)
     {
 	unsigned char c = *cp1;
-	if (isupper(c))
+	if (isupper((unsigned char)c))
     	    c = tolower(c);
 	*cp2 = c;
     }

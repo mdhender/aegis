@@ -23,7 +23,9 @@
 auto script_name;
 script_name = getenv("SCRIPT_NAME");
 if (script_name == "")
-    script_name = "http://localhost/cgi-bin/aegis.cgi";
+	script_name = "http://localhost/cgi-bin/aegis.cgi";
+auto pn;
+pn = project_name();
 
 auto fn;
 if (count(arg))
@@ -31,23 +33,53 @@ if (count(arg))
 else
     fn = "config";
 
-columns({width = 1000;});
+columns({width = 1000; });
 print("Content-Type: text/html");
 print("");
-print("<html><head><title>");
+print("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"");
+print("                      \"http://www.w3.org/TR/REC-html40/loose.dtd\">");
+
+print("<html><head>");
+print("<meta name=\"GENERATOR\" content=\"" ## script_name ## "\">");
+print("<meta http-equiv=\"Content-Type\" "
+	## "content=\"text/html; charset=ISO-8859-1\">");
+print("<style type=\"text/css\"> "
+	## "tr.even-group { background-color: #CCCCCC; } "
+	## "body { background-color: white; } "
+	## "</style>");
+/*
+ * Netscape 4.x has numerous CSS bugs, two of which need mentioning.
+ * 1. If a style sheet is nopt present Netscape says 404 Not found, when
+ * it should silently ignore it.  2. Style sheets who's media is not
+ * "screen" will be ignored.  Fortunately we can use (2) to get around (1).
+ */
+print("<link rel=\"stylesheet\" type=\"text/css\" href=\"/aedefault.css\" "
+	## "media=\"all\">");
+print("<link rel=\"stylesheet\" type=\"text/css\" href=\"/" ## pn ## ".css\" "
+	## "media=\"all\">");
+print("<title>");
+
+print("Project " ## quote_html(pn) ## ",");
 print("File Menu");
-print("</title></head><body bgcolor=\"#FFFFFF\"><h1 align=center>");
-print("Project ``" ## quote_html(project_name()) ## "'',");
+print("</title></head><body><h1 align=center>");
+auto href;
+href = script_name ## "?file@proj_menu+project@" ## quote_url(pn);
+print("Project ``<a href=\"" ## href ## "\">" ## quote_html(pn) ## "</a>'',");
 if (change_number_set())
-    print("Change " ## change_number() ## ",");
+{
+    href = script_name ## "?file@chan_menu+project@" ## quote_url(pn)
+	## "+change@" ## change_number();
+    print("Change <a href=\"" ## href ## "\">" ## change_number() ## "</a>,");
+}
 print("<br>File ``" ## quote_html(fn) ## "''");
 print("</h1>");
+
+print("<div class=\"information\">");
 print("<dl>");
 
 print("<dt>");
-auto href;
 href = script_name ## "?file@file_activ+" ## quote_url(fn);
-href ##= "+project@" ## quote_url(project_name());
+href ##= "+project@" ## quote_url(pn);
 print("<a href=\"" ## href ## "\">File Activity</a>");
 print("<dd>");
 print("This item will provide you with a listing of changes which are");
@@ -58,15 +90,15 @@ print("against the file.");
 
 print("<dt>");
 href = script_name ## "?file@file_cflct+" ## quote_url(fn);
-href ##= "+project@" ## quote_url(project_name());
+href ##= "+project@" ## quote_url(pn);
 print("<a href=\"" ## href ## "\">File Conflict</a>");
 print("<dd>");
 print("This item will provide you with a listing of changes which are");
-print("actively modifying this file <b>if</b> more than <i>one</i>");
-print("change is modifying the file.");
+print("actively modifying this file <strong>if</strong> more than");
+print("<em>one</em> change is modifying the file.");
 
 href = script_name ## "?file@file_hstry+" ## quote_url(fn);
-href ##= "+project@" ## quote_url(project_name());
+href ##= "+project@" ## quote_url(pn);
 print("<dt><a href=\"" ## href ## "\">");
 print("File History");
 print("</a><dd>");
@@ -74,8 +106,7 @@ print("This item will provide you with a listing of all completed");
 print("changes which affected this file in the past.  This report");
 print("can take a long time to generate.");
 
-auto pn, ps;
-pn = project_name();
+auto  ps;
 ps = project[pn].state.branch;
 
 auto cn, cs;
@@ -119,7 +150,7 @@ if (deleted_by != "")
     print("<dd>");
     print("The file no longer exists in the baseline.");
     href = script_name ## "?file@chan_menu";
-    href ##= "+project@" ## quote_url(project_name());
+    href ##= "+project@" ## quote_url(pn);
     href ##= "+change@" ## deleted_by;
 
     print("It was deleted in change " );
@@ -135,7 +166,7 @@ else if (change_number_set() && cs.state != "completed" && action == "create")
 else
 {
     href = script_name ## "?file@pre+" ## quote_url(fn);
-    href ##= "+project@" ## quote_url(project_name());
+    href ##= "+project@" ## quote_url(pn);
     print("<a href=\"" ## href ## "\">Baseline</a>");
     print("<dd>");
     print("This item will show you the contents of the file in the project");
@@ -149,7 +180,7 @@ if (change_number_set())
     {
 	print("<dt>");
 	href = script_name ## "?file@pre+" ## quote_url(fn);
-	href ##= "+project@" ## quote_url(project_name());
+	href ##= "+project@" ## quote_url(pn);
 	href ##= "+change@" ## cn;
 	print("<a href=\"" ## href ## "\">Change " ##
 	    change_number() ## "</a>");
@@ -176,7 +207,7 @@ if (change_number_set())
 	    print("<dt>");
 	    href = script_name ## "?file@pre+" ## "delta@" ## d ## "+";
 	    href ##= quote_url(fn);
-	    href ##= "+project@" ## quote_url(project_name());
+	    href ##= "+project@" ## quote_url(pn);
 	    print("<a href=\"" ## href ## "\">Pre Change " ##
 		change_number() ## "</a>");
 	    print("<dd>");
@@ -190,7 +221,7 @@ if (change_number_set())
 	{
 	    href = script_name ## "?file@pre+" ## "delta@" ## delta ## "+";
 	    href ##= quote_url(fn);
-	    href ##= "+project@" ## quote_url(project_name());
+	    href ##= "+project@" ## quote_url(pn);
 	    print("<a href=\"" ## href ## "\">Post Change " ##
 		change_number() ## "</a>");
 	    print("<dd>");
@@ -249,7 +280,7 @@ if (change_number_set())
 		    href ##= "delta1@" ## pre_d ## "+";
 		    href ##= "delta2@" ## post_d ## "+";
 		    href ##= quote_url(fn);
-		    href ##= "+project@" ## quote_url(project_name());
+		    href ##= "+project@" ## quote_url(pn);
 
 		    print("<td align=\"center\"><a href=\"" ## href ##
 			"\">diff</a></td>");
@@ -260,7 +291,7 @@ if (change_number_set())
 		    href ##= "delta1@" ## pre_d ## "+";
 		    href ##= "delta2@" ## "baseline" ## "+";
 		    href ##= quote_url(fn);
-		    href ##= "+project@" ## quote_url(project_name());
+		    href ##= "+project@" ## quote_url(pn);
 		    print("<td align=\"center\"><a href=\"" ## href ##
 			"\">diff</a></td>");
 		}
@@ -276,7 +307,7 @@ if (change_number_set())
 		    href ##= "delta1@" ## post_d ## "+";
 		    href ##= "delta2@" ## pre_d ## "+";
 		    href ##= quote_url(fn);
-		    href ##= "+project@" ## quote_url(project_name());
+		    href ##= "+project@" ## quote_url(pn);
 		    print("<td align=\"center\"><a href=\"" ## href ##
 			"\">diff</a></td>");
 	       	}
@@ -287,7 +318,7 @@ if (change_number_set())
 		    href ##= "delta1@" ## post_d ## "+";
 		    href ##= "delta2@" ## "baseline" ## "+";
 		    href ##= quote_url(fn);
-		    href ##= "+project@" ## quote_url(project_name());
+		    href ##= "+project@" ## quote_url(pn);
 		    print("<td align=\"center\"><a href=\"" ## href ##
 			"\">diff</a></td>");
 	       	}
@@ -306,7 +337,7 @@ if (change_number_set())
 		href ##= "delta1@" ## "change" ## "+";
 		href ##= "delta2@" ## "baseline"  ## "+";
 		href ##= quote_url(fn);
-		href ##= "+project@" ## quote_url(project_name());
+		href ##= "+project@" ## quote_url(pn);
 		href ##= "+change@" ## change_number();
 
 		print("<td align=\"center\"><a href=\"" ## href ##
@@ -328,7 +359,7 @@ if (change_number_set())
 		    href ##= "delta1@" ## "baseline" ## "+";
 		    href ##= "delta2@" ## pre_d  ## "+";
 		    href ##= quote_url(fn);
-		    href ##= "+project@" ## quote_url(project_name());
+		    href ##= "+project@" ## quote_url(pn);
 		    print("<td align=\"center\"><a href=\"" ## href ##
 			"\">diff</a></td>");
 		}
@@ -336,7 +367,7 @@ if (change_number_set())
 		href ##= "delta1@" ## "baseline" ## "+";
 		href ##= "delta2@" ## post_d ## "+";
 		href ##= quote_url(fn);
-		href ##= "+project@" ## quote_url(project_name());
+		href ##= "+project@" ## quote_url(pn);
 		print("<td align=\"center\"><a href=\"" ## href ##
 		    "\">diff</a></td>");
 	    }
@@ -346,7 +377,7 @@ if (change_number_set())
 		href ##= "delta1@" ## "baseline" ## "+";
 		href ##= "delta2@" ## "change"  ## "+";
 		href ##= quote_url(fn);
-		href ##= "+project@" ## quote_url(project_name());
+		href ##= "+project@" ## quote_url(pn);
 		href ##= "+change@" ## change_number();
 
 		print("<td align=\"center\"><a href=\"" ## href ##
@@ -362,6 +393,25 @@ if (change_number_set())
 }
 
 print("</dl>");
+print("</div>");
+
+print("<hr>");
+print("<p align=center class=\"navbar\">[");
+print("<a href=\"" ## script_name ## "\">Project List</a> |");
+href = script_name ## "?file@proj_menu+project@" ## quote_url(pn);
+print("<a href=\"" ## href ## "\">Project Menu</a> |");
+href = script_name ## "?file@chan_list+project@" ## quote_url(pn);
+print("<a href=\"" ## href ## "\">Change List</a> |");
+if (change_number_set())
+{
+    href = script_name ## "?file@chan_menu+project@" ## quote_url(pn)
+	## "+change@" ## cn ;
+    print("<a href=\"" ## href ## "\">Change Menu</a> |");
+}
+href = script_name ## "?file@proj_files+project@" ## quote_url(pn);
+print("<a href=\"" ## href ## "\">File List</a>");
+print("]</p>");
+
 print("<hr>");
 print("This page was generated " ## now() ## ".");
 print("</body></html>");

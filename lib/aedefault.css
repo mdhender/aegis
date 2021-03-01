@@ -1,0 +1,58 @@
+/*
+ * This is a crude CSS file designed to exercise all the style elements
+ * produced by the aegis.cgi script.   Using this stylesheet as is,
+ * will probably not produce results which please you, unless you have
+ * particularly bad taste.
+ *
+ * It does however highlight all the different elements within the
+ * generated pages, and is useful to distinguish which are which when
+ * creating new styles.
+ */
+
+body {
+ background: red;
+}
+hr {
+ background: blue;
+}
+
+*.navbar {
+ background: green;
+}
+
+*.report-cmd {
+ background: pink;
+}
+
+tr.odd-group {
+  background-color: purple;
+}
+
+tr.even-group {
+  background-color: yellow;
+}
+
+*.brief-description {
+  font-style: italic;
+}
+
+*.description {
+  text-transform: uppercase;
+}
+
+th {
+  border-bottom: 5px solid blue;
+}
+
+*.information {
+  font-family: "Helvetica", sans-serif;
+}
+
+*.legend {
+  background-color: yellow;
+}
+
+SPAN[class=filename] {
+  background-color: pink;
+  font-family: tt;
+}

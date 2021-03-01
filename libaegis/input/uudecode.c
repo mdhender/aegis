@@ -21,6 +21,7 @@
  */
 
 #include <ac/string.h>
+#include <ac/limits.h>
 
 #include <error.h>
 #include <input/uudecode.h>
@@ -28,6 +29,12 @@
 #include <stracc.h>
 #include <trace.h>
 
+/*
+ * The NOT_DECODABLE value is placed into the itab array to annotate
+ * characters which are not part of the encoding table.  It must be
+ * positive.  The values 0..63 indicate valid decode values.
+ */
+#define NOT_DECODABLE 127
 
 static char default_encoding_table[] =
 	   " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_";
@@ -41,7 +48,7 @@ struct input_uudecode_ty
     long	    pos;
     int		    state;
     char	    etab[64];
-    char	    itab[256];
+    unsigned char   itab[UCHAR_MAX + 1];
     int		    checksum;
     int		    padding;
 };
@@ -85,7 +92,7 @@ input_uudecode_read(fp, data, len)
 	return 0;
     cp = data;
     end = cp + len;
-    assert(len>=64);
+    assert(len >= 64);
     if (len < 64)
 	input_fatal_error(this->deeper, "uudecode: read too little");
     while (cp + 64 < end)
@@ -153,12 +160,12 @@ input_uudecode_read(fp, data, len)
 		 * invert the encoding table
 		 */
 		invert:
-		for (j = 0; j < 256; ++j)
-		    this->itab[j] = -1;
+		for (j = 0; j <= UCHAR_MAX; ++j)
+		    this->itab[j] = NOT_DECODABLE;
 		for (j = 0; j < 64; ++j)
 		{
 		    n = (unsigned char)this->etab[j];
-		    if (this->itab[n] >= 0)
+		    if (this->itab[n] != NOT_DECODABLE)
 		    {
 			input_fatal_error(this->deeper, "table has duplicate");
 		    }
@@ -170,7 +177,7 @@ input_uudecode_read(fp, data, len)
 		 * extension (because many e-mail
 		 * forwarders rip of trailing spaces).
 		 */
-		if (this->etab[0] == ' ' && this->itab['`'] < 0)
+		if (this->etab[0] == ' ' && this->itab['`'] == NOT_DECODABLE)
 		    this->itab['`'] = 0;
 	    }
 	    continue;
@@ -218,7 +225,7 @@ input_uudecode_read(fp, data, len)
 	     * get length
 	     */
 	    n = this->itab[*bp++];
-	    if (n < 0)
+	    if (n == NOT_DECODABLE)
 	    {
 		broken:
 		input_fatal_error
@@ -227,7 +234,7 @@ input_uudecode_read(fp, data, len)
 		    "broken data section (character not in encoding table)"
 		);
 	    }
-	    assert(n<64);
+	    assert(n < 64);
 
 	    check_the_sum = 0;
 	    switch (n % 3)
@@ -337,13 +344,15 @@ input_uudecode_read(fp, data, len)
 		int		c4;
 
 		c1 = this->itab[*bp++];
-		if (c1 < 0)
+		if (c1 == NOT_DECODABLE)
 		    goto broken;
+		assert(c1 < 64);
 		sum += c1;
 
 		c2 = this->itab[*bp++];
-		if (c2 < 0)
+		if (c2 == NOT_DECODABLE)
 		    goto broken;
+		assert(c2 < 64);
 		sum += c2;
 
 		c = (c1 << 2) | ((c2 >> 4) & 0x03);
@@ -352,8 +361,9 @@ input_uudecode_read(fp, data, len)
 		if (j + 1 < n || this->padding == 1)
 		{
 		    c3 = this->itab[*bp++];
-		    if (c3 < 0)
+		    if (c3 == NOT_DECODABLE)
 			goto broken;
+		    assert(c3 < 64);
 		    sum += c3;
 
 		    if (j + 1 < n)
@@ -365,8 +375,9 @@ input_uudecode_read(fp, data, len)
 		    if (j + 2 < n || this->padding == 1)
 		    {
 			c4 = this->itab[*bp++];
-			if (c4 < 0)
+			if (c4 == NOT_DECODABLE)
 			    goto broken;
+			assert(c4 < 64);
 			sum += c4;
 
 			if (j + 2 < n)
@@ -384,8 +395,9 @@ input_uudecode_read(fp, data, len)
 		    input_fatal_error(this->deeper, "checksum required");
 		}
 		c = this->itab[*bp++];
-		if (c < 0)
+		if (c == NOT_DECODABLE)
 		    goto broken;
+		assert(c < 64);
 		if (c != (sum & 077))
 		{
 		    input_fatal_error(this->deeper, "checksum is wrong");

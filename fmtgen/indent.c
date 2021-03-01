@@ -29,7 +29,7 @@
 #include <trace.h>
 
 
-#define INDENT 8
+#define INDENT 4
 
 static	FILE	*fp;
 static	char	*fn;
@@ -61,7 +61,7 @@ static	int	continuation_line;
  */
 
 void
-indent_more()
+indent_more(void)
 {
 	++depth;
 }
@@ -89,7 +89,7 @@ indent_more()
  */
 
 void
-indent_less()
+indent_less(void)
 {
 	--depth;
 }
@@ -116,73 +116,72 @@ indent_less()
  */
 
 void
-indent_putchar(c)
-	char	c;
+indent_putchar(int c)
 {
-	assert(fp);
-	switch (c)
-	{
-	case '\n':
-		fputc('\n', fp);
+    assert(fp);
+    switch (c)
+    {
+    case '\n':
+	fputc('\n', fp);
 #ifdef DEBUG
-		fflush(fp);
+	fflush(fp);
 #endif
-		in_col = 0;
-		out_col = 0;
-		if (continuation_line == 1)
-			continuation_line = 2;
-		else
-			continuation_line = 0;
-		break;
+	in_col = 0;
+	out_col = 0;
+	if (continuation_line == 1)
+    	    continuation_line = 2;
+	else
+    	    continuation_line = 0;
+	break;
 
-	case ' ':
-		if (out_col)
-			++in_col;
-		break;
+    case ' ':
+	if (out_col)
+	    ++in_col;
+	break;
 
-	case '\t':
-		if (out_col)
-			in_col = (in_col / INDENT + 1) * INDENT;
-		break;
+    case '\t':
+	if (out_col)
+	    in_col = (in_col / INDENT + 1) * INDENT;
+	break;
 
-	case '\1':
-		if (!out_col)
-			break;
-		if (in_col >= INDENT * (depth + 2))
-			++in_col;
-		else
-			in_col = INDENT * (depth + 2);
-		break;
+    case '\1':
+	if (!out_col)
+	    break;
+	if (in_col >= INDENT * depth + 16)
+	    ++in_col;
+	else
+	    in_col = INDENT * depth + 16;
+	break;
 
-	case /*{*/'}':
-	case /*(*/')':
-	case /*[*/']':
-		--depth;
-		/* fall through */
+    case '}':
+    case ')':
+    case ']':
+	--depth;
+	/* fall through */
 
-	default:
-		if (!out_col && c != '#' && continuation_line != 2)
-			in_col += INDENT * depth;
-		while (((out_col + 8) & -8) <= in_col && out_col + 1 < in_col)
-		{
-			fputc('\t', fp);
-			out_col = (out_col + 8) & -8;
-		}
-		while (out_col < in_col)
-		{
-			fputc(' ', fp);
-			++out_col;
-		}
-		if (c == '{'/*}*/ || c == '('/*)*/ || c == '['/*]*/)
-			++depth;
-		fputc(c, fp);
-		in_col++;
-		out_col = in_col;
-		continuation_line = (c == '\\');
-		break;
+    default:
+	if (!out_col && c != '#' && continuation_line != 2)
+	    in_col += INDENT * depth;
+	while (((out_col + 8) & -8) <= in_col && out_col + 1 < in_col)
+	{
+	    fputc('\t', fp);
+	    out_col = (out_col + 8) & -8;
 	}
-	if (ferror(fp))
-		nfatal("write \"%s\"", fn);
+	while (out_col < in_col)
+	{
+	    fputc(' ', fp);
+	    ++out_col;
+	}
+	if (c == '{' || c == '(' || c == '[')
+	    ++depth;
+	fputc(c, fp);
+	in_col++;
+	out_col = in_col;
+	continuation_line = (c == '\\');
+	break;
+    }
+    if (ferror(fp))
+	nfatal("write \"%s\"", fn);
 }
 
 
@@ -222,10 +221,9 @@ indent_printf(char *s, ...)
 
 
 void
-indent_open(s)
-	char	*s;
+indent_open(char *s)
 {
-	trace(("indent_open(s = %08lX)\n{\n"/*}*/, (long)s));
+	trace(("indent_open(s = %08lX)\n{\n", (long)s));
 	if (!s)
 	{
 		fp = stdout;
@@ -244,14 +242,14 @@ indent_open(s)
 	in_col = 0;
 	out_col = 0;
 	continuation_line = 0;
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }
 
 
 void
-indent_close()
+indent_close(void)
 {
-	trace(("indent_close()\n{\n"/*}*/));
+	trace(("indent_close()\n{\n"));
 	trace_pointer(fp);
 	if (out_col)
 		indent_putchar('\n');
@@ -261,5 +259,5 @@ indent_close()
 		nfatal("close \"%s\"", fn);
 	fp = 0;
 	fn = 0;
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }

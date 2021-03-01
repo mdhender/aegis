@@ -97,7 +97,7 @@ it is completed.
 Once a branch has develop-end (stops being an \fIactive\fP branch),
 it is reviewed as a normal change, and integrated as a normal change.
 If integration failed, it returns to ``being developed'' and becomes
-and active branch once again, until the next \fIaede\fP.  As you can
+an active branch once again, until the next \fIaede\fP.  As you can
 see, it is as easy to bounce a branch integration as it is to bounce a
 change integration.
 .LP

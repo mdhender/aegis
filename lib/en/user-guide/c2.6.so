@@ -36,7 +36,7 @@ It is possible to insulate your change from the baseline as much or as
 little as required.  The \fIaecp\fP(1) command, used to copy files into a
 change, has a \f[CW]--read-only\fP option.  The files copied in this way
 are marked as insulation (\fIi.e.\fP you don't intend to change them).
-If you have not un-copied them a develop end time, the \fIaede\fP(1)
+If you have not un-copied them at develop end time, the \fIaede\fP(1)
 command will produce a suitable error message, reminding you to un-copy
 the insulation and verify that your change still builds and tests
 successfully with the (probably) now-different baseline.

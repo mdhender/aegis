@@ -27,10 +27,7 @@
 
 
 void
-type_gen_include_declarator(type, name, is_a_list)
-	type_ty		*type;
-	string_ty	*name;
-	int		is_a_list;
+type_gen_include_declarator(type_ty *type, string_ty *name, int is_a_list)
 {
 	trace(("type_gen_include_declarator(type = %08lX, name = \"%s\", \
 is_a_list = %d)\n{\n"/*}*/, (long)type, name->str_text, is_a_list));
@@ -41,8 +38,7 @@ is_a_list = %d)\n{\n"/*}*/, (long)type, name->str_text, is_a_list));
 
 
 void
-type_gen_include(type)
-	type_ty		*type;
+type_gen_include(type_ty *type)
 {
 	trace(("type_gen_include(type = %08lX)\n{\n"/*}*/, (long)type));
 	if (type->method->gen_include)
@@ -52,23 +48,19 @@ type_gen_include(type)
 
 
 void
-type_gen_code_declarator(type, name, is_a_list, show)
-	type_ty		*type;
-	string_ty	*name;
-	int		is_a_list;
-	int		show;
+type_gen_code_declarator(type_ty *type, string_ty *name, int is_a_list,
+    int show)
 {
-	trace(("type_gen_code_declarator(type = %08lX, name = \"%s\", \
-is_a_list = %d)\n{\n"/*}*/, (long)type, name->str_text, is_a_list));
-	if (type->method->gen_code_declarator)
-		type->method->gen_code_declarator(type, name, is_a_list, show);
-	trace((/*{*/"}\n"));
+    trace(("type_gen_code_declarator(type = %08lX, name = \"%s\", "
+	"is_a_list = %d)\n{\n", (long)type, name->str_text, is_a_list));
+    if (type->method->gen_code_declarator)
+       	type->method->gen_code_declarator(type, name, is_a_list, show);
+    trace(("}\n"));
 }
 
 
 void
-type_gen_code(type)
-	type_ty		*type;
+type_gen_code(type_ty *type)
 {
 	trace(("type_gen_code(type = %08lX)\n{\n"/*}*/, (long)type));
 	if (type->method->gen_code)
@@ -78,25 +70,19 @@ type_gen_code(type)
 
 
 void
-type_gen_free_declarator(type, name, is_a_list)
-	type_ty		*type;
-	string_ty	*name;
-	int		is_a_list;
+type_gen_free_declarator(type_ty *type, string_ty *name, int is_a_list)
 {
-	trace(("type_gen_free_declarator(type = %08lX, name = \"%s\", \
-is_a_list = %d)\n{\n"/*}*/, (long)type, name->str_text, is_a_list));
-	if (type->method->gen_free_declarator)
-		type->method->gen_free_declarator(type, name, is_a_list);
-	trace((/*{*/"}\n"));
+    trace(("type_gen_free_declarator(type = %08lX, name = \"%s\", "
+	"is_a_list = %d)\n{\n", (long)type, name->str_text, is_a_list));
+    if (type->method->gen_free_declarator)
+	type->method->gen_free_declarator(type, name, is_a_list);
+    trace(("}\n"));
 }
 
 
 void
-type_member_add(type, member_name, member_type, show_or_not)
-    type_ty	    *type;
-    string_ty	    *member_name;
-    type_ty	    *member_type;
-    int		    show_or_not;
+type_member_add(type_ty	*type, string_ty *member_name, type_ty *member_type,
+    int show_or_not)
 {
     trace(
     (
@@ -115,9 +101,7 @@ type_member_add(type, member_name, member_type, show_or_not)
 
 
 type_ty *
-type_new(method, name)
-	type_method_ty	*method;
-	string_ty	*name;
+type_new(type_method_ty *method, string_ty *name)
 {
 	type_ty		*type;
 
@@ -138,8 +122,7 @@ type_new(method, name)
 
 
 void
-type_in_include_file(type)
-	type_ty	*type;
+type_in_include_file(type_ty *type)
 {
 	trace(("type_in_include_file(type = %08lX)\n{\n"/*}*/, (long)type));
 	type->included_flag = 1;
@@ -150,8 +133,7 @@ type_in_include_file(type)
 
 
 void
-type_delete(type)
-	type_ty	*type;
+type_delete(type_ty *type)
 {
 	trace(("type_delete(type = %08lX)\n{\n"/*}*/, (long)type));
 	if (type->method->destructor)

@@ -21,6 +21,7 @@
  */
 
 #include <ac/stdio.h>
+#include <ac/time.h>
 
 #include <ael/project/projects.h>
 #include <arglex3.h>
@@ -64,10 +65,8 @@
  *	briefly describe how to used the `aeimport' command.
  */
 
-static void import_usage _((void));
-
 static void
-import_usage()
+import_usage(void)
 {
     char	    *progname;
 
@@ -78,10 +77,8 @@ import_usage()
 }
 
 
-static void import_list _((void));
-
 static void
-import_list()
+import_list(void)
 {
     arglex();
     while (arglex_token != arglex_token_eoln)
@@ -102,10 +99,8 @@ import_list()
  *	describe in detail how to use the 'aegis -RePorT' command.
  */
 
-static void import_help _((void));
-
 static void
-import_help()
+import_help(void)
 {
     help("aeimport", import_usage);
 }
@@ -124,10 +119,8 @@ import_help()
  *	It extracts what to do from the command line.
  */
 
-static void import_main _((void));
-
 static void
-import_main()
+import_main(void)
 {
     sub_context_ty  *scp;
     string_ty	    *home;
@@ -152,6 +145,7 @@ import_main()
     project_ty	    *ppp;
     string_list_ty  staff;
     int		    mode;
+    time_t	    when;
 
     trace(("import_main()\n{\n"));
     project_name = 0;
@@ -538,7 +532,11 @@ import_main()
      * necessary so that we can do all of the commits and produce
      * a complete project at the end of the process.
      */
-    config_file(project_name, format);
+    if (cslp->length)
+	when = cslp->item[0]->when - 60;
+    else
+    	time(&when);
+    config_file(project_name, format, when);
 
     /*
      * Create a change for each change set
@@ -559,7 +557,7 @@ import_main()
 
 
 void
-import()
+import(void)
 {
     switch (arglex())
     {

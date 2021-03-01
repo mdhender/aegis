@@ -86,7 +86,7 @@ wrap(const char *s)
 	    unsigned char   c;
 
 	    c = *ep;
-	    if (isprint(c))
+	    if (isprint((unsigned char)c))
 		cw = 1 + (c == '\\');
 	    else
 		cw = (strchr(escapes, c) ? 2 : 4);
@@ -172,7 +172,7 @@ wrap(const char *s)
 	while (s < ep)
 	{
 	    unsigned char c = *s++;
-	    if (isprint(c))
+	    if (isprint((unsigned char)c))
 	    {
 		if (c == '\\')
 	    	    *tp++ = '\\';

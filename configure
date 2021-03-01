@@ -2076,7 +2076,7 @@ fi
 
 for ac_hdr in fcntl.h iso646.h libgettext.h libintl.h limits.h locale.h \
 	memory.h mntent.h regex.h rxposix.h stddef.h stdlib.h string.h \
-	unistd.h wchar.h wctype.h widec.h zlib.h sys/clu.h
+	unistd.h wchar.h wctype.h widec.h zlib.h sys/clu.h sys/ioctl.h
 do
 ac_safe=`echo "$ac_hdr" | sed 'y%./+-%__p_%'`
 echo $ac_n "checking for $ac_hdr""... $ac_c" 1>&6
@@ -2966,7 +2966,7 @@ rm -fr conftest*
 fi
 
 
-if test "$ac_cv_lib_z" != "yes" -o "$ac_cv_header_zlib_h" != "yes"
+if test "$ac_cv_lib_z_main" != "yes" -o "$ac_cv_header_zlib_h" != "yes"
 then
   echo "$ac_t""" 1>&6
   echo "$ac_t""	You need to install the GNU zlib compression" 1>&6

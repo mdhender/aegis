@@ -32,7 +32,7 @@ baseline version in parentheses if you are out-of-date.
 Aegis implements branches as very long changes, with sub-changes.
 A side effect of this is that a branch can become out-of-date in the
 same way that a development director becomes out of date.  When it
-comes to to \fIaede\fP(1) the branch, you will be told if there are
+comes time to \fIaede\fP(1) the branch, you will be told if there are
 any out-of-date files.  Additionally, the \fIproject files\fP listing
 will show out of date files in exactly the same way that the \fIchange
 file\fP listing does.

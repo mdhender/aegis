@@ -30,12 +30,25 @@ input_read_strictest(ip, buf, len)
     void	*buf;
     size_t	len;
 {
-    long	result;
+    long	asked;
+    long	got;
 
-    result = input_read(ip, buf, len);
-    if (result != len)
+    asked = len;
+    got = 0;
+    while (len > 0)
     {
-	string_ty *s = str_format("short read (asked %d, got %d)", len, result);
-	input_fatal_error(ip, s->str_text);
+	long            result;
+
+	result = input_read(ip, buf, len);
+	if (result <= 0)
+	{
+	    string_ty       *s;
+
+	    s = str_format("short read (asked %d, got %d)", asked, got);
+	    input_fatal_error(ip, s->str_text);
+	}
+	len -= result;
+	got += result;
+	buf = (char *)buf + result;
     }
 }

@@ -55,7 +55,7 @@ enum state_t
     state_c_comment,
     state_c_comment_begin,
     state_c_comment_doxygen,
-    state_c_comment_star,
+    state_c_comment_star
 };
 typedef enum state_t state_t;
 

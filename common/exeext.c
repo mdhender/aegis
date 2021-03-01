@@ -36,10 +36,10 @@ memcasecmp(const char *s1, const char *s2, size_t n)
     while (n > 0)
     {
 	c1 = *s1++;
-	if (isupper(c1))
+	if (isupper((unsigned char)c1))
 	    c1 = tolower(c1);
 	c2 = *s2++;
-	if (isupper(c2))
+	if (isupper((unsigned char)c2))
 	    c1 = tolower(c2);
 	if (c1 != c2)
 	    return (c1 - c2);

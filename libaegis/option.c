@@ -21,6 +21,8 @@
  */
 
 #include <ac/stdlib.h>
+#include <ac/unistd.h>
+#include <ac/sys/ioctl.h>
 #include <ac/termios.h>
 
 #include <arglex2.h>

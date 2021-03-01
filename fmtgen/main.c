@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1999 Peter Miller;
+ *	Copyright (C) 1991-1995, 1997, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,10 +32,8 @@
 #include <trace.h>
 
 
-static void usage _((void));
-
 static void
-usage()
+usage(void)
 {
 	char	*progname;
 
@@ -51,10 +49,8 @@ usage()
 }
 
 
-static void help _((void));
-
 static void
-help()
+help(void)
 {
 	static char *text[] =
 	{
@@ -152,12 +148,8 @@ static arglex_table_ty argtab[] =
 };
 
 
-int main _((int, char **));
-
 int
-main(argc, argv)
-	int	argc;
-	char	**argv;
+main(int argc, char **argv)
 {
 	char	*filename[3];
 	int	j;

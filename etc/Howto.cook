@@ -728,6 +728,7 @@ cascade common/fp/snefru.c = [arch]/common/find_sizes.h ;
 cascade common/version_stmp.c = common/patchlevel.h ;
 cascade etc/aegis.html = etc/version.so ;
 cascade fmtgen/lex.c = fmtgen/parse.gen.h ;
+cascade lib/en/aoss4/main.mm = etc/version.so ;
 cascade lib/en/auug93/main.mm = etc/version.so ;
 cascade lib/en/building/main.man = etc/version.so ;
 cascade lib/en/cvs-comparison/main.ms = [arch]/etc/libdir.so etc/version.so ;
@@ -1012,9 +1013,9 @@ Makefile.in: etc/Makefile.head etc/Makefile.sh etc/Makefile.awk [vs_file]
 etc/CHANGES: [arch]/bin/aereport lib/report/proj_detai.rpt [vs_file]
 {
 	[resolve [arch]/bin/aereport]
-		-f [resolve lib/report/chan_detai.rpt]
+		-f [resolve lib/report/proj_detai.rpt]
 		-o [target]
-		-p aegis
+		-p [project_short]
 		-pw\=80 -pl\=66
 								      set meter;
 }

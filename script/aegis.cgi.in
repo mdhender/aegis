@@ -134,6 +134,42 @@ then
     exit 0
 fi
 
+if test "$file" = "aetar"
+then
+    test -z "$project" && exit 1
+    test -z "$change" && change="--baseline"
+    $bindir/aetar --send $project $change \
+       	-o /tmp/aegis.$$.ae > /tmp/aegis.$$ 2>&1
+    status=$?
+    if test $status -ne 0
+    then
+       	echo 'Content-Type: text/html'
+       	echo ''
+       	echo '<html><head><title>Error</title></head><body><h1>'
+       	echo 'Error</h1>The command'
+       	echo '<blockquote><tt>'
+       	echo $bindir/aetar --send $project $change
+       	echo '</tt></blockquote>'
+       	echo "terminated with exit status $status."
+       	echo 'The following text was produced <blockquote><pre>'
+       	sed 's|<|\&lt;|g' < /tmp/aegis.$$
+       	echo '</pre></blockquote>'
+       	echo '<hr>'
+       	echo 'This page was generated'
+       	date
+       	echo '</body></html>'
+       	rm /tmp/aegis.$$*
+       	exit 1
+    fi
+
+    echo 'Content-Type: application/x-tar-gz'
+    echo 'Content-Transfer-Encoding: 8bit'
+    echo ''
+    cat /tmp/aegis.$$.ae
+    rm /tmp/aegis.$$*
+    exit 0
+fi
+
 
 if test "$file" = "diff"
 then

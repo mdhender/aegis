@@ -22,7 +22,7 @@
 #	is rescinded
 #
 # Suggested project attribute:
-# review_pass_undo_notify_command = "$datadir/de.inews.sh $p $c $developer"
+# review_pass_undo_notify_command = "$datadir/rpu.sh $p $c $developer"
 #
 aegis=aegis
 case $# in

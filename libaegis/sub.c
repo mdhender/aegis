@@ -135,7 +135,7 @@ struct sub_context_ty
 };
 
 
-typedef wstring_ty *(*fp)_((sub_context_ty *, wstring_list_ty *));
+typedef wstring_ty *(*fp)(sub_context_ty *, wstring_list_ty *);
 
 typedef struct sub_table_ty sub_table_ty;
 struct sub_table_ty
@@ -169,11 +169,8 @@ struct collect_ty
 };
 
 
-static void collect_constructor _((collect_ty *));
-
 static void
-collect_constructor(cp)
-    collect_ty	    *cp;
+collect_constructor(collect_ty *cp)
 {
     cp->buf = 0;
     cp->size = 0;
@@ -181,11 +178,8 @@ collect_constructor(cp)
 }
 
 
-static void collect_destructor _((collect_ty *));
-
 static void
-collect_destructor(cp)
-    collect_ty	    *cp;
+collect_destructor(collect_ty *cp)
 {
     if (cp->buf)
 	mem_free(cp->buf);
@@ -196,9 +190,7 @@ collect_destructor(cp)
 
 
 sub_context_ty *
-sub_context_New(file_name, line_number)
-    const char	    *file_name;
-    int		    line_number;
+sub_context_New(const char *file_name, int line_number)
 {
     sub_context_ty  *p;
     int		    hold;
@@ -221,8 +213,7 @@ sub_context_New(file_name, line_number)
 
 
 void
-sub_context_delete(p)
-    sub_context_ty  *p;
+sub_context_delete(sub_context_ty *p)
 {
     size_t	    j;
 
@@ -235,25 +226,21 @@ sub_context_delete(p)
 
 
 void
-sub_context_error_set(scp, s)
-    sub_context_ty  *scp;
-    const char	    *s;
+sub_context_error_set(sub_context_ty *scp, const char *s)
 {
     scp->suberr = s;
 }
 
 
 project_ty *
-sub_context_project_get(scp)
-    sub_context_ty  *scp;
+sub_context_project_get(sub_context_ty *scp)
 {
     return scp->pp;
 }
 
 
 change_ty *
-sub_context_change_get(scp)
-    sub_context_ty  *scp;
+sub_context_change_get(sub_context_ty *scp)
 {
     return scp->cp;
 }
@@ -284,12 +271,8 @@ sub_context_change_get(scp)
  *	or NULL on error, setting suberr appropriately.
  */
 
-static wstring_ty *sub_errno _((sub_context_ty *, wstring_list_ty *arg));
-
 static wstring_ty *
-sub_errno(scp, arg)
-    sub_context_ty  *scp;
-    wstring_list_ty *arg;
+sub_errno(sub_context_ty *scp, wstring_list_ty *arg)
 {
     wstring_ty	    *result;
 
@@ -443,13 +426,8 @@ static sub_table_ty table[] =
  *	s - string to take as input
  */
 
-static void sub_diversion _((sub_context_ty *, wstring_ty *, int));
-
 static void
-sub_diversion(scp, s, resubstitute)
-    sub_context_ty  *scp;
-    wstring_ty	    *s;
-    int		    resubstitute;
+sub_diversion(sub_context_ty *scp, wstring_ty *s, int resubstitute)
 {
     sub_diversion_ty *dp;
 
@@ -477,11 +455,8 @@ sub_diversion(scp, s, resubstitute)
  *	release a diversion when it has been exhausted.
  */
 
-static void sub_diversion_close _((sub_context_ty *));
-
 static void
-sub_diversion_close(scp)
-    sub_context_ty  *scp;
+sub_diversion_close(sub_context_ty *scp)
 {
     sub_diversion_ty *dp;
 
@@ -510,12 +485,8 @@ sub_diversion_close(scp)
  *	args - the name and arguments of the substitution
  */
 
-static void execute _((sub_context_ty *scp, wstring_list_ty *));
-
 static void
-execute(scp, arg)
-    sub_context_ty  *scp;
-    wstring_list_ty *arg;
+execute(sub_context_ty *scp, wstring_list_ty *arg)
 {
     string_ty	    *cmd;
     wstring_ty	    *s;
@@ -687,12 +658,8 @@ execute(scp, arg)
  *	int - the chacater, or NUL to indicate end of input
  */
 
-static wchar_t sub_getc_meta _((sub_context_ty *, getc_type *));
-
 static wchar_t
-sub_getc_meta(scp, tp)
-    sub_context_ty  *scp;
-    getc_type	    *tp;
+sub_getc_meta(sub_context_ty *scp, getc_type *tp)
 {
     wchar_t	    result;
     sub_diversion_ty *dp;
@@ -744,12 +711,8 @@ sub_getc_meta(scp, tp)
  *	Only push back what was read.
  */
 
-static void sub_getc_meta_undo _((sub_context_ty *, wchar_t));
-
 static void
-sub_getc_meta_undo(scp, c)
-    sub_context_ty  *scp;
-    wchar_t	    c;
+sub_getc_meta_undo(sub_context_ty *scp, wchar_t c)
 {
     sub_diversion_ty *dp;
 
@@ -789,12 +752,8 @@ sub_getc_meta_undo(scp, c)
  *	c - the character being collected
  */
 
-static void collect _((collect_ty *, wchar_t));
-
 static void
-collect(cp, c)
-    collect_ty	    *cp;
-    wchar_t	    c;
+collect(collect_ty *cp, wchar_t c)
 {
     if (cp->pos >= cp->size)
     {
@@ -808,13 +767,8 @@ collect(cp, c)
 }
 
 
-static void collect_n _((collect_ty *, wchar_t *, size_t));
-
 static void
-collect_n(cp, s, n)
-    collect_ty	    *cp;
-    wchar_t	    *s;
-    size_t	    n;
+collect_n(collect_ty *cp, wchar_t *s, size_t n)
 {
     while (n > 0)
     {
@@ -840,11 +794,8 @@ collect_n(cp, s, n)
  *	wstring_ty *; pointer to the string in dynamic memory.
  */
 
-static wstring_ty *collect_end _((collect_ty *));
-
 static wstring_ty *
-collect_end(cp)
-    collect_ty	    *cp;
+collect_end(collect_ty *cp)
 {
     wstring_ty	    *result;
 
@@ -873,11 +824,8 @@ collect_end(cp)
  *		or NUL if none.
  */
 
-static wchar_t percent _((sub_context_ty *));
-
 static wchar_t
-percent(scp)
-    sub_context_ty  *scp;
+percent(sub_context_ty *scp)
 {
     wchar_t	    c;
     wchar_t	    result;
@@ -1043,7 +991,7 @@ percent(scp)
 }
 
 
-static wchar_t sub_getc _((sub_context_ty *, getc_type *)); /* forward */
+static wchar_t sub_getc(sub_context_ty *, getc_type *); /* forward */
 
 
 /*
@@ -1065,11 +1013,8 @@ static wchar_t sub_getc _((sub_context_ty *, getc_type *)); /* forward */
  *		or NUL if none.
  */
 
-static wchar_t dollar _((sub_context_ty *));
-
 static wchar_t
-dollar(scp)
-    sub_context_ty  *scp;
+dollar(sub_context_ty *scp)
 {
     wstring_list_ty arg;
     int		    result;
@@ -1456,12 +1401,8 @@ dollar(scp)
  *		or NUL to indicate end of input.
  */
 
-static wchar_t sub_getc _((sub_context_ty *, getc_type *));
-
 static wchar_t
-sub_getc(scp, tp)
-    sub_context_ty  *scp;
-    getc_type	    *tp;
+sub_getc(sub_context_ty *scp, getc_type	*tp)
 {
     wchar_t	    c;
 
@@ -1520,9 +1461,7 @@ sub_getc(scp, tp)
 
 
 void
-subst_intl_project(scp, a)
-    sub_context_ty  *scp;
-    project_ty	    *a;
+subst_intl_project(sub_context_ty *scp, project_ty *a)
 {
     if (a != scp->pp)
     {
@@ -1535,9 +1474,7 @@ subst_intl_project(scp, a)
 
 
 void
-subst_intl_change(scp, a)
-    sub_context_ty  *scp;
-    change_ty	    *a;
+subst_intl_change(sub_context_ty *scp, change_ty *a)
 {
     assert(!scp->pp);
     assert(!scp->cp);
@@ -1546,12 +1483,8 @@ subst_intl_change(scp, a)
 }
 
 
-static wstring_ty *subst _((sub_context_ty *, wstring_ty *));
-
 static wstring_ty *
-subst(scp, s)
-    sub_context_ty  *scp;
-    wstring_ty	    *s;
+subst(sub_context_ty *scp, wstring_ty *s)
 {
     collect_ty	    buf;
     wchar_t	    c;
@@ -1682,12 +1615,8 @@ in substitution \"$message\" found unused variables")
 }
 
 
-static wstring_ty *subst_intl_wide _((sub_context_ty *, const char *));
-
 static wstring_ty *
-subst_intl_wide(scp, msg)
-    sub_context_ty  *scp;
-    const char	    *msg;
+subst_intl_wide(sub_context_ty *scp, const char *msg)
 {
     char	    *tmp;
     wstring_ty	    *s;
@@ -1721,9 +1650,7 @@ subst_intl_wide(scp, msg)
 
 
 string_ty *
-subst_intl(scp, s)
-    sub_context_ty  *scp;
-    const char	    *s;
+subst_intl(sub_context_ty *scp, const char *s)
 {
     wstring_ty	    *result_wide;
     string_ty	    *result;
@@ -1762,10 +1689,7 @@ subst_intl(scp, s)
  */
 
 string_ty *
-substitute(scp, acp, s)
-    sub_context_ty  *scp;
-    change_ty	    *acp;
-    string_ty	    *s;
+substitute(sub_context_ty *scp, change_ty *acp, string_ty *s)
 {
     wstring_ty	    *ws;
     wstring_ty	    *result_wide;
@@ -1796,10 +1720,7 @@ substitute(scp, acp, s)
 
 
 string_ty *
-substitute_p(scp, app, s)
-    sub_context_ty  *scp;
-    project_ty	    *app;
-    string_ty	    *s;
+substitute_p(sub_context_ty *scp, project_ty *app, string_ty *s)
 {
     wstring_ty	    *ws;
     wstring_ty	    *result_wide;
@@ -1843,8 +1764,7 @@ substitute_p(scp, app, s)
  */
 
 void
-sub_var_clear(scp)
-    sub_context_ty  *scp;
+sub_var_clear(sub_context_ty *scp)
 {
     size_t	    j;
 
@@ -1897,10 +1817,7 @@ sub_var_set_format(sub_context_ty *scp, const char *name, const char *fmt, ...)
 
 
 void
-sub_var_set_string(scp, name, value)
-    sub_context_ty  *scp;
-    const char	    *name;
-    string_ty	    *value;
+sub_var_set_string(sub_context_ty *scp, const char *name, string_ty *value)
 {
     sub_table_ty    *svp;
 
@@ -1923,10 +1840,7 @@ sub_var_set_string(scp, name, value)
 
 
 void
-sub_var_set_charstar(scp, name, value)
-    sub_context_ty  *scp;
-    const char	    *name;
-    const char	    *value;
+sub_var_set_charstar(sub_context_ty *scp, const char *name, const char *value)
 {
     string_ty	    *s;
 
@@ -1937,10 +1851,7 @@ sub_var_set_charstar(scp, name, value)
 
 
 void
-sub_var_set_long(scp, name, value)
-    sub_context_ty  *scp;
-    const char	    *name;
-    long	    value;
+sub_var_set_long(sub_context_ty *scp, const char *name, long value)
 {
     string_ty	    *s;
 
@@ -1951,9 +1862,7 @@ sub_var_set_long(scp, name, value)
 
 
 void
-sub_var_resubstitute(scp, name)
-    sub_context_ty  *scp;
-    const char	    *name;
+sub_var_resubstitute(sub_context_ty *scp, const char *name)
 {
     sub_table_ty    *the_end;
     sub_table_ty    *svp;
@@ -1970,9 +1879,7 @@ sub_var_resubstitute(scp, name)
 
 
 void
-sub_var_override(scp, name)
-    sub_context_ty  *scp;
-    const char	    *name;
+sub_var_override(sub_context_ty *scp, const char *name)
 {
     sub_table_ty    *the_end;
     sub_table_ty    *svp;
@@ -1989,9 +1896,7 @@ sub_var_override(scp, name)
 
 
 void
-sub_var_optional(scp, name)
-    sub_context_ty  *scp;
-    const char	    *name;
+sub_var_optional(sub_context_ty *scp, const char *name)
 {
     sub_table_ty    *the_end;
     sub_table_ty    *svp;
@@ -2008,9 +1913,7 @@ sub_var_optional(scp, name)
 
 
 void
-sub_var_append_if_unused(scp, name)
-    sub_context_ty  *scp;
-    const char	    *name;
+sub_var_append_if_unused(sub_context_ty *scp, const char *name)
 {
     sub_table_ty    *the_end;
     sub_table_ty    *svp;
@@ -2045,11 +1948,8 @@ sub_var_append_if_unused(scp, name)
  *	Line length is assumed to be 80 characters.
  */
 
-static void wrap _((const wchar_t *));
-
 static void
-wrap(s)
-    const wchar_t   *s;
+wrap(const wchar_t *s)
 {
     char	    *progname;
     int		    page_width;
@@ -2331,9 +2231,7 @@ wrap(s)
 
 
 void
-error_intl(scp, s)
-    sub_context_ty  *scp;
-    const char	    *s;
+error_intl(sub_context_ty *scp, const char *s)
 {
     wstring_ty	    *message;
     int		    need_to_delete;
@@ -2356,9 +2254,7 @@ error_intl(scp, s)
 
 
 void
-fatal_intl(scp, s)
-    sub_context_ty  *scp;
-    const char	    *s;
+fatal_intl(sub_context_ty *scp, const char *s)
 {
     wstring_ty	    *message;
     static const char *double_jeopardy;
@@ -2405,9 +2301,7 @@ This is a probably bug.",
 
 
 void
-verbose_intl(scp, s)
-    sub_context_ty  *scp;
-    const char	    *s;
+verbose_intl(sub_context_ty *scp, const char *s)
 {
     wstring_ty	    *message;
     int		    need_to_delete;
@@ -2435,17 +2329,14 @@ verbose_intl(scp, s)
 
 
 void
-sub_errno_setx(scp, x)
-    sub_context_ty  *scp;
-    int		    x;
+sub_errno_setx(sub_context_ty *scp, int x)
 {
     scp->errno_sequester = x;
 }
 
 
 void
-sub_errno_set(scp)
-    sub_context_ty  *scp;
+sub_errno_set(sub_context_ty *scp)
 {
     sub_errno_setx(scp, errno);
 }

@@ -95,11 +95,8 @@ static symtab_ty *typedef_symtab;
 static string_list_ty	initialize;
 
 
-static void push_name _((string_ty *));
-
 static void
-push_name(s)
-	string_ty	*s;
+push_name(string_ty *s)
 {
 	name_ty		*np;
 
@@ -114,11 +111,8 @@ push_name(s)
 }
 
 
-static void push_name_abs _((string_ty *));
-
 static void
-push_name_abs(s)
-	string_ty	*s;
+push_name_abs(string_ty *s)
 {
 	name_ty		*np;
 
@@ -133,10 +127,8 @@ push_name_abs(s)
 }
 
 
-static void pop_name _((void));
-
 static void
-pop_name()
+pop_name(void)
 {
 	name_ty		*np;
 
@@ -150,11 +142,8 @@ pop_name()
 }
 
 
-static void define_type _((type_ty *));
-
 static void
-define_type(type)
-	type_ty		*type;
+define_type(type_ty *type)
 {
 	size_t		nbytes;
 
@@ -170,11 +159,8 @@ define_type(type)
 }
 
 
-static char *base_name _((char *));
-
 static char *
-base_name(s)
-	char		*s;
+base_name(char *s)
 {
 	static char	buffer[256];
 	char		*cp;
@@ -197,11 +183,8 @@ base_name(s)
 }
 
 
-static void generate_include_file _((char *));
-
 static void
-generate_include_file(include_file)
-	char		*include_file;
+generate_include_file(char *include_file)
 {
 	char		*cp1;
 	size_t		j;
@@ -230,17 +213,17 @@ generate_include_file(include_file)
 	indent_putchar('\n');
 	indent_printf
 	(
-	   "void %s_write_file _((string_ty *filename, %s value, int comp));\n",
+	   "void %s_write_file(string_ty *filename, %s value, int comp);\n",
 		s->str_text,
 		s->str_text
 	);
 	indent_printf
 	(
-		"%s %s_read_file _((string_ty *filename));\n",
+		"%s %s_read_file(string_ty *filename);\n",
 		s->str_text,
 		s->str_text
 	);
-	indent_printf("void %s__rpt_init _((void));\n", s->str_text);
+	indent_printf("void %s__rpt_init(void);\n", s->str_text);
 	indent_putchar('\n');
 	indent_printf("#endif /* %s_H */\n", cp1);
 	indent_close();
@@ -248,12 +231,8 @@ generate_include_file(include_file)
 }
 
 
-static void generate_code_file _((char *, char *));
-
 static void
-generate_code_file(code_file, include_file)
-	char		*code_file;
-	char		*include_file;
+generate_code_file(char *code_file, char *include_file)
 {
 	char		*cp1;
 	size_t		j;
@@ -294,10 +273,7 @@ generate_code_file(code_file, include_file)
 	}
 	indent_putchar('\n');
 	indent_printf("%s\n", cp1);
-	indent_printf("%s_read_file(filename)\n", s->str_text);
-	indent_more();
-	indent_printf("%s\1*filename;\n", "string_ty");
-	indent_less();
+	indent_printf("%s_read_file(string_ty *filename)\n", s->str_text);
 	indent_printf("{\n"/*}*/);
 	indent_printf("%s\1result;\n\n", cp1);
 	indent_printf
@@ -320,14 +296,10 @@ generate_code_file(code_file, include_file)
 	indent_printf("void\n");
 	indent_printf
 	(
-		"%s_write_file(filename, value, compress)\n",
+		"%s_write_file(string_ty *filename, %s value, int compress)\n",
+		s->str_text,
 		s->str_text
 	);
-	indent_more();
-	indent_printf("%s\1*filename;\n", "string_ty");
-	indent_printf("%s\1value;\n", s->str_text);
-	indent_printf("%s\1compress;\n", "int");
-	indent_less();
 	indent_printf("{\n"/*}*/);
 	indent_printf("output_ty *fp;\n\n");
 	indent_printf
@@ -357,7 +329,7 @@ generate_code_file(code_file, include_file)
 
 	indent_putchar('\n');
 	indent_printf("void\n");
-	indent_printf("%s__rpt_init()\n", s->str_text);
+	indent_printf("%s__rpt_init(void)\n", s->str_text);
 	indent_printf("{\n"/*}*/);
 	indent_printf("trace((\"%s__rpt_init()\\n{\\n\"/*}*/));\n", cp1);
 	for (j = 0; j < initialize.nstrings; ++j)
@@ -370,21 +342,17 @@ generate_code_file(code_file, include_file)
 
 
 void
-generate_code__init(s)
-	string_ty	*s;
+generate_code__init(string_ty *s)
 {
 	string_list_append(&initialize, s);
 }
 
 
 void
-parse(definition_file, code_file, include_file)
-	char		*definition_file;
-	char		*code_file;
-	char		*include_file;
+parse(char *definition_file, char *code_file, char *include_file)
 {
 	string_ty	*s;
-	extern int yyparse _((void));
+	extern int yyparse(void);
 
 	/*
 	 * initial name is the basename of the definition file

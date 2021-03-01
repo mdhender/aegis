@@ -109,9 +109,10 @@ void input_ungetc_complicated _((input_ty *, int));
 void input_unread _((input_ty *, const void *, size_t));
 
 /**
-  * The input_delete function is usedto close the given input, and delete
+  * The input_delete function is used to close the given input, and delete
   * all resources associated with it.  Once this returns, the given
-  * input is no longer available for *any* use.
+  * input is no longer available for *any* use.  (Think of this function
+  * as input_close if it helps.)
   */
 void input_delete _((input_ty *));
 

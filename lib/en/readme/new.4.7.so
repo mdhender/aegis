@@ -19,10 +19,45 @@
 .\"
 .\" MANIFEST: document describing new 4.7 features
 .\"
-.\" .PP
-.\" .if n *
-.\" .if t \(bu
-.\" .\" change NN
+.PP
+.if n *
+.if t \(bu
+.\" change 51
+A bugs has been fixed in the \fIaetar -receive\fP command,
+where it incorrectly complained about shorty input files.
+.PP
+.if n *
+.if t \(bu
+.\" change 50, 36, 30, 26, 21
+Numerous changes have been made to the web interface.
+They now use cascading style sheets, have more navigation links,
+and inclde tarball downloads.
+.PP
+.if n *
+.if t \(bu
+.\" change 38, 37, 33, 28, 23, 20, 19, 18, 15
+Several build issues have been resolved.
+.PP
+.if n *
+.if t \(bu
+.\" change 35
+A bug has been fixed in the \fIaeimport\fP(1) command.  The symptom was
+that the \fIaecp -delta\fP command misbehaved.  The probelm was that
+the first delta needed a timestamp \fIprior to\fP the first change set
+taken from the import sets.
+.PP
+.if n *
+.if t \(bu
+.\" change 29
+A bug has been fixed in the \fIaepatch -send\fP command, where it
+would add \f[CW]Index\fP lines for files with no differences.
+.PP
+.if n *
+.if t \(bu
+.\" change 17
+A bug has been fixed in the \f[CW]protect_\%development_\%directory =
+true;\fP handling, where it would cause a "multiple user permissions
+setting" error message.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
 .SS Version 4.7

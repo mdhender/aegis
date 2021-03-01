@@ -38,7 +38,7 @@
 enum
 {
 	arglex_token_input,
-	arglex_token_output,
+	arglex_token_output
 };
 
 

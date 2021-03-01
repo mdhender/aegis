@@ -78,10 +78,10 @@ strcasecmp(const char *s1, const char *s2)
     for (;;)
     {
 	c1 = *s1++;
-	if (isupper(c1))
+	if (isupper((unsigned char)c1))
 	    c1 = tolower(c1);
 	c2 = *s2++;
-	if (isupper(c2))
+	if (isupper((unsigned char)c2))
 	    c2 = tolower(c2);
 	if (c1 != c2)
 	{
@@ -118,10 +118,10 @@ strncasecmp(const char *s1, const char *s2)
     while (len-- > 0)
     {
 	c1 = *s1++;
-	if (isupper(c1))
+	if (isupper((unsigned char)c1))
 		c1 = tolower(c1);
 	c2 = *s2++;
-	if (isupper(c2))
+	if (isupper((unsigned char)c2))
 	    c2 = tolower(c2);
 	if (c1 != c2)
 	{

@@ -307,7 +307,7 @@ To cope with this, you need to say
 .RS
 .ft CW
 .nf
-$ \f(CBCFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib ./configure\fP
+$ \f(CBCPPFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib ./configure\fP
 \fI\&...lots of output...\fP
 $
 .fi

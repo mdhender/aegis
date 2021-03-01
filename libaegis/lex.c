@@ -701,4 +701,13 @@ lex_error(scp, s)
 	sub_var_set_string(scp, "File_Name", input_name(input));
 	fatal_intl(scp, i18n("$filename: too many errors"));
     }
+
+#if 0
+    /*
+     * This stuff is here to insulate against error messages that various
+     * versions if GNU Bison may or may not issue.  If there are similar
+     * issues with byacc, put them here, too.
+     */
+    i18n("syntax error: cannot back up")
+#endif
 }

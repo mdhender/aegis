@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -17,46 +17,16 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
- * MANIFEST: functions to manipulate upcases
+ * MANIFEST: interface definition for common/ac/sys/ioctl.c
  */
 
-#include <ac/ctype.h>
+#ifndef COMMON_AC_SYS_IOCTL_H
+#define COMMON_AC_SYS_IOCTL_H
 
-#include <mem.h>
-#include <str.h>
+#include <config.h>
 
+#ifdef HAVE_SYS_IOCTL_H
+#include <sys/ioctl.h>
+#endif
 
-string_ty *
-str_upcase(string_ty *s)
-{
-    static char     *tmp;
-    static size_t   tmplen;
-    string_ty	    *retval;
-    char	    *cp1;
-    char	    *cp2;
-
-    if (!tmp)
-    {
-	tmplen = s->str_length;
-	if (tmplen < 16)
-    	    tmplen = 16;
-	tmp = mem_alloc(tmplen);
-    }
-    else
-    {
-	if (tmplen < s->str_length)
-	{
-    	    tmplen = s->str_length;
-    	    tmp = mem_change_size(tmp, tmplen);
-	}
-    }
-    for (cp1 = s->str_text, cp2 = tmp; *cp1; ++cp1, ++cp2)
-    {
-	unsigned char c = *cp1;
-	if (islower((unsigned char)c))
-    	    c = toupper(c);
-	*cp2 = c;
-    }
-    retval = str_n_from_c(tmp, s->str_length);
-    return retval;
-}
+#endif /* COMMON_AC_SYS_IOCTL_H */

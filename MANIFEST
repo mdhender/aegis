@@ -458,6 +458,7 @@ common/ac/string.c	 impliment missing functions from <string.h>
 common/ac/string.h	 insulate against <string.h> vs <strings.h> differences
 common/ac/sys/clu.c	 functions to manipulate clus
 common/ac/sys/clu.h	 interface definition for common/ac/sys/clu.c
+common/ac/sys/ioctl.h	 interface definition for common/ac/sys/ioctl.c
 common/ac/termios.h	 insulate against <sys/ioctl.h> vs <termios.h> differences
 common/ac/time.c	 impliment missing functions from <time.h>
 common/ac/time.h	 insulate against <time.h> vs <sys/time.h> differences
@@ -671,6 +672,7 @@ fmtgen/type/structure.h	 interface definition for fmtgen/type/structure.c
 fmtgen/type/time.c	 functions to manipulate time type
 fmtgen/type/time.h	 interface definition for fmtgen/type/time.c
 install-sh	
+lib/aedefault.css	
 lib/aegis.icon	X Bitmap of the aegis icon
 lib/aegis.mask	X Bitmap of the mask for the aegis icon
 lib/aegis.pgm	 portable graymap of aegis icon
@@ -1006,6 +1008,7 @@ lib/en/readme/new.4.4.so	 document describing new 4.4 features
 lib/en/readme/new.4.5.so	 document describing new 4.5 features
 lib/en/readme/new.4.6.so	 document describing new 4.6 features
 lib/en/readme/new.4.7.so	 document describing new 4.7 features
+lib/en/readme/new.4.8.so	 document describing new 4.8 features
 lib/en/readme/new.so	
 lib/en/readme/windows.so	 document describing lib/en/readme/windowss
 lib/en/refman/index.so	

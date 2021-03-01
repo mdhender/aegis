@@ -5,11 +5,11 @@
 #
 Summary: project change supervisor
 Name: aegis
-Version: 4.7
+Version: 4.8
 Release: 1
 Copyright: GPL
 Group: Development/Version Control
-Source: http://www.canb.auug.org.au/~millerp/aegis-4.7.tar.gz
+Source: http://www.canb.auug.org.au/~millerp/aegis-4.8.tar.gz
 URL: http://www.canb.auug.org.au/~millerp/aegis.html
 BuildRoot: /tmp/aegis-build-root
 Icon: aegis.gif
@@ -134,6 +134,7 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0755,root,bin) /usr/bin/tkaepa
 %attr(0755,root,bin) /usr/bin/tkaer
 %attr(0755,root,bin) /usr/bin/xaegis
+%attr(0644,root,bin) /usr/share/aegis/aedefault.css
 %attr(0644,root,bin) /usr/share/aegis/aegis.icon
 %attr(0644,root,bin) /usr/share/aegis/aegis.mask
 %attr(0644,root,bin) /usr/share/aegis/aegis.pgm

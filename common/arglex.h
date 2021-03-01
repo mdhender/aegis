@@ -29,41 +29,41 @@
 
 enum arglex_token_ty
 {
-	ARGLEX_PREFETCH_FAIL = -99,
-	arglex_token_eoln = -20,
-	arglex_token_help,
-	arglex_token_number,
-	arglex_token_number_incomplete,
-	arglex_token_option,
-	arglex_token_option_incomplete,
-	arglex_token_stdio,
-	arglex_token_string,
-	arglex_token_string_incomplete,
-	arglex_token_trace,
-	arglex_token_version
+    ARGLEX_PREFETCH_FAIL = -99,
+    arglex_token_eoln = -20,
+    arglex_token_help,
+    arglex_token_number,
+    arglex_token_number_incomplete,
+    arglex_token_option,
+    arglex_token_option_incomplete,
+    arglex_token_stdio,
+    arglex_token_string,
+    arglex_token_string_incomplete,
+    arglex_token_trace,
+    arglex_token_version
 };
 typedef enum arglex_token_ty arglex_token_ty;
 
 typedef struct arglex_table_ty arglex_table_ty;
 struct arglex_table_ty
 {
-	char	*t_name;
-	int	t_token;
+    char            *t_name;
+    int             t_token;
 };
 
 typedef struct arglex_value_ty arglex_value_ty;
 struct arglex_value_ty
 {
-	char	*alv_string;
-	long	alv_number;
+    char            *alv_string;
+    long            alv_number;
 };
 
-extern int		arglex_token;
-extern arglex_value_ty	arglex_value;
+extern int      arglex_token;
+extern arglex_value_ty arglex_value;
 
 void arglex_init(int, char **, arglex_table_ty *);
 int arglex(void);
-int arglex_prefetch(int *, int);
+arglex_token_ty arglex_prefetch(arglex_token_ty *, int);
 int arglex_compare(const char *formal, const char *actual);
 char *arglex_token_name(arglex_token_ty);
 
@@ -73,13 +73,13 @@ arglex_table_ty *arglex_table_catenate(arglex_table_ty *, arglex_table_ty *);
 typedef struct arglex_dispatch_ty arglex_dispatch_ty;
 struct arglex_dispatch_ty
 {
-	int	token;
-	void	(*func)(void);
-	int	priority;
+    arglex_token_ty token;
+    void            (*func)(void);
+    int             priority;
 };
 
 void arglex_dispatch(arglex_dispatch_ty *table, int table_len,
-	void (*usage)(void));
+    void (*usage)(void));
 
 void arglex_synthetic(int, char **, int);
 void arglex_retable(arglex_table_ty *);

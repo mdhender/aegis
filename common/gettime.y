@@ -1311,7 +1311,7 @@ yylex(void)
 	    continue;
 
 	case '-':
-	    if (!isdigit(*lptr))
+	    if (!isdigit((unsigned char)*lptr))
 	    {
 		/*
 		 * ignore lonely '-'s
@@ -1323,7 +1323,7 @@ yylex(void)
 	    goto number;
 
 	case '+':
-	    if (!isdigit(*lptr))
+	    if (!isdigit((unsigned char)*lptr))
 	    {
 	       	token = c;
 	       	break;
@@ -1373,7 +1373,7 @@ yylex(void)
 	    p = idbuf;
 	    for (;;)
 	    {
-		if (isupper(c))
+		if (isupper((unsigned char)c))
 		    c = tolower(c);
 		if (p < idbuf + sizeof(idbuf) - 1)
 		    *p++ = c;

@@ -176,11 +176,46 @@ There is no need to send email to \fIewt@metalab.unc.edu\fP,
 it will be archived automatically in a day or two (or fifteen).
 .br
 .ne 2i
+.SS Update SourceForge Archive
+Transfer a copy to \f[CW]upload.sourceforge.net\fP by FTP.
+Login as \f[CW]anonymous\fP and change to the \f[CW]/incoming\fP directory.
+Use the following commands
+.e(
+% \f[CB]aecd -bl archive\fP
+% \f[CW]ftp upload.sourceforge.net\fP
+user: \f[CB]anonymous\fP
+ftp> \f[CB]cd /incoming\fP
+ftp> \f[CB]binary\fP
+ftp> \f[CB]put \*(n)-\*(v).tar.gz\fP
+ftp> \f[CB]quit\fP
+%
+.e)
+.br
+.ne 2i
 .SH NOTIFICATION
 Once the archives are ready, you can let folks know its there.
 .LP
 Only send the notifications \fIafter\fP the files are actually available
 at the archive site.
+.br
+.ne 2i
+.SS SourceForge.Net
+This is \fIway\fP harder than any sane person expects.
+Go to http://sourceforge.net and login then go to
+http://sourceforge.net/projects/aegis/
+and click the \fBAdmin\fP link,
+and the \fBEdit/Release Files\fP link,
+and the \fB[Add Release]\fP link.
+In the \fINew Release Name\fP box put the version number (dumb, huh?).
+In the \fIPaste The Notes In" box type
+.RS
+http://aegis.sourceforge.net/download.html
+.RE
+In the \fIPste The Change Log In" box type
+.RS
+http://aegis.sourceforge.net/aegis-\*(v).README
+.RE
+And then finish the rest of the rather cumbersome dialog gunk.
 .br
 .ne 2i
 .SS Translation Project
@@ -206,7 +241,7 @@ at the archive site.
 Send a notification to the \fI\*(n)-users@auug.org.au\fP list.
 It should look like this:
 .e(
-To: \*(n)-users@canb.auug.org.au
+To: \*(n)-users@auug.org.au
 Reply-To: millerp@canb.auug.org.au
 Subject: \*(N) \*(v) \- a project change supervisor
 
@@ -233,17 +268,6 @@ release, please see the README file available at the above site.
 .PP
 Only send this notification \fIafter\fP the files are actually available
 at the archive site.
-.br
-.ne 2i
-.SS Update Mailing List Info
-Update the \*(n)-users list info, by sending email
-.e(
-To: majordomo@canb.auug.org.au
-
-newinfo \*(n)-users \fIpassword\fP
-
-attach the \fIREADME\fP file here
-.e)
 .br
 .ne 2i
 .SS Notify Newsgroups

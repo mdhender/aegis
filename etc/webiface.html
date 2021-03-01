@@ -79,19 +79,39 @@ Configure with <i>./configure --prefix=/home/groups/a/ae/aegis</i>
 Edit the generated Makefile, and add -DSOURCE_FORGE_HACK to the CFLAGS
 variable.
 <li>
-Edit the generated Makefile, and set ScriptRoot to ${prefix}/cgi-bin
-<li>
 Now you can <i>make</i> as normal.
 <li>
 You can use the RPM_BUILD_ROOT setting of the Makefile, or you can
 <i>mkdir -p /home/groups/a/ae/aegis/cgi-bin</i>
 <li>
 When you <i>make install</i>, you will then need to cull the install
-tree of unneccessary files.  You only need <i>cgi-bin/aegis.cgi</i>,
-<i>bin/aegis</i>, <i>bin/aedist</i>, <i>bin/aepatch</i>,
-<i>bin/aereport</i>, <i>bin/aerect</i> <i>bin/ae_diff2htm</i>,
-and the <i>share/en/html</i> tree.
+tree of unneccessary files.
+You only need
+<i>bin/aedist</i>,
+<i>bin/aegis</i>,
+<i>bin/aepatch</i>,
+<i>bin/aerect</i>,
+<i>bin/aereport</i>,
+<i>bin/aetar</i>,
+<i>bin/ae_diff2htm</i>,
+<i>cgi-bin/aegis.cgi</i>, and the
+<i>share/en/html</i> tree.
 The rest can be removed.
+<blockquote>
+.nf
+<pre>cd /home/groups/a/ae/aegis
+mv bin/aegis.cgi cgi-bin
+rm bin/aeannotate bin/aebuffy bin/aecomp bin/aecomplete
+rm bin/ae_diff2htm bin/aefind bin/aegis.cgi.i bin/aeimport
+rm bin/aeintegratq bin/aels bin/ae-sccs-put bin/aesub
+rm bin/tkaeca bin/tkaegis bin/tkaenc bin/tkaepa bin/tkaer bin/xaegis
+rm -r com lib man
+mkdir -p share-new/en
+mv share/en/html share-new/en
+rm -r share
+mv share-new share</pre>
+.fi
+</blockquote>
 <li>
 Make a tarball, <i>scp</i> it to SourceForge, unpack at the other end.
 <li>

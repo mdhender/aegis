@@ -25,13 +25,8 @@
 #include <type/real.h>
 
 
-static void gen_include_declarator _((type_ty *, string_ty *, int));
-
 static void
-gen_include_declarator(type, name, is_a_list)
-	type_ty		*type;
-	string_ty	*name;
-	int		is_a_list;
+gen_include_declarator(type_ty *type, string_ty *name, int is_a_list)
 {
 	char		*deref;
 
@@ -40,14 +35,8 @@ gen_include_declarator(type, name, is_a_list)
 }
 
 
-static void gen_code_declarator _((type_ty *, string_ty *, int, int));
-
 static void
-gen_code_declarator(type, name, is_a_list, show)
-	type_ty		*type;
-	string_ty	*name;
-	int		is_a_list;
-	int		show;
+gen_code_declarator(type_ty *type, string_ty *name, int is_a_list, int show)
 {
 	indent_printf("real_write(fp, ");
 	if (is_a_list)
@@ -65,13 +54,8 @@ gen_code_declarator(type, name, is_a_list, show)
 }
 
 
-static void gen_free_declarator _((type_ty *, string_ty *, int));
-
 static void
-gen_free_declarator(type, name, is_a_list)
-	type_ty		*type;
-	string_ty	*name;
-	int		is_a_list;
+gen_free_declarator(type_ty *type, string_ty *name, int is_a_list)
 {
 	if (is_a_list)
 		indent_printf(";\n");

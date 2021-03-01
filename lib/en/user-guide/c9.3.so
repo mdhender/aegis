@@ -76,7 +76,7 @@ Now finish the change as usual...
 \fIaeb, aed, aede, aerpass, aeib, ..., aeipass\fP
 nothing special here.
 .LP
-One small tip: merge file files one at a time.
+One small tip: merge the files one at a time.
 It makes keeping track of where you are up to much easier.
 .LP
 Now you can end development of the branch, because all of the files

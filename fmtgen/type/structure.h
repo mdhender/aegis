@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,6 @@
 
 extern type_method_ty type_structure;
 
-void type_structure_toplevel _((type_ty *));
+void type_structure_toplevel(type_ty *);
 
 #endif /* FMTGEN_TYPE_STRUCTURE_H */

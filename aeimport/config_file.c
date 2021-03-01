@@ -41,9 +41,10 @@
 
 
 void
-config_file(project_name, format)
+config_file(project_name, format, when)
 	string_ty	*project_name;
 	format_ty	*format;
+	time_t		when;
 {
 	project_ty	*pp;
 	long		change_number;
@@ -131,6 +132,7 @@ config_file(project_name, format)
 	cstate_data->state = cstate_state_awaiting_development;
 	history_data = change_history_new(cp, up);
 	history_data->what = cstate_history_what_new_change;
+	history_data->when = when;
 
 	/*
 	 * Add the change to the list of existing changes.
@@ -143,6 +145,7 @@ config_file(project_name, format)
 	cstate_data->state = cstate_state_being_developed;
 	history_data = change_history_new(cp, up);
 	history_data->what = cstate_history_what_develop_begin;
+	history_data->when = when + 1;
 
 	/*
 	 * Add the file to the change.
@@ -158,6 +161,7 @@ config_file(project_name, format)
 	cstate_data->state = cstate_state_being_reviewed;
 	history_data = change_history_new(cp, up);
 	history_data->what = cstate_history_what_develop_end;
+	history_data->when = when + 2;
 
 	/*
 	 * create the project file
@@ -171,6 +175,7 @@ config_file(project_name, format)
 	cstate_data->state = cstate_state_awaiting_integration;
 	history_data = change_history_new(cp, up);
 	history_data->what = cstate_history_what_review_pass;
+	history_data->when = when + 3;
 
 	/*
 	 * add to history for integrate begin
@@ -178,6 +183,7 @@ config_file(project_name, format)
 	cstate_data->state = cstate_state_being_integrated;
 	history_data = change_history_new(cp, up);
 	history_data->what = cstate_history_what_integrate_begin;
+	history_data->when = when + 4;
 
 	cstate_data->delta_number = project_next_delta_number(pp);
 	change_integration_directory_set(cp, bl);
@@ -229,6 +235,7 @@ config_file(project_name, format)
 	cstate_data->state = cstate_state_completed;
 	history_data = change_history_new(cp, up);
 	history_data->what = cstate_history_what_integrate_pass;
+	history_data->when = when + 5;
 
 	change_integration_directory_clear(cp);
 

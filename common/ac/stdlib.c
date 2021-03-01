@@ -83,7 +83,7 @@ strtoul(const char *nptr, char **endptr, int base)
 	for (;;)
 	{
 		c = (unsigned char)*s++;
-		if (!isspace(c))
+		if (!isspace((unsigned char)c))
 			break;
 	}
 	if (c == '-')
@@ -105,11 +105,11 @@ strtoul(const char *nptr, char **endptr, int base)
 	ndigits = 0;
 	for (;;)
 	{
-		if (isdigit(c))
+		if (isdigit((unsigned char)c))
                         c -= '0';
-		else if (isupper(c))
+		else if (isupper((unsigned char)c))
 			c -= 'A' - 10;
-                else if (islower(c))
+                else if (islower((unsigned char)c))
                         c += 'a' - 10;
                 else
                         break;

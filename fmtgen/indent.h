@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991-1993, 2002 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,11 +25,11 @@
 
 #include <main.h>
 
-void indent_close _((void));
-void indent_less _((void));
-void indent_more _((void));
-void indent_open _((char *));
-void indent_printf _((char *, ...));
-void indent_putchar _((int));
+void indent_close(void);
+void indent_less(void);
+void indent_more(void);
+void indent_open(char *);
+void indent_printf(char *, ...);
+void indent_putchar(int);
 
 #endif /* INDENT_H */

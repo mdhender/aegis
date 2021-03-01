@@ -143,7 +143,7 @@ arglex_compare(const char *formal, const char *actual)
 	trace_string(formal);
 	trace_string(actual);
 	ac = *actual++;
-	if (isupper(ac))
+	if (isupper((unsigned char)ac))
 	    ac = tolower(ac);
 	fc = *formal++;
 	switch (fc)
@@ -670,7 +670,8 @@ arglex(void)
  *	arglex_prefetch
  *
  * SYNOPSIS
- *	arglex_token_ty arglex_prefetch(arglex_token_ty *list, int list_len);
+ *	arglex_token_ty arglex_token_ty arglex_prefetch(arglex_token_ty *list,
+ *		int list_len);
  *
  * DESCRIPTION
  *	The arglex_prefetch function is used to perfom lexical analysis
@@ -687,7 +688,7 @@ arglex(void)
  *	Must call arglex_init before this function is called.
  */
 
-int
+arglex_token_ty
 arglex_prefetch(arglex_token_ty *list, int list_len)
 {
     int             j;
@@ -736,7 +737,7 @@ arglex_prefetch(arglex_token_ty *list, int list_len)
 
 	for (k = 0; k < list_len; ++k)
 	{
-	    int             token;
+	    arglex_token_ty token;
 	    char            *formal;
 
 	    token = list[k];
@@ -860,13 +861,13 @@ arglex_dispatch(arglex_dispatch_ty *choices, int choices_len,
     void (*the_default)(void))
 {
     int             j;
-    int             *tmp;
+    arglex_token_ty *tmp;
     int             tmp_len;
-    int             tok;
+    arglex_token_ty tok;
     int             priority;
 
     trace(("arglex_dispatch()\n{\n"));
-    tmp = mem_alloc(choices_len * sizeof(int));
+    tmp = mem_alloc(choices_len * sizeof(tmp[0]));
     for (priority = 0;; ++priority)
     {
 	tmp_len = 0;

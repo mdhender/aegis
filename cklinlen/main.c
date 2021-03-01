@@ -87,7 +87,7 @@
 
 enum
 {
-    arglex_token_warnings,
+    arglex_token_warnings
 };
 
 static arglex_table_ty argtab[] =

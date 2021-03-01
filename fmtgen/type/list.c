@@ -36,11 +36,8 @@ struct type_list_ty
 };
 
 
-static void gen_include _((type_ty *));
-
 static void
-gen_include(type)
-	type_ty		*type;
+gen_include(type_ty *type)
 {
 	string_ty	*s;
 	type_list_ty	*this;
@@ -71,20 +68,15 @@ gen_include(type)
 	indent_putchar('\n');
 	indent_printf
 	(
-		"void %s_write _((struct output_ty *, char *, %s));\n",
+		"void %s_write(struct output_ty *, char *, %s);\n",
 		this->name->str_text,
 		this->name->str_text
 	);
 }
 
 
-static void gen_include_declarator _((type_ty *, string_ty *, int));
-
 static void
-gen_include_declarator(type, variable_name, is_a_list)
-	type_ty		*type;
-	string_ty	*variable_name;
-	int		is_a_list;
+gen_include_declarator(type_ty *type, string_ty *variable_name, int is_a_list)
 {
 	char		*deref;
 
@@ -99,11 +91,8 @@ gen_include_declarator(type, variable_name, is_a_list)
 }
 
 
-static void gen_code _((type_ty *));
-
 static void
-gen_code(type)
-	type_ty		*type;
+gen_code(type_ty *type)
 {
 	string_ty	*s;
 	type_list_ty	*this;
@@ -119,12 +108,12 @@ gen_code(type)
 	this = (type_list_ty *)type;
 	indent_putchar('\n');
 	indent_printf("void\n");
-	indent_printf("%s_write(fp, name, this)\n", this->name->str_text);
-	indent_more();
-	indent_printf("%s\1*fp;\n", "output_ty");
-	indent_printf("%s\1*name;\n", "char");
-	indent_printf("%s\1this;\n", this->name->str_text);
-	indent_less();
+	indent_printf
+	(
+	    "%s_write(output_ty *fp, char *name, %s this)\n",
+	    this->name->str_text,
+	    this->name->str_text
+	);
 	indent_printf("{\n"/*}*/);
 	indent_printf("%s\1j;\n", "size_t");
 	indent_putchar('\n');
@@ -162,15 +151,8 @@ gen_code(type)
 	indent_printf(/*{*/"}\n");
 
 	indent_putchar('\n');
-	indent_printf
-	(
-		"static void *%s_alloc _((void));\n",
-		this->name->str_text
-	);
-
-	indent_putchar('\n');
 	indent_printf("static void *\n");
-	indent_printf("%s_alloc()\n", this->name->str_text);
+	indent_printf("%s_alloc(void)\n", this->name->str_text);
 	indent_printf("{\n"/*}*/);
 	indent_printf("%s\1result;\n\n", this->name->str_text);
 	indent_printf
@@ -192,18 +174,8 @@ gen_code(type)
 	indent_printf(/*{*/"}\n");
 
 	indent_putchar('\n');
-	indent_printf
-	(
-		"static void %s_free _((void *));\n",
-		this->name->str_text
-	);
-
-	indent_putchar('\n');
 	indent_printf("static void\n");
-	indent_printf("%s_free(that)\n", this->name->str_text);
-	indent_more();
-	indent_printf("%s\1*that;\n", "void");
-	indent_less();
+	indent_printf("%s_free(void *that)\n", this->name->str_text);
 	indent_printf("{\n"/*}*/);
 	indent_printf("%s\1this = that;\n", this->name->str_text);
 	indent_printf("%s\1j;\n", "size_t");
@@ -234,19 +206,12 @@ gen_code(type)
 	indent_printf(/*{*/"}\n");
 
 	indent_putchar('\n');
+	indent_printf("static void *\n");
 	indent_printf
 	(
-		"static void *%s_parse _((void *, type_ty **));\n",
-		this->name->str_text
+	    "%s_parse(void *that, type_ty **type_pp)\n",
+	    this->name->str_text
 	);
-
-	indent_putchar('\n');
-	indent_printf("static void *\n");
-	indent_printf("%s_parse(that, type_pp)\n", this->name->str_text);
-	indent_more();
-	indent_printf("%s\1*that;\n", "void");
-	indent_printf("%s\1**type_pp;\n", "type_ty");
-	indent_less();
 	indent_printf("{\n"/*}*/);
 	indent_printf("%s\1this = that;\n", this->name->str_text);
 	indent_printf("%s\1*addr;\n", "void");
@@ -275,18 +240,8 @@ gen_code(type)
 	indent_printf(/*{*/"}\n");
 
 	indent_putchar('\n');
-	indent_printf
-	(
-		"static rpt_value_ty *%s_convert _((void *));\n",
-		this->name->str_text
-	);
-
-	indent_putchar('\n');
 	indent_printf("static rpt_value_ty *\n");
-	indent_printf("%s_convert(that)\n", this->name->str_text);
-	indent_more();
-	indent_printf("%s\1*that;\n", "void");
-	indent_less();
+	indent_printf("%s_convert(void *that)\n", this->name->str_text);
 	indent_printf("{\n"/*}*/);
 	indent_printf("%s\1this;\n", this->name->str_text);
 	indent_printf("%s\1*result;\n", "rpt_value_ty");
@@ -338,31 +293,21 @@ gen_code(type)
 }
 
 
-static void gen_code_declarator _((type_ty *, string_ty *, int, int));
-
 static void
-gen_code_declarator(type, variable_name, is_a_list, show)
-	type_ty		*type;
-	string_ty	*variable_name;
-	int		is_a_list;
-	int		show;
+gen_code_declarator(type_ty *type, string_ty *variable_name, int is_a_list,
+    int show)
 {
-	indent_printf("%s_write(fp, "/*)*/, type->name->str_text);
-	if (is_a_list)
-		indent_printf("\"\"");
-	else
-		indent_printf("\"%s\"", variable_name->str_text);
-	indent_printf(/*(*/", this->%s);\n", variable_name->str_text);
+    indent_printf("%s_write(fp, "/*)*/, type->name->str_text);
+    if (is_a_list)
+       	indent_printf("\"\"");
+    else
+       	indent_printf("\"%s\"", variable_name->str_text);
+    indent_printf(/*(*/", this->%s);\n", variable_name->str_text);
 }
 
 
-static void gen_free_declarator _((type_ty *, string_ty *, int));
-
 static void
-gen_free_declarator(type, variable_name, is_a_list)
-	type_ty		*type;
-	string_ty	*variable_name;
-	int		is_a_list;
+gen_free_declarator(type_ty *type, string_ty *variable_name, int is_a_list)
 {
 	if (type->included_flag)
 	{
@@ -385,27 +330,19 @@ gen_free_declarator(type, variable_name, is_a_list)
 }
 
 
-static void member_add _((type_ty *, string_ty *, type_ty *, int));
-
 static void
-member_add(type, member_name, member_type, show)
-	type_ty		*type;
-	string_ty	*member_name;
-	type_ty		*member_type;
-	int		show;
+member_add(type_ty *type, string_ty *member_name, type_ty *member_type,
+    int show)
 {
-	type_list_ty	*this;
+    type_list_ty    *this;
 
-	this = (type_list_ty *)type;
-	this->subtype = member_type;
+    this = (type_list_ty *)type;
+    this->subtype = member_type;
 }
 
 
-static void in_include_file _((type_ty *));
-
 static void
-in_include_file(type)
-	type_ty		*type;
+in_include_file(type_ty *type)
 {
 	type_list_ty	*this;
 
