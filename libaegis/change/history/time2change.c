@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,34 +28,34 @@
 long
 change_history_change_by_timestamp(project_ty *pp, time_t when)
 {
-	cstate		cstate_data;
-	cstate_branch_history_list hl;
-	long            j;
-	change_ty	*cp;
+    cstate_ty       *cstate_data;
+    cstate_branch_history_list_ty *hl;
+    long            j;
+    change_ty       *cp;
 
-	cp = project_change_get(pp);
-	cstate_data = change_cstate_get(cp);
-	if (!cstate_data->branch)
-		return 0;
-	hl = cstate_data->branch->history;
-	if (!hl)
-		return 0;
-	for (j = hl->length - 1; j >= 0; --j)
-	{
-		cstate_branch_history bh;
-		change_ty	*cp2;
-		time_t		result;
-
-		bh = hl->list[j];
-		assert(bh);
-		if (!bh)
-			continue;
-		cp2 = change_alloc(pp, bh->change_number);
-		change_bind_existing(cp2);
-		result = change_completion_timestamp(cp2);
-		change_free(cp2);
-		if (result <= when)
-		    return bh->change_number;
-	}
+    cp = project_change_get(pp);
+    cstate_data = change_cstate_get(cp);
+    if (!cstate_data->branch)
 	return 0;
+    hl = cstate_data->branch->history;
+    if (!hl)
+	return 0;
+    for (j = hl->length - 1; j >= 0; --j)
+    {
+	cstate_branch_history_ty *bh;
+	change_ty	*cp2;
+	time_t		result;
+
+	bh = hl->list[j];
+	assert(bh);
+	if (!bh)
+	    continue;
+	cp2 = change_alloc(pp, bh->change_number);
+	change_bind_existing(cp2);
+	result = change_completion_timestamp(cp2);
+	change_free(cp2);
+	if (result <= when)
+	    return bh->change_number;
+    }
+    return 0;
 }

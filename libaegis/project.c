@@ -52,8 +52,8 @@ static void
 convert_to_new_format(project_ty *pp)
 {
     user_ty	    *up;
-    cstate_history  h;
-    pstate	    pstate_data;
+    cstate_history_ty *h;
+    pstate_ty	    *pstate_data;
     size_t	    j;
 
     trace(("convert_to_new_format(pp = %08lX)\n{\n", (long)pp));
@@ -230,8 +230,8 @@ convert_to_new_format(project_ty *pp)
 	pstate_data->src = pstate_src_list_type.alloc();
     for (j = 0; j < pstate_data->src->length; ++j)
     {
-	pstate_src	sp1;
-	fstate_src	sp2;
+	pstate_src_ty   *sp1;
+	fstate_src_ty   *sp2;
 
 	sp1 = pstate_data->src->list[j];
 	if (!sp1->file_name)
@@ -269,8 +269,29 @@ convert_to_new_format(project_ty *pp)
 	sp2->about_to_be_created_by = sp1->about_to_be_created_by;
 	sp2->deleted_by = sp1->deleted_by;
 
-	if (sp2->deleted_by && sp2->action == file_action_create)
+	if (sp2->deleted_by)
 	    sp2->action = file_action_remove;
+
+	/*
+	 * This code must agree with the corresponding code in
+	 * libaegis/change/file/fstate.c
+	 */
+	switch (sp2->action)
+	{
+	case file_action_remove:
+	case file_action_transparent:
+	    break;
+
+	case file_action_create:
+	case file_action_modify:
+	case file_action_insulate:
+#ifndef DEBUG
+	default:
+#endif
+	    if (sp2->about_to_be_created_by || sp2->about_to_be_copied_by)
+		sp2->action = file_action_transparent;
+	    break;
+	}
     }
     pstate_src_list_type.free(pstate_data->src);
     pp->pstate_data->src = 0;
@@ -279,7 +300,7 @@ convert_to_new_format(project_ty *pp)
 	pstate_data->history = pstate_history_list_type.alloc();
     for (j = 0; j < pstate_data->history->length; ++j)
     {
-	pstate_history	hp;
+	pstate_history_ty *hp;
 
 	hp = pstate_data->history->list[j];
 	change_branch_history_new(pp->pcp, hp->delta_number, hp->change_number);
@@ -585,7 +606,7 @@ get_the_owner(project_ty *pp)
 }
 
 
-pstate
+pstate_ty *
 project_pstate_get(project_ty *pp)
 {
     trace(("project_pstate_get(pp = %08lX)\n{\n", (long)pp));
@@ -947,7 +968,7 @@ project_bind_new(project_ty *pp)
 {
     int		    um;
     user_ty	    *up;
-    cstate_history  h;
+    cstate_history_ty *h;
 
     /*
      * make sure does not already exist
@@ -970,7 +991,7 @@ project_bind_new(project_ty *pp)
     assert(!pp->pstate_data);
     assert(!pp->pstate_path);
     pp->is_a_new_file = 1;
-    pp->pstate_data = (pstate)pstate_type.alloc();
+    pp->pstate_data = (pstate_ty *)pstate_type.alloc();
     pp->pstate_data->next_test_number = 1;
     os_become_orig_query(&pp->uid, &pp->gid, &um);
 
@@ -1650,7 +1671,7 @@ project_version_short_get(project_ty *pp)
     else
     {
 	change_ty	*cp;
-	pstate		pstate_data;
+	pstate_ty	*pstate_data;
 
 	cp = project_change_get(pp);
 	pstate_data = project_pstate_get(pp);
@@ -1772,7 +1793,7 @@ project_is_readable(project_ty *pp)
 long
 project_next_test_number_get(project_ty *pp)
 {
-    pstate	    pstate_data;
+    pstate_ty	    *pstate_data;
     long	    result;
     int		    skip;
 

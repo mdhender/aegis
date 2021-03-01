@@ -1,64 +1,64 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 2002, 2003 Peter Miller;
- *	All rights reserved.
+ *      aegis - project change supervisor
+ *      Copyright (C) 2002, 2003 Peter Miller;
+ *      All rights reserved.
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 2 of the License, or
+ *      (at your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program; if not, write to the Free Software
+ *      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to manipulate bashs
  *
  *
- *	The following is abstracted from the bash(1) man page:
+ *      The following is abstracted from the bash(1) man page:
  *
  * Programmable Completion
- *	When word completion is attempted for an argument to a command for
- *	which a completion specification (a compspec) has been defined
- *	using the complete builtin (see SHELL BUILTIN COMMANDS below),
- *	the programmable completion facilities are invoked.
+ *      When word completion is attempted for an argument to a command for
+ *      which a completion specification (a compspec) has been defined
+ *      using the complete builtin (see SHELL BUILTIN COMMANDS below),
+ *      the programmable completion facilities are invoked.
  *
- *	First, the command name is identified. If a compspec has been
- *	defined for that command, the compspec is used to generate the
- *	list of possible completions for the word.  If the command word
- *	is a full pathname, a compspec for the full pathname is searched
- *	for first. If no compspec is found for the full pathname, an
- *	attempt is made to find a compspec for the portion following
- *	the final slash.
+ *      First, the command name is identified. If a compspec has been
+ *      defined for that command, the compspec is used to generate the
+ *      list of possible completions for the word.  If the command word
+ *      is a full pathname, a compspec for the full pathname is searched
+ *      for first. If no compspec is found for the full pathname, an
+ *      attempt is made to find a compspec for the portion following
+ *      the final slash.
  *
- *	To use the aecomplete command, use a compspec of the form
- *		complete -C aecomplete <command>
- *	The list of commands that are viable depends on how much of
- *	aecomplete has been finished.
+ *      To use the aecomplete command, use a compspec of the form
+ *              complete -C aecomplete <command>
+ *      The list of commands that are viable depends on how much of
+ *      aecomplete has been finished.
  *
- *	Any command specified with the -C option is invoked in
- *	an environment equivalent to command substitution. It should
- *	print a list of completions, one per line, to the standard
- *	output. Backslash may be used to escape a newline, if necessary.
+ *      Any command specified with the -C option is invoked in
+ *      an environment equivalent to command substitution. It should
+ *      print a list of completions, one per line, to the standard
+ *      output. Backslash may be used to escape a newline, if necessary.
  *
- *	When the command is invoked, the COMP_LINE and COMP_POINT
- *	variables are assigned values as described below.  When the
- *	command is invoked, the first argument is the name of the command
- *	whose arguments are being completed, the second argument is
- *	the word being completed, and the third argument is the word
- *	preceding the word being completed on the current command line.
+ *      When the command is invoked, the COMP_LINE and COMP_POINT
+ *      variables are assigned values as described below.  When the
+ *      command is invoked, the first argument is the name of the command
+ *      whose arguments are being completed, the second argument is
+ *      the word being completed, and the third argument is the word
+ *      preceding the word being completed on the current command line.
  *
  * COMP_LINE
- *	The current command line.
+ *      The current command line.
  *
  * COMP_POINT
- *	The index of the current cursor position relative to the beginning
- *	of the current command.
+ *      The index of the current cursor position relative to the beginning
+ *      of the current command.
  */
 
 #include <ac/ctype.h>
@@ -103,9 +103,9 @@ destructor(shell_ty *sp)
 
     this_thing = (shell_bash_ty *)sp;
     if (this_thing->command)
-	str_free(this_thing->command);
+        str_free(this_thing->command);
     if (this_thing->prefix)
-	str_free(this_thing->prefix);
+        str_free(this_thing->prefix);
 }
 
 
@@ -141,20 +141,20 @@ test(shell_ty *sp)
      */
     comp_line = getenv("COMP_LINE");
     if (!comp_line || !*comp_line)
-    	return 0;
+        return 0;
 
     /*
      * The COMP_POINT environment variable must be set and valid.
      */
     cp = getenv("COMP_POINT");
     if (!cp)
-	return 0;
+        return 0;
     n = strtoul(cp, &end, 10);
     if (end == cp || *end)
-	return 0;
+        return 0;
     comp_point = n;
     if (comp_point > strlen(comp_line))
-	return 0;
+        return 0;
 
     /*
      * There should be exactly 3 command line arguments:
@@ -163,17 +163,17 @@ test(shell_ty *sp)
      * 3. the word before the word being completed
      */
     if (arglex_get_string() != arglex_token_string)
-	usage();
+        usage();
     this_thing->command = str_from_c(arglex_value.alv_string);
 
     if (arglex_get_string() != arglex_token_string)
-	usage();
+        usage();
     this_thing->prefix = str_from_c(arglex_value.alv_string);
 
     if (arglex_get_string() != arglex_token_string)
-	usage();
+        usage();
     if (arglex_get_string() != arglex_token_eoln)
-	usage();
+        usage();
 
     /*
      * Generate the new command line, by splitting the comp_line string
@@ -185,92 +185,92 @@ test(shell_ty *sp)
     inco_ac = -1;
     for (cp = comp_line; ; )
     {
-	/*
-	 * If the completion point is in the middle of white space,
-	 * or at the start of another word, insert an empty argument to
-	 * serve as the imcomplete argument in need of attention.
-	 */
-	if (cp - comp_line == comp_point)
-	{
-	    /*
-	     * insert the empty string as the incomplete argument.
-	     */
-	    if (ac >= ac_max)
-	    {
-		size_t          nbytes;
+        /*
+         * If the completion point is in the middle of white space,
+         * or at the start of another word, insert an empty argument to
+         * serve as the imcomplete argument in need of attention.
+         */
+        if ((unsigned long)(cp - comp_line) == comp_point)
+        {
+            /*
+             * insert the empty string as the incomplete argument.
+             */
+            if (ac >= ac_max)
+            {
+                size_t          nbytes;
 
-		ac_max = ac_max * 2 + 8;
-		nbytes = ac_max * sizeof(av[0]);
-		av = (char **)mem_change_size(av, nbytes);
-	    }
-	    inco_ac = ac;
-	    av[ac++] = copy_of(cp, 0);
-	    comp_point = (unsigned long)-1;
-	}
+                ac_max = ac_max * 2 + 8;
+                nbytes = ac_max * sizeof(av[0]);
+                av = (char **)mem_change_size(av, nbytes);
+            }
+            inco_ac = ac;
+            av[ac++] = copy_of(cp, 0);
+            comp_point = (unsigned long)-1;
+        }
 
-	/*
-	 * end of the line
-	 */
-	if (!*cp)
-	{
-	    break;
-	}
+        /*
+         * end of the line
+         */
+        if (!*cp)
+        {
+            break;
+        }
 
-	/*
-	 * Skip white space around words.
-	 */
-	if (isspace((unsigned char)*cp))
-	{
-	    ++cp;
-	    continue;
-	}
+        /*
+         * Skip white space around words.
+         */
+        if (isspace((unsigned char)*cp))
+        {
+            ++cp;
+            continue;
+        }
 
-	/*
-	 * Collect one word.
-	 *
-	 * Note that the completion point also terminates the word,
-	 * even if there is no white space present.
-	 */
-	end = cp;
-	while
-	(
-	    *end
-	&&
-	    !isspace((unsigned char)*end)
-	&&
-	    end != comp_line + comp_point
-	)
-	{
-	    ++end;
-	}
+        /*
+         * Collect one word.
+         *
+         * Note that the completion point also terminates the word,
+         * even if there is no white space present.
+         */
+        end = cp;
+        while
+        (
+            *end
+        &&
+            !isspace((unsigned char)*end)
+        &&
+            end != comp_line + comp_point
+        )
+        {
+            ++end;
+        }
 
-	/*
-	 * Insert word into the list.
-	 */
-	if (ac >= ac_max)
-	{
-	    size_t          nbytes;
+        /*
+         * Insert word into the list.
+         */
+        if (ac >= ac_max)
+        {
+            size_t          nbytes;
 
-	    ac_max = ac_max * 2 + 8;
-	    nbytes = ac_max * sizeof(av[0]);
-	    av = (char **)mem_change_size(av, nbytes);
-	}
-	if
-	(
-	    (size_t)(cp - comp_line) < comp_point
-	&&
+            ac_max = ac_max * 2 + 8;
+            nbytes = ac_max * sizeof(av[0]);
+            av = (char **)mem_change_size(av, nbytes);
+        }
+        if
+        (
+            (size_t)(cp - comp_line) < comp_point
+        &&
             comp_point <= (size_t)(end - comp_line)
-	)
-	{
-	    inco_ac = ac;
-	    comp_point = (unsigned long)-1;
-	}
-	av[ac++] = copy_of(cp, end - cp);
+        )
+        {
+            inco_ac = ac;
+            comp_point = (unsigned long)-1;
+        }
+        av[ac++] = copy_of(cp, end - cp);
 
-	/*
-	 * Move past the word.
-	 */
-	cp = end;
+        /*
+         * Move past the word.
+         */
+        cp = end;
     }
     assert(inco_ac >= 0);
 
@@ -279,11 +279,11 @@ test(shell_ty *sp)
      */
     if (ac >= ac_max)
     {
-	size_t          nbytes;
+        size_t          nbytes;
 
-	ac_max = ac_max * 2 + 8;
-	nbytes = ac_max * sizeof(av[0]);
-	av = (char **)mem_change_size(av, nbytes);
+        ac_max = ac_max * 2 + 8;
+        nbytes = ac_max * sizeof(av[0]);
+        av = (char **)mem_change_size(av, nbytes);
     }
     av[ac] = 0;
 
@@ -328,16 +328,16 @@ emit(shell_ty *sh, string_ty *s)
     this_thing = (shell_bash_ty *)sh;
     for (cp = s->str_text; *cp; ++cp)
     {
-	switch (*cp)
-	{
-	case '\\':
-	case '\n':
-	    putchar('\\');
-	    /* fall through... */
+        switch (*cp)
+        {
+        case '\\':
+        case '\n':
+            putchar('\\');
+            /* fall through... */
 
-	default:
-	    putchar(*cp);
-	}
+        default:
+            putchar(*cp);
+        }
     }
     putchar('\n');
 }

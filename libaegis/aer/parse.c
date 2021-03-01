@@ -78,11 +78,11 @@ report_parse_argument_set(string_list_ty *a)
 
 static void
 find_filename_process(string_ty *name, string_ty *dir, const char *nondir,
-    rptidx_where_list result)
+    rptidx_where_list_ty *result)
 {
     string_ty       *fn;
     int             err;
-    rptidx          data;
+    rptidx_ty       *data;
 
     trace(("find_filename_process()\n{\n"));
     fn = str_format("%S/%s", dir, nondir);
@@ -105,9 +105,9 @@ find_filename_process(string_ty *name, string_ty *dir, const char *nondir,
 
 	for (j = 0; j < data->where->length; ++j)
 	{
-	    rptidx_where    in;
-	    rptidx_where    out;
-	    rptidx_where    *out_p;
+	    rptidx_where_ty *in;
+	    rptidx_where_ty *out;
+	    rptidx_where_ty **out_p;
 	    type_ty         *type_p;
 	    int             have_it_already;
 
@@ -163,7 +163,7 @@ static string_ty *
 find_filename(string_ty *name)
 {
     string_list_ty  path;
-    rptidx_where_list result;
+    rptidx_where_list_ty *result;
     string_ty       *tmp;
     size_t          j;
 

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,14 +27,14 @@
 void
 change_development_directory_clear(change_ty *cp)
 {
-	cstate		cstate_data;
+    cstate_ty       *cstate_data;
 
-	assert(cp->reference_count >= 1);
-	cstate_data = change_cstate_get(cp);
-	assert(cstate_data->development_directory);
-	if (cstate_data->development_directory)
-	{
-		str_free(cstate_data->development_directory);
-		cstate_data->development_directory = 0;
-	}
+    assert(cp->reference_count >= 1);
+    cstate_data = change_cstate_get(cp);
+    assert(cstate_data->development_directory);
+    if (cstate_data->development_directory)
+    {
+	str_free(cstate_data->development_directory);
+	cstate_data->development_directory = 0;
+    }
 }

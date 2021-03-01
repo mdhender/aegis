@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -49,9 +49,9 @@ cstate_to_fstate(change_ty *cp)
      */
     for (j = 0; j < cp->cstate_data->src->length; ++j)
     {
-	cstate_src	src1;
-	fstate_src	src2;
-	fstate_src	*addr_p;
+	cstate_src_ty	*src1;
+	fstate_src_ty	*src2;
+	fstate_src_ty	**addr_p;
 	type_ty		*type_p;
 
 	src1 = cp->cstate_data->src->list[j];
@@ -125,7 +125,7 @@ cstate_to_fstate(change_ty *cp)
 }
 
 
-cstate
+cstate_ty *
 change_cstate_get(change_ty *cp)
 {
     string_ty	    *fn;

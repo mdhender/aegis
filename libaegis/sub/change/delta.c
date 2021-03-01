@@ -51,46 +51,38 @@
 wstring_ty *
 sub_delta(sub_context_ty *scp, wstring_list_ty *arg)
 {
-	wstring_ty	*result;
+    wstring_ty      *result;
 
-	trace(("sub_delta()\n{\n"));
-	result = 0;
-	if (arg->nitems != 1)
+    trace(("sub_delta()\n{\n"));
+    result = 0;
+    if (arg->nitems != 1)
+    {
+	sub_context_error_set(scp, i18n("requires zero arguments"));
+    }
+    else
+    {
+	change_ty	*cp;
+
+	cp = sub_context_change_get(scp);
+	if (!cp)
 	{
-		sub_context_error_set
-		(
-			scp,
-			i18n("requires zero arguments")
-		);
+	    yuck:
+	    sub_context_error_set(scp, i18n("not valid in current context"));
 	}
 	else
 	{
-		change_ty	*cp;
+	    cstate_ty       *cstate_data;
+	    string_ty       *s;
 
-		cp = sub_context_change_get(scp);
-		if (!cp)
-		{
-			yuck:
-			sub_context_error_set
-			(
-				scp,
-				i18n("not valid in current context")
-			);
-		}
-		else
-		{
-			cstate		cstate_data;
-			string_ty	*s;
-
-			cstate_data = change_cstate_get(cp);
-			if (cstate_data->state < cstate_state_being_integrated)
-				goto yuck;
-			s = str_format("%ld", cstate_data->delta_number);
-			result = str_to_wstr(s);
-			str_free(s);
-		}
+	    cstate_data = change_cstate_get(cp);
+	    if (cstate_data->state < cstate_state_being_integrated)
+		    goto yuck;
+	    s = str_format("%ld", cstate_data->delta_number);
+	    result = str_to_wstr(s);
+	    str_free(s);
 	}
-	trace(("return %8.8lX;\n", (long)result));
-	trace(("}\n"));
-	return result;
+    }
+    trace(("return %8.8lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }

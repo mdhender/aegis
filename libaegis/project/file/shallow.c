@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,8 +29,8 @@ void
 project_file_shallow(project_ty *pp, string_ty *file_name, long cn)
 {
     change_ty       *pcp;
-    fstate_src      src1_data;
-    fstate_src      src2_data;
+    fstate_src_ty   *src1_data;
+    fstate_src_ty   *src2_data;
 
     /*
      * Will never be zero, because already magic zero encoded.

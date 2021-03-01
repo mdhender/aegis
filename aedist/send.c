@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999-2003 Peter Miller;
+ *	Copyright (C) 1999-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,8 @@
 #include <ac/string.h>
 
 #include <arglex3.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <change/branch.h>
 #include <change/file.h>
 #include <change.h>
@@ -56,10 +58,10 @@
 
 
 static int
-have_it_already(cstate change_set, fstate_src src_data)
+have_it_already(cstate_ty *change_set, fstate_src_ty *src_data)
 {
     size_t          j;
-    cstate_src      dst_data;
+    cstate_src_ty   *dst_data;
 
     if (!change_set->src)
 	return 0;
@@ -74,10 +76,10 @@ have_it_already(cstate change_set, fstate_src src_data)
 
 
 static void
-one_more_src(cstate change_set, fstate_src src_data)
+one_more_src(cstate_ty *change_set, fstate_src_ty *src_data)
 {
-    cstate_src      *dst_data_p;
-    cstate_src      dst_data;
+    cstate_src_ty   **dst_data_p;
+    cstate_src_ty   *dst_data;
     type_ty         *type_p;
 
     trace(("add \"%s\"\n", src_data->file_name->str_text));
@@ -99,11 +101,11 @@ one_more_src(cstate change_set, fstate_src src_data)
 static int
 cmp(const void *va, const void *vb)
 {
-    cstate_src      a;
-    cstate_src      b;
+    cstate_src_ty   *a;
+    cstate_src_ty   *b;
 
-    a = *(cstate_src *)va;
-    b = *(cstate_src *)vb;
+    a = *(cstate_src_ty **)va;
+    b = *(cstate_src_ty **)vb;
     return strcmp(a->file_name->str_text, b->file_name->str_text);
 }
 
@@ -141,11 +143,11 @@ send_main(void (*usage)(void))
     project_ty      *pp;
     change_ty       *cp;
     user_ty         *up;
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
     string_ty       *output;
     string_ty       *s;
     string_ty       *s2;
-    cstate          change_set;
+    cstate_ty       *change_set;
     time_t          when;
     size_t          j;
     char            *buffer;
@@ -222,34 +224,17 @@ send_main(void (*usage)(void))
 
 	case arglex_token_change:
 	case arglex_token_delta_from_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, usage);
-	    /* fall throught... */
+	    arglex();
+	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-		duplicate_option_by_name(arglex_token_change, usage);
-	    change_number = arglex_value.alv_number;
-	    if (!change_number)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 0)
-	    {
-		sub_context_ty  *scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-	    }
-	    break;
+	    arglex_parse_change(&project_name, &change_number, usage);
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, usage);
-	    if (project_name)
-		duplicate_option_by_name(arglex_token_project, usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, usage);
+	    continue;
 
 	case arglex_token_branch:
 	    if (branch)
@@ -756,7 +741,7 @@ send_main(void (*usage)(void))
 	}
 	if (cstate_data->state > cstate_state_being_developed)
 	{
-	    cstate_history_list hlp;
+	    cstate_history_list_ty *hlp;
 
 	    hlp = cstate_data->history;
 	    assert(hlp);
@@ -764,7 +749,7 @@ send_main(void (*usage)(void))
 	    assert(hlp->list);
 	    if (hlp && hlp->length > 0 && hlp->list)
 	    {
-		cstate_history  hp;
+		cstate_history_ty *hp;
 
 		hp = hlp->list[hlp->length - 1];
 		assert(hp);
@@ -799,7 +784,7 @@ send_main(void (*usage)(void))
      */
     for (j = 0;; ++j)
     {
-	fstate_src      src_data;
+	fstate_src_ty   *src_data;
 
 	src_data = change_file_nth(cp, j);
 	if (!src_data)
@@ -807,11 +792,21 @@ send_main(void (*usage)(void))
 	switch (src_data->usage)
 	{
 	case file_usage_build:
-	    if (src_data->action == file_action_modify)
+	    switch (src_data->action)
+	    {
+	    case file_action_modify:
 		continue;
+
+	    case file_action_create:
+	    case file_action_remove:
+	    case file_action_insulate:
+	    case file_action_transparent:
+		break;
+	    }
 	    /* fall through...*/
 
 	case file_usage_source:
+	case file_usage_config:
 	case file_usage_test:
 	case file_usage_manual_test:
 	    switch (src_data->action)
@@ -856,7 +851,7 @@ send_main(void (*usage)(void))
     {
 	for (j = 0;; ++j)
 	{
-	    fstate_src      src_data;
+	    fstate_src_ty   *src_data;
 
 	    src_data = project_file_nth(pp, j, view_path_simple);
 	    if (!src_data)
@@ -864,11 +859,21 @@ send_main(void (*usage)(void))
 	    switch (src_data->usage)
 	    {
 	    case file_usage_build:
-		if (src_data->action == file_action_modify)
+		switch (src_data->action)
+		{
+		case file_action_modify:
 		    continue;
+
+		case file_action_create:
+		case file_action_remove:
+		case file_action_insulate:
+		case file_action_transparent:
+		    break;
+		}
 		/* fall through...*/
 
 	    case file_usage_source:
+	    case file_usage_config:
 	    case file_usage_test:
 	    case file_usage_manual_test:
 		switch (src_data->action)
@@ -928,7 +933,7 @@ send_main(void (*usage)(void))
     buffer = mem_alloc(buffer_size);
     for (j = 0; j < change_set->src->length; ++j)
     {
-	cstate_src      csrc;
+	cstate_src_ty   *csrc;
 	long            len;
 	string_ty       *original_filename = 0;
 	string_ty       *input_filename = 0;
@@ -936,10 +941,28 @@ send_main(void (*usage)(void))
 	int             input_filename_unlink = 0;
 
 	csrc = change_set->src->list[j];
-	if (csrc->usage == file_usage_build)
+	switch (csrc->usage)
+	{
+	case file_usage_build:
 	    continue;
-	if (csrc->action == file_action_remove)
+
+	case file_usage_source:
+	case file_usage_config:
+	case file_usage_test:
+	case file_usage_manual_test:
+	    break;
+	}
+	switch (csrc->action)
+	{
+	case file_action_remove:
 	    continue;
+
+	case file_action_create:
+	case file_action_modify:
+	case file_action_insulate:
+	case file_action_transparent:
+	    break;
+	}
 	trace(("file name = \"%s\"\n", csrc->file_name->str_text));
 
 	/*
@@ -972,29 +995,48 @@ send_main(void (*usage)(void))
 	    /*
 	     * Get the orginal file.
 	     */
-	    if (csrc->action == file_action_create)
+	    switch (csrc->action)
 	    {
+	    case file_action_create:
 		original_filename = str_copy(dev_null);
-	    }
-	    else
-	    {
+		break;
+
+	    case file_action_modify:
+	    case file_action_remove:
+	    case file_action_insulate:
+	    case file_action_transparent:
+#ifndef DEBUG
+	    default:
+#endif
 		original_filename = project_file_path(pp, csrc->file_name);
 		assert(original_filename);
+		break;
 	    }
 
 	    /*
 	     * Get the input file.
 	     */
-	    if (csrc->action == file_action_remove)
+	    switch (csrc->action)
 	    {
+	    case file_action_remove:
 		input_filename = str_copy(dev_null);
-	    }
-	    else
-	    {
+		break;
+
+	    case file_action_transparent:
+		/* FIXME: this is wrong, need version from grandparent */
+		/* fall through... */
+
+	    case file_action_create:
+	    case file_action_modify:
+	    case file_action_insulate:
+#ifndef DEBUG
+	    default:
+#endif
 		input_filename = change_file_path(cp, csrc->file_name);
 		if (!input_filename)
 		    input_filename = project_file_path(pp, csrc->file_name);
 		assert(input_filename);
+		break;
 	    }
 	    break;
 
@@ -1007,11 +1049,25 @@ send_main(void (*usage)(void))
 	    {
 		file_event_list_ty *felp;
 		file_event_ty  *fep;
-		fstate_src      old_src;
+		fstate_src_ty  *old_src;
 
 	    case file_action_create:
 		felp = project_file_roll_forward_get(csrc->file_name);
-		assert(felp);
+
+		/*
+		 * It's tempting to say
+		 *	assert(felp);
+		 * but file file may not yet exist at this point in
+		 * time, so there is no need (or ability) to create a
+		 * patch for it.
+		 */
+		if (!felp)
+		{
+		    original_filename = str_copy(dev_null);
+		    input_filename = str_copy(dev_null);
+		    break;
+		}
+
 		assert(felp->length >= 1);
 
 		/*
@@ -1036,22 +1092,50 @@ send_main(void (*usage)(void))
 
 	    case file_action_remove:
 		felp = project_file_roll_forward_get(csrc->file_name);
-		assert(felp);
-		assert(felp->length >= 2);
+
+		/*
+		 * It's tempting to say
+		 *	assert(felp);
+		 * but file file may not yet exist at this point in
+		 * time, so there is no need (or ability) to create a
+		 * patch for it.
+		 */
+		if (!felp)
+		{
+		    original_filename = str_copy(dev_null);
+		    input_filename = str_copy(dev_null);
+		    break;
+		}
+
+		/*
+		 * It is tempting to say
+		 *	assert(felp->length >= 2);
+		 * except that a file which is created and removed in
+		 * the same branch, will result in only a remove record
+		 * in its parent branch when integrated.
+		 */
+		assert(felp->length >= 1);
 
 		/*
 		 * Get the orginal file.
 		 */
-		fep = &felp->item[felp->length - 2];
-		old_src = change_file_find(fep->cp, csrc->file_name);
-		assert(old_src);
-		original_filename =
-		    project_file_version_path
-		    (
-			pp,
-			old_src,
-			&original_filename_unlink
-		    );
+		if (felp->length < 2)
+		{
+		    original_filename = str_copy(dev_null);
+		}
+		else
+		{
+		    fep = &felp->item[felp->length - 2];
+		    old_src = change_file_find(fep->cp, csrc->file_name);
+		    assert(old_src);
+		    original_filename =
+			project_file_version_path
+			(
+			    pp,
+			    old_src,
+			    &original_filename_unlink
+			);
+		}
 
 		/*
 		 * Get the input file.
@@ -1061,7 +1145,21 @@ send_main(void (*usage)(void))
 
 	    case file_action_modify:
 		felp = project_file_roll_forward_get(csrc->file_name);
-		assert(felp);
+
+		/*
+		 * It's tempting to say
+		 *	assert(felp);
+		 * but file file may not yet exist at this point in
+		 * time, so there is no need (or ability) to create a
+		 * patch for it.
+		 */
+		if (!felp)
+		{
+		    original_filename = str_copy(dev_null);
+		    input_filename = str_copy(dev_null);
+		    break;
+		}
+
 		assert(felp->length >= 2);
 
 		/*
@@ -1108,70 +1206,81 @@ send_main(void (*usage)(void))
 	}
 
 	/*
-	 * Put a patch into the archive
-	 * for modified files.
-	 *
-	 * We don't bother with a patch for created files, because
-	 * we simply include the whole source in the next section.
+	 * If they are both /dev/null don't bother with a patch.
 	 */
-	assert(original_filename);
-	assert(input_filename);
-	switch (csrc->action)
+	if
+	(
+	    !str_equal(original_filename, dev_null)
+	||
+	    !str_equal(input_filename, dev_null)
+	)
 	{
-	case file_action_create:
-	case file_action_remove:
-	case file_action_transparent:
-	    break;
-
-	case file_action_modify:
-	case file_action_insulate:
-	    if (entire_source)
-		break;
-	    if (!use_patch)
-		break;
-
 	    /*
-	     * Generate the difference file.
+	     * Put a patch into the archive
+	     * for modified files.
+	     *
+	     * We don't bother with a patch for created files, because
+	     * we simply include the whole source in the next section.
 	     */
 	    assert(original_filename);
-	    trace(("original_filename = \"%s\"\n",
-		original_filename->str_text));
 	    assert(input_filename);
-	    trace(("input_filename = \"%s\"\n",
-		input_filename->str_text));
-	    assert(diff_output_filename);
-	    trace(("diff_output_filename = \"%s\"\n",
-		diff_output_filename->str_text));
-	    change_run_patch_diff_command
-	    (
-		cp,
-		up,
-		original_filename,
-		input_filename,
-		diff_output_filename,
-		csrc->file_name
-	    );
-
-	    /*
-	     * Read the diff into the archive.
-	     */
-	    os_become_orig();
-	    ifp = input_file_open(diff_output_filename);
-	    assert(ifp);
-	    input_file_unlink_on_close(ifp);
-	    len = input_length(ifp);
-	    if (len > 0)
+	    switch (csrc->action)
 	    {
-		s = str_format("patch/%S", csrc->file_name);
-		ofp = output_cpio_child(cpio_p, s, len);
-		str_free(s);
-		input_to_output(ifp, ofp);
-		output_delete(ofp);
+	    case file_action_create:
+	    case file_action_remove:
+	    case file_action_transparent:
+		break;
+
+	    case file_action_modify:
+	    case file_action_insulate:
+		if (entire_source)
+		    break;
+		if (!use_patch)
+		    break;
+
+		/*
+		 * Generate the difference file.
+		 */
+		assert(original_filename);
+		trace(("original_filename = \"%s\"\n",
+		    original_filename->str_text));
+		assert(input_filename);
+		trace(("input_filename = \"%s\"\n",
+		    input_filename->str_text));
+		assert(diff_output_filename);
+		trace(("diff_output_filename = \"%s\"\n",
+		    diff_output_filename->str_text));
+		change_run_patch_diff_command
+		(
+		    cp,
+		    up,
+		    original_filename,
+		    input_filename,
+		    diff_output_filename,
+		    csrc->file_name
+		);
+
+		/*
+		 * Read the diff into the archive.
+		 */
+		os_become_orig();
+		ifp = input_file_open(diff_output_filename);
+		assert(ifp);
+		input_file_unlink_on_close(ifp);
+		len = input_length(ifp);
+		if (len > 0)
+		{
+		    s = str_format("patch/%S", csrc->file_name);
+		    ofp = output_cpio_child(cpio_p, s, len);
+		    str_free(s);
+		    input_to_output(ifp, ofp);
+		    output_delete(ofp);
+		}
+		input_delete(ifp);
+		os_become_undo();
+		str_free(diff_output_filename);
+		break;
 	    }
-	    input_delete(ifp);
-	    os_become_undo();
-	    str_free(diff_output_filename);
-	    break;
 	}
 
 	/*

@@ -27,7 +27,7 @@
 void
 change_architecture_add(change_ty *cp, string_ty *name)
 {
-	cstate		cstate_data;
+	cstate_ty       *cstate_data;
 	type_ty		*type_p;
 	string_ty	**who_p;
 

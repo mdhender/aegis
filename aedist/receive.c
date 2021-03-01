@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999-2003 Peter Miller;
+ *	Copyright (C) 1999-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,8 @@
 #include <ac/stdlib.h>
 
 #include <arglex3.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <cattr.h>
 #include <change.h>
 #include <change/attributes.h>
@@ -94,13 +96,14 @@ receive_main(void (*usage)(void))
     project_ty      *pp;
     change_ty       *cp;
     string_ty       *dd;
-    cstate          change_set;
+    cstate_ty       *change_set;
     size_t          j;
-    cattr           cattr_data;
-    cattr           dflt;
-    pconf           pconf_data;
+    cattr_ty        *cattr_data;
+    cattr_ty        *dflt;
+    pconf_ty        *pconf_data;
     string_ty       *attribute_file_name;
     string_list_ty  files_source;
+    string_list_ty  files_config;
     string_list_ty  files_build;
     string_list_ty  files_test_auto;
     string_list_ty  files_test_manual;
@@ -132,31 +135,14 @@ receive_main(void (*usage)(void))
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, usage);
-	    if (change_number)
-		duplicate_option_by_name(arglex_token_change, usage);
-	    change_number = arglex_value.alv_number;
-	    if (!change_number)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 0)
-	    {
-		sub_context_ty  *scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-	    }
-	    break;
+	    arglex();
+	    arglex_parse_change(&project_name, &change_number, usage);
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, usage);
-	    if (project_name)
-		duplicate_option_by_name(arglex_token_project, usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, usage);
+	    continue;
 
 	case arglex_token_file:
 	    if (ifn)
@@ -384,7 +370,7 @@ receive_main(void (*usage)(void))
 	input_fatal_error(cpio_p, "bad change set");
     for (j = 0; j < change_set->src->length; ++j)
     {
-	cstate_src      src_data;
+	cstate_src_ty   *src_data;
 
 	src_data = change_set->src->list[j];
 	if
@@ -485,115 +471,122 @@ receive_main(void (*usage)(void))
     could_have_a_trojan = 0;
     for (j = 0; j < change_set->src->length; ++j)
     {
-	cstate_src      src_data;
-	fstate_src      p_src_data;
+	cstate_src_ty   *src_data;
+	fstate_src_ty   *p_src_data;
 
 	src_data = change_set->src->list[j];
 	assert(src_data->file_name);
 	p_src_data =
 	    project_file_find(pp, src_data->file_name, view_path_extreme);
-	if (!p_src_data || p_src_data->action == file_action_remove)
+	switch (src_data->action)
 	{
-	    if (src_data->action == file_action_remove)
+	case file_action_remove:
+	    /*
+	     * Removing a removed file would be an
+	     * error, so take it out of the list completely.
+	     */
+	    if (!p_src_data)
 	    {
 		/*
-		 * Removing a removed file would be an
-		 * error, so butcher the action field
-		 * and none of the selection loops will
-		 * use it.
+		 * Move the end element of the array down to fill
+		 * the hole.  There is no need for a range test, in the
+		 * worst case it will write over itself.
 		 */
-		src_data->action = -1;
+		change_set->src->list[j] =
+		    change_set->src->list[change_set->src->length - 1];
+		fstate_src_type.free(src_data);
+		--j;
+		change_set->src->length--;
+		continue;
+	    }
+	    /* the view_path_extreme was supposed to take care of this */
+	    assert(p_src_data->action != file_action_remove);
+	    break;
+
+	case file_action_transparent:
+	    assert(0);
+
+	case file_action_create:
+	case file_action_modify:
+	case file_action_insulate:
+	    if (!p_src_data)
+	    {
+		src_data->action = file_action_create;
 	    }
 	    else
-		src_data->action = file_action_create;
-	}
-	else
-	{
-	    if (src_data->action != file_action_remove)
+	    {
 		src_data->action = file_action_modify;
+		switch (p_src_data->action)
+		{
+		case file_action_create:
+		case file_action_modify:
+		    break;
+
+		case file_action_remove:
+		    src_data->action = file_action_create;
+		    break;
+
+		case file_action_insulate:
+		case file_action_transparent:
+		    assert(0);
+		    break;
+		}
+	    }
+	    break;
 	}
 	if (project_file_trojan_suspect(pp, src_data->file_name))
 	    could_have_a_trojan = 1;
     }
 
     /*
-     * add the modified files to the change
-     */
-    string_list_constructor(&files_source);
-    string_list_constructor(&files_build);
-    string_list_constructor(&files_test_auto);
-    string_list_constructor(&files_test_manual);
-    for (j = 0; j < change_set->src->length; ++j)
-    {
-	cstate_src      src_data;
-
-	/*
-	 * For now, we are only copying files.
-	 */
-	src_data = change_set->src->list[j];
-	assert(src_data->file_name);
-	if (src_data->action != file_action_modify)
-	    continue;
-	if (src_data->usage == file_usage_build)
-	    continue;
-
-	/*
-	 * add it to the list
-	 */
-	string_list_append_unique(&files_source, src_data->file_name);
-	if
-	(
-	    src_data->usage == file_usage_test
-	||
-	    src_data->usage == file_usage_manual_test
-	)
-	    need_to_test = 1;
-    }
-    uncopy = 0;
-    if (files_source.nstrings)
-    {
-	string_ty       *delopt;
-
-	delopt = 0;
-	if (delta)
-	{
-	    delopt = str_from_c(delta);
-	    s = str_quote_shell(delopt);
-	    str_free(delopt);
-	    delopt = str_format(" --delta=%S", s);
-	    str_free(s);
-	}
-	uncopy = 1;
-	s =
-	    str_format
-	    (
-		"aegis --copy-file --project=%S --change=%ld --verbose%s",
-		project_name,
-		change_number,
-		(delopt ? delopt->str_text : "")
-	    );
-	if (delopt)
-	    str_free(delopt);
-	os_xargs(s, &files_source, dd);
-	str_free(s);
-    }
-    string_list_destructor(&files_source);
-
-    /*
      * add the removed files to the change
      */
     move_list_constructor(&files_moved);
+    string_list_constructor(&files_source);
+    string_list_constructor(&files_config);
+    string_list_constructor(&files_build);
+    string_list_constructor(&files_test_auto);
+    string_list_constructor(&files_test_manual);
+
     for (j = 0; j < change_set->src->length; ++j)
     {
-	cstate_src      src_data;
+	cstate_src_ty   *src_data;
+        fstate_src_ty   *p_src_data;
 
 	/*
 	 * For now, we are only removing files.
 	 */
 	src_data = change_set->src->list[j];
 	assert(src_data->file_name);
-	if (src_data->action != file_action_remove)
+	switch (src_data->action)
+	{
+	case file_action_remove:
+	    break;
+
+	case file_action_modify:
+            p_src_data =
+		project_file_find(pp, src_data->file_name, view_path_extreme);
+            assert (p_src_data);
+            if (p_src_data->usage != src_data->usage)
+	    {
+		/*
+		 * When files change type, it is necessary to remove
+		 * them *and* then create them in the same change.
+		 * Make sure the create loop also creates this file.
+		 */
+                src_data->action = file_action_create;
+                break;
+            }
+            continue;
+
+	case file_action_create:
+	case file_action_insulate:
+	case file_action_transparent:
+#ifndef DEBUG
+	default:
+#endif
 	    continue;
+	}
 
 	/*
 	 * add it to the list
@@ -625,20 +618,102 @@ receive_main(void (*usage)(void))
     string_list_destructor(&files_source);
 
     /*
+     * add the modified files to the change
+     */
+    for (j = 0; j < change_set->src->length; ++j)
+    {
+	cstate_src_ty   *src_data;
+
+	/*
+	 * For now, we are only copying files.
+	 */
+	src_data = change_set->src->list[j];
+	assert(src_data->file_name);
+	switch (src_data->action)
+	{
+	case file_action_modify:
+	    switch (src_data->usage)
+	    {
+	    case file_usage_build:
+		break;
+
+	    case file_usage_test:
+	    case file_usage_manual_test:
+		need_to_test = 1;
+		/* fall through... */
+
+	    case file_usage_source:
+	    case file_usage_config:
+		string_list_append_unique(&files_source, src_data->file_name);
+		break;
+	    }
+	    break;
+
+	case file_action_create:
+	case file_action_remove:
+	case file_action_insulate:
+	case file_action_transparent:
+	    break;
+	}
+    }
+    uncopy = 0;
+    if (files_source.nstrings)
+    {
+	string_ty       *delopt;
+
+	delopt = 0;
+	if (delta)
+	{
+	    delopt = str_from_c(delta);
+	    s = str_quote_shell(delopt);
+	    str_free(delopt);
+	    delopt = str_format(" --delta=%S", s);
+	    str_free(s);
+	}
+	uncopy = 1;
+	s =
+	    str_format
+	    (
+		"aegis --copy-file --project=%S --change=%ld --verbose%s",
+		project_name,
+		change_number,
+		(delopt ? delopt->str_text : "")
+	    );
+	if (delopt)
+	    str_free(delopt);
+	os_xargs(s, &files_source, dd);
+	str_free(s);
+    }
+    string_list_destructor(&files_source);
+
+
+    /*
      * add the new files to the change
      */
     need_to_test = 0;
     for (j = 0; j < change_set->src->length; ++j)
     {
-	cstate_src      src_data;
+	cstate_src_ty   *src_data;
 
 	/*
 	 * for now, we are only dealing with create
 	 */
 	src_data = change_set->src->list[j];
 	assert(src_data->file_name);
-	if (src_data->action != file_action_create)
+	switch (src_data->action)
+	{
+	case file_action_create:
+	    break;
+
+	case file_action_modify:
+	case file_action_remove:
+	case file_action_insulate:
+	case file_action_transparent:
+#ifndef DEBUG
+	default:
+#endif
 	    continue;
+	}
 
 	/*
 	 * add it to the list
@@ -657,6 +732,10 @@ receive_main(void (*usage)(void))
 	{
 	case file_usage_source:
 	    string_list_append_unique(&files_source, src_data->file_name);
+	    break;
+
+	case file_usage_config:
+	    string_list_append_unique(&files_config, src_data->file_name);
 	    break;
 
 	case file_usage_build:
@@ -741,6 +820,24 @@ receive_main(void (*usage)(void))
 		change_number
 	    );
 	os_xargs(s, &files_source, dd);
+	str_free(s);
+    }
+
+    /*
+     * NOTE: do this one last, in case it includes the first instance
+     * of the project config file.
+     */
+    if (files_config.nstrings)
+    {
+	s =
+	    str_format
+	    (
+		"aegis --new-file --config --project=%S --change=%ld "
+		    "--verbose --no-template",
+		project_name,
+		change_number
+	    );
+	os_xargs(s, &files_config, dd);
 	str_free(s);
     }
     string_list_destructor(&files_source);
@@ -849,29 +946,41 @@ receive_main(void (*usage)(void))
     os_become_orig();
     for (j = 0; j < change_set->src->length; ++j)
     {
-	cstate_src      src_data;
+	cstate_src_ty   *src_data;
 	output_ty       *ofp;
 	int             need_whole_source;
 
 	/* verbose progress message here? */
 	src_data = change_set->src->list[j];
-	if
-	(
-	    src_data->action != file_action_create
-	&&
-	    src_data->action != file_action_modify
-	)
+	switch (src_data->action)
+	{
+	case file_action_insulate:
+	case file_action_remove:
+	case file_action_transparent:
+#ifndef DEBUG
+	default:
+#endif
 	    continue;
-	if (src_data->usage == file_usage_build)
-	    continue;
+
+	case file_action_create:
+	case file_action_modify:
+	    break;
+	}
 	assert(src_data->file_name);
-	if
-	(
-	    src_data->usage == file_usage_test
-	||
-	    src_data->usage == file_usage_manual_test
-	)
+	switch (src_data->usage)
+	{
+	case file_usage_build:
+	    continue;
+
+	case file_usage_config:
+	case file_usage_test:
+	case file_usage_manual_test:
 	    could_have_a_trojan = 1;
+	    break;
+
+	case file_usage_source:
+	    break;
+	}
 	archive_name = 0;
 	ifp = input_cpio_child(cpio_p, &archive_name);
 	if (!ifp)
@@ -894,47 +1003,58 @@ receive_main(void (*usage)(void))
 	    plp = patch_read(ifp, 0);
 	    input_delete(ifp);
 
-	    if
-	    (
-		use_patch
-	    &&
-		src_data->action == file_action_modify
-	    &&
-		plp->length == 1
-	    )
+	    switch (src_data->action)
 	    {
-		patch_ty	*p;
-		string_ty       *orig;
-		int             ok;
+	    case file_action_create:
+		break;
 
-	        /*
-	         * Apply the patch.
-	         *
-	         * The input file (to which the patch is applied) may
-	         * be found in the baseline.
-	         */
-		p = plp->item[0];
-	        os_become_undo();
-		assert(pp);
-	        orig = project_file_path(pp, src_data->file_name);
-	        os_become_orig();
-	        ok = patch_apply(p, orig, src_data->file_name);
-	        str_free(orig);
-	        if (ok)
-		    need_whole_source = 0;
-		else
+	    case file_action_modify:
+		if (use_patch && plp->length == 1)
 		{
-		    sub_context_ty  *scp;
+		    patch_ty	*p;
+		    string_ty       *orig;
+		    int             ok;
 
-		    scp = sub_context_new();
-		    sub_var_set_string(scp, "File_Name", src_data->file_name);
-		    error_intl
-		    (
-			scp,
-			i18n("warning: $filename patch not used")
-		    );
-		    sub_context_delete(scp);
+		    /*
+		     * Apply the patch.
+		     *
+		     * The input file (to which the patch is applied) may
+		     * be found in the baseline.
+		     */
+		    p = plp->item[0];
+		    os_become_undo();
+		    assert(pp);
+		    orig = project_file_path(pp, src_data->file_name);
+		    os_become_orig();
+		    ok = patch_apply(p, orig, src_data->file_name);
+		    str_free(orig);
+		    if (ok)
+			need_whole_source = 0;
+		    else
+		    {
+			sub_context_ty  *scp;
+
+			scp = sub_context_new();
+			sub_var_set_string
+			(
+			    scp,
+			    "File_Name",
+			    src_data->file_name
+			);
+			error_intl
+			(
+			    scp,
+			    i18n("warning: $filename patch not used")
+			);
+			sub_context_delete(scp);
+		    }
 		}
+		break;
+
+	    case file_action_remove:
+	    case file_action_insulate:
+	    case file_action_transparent:
+		break;
 	    }
 	    patch_list_delete(plp);
 
@@ -970,18 +1090,35 @@ receive_main(void (*usage)(void))
     os_become_orig();
     for (j = 0; j < change_set->src->length; ++j)
     {
-	cstate_src      src_data;
+	cstate_src_ty   *src_data;
 
 	src_data = change_set->src->list[j];
-	if
-	(
-	    src_data->action != file_action_create
-	&&
-	    src_data->action != file_action_modify
-	)
+	switch (src_data->action)
+	{
+	case file_action_create:
+	case file_action_modify:
+	    break;
+
+	case file_action_remove:
+	case file_action_insulate:
+	case file_action_transparent:
+#ifndef DEBUG
+	default:
+#endif
 	    continue;
-	if (src_data->usage == file_usage_build)
+	}
+
+	switch (src_data->usage)
+	{
+	case file_usage_source:
+	case file_usage_config:
+	case file_usage_test:
+	case file_usage_manual_test:
+	    break;
+
+	case file_usage_build:
 	    continue;
+	}
 	assert(src_data->file_name);
 
 	os_chmod
@@ -999,31 +1136,47 @@ receive_main(void (*usage)(void))
     config_seen = 0;
     for (j = 0; j < change_set->src->length; ++j)
     {
-	cstate_src      src_data;
+	cstate_src_ty     *      src_data;
 
 	src_data = change_set->src->list[j];
-	if
-	(
-	    src_data->action != file_action_create
-	&&
-	    src_data->action != file_action_modify
-	)
-	    continue;
-	if (src_data->usage == file_usage_build)
-	    continue;
-	assert(src_data->file_name);
-	if (change_file_is_config(cp, src_data->file_name))
+	switch (src_data->action)
 	{
+	case file_action_create:
+	case file_action_modify:
+	    break;
+
+	case file_action_remove:
+	case file_action_insulate:
+	case file_action_transparent:
+#ifndef DEBUG
+	default:
+#endif
+	    continue;
+	}
+	switch (src_data->usage)
+	{
+	case file_usage_build:
+	    continue;
+
+	case file_usage_source:
+	    assert(src_data->file_name);
+	    if (change_file_is_config(cp, src_data->file_name))
+	    {
+		could_have_a_trojan = 1;
+		config_seen = 1;
+	    }
+	    break;
+
+	case file_usage_config:
 	    could_have_a_trojan = 1;
 	    config_seen = 1;
-	}
-	if
-	(
-	    src_data->usage == file_usage_test
-	||
-	    src_data->usage == file_usage_manual_test
-	)
+	    break;
+
+	case file_usage_test:
+	case file_usage_manual_test:
 	    could_have_a_trojan = 1;
+	    break;
+	}
     }
     change_free(cp);
     cp = 0;

@@ -3,7 +3,7 @@ Build(Aegis)							  Build(Aegis)
 NAME
 	aegis -	project	change supervisor
 	Copyright (C) 1991, 1992, 1993,	1994, 1995, 1996, 1997,	1998, 1999,
-	2000, 2001, 2002, 2003 Peter Miller; All rights	reserved.
+	2000, 2001, 2002, 2003,	2004 Peter Miller; All rights reserved.
 
 	The aegis program is distributed under the terms of the	GNU General
 	Public License.	 See the LICENSE section, below, for more details.
@@ -195,7 +195,8 @@ SITE CONFIGURATION
    AIX Command Line Lengths
 	For some reason, AIX has a very	short command line length limit	by
 	default.  You can extend this by using the command
-		$ systune ncargs 0x8000	$
+		$ systune ncargs 0x8000
+		$
 	You will need to do this to build Aegis.  It has some very long	link
 	lines.
 

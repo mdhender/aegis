@@ -53,7 +53,7 @@ destruct(rpt_value_ty *vp)
 static void
 grab(rpt_value_pconf_ty *this_thing)
 {
-    pconf           pconf_data;
+    pconf_ty        *pconf_data;
 
     /*
      * construct the project config file's value, assuming it exists

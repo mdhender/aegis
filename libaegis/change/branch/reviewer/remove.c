@@ -28,35 +28,35 @@
 void
 change_branch_reviewer_remove(change_ty *cp, string_ty *user_name)
 {
-	cstate		cstate_data;
-	cstate_branch_reviewer_list lp;
-	size_t		j;
+    cstate_ty       *cstate_data;
+    cstate_branch_reviewer_list_ty *lp;
+    size_t		j;
 
-	trace(("change_branch_reviewer_remove(cp = %8.8lX, user_name = \
-\"%s\")\n{\n"/*}*/, (long)cp, user_name->str_text));
-	cstate_data = change_cstate_get(cp);
-	assert(cstate_data->branch);
-	if (!cstate_data->branch->reviewer)
-		cstate_data->branch->reviewer =
-			cstate_branch_reviewer_list_type.alloc();
-	lp = cstate_data->branch->reviewer;
+    trace(("change_branch_reviewer_remove(cp = %8.8lX, "
+	"user_name = \"%s\")\n{\n", (long)cp, user_name->str_text));
+    cstate_data = change_cstate_get(cp);
+    assert(cstate_data->branch);
+    if (!cstate_data->branch->reviewer)
+	cstate_data->branch->reviewer =
+    	    cstate_branch_reviewer_list_type.alloc();
+    lp = cstate_data->branch->reviewer;
 
-	/*
-	 * Remove the name from the list, if it is on the list.
-	 * Be conservative, look for duplicates.
-	 */
-	for (j = 0; j < lp->length; ++j)
+    /*
+     * Remove the name from the list, if it is on the list.
+     * Be conservative, look for duplicates.
+     */
+    for (j = 0; j < lp->length; ++j)
+    {
+	if (str_equal(user_name, lp->list[j]))
 	{
-		if (str_equal(user_name, lp->list[j]))
-		{
-			size_t		k;
+    	    size_t		k;
 
-			str_free(lp->list[j]);
-			for (k = j + 1; k < lp->length; ++k)
-				lp->list[k - 1] = lp->list[k];
-			lp->length--;
-			j--;
-		}
+    	    str_free(lp->list[j]);
+    	    for (k = j + 1; k < lp->length; ++k)
+       		lp->list[k - 1] = lp->list[k];
+    	    lp->length--;
+    	    j--;
 	}
-	trace((/*{*/"}\n"));
+    }
+    trace(("}\n"));
 }

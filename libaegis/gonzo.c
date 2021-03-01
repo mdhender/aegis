@@ -50,7 +50,7 @@ struct gonzo_ty
 {
     string_ty	    *dir;
     string_ty	    *gstate_filename;
-    gstate	    gstate_data;
+    gstate_ty	    *gstate_data;
     int		    is_a_new_file;
     int		    modified;
     long	    lock_magic;
@@ -179,7 +179,7 @@ lock_sync(gonzo_ty *gp)
 }
 
 
-static gstate
+static gstate_ty *
 gonzo_gstate_get(gonzo_ty *gp)
 {
     trace(("gonzo_gstate_get(gp = %08lX)\n{\n", (long)gp));
@@ -200,10 +200,10 @@ gonzo_gstate_get(gonzo_ty *gp)
 	    gp->gstate_data = gstate_read_file(gp->gstate_filename);
 	}
 	else
-	    gp->gstate_data = (gstate)gstate_type.alloc();
+	    gp->gstate_data = (gstate_ty *)gstate_type.alloc();
 	if (!gp->gstate_data->where)
 	    gp->gstate_data->where =
-		(gstate_where_list)gstate_where_list_type.alloc();
+		(gstate_where_list_ty *)gstate_where_list_type.alloc();
 	gonzo_become_undo();
     }
     trace(("return %08lX;\n", (long)gp->gstate_data));
@@ -505,10 +505,10 @@ gonzo_gstate_write(void)
 static string_ty *
 gonzo_project_home_path_sub(gonzo_ty *gp, string_ty *name)
 {
-    gstate	    gstate_data;
+    gstate_ty	    *gstate_data;
     size_t	    j;
     string_ty	    *result;
-    gstate_where    addr =	    0;
+    gstate_where_ty *addr =	    0;
 
     /*
      * find the project in the gstate
@@ -570,7 +570,7 @@ gonzo_project_home_path_from_name(string_ty *name)
 static string_ty *
 gonzo_alias_to_actual_sub(gonzo_ty *gp, string_ty *name)
 {
-    gstate	    gstate_data;
+    gstate_ty	    *gstate_data;
     size_t	    j;
     string_ty	    *result;
 
@@ -584,7 +584,7 @@ gonzo_alias_to_actual_sub(gonzo_ty *gp, string_ty *name)
     result = 0;
     for (j = 0; j < gstate_data->where->length; ++j)
     {
-	gstate_where	addr;
+	gstate_where_ty *addr;
 
 	addr = gstate_data->where->list[j];
 	if (!addr->alias_for)
@@ -638,7 +638,7 @@ gonzo_project_list(string_list_ty *result)
     size_t	    n;
     size_t	    j;
     gonzo_ty	    *gp;
-    gstate	    gstate_data;
+    gstate_ty	    *gstate_data;
 
     trace(("gonzo_project_list(result = %08lX)\n{\n", (long)result));
     string_list_constructor(result);
@@ -659,7 +659,7 @@ gonzo_project_list(string_list_ty *result)
 	assert(gstate_data->where);
 	for (j = 0; j < gstate_data->where->length; ++j)
 	{
-	    gstate_where    addr;
+	    gstate_where_ty *addr;
 
 	    addr = gstate_data->where->list[j];
 	    if (addr->alias_for)
@@ -677,7 +677,7 @@ gonzo_alias_list(string_list_ty *result)
     size_t	    n;
     size_t	    j;
     gonzo_ty	    *gp;
-    gstate	    gstate_data;
+    gstate_ty	    *gstate_data;
 
     trace(("gonzo_project_list(result = %08lX)\n{\n", (long)result));
     string_list_constructor(result);
@@ -698,7 +698,7 @@ gonzo_alias_list(string_list_ty *result)
 	assert(gstate_data->where);
 	for (j = 0; j < gstate_data->where->length; ++j)
 	{
-	    gstate_where    addr;
+	    gstate_where_ty *addr;
 
 	    addr = gstate_data->where->list[j];
 	    if (!addr->alias_for)
@@ -722,7 +722,7 @@ gonzo_project_list_user(string_ty *uname, string_list_ty *result)
     for (n = 0;; ++n)
     {
 	string_ty	*ustate_path;
-	ustate		ustate_data;
+	ustate_ty	*ustate_data;
 	gonzo_ty	*gp;
 
 	gp = gonzo_nth(n);
@@ -744,7 +744,8 @@ gonzo_project_list_user(string_ty *uname, string_list_ty *result)
 	ustate_data = ustate_read_file(ustate_path);
 	gonzo_become_undo();
 	if (!ustate_data->own)
-	    ustate_data->own = (ustate_own_list)ustate_own_list_type.alloc();
+	    ustate_data->own =
+		(ustate_own_list_ty *)ustate_own_list_type.alloc();
 	str_free(ustate_path);
 
 	/*
@@ -770,9 +771,9 @@ gonzo_project_list_user(string_ty *uname, string_list_ty *result)
 void
 gonzo_project_add(project_ty *pp)
 {
-    gstate	    gstate_data;
-    gstate_where    *addr_p;
-    gstate_where    addr;
+    gstate_ty	    *gstate_data;
+    gstate_where_ty **addr_p;
+    gstate_where_ty *addr;
     gonzo_ty	    *gp;
     type_ty	    *type_p;
 
@@ -781,7 +782,7 @@ gonzo_project_add(project_ty *pp)
     gstate_data = gonzo_gstate_get(gp);
     addr_p = gstate_where_list_type.list_parse(gstate_data->where, &type_p);
     assert(type_p == &gstate_where_type);
-    addr = (gstate_where)gstate_where_type.alloc();
+    addr = (gstate_where_ty *)gstate_where_type.alloc();
     *addr_p = addr;
     trace_pointer(addr);
     addr->project_name = str_copy(project_name_get(pp));
@@ -794,9 +795,9 @@ gonzo_project_add(project_ty *pp)
 void
 gonzo_alias_add(project_ty *pp, string_ty *name)
 {
-    gstate	    gstate_data;
-    gstate_where    *addr_p;
-    gstate_where    addr;
+    gstate_ty	    *gstate_data;
+    gstate_where_ty **addr_p;
+    gstate_where_ty *addr;
     gonzo_ty	    *gp;
     type_ty	    *type_p;
 
@@ -805,7 +806,7 @@ gonzo_alias_add(project_ty *pp, string_ty *name)
     gstate_data = gonzo_gstate_get(gp);
     addr_p = gstate_where_list_type.list_parse(gstate_data->where, &type_p);
     assert(type_p == &gstate_where_type);
-    addr = (gstate_where)gstate_where_type.alloc();
+    addr = (gstate_where_ty *)gstate_where_type.alloc();
     *addr_p = addr;
     trace_pointer(addr);
     addr->project_name = str_copy(name);
@@ -818,7 +819,7 @@ gonzo_alias_add(project_ty *pp, string_ty *name)
 static int
 gonzo_project_delete_sub(gonzo_ty *gp, project_ty *pp)
 {
-    gstate	    gstate_data;
+    gstate_ty	    *gstate_data;
     size_t	    j;
     int		    result;
 
@@ -832,7 +833,7 @@ gonzo_project_delete_sub(gonzo_ty *gp, project_ty *pp)
     result = 0;
     for (j = 0; j < gstate_data->where->length; ++j)
     {
-	gstate_where	addr;
+	gstate_where_ty *addr;
 	long		k;
 
 	addr = gstate_data->where->list[j];
@@ -885,7 +886,7 @@ is_leading_prefix(string_ty *s1, string_ty *s2)
 static void
 gonzo_alias_delete_destination_sub(gonzo_ty *gp, string_ty *name)
 {
-    gstate	    gstate_data;
+    gstate_ty	    *gstate_data;
     size_t	    j;
     int		    result;
 
@@ -898,7 +899,7 @@ gonzo_alias_delete_destination_sub(gonzo_ty *gp, string_ty *name)
     result = 0;
     for (j = 0; j < gstate_data->where->length; ++j)
     {
-	gstate_where	addr;
+	gstate_where_ty *addr;
 	long		k;
 
 	addr = gstate_data->where->list[j];
@@ -952,7 +953,7 @@ gonzo_project_delete(project_ty *pp)
 static int
 gonzo_alias_delete_sub(gonzo_ty *gp, string_ty *name)
 {
-    gstate	    gstate_data;
+    gstate_ty	    *gstate_data;
     size_t	    j;
     int		    result;
 
@@ -966,7 +967,7 @@ gonzo_alias_delete_sub(gonzo_ty *gp, string_ty *name)
     result = 0;
     for (j = 0; j < gstate_data->where->length; ++j)
     {
-	gstate_where	addr;
+	gstate_where_ty *addr;
 	long		k;
 
 	addr = gstate_data->where->list[j];
@@ -1062,7 +1063,7 @@ gonzo_lockpath_get(void)
 static int
 gonzo_ustate_path_sub(gonzo_ty *gp, string_ty *project_name)
 {
-    gstate	    gstate_data;
+    gstate_ty	    *gstate_data;
     size_t	    j;
     int		    result;
 
@@ -1075,7 +1076,7 @@ gonzo_ustate_path_sub(gonzo_ty *gp, string_ty *project_name)
     result = 0;
     for (j = 0; j < gstate_data->where->length; ++j)
     {
-	gstate_where	addr;
+	gstate_where_ty *addr;
 
 	addr = gstate_data->where->list[j];
 	if (addr->alias_for)

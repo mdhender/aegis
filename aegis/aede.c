@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2003 Peter Miller;
+ *	Copyright (C) 1991-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,8 @@
 #include <aede.h>
 #include <ael/change/by_state.h>
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <change/branch.h>
 #include <change/develop_direct/read_only.h>
 #include <change/file.h>
@@ -90,21 +92,12 @@ develop_end_list(void)
 	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, develop_end_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_string:
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    develop_end_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex_parse_project(&project_name, develop_end_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -120,9 +113,9 @@ develop_end_main(void)
 {
     sub_context_ty  *scp;
     string_ty	    *dd;
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
     int		    j;
-    cstate_history  history_data;
+    cstate_history_ty *history_data;
     string_ty	    *project_name;
     project_ty	    *pp;
     long	    change_number;
@@ -149,48 +142,25 @@ develop_end_main(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, develop_end_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_change,
-		    develop_end_usage
-		);
-	    }
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change
+	    (
+		&project_name,
+		&change_number,
+		develop_end_usage
+	    );
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, develop_end_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_string:
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    develop_end_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex_parse_project(&project_name, develop_end_usage);
+	    continue;
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
@@ -285,8 +255,8 @@ develop_end_main(void)
     is_a_branch = change_is_a_branch(cp);
     for (j = 0;; ++j)
     {
-	fstate_src	c_src_data;
-	fstate_src	p_src_data;
+	fstate_src_ty   *c_src_data;
+	fstate_src_ty   *p_src_data;
 	string_ty	*path;
 	string_ty	*path_d;
 	int		same;
@@ -312,7 +282,7 @@ develop_end_main(void)
 	    file_required = 0;
 	    if (is_a_branch)
 	    {
-		fstate_src      src;
+		fstate_src_ty   *src;
 
 		src =
 		    project_file_find
@@ -346,7 +316,7 @@ develop_end_main(void)
 		assert(pp->parent);
 		if (pp->parent)
 		{
-		    fstate_src      pp_src;
+		    fstate_src_ty   *pp_src;
 
 		    pp_src =
 			project_file_find
@@ -391,10 +361,18 @@ develop_end_main(void)
 	    }
 	    break;
 	}
-	if (c_src_data->usage == file_usage_build)
+	switch (c_src_data->usage)
 	{
+	case file_usage_build:
 	    file_required = 0;
 	    diff_file_required = 0;
+	    break;
+
+	case file_usage_source:
+	case file_usage_config:
+	case file_usage_test:
+	case file_usage_manual_test:
+	    break;
 	}
 
 	/*
@@ -610,6 +588,7 @@ develop_end_main(void)
 	    {
 		p_src_data = project_file_new(pp, c_src_data->file_name);
 		p_src_data->usage = c_src_data->usage;
+		p_src_data->action = file_action_transparent;
 		p_src_data->about_to_be_created_by = change_number;
 		assert(c_src_data->edit||c_src_data->edit_origin);
 		p_src_data->edit =
@@ -736,11 +715,28 @@ develop_end_main(void)
 	     */
 	    if (!change_file_up_to_date(pp, c_src_data))
 	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", c_src_data->file_name);
-		change_error(cp, scp, i18n("baseline $filename changed"));
-		sub_context_delete(scp);
-		errs++;
+                switch (c_src_data->usage) {
+                /*
+                 * Build files can't be merged so they must pass
+                 * anyway to the upper branch.
+                 */
+                case file_usage_build:
+                    break;
+
+                case file_usage_config:
+                case file_usage_source:
+                case file_usage_test:
+                case file_usage_manual_test:
+#ifndef DEBUG
+                default:
+#endif
+                    scp = sub_context_new();
+                    sub_var_set_string(scp, "File_Name", c_src_data->file_name);
+                    change_error(cp, scp, i18n("baseline $filename changed"));
+                    sub_context_delete(scp);
+                    errs++;
+                    break;
+                }
 	    }
 
 	    /*
@@ -844,7 +840,7 @@ develop_end_main(void)
     {
 	for (j = 0;; ++j)
 	{
-	    fstate_src	    p_src_data;
+	    fstate_src_ty   *p_src_data;
 	    string_ty	    *e;
 
 	    p_src_data = project_file_nth(pp, j, view_path_extreme);

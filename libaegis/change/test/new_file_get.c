@@ -29,7 +29,7 @@ string_ty *
 change_new_test_filename_get(change_ty *cp, long n, int is_auto)
 {
 	sub_context_ty	*scp;
-	pconf		pconf_data;
+	pconf_ty        *pconf_data;
 	string_ty	*result;
 
 	assert(cp->reference_count >= 1);

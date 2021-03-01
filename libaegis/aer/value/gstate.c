@@ -79,7 +79,7 @@ grab_one(string_ty *project_name)
     rpt_value_ty    *value;
     change_ty       *cp;
     string_ty       *dd;
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
     int             err;
 
     /*

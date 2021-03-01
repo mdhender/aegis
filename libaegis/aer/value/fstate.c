@@ -52,7 +52,7 @@ destruct(rpt_value_ty *vp)
 static void
 convert(rpt_value_fstate_ty *this_thing)
 {
-    fstate          fstate_data;
+    fstate_ty       *fstate_data;
 
     assert(!this_thing->converted);
     fstate_data = change_fstate_get(this_thing->cp);

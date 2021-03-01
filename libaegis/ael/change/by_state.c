@@ -143,7 +143,7 @@ list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
      */
     for (j = 0; ; ++j)
     {
-	cstate		cstate_data;
+	cstate_ty       *cstate_data;
 	long		change_number;
 	change_ty	*cp;
 

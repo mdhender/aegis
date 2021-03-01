@@ -27,12 +27,12 @@
 #include <user.h>
 
 
-cstate_history
+cstate_history_ty *
 change_history_new(change_ty *cp, user_ty *up)
 {
-    cstate          cstate_data;
-    cstate_history  history_data;
-    cstate_history  *history_data_p;
+    cstate_ty       *cstate_data;
+    cstate_history_ty *history_data;
+    cstate_history_ty **history_data_p;
     type_ty         *type_p;
 
     trace(("change_history_new(cp = %08lX)\n{\n", (long)cp));

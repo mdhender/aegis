@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,74 +30,74 @@
 static void
 change_copyright_years_slurp(change_ty *cp, int *a, int amax, int *alen_p)
 {
-	int		j, k;
-	int		n;
-	cstate		cstate_data;
-	cstate_copyright_years_list cylp;
+    int             j, k;
+    int             n;
+    cstate_ty       *cstate_data;
+    cstate_copyright_years_list_ty *cylp;
 
-	cstate_data = change_cstate_get(cp);
-	cylp = cstate_data->copyright_years;
-	if (!cylp)
-		return;
-	for (j = 0; j < cylp->length; ++j)
+    cstate_data = change_cstate_get(cp);
+    cylp = cstate_data->copyright_years;
+    if (!cylp)
+	return;
+    for (j = 0; j < cylp->length; ++j)
+    {
+	if (*alen_p >= amax)
+	    return;
+	n = cylp->list[j];
+	for (k = 0; k < *alen_p; ++k)
+	    if (a[k] == n)
+	       	break;
+	if (k >= *alen_p)
 	{
-		if (*alen_p >= amax)
-			return;
-		n = cylp->list[j];
-		for (k = 0; k < *alen_p; ++k)
-			if (a[k] == n)
-				break;
-		if (k >= *alen_p)
-		{
-			a[*alen_p] = n;
-			++*alen_p;
-		}
+	    a[*alen_p] = n;
+	    ++*alen_p;
 	}
+    }
 }
 
 
 static int
 change_copyright_years_cmp(const void *va, const void *vb)
 {
-	const int	*a;
-	const int	*b;
+    const int       *a;
+    const int       *b;
 
-	a = va;
-	b = vb;
-	return (*a - *b);
+    a = va;
+    b = vb;
+    return (*a - *b);
 }
 
 
 void
 change_copyright_years_get(change_ty *cp, int *a, int amax, int *alen_p)
 {
-	project_ty	*pp;
+    project_ty      *pp;
 
-	/*
-	 * Get the years specific to this change.
-	 */
-	assert(alen_p);
-	*alen_p = 0;
-	change_copyright_years_slurp(cp, a, amax, alen_p);
+    /*
+     * Get the years specific to this change.
+     */
+    assert(alen_p);
+    *alen_p = 0;
+    change_copyright_years_slurp(cp, a, amax, alen_p);
 
-	/*
-	 * Walk up the list of ancestors until we get to the trunk
-	 * extracting the years specific to each branch.
-	 */
-	for (pp = cp->pp; pp; pp = pp->parent)
-	{
-		change_copyright_years_slurp
-		(
-			project_change_get(pp),
-			a,
-			amax,
-			alen_p
-		);
-	}
+    /*
+     * Walk up the list of ancestors until we get to the trunk
+     * extracting the years specific to each branch.
+     */
+    for (pp = cp->pp; pp; pp = pp->parent)
+    {
+	change_copyright_years_slurp
+	(
+	    project_change_get(pp),
+	    a,
+	    amax,
+	    alen_p
+	);
+    }
 
-	/*
-	 * sort the years into ascending order
-	 */
-	if (*alen_p >= 2)
-		qsort(a, *alen_p, sizeof(a[0]), change_copyright_years_cmp);
+    /*
+     * sort the years into ascending order
+     */
+    if (*alen_p >= 2)
+	qsort(a, *alen_p, sizeof(a[0]), change_copyright_years_cmp);
 }

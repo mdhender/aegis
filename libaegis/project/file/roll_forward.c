@@ -89,9 +89,9 @@ static int
 possibly_broken_by_aeimport(change_ty *cp)
 {
     static string_ty *config;
-    fstate_src      src;
-    cstate          cstate_data;
-    cstate_history  chp;
+    fstate_src_ty   *src;
+    cstate_ty       *cstate_data;
+    cstate_history_ty *chp;
 
     /*
      * Older versions of aeimport had a bug, and the very
@@ -107,15 +107,24 @@ possibly_broken_by_aeimport(change_ty *cp)
     if (!config)
 	config = str_from_c(THE_CONFIG_FILE);
     src = change_file_nth(cp, 0);
-    if
-    (
-	!src
-    ||
-	src->action != file_action_create
-    ||
-	!str_equal(src->file_name, config)
-    )
+    if (!src)
 	return 0;
+    switch (src->action)
+    {
+    case file_action_create:
+	if (!str_equal(src->file_name, config))
+	    return 0;
+	break;
+
+    case file_action_modify:
+    case file_action_remove:
+    case file_action_insulate:
+    case file_action_transparent:
+#ifndef DEBUG
+    default:
+#endif
+	return 0;
+    }
 
     /*
      * Check that the history is the shape we expect.
@@ -149,8 +158,8 @@ static change_list_ty *
 change_list_get(project_ty *pp, time_t limit)
 {
     change_ty       *pcp;
-    cstate	    cstate_data;
-    cstate_branch   bp;
+    cstate_ty       *cstate_data;
+    cstate_branch_ty *bp;
     size_t	    j;
     change_list_ty  *clp;
 
@@ -179,8 +188,8 @@ change_list_get(project_ty *pp, time_t limit)
 	{
 	    long            change_number;
 	    change_ty       *cp;
-	    cstate_branch_history hp;
-	    cstate_history  chp;
+	    cstate_branch_history_ty *hp;
+	    cstate_history_ty *chp;
 
 	    hp = bp->history->list[j];
 	    assert(hp);
@@ -530,8 +539,8 @@ static time_t
 branch_start_time(project_ty *pp)
 {
     change_ty       *cp;
-    cstate          cstate_data;
-    cstate_history  hp;
+    cstate_ty       *cstate_data;
+    cstate_history_ty *hp;
 
     cp = project_change_get(pp);
     cstate_data = change_cstate_get(cp);
@@ -559,8 +568,8 @@ static time_t
 branch_finish_time(project_ty *pp)
 {
     change_ty       *cp;
-    cstate          cstate_data;
-    cstate_history  hp;
+    cstate_ty       *cstate_data;
+    cstate_history_ty *hp;
 
     cp = project_change_get(pp);
     cstate_data = change_cstate_get(cp);
@@ -740,10 +749,11 @@ recapitulate(project_ty *pp, time_t limit, int detailed)
 	{
 	    for (j = 0; ; ++j)
 	    {
-		fstate_src      src;
+		fstate_src_ty   *src;
 		change_ty       *vp_cp;
-		fstate_src      vp_src;
+		fstate_src_ty   *vp_src;
 		size_t          vp_idx;
+		file_event_list_ty *felp;
 
 		trace(("j = %d\n", (int)j));
 		src = change_file_nth(cp, j);
@@ -780,77 +790,98 @@ recapitulate(project_ty *pp, time_t limit, int detailed)
 		     * libaegis/project/file/list_get.c otherwise subtle
 		     * and elusive bugs appear.
 		     */
-		    if
-		    (
-			vp_src
-		    &&
-			vp_src->action != file_action_transparent
-		    &&
-			(
-			    vp_src->deleted_by
-			||
-			    vp_src->action == file_action_remove
-			||
-			    (
-				!vp_src->about_to_be_created_by
-			    &&
-				!vp_src->about_to_be_copied_by
-			    )
-			)
-		    )
+		    if (vp_src)
 		    {
-			/*
-			 * We found a concrete file.
-			 */
-			break;
+			int             found_a_concrete_file;
+
+			found_a_concrete_file = 0;
+			switch (vp_src->action)
+			{
+			case file_action_transparent:
+			    break;
+
+			case file_action_remove:
+			    found_a_concrete_file = 1;
+			    break;
+
+			case file_action_create:
+			case file_action_modify:
+			case file_action_insulate:
+#ifndef DEBUG
+			default:
+#endif
+			    /* should be file_action_remove */
+			    assert(!vp_src->deleted_by);
+			    if (vp_src->deleted_by)
+			    {
+				found_a_concrete_file = 1;
+				break;
+			    }
+			    /* should be file_action_transparent */
+			    assert(!vp_src->about_to_be_created_by);
+			    if (vp_src->about_to_be_created_by)
+				break;
+			    /* should be file_action_transparent */
+			    assert(!vp_src->about_to_be_copied_by);
+			    if (vp_src->about_to_be_copied_by)
+				break;
+
+			    found_a_concrete_file = 1;
+			    break;
+			}
+			if (found_a_concrete_file)
+			    break;
 		    }
 
 		    vp_cp = 0;
 		    vp_src = 0;
 		}
 		assert(vp_src);
+		if (!vp_src)
+		    continue;
 
 		/*
 		 * If the file changes appearance, from the along-the-view-path
 		 * perspective, append the change to the list of file events.
 		 */
-		if
-		(
-		    vp_src
-		&&
-		    (
-			src == vp_src
-		    ||
-			(
-			    idx == stack.length - 1
-			&&
-			    src->action == file_action_transparent
-			)
-		    )
-		)
+		switch (src->action)
 		{
-		    file_event_list_ty *felp;
+		case file_action_transparent:
+		    if (idx != stack.length - 1)
+			continue;
+		    break;
 
-		    felp = symtab_query(stp, vp_src->file_name);
-		    if (!felp)
-		    {
-			felp = file_event_list_new();
-			symtab_assign(stp, vp_src->file_name, felp);
-		    }
-
-		    /*
-		     * Note that we insert vp_cp, not cp.  This is because
-		     * the file entry pointed to by src may be transparent,
-		     * whereas the file entry pointed to by vp_src will
-		     * be concrete.
-		     */
-		    trace(("vp_src = %08lX\n", (long)vp_src));
-		    trace(("%s \"%s\" %s\n",
-			file_action_ename(vp_src->action),
-			vp_src->file_name->str_text,
-			vp_src->edit->revision->str_text));
-		    file_event_list_append(felp, playback_when(pbp), vp_cp);
+		case file_action_create:
+		case file_action_modify:
+		case file_action_remove:
+		case file_action_insulate:
+#ifndef DEBUG
+		default:
+#endif
+		    if (src != vp_src)
+			continue;
+		    break;
 		}
+
+		felp = symtab_query(stp, vp_src->file_name);
+		if (!felp)
+		{
+		    felp = file_event_list_new();
+		    symtab_assign(stp, vp_src->file_name, felp);
+		}
+
+		/*
+		 * Note that we insert vp_cp, not cp.  This is because
+		 * the file entry pointed to by src may be transparent,
+		 * whereas the file entry pointed to by vp_src will
+		 * be concrete.
+		 */
+		trace(("vp_src = %08lX\n", (long)vp_src));
+		trace(("%s \"%s\" %s\n",
+		    file_action_ename(vp_src->action),
+		    vp_src->file_name->str_text,
+		    vp_src->edit->revision->str_text));
+		file_event_list_append(felp, playback_when(pbp), vp_cp);
 	    }
 	}
 

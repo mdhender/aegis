@@ -28,8 +28,8 @@
 long
 change_branch_next_delta_number(change_ty *cp)
 {
-    cstate	    cstate_data;
-    cstate_branch   bp;
+    cstate_ty       *cstate_data;
+    cstate_branch_ty *bp;
     long	    result;
     size_t	    j;
 
@@ -46,7 +46,7 @@ change_branch_next_delta_number(change_ty *cp)
     result = bp->history->length + 1;
     for (j = 0; j < bp->history->length; ++j)
     {
-       	cstate_branch_history hp;
+       	cstate_branch_history_ty *hp;
 
        	hp = bp->history->list[j];
        	if (hp->delta_number >= result)

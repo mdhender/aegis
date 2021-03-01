@@ -1,21 +1,21 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 1999-2003 Peter Miller;
- *	All rights reserved.
+ *      aegis - project change supervisor
+ *      Copyright (C) 1999-2003 Peter Miller;
+ *      All rights reserved.
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 2 of the License, or
+ *      (at your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program; if not, write to the Free Software
+ *      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to manipulate truncates
  *
@@ -55,12 +55,12 @@ wide_output_truncate_destructor(wide_output_ty *fp)
 
     this_thing = (wide_output_truncate_ty *)fp;
     if (this_thing->buf_pos)
-	wide_output_write(
+        wide_output_write(
             this_thing->deeper, this_thing->buf, this_thing->buf_pos);
     if (this_thing->buf)
-	mem_free(this_thing->buf);
+        mem_free(this_thing->buf);
     if (this_thing->delete_on_close)
-	wide_output_delete(this_thing->deeper);
+        wide_output_delete(this_thing->deeper);
     this_thing->deeper = 0;
 }
 
@@ -85,56 +85,57 @@ wide_output_truncate_write(wide_output_ty *fp, const wchar_t *data, size_t len)
     language_human();
     while (len > 0)
     {
-	wchar_t wc = *data++;
-	--len;
+        wchar_t wc = *data++;
+        --len;
 
-	switch (wc)
-	{
-	case '\n':
-	case '\f':
-	    language_C();
-	    if (this_thing->buf_pos)
-	    {
-		wide_output_write(
+        switch (wc)
+        {
+        case '\n':
+        case '\f':
+            language_C();
+            if (this_thing->buf_pos)
+            {
+                wide_output_write(
                     this_thing->deeper, this_thing->buf, this_thing->buf_pos);
-	    }
-	    wide_output_putwc(this_thing->deeper, wc);
-	    language_human();
-	    this_thing->buf_pos = 0;
-	    this_thing->column = 0;
-	    break;
+            }
+            wide_output_putwc(this_thing->deeper, wc);
+            language_human();
+            this_thing->buf_pos = 0;
+            this_thing->column = 0;
+            break;
 
-	default:
-	    /*
-	     * If we have already become too wide, don't
-	     * make the deeper unnecessary function calls.
-	     */
-	    if (this_thing->column >= this_thing->width)
-		break;
+        default:
+            /*
+             * If we have already become too wide, don't
+             * make the deeper unnecessary function calls.
+             */
+            if (this_thing->column >= this_thing->width)
+                break;
 
-	    /*
-	     * Only remember this_thing character if all of it
-	     * fits within the specified width.
-	     */
-	    cwid = wcwidth(wc);
-	    if (this_thing->column + cwid > this_thing->width)
-		break;
+            /*
+             * Only remember this_thing character if all of it
+             * fits within the specified width.
+             */
+            cwid = wcwidth(wc);
+            if (this_thing->column + cwid > this_thing->width)
+                break;
 
-	    /*
-	     * Make room if necessary
-	     */
-	    if (this_thing->buf_pos >= this_thing->buf_max)
-	    {
-		size_t		nbytes;
+            /*
+             * Make room if necessary
+             */
+            if (this_thing->buf_pos >= this_thing->buf_max)
+            {
+                size_t          nbytes;
 
-		this_thing->buf_max = 16 + 2 * this_thing->buf_max;
-		nbytes = this_thing->buf_max * sizeof(this_thing->buf[0]);
-		this_thing->buf = mem_change_size(this_thing->buf, nbytes);
-	    }
-	    this_thing->buf[this_thing->buf_pos++] = wc;
-	    this_thing->column += cwid;
-	    break;
-	}
+                this_thing->buf_max = 16 + 2 * this_thing->buf_max;
+                nbytes = this_thing->buf_max * sizeof(this_thing->buf[0]);
+                this_thing->buf =
+                    (wchar_t *)mem_change_size(this_thing->buf, nbytes);
+            }
+            this_thing->buf[this_thing->buf_pos++] = wc;
+            this_thing->column += cwid;
+            break;
+        }
     }
     language_C();
 }
@@ -179,7 +180,7 @@ wide_output_truncate_eoln(wide_output_ty *fp)
 
     this_thing = (wide_output_truncate_ty *)fp;
     if (this_thing->column > 0)
-	wide_output_putwc(fp, (wchar_t)'\n');
+        wide_output_putwc(fp, (wchar_t)'\n');
 }
 
 

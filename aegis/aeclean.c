@@ -29,6 +29,8 @@
 #include <aeclean.h>
 #include <ael/change/files.h>
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <change.h>
 #include <change/file.h>
 #include <commit.h>
@@ -87,35 +89,17 @@ clean_list(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, clean_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-		duplicate_option_by_name(arglex_token_change, clean_usage);
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change(&project_name, &change_number, clean_usage);
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, clean_usage);
-	    if (project_name)
-		duplicate_option_by_name(arglex_token_project, clean_usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, clean_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -282,7 +266,7 @@ clean_main(void)
 {
     sub_context_ty  *scp;
     string_ty	    *dd;
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
     size_t	    j;
     string_ty	    *project_name;
     project_ty	    *pp;
@@ -297,9 +281,9 @@ clean_main(void)
     string_list_ty  wl_cp;
     string_list_ty  wl_rm;
     string_list_ty  wl_mt;
-    fstate_src	    p_src_data;
-    fstate_src	    c_src_data;
-    pconf	    pconf_data;
+    fstate_src_ty   *p_src_data;
+    fstate_src_ty   *c_src_data;
+    pconf_ty        *pconf_data;
     int		    minimum;
     clean_info_ty   info;
     int             touch;
@@ -321,33 +305,17 @@ clean_main(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, clean_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-		duplicate_option_by_name(arglex_token_change, clean_usage);
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change(&project_name, &change_number, clean_usage);
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, clean_usage);
-	    if (project_name)
-		duplicate_option_by_name(arglex_token_project, clean_usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, clean_usage);
+	    continue;
 
 	case arglex_token_nolog:
 	    if (log_style == log_style_none)
@@ -466,6 +434,7 @@ clean_main(void)
 	    continue;
 
 	case file_usage_source:
+	case file_usage_config:
 	case file_usage_test:
 	case file_usage_manual_test:
 	    /* keep these ones */
@@ -521,15 +490,21 @@ clean_main(void)
 	/*
 	 * the removed half of a move is not differenced
 	 */
-	if
-	(
-	    c_src_data->action == file_action_remove
-	&&
-	    c_src_data->move
-	&&
-	    change_file_find(cp, c_src_data->move)
-	)
-	    continue;
+	switch (c_src_data->action)
+	{
+	case file_action_create:
+	case file_action_modify:
+	    break;
+
+	case file_action_remove:
+	    if (c_src_data->move && change_file_find(cp, c_src_data->move))
+		continue;
+	    break;
+
+	case file_action_insulate:
+	case file_action_transparent:
+	    break;
+	}
 
 	/*
 	 * build various paths
@@ -562,8 +537,21 @@ clean_main(void)
 	 * the other timestamps if the fingerprint has
 	 * changed.
 	 */
-	if (c_src_data->action != file_action_remove)
+	switch (c_src_data->action)
+	{
+	case file_action_remove:
+	    break;
+
+	case file_action_create:
+	case file_action_modify:
+	case file_action_insulate:
+	case file_action_transparent:
+#ifndef DEBUG
+	default:
+#endif
 	    change_file_fingerprint_check(cp, c_src_data);
+	    break;
+	}
 
 	/*
 	 * See if we need to diff the file
@@ -655,6 +643,7 @@ clean_main(void)
 		break;
 
 	    case file_usage_source:
+	    case file_usage_config:
 	    case file_usage_build:
 		string_list_append(&wl_nf, c_src_data->file_name);
 		break;

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ project_search_path_get(project_ty *pp, string_list_ty *wlp, int resolve)
     for (ppp = pp; ppp; ppp = ppp->parent)
     {
 	change_ty       *cp;
-	cstate          cstate_data;
+	cstate_ty       *cstate_data;
 
 	cp = project_change_get(pp);
 	cstate_data = change_cstate_get(cp);

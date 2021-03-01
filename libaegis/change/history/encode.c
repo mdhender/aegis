@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -50,9 +50,9 @@ dir_and_base(string_ty *dir, string_ty *other)
 
 
 string_ty *
-change_history_encode(change_ty *cp, fstate_src src)
+change_history_encode(change_ty *cp, fstate_src_ty *src)
 {
-	pconf		pconf_data;
+	pconf_ty        *pconf_data;
 	int		min_qp_enc;
 	string_ty	*ofn1;
 	input_ty	*ip;

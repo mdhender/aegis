@@ -37,7 +37,7 @@
 static string_ty *
 change_brief_description_get(change_ty *cp)
 {
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
 
     cstate_data = change_cstate_get(cp);
     return cstate_data->brief_description;

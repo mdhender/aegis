@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ int
 change_file_is_config(change_ty *cp, string_ty *file_name)
 {
     static string_ty *the_config_file;
-    pconf	    pconf_data;
+    pconf_ty        *pconf_data;
     string_ty	    *s;
 
     /*
@@ -42,7 +42,7 @@ change_file_is_config(change_ty *cp, string_ty *file_name)
 
     /*
      * If the project does not have a config directory, then file is
-     * not a confiog file.
+     * not a config file.
      */
     pconf_data = change_pconf_get(cp, 0);
     if
@@ -56,7 +56,7 @@ change_file_is_config(change_ty *cp, string_ty *file_name)
 	return 0;
 
     /*
-     * If the file is within the config dirfectory it is a confif gile.
+     * If the file is within the config directory it is a config file.
      */
     s = os_below_dir(pconf_data->configuration_directory, file_name);
     if (!s)

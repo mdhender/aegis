@@ -116,7 +116,7 @@ list_project_files(string_ty *project_name,
      */
     for (j = 0;; ++j)
     {
-	fstate_src	src_data;
+	fstate_src_ty	*src_data;
 
 	src_data = project_file_nth(pp, j, view_path_simple);
 	if (!src_data)
@@ -143,7 +143,7 @@ list_project_files(string_ty *project_name,
 		!change_file_up_to_date(pp->parent, src_data)
 	    )
 	    {
-		fstate_src	psrc_data;
+		fstate_src_ty	*psrc_data;
 
 		psrc_data =
 		    project_file_find
@@ -208,13 +208,26 @@ list_project_files(string_ty *project_name,
 	}
 	if (src_data->move)
 	{
-	    output_end_of_line(file_name_col);
-	    output_fputs(file_name_col, "Moved ");
-	    if (src_data->action == file_action_create)
-		output_fputs(file_name_col, "from ");
-	    else
-		output_fputs(file_name_col, "to ");
-	    output_fputs(file_name_col, src_data->move->str_text);
+	    switch (src_data->action)
+	    {
+	    case file_action_create:
+		output_end_of_line(file_name_col);
+		output_fputs(file_name_col, "Moved from ");
+		output_fputs(file_name_col, src_data->move->str_text);
+		break;
+
+	    case file_action_remove:
+		output_end_of_line(file_name_col);
+		output_fputs(file_name_col, "Moved to ");
+		output_fputs(file_name_col, src_data->move->str_text);
+		break;
+
+	    case file_action_modify:
+	    case file_action_insulate:
+	    case file_action_transparent:
+		assert(0);
+		break;
+	    }
 	}
 	col_eoln(colp);
     }

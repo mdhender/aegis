@@ -27,12 +27,12 @@
 void
 change_branch_reuse_change_numbers_set(change_ty *cp, int n)
 {
-	cstate		cstate_data;
-	cstate_branch	bp;
+    cstate_ty       *cstate_data;
+    cstate_branch_ty *bp;
 
-	cstate_data = change_cstate_get(cp);
-	bp = cstate_data->branch;
-	assert(bp);
-	bp->reuse_change_numbers = !!n;
-	bp->mask |= cstate_branch_reuse_change_numbers_mask;
+    cstate_data = change_cstate_get(cp);
+    bp = cstate_data->branch;
+    assert(bp);
+    bp->reuse_change_numbers = !!n;
+    bp->mask |= cstate_branch_reuse_change_numbers_mask;
 }

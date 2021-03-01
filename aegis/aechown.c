@@ -27,6 +27,8 @@
 #include <aechown.h>
 #include <ael/change/by_state.h>
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <error.h>
 #include <change.h>
 #include <change/branch.h>
@@ -89,18 +91,9 @@ change_owner_list(void)
 	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, change_owner_usage);
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    change_owner_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, change_owner_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -122,13 +115,13 @@ change_owner_main(void)
     user_ty	    *up1;
     user_ty	    *up2;
     change_ty	    *cp;
-    cstate	    cstate_data;
-    cstate_history  history_data;
+    cstate_ty       *cstate_data;
+    cstate_history_ty *history_data;
     string_ty	    *new_developer;
     string_ty	    *devdir;
     string_ty	    *old_dd;
     size_t	    j;
-    pconf	    pconf_data;
+    pconf_ty        *pconf_data;
 
     trace(("change_owner_main()\n{\n"));
     arglex();
@@ -151,39 +144,22 @@ change_owner_main(void)
 	    break;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, change_owner_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_change,
-		    change_owner_usage
-		);
-	    }
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change
+	    (
+		&project_name,
+		&change_number,
+		change_owner_usage
+	    );
+	    continue;
 
 	case arglex_token_project:
-	    if (project_name)
-		duplicate_option(change_owner_usage);
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, change_owner_usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, change_owner_usage);
+	    continue;
 
 	case arglex_token_directory:
 	    if (devdir)
@@ -363,7 +339,7 @@ change_owner_main(void)
     for (j = 0;; ++j)
     {
 	string_ty	*s1;
-	fstate_src	src_data;
+	fstate_src_ty   *src_data;
 
 	/*
 	 * copy the file across

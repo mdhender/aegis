@@ -5,14 +5,16 @@
 #
 Summary: project change supervisor
 Name: aegis
-Version: 4.15
+Version: 4.16
 Release: 1
 Copyright: GPL
 Group: Development/Version Control
-Source: http://www.canb.auug.org.au/~millerp/aegis-4.15.tar.gz
+Source: http://www.canb.auug.org.au/~millerp/aegis-4.16.tar.gz
 URL: http://www.canb.auug.org.au/~millerp/aegis.html
 BuildRoot: /tmp/aegis-build-root
 Icon: aegis.xpm
+BuildPrereq: bison, curl-devel, diffutils, gawk, gettext >= 0.11.4
+BuildPrereq: groff >= 1.15, perl, tk, zlib-devel
 
 %description
 Aegis is a transaction-based software configuration management system.
@@ -448,6 +450,7 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/share/aegis/en/auug96.txt
 %attr(0644,root,bin) /usr/share/aegis/en/auug97.txt
 %attr(0644,root,bin) /usr/share/aegis/en/building.txt
+%attr(0644,root,bin) /usr/share/aegis/en/change_log.txt
 %attr(0644,root,bin) /usr/share/aegis/en/cvs-comparison.txt
 %attr(0644,root,bin) /usr/share/aegis/en/faq.txt
 %attr(0644,root,bin) /usr/share/aegis/en/howto.txt
@@ -472,6 +475,7 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/share/aegis/en/auug96.ps
 %attr(0644,root,bin) /usr/share/aegis/en/auug97.ps
 %attr(0644,root,bin) /usr/share/aegis/en/building.ps
+%attr(0644,root,bin) /usr/share/aegis/en/change_log.ps
 %attr(0644,root,bin) /usr/share/aegis/en/cvs-comparison.ps
 %attr(0644,root,bin) /usr/share/aegis/en/faq.ps
 %attr(0644,root,bin) /usr/share/aegis/en/howto.ps
@@ -496,6 +500,7 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/share/aegis/en/auug96.dvi
 %attr(0644,root,bin) /usr/share/aegis/en/auug97.dvi
 %attr(0644,root,bin) /usr/share/aegis/en/building.dvi
+%attr(0644,root,bin) /usr/share/aegis/en/change_log.dvi
 %attr(0644,root,bin) /usr/share/aegis/en/cvs-comparison.dvi
 %attr(0644,root,bin) /usr/share/aegis/en/faq.dvi
 %attr(0644,root,bin) /usr/share/aegis/en/howto.dvi

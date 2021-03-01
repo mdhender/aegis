@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2003 Peter Miller;
+ *	Copyright (C) 1991-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,8 @@
 #include <aeip.h>
 #include <ael/change/by_state.h>
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <commit.h>
 #include <change/branch.h>
 #include <change/file.h>
@@ -60,7 +62,7 @@ typedef struct time_map_ty time_map_ty;
 struct time_map_ty
 {
     time_t	    old;
-    time_t	    new;
+    time_t	    becomes;
 };
 
 typedef struct time_map_list_ty time_map_list_ty;
@@ -116,18 +118,12 @@ integrate_pass_list(void)
 	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, integrate_pass_usage);
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    integrate_pass_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    /* fall through... */
+
+	case arglex_token_string:
+	    arglex_parse_project(&project_name, integrate_pass_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -198,7 +194,7 @@ time_map_get(void *p, dir_walk_message_ty message, string_ty *path,
     tlp->len++;
     tp = &tlp->list[min];
     tp->old = st->st_mtime;
-    tp->new = st->st_mtime;
+    tp->becomes = st->st_mtime;
 }
 
 
@@ -257,14 +253,14 @@ time_map_set(void *p, dir_walk_message_ty message, string_ty *path,
     /*
      * set the file time
      */
-    os_mtime_set_errok(path, tlp->list[min].new);
+    os_mtime_set_errok(path, tlp->list[min].becomes);
 }
 
 
-static metric_list
-metric_list_copy(metric_list mlp)
+static metric_list_ty *
+metric_list_copy(metric_list_ty *mlp)
 {
-    metric_list	    result;
+    metric_list_ty  *result;
     size_t	    j;
 
     if (!mlp)
@@ -272,8 +268,8 @@ metric_list_copy(metric_list mlp)
     result = metric_list_type.alloc();
     for (j = 0; j < mlp->length; ++j)
     {
-	metric		mp;
-	metric		*mpp;
+	metric_ty	*mp;
+	metric_ty	**mpp;
 	type_ty		*bogus;
 
 	mp = mlp->list[j];
@@ -292,14 +288,14 @@ integrate_pass_main(void)
     string_ty	    *hp;
     string_ty	    *id;
     string_ty	    *cwd;
-    cstate	    cstate_data;
+    cstate_ty	    *cstate_data;
     string_ty	    *old_baseline;
     string_ty	    *new_baseline;
     string_ty	    *dev_dir;
     string_ty	    *int_name;
     string_ty	    *rev_name;
     string_ty	    *dev_name;
-    cstate_history  history_data;
+    cstate_history_ty *history_data;
     int		    j;
     int		    k;
     int		    ncmds;
@@ -314,11 +310,11 @@ integrate_pass_main(void)
     int		    nerr;
     int		    diff_whine;
     change_ty	    *pcp;
-    cstate	    p_cstate_data;
+    cstate_ty	    *p_cstate_data;
     time_map_list_ty tml;
     time_t	    time_final;
     string_list_ty  trashed;
-    pconf	    pconf_data;
+    pconf_ty        *pconf_data;
 
     trace(("integrate_pass_main()\n{\n"));
     arglex();
@@ -335,50 +331,25 @@ integrate_pass_main(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, integrate_pass_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_change,
-		    integrate_pass_usage
-		);
-	    }
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change
+	    (
+		&project_name,
+		&change_number,
+		integrate_pass_usage
+	    );
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, integrate_pass_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_string:
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    integrate_pass_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex_parse_project(&project_name, integrate_pass_usage);
+	    continue;
 
 	case arglex_token_nolog:
 	    if (log_style == log_style_none)
@@ -472,7 +443,7 @@ integrate_pass_main(void)
     tml.time_aeib = 0;
     for (j = 0; j < cstate_data->history->length; ++j)
     {
-	cstate_history	hhp;
+	cstate_history_ty *hhp;
 
 	hhp = cstate_data->history->list[j];
 	if (hhp->what == cstate_history_what_integrate_begin)
@@ -499,8 +470,8 @@ integrate_pass_main(void)
     diff_whine = 0;
     for (j = 0;; ++j)
     {
-	fstate_src	c_src_data;
-	fstate_src	p_src_data;
+	fstate_src_ty   *c_src_data;
+	fstate_src_ty   *p_src_data;
 	int		transfer_architecture_times;
 	int		transfer_file_times;
 	int		transfer_diff_file_times;
@@ -513,30 +484,43 @@ integrate_pass_main(void)
 	/*
 	 * check the the file has been differenced
 	 */
-	if
-	(
-	    pp->parent
-	&&
-	    c_src_data->usage != file_usage_build
-	&&
-	    c_src_data->action != file_action_transparent
-	&&
-	    !(
-		c_src_data->action == file_action_remove
-	    &&
-		c_src_data->move
-	    &&
-		change_file_find(cp, c_src_data->move)
-	    )
-	&&
-	    (!c_src_data->idiff_file_fp || !c_src_data->idiff_file_fp->youngest)
-	&&
-	    !diff_whine
-	)
+	if (!diff_whine)
 	{
-	    change_error(cp, 0, i18n("diff required"));
-	    ++nerr;
-	    ++diff_whine;
+	    switch (c_src_data->action)
+	    {
+	    case file_action_remove:
+		if (c_src_data->move && change_file_find(cp, c_src_data->move))
+		    break;
+		/* fall through... */
+
+	    case file_action_create:
+	    case file_action_modify:
+#ifndef DEBUG
+	    default:
+#endif
+		if
+		(
+		    pp->parent
+		&&
+		    c_src_data->usage != file_usage_build
+		&&
+		    (
+			!c_src_data->idiff_file_fp
+		    ||
+			!c_src_data->idiff_file_fp->youngest
+		    )
+		)
+		{
+		    change_error(cp, 0, i18n("diff required"));
+		    ++nerr;
+		    ++diff_whine;
+		}
+		break;
+
+	    case file_action_insulate:
+	    case file_action_transparent:
+		break;
+	    }
 	}
 
 	/*
@@ -553,6 +537,23 @@ integrate_pass_main(void)
 	p_src_data = change_file_find(pcp, c_src_data->file_name);
 	if (!p_src_data)
 	    this_is_a_bug();
+
+	/*
+	 * The file may be having its usage field changed, even though
+	 * it's marked "modify" (only the meta-data is changing).
+	 */
+	switch (c_src_data->action)
+	{
+	case file_action_modify:
+	case file_action_create:
+	    p_src_data->usage = c_src_data->usage;
+	    break;
+
+	case file_action_remove:
+	case file_action_insulate:
+	case file_action_transparent:
+	    break;
+	}
 
 	/*
 	 * remove the file metrics, if any
@@ -575,55 +576,89 @@ integrate_pass_main(void)
 	 * Only do this for primary source files, and only for
 	 * creates and modifies.
 	 */
-	if
-	(
-	    c_src_data->usage != file_usage_build
-	&&
-	    (
-		c_src_data->action == file_action_create
-	    ||
-		c_src_data->action == file_action_modify
-	    )
-	)
+	switch (c_src_data->usage)
 	{
-	    metric_list	    mlp;
+	case file_usage_build:
+	    break;
 
-	    mlp = change_file_metrics_get(cp, c_src_data->file_name);
-	    if (mlp)
+	case file_usage_source:
+	case file_usage_config:
+	case file_usage_test:
+	case file_usage_manual_test:
+#ifndef DEBUG
+	default:
+#endif
+	    switch (c_src_data->action)
 	    {
-		c_src_data->metrics = mlp;
-		p_src_data->metrics = metric_list_copy(mlp);
+		metric_list_ty  *mlp;
+
+	    case file_action_create:
+	    case file_action_modify:
+		mlp = change_file_metrics_get(cp, c_src_data->file_name);
+		if (mlp)
+		{
+		    c_src_data->metrics = mlp;
+		    p_src_data->metrics = metric_list_copy(mlp);
+		}
+		break;
+
+	    case file_action_insulate:
+		assert(0);
+		break;
+
+	    case file_action_remove:
+	    case file_action_transparent:
+		break;
 	    }
+	    break;
 	}
 
 	/*
 	 * don't do any of the transfers
 	 * if the file is built
 	 */
-	if
-	(
-	    c_src_data->usage == file_usage_build
-	||
-	    c_src_data->action == file_action_transparent
-	)
+	transfer_architecture_times = 1;
+	transfer_file_times = 1;
+	transfer_diff_file_times = 1;
+	switch (c_src_data->usage)
 	{
+	case file_usage_source:
+	case file_usage_config:
+	case file_usage_test:
+	case file_usage_manual_test:
+#ifndef DEBUG
+	default:
+#endif
+	    switch (c_src_data->action)
+	    {
+	    case file_action_create:
+	    case file_action_modify:
+		break;
+
+	    case file_action_insulate:
+		assert(0);
+		/* fall through... */
+
+	    case file_action_transparent:
+		transfer_architecture_times = 0;
+		transfer_file_times = 0;
+		transfer_diff_file_times = 0;
+		break;
+
+	    case file_action_remove:
+		transfer_architecture_times = 0;
+		transfer_file_times = 0;
+		if (c_src_data->move && change_file_find(cp, c_src_data->move))
+		    transfer_diff_file_times = 0;
+		break;
+	    }
+	    break;
+
+	case file_usage_build:
 	    transfer_architecture_times = 0;
 	    transfer_file_times = 0;
 	    transfer_diff_file_times = 0;
-	}
-	else if (c_src_data->action == file_action_remove)
-	{
-	    transfer_architecture_times = 0;
-	    transfer_file_times = 0;
-	    transfer_diff_file_times = 1;
-	    if (c_src_data->move && change_file_find(cp, c_src_data->move))
-		transfer_diff_file_times = 0;
-	}
-	else
-	{
-	    transfer_architecture_times = 1;
-	    transfer_file_times = 1;
-	    transfer_diff_file_times = 1;
+	    break;
 	}
 
 	/*
@@ -657,9 +692,9 @@ integrate_pass_main(void)
 		fstate_src_architecture_times_list_type.alloc();
 	    for (k = 0; k < c_src_data->architecture_times->length; ++k)
 	    {
-		fstate_src_architecture_times catp;
-		fstate_src_architecture_times patp;
-		fstate_src_architecture_times *addr;
+		fstate_src_architecture_times_ty *catp;
+		fstate_src_architecture_times_ty *patp;
+		fstate_src_architecture_times_ty **addr;
 		type_ty		*type_p;
 
 		catp = c_src_data->architecture_times->list[k];
@@ -669,7 +704,7 @@ integrate_pass_main(void)
 			p_src_data->architecture_times,
 			&type_p
 		    );
-		assert(type_p==&fstate_src_architecture_times_type);
+		assert(type_p == &fstate_src_architecture_times_type);
 		patp = fstate_src_architecture_times_type.alloc();
 		*addr = patp;
 		patp->variant = str_copy(catp->variant);
@@ -756,37 +791,45 @@ integrate_pass_main(void)
 	 * changed things to generate a file which was previously
 	 * a source file, but you forgot to aerm the file.
 	 */
-	if
-	(
-	    c_src_data->file_fp
-	&&
-	    !(
-		c_src_data->action == file_action_remove
-	    ||
-		c_src_data->action == file_action_transparent
-	    )
-	)
+	if (c_src_data->file_fp)
 	{
 	    string_ty	    *absfn;
 	    int		    ok;
 
-	    absfn = change_file_path(cp, c_src_data->file_name);
-	    if (!absfn)
-		absfn = str_format("%S/%S", id, c_src_data->file_name);
-	    project_become(pp);
-	    ok = change_fingerprint_same(c_src_data->file_fp, absfn, 1);
-	    project_become_undo();
-	    if (!ok)
+	    switch(c_src_data->action)
 	    {
-		sub_context_ty	*scp;
+	    case file_action_remove:
+	    case file_action_transparent:
+		break;
 
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", c_src_data->file_name);
-		change_error(cp, scp, i18n("build trashed $filename"));
-		sub_context_delete(scp);
-		++nerr;
+	    case file_action_insulate:
+		assert(0);
+		break;
+
+	    case file_action_create:
+	    case file_action_modify:
+#ifndef DEBUG
+	    default:
+#endif
+		absfn = change_file_path(cp, c_src_data->file_name);
+		if (!absfn)
+		    absfn = str_format("%S/%S", id, c_src_data->file_name);
+		project_become(pp);
+		ok = change_fingerprint_same(c_src_data->file_fp, absfn, 1);
+		project_become_undo();
+		if (!ok)
+		{
+		    sub_context_ty	*scp;
+
+		    scp = sub_context_new();
+		    sub_var_set_string(scp, "File_Name", c_src_data->file_name);
+		    change_error(cp, scp, i18n("build trashed $filename"));
+		    sub_context_delete(scp);
+		    ++nerr;
+		}
+		str_free(absfn);
+		break;
 	    }
-	    str_free(absfn);
 	}
 
 	/*
@@ -836,8 +879,15 @@ integrate_pass_main(void)
 	/*
 	 * update the test correlation
 	 */
-	if (c_src_data->usage == file_usage_source)
+	switch (c_src_data->usage)
 	{
+	case file_usage_config:
+	case file_usage_build:
+	case file_usage_test:
+	case file_usage_manual_test:
+	    break;
+
+	case file_usage_source:
 	    if (change_was_a_branch(cp))
 	    {
 		size_t		n;
@@ -877,50 +927,55 @@ integrate_pass_main(void)
 	    {
 		for (k = 0;; ++k)
 		{
-		    fstate_src	    src2;
+		    fstate_src_ty   *src2;
 		    size_t	    m;
 
 		    src2 = change_file_nth(cp, k);
 		    if (!src2)
 			break;
-		    if
-		    (
-			src2->usage != file_usage_test
-		    &&
-			src2->usage != file_usage_manual_test
-		    )
-			continue;
-
-		    if (!p_src_data->test)
-			p_src_data->test = fstate_src_test_list_type.alloc();
-		    for (m = 0; m < p_src_data->test->length; ++m)
+		    switch (src2->usage)
 		    {
-			if
-			(
-			    str_equal
+		    case file_usage_test:
+		    case file_usage_manual_test:
+			if (!p_src_data->test)
+			    p_src_data->test =
+				fstate_src_test_list_type.alloc();
+			for (m = 0; m < p_src_data->test->length; ++m)
+			{
+			    if
 			    (
-				p_src_data->test->list[m],
-				src2->file_name
+				str_equal
+				(
+				    p_src_data->test->list[m],
+				    src2->file_name
+				)
 			    )
-			)
-			    break;
-		    }
-		    if (m >= p_src_data->test->length)
-		    {
-			string_ty	**addr_p;
-			type_ty		*type_p;
+				break;
+			}
+			if (m >= p_src_data->test->length)
+			{
+			    string_ty       **addr_p;
+			    type_ty         *type_p;
 
-			addr_p =
-			    fstate_src_test_list_type.list_parse
-			    (
-				p_src_data->test,
-				&type_p
-			    );
-			assert(type_p==&string_type);
-			*addr_p = str_copy(src2->file_name);
+			    addr_p =
+				fstate_src_test_list_type.list_parse
+				(
+				    p_src_data->test,
+				    &type_p
+				);
+			    assert(type_p==&string_type);
+			    *addr_p = str_copy(src2->file_name);
+			}
+			break;
+
+		    case file_usage_source:
+		    case file_usage_config:
+		    case file_usage_build:
+			break;
 		    }
 		}
 	    }
+	    break;
 	}
     }
 
@@ -1035,9 +1090,9 @@ integrate_pass_main(void)
 	this_is_a_bug();
     for (j = 0; j < cstate_data->architecture_times->length; ++j)
     {
-	cstate_architecture_times catp;
-	cstate_architecture_times patp;
-	cstate_architecture_times *addr;
+	cstate_architecture_times_ty *catp;
+	cstate_architecture_times_ty *patp;
+	cstate_architecture_times_ty **addr;
 	type_ty		*type_p;
 
 	catp = cstate_data->architecture_times->list[j];
@@ -1100,29 +1155,38 @@ integrate_pass_main(void)
      */
     for (j = 0;; ++j)
     {
-	fstate_src	c_src_data;
-	fstate_src	p_src_data;
+	fstate_src_ty   *c_src_data;
+	fstate_src_ty   *p_src_data;
 
 	p_src_data = project_file_nth(pp, j, view_path_extreme);
 	if (!p_src_data)
 	    break;
-	if (p_src_data->usage != file_usage_build)
-	    continue;
-	c_src_data = change_file_find(cp, p_src_data->file_name);
-	if (c_src_data)
-	    continue;
-	c_src_data = change_file_new(cp, p_src_data->file_name);
-	assert(p_src_data->edit);
-	assert(p_src_data->edit->revision);
-	c_src_data->edit_origin = history_version_copy(p_src_data->edit);
-	c_src_data->action = file_action_modify;
-	c_src_data->usage = p_src_data->usage;
+	switch (p_src_data->usage)
+	{
+	case file_usage_build:
+	    c_src_data = change_file_find(cp, p_src_data->file_name);
+	    if (c_src_data)
+		continue;
+	    c_src_data = change_file_new(cp, p_src_data->file_name);
+	    assert(p_src_data->edit);
+	    assert(p_src_data->edit->revision);
+	    c_src_data->edit_origin = history_version_copy(p_src_data->edit);
+	    c_src_data->action = file_action_modify;
+	    c_src_data->usage = p_src_data->usage;
 
-	/*
-	 * Make sure the branch has them, too, otherwise the code will
-	 * barf a little further on.
-	 */
-	project_file_shallow(pp, c_src_data->file_name, change_number);
+	    /*
+	     * Make sure the branch has them, too, otherwise the code will
+	     * barf a little further on.
+	     */
+	    project_file_shallow(pp, c_src_data->file_name, change_number);
+	    break;
+
+	case file_usage_source:
+	case file_usage_config:
+	case file_usage_test:
+	case file_usage_manual_test:
+	    break;
+	}
     }
 
     /*
@@ -1137,8 +1201,8 @@ integrate_pass_main(void)
     string_list_constructor(&trashed);
     for (j = 0;; ++j)
     {
-	fstate_src	c_src_data;
-	fstate_src	p_src_data;
+	fstate_src_ty   *c_src_data;
+	fstate_src_ty   *p_src_data;
 	string_ty	*absfn;
 
 	c_src_data = change_file_nth(cp, j);
@@ -1171,13 +1235,22 @@ integrate_pass_main(void)
 	/*
 	 * Do absolutely nothing for transparent branch files.
 	 */
-	if
-	(
-	    c_src_data->action == file_action_transparent
-	&&
-	    change_was_a_branch(cp)
-	)
-	    continue;
+	switch (c_src_data->action)
+	{
+	case file_action_transparent:
+	    if (change_was_a_branch(cp))
+		continue;
+	    break;
+
+	case file_action_create:
+	case file_action_modify:
+	case file_action_remove:
+	    break;
+
+	case file_action_insulate:
+	    assert(0);
+	    break;
+	}
 
 	p_src_data = change_file_find(pcp, c_src_data->file_name);
 	if (!p_src_data)
@@ -1445,7 +1518,7 @@ integrate_pass_main(void)
 	case file_action_insulate:
 	    if (pp->parent)
 	    {
-		fstate_src	    pp_src_data;
+		fstate_src_ty   *pp_src_data;
 
 		pp_src_data =
 		    project_file_find
@@ -1518,7 +1591,7 @@ integrate_pass_main(void)
 	 */
 	for (j = 0;; ++j)
 	{
-	    fstate_src	    src_data;
+	    fstate_src_ty   *src_data;
 
 	    src_data = project_file_nth(cp->pp, j, view_path_extreme);
 	    if (!src_data)
@@ -1647,7 +1720,7 @@ integrate_pass_main(void)
 	{
 	    assert(tml.list[j].old>=tml.time_aeib);
 	    assert(j==0||tml.list[j].old>tml.list[j-1].old);
-	    tml.list[j].new = tml.time_aeip + j;
+	    tml.list[j].becomes = tml.time_aeip + j;
 	}
 #if MTIME_BLURB
 	if (tml.len > 0)
@@ -1655,14 +1728,14 @@ integrate_pass_main(void)
 	    char		buf1[30];
 	    char		buf2[30];
 
-	    strcpy(buf1, ctime(&tml.list[0].new));
-	    strcpy(buf2, ctime(&tml.list[tml.len - 1].new));
+	    strcpy(buf1, ctime(&tml.list[0].becomes));
+	    strcpy(buf2, ctime(&tml.list[tml.len - 1].becomes));
 	    error_raw
 	    (
 		"adjusted times range from %.24s to %.24s = %d seconds",
 		buf1,
 		buf2,
-		(int)(1 + tml.list[tml.len - 1].new - tml.list[0].new)
+		(int)(1 + tml.list[tml.len - 1].becomes - tml.list[0].becomes)
 	    );
 	}
 #endif
@@ -1689,12 +1762,12 @@ integrate_pass_main(void)
 
     case pconf_build_time_adjust_adjust_and_sleep:
 	time_final = now();
-	if (tml.len > 0 && time_final < tml.list[tml.len - 1].new)
+	if (tml.len > 0 && time_final < tml.list[tml.len - 1].becomes)
 	{
 	    long            nsec;
 	    sub_context_ty  *scp;
 
-	    nsec = tml.list[tml.len - 1].new - time_final;
+	    nsec = tml.list[tml.len - 1].becomes - time_final;
 	    scp = sub_context_new();
 	    sub_var_set_long(scp, "Number", nsec);
 	    error_intl(scp, i18n("throttling $number seconds"));
@@ -1705,7 +1778,7 @@ integrate_pass_main(void)
 	    {
 		now_clear();
 		time_final = now();
-		if (time_final < tml.list[tml.len - 1].new)
+		if (time_final < tml.list[tml.len - 1].becomes)
 		    goto impatient;
 	    }
 	}
@@ -1716,14 +1789,14 @@ integrate_pass_main(void)
 	 * warn the user if some files have been timed into the future
 	 */
 	time_final = now();
-	if (tml.len > 0 && time_final < tml.list[tml.len - 1].new)
+	if (tml.len > 0 && time_final < tml.list[tml.len - 1].becomes)
 	{
 	    sub_context_ty	*scp;
 	    long		nsec;
 
 	    impatient:
 	    scp = sub_context_new();
-	    nsec = tml.list[tml.len - 1].new - time_final;
+	    nsec = tml.list[tml.len - 1].becomes - time_final;
 	    sub_var_set_long(scp, "Number", nsec);
 	    sub_var_optional(scp, "Number");
 	    error_intl(scp, i18n("warning: file times in future"));

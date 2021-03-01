@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1997, 1999, 2002, 2003 Peter Miller;
+ *	Copyright (C) 1991-1995, 1997, 1999, 2002-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -111,18 +111,13 @@ lex_open(const char *s)
 
     f = (file_ty *)mem_alloc_clear(sizeof(file_ty));
     if (!file)
-    {
 	lex_initialize();
-	f->file_name = mem_copy_string(s);
-	f->fp = fopen(s, "r");
-	if (!f->fp)
-    	    nfatal("%s", s);
-    }
-    else
-    {
-	size_t		j;
 
-	f->fp = 0;
+    f->fp = 0;
+    if (s[0] != '/')
+    {
+	size_t          j;
+
 	for (j = 0; j < include_path.nstrings; ++j)
 	{
 	    char	buffer[2000];
@@ -137,16 +132,16 @@ lex_open(const char *s)
 	    if (errno != ENOENT)
 		nfatal("%s", buffer);
 	}
-	if (!f->fp)
-	{
-	    f->fp = fopen(s, "r");
-	    if (!f->fp)
-	       	nfatal("%s", s);
-	    f->file_name = mem_copy_string(s);
-	}
-	f->next = file;
-	string_list_append_unique(&ifiles, str_from_c(s));
     }
+    if (!f->fp)
+    {
+	f->fp = fopen(s, "r");
+	if (!f->fp)
+	    nfatal("%s", s);
+	f->file_name = mem_copy_string(s);
+    }
+    f->next = file;
+    string_list_append_unique(&ifiles, str_from_c(s));
     f->line_number = 1;
     file = f;
 }

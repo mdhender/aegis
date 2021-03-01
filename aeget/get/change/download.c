@@ -33,7 +33,7 @@
 static int
 not_awaiting_development(change_ty *cp)
 {
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
 
     cstate_data = change_cstate_get(cp);
     return (cstate_data->state != cstate_state_awaiting_development);

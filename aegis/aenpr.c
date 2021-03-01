@@ -28,6 +28,7 @@
 #include <ael/project/projects.h>
 #include <aenpr.h>
 #include <arglex2.h>
+#include <arglex/project.h>
 #include <change.h>
 #include <change/branch.h>
 #include <commit.h>
@@ -105,7 +106,7 @@ new_project_main(void)
     string_ty	    *version_string;
     long	    j;
     int		    keep;
-    pattr	    pattr_data;
+    pattr_ty	    *pattr_data;
     edit_ty	    edit;
 
     trace(("new_project_main()\n{\n"));
@@ -126,21 +127,12 @@ new_project_main(void)
 	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, new_project_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_string:
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    new_project_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex_parse_project(&project_name, new_project_usage);
+	    continue;
 
 	case arglex_token_directory:
 	    if (home)

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,8 @@
 int
 change_branch_administrator_query(change_ty *cp, string_ty *name)
 {
-    cstate	    cstate_data;
-    cstate_branch_administrator_list lp;
+    cstate_ty       *cstate_data;
+    cstate_branch_administrator_list_ty *lp;
     size_t	    j;
 
     trace(("change_branch_administrator_query(cp = %8.8lX, name = \"%s\")\n{\n",

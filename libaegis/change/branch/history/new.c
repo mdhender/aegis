@@ -28,28 +28,28 @@
 void
 change_branch_history_new(change_ty *cp, long delta_number, long change_number)
 {
-	cstate		cstate_data;
-	cstate_branch_history hp;
-	cstate_branch_history *hpp;
-	type_ty		*type_p;
+    cstate_ty       *cstate_data;
+    cstate_branch_history_ty *hp;
+    cstate_branch_history_ty **hpp;
+    type_ty         *type_p;
 
-	trace(("change_branch_history_new(cp = %8.8lX, delta_number = %ld, \
-change_number = %ld)\n{\n"/*}*/, (long)cp, delta_number, change_number));
-	cstate_data = change_cstate_get(cp);
-	assert(cstate_data->branch);
-	if (!cstate_data->branch->history)
-		cstate_data->branch->history =
-			cstate_branch_history_list_type.alloc();
-	hpp =
-		cstate_branch_history_list_type.list_parse
-		(
-			cstate_data->branch->history,
-			&type_p
-		);
-	assert(type_p == &cstate_branch_history_type);
-	hp = cstate_branch_history_type.alloc();
-	*hpp = hp;
-	hp->delta_number = delta_number;
-	hp->change_number = change_number;
-	trace((/*{*/"}\n"));
+    trace(("change_branch_history_new(cp = %8.8lX, delta_number = %ld, "
+	"change_number = %ld)\n{\n", (long)cp, delta_number, change_number));
+    cstate_data = change_cstate_get(cp);
+    assert(cstate_data->branch);
+    if (!cstate_data->branch->history)
+	cstate_data->branch->history =
+    	    cstate_branch_history_list_type.alloc();
+    hpp =
+	cstate_branch_history_list_type.list_parse
+	(
+    	    cstate_data->branch->history,
+    	    &type_p
+	);
+    assert(type_p == &cstate_branch_history_type);
+    hp = cstate_branch_history_type.alloc();
+    *hpp = hp;
+    hp->delta_number = delta_number;
+    hp->change_number = change_number;
+    trace(("}\n"));
 }

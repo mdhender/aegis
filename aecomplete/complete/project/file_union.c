@@ -111,7 +111,7 @@ perform(complete_ty *cp, shell_ty *sh)
     prefix = str_catenate(base, shell_prefix_get(sh));
     for (j = 0; ; ++j)
     {
-	fstate_src      src;
+	fstate_src_ty   *src;
 	string_ty       *relfn;
 
 	src = project_file_nth(this_thing->cp->pp, j, view_path_simple);
@@ -155,7 +155,7 @@ perform(complete_ty *cp, shell_ty *sh)
      */
     for (j = 0; ; ++j)
     {
-	fstate_src      src;
+	fstate_src_ty   *src;
 	string_ty       *relfn;
 
 	src = change_file_nth(this_thing->cp, j);
@@ -165,8 +165,19 @@ perform(complete_ty *cp, shell_ty *sh)
 	/*
 	 * Ignore files that aren't there.
 	 */
-	if (src->action == file_action_remove)
+	switch (src->action)
+	{
+	case file_action_create:
+	case file_action_modify:
+	    break;
+
+	case file_action_remove:
 	    continue;
+
+	case file_action_insulate:
+	case file_action_transparent:
+	    break;
+	}
 
 	/*
 	 * Ignore files that don't match the prefix.

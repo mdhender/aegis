@@ -72,7 +72,7 @@ xml_change_fstate(struct string_ty *project_name, long change_number,
     output_fputs(op, "<fstate>\n<src>\n");
     for (j = 0; ; ++j)
     {
-	fstate_src      src;
+	fstate_src_ty   *src;
 
 	src = change_file_nth(cp, j);
 	if (!src)

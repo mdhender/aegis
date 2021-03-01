@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001-2003 Peter Miller;
+ *	Copyright (C) 1999, 2001-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -121,7 +121,10 @@ project_list_get(string_list_ty *wlp)
 	/*
 	 * sort the list of names
 	 * (C locale)
+	 *
+	 * Project names look a lot like versions strings (indeed,
+	 * the tail ends *are* version strings) so sort them as such.
 	 */
-	string_list_sort(wlp);
+	string_list_sort_version(wlp);
 	trace(("}\n"));
 }

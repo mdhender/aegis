@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,6 @@
 
 struct pattr; /* existence */
 
-void project_pattr_edit(struct pattr **, edit_ty);
+void project_pattr_edit(struct pattr_ty **, edit_ty);
 
 #endif /* LIBAEGIS_PROJECT_PATTR_EDIT_H */

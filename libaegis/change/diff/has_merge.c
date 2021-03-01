@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,8 +26,8 @@
 int
 change_has_merge_command(change_ty *cp)
 {
-	pconf		pconf_data;
+    pconf_ty        *pconf_data;
 
-	pconf_data = change_pconf_get(cp, 1);
-	return !!pconf_data->merge_command;
+    pconf_data = change_pconf_get(cp, 1);
+    return !!pconf_data->merge_command;
 }

@@ -22,6 +22,7 @@
 
 #include <ael/project/files.h>
 #include <arglex2.h>
+#include <arglex/project.h>
 #include <help.h>
 #include <list.h>
 #include <str.h>
@@ -44,10 +45,12 @@ list()
 	    continue;
 
 	case arglex_token_project:
-	    if (project_name)
-		duplicate_option(usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    /* fall through... */
+
+	case arglex_token_string:
+	    arglex_parse_project(&project_name, usage);
+	    continue;
 	}
 	arglex();
     }

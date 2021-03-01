@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,9 +28,9 @@
 
 
 int
-change_file_up_to_date(project_ty *pp, fstate_src c_src_data)
+change_file_up_to_date(project_ty *pp, fstate_src_ty *c_src_data)
 {
-    fstate_src      p_src_data;
+    fstate_src_ty   *p_src_data;
     int             result;
 
     /*

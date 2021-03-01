@@ -1,21 +1,21 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 1999-2003 Peter Miller;
- *	All rights reserved.
+ *      aegis - project change supervisor
+ *      Copyright (C) 1999-2003 Peter Miller;
+ *      All rights reserved.
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 2 of the License, or
+ *      (at your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program; if not, write to the Free Software
+ *      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to manipulate wraps
  *
@@ -42,20 +42,20 @@ struct wide_output_wrap_ty
 {
     wide_output_ty  inherited;
     wide_output_ty  *deeper;
-    int		    delete_on_close;
-    int		    width;
+    int             delete_on_close;
+    int             width;
 
-    wchar_t	    *buf;
-    size_t	    buf_pos;
-    size_t	    buf_max;
+    wchar_t         *buf;
+    size_t          buf_pos;
+    size_t          buf_max;
 };
 
 
 static void
 wrap(wide_output_wrap_ty *this_thing)
 {
-    wchar_t	    *s;
-    wchar_t	    *s_end;
+    wchar_t         *s;
+    wchar_t         *s_end;
 
     trace(("wide_output_wrap::wrap(this_thing = %08lX)\n{\n",
            (long)this_thing));
@@ -63,97 +63,97 @@ wrap(wide_output_wrap_ty *this_thing)
     s_end = s + this_thing->buf_pos;
     while (s < s_end)
     {
-	wchar_t		*s_start;
-	int		s_wid;
+        wchar_t         *s_start;
+        int             s_wid;
 
-	/*
-	 * remember where the line starts within the buffer
-	 */
-	s_start = s;
-	s_wid = 0;
+        /*
+         * remember where the line starts within the buffer
+         */
+        s_start = s;
+        s_wid = 0;
 
-	/*
-	 * Collect characters until we run out of width.
-	 */
-	language_human();
-	if (s < s_end && *s != '\n')
-	{
-	    /*
-	     * Always use the first character.	This avoids
-	     * an infinite loop where you have a 1-position
-	     * wide column, and a 2-position wide character.
-	     * (Or other variations on the same theme.)
-	     */
-	    s_wid += wcwidth(*s++);
-	}
-	while (s < s_end && *s != '\n')
-	{
-	    int		    c_wid;
+        /*
+         * Collect characters until we run out of width.
+         */
+        language_human();
+        if (s < s_end && *s != '\n')
+        {
+            /*
+             * Always use the first character.  This avoids
+             * an infinite loop where you have a 1-position
+             * wide column, and a 2-position wide character.
+             * (Or other variations on the same theme.)
+             */
+            s_wid += wcwidth(*s++);
+        }
+        while (s < s_end && *s != '\n')
+        {
+            int             c_wid;
 
-	    c_wid = s_wid + wcwidth(*s);
-	    if (c_wid > this_thing->width)
-		break;
-	    ++s;
-	    s_wid = c_wid;
-	}
-	trace(("s_wid=%d width=%d\n", s_wid, this_thing->width));
+            c_wid = s_wid + wcwidth(*s);
+            if (c_wid > this_thing->width)
+                break;
+            ++s;
+            s_wid = c_wid;
+        }
+        trace(("s_wid=%d width=%d\n", s_wid, this_thing->width));
 
-	/*
-	 * If we reached the end of the line,
-	 * write it out and stop.
-	 */
-	if (s >= s_end)
-	{
-	    trace(("mark s_start=%08lX s=%08lX\n", (long)s_start, (long)s));
-	    language_C();
-	    wide_output_write(this_thing->deeper, s_start, s - s_start);
-	    break;
-	}
+        /*
+         * If we reached the end of the line,
+         * write it out and stop.
+         */
+        if (s >= s_end)
+        {
+            trace(("mark s_start=%08lX s=%08lX\n", (long)s_start, (long)s));
+            language_C();
+            wide_output_write(this_thing->deeper, s_start, s - s_start);
+            break;
+        }
 
-	/*
-	 * The line needs to be wrapped.
-	 * See if there is a better place to wrap it.
-	 */
-	trace(("mark\n"));
-	if (s < s_end && !iswspace(*s))
-	{
-	    wchar_t	    *s2;
+        /*
+         * The line needs to be wrapped.
+         * See if there is a better place to wrap it.
+         */
+        trace(("mark\n"));
+        if (s < s_end && !iswspace(*s))
+        {
+            wchar_t         *s2;
 
-	    s2 = s;
-	    while
-	    (
-		s2 > s_start
-	    &&
-		!iswspace(s2[-1])
-	    &&
-		s2[-1] != (wchar_t)'-'
-	    &&
-		s2[-1] != (wchar_t)'_'
-	    &&
-		s2[-1] != (wchar_t)'/'
-	    )
-		--s2;
-	    if (s2 > s_start)
-	    {
-		while (s2 > s_start && iswspace(s2[-1]))
-		    --s2;
-		s = s2;
-	    }
-	}
+            s2 = s;
+            while
+            (
+                s2 > s_start
+            &&
+                !iswspace(s2[-1])
+            &&
+                s2[-1] != (wchar_t)'-'
+            &&
+                s2[-1] != (wchar_t)'_'
+            &&
+                s2[-1] != (wchar_t)'/'
+            )
+                --s2;
+            if (s2 > s_start)
+            {
+                while (s2 > s_start && iswspace(s2[-1]))
+                    --s2;
+                s = s2;
+            }
+        }
 
-	/*
-	 * Write out the line so far, plus the newline,
-	 * and then skip any trailing spaces (including one newlines).
-	 */
-	trace(("s_start=%08lX s=%08lX\n", (long)s_start, (long)s));
-	language_C();
-	wide_output_write(this_thing->deeper, s_start, s - s_start);
-	while (s < s_end && iswspace(*s))
-	    ++s;
-	trace(("s=%08lX\n", (long)s));
-	if (s >= s_end)
-	    break;
-	wide_output_putwc(this_thing->deeper, (wchar_t)'\n');
+        /*
+         * Write out the line so far, plus the newline,
+         * and then skip any trailing spaces (including one newlines).
+         */
+        trace(("s_start=%08lX s=%08lX\n", (long)s_start, (long)s));
+        language_C();
+        wide_output_write(this_thing->deeper, s_start, s - s_start);
+        while (s < s_end && iswspace(*s))
+            ++s;
+        trace(("s=%08lX\n", (long)s));
+        if (s >= s_end)
+            break;
+        wide_output_putwc(this_thing->deeper, (wchar_t)'\n');
     }
 
     /*
@@ -177,11 +177,11 @@ wide_output_wrap_destructor(wide_output_ty *fp)
     trace(("wide_output_wrap::destructor(fp = %08lX)\n{\n", (long)fp));
     this_thing = (wide_output_wrap_ty *)fp;
     if (this_thing->buf_pos)
-	wrap(this_thing);
+        wrap(this_thing);
     if (this_thing->buf)
-	mem_free(this_thing->buf);
+        mem_free(this_thing->buf);
     if (this_thing->delete_on_close)
-	wide_output_delete(this_thing->deeper);
+        wide_output_delete(this_thing->deeper);
     this_thing->deeper = 0;
     trace(("}\n"));
 }
@@ -203,28 +203,29 @@ wide_output_wrap_write(wide_output_ty *fp, const wchar_t *data, size_t len)
     wide_output_wrap_ty *this_thing;
 
     trace(("wide_output_wrap_write(fp = %08lX, data = %08lX, len = %ld)\n{\n",
-	(long)fp, (long)data, (long)len));
+        (long)fp, (long)data, (long)len));
     this_thing = (wide_output_wrap_ty *)fp;
     while (len > 0)
     {
-	wchar_t		wc;
+        wchar_t         wc;
 
-	wc = *data++;
-	--len;
-	if (wc == (wchar_t)'\n')
-	    wrap(this_thing);
-	else
-	{
-	    if (this_thing->buf_pos >= this_thing->buf_max)
-	    {
-		size_t		nbytes;
+        wc = *data++;
+        --len;
+        if (wc == (wchar_t)'\n')
+            wrap(this_thing);
+        else
+        {
+            if (this_thing->buf_pos >= this_thing->buf_max)
+            {
+                size_t          nbytes;
 
-		this_thing->buf_max = 16 + 2 * this_thing->buf_max;
-		nbytes = this_thing->buf_max * sizeof(this_thing->buf[0]);
-		this_thing->buf = mem_change_size(this_thing->buf, nbytes);
-	    }
-	    this_thing->buf[this_thing->buf_pos++] = wc;
-	}
+                this_thing->buf_max = 16 + 2 * this_thing->buf_max;
+                nbytes = this_thing->buf_max * sizeof(this_thing->buf[0]);
+                this_thing->buf =
+                    (wchar_t *)mem_change_size(this_thing->buf, nbytes);
+            }
+            this_thing->buf[this_thing->buf_pos++] = wc;
+        }
     }
     trace(("}\n"));
 }
@@ -268,7 +269,7 @@ wide_output_wrap_eoln(wide_output_ty *fp)
     trace(("wide_output_wrap::eoln(fp = %08lX)\n{\n", (long)fp));
     this_thing = (wide_output_wrap_ty *)fp;
     if (this_thing->buf_pos > 0)
-	wide_output_putwc(fp, (wchar_t)'\n');
+        wide_output_putwc(fp, (wchar_t)'\n');
     trace(("}\n"));
 }
 
@@ -294,7 +295,7 @@ wide_output_wrap_open(wide_output_ty *deeper, int delete_on_close, int width)
     wide_output_wrap_ty *this_thing;
 
     trace(("wide_output_wrap::new(deeper = %08lX, doc = %d, width = %d)\n{\n",
-	(long)deeper, delete_on_close, width));
+        (long)deeper, delete_on_close, width));
     result = wide_output_new(&vtbl);
     this_thing = (wide_output_wrap_ty *)result;
     this_thing->deeper = deeper;

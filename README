@@ -3,7 +3,7 @@ Read Me(Aegis)							Read Me(Aegis)
 NAME
 	aegis -	project	change supervisor
 	Copyright (C) 1991, 1992, 1993,	1994, 1995, 1996, 1997,	1998, 1999,
-	2000, 2001, 2002, 2003 Peter Miller; All rights	reserved.
+	2000, 2001, 2002, 2003,	2004 Peter Miller; All rights reserved.
 
 	Aegis is distributed under the terms of	the GNU	General	Public
 	License.  See the LICENSE section, below, for more details.
@@ -97,11 +97,11 @@ ARCHIVE	SITE
 
 		URL:	http://www.canb.auug.org.au/~millerp/
 		File:	aegis.html	    # the Aegis	page
-		File:	aegis.4.15.README   # Description, from	tar file
-		File:	aegis.4.15.lsm	    # Description, in LSM format
-		File:	aegis.4.15.ae	    # the complete source, aedist format
-		File:	aegis.4.15.spec	    # RedHat package specification
-		File:	aegis.4.15.tar.gz   # the complete source
+		File:	aegis.4.16.README   # Description, from	tar file
+		File:	aegis.4.16.lsm	    # Description, in LSM format
+		File:	aegis.4.16.ae	    # the complete source, aedist format
+		File:	aegis.4.16.spec	    # RedHat package specification
+		File:	aegis.4.16.tar.gz   # the complete source
 
 	This directory also contains a few other pieces	of software written by
 	me.  Some are referred to in the Aegis documentation.  Please have a
@@ -114,11 +114,11 @@ ARCHIVE	SITE
 	will be	able to	find Aegis on any of its mirrors.
 
 		URL:	ftp://metalab.unc.edu/pub/Linux/devel/vc/
-		File:	aegis.4.15.README   # Description, from	tar file
-		File:	aegis.4.15.lsm	    # Description, in LSM format
-		File:	aegis.4.15.spec	    # RedHat package specification
-		File:	aegis.4.15.ae	    # the complete source, aedist format
-		File:	aegis.4.15.tar.gz   # the complete source
+		File:	aegis.4.16.README   # Description, from	tar file
+		File:	aegis.4.16.lsm	    # Description, in LSM format
+		File:	aegis.4.16.spec	    # RedHat package specification
+		File:	aegis.4.16.ae	    # the complete source, aedist format
+		File:	aegis.4.16.tar.gz   # the complete source
 	This site is extensively mirrored around the world, so look for	a copy
 	near you (you will get much better response).
 
@@ -250,6 +250,72 @@ RELEASE	NOTES
 	same release of	Aegis.	While the database format is backwards
 	compatible, it is rarely forwards compatible in	the face of new
 	capabilities.
+
+   Version 4.16	(14-Jan-2004)
+	* There	is a new aecp -keep option, causing aecp(1) not	to overwrite
+	file contents in the development directory.
+
+	* The aedist -receive option now understands changing the type of a
+	file.
+
+	* It is	now possible to	specify	a URL to the -file option on the
+	command	line of	aedist(1), aepatch(1) and aetar(1).  The data will be
+	downloaded and applied.
+
+	* More work has	been done towards making the code compilable by	a C++
+	compiler.
+
+	* The project list (see	ael(1),	aeget(1), etc) is now sorted in	a
+	slightly more natural way, as are the version statistics at the	end of
+	an aeannotate(1) listing.
+
+	* A bug	has been fixed in aede91) for branches,	where Aegis would
+	complain about build source files (created by the aenf -build command)
+	being out-of-date.  This, of course, was difficult or impossible to
+	fix, and unnecessary because the next build would fix them.
+
+	* A bug	has been fixed in the aecp -independent	command, where it did
+	not preserve the execute bit, nor honour the user's umask.
+
+	* The missing aemt and aemtu alias ve been added to the	profile.
+
+	* More detail has been added to	aepconf(5) detailing how to create the
+	project	config file for	the first time.
+
+	* A bug	has been fixed in aedist(1) and	aepatch(1) which would cause
+	an assertion failure (or segfault) when	you tried to aedist -send
+	-delta -es files which did not exist at	that delta.
+
+	* A bug	has been fixed in aedist(1) and	aepatch(1) which caused	an
+	assert failure (or segfault) when you tried to send a file which had
+	been created and removed in a branch, and after	the branch was
+	integrated only	a remove record	exists in the parent branch.
+
+	* The problem with test	134 failing has	been fixed.
+
+	* A bug	has been fixed in aeipass91) which prevented changing a	file's
+	usage from being as straight-forward as	it should have been.
+
+	* The source RPM (and the spec file) now has Build Prequisites
+	specified.
+
+	* The -Change option now accepts more than just	a change number.  It
+	now accepts many forms similar to those	used by	the ${version}
+	substitution, allowing its output to be	used directly as command line
+	input; forms such as -c	1.2.C34	and --c=5.6.D78	are now	understood to
+	imply a	-branch	option as well as either -change or -change-from-
+	delta, respectively.  In addition, you may prepend a project name, to
+	imply the -project option as well; form	such as	-c aegis.4.15.C28 are
+	understood.
+
+	* The aemeasure(1) program now also generates Halstead metrics.
+
+	* A bug	has been fixed in the symbolic link handling code.  In some
+	cases it would report "multiple	user permissions (bug)"	and not
+	complete correctly.
+
+	* A bug	has been fixed in the test of aedist(1)	for moved files.
+	There was nothing wrong	with aedist(1),	the test itself	was broken.
 
    Version 4.15	(17-Nov-2003)
 	* A bug	has been fixed in ``ael	cf''.  It used to fail an assertion

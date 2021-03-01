@@ -26,7 +26,7 @@
 long
 change_delta_number_get(change_ty *cp)
 {
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
 
     cstate_data = change_cstate_get(cp);
     return cstate_data->delta_number;

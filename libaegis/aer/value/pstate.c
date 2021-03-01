@@ -66,7 +66,7 @@ grab(rpt_value_pstate_ty *this_thing)
     project_ty	    *pp;
     change_ty	    *cp;
     int		    err;
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
     string_ty	    *name;
     rpt_value_ty    *vp1;
     rpt_value_ty    *vp2;

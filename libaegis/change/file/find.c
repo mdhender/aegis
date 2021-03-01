@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,17 +26,17 @@
 #include <trace.h>
 
 
-fstate_src
+fstate_src_ty *
 change_file_find(change_ty *cp, string_ty *file_name)
 {
-	fstate_src	result;
+    fstate_src_ty   *result;
 
-	trace(("change_file_find(cp = %08lX, file_name = \"%s\")\n{\n"/*}*/,
-		(long)cp, file_name->str_text));
-	change_fstate_get(cp);
-	assert(cp->fstate_stp);
-	result = symtab_query(cp->fstate_stp, file_name);
-	trace(("return %08lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
+    trace(("change_file_find(cp = %08lX, file_name = \"%s\")\n{\n",
+	(long)cp, file_name->str_text));
+    change_fstate_get(cp);
+    assert(cp->fstate_stp);
+    result = symtab_query(cp->fstate_stp, file_name);
+    trace(("return %08lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }

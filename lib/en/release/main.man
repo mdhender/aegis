@@ -202,16 +202,13 @@ This is \fIway\fP harder than any sane person expects.
 Go to http://sourceforge.net and login then go to
 http://sourceforge.net/projects/aegis/
 and click the \fBAdmin\fP link,
-and the \fBEdit/Release Files\fP link,
-and the \fB[Add Release]\fP link.
-In the \fINew Release Name\fP box put the version number (dumb, huh?).
-In the \fIPaste The Notes In" box type
+and the \fBFile Releases\fP link,
+and the \fB[Add Release]\fP link (near the bottom of the page).
+In the "\fINew release name\fP" box put the version number,
+and click the "\fICreate This Release\fP" button.
+In the "\fIPaste The Notes In\fP" box type
 .RS
-http://aegis.sourceforge.net/download.html
-.RE
-In the \fIPste The Change Log In" box type
-.RS
-http://aegis.sourceforge.net/aegis-\*(v).README
+http://aegis.sourceforge.net/change_log.txt
 .RE
 And then finish the rest of the rather cumbersome dialog gunk.
 .br

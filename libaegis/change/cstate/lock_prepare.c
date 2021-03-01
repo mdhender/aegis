@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,27 +32,27 @@
 static void
 waiting_callback(void *p)
 {
-	change_ty	*cp;
+    change_ty       *cp;
 
-	cp = p;
-	if (user_lock_wait(0))
-		change_verbose(cp, 0, i18n("waiting for lock"));
-	else
-		change_verbose(cp, 0, i18n("lock not available"));
+    cp = p;
+    if (user_lock_wait(0))
+	change_verbose(cp, 0, i18n("waiting for lock"));
+    else
+	change_verbose(cp, 0, i18n("lock not available"));
 }
 
 
 void
 change_cstate_lock_prepare(change_ty *cp)
 {
-	trace(("change_cstate_lock_prepare(cp = %08lX)\n{\n", (long)cp));
-	assert(cp->reference_count >= 1);
-	lock_prepare_cstate
-	(
-		project_name_get(cp->pp),
-		cp->number,
-		waiting_callback,
-		(void *)cp
-	);
-	trace(("}\n"));
+    trace(("change_cstate_lock_prepare(cp = %08lX)\n{\n", (long)cp));
+    assert(cp->reference_count >= 1);
+    lock_prepare_cstate
+    (
+	project_name_get(cp->pp),
+	cp->number,
+	waiting_callback,
+	(void *)cp
+    );
+    trace(("}\n"));
 }

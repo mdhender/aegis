@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,48 +28,48 @@
 void
 change_build_times_clear(change_ty *cp)
 {
-	cstate		cstate_data;
-	size_t		j;
+    cstate_ty       *cstate_data;
+    size_t          j;
 
-	/*
-	 * reset the build and test times in all architecture variant records
-	 */
-	assert(cp->reference_count >= 1);
-	cstate_data = change_cstate_get(cp);
-	if (cstate_data->architecture_times)
+    /*
+     * reset the build and test times in all architecture variant records
+     */
+    assert(cp->reference_count >= 1);
+    cstate_data = change_cstate_get(cp);
+    if (cstate_data->architecture_times)
+    {
+	cstate_architecture_times_list_type.free
+	(
+    	    cstate_data->architecture_times
+	);
+	cstate_data->architecture_times = 0;
+    }
+
+    /*
+     * reset the test times in the change state
+     */
+    cstate_data->build_time = 0;
+    cstate_data->test_time = 0;
+    cstate_data->test_baseline_time = 0; /* XXX */
+    cstate_data->regression_test_time = 0;
+
+    /*
+     * reset file test times
+     */
+    for (j = 0; ; ++j)
+    {
+	fstate_src_ty   *src_data;
+
+	src_data = change_file_nth(cp, j);
+	if (!src_data)
+	    break;
+	if (src_data->architecture_times)
 	{
-		cstate_architecture_times_list_type.free
-		(
-			cstate_data->architecture_times
-		);
-		cstate_data->architecture_times = 0;
+	    fstate_src_architecture_times_list_type.free
+	    (
+		src_data->architecture_times
+	    );
+	    src_data->architecture_times = 0;
 	}
-
-	/*
-	 * reset the test times in the change state
-	 */
-	cstate_data->build_time = 0;
-	cstate_data->test_time = 0;
-	cstate_data->test_baseline_time = 0; /* XXX */
-	cstate_data->regression_test_time = 0;
-
-	/*
-	 * reset file test times
-	 */
-	for (j = 0; ; ++j)
-	{
-		fstate_src	src_data;
-
-		src_data = change_file_nth(cp, j);
-		if (!src_data)
-			break;
-		if (src_data->architecture_times)
-		{
-			fstate_src_architecture_times_list_type.free
-			(
-				src_data->architecture_times
-			);
-			src_data->architecture_times = 0;
-		}
-	}
+    }
 }

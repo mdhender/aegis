@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -65,12 +65,12 @@ extract_year(time_t t)
 }
 
 
-static cstate_history
+static cstate_history_ty *
 change_history_fake(change_ty *cp, string_ty *who, time_t when)
 {
-    cstate	    cstate_data;
-    cstate_history  history_data;
-    cstate_history  *history_data_p;
+    cstate_ty	    *cstate_data;
+    cstate_history_ty *history_data;
+    cstate_history_ty **history_data_p;
     type_ty	    *type_p;
 
     trace(("change_history_fale(cp = %08lX)\n{\n", (long)cp));
@@ -96,12 +96,12 @@ synthesize(string_ty *project_name, change_set_ty *csp)
     project_ty	    *pp;
     long	    change_number;
     change_ty	    *cp;
-    cstate	    cstate_data;
+    cstate_ty	    *cstate_data;
     user_ty	    *up;
-    fstate_src	    c_src_data;
-    fstate_src	    p_src_data;
+    fstate_src_ty   *c_src_data;
+    fstate_src_ty   *p_src_data;
     size_t	    j;
-    cstate_history  history_data;
+    cstate_history_ty *history_data;
 
     /*
      * Take some locks.
@@ -163,12 +163,22 @@ synthesize(string_ty *project_name, change_set_ty *csp)
 	csfp = csp->file.item + j;
 	trace(("%s\n", csfp->filename->str_text));
 	c_src_data = change_file_new(cp, csfp->filename);
-	if (csfp->action == change_set_file_action_create)
+
+	c_src_data->action = file_action_modify;
+	switch (csfp->action)
+	{
+	case change_set_file_action_create:
 	    c_src_data->action = file_action_create;
-	else if (csfp->action == change_set_file_action_remove)
+	    break;
+
+	case change_set_file_action_modify:
+	    break;
+
+	case change_set_file_action_remove:
 	    c_src_data->action = file_action_remove;
-	else
-	    c_src_data->action = file_action_modify;
+	    break;
+	}
+
 	c_src_data->usage = file_usage_source;
 	c_src_data->edit = history_version_type.alloc();
 	c_src_data->edit->revision = str_copy(csfp->edit);
@@ -176,17 +186,23 @@ synthesize(string_ty *project_name, change_set_ty *csp)
 	if (!p_src_data)
 	    p_src_data = project_file_new(pp, csfp->filename);
 	p_src_data->action = file_action_create;
-	if (csfp->action == change_set_file_action_remove)
+	switch (csfp->action)
+	{
+	case change_set_file_action_create:
+	case change_set_file_action_modify:
+	    break;
+
+	case change_set_file_action_remove:
 	    p_src_data->action = file_action_remove;
+	    p_src_data->deleted_by = change_number;
+	    break;
+	}
 	p_src_data->usage = c_src_data->usage;
 	if (p_src_data->edit)
 	    history_version_type.free(p_src_data->edit);
 	else
 	    p_src_data->edit_origin = history_version_copy(c_src_data->edit);
 	p_src_data->edit = history_version_copy(c_src_data->edit);
-
-	if (p_src_data->action == file_action_remove)
-	    p_src_data->deleted_by = change_number;
     }
 
     /*

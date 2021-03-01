@@ -44,7 +44,7 @@ list_main(void (*usage)(void))
     input_ty        *cpio_p;
     string_ty       *archive_name;
     string_ty       *s;
-    cstate          change_set;
+    cstate_ty       *change_set;
     size_t          j;
     string_ty       *ofn;
     output_ty       *head_col;
@@ -209,7 +209,7 @@ list_main(void (*usage)(void))
 	input_fatal_error(cpio_p, "bad change set");
     for (j = 0; j < change_set->src->length; ++j)
     {
-	cstate_src      src_data;
+	cstate_src_ty   *src_data;
 
 	src_data = change_set->src->list[j];
 	if
@@ -270,7 +270,7 @@ list_main(void (*usage)(void))
 
     for (j = 0; j < change_set->src->length; ++j)
     {
-	cstate_src	src_data;
+	cstate_src_ty   *src_data;
 
 	src_data = change_set->src->list[j];
 	assert(src_data->file_name);
@@ -279,13 +279,24 @@ list_main(void (*usage)(void))
 	output_put_str(file_name_col, src_data->file_name);
 	if (src_data->move)
 	{
-	    output_fprintf
-	    (
-		file_name_col,
-		"\nMoved %s ",
-		(src_data->action == file_action_create ? "from" : "to")
-	    );
-	    output_put_str(file_name_col, src_data->move);
+	    switch (src_data->action)
+	    {
+	    case file_action_create:
+		output_fputs(file_name_col, "\nMoved from ");
+		output_put_str(file_name_col, src_data->move);
+		break;
+
+	    case file_action_remove:
+		output_fputs(file_name_col, "\nMoved to ");
+		output_put_str(file_name_col, src_data->move);
+		break;
+
+	    case file_action_modify:
+	    case file_action_insulate:
+	    case file_action_transparent:
+		assert(0);
+		break;
+	    }
 	}
 	col_eoln(colp);
     }

@@ -1,6 +1,6 @@
 dnl
 dnl	aegis - a project change supervisor
-dnl	Copyright (C) 1994, 1995, 1997-1999, 2001-2003 Peter Miller;
+dnl	Copyright (C) 1994, 1995, 1997-1999, 2001-2004 Peter Miller;
 dnl	All rights reserved.
 dnl
 dnl	This program is free software; you can redistribute it and/or modify
@@ -94,6 +94,7 @@ AC_CHECK_LIB(z, main)
 AC_CHECK_LIB(magic, magic_file)
 dnl The -lclu library is for OSF/1 clustering
 AC_CHECK_LIB(clu, main)
+AC_CHECK_LIB(curl, curl_multi_perform)
 AC_CHECK_PROGS(MSGFMT, gmsgfmt msgfmt, msgfmt)
 AC_CHECK_PROGS(MSGCAT, gmsgcat msgcat)
 AC_CHECK_PROGS(GROFF, groff roff)
@@ -221,8 +222,8 @@ AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no),
 AC_MSG_RESULT(cross))
 
-AC_CHECK_HEADERS(fcntl.h iso646.h libgettext.h libintl.h limits.h locale.h \
-	magic.h memory.h mntent.h regex.h rxposix.h stddef.h stdlib.h \
+AC_CHECK_HEADERS(curl/curl.h fcntl.h iso646.h libgettext.h libintl.h limits.h \
+	locale.h magic.h memory.h mntent.h regex.h rxposix.h stddef.h stdlib.h \
 	string.h unistd.h wchar.h wctype.h widec.h zlib.h sys/clu.h \
 	sys/ioctl.h)
 AC_HEADER_DIRENT
@@ -234,8 +235,8 @@ AC_SYS_LONG_FILE_NAMES
 AC_CHECK_FUNCS(clu_info getpgrp gettext gettimeofday iswctype magic_file \
 	mbrtowc pathconf regcomp seteuid setlocale setresuid setreuid \
 	sighold sigprocmask snprintf strcasecmp strncasecmp strerror \
-	strftime strsignal strtoul tcgetpgrp vsnprintf wcrtomb wcslen \
-	wcwidth)
+	strftime strsignal strtoul strverscmp tcgetpgrp vsnprintf wcrtomb \
+	wcslen wcwidth)
 
 dnl
 dnl	Check to see if wint_t is defined.
@@ -565,7 +566,7 @@ AC_SUBST(PROGRAM_SUFFIX)
 AH_TOP(
 [/*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2003 Peter Miller.
+ *	Copyright (C) 1991-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify

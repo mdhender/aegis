@@ -1,21 +1,21 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1996, 2002, 2003 Peter Miller;
- *	All rights reserved.
+ *      aegis - project change supervisor
+ *      Copyright (C) 1991-1994, 1996, 2002, 2003 Peter Miller;
+ *      All rights reserved.
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 2 of the License, or
+ *      (at your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program; if not, write to the Free Software
+ *      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to manipulate types in aegis' data files
  */
@@ -48,7 +48,7 @@ integer_is_set(void *this_thing)
 }
 
 
-type_ty	integer_type =
+type_ty integer_type =
 {
     "integer",
     0, /* alloc */
@@ -76,7 +76,7 @@ time_is_set(void *this_thing)
 }
 
 
-type_ty	time_type =
+type_ty time_type =
 {
     "time",
     0, /* alloc */
@@ -104,7 +104,7 @@ real_is_set(void *this_thing)
 }
 
 
-type_ty	real_type =
+type_ty real_type =
 {
     "real",
     0, /* alloc */
@@ -151,27 +151,27 @@ generic_struct_parse(void *this_thing, string_ty *name, type_ty **type_pp,
     unsigned long *mask_p, type_table_ty *table, size_t table_length)
 {
     type_table_ty   *tp;
-    void	    *addr;
+    void            *addr;
     type_table_ty   *table_end;
 
     trace(("generic_struct_parse(this_thing = %08lX, name = %08lX, "
-	"type_pp = %08lX)\n{\n"/*}*/,
+        "type_pp = %08lX)\n{\n"/*}*/,
            (long)this_thing, (long)name, (long)type_pp));
     table_end = table + table_length;
     addr = 0;
     for (tp = table; tp < table_end; ++tp)
     {
-	if (!tp->fast_name)
-	    tp->fast_name = str_from_c(tp->name);
-	if (str_equal(name, tp->fast_name))
-	{
-	    *type_pp = tp->type;
-	    trace_pointer(*type_pp);
-	    addr = (char *)this_thing + tp->offset;
-	    trace_pointer(addr);
-	    *mask_p = tp->mask;
-	    break;
-	}
+        if (!tp->fast_name)
+            tp->fast_name = str_from_c(tp->name);
+        if (str_equal(name, tp->fast_name))
+        {
+            *type_pp = tp->type;
+            trace_pointer(*type_pp);
+            addr = (char *)this_thing + tp->offset;
+            trace_pointer(addr);
+            *mask_p = tp->mask;
+            break;
+        }
     }
     trace((/*{*/"return %08lX;\n}\n", (long)addr));
     return addr;
@@ -183,8 +183,8 @@ generic_struct_fuzzy(string_ty *name, type_table_ty *table, size_t table_length)
 {
     type_table_ty   *tp;
     type_table_ty   *table_end;
-    string_ty	    *best_name;
-    double	    best_weight;
+    string_ty       *best_name;
+    double          best_weight;
 
     trace(("generic_struct_fuzzy(name = %08lX)\n{\n"/*}*/, (long)name));
     table_end = table + table_length;
@@ -192,15 +192,15 @@ generic_struct_fuzzy(string_ty *name, type_table_ty *table, size_t table_length)
     best_weight = 0.6;
     for (tp = table; tp < table_end; ++tp)
     {
-	double		weight;
+        double          weight;
 
-	assert(tp->fast_name);
-	weight = fstrcmp(name->str_text, tp->name);
-	if (weight > best_weight)
-	{
-	    best_name = tp->fast_name;
-	    best_weight = weight;
-	}
+        assert(tp->fast_name);
+        weight = fstrcmp(name->str_text, tp->name);
+        if (weight > best_weight)
+        {
+            best_name = tp->fast_name;
+            best_weight = weight;
+        }
     }
     trace(("return %08lX;\n", (long)best_name));
     trace((/*{*/"}\n"));
@@ -218,29 +218,29 @@ generic_struct_convert(void *that, type_table_ty *table, size_t table_length)
 
     this_thing = *(generic_struct_ty **)that;
     if (!this_thing)
-	return 0;
+        return 0;
     trace(("generic_struct_convert(this_thing = %08lX)\n{\n"/*}*/,
            (long)this_thing));
     table_end = table + table_length;
     result = rpt_value_struct((struct symtab_ty *)0);
     for (tp = table; tp < table_end; ++tp)
     {
-	void		*addr;
+        void            *addr;
 
-	if (!tp->fast_name)
-	    tp->fast_name = str_from_c(tp->name);
-	addr = (char *)this_thing + tp->offset;
-	if (tp->mask ? (this_thing->mask & tp->mask) : tp->type->is_set(addr))
-	{
-	    rpt_value_ty    *vp;
+        if (!tp->fast_name)
+            tp->fast_name = str_from_c(tp->name);
+        addr = (char *)this_thing + tp->offset;
+        if (tp->mask ? (this_thing->mask & tp->mask) : tp->type->is_set(addr))
+        {
+            rpt_value_ty    *vp;
 
-	    vp = tp->type->convert(addr);
-	    if (vp)
-	    {
-	       	rpt_value_struct__set(result, tp->fast_name, vp);
-	       	rpt_value_free(vp);
-	    }
-	}
+            vp = tp->type->convert(addr);
+            if (vp)
+            {
+                rpt_value_struct__set(result, tp->fast_name, vp);
+                rpt_value_free(vp);
+            }
+        }
     }
     trace((/*{*/"return %08lX;\n}\n", (long)result));
     return result;
@@ -257,23 +257,23 @@ generic_struct_is_set(void *this_thing)
 string_ty *
 generic_enum_fuzzy(string_ty *name, string_ty **table, size_t table_length)
 {
-    int		    j;
-    string_ty	    *best_name;
-    double	    best_weight;
+    size_t          j;
+    string_ty       *best_name;
+    double          best_weight;
 
     best_name = 0;
     best_weight = 0.6;
     for (j = 0; j < table_length; ++j)
     {
-	double		weight;
+        double          weight;
 
-	assert(table[j]);
-	weight = fstrcmp(name->str_text, table[j]->str_text);
-	if (weight > best_weight)
-	{
-	    best_name = table[j];
-	    best_weight = weight;
-	}
+        assert(table[j]);
+        weight = fstrcmp(name->str_text, table[j]->str_text);
+        if (weight > best_weight)
+        {
+            best_name = table[j];
+            best_weight = weight;
+        }
     }
     return best_name;
 }
@@ -282,11 +282,11 @@ generic_enum_fuzzy(string_ty *name, string_ty **table, size_t table_length)
 rpt_value_ty *
 generic_enum_convert(void *this_thing, string_ty **table, size_t table_length)
 {
-    long	    n;
+    long            n;
 
     n = *(int *)this_thing;
-    if (n < 0 || n >= table_length)
-	return rpt_value_integer(n);
+    if (n < 0 || n >= (long)table_length)
+        return rpt_value_integer(n);
     assert(table[n]);
     return rpt_value_enumeration(n, table[n]);
 }
@@ -302,16 +302,16 @@ generic_enum_is_set(void *this_thing)
 void
 generic_enum__init(const char *const *table, size_t table_length)
 {
-    long	    j;
-    string_ty	    *name;
+    long            j;
+    string_ty       *name;
     rpt_value_ty    *value;
 
-    for (j = 0; j < table_length; ++j)
+    for (j = 0; j < (long)table_length; ++j)
     {
-	name = str_from_c(table[j]);
-	value = rpt_value_enumeration(j, name);
-	rpt_expr_name__init(name, value);
-	str_free(name);
+        name = str_from_c(table[j]);
+        value = rpt_value_enumeration(j, name);
+        rpt_expr_name__init(name, value);
+        str_free(name);
     }
 }
 

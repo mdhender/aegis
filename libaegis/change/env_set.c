@@ -31,29 +31,29 @@
 void
 change_env_set(change_ty *cp, int with_arch)
 {
-	string_ty	*s;
+    string_ty       *s;
 
-	env_set_page();
+    env_set_page();
 
-	/*
-	 * set the AEGIS_PROJECT environment cariable
-	 */
-	env_set("AEGIS_PROJECT", cp->pp->name->str_text);
+    /*
+     * set the AEGIS_PROJECT environment cariable
+     */
+    env_set("AEGIS_PROJECT", cp->pp->name->str_text);
 
-	/*
-	 * set the AEGIS_CHANGE environment cariable
-	 */
-	if (!cp->bogus)
-		env_setf("AEGIS_CHANGE", "%ld", magic_zero_decode(cp->number));
-	else
-		env_unset("AEGIS_CHANGE");
+    /*
+     * set the AEGIS_CHANGE environment cariable
+     */
+    if (!cp->bogus)
+	env_setf("AEGIS_CHANGE", "%ld", magic_zero_decode(cp->number));
+    else
+	env_unset("AEGIS_CHANGE");
 
-	/*
-	 * set the AEGIS_ARCH environment variable
-	 */
-	s = change_architecture_name(cp, with_arch);
-	if (s)
-		env_set("AEGIS_ARCH", s->str_text);
-	else
-		env_unset("AEGIS_ARCH");
+    /*
+     * set the AEGIS_ARCH environment variable
+     */
+    s = change_architecture_name(cp, with_arch);
+    if (s)
+	env_set("AEGIS_ARCH", s->str_text);
+    else
+	env_unset("AEGIS_ARCH");
 }

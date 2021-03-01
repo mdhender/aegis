@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,8 @@
 time_t
 change_history_delta_to_timestamp(project_ty *pp, long delta_number)
 {
-	cstate		cstate_data;
-	cstate_branch_history_list hl;
+	cstate_ty       *cstate_data;
+	cstate_branch_history_list_ty *hl;
 	size_t		j;
 	change_ty	*cp;
 
@@ -52,7 +52,7 @@ change_history_delta_to_timestamp(project_ty *pp, long delta_number)
 		return (time_t)-1;
 	for (j = 0; j < hl->length; ++j)
 	{
-		cstate_branch_history bh;
+		cstate_branch_history_ty *bh;
 		change_ty	*cp2;
 		time_t		result;
 

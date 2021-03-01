@@ -35,7 +35,7 @@ xml_change_cstate(string_ty *project_name, long change_number, output_ty *op)
     project_ty      *pp;
     user_ty         *up;
     change_ty       *cp;
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
 
     trace(("xml_change_cstate()\n{\n"));
 

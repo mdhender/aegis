@@ -69,7 +69,7 @@ lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lval)
     long	    change_number;
     long	    j;
     change_ty	    *cp;
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
     string_ty	    *name;
     rpt_value_ty    *vp1;
     rpt_value_ty    *vp2;

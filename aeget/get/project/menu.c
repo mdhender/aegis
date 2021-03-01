@@ -35,7 +35,7 @@ void
 get_project_menu(project_ty *pp, string_ty *filename, string_list_ty *modifier)
 {
     change_ty       *cp;
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
 
     html_header(pp);
 

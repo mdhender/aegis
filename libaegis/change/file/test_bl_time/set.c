@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,11 +25,11 @@
 
 
 void
-change_file_test_baseline_time_set(change_ty *cp, fstate_src src_data,
+change_file_test_baseline_time_set(change_ty *cp, fstate_src_ty *src_data,
     time_t when, string_ty *variant)
 {
-    fstate_src_architecture_times_list atlp;
-    fstate_src_architecture_times atp = 0;
+    fstate_src_architecture_times_list_ty *atlp;
+    fstate_src_architecture_times_ty *atp = 0;
     size_t          j;
     size_t          k;
 
@@ -57,7 +57,7 @@ change_file_test_baseline_time_set(change_ty *cp, fstate_src src_data,
     }
     if (j >= atlp->length)
     {
-	fstate_src_architecture_times *addr;
+	fstate_src_architecture_times_ty **addr;
 	type_ty         *type_p;
 
 	addr =
@@ -88,17 +88,30 @@ change_file_test_baseline_time_set(change_ty *cp, fstate_src src_data,
 	{
 	case file_usage_test:
 	case file_usage_manual_test:
-	    if (src_data->action == file_action_remove)
+	    switch (src_data->action)
+	    {
+	    case file_action_remove:
+	    case file_action_modify:
+	    case file_action_transparent:
 		    continue;
-	    if (src_data->action == file_action_modify)
+
+	    case file_action_create:
+	    case file_action_insulate:
+		/* should be file_action_removed */
+		assert(!src_data->deleted_by);
+		if (src_data->deleted_by)
 		    continue;
-	    if (src_data->deleted_by)
+
+		/* should be file_action_transparent */
+		assert(!src_data->about_to_be_created_by);
+		if (src_data->about_to_be_created_by)
 		    continue;
-	    if (src_data->about_to_be_created_by)
-		    continue;
+		break;
+	    }
 	    break;
 
 	case file_usage_source:
+	case file_usage_config:
 	case file_usage_build:
 	    continue;
 	}

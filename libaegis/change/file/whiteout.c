@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -55,7 +55,7 @@ change_file_whiteout(change_ty *cp, string_ty *name)
 {
     string_ty	    *result;
     size_t	    j, k;
-    pconf	    pconf_data;
+    pconf_ty        *pconf_data;
 
     trace(("change_file_template(name = \"%s\")\n{\n", name->str_text));
     assert(cp->reference_count >= 1);
@@ -65,7 +65,7 @@ change_file_whiteout(change_ty *cp, string_ty *name)
 	goto fell_off_end;
     for (j = 0; j < pconf_data->whiteout_template->length; ++j)
     {
-	pconf_whiteout_template ftp;
+	pconf_whiteout_template_ty *ftp;
 
 	ftp = pconf_data->whiteout_template->list[j];
 	if (!ftp->pattern)
@@ -110,7 +110,7 @@ change_file_whiteout(change_ty *cp, string_ty *name)
 
     /*
      * If there are no matching patterns,
-     * use a 1K ugly string.
+     * use a 1KB ugly string.
      */
     fell_off_end:
     result = ugly();

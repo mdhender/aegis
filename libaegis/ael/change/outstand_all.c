@@ -134,7 +134,7 @@ list_outstanding_changes_all(string_ty *project_name,
 		 */
 		for (k = 0; ; ++k)
 		{
-			cstate		cstate_data;
+			cstate_ty	*cstate_data;
 			change_ty	*cp;
 
 			/*

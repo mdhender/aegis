@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@
 int
 project_file_trojan_suspect(project_ty *pp, string_ty *fn)
 {
-    pconf	    pconf_data;
+    pconf_ty        *pconf_data;
     size_t	    j;
     string_ty	    *pattern;
 

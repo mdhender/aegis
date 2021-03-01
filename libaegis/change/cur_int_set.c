@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,8 @@
 void
 change_current_integration_set(change_ty *cp, long change_number)
 {
-    cstate	    cstate_data;
-    cstate_branch   bp;
+    cstate_ty       *cstate_data;
+    cstate_branch_ty *bp;
 
     trace(("change_current_integration_set(cp = %8.8lX, "
 	"change_number = %ld)\n{\n", (long)cp, change_number));
@@ -49,5 +49,5 @@ change_current_integration_set(change_ty *cp, long change_number)
 	bp->currently_integrating_change = 0;
 	bp->mask &= ~cstate_branch_currently_integrating_change_mask;
     }
-    trace((/*{*/"}\n"));
+    trace(("}\n"));
 }

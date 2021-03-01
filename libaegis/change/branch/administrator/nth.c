@@ -28,24 +28,24 @@
 string_ty *
 change_branch_administrator_nth(change_ty *cp, long n)
 {
-	cstate		cstate_data;
-	cstate_branch_administrator_list lp;
-	string_ty	*result;
+    cstate_ty       *cstate_data;
+    cstate_branch_administrator_list_ty *lp;
+    string_ty       *result;
 
-	trace(("change_branch_administrator_nth(cp = %8.8lX, n = %ld)\n{\n",
-		(long)cp, n));
-	cstate_data = change_cstate_get(cp);
-	assert(cstate_data->branch);
-	if (!cstate_data->branch->administrator)
-		cstate_data->branch->administrator =
-			cstate_branch_administrator_list_type.alloc();
-	lp = cstate_data->branch->administrator;
+    trace(("change_branch_administrator_nth(cp = %8.8lX, n = %ld)\n{\n",
+	(long)cp, n));
+    cstate_data = change_cstate_get(cp);
+    assert(cstate_data->branch);
+    if (!cstate_data->branch->administrator)
+	cstate_data->branch->administrator =
+    	    cstate_branch_administrator_list_type.alloc();
+    lp = cstate_data->branch->administrator;
 
-	if (n < 0 || n >= lp->length)
-		result = 0;
-	else
-		result = lp->list[n];
-	trace(("return %8.8lX;\n", (long)result));
-	trace(("}\n"));
-	return result;
+    if (n < 0 || n >= lp->length)
+	result = 0;
+    else
+	result = lp->list[n];
+    trace(("return %8.8lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }

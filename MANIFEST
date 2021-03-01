@@ -473,6 +473,20 @@ aels/stack.c	 functions to manipulate stacks
 aels/stack.h	 interface definition for aels/stack.c
 aemeasure/count.c	 functions to manipulate counts
 aemeasure/count.h	 interface definition for simp_file_stat/count.c
+aemeasure/end_with.c	 functions to manipulate end_withs
+aemeasure/end_with.h	 interface definition for aemeasure/end_with.c
+aemeasure/getc_special.c	 functions to manipulate getc_specials
+aemeasure/getc_special.h	 interface definition for aemeasure/getc_special.c
+aemeasure/lang.c	 functions to manipulate langs
+aemeasure/lang.h	 interface definition for aemeasure/lang.c
+aemeasure/lang/c.c	 functions to manipulate cs
+aemeasure/lang/c.h	 interface definition for aemeasure/lang/c.c
+aemeasure/lang/cxx.c	 functions to manipulate cxxs
+aemeasure/lang/cxx.h	 interface definition for aemeasure/lang/cxx.c
+aemeasure/lang/generic.c	 functions to manipulate generics
+aemeasure/lang/generic.h	 interface definition for aemeasure/lang/generic.c
+aemeasure/lang/roff.c	 functions to manipulate roffs
+aemeasure/lang/roff.h	 interface definition for aemeasure/lang/roff.c
 aemeasure/main.c	 operating system start point, and command line argument parsing
 aepatch/arglex3.c	 functions to manipulate arglex3s
 aepatch/arglex3.h	 interface definition for aepatch/arglex3.c
@@ -533,6 +547,7 @@ cklinlen/module.cook	 module.cook
 common/abbreviate.c	 functions to manipulate abbreviates
 common/abbreviate.h	 interface definition for common/abbreviate.c
 common/ac/ctype.h	 insulate against <ctype.h> vagueries
+common/ac/curl/curl.h	 interface definition for common/ac/curl/curl.c
 common/ac/dirent.h	 insulate against <dirent.h> vs <ndir.h> differences
 common/ac/errno.h	 insulate against <errno.h> differences
 common/ac/fcntl.h	 insulate against <fcntl.h> vs <sys/file.h> differences
@@ -659,6 +674,7 @@ common/str_list/quote.c	 functions to manipulate quotes
 common/str_list/remove.c	 functions to manipulate removes
 common/str_list/remove_list.c	 functions to manipulate remove_lists
 common/str_list/sort.c	 functions to manipulate sorts
+common/str_list/sort_vers.c	 functions to manipulate sorts
 common/str_list/str2wl.c	 functions to manipulate str2wls
 common/str_list/subset.c	 functions to manipulate subsets
 common/str_list/validate.c	 functions to manipulate validates
@@ -709,7 +725,6 @@ etc/archive.cook	 instructions to cook(1), how to build archive directory
 etc/autoconf.cook	 autoconf.cook
 etc/cfmt.cook	 cfmt.cook
 etc/chan_files.awk	 chan_files.awk
-etc/change_log.man	 manual page describing the etc/change_log command.
 etc/compat.2.3.in	 compat.2.3.in
 etc/configure.ac	 how to configure aegis, input to the GNU autoconf program
 etc/documents.cook	 instructions to cook(1), how to build documents
@@ -887,6 +902,7 @@ lib/en/auug97/main.ms	 Proposed AUUGN'97 article
 lib/en/auug97/make.bib	 Bibliography of papers about Make
 lib/en/building/main.man	 source for BUILDING file
 lib/en/building/windows-nt.so	 document describing how to build Aegis for Windows-NT
+lib/en/change_log/main.man	 manual page describing the etc/change_log command.
 lib/en/cvs-comparison/c1.so	 document describing lib/en/cvs-comparison/c1s
 lib/en/cvs-comparison/c2.so	 document describing lib/en/cvs-comparison/c2s
 lib/en/cvs-comparison/c3.so	 document describing lib/en/cvs-comparison/c3s
@@ -904,6 +920,7 @@ lib/en/howto/main.ms	 Howto
 lib/en/howto/move_projec.so	 document describing lib/en/howto/move_projecs
 lib/en/howto/new_project.so	 Howto, New project
 lib/en/howto/python.so	 document describing lib/en/howto/python
+lib/en/howto/recreate.so	 Howto, Recreate Old Versions
 lib/en/howto/team_work.so	 Howto, Teamwork
 lib/en/html/chan_hstry.rpt	 report the history of a change
 lib/en/html/chan_menu.rpt	 menu of change information
@@ -1024,6 +1041,7 @@ lib/en/man1/o_devdir.so	 description of -Development_Directory command line opti
 lib/en/man1/o_dir.so	 description of -DIRectory command line option
 lib/en/man1/o_edit.so	 document describing -Edit option
 lib/en/man1/o_file.so	 document describing -File option
+lib/en/man1/o_file_cs.so	 document describing lib/en/man1/o_file_css
 lib/en/man1/o_help.so	 description of -Help command line option
 lib/en/man1/o_indep.so	 description of -INDependent command line option
 lib/en/man1/o_interact.so	 document describing o_interact.so
@@ -1130,6 +1148,7 @@ lib/en/readme/new.4.10.so	 document describing new 4.10 features
 lib/en/readme/new.4.11.so	 document describing new 4.11 features
 lib/en/readme/new.4.12.so	 document describing new 4.12 features
 lib/en/readme/new.4.15.so	 document describing new 4.15 features
+lib/en/readme/new.4.16.so	 document describing new 4.16 features
 lib/en/readme/new.4.2.so	 document describing new 4.2 features
 lib/en/readme/new.4.3.so	 document describing new 4.3 features
 lib/en/readme/new.4.4.so	 document describing new 4.4 features
@@ -1492,6 +1511,10 @@ libaegis/aer/value/uconf.c	 functions to manipulate uconf values
 libaegis/aer/value/uconf.h	 interface definition for libaegis/aer/value/uconf.c
 libaegis/aer/value/void.c	 functions to manipulate void values
 libaegis/aer/value/void.h	 interface definition for aegis/aer/value/void.c
+libaegis/arglex/change.c	 functions to manipulate changes
+libaegis/arglex/change.h	 interface definition for libaegis/arglex/change.c
+libaegis/arglex/project.c	 functions to manipulate projects
+libaegis/arglex/project.h	 interface definition for libaegis/arglex/project.c
 libaegis/arglex2.c	 functions to manipulate command line arguments
 libaegis/arglex2.h	 definitions of command line tokens
 libaegis/cattr.def	 change state file contents definition
@@ -1826,6 +1849,8 @@ libaegis/input/catenate.c	 functions to manipulate catenates
 libaegis/input/catenate.h	 interface definition for libaegis/input/catenate.c
 libaegis/input/crlf.c	 functions for reading input and filtering out CR LF sequences
 libaegis/input/crlf.h	 interface definition for libaegis/input/crlf.c
+libaegis/input/curl.c	 functions to manipulate curls
+libaegis/input/curl.h	 interface definition for libaegis/input/curl.c
 libaegis/input/env.c	 functions for reading input from environment variables
 libaegis/input/env.h	 interface definition for libaegis/input/env.c
 libaegis/input/fatal_error.c	 functions to manipulate fatal_errors
@@ -1991,6 +2016,7 @@ libaegis/project/active.h	 interface definition for libaegis/project/active.c
 libaegis/project/change2delta.c	 functions to manipulate change2deltas
 libaegis/project/compdataget.c	 functions to manipulate compdatagets
 libaegis/project/compdataset.c	 functions to manipulate compdatasets
+libaegis/project/delta2change.c	 functions to convert delta numbers to change numbers
 libaegis/project/devendactget.c	 functions to manipulate devendactgets
 libaegis/project/devendactset.c	 functions to manipulate devendactsets
 libaegis/project/directory.c	 functions to manipulate directorys
@@ -2183,6 +2209,8 @@ libaegis/user.h	 interface definition for aegis/user.c
 libaegis/ustate.def	 user state file contents definition
 libaegis/version.c	 functions to manipulate versions
 libaegis/version.h	 interface definition for libaegis/version.c
+libaegis/view_path.c	 functions to manipulate view_paths
+libaegis/view_path.h	 interface definition for libaegis/view_path.c
 libaegis/wide_output.c	 functions to manipulate wchar_t output through a common API
 libaegis/wide_output.h	 interface definition for libaegis/wide_output.c
 libaegis/wide_output/column.c	 functions to manipulate columns
@@ -2360,8 +2388,11 @@ test/01/t0137a.sh	 Test the aepatch --list functionality
 test/01/t0138a.sh	 Test patch -send functionality
 test/01/t0139a.sh	 Test patch -send functionality
 test/01/t0140a.sh	 Test the test exemption (aecpu) functionality
+test/01/t0141a.sh	 Test aenf functionality
+test/01/t0143a.sh	 Test aedist functionality
 test/01/t0144a.sh	 Test the email address functionality
 test/01/t0145a.sh	 Test the -Descend_Project_Tree option
+test/01/t0147a.sh	 Test the aede functionality
 test/01/t0150a.sh	 Test patch -send functionality
 test/01/t0151a.sh	 Test the uuencode functionality
 test/01/t0152a.sh	 Test build_time_adjust_notify_command functionality

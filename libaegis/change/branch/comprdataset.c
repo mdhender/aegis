@@ -27,11 +27,11 @@
 void
 change_branch_compress_database_set(change_ty *cp, int n)
 {
-	cstate		cstate_data;
-	cstate_branch	bp;
+    cstate_ty       *cstate_data;
+    cstate_branch_ty *bp;
 
-	cstate_data = change_cstate_get(cp);
-	bp = cstate_data->branch;
-	assert(bp);
-	bp->compress_database = !!n;
+    cstate_data = change_cstate_get(cp);
+    bp = cstate_data->branch;
+    assert(bp);
+    bp->compress_database = !!n;
 }

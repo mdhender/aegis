@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000-2002 Peter Miller;
+ *	Copyright (C) 2000-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -46,11 +46,11 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
     sub_context_ty  *scp;
     int		    flags;
     batch_result_list_ty *result;
-    tstrslt	    tstrslt_data;
+    tstrslt_ty	    *tstrslt_data;
     string_ty	    *the_command;
     string_ty	    *s;
     string_ty	    *output_file_name;
-    pconf	    pconf_data;
+    pconf_ty        *pconf_data;
     size_t	    j;
     size_t          k;
     string_ty	    *dir;
@@ -72,7 +72,7 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
     {
 	string_ty	*fn;
 	string_ty	*fn_abs;
-	fstate_src	src_data;
+	fstate_src_ty   *src_data;
 
 	fn = wlp->string[j];
 	src_data = change_file_find(cp, fn);
@@ -130,18 +130,31 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
     for (j = 0; j < wlp->nstrings; ++j)
     {
 	string_ty	*file_name;
-	fstate_src	src_data;
+	fstate_src_ty   *src_data;
 
 	file_name = wlp->string[j];
 	src_data = change_file_find(cp, file_name);
 	if (!src_data)
 	    src_data = project_file_find(cp->pp, file_name, view_path_simple);
 	assert(src_data);
-	if (src_data && src_data->usage == file_usage_manual_test)
+	if (!src_data)
+	    continue;
+	switch (src_data->usage)
 	{
+	case file_usage_source:
+	case file_usage_config:
+	case file_usage_build:
+	case file_usage_test:
+#ifndef DEBUG
+	default:
+#endif
+	    continue;
+
+	case file_usage_manual_test:
 	    flags = OS_EXEC_FLAG_INPUT;
 	    break;
 	}
+	break;
     }
 
     /*
@@ -156,7 +169,7 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
     dir = project_baseline_path_get(cp->pp, 0);
     if (!bl && !cp->bogus)
     {
-	cstate		cstate_data;
+	cstate_ty       *cstate_data;
 
 	cstate_data = change_cstate_get(cp);
 	switch (cstate_data->state)
@@ -230,7 +243,7 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
     result = batch_result_list_new();
     for (j = 0; j < tstrslt_data->test_result->length; ++j)
     {
-	tstrslt_test_result p;
+	tstrslt_test_result_ty *p;
 
 	/*
 	 * perform sanity checks

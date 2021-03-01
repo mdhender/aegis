@@ -53,7 +53,7 @@ wstring_ty *
 sub_development_directory(sub_context_ty *scp, wstring_list_ty *arg)
 {
     wstring_ty	    *result;
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
 
     trace(("sub_development_directory()\n{\n"));
     if (arg->nitems != 1)

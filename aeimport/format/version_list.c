@@ -1,21 +1,21 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
- *	All rights reserved.
+ *      aegis - project change supervisor
+ *      Copyright (C) 2001, 2002 Peter Miller;
+ *      All rights reserved.
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 2 of the License, or
+ *      (at your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program; if not, write to the Free Software
+ *      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to manipulate version_lists
  */
@@ -31,7 +31,7 @@ format_version_list_new(void)
 {
     format_version_list_ty *fvlp;
 
-    fvlp = mem_alloc(sizeof(format_version_list_ty));
+    fvlp = (format_version_list_ty *)mem_alloc(sizeof(format_version_list_ty));
     fvlp->item = 0;
     fvlp->length = 0;
     fvlp->maximum = 0;
@@ -42,15 +42,15 @@ format_version_list_new(void)
 void
 format_version_list_delete(format_version_list_ty *fvlp, int delmore)
 {
-    size_t	    j;
+    size_t          j;
 
     if (delmore)
     {
-	for (j = 0; j < fvlp->length; ++j)
-    	    format_version_delete(fvlp->item[j]);
+        for (j = 0; j < fvlp->length; ++j)
+            format_version_delete(fvlp->item[j]);
     }
     if (fvlp->item)
-	mem_free(fvlp->item);
+        mem_free(fvlp->item);
     fvlp->item = 0;
     fvlp->length = 0;
     fvlp->maximum = 0;
@@ -63,10 +63,10 @@ format_version_list_delete(format_version_list_ty *fvlp, int delmore)
 void
 format_version_list_validate(format_version_list_ty *fvlp)
 {
-    size_t	    j;
+    size_t          j;
 
     for (j = 0; j < fvlp->length; ++j)
-	format_version_validate(fvlp->item[j]);
+        format_version_validate(fvlp->item[j]);
 }
 
 #endif
@@ -77,11 +77,11 @@ format_version_list_append(format_version_list_ty *fvlp, format_version_ty *fvp)
 {
     if (fvlp->length >= fvlp->maximum)
     {
-	size_t		nbytes;
+        size_t          nbytes;
 
-	fvlp->maximum = fvlp->maximum * 2 + 8;
-	nbytes = fvlp->maximum * sizeof(fvlp->item[0]);
-	fvlp->item = mem_change_size(fvlp->item, nbytes);
+        fvlp->maximum = fvlp->maximum * 2 + 8;
+        nbytes = fvlp->maximum * sizeof(fvlp->item[0]);
+        fvlp->item = (format_version_ty **)mem_change_size(fvlp->item, nbytes);
     }
     fvlp->item[fvlp->length++] = fvp;
 }
@@ -96,9 +96,9 @@ cmp(const void *va, const void *vb)
     a = *(format_version_ty **)va;
     b = *(format_version_ty **)vb;
     if (a->when < b->when)
-	return -1;
+        return -1;
     if (a->when > b->when)
-	return 1;
+        return 1;
     return 0;
 }
 

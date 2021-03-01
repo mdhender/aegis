@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1999, 2001-2003 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,8 @@
 #include <aecp.h>
 #include <ael/project/files.h>
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <commit.h>
 #include <change/branch.h>
 #include <change/file.h>
@@ -101,35 +103,17 @@ copy_file_list(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, copy_file_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-		duplicate_option_by_name(arglex_token_change, copy_file_usage);
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty *scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change(&project_name, &change_number, copy_file_usage);
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, copy_file_usage);
-	    if (project_name)
-		duplicate_option_by_name(arglex_token_project, copy_file_usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, copy_file_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -167,10 +151,10 @@ copy_file_independent(void)
     string_list_ty  search_path;
     const char      *branch;
     int             trunk;
-    change_ty       *cp_bogus;
     int             based;
     string_ty       *base;
     const char      *output;
+    int             original_umask;
 
     trace(("copy_file_independent()\n{\n"));
     arglex();
@@ -209,12 +193,9 @@ copy_file_independent(void)
 	    break;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, copy_file_usage);
-	    if (project_name)
-		duplicate_option_by_name(arglex_token_project, copy_file_usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, copy_file_usage);
+	    continue;
 
 	case arglex_token_delta:
 	    if (delta_number >= 0 || delta_name)
@@ -421,6 +402,12 @@ copy_file_independent(void)
     up = user_executing(pp);
 
     /*
+     * In order to behave as users expect, we need the original umask
+     * when Aegis was invoked.
+     */
+    os_become_orig_query(0, 0, &original_umask);
+
+    /*
      * Take a read lock on the baseline, to ensure that it does
      * not change (aeip) for the duration of the copy.
      */
@@ -594,7 +581,7 @@ copy_file_independent(void)
      */
     for (j = 0; j < wl.nstrings; ++j)
     {
-	fstate_src      src_data;
+	fstate_src_ty   *src_data;
 
 	s1 = wl.string[j];
 	src_data = project_file_find(pp2, s1, view_path_simple);
@@ -639,13 +626,6 @@ copy_file_independent(void)
     }
 
     /*
-     * create a fake change,
-     * so can set environment variables
-     * for the test
-     */
-    cp_bogus = change_bogus(pp);
-
-    /*
      * Copy each file into the destination directory.
      * Create any necessary directories along the way.
      */
@@ -653,15 +633,16 @@ copy_file_independent(void)
 	project_file_roll_forward(pp2, delta_date, 0);
     for (j = 0; j < wl.nstrings; ++j)
     {
-	string_ty      *from;
-	string_ty      *to;
+	string_ty       *from;
+	string_ty       *to;
 	int             from_unlink = 0;
+	int             mode;
 
 	s1 = wl.string[j];
 	if (delta_date != NO_TIME_SET)
 	{
 	    file_event_ty  *fep;
-	    fstate_src      old_src;
+	    fstate_src_ty  *old_src;
 
 	    fep = project_file_roll_forward_get_last(s1);
 	    if (!fep)
@@ -675,13 +656,20 @@ copy_file_independent(void)
 
 	    old_src = change_file_find(fep->cp, s1);
 	    assert(old_src);
-	    if (old_src->action == file_action_remove)
+	    switch (old_src->action)
 	    {
+	    case file_action_remove:
 		/*
 		 * The file had been removed at this
 		 * delta.  Omit it.
 		 */
 		continue;
+
+	    case file_action_create:
+	    case file_action_modify:
+	    case file_action_insulate:
+	    case file_action_transparent:
+		break;
 	    }
 	    from = project_file_version_path(pp2, old_src, &from_unlink);
 
@@ -699,11 +687,20 @@ copy_file_independent(void)
 	    os_become_orig();
 	    if (!output)
 	    {
-		os_mkdir_between(dd, s1, 02755);
+		os_mkdir_between(dd, s1, 02777 & ~original_umask);
 		if (os_exists(to))
 		    os_unlink(to);
 	    }
 	    copy_whole_file(from, to, 0);
+
+	    /*
+	     * set the file mode
+	     */
+	    mode = 0666;
+	    if (old_src->executable)
+		mode |= 0111;
+	    mode &= ~original_umask;
+	    os_chmod(to, mode);
 
 	    /*
 	     * clean up afterwards
@@ -718,7 +715,7 @@ copy_file_independent(void)
 	}
 	else
 	{
-	    fstate_src      old_src;
+	    fstate_src_ty   *old_src;
 
 	    old_src = project_file_find(pp2, s1, view_path_extreme);
 	    if (!old_src)
@@ -736,11 +733,20 @@ copy_file_independent(void)
 	    os_become_orig();
 	    if (!output)
 	    {
-		os_mkdir_between(dd, s1, 02755);
+		os_mkdir_between(dd, s1, 02777 & ~original_umask);
 		if (os_exists(to))
 		    os_unlink(to);
 	    }
 	    copy_whole_file(from, to, 0);
+
+	    /*
+	     * set the file mode
+	     */
+	    mode = 0666;
+	    if (old_src->executable)
+		mode |= 0111;
+	    mode &= ~original_umask;
+	    os_chmod(to, mode);
 	    os_become_undo();
 
 	    /*
@@ -750,7 +756,6 @@ copy_file_independent(void)
 	    str_free(to);
 	}
     }
-    change_free(cp_bogus);
 
     /*
      * release the baseline lock
@@ -778,11 +783,11 @@ copy_file_independent(void)
 }
 
 
-static fstate_src
+static fstate_src_ty *
 fake_removed_file(project_ty *pp, string_ty *filename)
 {
-    fstate_src p_src_data;
-    fstate_src old_src;
+    fstate_src_ty   *p_src_data;
+    fstate_src_ty   *old_src;
 
     p_src_data = project_file_find(pp, filename, view_path_simple);
     assert(p_src_data);
@@ -805,6 +810,18 @@ fake_removed_file(project_ty *pp, string_ty *filename)
 }
 
 
+static int
+delete_file_p(user_ty *up, string_ty *filename)
+{
+    int             result;
+
+    user_become_undo();
+    result = user_delete_file_query(up, filename, 0);
+    user_become(up);
+    return result;
+}
+
+
 static void
 copy_file_main(void)
 {
@@ -816,7 +833,7 @@ copy_file_main(void)
     string_ty       *s1;
     string_ty       *s2;
     int             overwriting;
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
     int             j;
     int             k;
     string_ty       *project_name;
@@ -891,33 +908,23 @@ copy_file_main(void)
 	    break;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, copy_file_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-		duplicate_option_by_name(arglex_token_change, copy_file_usage);
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change_with_branch
+	    (
+		&project_name,
+		&change_number,
+		&branch,
+		copy_file_usage
+	    );
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, copy_file_usage);
-	    if (project_name)
-		duplicate_option_by_name(arglex_token_project, copy_file_usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, copy_file_usage);
+	    continue;
 
 	case arglex_token_nolog:
 	    if (log_style == log_style_none)
@@ -1064,6 +1071,12 @@ copy_file_main(void)
 	    if (rescind)
 		duplicate_option(copy_file_usage);
 	    rescind = 1;
+	    break;
+
+	case arglex_token_keep:
+	case arglex_token_interactive:
+	case arglex_token_keep_not:
+	    user_delete_file_argument(copy_file_usage);
 	    break;
 	}
 	arglex();
@@ -1451,7 +1464,7 @@ copy_file_main(void)
      */
     for (j = 0; j < wl.nstrings; ++j)
     {
-	fstate_src      src_data;
+	fstate_src_ty   *src_data;
 
 	s1 = wl.string[j];
 	if (change_file_find(cp, s1) && !overwriting && !output)
@@ -1465,15 +1478,27 @@ copy_file_main(void)
 	}
 	if (output)
 	{
-	    fstate_src      c_src_data;
+	    fstate_src_ty   *c_src_data;
 
 	    /*
 	     * OK to use a file that "almost" exists
 	     * in combination with the -Output option
 	     */
 	    c_src_data = change_file_find(cp, s1);
-	    if (c_src_data && c_src_data->action == file_action_create)
-		continue;
+	    if (c_src_data)
+	    {
+		switch (c_src_data->action)
+		{
+		case file_action_create:
+		    continue;
+
+		case file_action_modify:
+		case file_action_remove:
+		case file_action_insulate:
+		case file_action_transparent:
+		    break;
+		}
+	    }
 	}
 	src_data = project_file_find(pp2, s1, view_path_simple);
 	if
@@ -1502,13 +1527,24 @@ copy_file_main(void)
 	    ++number_of_errors;
 	    continue;
 	}
-	if (src_data && src_data->usage == file_usage_build && !output)
+	if (src_data && !output)
 	{
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", s1);
-	    change_error(cp, scp, i18n("$filename is built"));
-	    sub_context_delete(scp);
-	    ++number_of_errors;
+	    switch (src_data->usage)
+	    {
+	    case file_usage_source:
+	    case file_usage_config:
+	    case file_usage_test:
+	    case file_usage_manual_test:
+		break;
+
+	    case file_usage_build:
+		scp = sub_context_new();
+		sub_var_set_string(scp, "File_Name", s1);
+		change_error(cp, scp, i18n("$filename is built"));
+		sub_context_delete(scp);
+		++number_of_errors;
+		break;
+	    }
 	}
     }
     if (number_of_errors)
@@ -1532,10 +1568,10 @@ copy_file_main(void)
 	project_file_roll_forward(pp2, delta_date, 0);
     for (j = 0; j < wl.nstrings; ++j)
     {
-	string_ty       *from;
+	string_ty       *from = 0;
 	string_ty       *to;
-	fstate_src      old_src = 0;
-	fstate_src      older_src = 0;
+	fstate_src_ty   *old_src = 0;
+	fstate_src_ty   *older_src = 0;
 
 	s1 = wl.string[j];
 	trace(("s1 = \"%s\";\n", s1->str_text));
@@ -1582,14 +1618,22 @@ copy_file_main(void)
 	    trace(("old_src = %lX\n", (long)old_src));
 	    assert(older_src);
 	    trace(("older_src = %lX\n", (long)older_src));
-	    if (older_src->action == file_action_remove)
+	    switch (older_src->action)
 	    {
+	    case file_action_remove:
 		/* Shouldn't we use whiteout like aerm? */
 		from = str_from_c("/dev/null");
-	    }
-	    else
-	    {
+		break;
+
+	    case file_action_create:
+	    case file_action_modify:
+	    case file_action_insulate:
+	    case file_action_transparent:
+#ifndef DEBUG
+	    default:
+#endif
 		from = project_file_version_path(pp2, older_src, &from_unlink);
+		break;
 	    }
 	    trace(("from = \"%s\";\n", from->str_text));
 
@@ -1603,15 +1647,40 @@ copy_file_main(void)
 
 	    /*
 	     * copy the file
+	     *
+	     * But only if it doesn't exist,
+	     * or the user didn't say --keep.
 	     */
 	    user_become(up);
-	    if (!output)
+	    if (output)
 	    {
-		os_mkdir_between(dd, s1, 02755);
-		if (os_exists(to))
-		    os_unlink(to);
+		copy_whole_file(from, to, 0);
 	    }
-	    copy_whole_file(from, to, 0);
+	    else
+	    {
+		if (os_exists(to) && !os_symlink_query(to))
+		{
+		    /*
+		     * File exists in development directory.
+		     * Be careful replacing it.
+		     */
+		    if (overwriting || delete_file_p(up, s1))
+		    {
+			os_unlink(to);
+			copy_whole_file(from, to, 0);
+		    }
+		}
+		else
+		{
+		    /*
+		     * File does not exist in the development directory.
+		     * (But a symlink may.)
+		     */
+		    os_mkdir_between(dd, s1, 02755);
+		    os_unlink(to);
+		    copy_whole_file(from, to, 0);
+		}
+	    }
 
 	    /*
 	     * set the file mode
@@ -1665,13 +1734,35 @@ copy_file_main(void)
 	     * copy the file
 	     */
 	    user_become(up);
-	    if (!output)
+	    if (output)
 	    {
-		os_mkdir_between(dd, s1, 02755);
-		if (os_exists(to))
-		    os_unlink(to);
+		copy_whole_file(from, to, 0);
 	    }
-	    copy_whole_file(from, to, 0);
+	    else
+	    {
+		if (os_exists(to) && !os_symlink_query(to))
+		{
+		    /*
+		     * File exists in development directory.
+		     * Be careful replacing it.
+		     */
+		    if (overwriting || delete_file_p(up, s1))
+		    {
+			os_unlink(to);
+			copy_whole_file(from, to, 0);
+		    }
+		}
+		else
+		{
+		    /*
+		     * File does not exist in the development directory.
+		     * (But a symlink may.)
+		     */
+		    os_mkdir_between(dd, s1, 02755);
+		    os_unlink(to);
+		    copy_whole_file(from, to, 0);
+		}
+	    }
 
 	    /*
 	     * set the file mode
@@ -1694,8 +1785,8 @@ copy_file_main(void)
 
 	if (!output)
 	{
-	    fstate_src      c_src_data;
-	    fstate_src      p_src_data;
+	    fstate_src_ty   *c_src_data;
+	    fstate_src_ty   *p_src_data;
 
 	    assert(!old_src == !older_src);
 	    p_src_data = older_src;
@@ -1707,14 +1798,26 @@ copy_file_main(void)
 	    c_src_data = change_file_find(cp, s1);
 	    if (!c_src_data)
 		c_src_data = change_file_new(cp, s1);
-	    c_src_data->action =
-		(
-		    p_src_data->action == file_action_remove
-		?
-		    file_action_remove
-		:
-		    (read_only ? file_action_insulate : file_action_modify)
-		);
+	    switch (p_src_data->action)
+	    {
+	    case file_action_remove:
+		c_src_data->action = file_action_remove;
+		break;
+
+	    case file_action_insulate:
+	    case file_action_transparent:
+		assert(0);
+		/* fall through... */
+
+	    case file_action_create:
+	    case file_action_modify:
+#ifndef DEBUG
+	    default:
+#endif
+		c_src_data->action =
+		    (read_only ? file_action_insulate : file_action_modify);
+		break;
+	    }
 	    c_src_data->usage = p_src_data->usage;
 
 	    /*
@@ -1738,25 +1841,26 @@ copy_file_main(void)
 
 		    /*
 		     * If there are no more tests, then the change
-		     *  must be made regression test exempt
+		     * must be made regression test exempt
 		     */
 		    more_tests = 0;
 		    for (f_idx = 0; ; ++f_idx)
 		    {
-			fstate_src      p_src_data_proj;
+			fstate_src_ty   *p_src;
 
-			p_src_data_proj =
-			    project_file_nth(pp2, f_idx, view_path_simple);
-			if (!p_src_data_proj)
+			p_src = project_file_nth(pp2, f_idx, view_path_extreme);
+			if (!p_src)
 			    break;
-			switch (p_src_data_proj->usage)
+			switch (p_src->usage)
 			{
 			case file_usage_test:
 			case file_usage_manual_test:
-			    more_tests = 1;
+			    if (!change_file_find(cp, p_src->file_name))
+				more_tests = 1;
 			    break;
 
 			case file_usage_source:
+			case file_usage_config:
 			case file_usage_build:
 			    continue;
 			}
@@ -1767,6 +1871,7 @@ copy_file_main(void)
 		    break;
 
 		case file_usage_source:
+		case file_usage_config:
 		case file_usage_build:
 		    break;
 		}

@@ -57,7 +57,7 @@ change_file_whiteout_write(change_ty *cp, string_ty *filename, user_ty *up)
 	{
 	    int             umask;
 	    int             mode;
-	    fstate_src      p_src_data;
+	    fstate_src_ty   *p_src_data;
 
 	    /*
 	     * create a junk file in the change

@@ -40,11 +40,11 @@ struct user_ty
     int             gid;
     int             umask;
     string_ty       *ustate_path;
-    ustate          ustate_data;
+    ustate_ty       *ustate_data;
     int             ustate_is_new;
     int             ustate_modified;
     string_ty       *uconf_path;
-    uconf           uconf_data;
+    uconf_ty        *uconf_data;
     long            lock_magic;
     /*
      * if you add anything to this structure,
@@ -129,6 +129,6 @@ void user_uconf_write_xml(user_ty *, struct output_ty *);
   * if at all.  It is preferable to use one of the above interfaces if
   * at all possible.
   */
-uconf user_uconf_get(user_ty *);
+uconf_ty *user_uconf_get(user_ty *);
 
 #endif /* AEGIS_USER_H */

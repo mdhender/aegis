@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 
 
 static void
-metric_check(metric mp, string_ty *fn, change_ty *cp)
+metric_check(metric_ty *mp, string_ty *fn, change_ty *cp)
 {
 	sub_context_ty	*scp;
 
@@ -59,7 +59,7 @@ metric_check(metric mp, string_ty *fn, change_ty *cp)
 
 
 static void
-metric_list_check(metric_list mlp, string_ty *fn, change_ty *cp)
+metric_list_check(metric_list_ty *mlp, string_ty *fn, change_ty *cp)
 {
 	size_t		j;
 
@@ -87,12 +87,12 @@ change_file_metrics_filename(change_ty *cp, string_ty *filename)
 }
 
 
-metric_list
+metric_list_ty *
 change_file_metrics_get(change_ty *cp, string_ty *filename)
 {
 	string_ty	*metrics_filename;
-	metrics		mp;
-	metric_list	mlp;
+	metrics_ty      *mp;
+	metric_list_ty	*mlp;
 
 	/*
 	 * Get the name of the file to read.

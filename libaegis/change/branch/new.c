@@ -27,11 +27,11 @@
 void
 change_branch_new(change_ty *cp)
 {
-	cstate		cstate_data;
+    cstate_ty       *cstate_data;
 
-	cstate_data = change_cstate_get(cp);
-	assert(!cstate_data->branch);
-	cstate_data->cause = change_cause_internal_enhancement;
-	cstate_data->branch = cstate_branch_type.alloc();
-	cstate_data->branch->change = cstate_branch_change_list_type.alloc();
+    cstate_data = change_cstate_get(cp);
+    assert(!cstate_data->branch);
+    cstate_data->cause = change_cause_internal_enhancement;
+    cstate_data->branch = cstate_branch_type.alloc();
+    cstate_data->branch->change = cstate_branch_change_list_type.alloc();
 }

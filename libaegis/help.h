@@ -27,7 +27,7 @@
 
 void help(const char *progname, void (*usage)(void));
 void generic_argument(void(*usage)(void));
-void bad_argument(void(*usage)(void));
+void bad_argument(void(*usage)(void)) NORETURN;
 void mutually_exclusive_options(int name1, int name2, void(*usage)(void));
 void mutually_exclusive_options3(int name1, int name2, int name3,
 	void (*usage)(void));
@@ -41,12 +41,12 @@ void option_needs_dir(int name, void(*usage)(void));
 void option_needs_files(int name, void(*usage)(void));
 
 struct string_ty; /* forward */
-void fatal_too_many_files(void);
-void fatal_user_too_privileged(struct string_ty *);
-void fatal_group_too_privileged(struct string_ty *);
-void fatal_bad_project_name(struct string_ty *);
-void fatal_project_name_too_long(struct string_ty *, int);
-void fatal_date_unknown(const char *);
-void fatal_project_alias_exists(struct string_ty *);
+void fatal_too_many_files(void) NORETURN;
+void fatal_user_too_privileged(struct string_ty *) NORETURN;
+void fatal_group_too_privileged(struct string_ty *) NORETURN;
+void fatal_bad_project_name(struct string_ty *) NORETURN;
+void fatal_project_name_too_long(struct string_ty *, int) NORETURN;
+void fatal_date_unknown(const char *) NORETURN;
+void fatal_project_alias_exists(struct string_ty *) NORETURN;
 
 #endif /* HELP_H */

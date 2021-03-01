@@ -69,7 +69,7 @@ list_change_details(string_ty *project_name,
     output_ty	    *body_col;
     project_ty	    *pp;
     change_ty	    *cp;
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
     user_ty	    *up;
     string_ty	    *line1;
     int		    left;
@@ -224,7 +224,7 @@ list_change_details(string_ty *project_name,
 	{
 	    long	    sub_cn;
 	    change_ty	    *sub_cp;
-	    cstate	    sub_cstate_data;
+	    cstate_ty       *sub_cstate_data;
 
 	    if (!project_change_nth(sub_pp, j, &sub_cn))
 		break;
@@ -328,7 +328,7 @@ list_change_details(string_ty *project_name,
 
 	for (j = 0; j < cstate_data->architecture->length; ++j)
 	{
-	    cstate_architecture_times tp;
+	    cstate_architecture_times_ty *tp;
 	    string_ty	    *s;
 
 	    s = cstate_data->architecture->list[j];
@@ -356,7 +356,7 @@ list_change_details(string_ty *project_name,
 	}
 	for (j = 0; j < cstate_data->architecture_times->length; ++j)
 	{
-	    cstate_architecture_times tp;
+	    cstate_architecture_times_ty *tp;
 
 	    tp = cstate_data->architecture_times->list[j];
 	    if (string_list_member(&done, tp->variant))
@@ -470,7 +470,7 @@ list_change_details(string_ty *project_name,
 
 	for (j = 0;; ++j)
 	{
-	    fstate_src	    src_data;
+	    fstate_src_ty   *src_data;
 
 	    src_data = change_file_nth(cp, j);
 	    if (!src_data)
@@ -486,7 +486,7 @@ list_change_details(string_ty *project_name,
 		!change_file_up_to_date(pp, src_data)
 	    )
 	    {
-		fstate_src	psrc_data;
+		fstate_src_ty   *psrc_data;
 
 		/*
 		 * The current head revision of the
@@ -528,13 +528,25 @@ list_change_details(string_ty *project_name,
 	    output_put_str(file_name_col, src_data->file_name);
 	    if (src_data->move)
 	    {
-		output_end_of_line(file_name_col);
-		output_fputs(file_name_col, "Moved ");
-		if (src_data->action == file_action_create)
-		    output_fputs(file_name_col, "from ");
-		else
-		    output_fputs(file_name_col, "to ");
-		output_put_str(file_name_col, src_data->move);
+		switch (src_data->action)
+		{
+		case file_action_create:
+		    output_end_of_line(file_name_col);
+		    output_fputs(file_name_col, "Moved from ");
+		    output_put_str(file_name_col, src_data->move);
+		    break;
+
+		case file_action_remove:
+		    output_end_of_line(file_name_col);
+		    output_fputs(file_name_col, "Moved to ");
+		    output_put_str(file_name_col, src_data->move);
+		    break;
+
+		case file_action_modify:
+		case file_action_insulate:
+		case file_action_transparent:
+		    break;
+		}
 	    }
 	    col_eoln(colp);
 	}
@@ -576,7 +588,7 @@ list_change_details(string_ty *project_name,
 
 	for (j = 0; j < cstate_data->history->length; ++j)
 	{
-	    cstate_history  history_data;
+	    cstate_history_ty *history_data;
 	    time_t	    t;
 
 	    history_data = cstate_data->history->list[j];

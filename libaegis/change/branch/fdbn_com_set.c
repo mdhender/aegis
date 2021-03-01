@@ -26,19 +26,19 @@
 
 void
 change_branch_forced_develop_begin_notify_command_set(change_ty *cp,
-                                                      string_ty *s)
+    string_ty *s)
 {
-	cstate		cstate_data;
-	cstate_branch	bp;
+    cstate_ty       *cstate_data;
+    cstate_branch_ty *bp;
 
-	cstate_data = change_cstate_get(cp);
-	bp = cstate_data->branch;
-	assert(bp);
-	if (bp->forced_develop_begin_notify_command)
-	{
-		str_free(bp->forced_develop_begin_notify_command);
-		bp->forced_develop_begin_notify_command = 0;
-	}
-	if (s)
-		bp->forced_develop_begin_notify_command = str_copy(s);
+    cstate_data = change_cstate_get(cp);
+    bp = cstate_data->branch;
+    assert(bp);
+    if (bp->forced_develop_begin_notify_command)
+    {
+	str_free(bp->forced_develop_begin_notify_command);
+	bp->forced_develop_begin_notify_command = 0;
+    }
+    if (s)
+	bp->forced_develop_begin_notify_command = str_copy(s);
 }

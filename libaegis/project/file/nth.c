@@ -27,11 +27,11 @@
 #include <trace.h>
 
 
-fstate_src
+fstate_src_ty *
 project_file_nth(project_ty *pp, size_t n, view_path_ty as_view_path)
 {
     string_list_ty  *wlp;
-    fstate_src      src_data;
+    fstate_src_ty   *src_data;
 
     trace(("project_file_nth(pp = %8.8lX, n = %ld)\n{\n", (long)pp, (long)n));
     /* do not free wlp, it's cached */

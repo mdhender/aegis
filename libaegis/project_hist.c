@@ -539,7 +539,7 @@ void
 project_description_set(project_ty *pp, string_ty *s)
 {
     change_ty       *cp;
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
 
     /*
      * set the trunk change state file
@@ -559,7 +559,7 @@ string_ty *
 project_description_get(project_ty *pp)
 {
     change_ty       *cp;
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
 
     cp = project_change_get(pp);
     cstate_data = change_cstate_get(cp);
@@ -571,7 +571,7 @@ string_ty *
 project_version_previous_get(project_ty *pp)
 {
     change_ty       *cp;
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
 
     cp = project_change_get(pp);
     cstate_data = change_cstate_get(cp);
@@ -583,7 +583,7 @@ void
 project_version_previous_set(project_ty *pp, string_ty *s)
 {
     change_ty       *cp;
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
 
     cp = project_change_get(pp);
     cstate_data = change_cstate_get(cp);

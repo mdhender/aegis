@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,14 +33,14 @@
 
 
 string_ty *
-project_file_version_path(project_ty *pp, fstate_src src, int *unlink_p)
+project_file_version_path(project_ty *pp, fstate_src_ty *src, int *unlink_p)
 {
-    fstate_src      old_src;
+    fstate_src_ty   *old_src;
     project_ty      *ppp;
     change_ty       *cp;
     string_ty       *filename;
-    history_version ed;
-    fstate_src      reconstruct;
+    history_version_ty *ed;
+    fstate_src_ty   *reconstruct;
 
     trace(("project_file_version_path(pp = %08lX, src = %08lX, "
 	"unlink_p = %08lX)\n{\n", (long)pp, (long)src, (long)unlink_p));
@@ -59,14 +59,34 @@ project_file_version_path(project_ty *pp, fstate_src src, int *unlink_p)
 	old_src = change_file_find(cp, src->file_name);
 	if (!old_src)
 	    continue;
-	if (old_src->about_to_be_created_by)
+	switch (old_src->action)
+	{
+	case file_action_remove:
+	case file_action_transparent:
 	    continue;
-	if (old_src->about_to_be_copied_by)
-	    continue;
-	if (old_src->action == file_action_remove)
-	    continue;
-	if (old_src->action == file_action_transparent)
-	    continue;
+
+	case file_action_create:
+	case file_action_modify:
+	case file_action_insulate:
+#ifndef DEBUG
+	default:
+#endif
+	    /* should be file_action_remove */
+	    assert(!old_src->deleted_by);
+	    if (old_src->deleted_by)
+		continue;
+
+	    /* should be file_action_transparent */
+	    assert(!old_src->about_to_be_created_by);
+	    if (old_src->about_to_be_created_by)
+		continue;
+
+	    /* should be file_action_transparent */
+	    assert(!old_src->about_to_be_copied_by);
+	    if (old_src->about_to_be_copied_by)
+		continue;
+	    break;
+	}
 	assert(old_src->edit);
 	assert(old_src->edit->revision);
 	if (str_equal(old_src->edit->revision, ed->revision))

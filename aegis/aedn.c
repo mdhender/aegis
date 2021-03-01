@@ -25,6 +25,8 @@
 #include <aedn.h>
 #include <ael/project/history.h>
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <change/file.h>
 #include <commit.h>
 #include <error.h>
@@ -87,41 +89,22 @@ delta_name_list(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, delta_name_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-		duplicate_option_by_name(arglex_token_change, delta_name_usage);
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty *scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change
+	    (
+		&project_name,
+		&change_number,
+		delta_name_usage
+	    );
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, delta_name_usage);
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    delta_name_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, delta_name_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -144,7 +127,7 @@ delta_name_main(void)
     int             stomp;
     project_ty      *pp;
     user_ty         *up;
-    pconf           pconf_data;
+    pconf_ty        *pconf_data;
     time_t          delta_date;
 
     trace(("delta_name_main()\n{\n"));
@@ -228,35 +211,14 @@ delta_name_main(void)
 
 	case arglex_token_change:
 	case arglex_token_delta_from_change:
-	    if (arglex() != arglex_token_number)
-	    {
-		option_needs_number
-		(
-		    arglex_token_delta_from_change,
-		    delta_name_usage
-		);
-		/*NOTREACHED*/
-	    }
-	    if (change_number)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_delta_from_change,
-		    delta_name_usage
-		);
-	    }
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex();
+	    arglex_parse_change
+	    (
+		&project_name,
+		&change_number,
+		delta_name_usage
+	    );
+	    continue;
 
 	case arglex_token_delta_date:
 	    if (delta_date != (time_t)-1)
@@ -272,12 +234,9 @@ delta_name_main(void)
 	    break;
 
 	case arglex_token_project:
-	    if (project_name)
-		duplicate_option(delta_name_usage);
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, delta_name_usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, delta_name_usage);
+	    continue;
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
@@ -418,7 +377,7 @@ delta_name_main(void)
 	project_file_roll_forward(pp, delta_date, 0);
 	for (j = 0;; j++)
 	{
-	    fstate_src      src;
+	    fstate_src_ty   *src;
 	    file_event_ty   *fep;
 
 	    src = project_file_nth(pp, j, view_path_simple);
@@ -434,12 +393,19 @@ delta_name_main(void)
 	    }
 	    src = change_file_find(fep->cp, src->file_name);
 	    assert(src);
-	    if (src->action == file_action_remove)
+	    switch (src->action)
 	    {
+	    case file_action_remove:
 		/*
 		 * File removed before this delta.
 		 */
 		continue;
+
+	    case file_action_create:
+	    case file_action_modify:
+	    case file_action_insulate:
+	    case file_action_transparent:
+		break;
 	    }
 
 	    /*

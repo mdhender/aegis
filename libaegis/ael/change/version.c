@@ -37,7 +37,7 @@ void
 list_version(string_ty *project_name, long change_number, string_list_ty *args)
 {
     project_ty	    *pp;
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
     change_ty	    *cp;
     user_ty	    *up;
     string_ty	    *vs;

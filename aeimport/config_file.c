@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -45,16 +45,16 @@ config_file(string_ty *project_name, format_ty *format, time_t when)
 {
     project_ty      *pp;
     long	    change_number;
-    fstate_src      c_src_data;
-    fstate_src      p_src_data;
+    fstate_src_ty   *c_src_data;
+    fstate_src_ty   *p_src_data;
     change_ty	    *cp;
-    pconf	    pconf_data;
+    pconf_ty	    *pconf_data;
     string_ty	    *bl;
     string_ty	    *pconf_file_name;
-    cstate_history  history_data;
+    cstate_history_ty *history_data;
     user_ty	    *up;
-    cstate	    cstate_data;
-    cstate	    p_cstate_data;
+    cstate_ty	    *cstate_data;
+    cstate_ty	    *p_cstate_data;
     string_ty	    *the_config_file;
     string_ty	    *path;
     string_ty	    *path_d;

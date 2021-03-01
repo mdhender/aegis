@@ -24,6 +24,8 @@
 #include <ac/stdlib.h>
 
 #include <arglex3.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <change.h>
 #include <change/branch.h>
 #include <change/file.h>
@@ -76,7 +78,7 @@ send(void)
     project_ty      *pp;
     change_ty       *cp;
     user_ty         *up;
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
     string_ty       *output;
     size_t          j;
     int             baseline;
@@ -146,34 +148,17 @@ send(void)
 
 	case arglex_token_change:
 	case arglex_token_delta_from_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, usage);
-	    /* fall throught... */
+	    arglex();
+	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-		duplicate_option_by_name(arglex_token_change, usage);
-	    change_number = arglex_value.alv_number;
-	    if (!change_number)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 0)
-	    {
-		sub_context_ty  *scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-	    }
-	    break;
+	    arglex_parse_change(&project_name, &change_number, usage);
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, usage);
-	    if (project_name)
-		duplicate_option_by_name(arglex_token_project, usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, usage);
+	    continue;
 
 	case arglex_token_branch:
 	    if (branch)
@@ -482,22 +467,35 @@ send(void)
     string_list_constructor(&wl);
     for (j = 0;; ++j)
     {
-	fstate_src      src_data;
+	fstate_src_ty   *src_data;
 
 	src_data = change_file_nth(cp, j);
 	if (!src_data)
 	    break;
-	if (src_data->action == file_action_insulate)
+	switch (src_data->action)
+	{
+	case file_action_create:
+	case file_action_remove:
+	    break;
+
+	case file_action_insulate:
+	case file_action_transparent:
 	    continue;
-	if (src_data->about_to_be_created_by)
-	    continue;
-	if
-	(
-	    src_data->usage == file_usage_build
-	&&
-	    src_data->action == file_action_modify
-	)
-	    continue;
+
+	case file_action_modify:
+	    switch (src_data->usage)
+	    {
+	    case file_usage_source:
+	    case file_usage_config:
+	    case file_usage_test:
+	    case file_usage_manual_test:
+		break;
+
+	    case file_usage_build:
+		continue;
+	    }
+	    break;
+	}
 	string_list_append(&wl, src_data->file_name);
     }
     if (entire_source)
@@ -508,7 +506,7 @@ send(void)
 	 */
 	for (j = 0;; ++j)
 	{
-	    fstate_src      src_data;
+	    fstate_src_ty   *src_data;
 
 	    src_data = project_file_nth(pp, j, view_path_extreme);
 	    if (!src_data)
@@ -530,7 +528,7 @@ send(void)
     for (j = 0; j < wl.nstrings; ++j)
     {
 	string_ty	*filename;
-	fstate_src      csrc = 0;
+	fstate_src_ty   *csrc = 0;
 	long            len;
 	string_ty       *abs_filename = 0;
 	int             abs_filename_unlink = 0;
@@ -557,12 +555,28 @@ send(void)
 	    csrc = change_file_find(cp, filename);
 	    if (!csrc)
 		csrc = project_file_find(pp, filename, view_path_simple);
-	    if (csrc->action == file_action_remove)
+	    switch (csrc->action)
+	    {
+	    case file_action_create:
+	    case file_action_modify:
+	    case file_action_transparent:
+		break;
+
+	    case file_action_remove:
+	    case file_action_insulate:
 		continue;
-	    if (csrc->action == file_action_insulate)
+	    }
+	    switch (csrc->usage)
+	    {
+	    case file_usage_build:
 		continue;
-	    if (csrc->usage == file_usage_build)
-		continue;
+
+	    case file_usage_source:
+	    case file_usage_config:
+	    case file_usage_test:
+	    case file_usage_manual_test:
+		break;
+	    }
 	    if (csrc->deleted_by)
 		continue;
 	    if (csrc->about_to_be_created_by)
@@ -594,12 +608,28 @@ send(void)
 	    assert(csrc);
 	    if (!csrc)
 		continue;
-	    if (csrc->action == file_action_remove)
+	    switch (csrc->action)
+	    {
+	    case file_action_create:
+	    case file_action_modify:
+	    case file_action_transparent:
+		break;
+
+	    case file_action_remove:
+	    case file_action_insulate:
 		continue;
-	    if (csrc->action == file_action_insulate)
+	    }
+	    switch (csrc->usage)
+	    {
+	    case file_usage_source:
+	    case file_usage_config:
+	    case file_usage_test:
+	    case file_usage_manual_test:
+		break;
+
+	    case file_usage_build:
 		continue;
-	    if (csrc->usage == file_usage_build)
-		continue;
+	    }
 	    abs_filename =
 		project_file_version_path
 		(

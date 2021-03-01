@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,24 +27,24 @@
 void
 change_copyright_year_append(change_ty *cp, int year)
 {
-	cstate		cstate_data;
-	size_t		j;
-	long		*year_p;
-	type_ty		*type_p;
+    cstate_ty       *cstate_data;
+    size_t          j;
+    long            *year_p;
+    type_ty         *type_p;
 
-	cstate_data = change_cstate_get(cp);
-	if (!cstate_data->copyright_years)
-		cstate_data->copyright_years =
-			cstate_copyright_years_list_type.alloc();
-	for (j = 0; j < cstate_data->copyright_years->length; ++j)
-		if (cstate_data->copyright_years->list[j] == year)
-			return;
-	year_p =
-		cstate_copyright_years_list_type.list_parse
-		(
-			cstate_data->copyright_years,
-			&type_p
-		);
-	assert(type_p == &integer_type);
-	*year_p = year;
+    cstate_data = change_cstate_get(cp);
+    if (!cstate_data->copyright_years)
+	cstate_data->copyright_years =
+    	    cstate_copyright_years_list_type.alloc();
+    for (j = 0; j < cstate_data->copyright_years->length; ++j)
+	if (cstate_data->copyright_years->list[j] == year)
+    	    return;
+    year_p =
+	cstate_copyright_years_list_type.list_parse
+	(
+    	    cstate_data->copyright_years,
+    	    &type_p
+	);
+    assert(type_p == &integer_type);
+    *year_p = year;
 }

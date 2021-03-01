@@ -32,7 +32,8 @@
 string_list_ty *
 project_file_list_get(project_ty *pp, view_path_ty as_view_path)
 {
-    trace(("project_file_list_get(pp = %8.8lX)\n{\n"/*}*/, (long)pp));
+    trace(("project_file_list_get(pp = %8.8lX, as_view_path = %s)\n{\n",
+	(long)pp, view_path_ename(as_view_path)));
 #ifdef DEBUG
     switch (as_view_path)
     {
@@ -52,7 +53,7 @@ project_file_list_get(project_ty *pp, view_path_ty as_view_path)
 	project_ty	*ppp;
 	change_ty	*cp;
 	long		j;
-	fstate_src	fsp;
+	fstate_src_ty   *fsp;
 	string_list_ty	*wlp;
 	symtab_ty	*tmp;
 	symtab_iterator	*tmpi;
@@ -103,27 +104,41 @@ project_file_list_get(project_ty *pp, view_path_ty as_view_path)
 
 		case view_path_simple:
 		case view_path_extreme:
-		    /*
-		     * These cases both mean that transparent files
-		     * are resolved (the underlying file is shown).
-		     */
-		    if (fsp->action == file_action_transparent)
+		    switch (fsp->action)
+		    {
+		    case file_action_transparent:
+			/*
+			 * These cases both mean that transparent files
+			 * are resolved (the underlying file is shown).
+			 */
 			continue;
 
-		    /*
-		     * For now, we keep removed files in the symbol table.
-		     * (Takes precedence over the next two.)
-		     */
-		    if (fsp->deleted_by || fsp->action == file_action_remove)
+		    case file_action_remove:
+			/*
+			 * For now, we keep removed files in the symbol table.
+			 */
 			break;
 
-		    /*
-		     * These two are transparent, for locking purposes.
-		     */
-		    if (fsp->about_to_be_created_by)
-			continue;
-		    if (fsp->about_to_be_copied_by)
-			continue;
+		    case file_action_create:
+		    case file_action_modify:
+		    case file_action_insulate:
+#ifndef DEBUG
+		    default:
+#endif
+			/* should be file_action_remove */
+			assert(!fsp->deleted_by);
+			if (fsp->deleted_by)
+			    break;
+			/* should be file_action_transparent */
+			assert(!fsp->about_to_be_created_by);
+			if (fsp->about_to_be_created_by)
+			    continue;
+			/* should be file_action_transparent */
+			assert(!fsp->about_to_be_copied_by);
+			if (fsp->about_to_be_copied_by)
+			    continue;
+			break;
+		    }
 		    break;
 		}
 		symtab_assign(tmp, fsp->file_name, fsp);
@@ -152,13 +167,26 @@ project_file_list_get(project_ty *pp, view_path_ty as_view_path)
 		 */
 		fsp = symtab_query(tmp, key);
 		assert(fsp);
-		if
-		(
-		    fsp
-		&&
-		    (fsp->deleted_by || fsp->action == file_action_remove)
-		)
+		if (!fsp)
+		    break;
+		switch (fsp->action)
+		{
+		case file_action_remove:
 		    continue;
+
+		case file_action_create:
+		case file_action_modify:
+		case file_action_insulate:
+		case file_action_transparent:
+#ifndef DEBUG
+		default:
+#endif
+		    /* should be file_action_remove */
+		    assert(!fsp->deleted_by);
+		    if (fsp->deleted_by)
+			continue;
+		    break;
+		}
 		break;
 	    }
 	    string_list_append(wlp, key);
@@ -180,6 +208,6 @@ project_file_list_get(project_ty *pp, view_path_ty as_view_path)
 	pp->file_list[as_view_path] = wlp;
     }
     trace(("return %8.8lX;\n", (long)pp->file_list[as_view_path]));
-    trace((/*{*/"}\n"));
+    trace(("}\n"));
     return pp->file_list[as_view_path];
 }

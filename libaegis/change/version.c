@@ -29,7 +29,7 @@ change_version_get(change_ty *cp)
 {
     string_ty       *s1;
     string_ty       *s2;
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
 
     s1 = project_version_short_get(cp->pp);
     cstate_data = change_cstate_get(cp);

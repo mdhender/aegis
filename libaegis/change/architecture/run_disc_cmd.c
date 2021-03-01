@@ -34,7 +34,7 @@
 string_ty *
 change_run_architecture_discriminator_command(change_ty *cp)
 {
-    pconf           pconf_data;
+    pconf_ty        *pconf_data;
     string_ty       *the_command;
     string_ty       *dir;
     user_ty         *up;

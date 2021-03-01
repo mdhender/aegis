@@ -30,40 +30,40 @@
 void
 change_become(change_ty *cp)
 {
-	trace(("change_become(cp = %08lX)\n{\n", (long)cp));
-	assert(cp->reference_count >= 1);
-	project_become(cp->pp);
-	trace(("}\n"));
+    trace(("change_become(cp = %08lX)\n{\n", (long)cp));
+    assert(cp->reference_count >= 1);
+    project_become(cp->pp);
+    trace(("}\n"));
 }
 
 
 void
 change_become_undo()
 {
-	trace(("change_become_undo()\n{\n"));
-	project_become_undo();
-	trace(("}\n"));
+    trace(("change_become_undo()\n{\n"));
+    project_become_undo();
+    trace(("}\n"));
 }
 
 
 void
 change_developer_become(change_ty *cp)
 {
-	string_ty       *name;
-	user_ty         *up;
+    string_ty       *name;
+    user_ty         *up;
 
-	trace(("change_become(cp = %08lX)\n{\n", (long)cp));
-	name = change_developer_name(cp);
-	up = user_symbolic(cp->pp, name);
-	user_become(up);
-	trace(("}\n"));
+    trace(("change_become(cp = %08lX)\n{\n", (long)cp));
+    name = change_developer_name(cp);
+    up = user_symbolic(cp->pp, name);
+    user_become(up);
+    trace(("}\n"));
 }
 
 
 void
 change_developer_become_undo()
 {
-	trace(("change_become_undo()\n{\n"));
-	user_become_undo();
-	trace(("}\n"));
+    trace(("change_become_undo()\n{\n"));
+    user_become_undo();
+    trace(("}\n"));
 }

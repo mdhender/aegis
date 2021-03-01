@@ -49,8 +49,8 @@ passwd_null(void)
 #ifndef SOURCE_FORGE_HACK
 	result->pw_name = 0;
 	result->pw_passwd = 0;
-	result->pw_uid = (__uid_t)-1;
-	result->pw_gid = (__gid_t)-1;
+	result->pw_uid = ~0;
+	result->pw_gid = ~0;
 	result->pw_gecos = 0;
 #ifdef HAVE_pw_comment
 	result->pw_comment = 0;

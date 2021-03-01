@@ -25,55 +25,47 @@
 #include <trace.h>
 
 
-cstate_architecture_times
+cstate_architecture_times_ty *
 change_architecture_times_find(change_ty *cp, string_ty *un)
 {
-	cstate		cstate_data;
-	long		j;
-	cstate_architecture_times tp;
+    cstate_ty       *cstate_data;
+    long            j;
+    cstate_architecture_times_ty *tp;
 
-	/*
-	 * find this variant in the times list
-	 */
-	trace(("change_architecture_times_find(cp = %8.8lX, un = %8.8lX)\n{\n"
-		/*}*/, (long)cp, (long)un));
-	assert(cp->reference_count >= 1);
-	cstate_data = change_cstate_get(cp);
-	if (!cstate_data->architecture_times)
-		cstate_data->architecture_times =
-			cstate_architecture_times_list_type.alloc();
-	for (j = 0; j < cstate_data->architecture_times->length; ++j)
-	{
-		if
-		(
-			str_equal
-			(
-				un,
-				cstate_data->architecture_times->list[j]->
-					variant
-			)
-		)
-			break;
-	}
-	if (j >= cstate_data->architecture_times->length)
-	{
-		type_ty		*type_p;
-		cstate_architecture_times *data_p;
+    /*
+     * find this variant in the times list
+     */
+    trace(("change_architecture_times_find(cp = %8.8lX, un = %8.8lX)\n{\n",
+	(long)cp, (long)un));
+    assert(cp->reference_count >= 1);
+    cstate_data = change_cstate_get(cp);
+    if (!cstate_data->architecture_times)
+	cstate_data->architecture_times =
+    	    cstate_architecture_times_list_type.alloc();
+    for (j = 0; j < cstate_data->architecture_times->length; ++j)
+    {
+	if (str_equal(un, cstate_data->architecture_times->list[j]->variant))
+	    break;
+    }
+    if (j >= cstate_data->architecture_times->length)
+    {
+	type_ty		*type_p;
+	cstate_architecture_times_ty **data_p;
 
-		data_p =
-			cstate_architecture_times_list_type.list_parse
-			(
-				cstate_data->architecture_times,
-				&type_p
-			);
-		assert(type_p == &cstate_architecture_times_type);
-		tp = cstate_architecture_times_type.alloc();
-		*data_p = tp;
-		tp->variant = str_copy(un);
-	}
-	else
-		tp = cstate_data->architecture_times->list[j];
-	trace(("return %8.8lX;\n", (long)tp));
-	trace((/*{*/"}\n"));
-	return tp;
+	data_p =
+	    cstate_architecture_times_list_type.list_parse
+	    (
+	       	cstate_data->architecture_times,
+	       	&type_p
+	    );
+	assert(type_p == &cstate_architecture_times_type);
+	tp = cstate_architecture_times_type.alloc();
+	*data_p = tp;
+	tp->variant = str_copy(un);
+    }
+    else
+	    tp = cstate_data->architecture_times->list[j];
+    trace(("return %8.8lX;\n", (long)tp));
+    trace(("}\n"));
+    return tp;
 }

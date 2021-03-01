@@ -28,43 +28,43 @@
 void
 change_branch_developer_add(change_ty *cp, string_ty *user_name)
 {
-	cstate		cstate_data;
-	type_ty		*type_p;
-	string_ty	**spp;
-	cstate_branch_developer_list lp;
-	size_t		j;
+    cstate_ty       *cstate_data;
+    type_ty         *type_p;
+    string_ty       **spp;
+    cstate_branch_developer_list_ty *lp;
+    size_t          j;
 
-	trace(("change_branch_developer_add(cp = %8.8lX, user_name = \
-\"%s\")\n{\n"/*}*/, (long)cp, user_name->str_text));
-	cstate_data = change_cstate_get(cp);
-	assert(cstate_data->branch);
-	if (!cstate_data->branch->developer)
-		cstate_data->branch->developer =
-			cstate_branch_developer_list_type.alloc();
-	lp = cstate_data->branch->developer;
+    trace(("change_branch_developer_add(cp = %8.8lX, user_name = \"%s\")\n{\n",
+	(long)cp, user_name->str_text));
+    cstate_data = change_cstate_get(cp);
+    assert(cstate_data->branch);
+    if (!cstate_data->branch->developer)
+	cstate_data->branch->developer =
+    	    cstate_branch_developer_list_type.alloc();
+    lp = cstate_data->branch->developer;
 
-	/*
-	 * make sure we don't have her already
-	 */
-	for (j = 0; j < lp->length; ++j)
+    /*
+     * make sure we don't have her already
+     */
+    for (j = 0; j < lp->length; ++j)
+    {
+	if (str_equal(user_name, lp->list[j]))
 	{
-		if (str_equal(user_name, lp->list[j]))
-		{
-			trace((/*{*/"}\n"));
-			return;
-		}
+    	    trace((/*{*/"}\n"));
+    	    return;
 	}
+    }
 
-	/*
-	 * append her to the list
-	 */
-	spp =
-		cstate_branch_developer_list_type.list_parse
-		(
-			cstate_data->branch->developer,
-			&type_p
-		);
-	assert(type_p == &string_type);
-	*spp = str_copy(user_name);
-	trace((/*{*/"}\n"));
+    /*
+     * append her to the list
+     */
+    spp =
+	cstate_branch_developer_list_type.list_parse
+	(
+    	    cstate_data->branch->developer,
+    	    &type_p
+	);
+    assert(type_p == &string_type);
+    *spp = str_copy(user_name);
+    trace(("}\n"));
 }

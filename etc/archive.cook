@@ -452,6 +452,13 @@ if [example-make-rcs-baseline] then
 }
 
 archive/index.html: archive/[project_short].html
+    set shallow
+{
+    cp [resolve [need]] [target];
+}
+
+archive/change_log.txt: lib/en/change_log/change_log.txt
+    set shallow
 {
     cp [resolve [need]] [target];
 }

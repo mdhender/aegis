@@ -40,7 +40,7 @@
 static string_ty *
 change_brief_description_get(change_ty *cp)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
 
     cstate_data = change_cstate_get(cp);
     return cstate_data->brief_description;
@@ -122,7 +122,7 @@ get_file_history(change_ty *master_cp, string_ty *filename,
 	    for (k = 0; k < felp->length; ++k)
 	    {
 		file_event_ty	*fep;
-		fstate_src	src2_data;
+		fstate_src_ty   *src2_data;
 		string_ty	*s;
 		const char      *html_class;
 
@@ -194,7 +194,7 @@ get_file_history(change_ty *master_cp, string_ty *filename,
 	 */
 	if (!master_cp->bogus && !change_is_completed(master_cp))
 	{
-	    fstate_src      src_data;
+	    fstate_src_ty   *src_data;
 
 	    src_data = change_file_find(master_cp, the_file_name);
 	    if (src_data)

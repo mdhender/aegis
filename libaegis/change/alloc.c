@@ -30,37 +30,37 @@
 change_ty *
 change_alloc(project_ty *pp, long number)
 {
-	change_ty	*cp;
+    change_ty       *cp;
 
-	trace(("change_alloc(pp = %08lX, number = %ld)\n{\n"/*}*/, (long)pp,
-	    number));
-	assert(number >= 1 || number == MAGIC_ZERO);
-	cp = (change_ty *)mem_alloc(sizeof(change_ty));
-	cp->reference_count = 1;
-	cp->pp = project_copy(pp);
-	cp->number = number;
+    trace(("change_alloc(pp = %08lX, number = %ld)\n{\n", (long)pp,
+	number));
+    assert(number >= 1 || number == MAGIC_ZERO);
+    cp = (change_ty *)mem_alloc(sizeof(change_ty));
+    cp->reference_count = 1;
+    cp->pp = project_copy(pp);
+    cp->number = number;
 
-	cp->cstate_data = 0;
-	cp->cstate_filename = 0;
-	cp->cstate_is_a_new_file = 0;
-	cp->fstate_data = 0;
-	cp->fstate_stp = 0;
-	cp->fstate_filename = 0;
-	cp->fstate_is_a_new_file = 0;
+    cp->cstate_data = 0;
+    cp->cstate_filename = 0;
+    cp->cstate_is_a_new_file = 0;
+    cp->fstate_data = 0;
+    cp->fstate_stp = 0;
+    cp->fstate_filename = 0;
+    cp->fstate_is_a_new_file = 0;
 
-	cp->architecture_name = 0;
-	cp->bogus = 0;
-	cp->top_path_unresolved = 0;
-	cp->top_path_resolved = 0;
-	cp->development_directory_unresolved = 0;
-	cp->development_directory_resolved = 0;
-	cp->integration_directory_unresolved = 0;
-	cp->integration_directory_resolved = 0;
-	cp->lock_magic = 0;
-	cp->logfile = 0;
-	cp->pconf_data = 0;
-	cp->pconf_path = 0;
-	trace(("return %08lX;\n", (long)cp));
-	trace((/*{*/"}\n"));
-	return cp;
+    cp->architecture_name = 0;
+    cp->bogus = 0;
+    cp->top_path_unresolved = 0;
+    cp->top_path_resolved = 0;
+    cp->development_directory_unresolved = 0;
+    cp->development_directory_resolved = 0;
+    cp->integration_directory_unresolved = 0;
+    cp->integration_directory_resolved = 0;
+    cp->lock_magic = 0;
+    cp->logfile = 0;
+    cp->pconf_data = 0;
+    cp->pconf_path = 0;
+    trace(("return %08lX;\n", (long)cp));
+    trace(("}\n"));
+    return cp;
 }

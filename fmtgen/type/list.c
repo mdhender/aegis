@@ -48,11 +48,11 @@ gen_include(type_ty *type)
     indent_printf("#define %s_DEF\n", this_thing->name->str_text);
     indent_printf
     (
-	"typedef struct %s *%s;\n",
+	"typedef struct %s_ty %s_ty;\n",
 	this_thing->name->str_text,
 	this_thing->name->str_text
     );
-    indent_printf("struct %s\n", this_thing->name->str_text);
+    indent_printf("struct %s_ty\n", this_thing->name->str_text);
     indent_printf("{\n");
     indent_printf("%s\1length;\n", "size_t");
     indent_printf("%s\1maximum;\n", "size_t");
@@ -68,13 +68,13 @@ gen_include(type_ty *type)
     indent_putchar('\n');
     indent_printf
     (
-	"void %s_write(struct output_ty *, const char *, %s);\n",
+	"void %s_write(struct output_ty *, const char *, %s_ty *);\n",
 	this_thing->name->str_text,
 	this_thing->name->str_text
     );
     indent_printf
     (
-	"void %s_write_xml(struct output_ty *, const char *, %s);\n",
+	"void %s_write_xml(struct output_ty *, const char *, %s_ty *);\n",
 	this_thing->name->str_text,
 	this_thing->name->str_text
     );
@@ -89,7 +89,7 @@ gen_include_declarator(type_ty *type, string_ty *variable_name, int is_a_list)
     deref = (is_a_list ? "*" : "");
     indent_printf
     (
-	"%s\1%s%s;\n",
+	"%s_ty\1%s*%s;\n",
 	type->name->str_text,
 	deref,
 	variable_name->str_text
@@ -116,12 +116,12 @@ gen_code(type_ty *type)
     indent_printf("void\n");
     indent_printf
     (
-	"%s_write(output_ty *fp, const char *name, %s this_thing)\n",
+	"%s_write(output_ty *fp, const char *name, %s_ty *this_thing)\n",
 	this_thing->name->str_text,
 	this_thing->name->str_text
     );
     indent_printf("{\n");
-    indent_printf("%s\1j;\n", "size_t");
+    indent_printf("size_t\1j;\n");
     indent_putchar('\n');
     indent_printf("if (!this_thing)\n");
     indent_more();
@@ -161,12 +161,12 @@ gen_code(type_ty *type)
     indent_printf("void\n");
     indent_printf
     (
-	"%s_write_xml(output_ty *fp, const char *name, %s this_thing)\n",
+	"%s_write_xml(output_ty *fp, const char *name, %s_ty *this_thing)\n",
 	this_thing->name->str_text,
 	this_thing->name->str_text
     );
     indent_printf("{\n");
-    indent_printf("%s\1j;\n", "size_t");
+    indent_printf("size_t\1j;\n");
     indent_putchar('\n');
     indent_printf("if (!this_thing)\n");
     indent_more();
@@ -201,12 +201,12 @@ gen_code(type_ty *type)
     indent_printf("static void *\n");
     indent_printf("%s_alloc(void)\n", this_thing->name->str_text);
     indent_printf("{\n");
-    indent_printf("%s\1result;\n\n", this_thing->name->str_text);
+    indent_printf("%s_ty\1*result;\n\n", this_thing->name->str_text);
     indent_printf("trace((\"%s_alloc()\\n{\\n\"));\n",
                   this_thing->name->str_text);
     indent_printf
     (
-	"result = mem_alloc(sizeof(struct %s));\n",
+	"result = mem_alloc(sizeof(%s_ty));\n",
 	this_thing->name->str_text
     );
     indent_printf("result->list = 0;\n");
@@ -221,8 +221,8 @@ gen_code(type_ty *type)
     indent_printf("static void\n");
     indent_printf("%s_free(void *that)\n", this_thing->name->str_text);
     indent_printf("{\n");
-    indent_printf("%s\1this_thing = that;\n", this_thing->name->str_text);
-    indent_printf("%s\1j;\n", "size_t");
+    indent_printf("%s_ty\1*this_thing = that;\n", this_thing->name->str_text);
+    indent_printf("size_t\1j;\n");
     indent_putchar('\n');
     indent_printf("if (!this_thing)\n");
     indent_more();
@@ -257,8 +257,8 @@ gen_code(type_ty *type)
 	this_thing->name->str_text
     );
     indent_printf("{\n");
-    indent_printf("%s\1this_thing = that;\n", this_thing->name->str_text);
-    indent_printf("%s\1*addr;\n", "void");
+    indent_printf("%s_ty\1*this_thing = that;\n", this_thing->name->str_text);
+    indent_printf("void\1*addr;\n");
     indent_putchar('\n');
     indent_printf
     (
@@ -290,12 +290,13 @@ gen_code(type_ty *type)
     indent_printf("static rpt_value_ty *\n");
     indent_printf("%s_convert(void *that)\n", this_thing->name->str_text);
     indent_printf("{\n");
-    indent_printf("%s\1this_thing;\n", this_thing->name->str_text);
-    indent_printf("%s\1*result;\n", "rpt_value_ty");
-    indent_printf("%s\1j;\n", "size_t");
-    indent_printf("%s\1*vp;\n", "rpt_value_ty");
+    indent_printf("%s_ty\1*this_thing;\n", this_thing->name->str_text);
+    indent_printf("rpt_value_ty\1*result;\n");
+    indent_printf("size_t\1j;\n");
+    indent_printf("rpt_value_ty\1*vp;\n");
     indent_putchar('\n');
-    indent_printf("this_thing = *(%s *)that;\n", this_thing->name->str_text);
+    indent_printf("this_thing = *(%s_ty **)that;\n",
+	this_thing->name->str_text);
     indent_printf("if (!this_thing)\n");
     indent_more();
     indent_printf("return 0;\n");

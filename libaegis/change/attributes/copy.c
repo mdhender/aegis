@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000, 2002 Peter Miller;
+ *	Copyright (C) 2000, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 
 
 void
-change_attributes_copy(cattr a, cstate s)
+change_attributes_copy(cattr_ty *a, cstate_ty *s)
 {
     trace(("cattr_copy()\n{\n"));
     if (!a->description && s->description)
@@ -64,7 +64,7 @@ change_attributes_copy(cattr a, cstate s)
 
     if (!a->architecture)
 	a->architecture =
-    	    (cattr_architecture_list)cattr_architecture_list_type.alloc();
+    	    (cattr_architecture_list_ty *)cattr_architecture_list_type.alloc();
     if (!a->architecture->length)
     {
 	long		j;
@@ -89,7 +89,7 @@ change_attributes_copy(cattr a, cstate s)
     {
 	if (!a->copyright_years)
 	    a->copyright_years =
-	       	(cattr_copyright_years_list)
+	       	(cattr_copyright_years_list_ty *)
 		cattr_copyright_years_list_type.alloc();
 	if (!a->copyright_years->length)
 	{

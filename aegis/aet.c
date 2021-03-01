@@ -26,6 +26,8 @@
 #include <ael/change/files.h>
 #include <aet.h>
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <change.h>
 #include <change/branch.h>
 #include <change/file.h>
@@ -94,35 +96,20 @@ test_list(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, test_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-		duplicate_option_by_name(arglex_token_change, test_usage);
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change(&project_name, &change_number, test_usage);
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, test_usage);
-	    if (project_name)
-		duplicate_option_by_name(arglex_token_project, test_usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    /* fall through... */
+
+	case arglex_token_string:
+	    arglex_parse_project(&project_name, test_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -225,15 +212,33 @@ limit_suggestions(change_ty *cp, string_list_ty *flp, int want,
      */
     for (j = 0;; ++j)
     {
-	fstate_src	c_src_data;
-	fstate_src	p_src_data;
+	fstate_src_ty   *c_src_data;
+	fstate_src_ty   *p_src_data;
 	size_t		k;
 
 	c_src_data = change_file_nth(cp, j);
 	if (!c_src_data)
 	    break;
-	if (c_src_data->usage != file_usage_source)
+	switch (c_src_data->usage)
+	{
+	case file_usage_source:
+	case file_usage_config:
+	    break;
+
+	case file_usage_test:
+	case file_usage_manual_test:
+	    /*
+	     * Correlations with other tests, while interesting,
+	     * aren't useful.
+	     */
 	    continue;
+
+	case file_usage_build:
+#ifndef DEBUG
+	default:
+#endif
+	    continue;
+	}
 	p_src_data =
 	    project_file_find(pp, c_src_data->file_name, view_path_extreme);
 	if (!p_src_data)
@@ -380,9 +385,9 @@ test_main(void)
     string_list_ty  wl2;
     string_ty	    *s1;
     string_ty	    *s2;
-    fstate_src	    p_src_data;
-    cstate	    cstate_data;
-    fstate_src	    c_src_data =    0;
+    fstate_src_ty   *p_src_data;
+    cstate_ty	    *cstate_data;
+    fstate_src_ty   *c_src_data =    0;
     string_ty	    *dir; /* unresolved */
     size_t	    j;
     size_t	    k;
@@ -428,25 +433,12 @@ test_main(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, test_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-		duplicate_option_by_name(arglex_token_change, test_usage);
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change(&project_name, &change_number, test_usage);
+	    continue;
 
 	case arglex_token_regression:
 	    if (regression_flag)
@@ -515,12 +507,9 @@ test_main(void)
 	    break;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, test_usage);
-	    if (project_name)
-		duplicate_option_by_name(arglex_token_project, test_usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, test_usage);
+	    continue;
 
 	case arglex_token_nolog:
 	    if (log_style == log_style_none)
@@ -839,17 +828,12 @@ test_main(void)
 		s3 = wl_in.string[k];
 		c_src_data = change_file_find(cp, s3);
 		assert(c_src_data);
-		if
-		(
-		    c_src_data
-		&&
-		    (
-			c_src_data->usage == file_usage_test
-		    ||
-			c_src_data->usage == file_usage_manual_test
-		    )
-		)
+		if (!c_src_data)
+		    continue;
+		switch (c_src_data->usage)
 		{
+		case file_usage_test:
+		case file_usage_manual_test:
 		    if (string_list_member(&wl2, s3))
 		    {
 			scp = sub_context_new();
@@ -861,6 +845,12 @@ test_main(void)
 		    else
 			string_list_append(&wl2, s3);
 		    used = 1;
+		    break;
+
+		case file_usage_source:
+		case file_usage_config:
+		case file_usage_build:
+		    break;
 		}
 	    }
 	    if (!used)
@@ -893,26 +883,43 @@ test_main(void)
 	c_src_data = change_file_find(cp, s2);
 	if (c_src_data)
 	{
-	    if
-	    (
-		c_src_data->usage != file_usage_test
-	    &&
-		c_src_data->usage != file_usage_manual_test
-	    )
+	    switch (c_src_data->usage)
 	    {
+	    case file_usage_test:
+		break;
+
+	    case file_usage_manual_test:
+		log_style = log_style_none;
+		break;
+
+	    case file_usage_source:
+	    case file_usage_config:
+	    case file_usage_build:
+#ifndef DEBUG
+	    default:
+#endif
 		scp = sub_context_new();
 		sub_var_set_string(scp, "File_Name", s2);
 		change_fatal(cp, scp, i18n("$filename not test"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
+		break;
 	    }
-	    if (c_src_data->action == file_action_remove)
+	    switch (c_src_data->action)
 	    {
+	    case file_action_remove:
 		scp = sub_context_new();
 		sub_var_set_string(scp, "File_Name", s2);
 		change_fatal(cp, scp, i18n("$filename being removed"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
+		break;
+
+	    case file_action_create:
+	    case file_action_modify:
+	    case file_action_insulate:
+	    case file_action_transparent:
+		break;
 	    }
 	    if (string_list_member(&wl2, s2))
 	    {
@@ -924,8 +931,6 @@ test_main(void)
 	    }
 	    else
 		string_list_append(&wl2, s2);
-	    if (c_src_data->usage == file_usage_manual_test)
-		log_style = log_style_none;
 	}
 	else
 	{
@@ -956,18 +961,27 @@ test_main(void)
 		    sub_context_delete(scp);
 		}
 	    }
-	    if
-	    (
-		p_src_data->usage != file_usage_test
-	    &&
-		p_src_data->usage != file_usage_manual_test
-	    )
+	    switch (p_src_data->usage)
 	    {
+	    case file_usage_test:
+		break;
+
+	    case file_usage_manual_test:
+		log_style = log_style_none;
+		break;
+
+	    case file_usage_source:
+	    case file_usage_config:
+	    case file_usage_build:
+#ifndef DEBUG
+	    default:
+#endif
 		scp = sub_context_new();
 		sub_var_set_string(scp, "File_Name", s2);
 		project_fatal(pp, scp, i18n("$filename not test"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
+		break;
 	    }
 	    if (string_list_member(&wl2, s2))
 	    {
@@ -979,8 +993,6 @@ test_main(void)
 	    }
 	    else
 		string_list_append(&wl2, s2);
-	    if (p_src_data->usage == file_usage_manual_test)
-		log_style = log_style_none;
 	}
 	str_free(s2);
     }
@@ -1012,18 +1024,22 @@ test_main(void)
 		/*
 		 * run the test if it satisfies the request
 		 */
-		if
-		(
-		    (p_src_data->usage == file_usage_test && automatic_flag)
-		||
-		    (
-			(p_src_data->usage == file_usage_manual_test)
-		    &&
-			manual_flag
-		    )
-		)
+		switch (p_src_data->usage)
 		{
-		    string_list_append(&wl, p_src_data->file_name);
+		case file_usage_test:
+		    if (automatic_flag)
+			string_list_append(&wl, p_src_data->file_name);
+		    break;
+
+		case file_usage_manual_test:
+		    if (manual_flag)
+			string_list_append(&wl, p_src_data->file_name);
+		    break;
+
+		case file_usage_source:
+		case file_usage_config:
+		case file_usage_build:
+		    break;
 		}
 	    }
 	}
@@ -1034,22 +1050,36 @@ test_main(void)
 		c_src_data = change_file_nth(cp, j);
 		if (!c_src_data)
 		    break;
-		if (c_src_data->action == file_action_remove)
-		    continue;
-		if
-		(
-		    ((c_src_data->usage == file_usage_test) && automatic_flag)
-		||
-		    (
-			(c_src_data->usage == file_usage_manual_test)
-		    &&
-			manual_flag
-		    )
-		)
+		switch (c_src_data->action)
 		{
-		    string_list_append(&wl, c_src_data->file_name);
-		    if (c_src_data->usage == file_usage_manual_test)
+		case file_action_remove:
+		    continue;
+
+		case file_action_create:
+		case file_action_modify:
+		case file_action_insulate:
+		case file_action_transparent:
+		    break;
+		}
+		switch (c_src_data->usage)
+		{
+		case file_usage_test:
+		    if (automatic_flag)
+			string_list_append(&wl, c_src_data->file_name);
+		    break;
+
+		case file_usage_manual_test:
+		    if (manual_flag)
+		    {
+			string_list_append(&wl, c_src_data->file_name);
 			log_style = log_style_none;
+		    }
+		    break;
+
+		case file_usage_source:
+		case file_usage_config:
+		case file_usage_build:
+		    break;
 		}
 	    }
 	}
@@ -1121,7 +1151,7 @@ test_main(void)
 	{
 	    string_ty	    *fn;
 	    time_t	    last_time;
-	    fstate_src	    src_data;
+	    fstate_src_ty   *src_data;
 
 	    /*
 	     * this only applies to change tests,
@@ -1179,7 +1209,7 @@ test_main(void)
     for (j = 0; j < brlp->length; ++j)
     {
 	batch_result_ty *rp;
-	fstate_src	src_data;
+	fstate_src_ty   *src_data;
 
 	rp = &brlp->item[j];
 	trace(("rp->filename = \"%s\"\n", rp->file_name->str_text));
@@ -1292,7 +1322,7 @@ test_independent(void)
     string_ty	    *s1;
     string_ty	    *s2;
     string_ty	    *s3;
-    fstate_src	    src_data;
+    fstate_src_ty   *src_data;
     size_t	    j;
     size_t	    k;
     string_ty	    *project_name;
@@ -1373,12 +1403,9 @@ test_independent(void)
 	    break;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, test_usage);
-	    if (project_name)
-		duplicate_option_by_name(arglex_token_project, test_usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, test_usage);
+	    continue;
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
@@ -1561,6 +1588,7 @@ test_independent(void)
 		    break;
 
 		case file_usage_source:
+		case file_usage_config:
 		case file_usage_build:
 		    break;
 		}
@@ -1605,20 +1633,26 @@ test_independent(void)
 	    /* NOTREACHED */
 	    sub_context_delete(scp);
 	}
-	if
-	(
-	    src_data->usage != file_usage_test
-	&&
-	    src_data->usage != file_usage_manual_test
-	)
+	switch (src_data->usage)
 	{
 	    sub_context_ty  *scp;
 
+	case file_usage_test:
+	case file_usage_manual_test:
+	    break;
+
+	case file_usage_source:
+	case file_usage_config:
+	case file_usage_build:
+#ifndef DEBUG
+	default:
+#endif
 	    scp = sub_context_new();
 	    sub_var_set_string(scp, "File_Name", s2);
 	    project_fatal(pp, scp, i18n("$filename not test"));
 	    /* NOTREACHED */
 	    sub_context_delete(scp);
+	    break;
 	}
 	if (string_list_member(&wl2, s2))
 	{
@@ -1647,13 +1681,23 @@ test_independent(void)
 	    src_data = project_file_nth(pp, j, view_path_extreme);
 	    if (!src_data)
 		break;
-	    if
-	    (
-		(src_data->usage == file_usage_test && automatic_flag)
-	    ||
-		(src_data->usage == file_usage_manual_test && manual_flag)
-	    )
-		string_list_append(&wl, src_data->file_name);
+	    switch (src_data->usage)
+	    {
+	    case file_usage_test:
+		if (automatic_flag)
+		    string_list_append(&wl, src_data->file_name);
+		break;
+
+	    case file_usage_manual_test:
+		if (manual_flag)
+		    string_list_append(&wl, src_data->file_name);
+		break;
+
+	    case file_usage_source:
+	    case file_usage_config:
+	    case file_usage_build:
+		break;
+	    }
 	}
 	if (!wl.nstrings)
 	    project_fatal(pp, 0, i18n("has no tests"));

@@ -25,6 +25,8 @@
 #include <ael/change/files.h>
 #include <aemtu.h>
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <change/branch.h>
 #include <change/file.h>
 #include <change.h>
@@ -92,59 +94,25 @@ make_transparent_undo_list(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-	    {
-		option_needs_number
-		(
-		    arglex_token_change,
-		    make_transparent_undo_usage
-		);
-	    }
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_change,
-		    make_transparent_undo_usage
-		);
-	    }
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change
+	    (
+		&project_name,
+		&change_number,
+		make_transparent_undo_usage
+	    );
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-	    {
-		option_needs_name
-		(
-		    arglex_token_project,
-		    make_transparent_undo_usage
-		);
-	    }
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    make_transparent_undo_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    /* fall through... */
+
+	case arglex_token_string:
+	    arglex_parse_project(&project_name, make_transparent_undo_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -161,7 +129,7 @@ make_transparent_undo_main(void)
     sub_context_ty  *scp;
     string_list_ty  wl;
     string_list_ty  wl2;
-    cstate	    cstate_data;
+    cstate_ty	    *cstate_data;
     size_t	    j;
     size_t	    k;
     string_ty	    *s1;
@@ -176,7 +144,7 @@ make_transparent_undo_main(void)
     int		    number_of_errors;
     string_list_ty  search_path;
     int		    mend_symlinks;
-    pconf	    pconf_data;
+    pconf_ty        *pconf_data;
     int		    based;
     string_ty	    *base;
 
@@ -230,57 +198,22 @@ make_transparent_undo_main(void)
 	    break;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-	    {
-		option_needs_number
-		(
-		    arglex_token_change,
-		    make_transparent_undo_usage
-		);
-	    }
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_change,
-		    make_transparent_undo_usage
-		);
-	    }
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change
+	    (
+		&project_name,
+		&change_number,
+		make_transparent_undo_usage
+	    );
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-	    {
-		option_needs_name
-		(
-		    arglex_token_project,
-		    make_transparent_undo_usage
-		);
-	    }
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    make_transparent_undo_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, make_transparent_undo_usage);
+	    continue;
 
 	case arglex_token_nolog:
 	    if (log_style == log_style_none)
@@ -431,7 +364,7 @@ make_transparent_undo_main(void)
 	    for (k = 0; k < wl_in.nstrings; ++k)
 	    {
 		string_ty	*s3;
-		fstate_src	src_data;
+		fstate_src_ty   *src_data;
 
 		s3 = wl_in.string[k];
 		src_data = change_file_find(cp, s3);
@@ -512,7 +445,7 @@ make_transparent_undo_main(void)
      */
     for (j = 0; j < wl.nstrings; ++j)
     {
-	fstate_src	src_data;
+	fstate_src_ty   *src_data;
 
 	s1 = wl.string[j];
 	src_data = change_file_find(cp, s1);
@@ -601,7 +534,7 @@ make_transparent_undo_main(void)
 	 */
 	if (exists && user_delete_file_query(up, s1, 0))
 	{
-	    fstate_src	    psrc_data;
+	    fstate_src_ty   *psrc_data;
 
 	    if (mend_symlinks)
 		psrc_data = project_file_find(pp, s1, view_path_extreme);

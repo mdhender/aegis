@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@ long
 project_change_number_to_delta_number(project_ty *pp, long change_number)
 {
     change_ty	    *cp;
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
     long	    result;
 
     cp = change_alloc(pp, change_number);

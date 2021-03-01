@@ -31,6 +31,8 @@
 #include <aeib.h>
 #include <ael/change/by_state.h>
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <commit.h>
 #include <change.h>
 #include <change/branch.h>
@@ -95,18 +97,12 @@ integrate_begin_list(void)
 	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, integrate_begin_usage);
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    integrate_begin_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    /* fall through... */
+
+	case arglex_token_string:
+	    arglex_parse_project(&project_name, integrate_begin_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -138,8 +134,8 @@ remove_comma_d_if_present(string_ty *s)
 static int
 isa_suppressed_filename(change_ty *cp, string_ty *fn)
 {
-    pconf	    pconf_data;
-    pconf_integrate_begin_exceptions_list p;
+    pconf_ty        *pconf_data;
+    pconf_integrate_begin_exceptions_list_ty *p;
     size_t	    j;
 
     pconf_data = change_pconf_get(cp, 1);
@@ -196,7 +192,7 @@ link_tree_callback_minimum(void	*arg, dir_walk_message_ty message,
     string_ty	    *s1short;
     string_ty	    *s2;
     change_ty	    *cp;
-    fstate_src	    src;
+    fstate_src_ty   *src;
     int		    exists;
     int		    remove_the_file;
 
@@ -346,7 +342,7 @@ link_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
     string_ty	    *s1short;
     string_ty	    *s2;
     change_ty	    *cp;
-    fstate_src	    src;
+    fstate_src_ty   *src;
     string_ty	    *contents;
     int		    remove_the_file;
 
@@ -463,7 +459,7 @@ copy_tree_callback_minimum(void *arg, dir_walk_message_ty message,
     string_ty	    *s1short;
     string_ty	    *s2;
     change_ty	    *cp;
-    fstate_src	    src;
+    fstate_src_ty   *src;
     int		    uid;
     int		    exists;
     int		    remove_the_file;
@@ -740,10 +736,10 @@ integrate_begin_main(void)
     string_ty	    *bl;
     string_ty	    *dd;
     string_ty	    *id;
-    pconf	    pconf_data;
-    cstate	    cstate_data;
+    pconf_ty        *pconf_data;
+    cstate_ty       *cstate_data;
     int		    j;
-    cstate_history  history_data;
+    cstate_history_ty *history_data;
     int		    minimum;
     int		    maximum;
     string_ty	    *project_name;
@@ -777,33 +773,17 @@ integrate_begin_main(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, integrate_begin_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_change,
-		    integrate_begin_usage
-		);
-	    }
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change
+	    (
+		&project_name,
+		&change_number,
+		integrate_begin_usage
+	    );
+	    continue;
 
 	case arglex_token_minimum:
 	    if (minimum)
@@ -818,21 +798,12 @@ integrate_begin_main(void)
 	    break;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, integrate_begin_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_string:
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    integrate_begin_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex_parse_project(&project_name, integrate_begin_usage);
+	    continue;
 
 	case arglex_token_nolog:
 	    if (log_style == log_style_none)
@@ -983,7 +954,7 @@ integrate_begin_main(void)
     {
 	for (j = 0;; ++j)
 	{
-	    fstate_src	    src_data;
+	    fstate_src_ty   *src_data;
 
 	    src_data = change_file_nth(cp, j);
 	    if (!src_data)
@@ -1025,7 +996,7 @@ integrate_begin_main(void)
     errs = 0;
     for (j = 0;; ++j)
     {
-	fstate_src	src_data;
+	fstate_src_ty   *src_data;
 	string_ty	*s1;
 	string_ty	*s2;
 	int		ok;
@@ -1036,6 +1007,7 @@ integrate_begin_main(void)
 	switch (src_data->usage)
 	{
 	case file_usage_source:
+	case file_usage_config:
 	case file_usage_test:
 	case file_usage_manual_test:
 	    break;
@@ -1152,7 +1124,7 @@ integrate_begin_main(void)
     change_verbose(cp, 0, i18n("apply change to integration directory"));
     for (j = 0;; ++j)
     {
-	fstate_src	src_data;
+	fstate_src_ty   *src_data;
 	string_ty	*s1;
 	string_ty	*s2;
 
@@ -1185,37 +1157,48 @@ integrate_begin_main(void)
 
 	case file_action_modify:
 	case file_action_create:
-	    if (src_data->usage == file_usage_build)
+	    switch (src_data->usage)
+	    {
+	    case file_usage_build:
 		break;
 
-	    /*
-	     * New files do not exist in the baseline,
-	     * and old files may not be copied under -MINimum,
-	     * so we may need to create directories.
-	     */
-	    os_mkdir_between(id, src_data->file_name, 02755);
-	    copy_whole_file(s1, s2, 0);
+	    case file_usage_source:
+	    case file_usage_config:
+	    case file_usage_test:
+	    case file_usage_manual_test:
+#ifndef DEBUG
+	    default:
+#endif
+		/*
+		 * New files do not exist in the baseline,
+		 * and old files may not be copied under -MINimum,
+		 * so we may need to create directories.
+		 */
+		os_mkdir_between(id, src_data->file_name, 02755);
+		copy_whole_file(s1, s2, 0);
 
-	    /*
-	     * Set the mode of the file.
-	     */
-	    mode = 0444;
-	    if (os_executable(s1))
-		mode |= 0111;
-	    os_chmod(s2, mode & ~change_umask(cp));
+		/*
+		 * Set the mode of the file.
+		 */
+		mode = 0444;
+		if (os_executable(s1))
+		    mode |= 0111;
+		os_chmod(s2, mode & ~change_umask(cp));
 
-	    /*
-	     * Make all of the change's files have the same
-	     * mod time, so that when aeipass flattens the
-	     * mod times, all of them fall into a single
-	     * second, minimizing the chance that mod times
-	     * will extend into the future after aeipass.
-	     *
-	     * This also helps cooperating DMTs flatten the
-	     * targets' mod times into a smaller range,
-	     * which also helps aeipass.
-	     */
-	    os_mtime_set(s2, history_data->when);
+		/*
+		 * Make all of the change's files have the same
+		 * mod time, so that when aeipass flattens the
+		 * mod times, all of them fall into a single
+		 * second, minimizing the chance that mod times
+		 * will extend into the future after aeipass.
+		 *
+		 * This also helps cooperating DMTs flatten the
+		 * targets' mod times into a smaller range,
+		 * which also helps aeipass.
+		 */
+		os_mtime_set(s2, history_data->when);
+		break;
+	    }
 	    break;
 	}
 	str_free(s1);

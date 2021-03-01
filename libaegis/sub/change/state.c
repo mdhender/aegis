@@ -63,7 +63,7 @@ sub_state(sub_context_ty *scp, wstring_list_ty *arg)
 	sub_context_error_set(scp, i18n("not valid in current context"));
     else
     {
-	cstate		cstate_data;
+	cstate_ty       *cstate_data;
 
 	cstate_data = change_cstate_get(cp);
 	result = wstr_from_c(cstate_state_ename(cstate_data->state));

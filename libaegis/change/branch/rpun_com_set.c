@@ -27,17 +27,17 @@
 void
 change_branch_review_pass_undo_notify_command_set(change_ty *cp, string_ty *s)
 {
-	cstate		cstate_data;
-	cstate_branch	bp;
+    cstate_ty       *cstate_data;
+    cstate_branch_ty *bp;
 
-	cstate_data = change_cstate_get(cp);
-	bp = cstate_data->branch;
-	assert(bp);
-	if (bp->review_pass_undo_notify_command)
-	{
-		str_free(bp->review_pass_undo_notify_command);
-		bp->review_pass_undo_notify_command = 0;
-	}
-	if (s && s->str_length)
-		bp->review_pass_undo_notify_command = str_copy(s);
+    cstate_data = change_cstate_get(cp);
+    bp = cstate_data->branch;
+    assert(bp);
+    if (bp->review_pass_undo_notify_command)
+    {
+	str_free(bp->review_pass_undo_notify_command);
+	bp->review_pass_undo_notify_command = 0;
+    }
+    if (s && s->str_length)
+	bp->review_pass_undo_notify_command = str_copy(s);
 }

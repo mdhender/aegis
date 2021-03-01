@@ -28,27 +28,25 @@
 int
 change_branch_change_nth(change_ty *cp, long n, long *cnp)
 {
-	cstate		cstate_data;
-	cstate_branch_change_list lp;
+    cstate_ty       *cstate_data;
+    cstate_branch_change_list_ty *lp;
 
-	trace(("change_branch_change_nth(cp = %8.8lX, n = %ld)\n{\n"/*}*/,
-		(long)cp, n));
-	cstate_data = change_cstate_get(cp);
-	assert(cstate_data->branch);
-	if (!cstate_data->branch->change)
-		cstate_data->branch->change =
-			cstate_branch_change_list_type.alloc();
-	lp = cstate_data->branch->change;
+    trace(("change_branch_change_nth(cp = %8.8lX, n = %ld)\n{\n", (long)cp, n));
+    cstate_data = change_cstate_get(cp);
+    assert(cstate_data->branch);
+    if (!cstate_data->branch->change)
+	cstate_data->branch->change = cstate_branch_change_list_type.alloc();
+    lp = cstate_data->branch->change;
 
-	if (n < 0 || n >= lp->length)
-	{
-		trace(("return FALSE;\n"));
-		trace((/*{*/"}\n"));
-		return 0;
-	}
-	assert(cnp);
-	*cnp = lp->list[n];
-	trace(("return %ld;\n", *cnp));
-	trace((/*{*/"}\n"));
-	return 1;
+    if (n < 0 || n >= lp->length)
+    {
+	trace(("return FALSE;\n"));
+	trace(("}\n"));
+	return 0;
+    }
+    assert(cnp);
+    *cnp = lp->list[n];
+    trace(("return %ld;\n", *cnp));
+    trace(("}\n"));
+    return 1;
 }

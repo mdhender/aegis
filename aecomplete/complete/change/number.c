@@ -59,7 +59,7 @@ perform(complete_ty *cop, shell_ty *sh)
     prefix = shell_prefix_get(sh);
     for (j = 0; ; ++j)
     {
-	cstate          cstate_data;
+	cstate_ty       *cstate_data;
 	long            change_number;
 	change_ty       *cp;
 

@@ -1,21 +1,21 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 2003 Peter Miller;
- *	All rights reserved.
+ *      aegis - project change supervisor
+ *      Copyright (C) 2003 Peter Miller;
+ *      All rights reserved.
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 2 of the License, or
+ *      (at your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program; if not, write to the Free Software
+ *      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to manipulate moves
  */
@@ -57,9 +57,9 @@ move_list_destructor(move_list_ty *mlp)
     size_t          j;
 
     for (j = 0; j < mlp->length; ++j)
-	move_destructor(mlp->item + j);
+        move_destructor(mlp->item + j);
     if (mlp->item)
-	mem_free(mlp->item);
+        mem_free(mlp->item);
     mlp->length = 0;
     mlp->maximum = 0;
     mlp->item = 0;
@@ -74,17 +74,17 @@ move_list_append_unique(move_list_ty *mlp, string_ty *from, string_ty *to)
 
     for (j = 0; j < mlp->length; ++j)
     {
-	mp = mlp->item + j;
-	if (str_equal(mp->from, from) && str_equal(mp->to, to))
-	    return mp;
+        mp = mlp->item + j;
+        if (str_equal(mp->from, from) && str_equal(mp->to, to))
+            return mp;
     }
     if (mlp->length >= mlp->maximum)
     {
-	size_t          nbytes;
+        size_t          nbytes;
 
-	mlp->maximum = mlp->maximum * 2 + 4;
-	nbytes = mlp->maximum * sizeof(mlp->item[0]);
-	mlp->item = mem_change_size(mlp->item, nbytes);
+        mlp->maximum = mlp->maximum * 2 + 4;
+        nbytes = mlp->maximum * sizeof(mlp->item[0]);
+        mlp->item = (move_ty *)mem_change_size(mlp->item, nbytes);
     }
     mp = mlp->item + mlp->length++;
     move_constructor(mp, from, to);

@@ -24,6 +24,8 @@
 #include <ac/stdlib.h>
 
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <change.h>
 #include <env.h>
 #include <error.h>
@@ -91,7 +93,7 @@ list_usage(void)
     const char      *progname;
 
     progname = progname_get();
-    fprintf(stderr, "usage: %s [ <option>... ] width height\n", progname);
+    fprintf(stderr, "usage: %s [ <option>... ][ <filename>... ]\n", progname);
     fprintf(stderr, "       %s -Help\n", progname);
     quit(1);
 }
@@ -148,57 +150,18 @@ main(int argc, char **argv)
 	    generic_argument(list_usage);
 	    continue;
 
-        case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-	    {
-		    option_needs_number
-		    (
-			    arglex_token_change,
-			    list_usage
-		    );
-		    /*NOTREACHED*/
-	    }
+	case arglex_token_change:
+	    arglex();
 	    /* fall through... */
 
-        case arglex_token_number:
-	    if (change_number)
-	    {
-		    duplicate_option_by_name
-		    (
-			    arglex_token_change,
-			    list_usage
-		    );
-		    /*NOTREACHED*/
-	    }
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		    change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	case arglex_token_number:
+	    arglex_parse_change(&project_name, &change_number, list_usage);
+	    continue;
 
         case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-	    option_needs_name(arglex_token_project, list_usage);
-	    if (project_name)
-	    {
-		    duplicate_option_by_name
-		    (
-			    arglex_token_project,
-			    list_usage
-		    );
-		    /*NOTREACHED*/
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, list_usage);
+	    continue;
 
         case arglex_token_string:
 	    s = str_from_c(arglex_value.alv_string);
@@ -316,7 +279,7 @@ main(int argc, char **argv)
     }
     else
     {
-	cstate		cstate_data;
+	cstate_ty       *cstate_data;
 
 	/*
 	 * locate user data

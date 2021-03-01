@@ -40,7 +40,7 @@ void
 get_project_statistics(project_ty *pp, string_ty *fn, string_list_ty *modifier)
 {
     double          scale;
-    cstate_branch   bp;
+    cstate_branch_ty *bp;
     change_ty       *cp;
     long            cause_stats[change_cause_max];
     long            number_of_changes = 0;
@@ -55,7 +55,7 @@ get_project_statistics(project_ty *pp, string_ty *fn, string_list_ty *modifier)
     double          hist_total_max = 0;
     double          hist_total_min = 0;
     int             n;
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
 
     html_header(pp);
     printf("<title>Project ");
@@ -109,7 +109,7 @@ get_project_statistics(project_ty *pp, string_ty *fn, string_list_ty *modifier)
 
 	for (nn = 0; ; ++nn)
 	{
-	    fstate_src      src;
+	    fstate_src_ty   *src;
 
 	    src = change_file_nth(cp, nn);
 	    if (!src)
@@ -117,16 +117,30 @@ get_project_statistics(project_ty *pp, string_ty *fn, string_list_ty *modifier)
 
 	    file_action_stats[src->action]++;
 	    file_action_total++;
-	    if
-	    (
-		src->usage != file_usage_build
-	    ||
-		src->action != file_action_modify
-	    )
+	    switch (src->usage)
 	    {
-		file_usage_stats[src->usage]++;
-		file_usage_total++;
+	    case file_usage_source:
+	    case file_usage_config:
+	    case file_usage_test:
+	    case file_usage_manual_test:
+		break;
+
+	    case file_usage_build:
+		switch (src->action)
+		{
+		case file_action_modify:
+		    continue;
+
+		case file_action_create:
+		case file_action_remove:
+		case file_action_insulate:
+		case file_action_transparent:
+		    break;
+		}
+		break;
 	    }
+	    file_usage_stats[src->usage]++;
+	    file_usage_total++;
 	}
 
 	hist_state = cstate_state_awaiting_development;
@@ -136,7 +150,7 @@ get_project_statistics(project_ty *pp, string_ty *fn, string_list_ty *modifier)
 	assert(cstate_data->history);
 	for (nn = 0; nn < cstate_data->history->length; ++nn)
 	{
-	    cstate_history  hp;
+	    cstate_history_ty *hp;
 
 	    hp = cstate_data->history->list[nn];
 	    if (hp->what == cstate_history_what_new_change)

@@ -34,8 +34,8 @@ void
 change_run_project_file_command(change_ty *cp, user_ty *up)
 {
     sub_context_ty  *scp;
-    cstate          cstate_data;
-    pconf           pconf_data;
+    cstate_ty       *cstate_data;
+    pconf_ty        *pconf_data;
     string_ty       *the_command;
     string_ty       *dd;
 

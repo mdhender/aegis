@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2003 Peter Miller;
+.\"	Copyright (C) 2003, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -19,10 +19,122 @@
 .\"
 .\" MANIFEST: document describing new 4.15 features
 .\"
-.\" .PP
-.\" .if n *
-.\" .if t \(bu
-.\" .\" change NNN
+
+.PP
+.if n *
+.if t \(bu
+.\" change 62
+There is a new \fIaecp \-keep\fP option, causing \fIaecp\fP(1) \fBnot\fP
+to overwrite file contents in the development directory.
+.PP
+.if n *
+.if t \(bu
+.\" change 60, 59
+The \fIaedist \-receive\fP option now understands changing the type of a file.
+.PP
+.if n *
+.if t \(bu
+.\" change 58, 38, 21
+It is now possible to specify a URL to the \fB\-file\fP option on the
+command line of \fIaedist\fP(1), \fIaepatch\fP(1) and \fIaetar\fP(1).
+The data will be downloaded and applied.
+.PP
+.if n *
+.if t \(bu
+.\" change 56, 36, 32, 31
+More work has been done towards making the code compilable by a C++ compiler.
+.PP
+.if n *
+.if t \(bu
+.\" change 57
+The project list (see \fIael\fP(1), \fIaeget\fP(1), etc) is now sorted
+in a slightly more natural way, as are the version statistics at the
+end of an \fIaeannotate\fP(1) listing.
+.PP
+.if n *
+.if t \(bu
+.\" change 55
+A bug has been fixed in \fIaede\fP91) for branches, where Aegis would
+complain about build source files (created by the \fIaenf \-build\fP
+command) being out-of-date.  This, of course, was difficult or impossible
+to fix, and unnecessary because the next build would fix them.
+.PP
+.if n *
+.if t \(bu
+.\" change 53
+A bug has been fixed in the \fIaecp \-independent\fP command,
+where it did not preserve the execute bit, nor honour the user's umask.
+.PP
+.if n *
+.if t \(bu
+.\" change 51
+The missing \fIaemt\fP and \fIaemtu\fP alias ve been added to the profile.
+.PP
+.if n *
+.if t \(bu
+.\" change 50
+More detail has been added to \fIaepconf\fP(5) detailing how to create
+the project config file for the first time.
+.PP
+.if n *
+.if t \(bu
+.\" change 35
+A bug has been fixed in \fIaedist\fP(1) and \fIaepatch\fP(1) which would
+cause an assertion failure (or segfault) when you tried to \fIaedist
+\-send \-delta \-es\fP files which did not exist at that delta.
+.PP
+.if n *
+.if t \(bu
+.\" change 33
+A bug has been fixed in \fIaedist\fP(1) and \fIaepatch\fP(1) which caused
+an assert failure (or segfault) when you tried to send a file which had
+been created and removed in a branch, and after the branch was integrated
+only a remove record exists in the parent branch.
+.PP
+.if n *
+.if t \(bu
+.\" change 22
+The problem with test 134 failing has been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" change 27
+A bug has been fixed in \fIaeipass\fP91) which prevented changing a
+file's usage from being as straight-forward as it should have been.
+.PP
+.if n *
+.if t \(bu
+.\" change 29
+The source RPM (and the \fIspec\fP file) now has Build Prequisites specified.
+.PP
+.if n *
+.if t \(bu
+.\" change 28
+The \fB\-Change\fP option now accepts more than just a change number.
+It now accepts many forms similar to those used by the \fI${version}\fP
+substitution, allowing its output to be used directly as command line
+input; forms such as \f[CW]-c 1.2.C34\fP and \f[CW]--c=5.6.D78\fP
+are now understood to imply a \fB\-branch\fP option as well as either
+\fB\-change\fP or \fB\-change-from-delta\fP, respectively.  In addition,
+you may prepend a project name, to imply the \fB\-project\fP option as
+well; form such as \f[CW]-c aegis.4.15.C28\fP are understood.
+.PP
+.if n *
+.if t \(bu
+.\" change 23
+The \fIaemeasure\fP(1) program now also generates Halstead metrics.
+.PP
+.if n *
+.if t \(bu
+.\" change 17
+A bug has been fixed in the symbolic link handling code.  In some cases it
+would report "multiple user permissions (bug)" and not complete correctly.
+.PP
+.if n *
+.if t \(bu
+.\" change NNN
+A bug has been fixed in the test of \fIaedist\fP(1) for moved files.
+There was nothing wrong with \fIaedist\fP(1), the test itself was broken.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
 .SS Version 4.15 (17-Nov-2003)

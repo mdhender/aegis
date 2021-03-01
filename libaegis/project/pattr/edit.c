@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,10 +29,10 @@
 
 
 void
-project_pattr_edit(pattr *dp, edit_ty et)
+project_pattr_edit(pattr_ty **dp, edit_ty et)
 {
     sub_context_ty  *scp;
-    pattr	    d;
+    pattr_ty	    *d;
     string_ty       *filename;
     string_ty       *msg;
 

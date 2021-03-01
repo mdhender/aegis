@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1993, 2002, 2003 Peter Miller.
+ *	Copyright (C) 1991-1993, 2002-2004 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,43 @@
 
 #ifndef MAIN_H
 #define MAIN_H
+
+/*
+ * Generate a syntax error for all C++ keywords that aren't C keywords.
+ * This ensures that we won't write C code that can't be complied by a
+ * C++ compiler in the future.
+ */
+#ifndef __cplusplus
+#define bool		/!/!/
+#define catch		/!/!/
+#define class		/!/!/
+#define complex		/!/!/
+#define const_cast	/!/!/
+#define delete		/!/!/
+#define dynamic_cast	/!/!/
+#define explicit	/!/!/
+#define false		/!/!/
+#define friend		/!/!/
+#define inline		/!/!/
+#define mutable		/!/!/
+#define namespace	/!/!/
+#define new		/!/!/
+#define operator	/!/!/
+#define private		/!/!/
+#define protected	/!/!/
+#define public		/!/!/
+#define reinterpret_cast /!/!/
+#define static_cast	/!/!/
+#define template	/!/!/
+#define this		/!/!/
+#define throw		/!/!/
+#define true		/!/!/
+#define try		/!/!/
+#define typeid		/!/!/
+#define typename	/!/!/
+#define using		/!/!/
+#define virtual		/!/!/
+#endif
 
 /*
  * array manipulation

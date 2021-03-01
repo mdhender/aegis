@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001, 2002 Peter Miller;
+.\"	Copyright (C) 1999, 2001-2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -135,8 +135,8 @@ The result will contain only complete files sources.
 .SH RECEIVE
 The receive variant takes a change package created by the send variant
 and creates an Aegis change (see \fIaenc\fP(1)) to implement the change
-within.  Files are added to the change (see \fIaenf\fP(1), \fIaecp\fP(1),
-\fIaerm\fP(1), \fIaent\fP(1)) and then the file contents are unpackaged
+within.  Files are added to the change (see \fIaerm\fP(1), \fIaecp\fP(1),
+\fIaenf\fP(1) and \fIaent\fP(1)) and then the file contents are unpackaged
 into the development directory.
 .PP
 The change is then built (see \fIaeb\fP(1)), differenced (see
@@ -161,11 +161,7 @@ delta in the project's history to copy the file from,
 just as for the \fIaecp\fP(1) command.
 You may also use a delta name instead of a delta number.
 .so o_dir.so
-.TP 8n
-\fB\-File\fP \fIfilename\fP
-Read the change set from the specified file.
-The default is to read it from the standard input.
-The filename `-' is understood to mean the standard input.
+.so o_file_cs.so
 .TP 8n
 \fB\-PATch\fP
 This option may be used to apply patches from the input, if available.
@@ -258,10 +254,7 @@ actually unpacking it first.
 The output is reminiscent of the \fIaegis -list change-details\fP output.
 .SS Options
 The following options are understood by the list variant:
-.TP 8n
-\fB\-File\fP \fIfilename\fP
-Read the change set from the specified file.
-The default is to read it from the standard input.
+.so o_file_cs.so
 .so o_output.so
 Only useful with the \-List option.
 .SH OPTIONS

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,9 +27,9 @@
 size_t
 change_file_count(change_ty *cp)
 {
-	fstate		fstate_data;
+    fstate_ty       *fstate_data;
 
-	fstate_data = change_fstate_get(cp);
-	assert(fstate_data->src);
-	return fstate_data->src->length;
+    fstate_data = change_fstate_get(cp);
+    assert(fstate_data->src);
+    return fstate_data->src->length;
 }

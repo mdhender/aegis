@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,18 +26,18 @@
 void
 change_copyright_years_merge(change_ty *cp1, change_ty *cp2)
 {
-	cstate		cstate_data;
-	size_t		j;
+    cstate_ty       *cstate_data;
+    size_t          j;
 
-	cstate_data = change_cstate_get(cp2);
-	if (!cstate_data->copyright_years)
-		return;
-	for (j = 0; j < cstate_data->copyright_years->length; ++j)
-	{
-		change_copyright_year_append
-		(
-			cp1,
-			cstate_data->copyright_years->list[j]
-		);
-	}
+    cstate_data = change_cstate_get(cp2);
+    if (!cstate_data->copyright_years)
+	return;
+    for (j = 0; j < cstate_data->copyright_years->length; ++j)
+    {
+	change_copyright_year_append
+	(
+    	    cp1,
+    	    cstate_data->copyright_years->list[j]
+	);
+    }
 }

@@ -26,31 +26,31 @@
 #include <uname.h>
 
 
-cstate_architecture_times
+cstate_architecture_times_ty *
 change_find_architecture_variant(change_ty *cp)
 {
-	string_ty	*an;
-	cstate_architecture_times tp;
+    string_ty       *an;
+    cstate_architecture_times_ty *tp;
 
-	/*
-	 * find the name of the architecture variant
-	 *	one of the patterns, not the actual value in architecture
-	 */
-	trace(("find_architecture_variant(cp = %8.8lX)\n{\n"/*}*/, (long)cp));
-	assert(cp->reference_count >= 1);
-	an = change_architecture_name(cp, 1);
+    /*
+     * find the name of the architecture variant
+     *	one of the patterns, not the actual value in architecture
+     */
+    trace(("find_architecture_variant(cp = %8.8lX)\n{\n", (long)cp));
+    assert(cp->reference_count >= 1);
+    an = change_architecture_name(cp, 1);
 
-	/*
-	 * find this variant in the times list
-	 */
-	tp = change_architecture_times_find(cp, an);
+    /*
+     * find this variant in the times list
+     */
+    tp = change_architecture_times_find(cp, an);
 
-	/*
-	 * adjust the node
-	 */
-	str_free(tp->node);
-	tp->node = str_copy(uname_node_get());
-	trace(("return %8.8lX;\n", (long)tp));
-	trace((/*{*/"}\n"));
-	return tp;
+    /*
+     * adjust the node
+     */
+    str_free(tp->node);
+    tp->node = str_copy(uname_node_get());
+    trace(("return %8.8lX;\n", (long)tp));
+    trace(("}\n"));
+    return tp;
 }

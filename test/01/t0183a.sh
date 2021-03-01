@@ -52,6 +52,9 @@ if test $? -ne 0 ; then exit 2; fi
 
 bin=$here/${1-.}/bin
 
+PATH=${bin}:${PATH}
+export PATH
+
 check_it()
 {
 	sed	-e "s|$work|...|g" \
@@ -79,7 +82,8 @@ pass()
 fail()
 {
 	set +x
-	echo 'FAILED test of the aedist (mv) functionality' 1>&2
+	echo 'FAILED test of the aedist (mv) functionality' \
+		"($activity)" 1>&2
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
@@ -88,7 +92,8 @@ fail()
 no_result()
 {
 	set +x
-	echo 'NO RESULT when testing the aedist (mv) functionality' 1>&2
+	echo 'NO RESULT when testing the aedist (mv) functionality' \
+		"($activity)" 1>&2
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
@@ -120,14 +125,14 @@ AEGIS_PROJECT=foo ; export AEGIS_PROJECT
 #
 # make a new project
 #
-activity="new project 137"
+activity="new project 128"
 $bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 144"
+activity="project attributes 135"
 cat > tmp << 'end'
 description = "A bogus project created to test the aedist -send functionality.";
 developer_may_review = true;
@@ -142,7 +147,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 159"
+activity="staff 150"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -155,7 +160,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 172"
+activity="new change 163"
 cat > tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -173,7 +178,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 190"
+activity="new file 181"
 $bin/aegis -nf  $workchan/config $workchan/bogus -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -206,49 +211,49 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 221"
+activity="build 214"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 228"
+activity="diff 221"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 235"
+activity="develop end 228"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 242"
+activity="review pass 235"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 249"
+activity="integrate begin 242"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 256"
+activity="build 249"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 263"
+activity="integrate pass 256"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -257,7 +262,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 284"
+activity="new change 265"
 cat > tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -275,7 +280,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add files to the change
 #
-activity="copy file 302"
+activity="copy file 283"
 $bin/aegis -mv $workchan/bogus $workchan/bogus13 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -287,15 +292,18 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # aedist -send the change.
 #
+activity="aedist -send 295"
 $bin/aedist -send -c 2 -o $work/c2.ae > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # aedist -receive the change.
 #
+activity="aedist -rec 302"
 $bin/aedist -rec -f $work/c2.ae -c 3 -dir ${workchan}.3 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
+activity="check change state 306"
 cat > ok << 'end'
 src =
 [

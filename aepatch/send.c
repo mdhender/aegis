@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001-2003 Peter Miller;
+ *	Copyright (C) 2001-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,8 @@
 #include <ac/stdlib.h>
 
 #include <arglex3.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <change.h>
 #include <change/branch.h>
 #include <change/file.h>
@@ -89,7 +91,7 @@ usage(void)
 static string_ty *
 change_description_get(change_ty *cp)
 {
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
 
     cstate_data = change_cstate_get(cp);
     return cstate_data->description;
@@ -116,7 +118,7 @@ send(void)
     project_ty      *pp;
     change_ty       *cp;
     user_ty         *up;
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
     string_ty       *output;
     string_ty       *s;
     string_ty       *s2;
@@ -150,34 +152,17 @@ send(void)
 
 	case arglex_token_change:
 	case arglex_token_delta_from_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, usage);
-	    /* fall throught... */
+	    arglex();
+	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-		duplicate_option_by_name(arglex_token_change, usage);
-	    change_number = arglex_value.alv_number;
-	    if (!change_number)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 0)
-	    {
-		sub_context_ty *scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-	    }
-	    break;
+	    arglex_parse_change(&project_name, &change_number, usage);
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, usage);
-	    if (project_name)
-		duplicate_option_by_name(arglex_token_project, usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, usage);
+	    continue;
 
 	case arglex_token_branch:
 	    if (branch)
@@ -571,7 +556,7 @@ send(void)
      */
     for (j = 0;; ++j)
     {
-	fstate_src      csrc;
+	fstate_src_ty   *csrc;
 
 	original_filename_unlink = 0;
 	input_filename_unlink = 0;
@@ -580,8 +565,17 @@ send(void)
 	if (!csrc)
 	    break;
 	trace(("fn = \"%s\"\n", csrc->file_name->str_text));
-	if (csrc->usage == file_usage_build)
+	switch (csrc->usage)
+	{
+	case file_usage_source:
+	case file_usage_config:
+	case file_usage_test:
+	case file_usage_manual_test:
+	    break;
+
+	case file_usage_build:
 	    continue;
+	}
 
 	/*
 	 * Find a source file.  Depending on the change state,
@@ -610,10 +604,19 @@ send(void)
 	case cstate_state_being_reviewed:
 	case cstate_state_awaiting_integration:
 	case cstate_state_being_integrated:
-	    if (csrc->action == file_action_create)
-		original_filename = str_copy(dev_null);
-	    else
+	    switch (csrc->action)
 	    {
+	    case file_action_create:
+		original_filename = str_copy(dev_null);
+		break;
+
+	    case file_action_modify:
+	    case file_action_remove:
+	    case file_action_insulate:
+	    case file_action_transparent:
+#ifndef DEBUG
+	    default:
+#endif
 		original_filename =
 		    project_file_version_path
 		    (
@@ -621,13 +624,24 @@ send(void)
 			csrc,
 			&original_filename_unlink
 		    );
+		break;
 	    }
-	    if (csrc->action != file_action_remove)
+	    switch (csrc->action)
 	    {
+	    case file_action_create:
+	    case file_action_modify:
+	    case file_action_insulate:
+	    case file_action_transparent:
+#ifndef DEBUG
+	    default:
+#endif
 		input_filename = change_file_path(cp, csrc->file_name);
-	    }
-	    else
+		break;
+
+	    case file_action_remove:
 		input_filename = str_copy(dev_null);
+		break;
+	    }
 	    break;
 
 	case cstate_state_completed:
@@ -638,8 +652,8 @@ send(void)
 	    switch (csrc->action)
 	    {
 		file_event_list_ty *felp;
-		file_event_ty  *fep;
-		fstate_src      old_src;
+		file_event_ty   *fep;
+		fstate_src_ty   *old_src;
 
 	    case file_action_create:
 		original_filename = dev_null;
@@ -649,26 +663,68 @@ send(void)
 
 	    case file_action_remove:
 		felp = project_file_roll_forward_get(csrc->file_name);
-		assert(felp);
-		assert(felp->length >= 2);
 
-		fep = &felp->item[felp->length - 2];
-		old_src = change_file_find(fep->cp, csrc->file_name);
-		assert(old_src);
-		original_filename =
-		    project_file_version_path
-		    (
-			pp,
-			old_src,
-			&original_filename_unlink
-		    );
+		/*
+		 * It's tempting to say
+		 *      assert(felp);
+		 * but file file may not yet exist at this point in
+		 * time, so there is no need (or ability) to create a
+		 * patch for it.
+		 */
+		if (!felp)
+		{
+		    original_filename = str_copy(dev_null);
+		    input_filename = str_copy(dev_null);
+		    break;
+		}
+
+		/*
+		 * It is tempting to say
+		 *	assert(felp->length >= 2);
+		 * except that a file which is created and removed in
+		 * the same branch, will result in only a remove record
+		 * in its parent branch when integrated.
+		 */
+		assert(felp->length >= 1);
+
+		if (felp->length < 2)
+		{
+		    original_filename = str_copy(dev_null);
+		}
+		else
+		{
+		    fep = &felp->item[felp->length - 2];
+		    old_src = change_file_find(fep->cp, csrc->file_name);
+		    assert(old_src);
+		    original_filename =
+			project_file_version_path
+			(
+			    pp,
+			    old_src,
+			    &original_filename_unlink
+			);
+		}
 
 		input_filename = str_copy(dev_null);
 		break;
 
 	    default:
 		felp = project_file_roll_forward_get(csrc->file_name);
-		assert(felp);
+
+		/*
+		 * It's tempting to say
+		 *      assert(felp);
+		 * but file file may not yet exist at this point in
+		 * time, so there is no need (or ability) to create a
+		 * patch for it.
+		 */
+		if (!felp)
+		{
+		    original_filename = str_copy(dev_null);
+		    input_filename = str_copy(dev_null);
+		    break;
+		}
+
 		assert(felp->length >= 2);
 
 		fep = &felp->item[felp->length - 2];
@@ -692,8 +748,24 @@ send(void)
 			old_src,
 			&input_filename_unlink
 		    );
+		break;
 	    }
 	    break;
+	}
+
+	/*
+	 * If they are both /dev/null don't bother with a patch.
+	 */
+	if
+	(
+	    str_equal(original_filename, dev_null)
+	&&
+	    str_equal(input_filename, dev_null)
+	)
+	{
+	    str_free(original_filename);
+	    str_free(input_filename);
+	    continue;
 	}
 
 	/*

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999-2002 Peter Miller;
+ *	Copyright (C) 1999-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,7 +39,7 @@
 
 
 static void
-pconf_improve(change_ty *cp, pconf d, string_ty *filename)
+pconf_improve(change_ty *cp, pconf_ty *d, string_ty *filename)
 {
     sub_context_ty  *scp;
     size_t          j;
@@ -174,7 +174,7 @@ pconf_improve(change_ty *cp, pconf d, string_ty *filename)
     {
 	for (j = 0; j < d->file_template->length; ++j)
 	{
-	    pconf_file_template tp;
+	    pconf_file_template_ty *tp;
 
 	    tp = d->file_template->list[j];
 	    if (!tp->pattern || !tp->pattern->length)
@@ -226,7 +226,7 @@ pconf_improve(change_ty *cp, pconf d, string_ty *filename)
     {
 	for (j = 0; j < d->project_specific->length; ++j)
 	{
-	    pconf_project_specific psp;
+	    pconf_project_specific_ty *psp;
 
 	    psp = d->project_specific->list[j];
 	    if (!psp->name)
@@ -290,7 +290,7 @@ pconf_improve(change_ty *cp, pconf d, string_ty *filename)
 
 
 static void
-set_pconf_symlink_exceptions_defaults(pconf pconf_data)
+set_pconf_symlink_exceptions_defaults(pconf_ty *pconf_data)
 {
     type_ty         *type_p;
     string_ty       **str_p;
@@ -335,7 +335,42 @@ input_catenate_tricky(string_list_ty *filename)
 }
 
 
-static pconf
+static int
+candidate(fstate_src_ty *src)
+{
+    if (src->about_to_be_created_by)
+	return 0;
+    if (src->deleted_by)
+	return 0;
+    if (src->about_to_be_copied_by)
+	return 0;
+    switch (src->usage)
+    {
+    case file_usage_source:
+    case file_usage_config:
+	switch (src->action)
+	{
+	case file_action_create:
+	case file_action_modify:
+	case file_action_insulate:
+	case file_action_transparent:
+	    return 1;
+
+	case file_action_remove:
+	    break;
+	}
+	break;
+
+    case file_usage_build:
+    case file_usage_test:
+    case file_usage_manual_test:
+	break;
+    }
+    return 0;
+}
+
+
+static pconf_ty *
 read_the_pconf_list(change_ty *cp, string_ty *dirname)
 {
     symtab_ty       *stp;
@@ -344,8 +379,8 @@ read_the_pconf_list(change_ty *cp, string_ty *dirname)
     input_ty        *ifp;
     string_list_ty  filename;
     size_t          j;
-    fstate_src      src;
-    pconf           result;
+    fstate_src_ty   *src;
+    pconf_ty        *result;
 
     /*
      * If there is no config directory,
@@ -368,11 +403,7 @@ read_the_pconf_list(change_ty *cp, string_ty *dirname)
 	src = change_file_nth(cp, j);
 	if (!src)
 	    break;
-	if (src->about_to_be_created_by)
-	    continue;
-	if (src->deleted_by)
-	    continue;
-	if (src->about_to_be_copied_by)
+	if (!candidate(src))
 	    continue;
 	if (!os_isa_path_prefix(dirname, src->file_name))
 	    continue;
@@ -391,11 +422,7 @@ read_the_pconf_list(change_ty *cp, string_ty *dirname)
 	    src = change_file_nth(cp2, j);
 	    if (!src)
 		break;
-	    if (src->about_to_be_created_by)
-		continue;
-	    if (src->deleted_by)
-		continue;
-	    if (src->about_to_be_copied_by)
+	    if (!candidate(src))
 		continue;
 	    if (!os_isa_path_prefix(dirname, src->file_name))
 		continue;
@@ -429,7 +456,7 @@ read_the_pconf_list(change_ty *cp, string_ty *dirname)
 }
 
 
-pconf
+pconf_ty *
 change_pconf_get(change_ty *cp, int required)
 {
     static string_ty *star_comma_d;
@@ -476,7 +503,7 @@ change_pconf_get(change_ty *cp, int required)
 	    change_become_undo();
 	    if (cp->pconf_data->configuration_directory)
 	    {
-		pconf           temp;
+		pconf_ty        *temp;
 
 		temp =
 		    read_the_pconf_list
@@ -502,8 +529,8 @@ change_pconf_get(change_ty *cp, int required)
 	if (!cp->pconf_data->architecture->length)
 	{
 	    type_ty         *type_p;
-	    pconf_architecture *app;
-	    pconf_architecture ap;
+	    pconf_architecture_ty **app;
+	    pconf_architecture_ty *ap;
 
 	    app =
 		pconf_architecture_list_type.list_parse
@@ -519,7 +546,8 @@ change_pconf_get(change_ty *cp, int required)
 	}
 	for (j = 0; j < cp->pconf_data->architecture->length; ++j)
 	{
-	    pconf_architecture ap;
+	    pconf_architecture_ty *ap;
+
 	    ap = cp->pconf_data->architecture->list[j];
 	    if (!ap->name && !ap->pattern)
 	    {

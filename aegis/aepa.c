@@ -25,6 +25,7 @@
 
 #include <aepa.h>
 #include <arglex2.h>
+#include <arglex/project.h>
 #include <commit.h>
 #include <error.h>
 #include <help.h>
@@ -84,7 +85,7 @@ project_attributes_help(void)
 static void
 project_attributes_list(void)
 {
-    pattr	    pattr_data;
+    pattr_ty	    *pattr_data;
     string_ty	    *project_name;
     project_ty	    *pp;
 
@@ -100,27 +101,12 @@ project_attributes_list(void)
 	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-	    {
-		option_needs_name
-		(
-		    arglex_token_project,
-		    project_attributes_usage
-		);
-	    }
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_string:
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    project_attributes_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex_parse_project(&project_name, project_attributes_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -134,7 +120,7 @@ project_attributes_list(void)
     str_free(project_name);
     project_bind_existing(pp);
 
-    pattr_data = (pattr)pattr_type.alloc();
+    pattr_data = (pattr_ty *)pattr_type.alloc();
     project_pattr_get(pp, pattr_data);
     pattr_write_file((string_ty *)0, pattr_data, 0);
     pattr_type.free(pattr_data);
@@ -155,7 +141,7 @@ check_permissions(project_ty *pp, user_ty *up)
 
 
 static void
-change_existing_project_attributes(project_ty *pp, pattr pattr_data)
+change_existing_project_attributes(project_ty *pp, pattr_ty *pattr_data)
 {
     user_ty  *up;
 
@@ -194,7 +180,7 @@ project_attributes_main(void)
 {
     string_ty	    *s;
     sub_context_ty  *scp;
-    pattr	    pattr_data =    0;
+    pattr_ty	    *pattr_data =    0;
     string_ty	    *project_name;
     project_ty	    *pp;
     edit_ty	    edit;
@@ -259,18 +245,9 @@ project_attributes_main(void)
 	    break;
 
 	case arglex_token_project:
-	    if (project_name)
-		duplicate_option(project_attributes_usage);
-	    if (arglex() != arglex_token_string)
-	    {
-		option_needs_name
-		(
-		    arglex_token_project,
-		    project_attributes_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, project_attributes_usage);
+	    continue;
 
 	case arglex_token_edit:
 	    if (edit == edit_foreground)
@@ -338,7 +315,7 @@ project_attributes_main(void)
 	edit = edit_foreground;
     }
     if (edit != edit_not_set && !pattr_data)
-	pattr_data = (pattr)pattr_type.alloc();
+	pattr_data = (pattr_ty *)pattr_type.alloc();
 
     /*
      * locate project data

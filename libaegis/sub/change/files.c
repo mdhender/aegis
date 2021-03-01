@@ -140,7 +140,7 @@ sub_change_files(sub_context_ty *scp, wstring_list_ty *arg)
     string_list_constructor(&sl);
     for (n = 0; ; ++n)
     {
-	fstate_src src;
+	fstate_src_ty   *src;
 
 	src = change_file_nth(cp, n);
 	if (!src)

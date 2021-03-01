@@ -27,13 +27,13 @@
 void
 change_branch_minimum_branch_number_set(change_ty *cp, long n)
 {
-	cstate		cstate_data;
-	cstate_branch	bp;
+    cstate_ty       *cstate_data;
+    cstate_branch_ty *bp;
 
-	cstate_data = change_cstate_get(cp);
-	bp = cstate_data->branch;
-	assert(bp);
-	if (n < 1)
-		n = 1;
-	bp->minimum_branch_number = n;
+    cstate_data = change_cstate_get(cp);
+    bp = cstate_data->branch;
+    assert(bp);
+    if (n < 1)
+	n = 1;
+    bp->minimum_branch_number = n;
 }

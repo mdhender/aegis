@@ -51,10 +51,10 @@ struct change_ty
 	long		reference_count;
 	struct project_ty *pp;
 	long		number;
-	cstate		cstate_data;
+	cstate_ty       *cstate_data;
 	string_ty	*cstate_filename;
 	int		cstate_is_a_new_file;
-	fstate		fstate_data;
+	fstate_ty	*fstate_data;
 	struct symtab_ty *fstate_stp;
 	string_ty	*fstate_filename;
 	int		fstate_is_a_new_file;
@@ -66,7 +66,7 @@ struct change_ty
 	string_ty	*integration_directory_resolved;
 	string_ty	*logfile;
 	string_ty	*pconf_path;
-	pconf		pconf_data;
+	pconf_ty	*pconf_data;
 	long		lock_magic;
 	int		bogus;
 	string_ty	*architecture_name;
@@ -83,9 +83,9 @@ change_ty *change_copy(change_ty *);
 void change_bind_existing(change_ty *);
 void change_bind_new(change_ty *);
 change_ty *change_bogus(struct project_ty *);
-cstate change_cstate_get(change_ty *);
+cstate_ty *change_cstate_get(change_ty *);
 void change_cstate_write(change_ty *);
-cstate_history change_history_new(change_ty *, struct user_ty *);
+cstate_history_ty *change_history_new(change_ty *, struct user_ty *);
 string_ty *change_creator_name(change_ty *);
 string_ty *change_developer_name(change_ty *);
 string_ty *change_reviewer_name(change_ty *);
@@ -100,10 +100,10 @@ string_ty *change_logfile_basename(void);
 string_ty *change_logfile_get(change_ty *);
 void change_cstate_lock_prepare(change_ty *);
 void change_error(change_ty *, struct sub_context_ty *, const char *);
-void change_fatal(change_ty *, struct sub_context_ty *, const char *);
+void change_fatal(change_ty *, struct sub_context_ty *, const char *) NORETURN;
 void change_verbose(change_ty *, struct sub_context_ty *, const char *);
 string_ty *change_pconf_path_get(change_ty *);
-pconf change_pconf_get(change_ty *, int);
+pconf_ty *change_pconf_get(change_ty *, int);
 void change_run_new_file_command(change_ty *, struct string_list_ty *,
 	struct user_ty *);
 void change_run_new_file_undo_command(change_ty *,
@@ -137,13 +137,13 @@ void change_run_review_pass_undo_notify_command(change_ty *);
 void change_run_review_fail_notify_command(change_ty *);
 void change_run_integrate_pass_notify_command(change_ty *);
 void change_run_integrate_fail_notify_command(change_ty *);
-void change_run_history_get_command(change_ty *cp, fstate_src src,
+void change_run_history_get_command(change_ty *cp, fstate_src_ty *src,
 	string_ty *output_file, struct user_ty *up);
-void change_run_history_create_command(change_ty *cp, fstate_src);
-void change_run_history_put_command(change_ty *cp, fstate_src);
+void change_run_history_create_command(change_ty *cp, fstate_src_ty *);
+void change_run_history_put_command(change_ty *cp, fstate_src_ty *);
 string_ty *change_run_history_query_command(change_ty *cp,
 	string_ty *file_name);
-void change_run_history_label_command(change_ty *cp, fstate_src,
+void change_run_history_label_command(change_ty *cp, fstate_src_ty *,
 	string_ty *label);
 void change_history_trashed_fingerprints(change_ty *,
     struct string_list_ty *);
@@ -188,7 +188,7 @@ void change_architecture_add(change_ty *, string_ty *);
 void change_architecture_query(change_ty *);
 string_ty *change_architecture_name(change_ty *, int);
 string_ty *change_run_architecture_discriminator_command(change_ty *cp);
-cstate_architecture_times change_architecture_times_find(change_ty *,
+cstate_architecture_times_ty *change_architecture_times_find(change_ty *,
 	string_ty *);
 void change_build_time_set(change_ty *);
 void change_test_time_set(change_ty *, time_t);

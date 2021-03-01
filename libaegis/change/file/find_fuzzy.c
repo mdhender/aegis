@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,22 +26,22 @@
 #include <trace.h>
 
 
-fstate_src
+fstate_src_ty *
 change_file_find_fuzzy(change_ty *cp, string_ty *file_name)
 {
-	string_ty	*best_file_name;
-	fstate_src	best;
+    string_ty       *best_file_name;
+    fstate_src_ty   *best;
 
-	trace(("change_file_find_fuzzy(cp = %08lX, fn = \"%s\")\n{\n"/*}*/,
-		(long)cp, file_name->str_text));
-	change_fstate_get(cp);
-	assert(cp->fstate_stp);
-	best_file_name = symtab_query_fuzzy(cp->fstate_stp, file_name);
-	if (!best_file_name)
-		best = 0;
-	else
-		best = symtab_query(cp->fstate_stp, best_file_name);
-	trace(("return %08lX;\n", (long)best));
-	trace((/*{*/"}\n"));
-	return best;
+    trace(("change_file_find_fuzzy(cp = %08lX, fn = \"%s\")\n{\n",
+	(long)cp, file_name->str_text));
+    change_fstate_get(cp);
+    assert(cp->fstate_stp);
+    best_file_name = symtab_query_fuzzy(cp->fstate_stp, file_name);
+    if (!best_file_name)
+	best = 0;
+    else
+	best = symtab_query(cp->fstate_stp, best_file_name);
+    trace(("return %08lX;\n", (long)best));
+    trace(("}\n"));
+    return best;
 }

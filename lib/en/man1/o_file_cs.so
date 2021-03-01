@@ -1,0 +1,34 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2003, 2004 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing lib/en/man1/o_file_css
+.\"
+.TP 8n
+\fB\-File\fP \fIfilename\fP
+.RS
+Read the change set from the specified file.
+The default is to read it from the standard input.
+The filename `-' is understood to mean the standard input.
+.PP
+If your system has \fIlibcurl\fP(3), and Aegis was configured to use
+it at compile time (this is the default if it is available) you will
+also be able to specify a Uniform Resource Locator (URL) in place of
+the file name.  The relevant data will be downloaded.
+(The \fB\-Verbose\fP option will provide a progress bar.)
+.RE

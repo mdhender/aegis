@@ -28,11 +28,11 @@
 void
 change_branch_develop_end_action_set(change_ty *cp, int n)
 {
-	cstate		cstate_data;
-	cstate_branch	bp;
+    cstate_ty       *cstate_data;
+    cstate_branch_ty *bp;
 
-	cstate_data = change_cstate_get(cp);
-	bp = cstate_data->branch;
-	assert(bp);
-	bp->develop_end_action = n;
+    cstate_data = change_cstate_get(cp);
+    bp = cstate_data->branch;
+    assert(bp);
+    bp->develop_end_action = n;
 }

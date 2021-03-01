@@ -41,7 +41,7 @@
 static string_ty *
 change_brief_description_get(change_ty *cp)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
 
     cstate_data = change_cstate_get(cp);
     return cstate_data->brief_description;
@@ -52,11 +52,10 @@ change_brief_description_get(change_ty *cp)
 
 
 void
-list_change_file_history(string_ty *project_name,
-                         long change_number,
-                         string_list_ty *args)
+list_change_file_history(string_ty *project_name, long change_number,
+    string_list_ty *args)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
     project_ty	    *pp;
     change_ty	    *cp;
     user_ty	    *up;
@@ -153,7 +152,7 @@ list_change_file_history(string_ty *project_name,
      */
     for (j = 0;; ++j)
     {
-	fstate_src	src_data;
+	fstate_src_ty	*src_data;
 	file_event_list_ty *felp;
 	size_t		k;
 	int		usage_track;
@@ -176,7 +175,7 @@ list_change_file_history(string_ty *project_name,
 	{
 	    for (k = 0; k < felp->length; ++k)
 	    {
-		fstate_src	src2_data;
+		fstate_src_ty	*src2_data;
 		file_event_ty	*fep;
 		string_ty	*s;
 

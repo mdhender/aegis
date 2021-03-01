@@ -28,13 +28,13 @@
 time_t
 change_completion_timestamp(change_ty *cp)
 {
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
 
     cstate_data = change_cstate_get(cp);
     if (!cp->bogus && cstate_data->state == cstate_state_completed)
     {
-	cstate_history  chp;
-	cstate_history_list chlp;
+	cstate_history_ty *chp;
+	cstate_history_list_ty *chlp;
 
 	chlp = cstate_data->history;
 	assert(chlp);

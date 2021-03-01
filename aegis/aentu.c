@@ -27,6 +27,8 @@
 #include <ael/change/files.h>
 #include <aentu.h>
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <change/branch.h>
 #include <change/file.h>
 #include <col.h>
@@ -94,47 +96,25 @@ new_test_undo_list(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, new_test_undo_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_change,
-		    new_test_undo_usage
-		);
-	    }
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change
+	    (
+		&project_name,
+		&change_number,
+		new_test_undo_usage
+	    );
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, new_test_undo_usage);
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    new_test_undo_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    /* fall through... */
+
+	case arglex_token_string:
+	    arglex_parse_project(&project_name, new_test_undo_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -145,12 +125,43 @@ new_test_undo_list(void)
 }
 
 
+static int
+aentu_candidate(fstate_src_ty *src)
+{
+    if (src->move)
+	return 0;
+    switch (src->action)
+    {
+    case file_action_create:
+	switch (src->usage)
+	{
+	case file_usage_test:
+	case file_usage_manual_test:
+	    return 1;
+
+	case file_usage_source:
+	case file_usage_config:
+	case file_usage_build:
+	    break;
+	}
+	break;
+
+    case file_action_modify:
+    case file_action_remove:
+    case file_action_insulate:
+    case file_action_transparent:
+	break;
+    }
+    return 0;
+}
+
+
 static void
 new_test_undo_main(void)
 {
     string_list_ty  wl;
     string_list_ty  wl2;
-    cstate	    cstate_data;
+    cstate_ty	    *cstate_data;
     size_t	    j;
     size_t	    k;
     string_ty	    *s1;
@@ -228,18 +239,9 @@ new_test_undo_main(void)
 	    break;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, new_test_undo_usage);
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    new_test_undo_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, new_test_undo_usage);
+	    continue;
 
 	case arglex_token_nolog:
 	    if (log_style == log_style_none)
@@ -393,23 +395,14 @@ new_test_undo_main(void)
 	    for (k = 0; k < wl_in.nstrings; ++k)
 	    {
 		string_ty	*s3;
-		fstate_src	src_data;
+		fstate_src_ty   *src_data;
 
 		s3 = wl_in.string[k];
 		src_data = change_file_find(cp, s3);
 		assert(src_data);
-		if
-		(
-		    src_data
-		&&
-		    src_data->action == file_action_create
-		&&
-		    (
-			src_data->usage == file_usage_test
-		    ||
-			src_data->usage == file_usage_manual_test
-		    )
-		)
+		if (!src_data)
+		    continue;
+		if (aentu_candidate(src_data))
 		{
 		    if (string_list_member(&wl2, s3))
 		    {
@@ -476,7 +469,7 @@ new_test_undo_main(void)
      */
     for (j = 0; j < wl.nstrings; ++j)
     {
-	fstate_src	src_data;
+	fstate_src_ty   *src_data;
 
 	s1 = wl.string[j];
 	src_data = change_file_find(cp, s1);
@@ -505,16 +498,7 @@ new_test_undo_main(void)
 	    ++number_of_errors;
 	    continue;
 	}
-	if
-	(
-	    src_data->action != file_action_create
-	||
-	    (
-		src_data->usage != file_usage_test
-	    &&
-		src_data->usage != file_usage_manual_test
-	    )
-	)
+	if (!aentu_candidate(src_data))
 	{
 	    sub_context_ty  *scp;
 

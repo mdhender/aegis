@@ -25,6 +25,8 @@
 #include <ael/project/files.h>
 #include <aemt.h>
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <change.h>
 #include <change/branch.h>
 #include <change/file.h>
@@ -130,53 +132,25 @@ make_transparent_list(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-	    {
-		option_needs_number
-		(
-		    arglex_token_change,
-		    make_transparent_usage
-		);
-	    }
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_change,
-		    make_transparent_usage
-		);
-	    }
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change
+	    (
+		&project_name,
+		&change_number,
+		make_transparent_usage
+	    );
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, make_transparent_usage);
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    make_transparent_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    /* fall through... */
+
+	case arglex_token_string:
+	    arglex_parse_project(&project_name, make_transparent_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -211,9 +185,9 @@ make_transparent_main(void)
     string_list_ty  wl_in;
     string_ty	    *s1;
     string_ty	    *s2;
-    cstate	    cstate_data;
-    fstate_src	    c_src_data;
-    fstate_src	    b_src_data;
+    cstate_ty	    *cstate_data;
+    fstate_src_ty   *c_src_data;
+    fstate_src_ty   *b_src_data;
     size_t	    j;
     size_t	    k;
     string_ty	    *project_name;
@@ -259,51 +233,22 @@ make_transparent_main(void)
 	    break;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-	    {
-		option_needs_number
-		(
-		    arglex_token_change,
-		    make_transparent_usage
-		);
-	    }
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_change,
-		    make_transparent_usage
-		);
-	    }
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Name", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change
+	    (
+		&project_name,
+		&change_number,
+		make_transparent_usage
+	    );
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, make_transparent_usage);
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    make_transparent_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, make_transparent_usage);
+	    continue;
 
 	case arglex_token_nolog:
 	    if (log_style == log_style_none)
@@ -537,7 +482,7 @@ make_transparent_main(void)
      */
     for (j = 0; j < wl.nstrings; ++j)
     {
-	fstate_src      pp_src_data;
+	fstate_src_ty   *pp_src_data;
 
 	s1 = wl.string[j];
 	trace(("s1 = \"%s\"\n", s1->str_text));
@@ -559,55 +504,38 @@ make_transparent_main(void)
 		scp = sub_context_new();
 		sub_var_set_string(scp, "File_Name", s1);
 		sub_var_set_string(scp, "Guess", b_src_data->file_name);
-		project_error(pp, scp, i18n("no $filename, closest is $guess"));
+		change_error(bcp, scp, i18n("no $filename, closest is $guess"));
 		sub_context_delete(scp);
 		++number_of_errors;
 	    }
-	}
-
-	/*
-	 * This is here to cope with cases where the users upgrade
-	 * from 4.9 to 4.10 with changes between being reviewed and
-	 * being integrated.
-	 */
-	if
-	(
-	    b_src_data
-	&&
-	    (
-	       	b_src_data->about_to_be_created_by
-	    ||
-	       	b_src_data->about_to_be_copied_by
-	    )
-	)
-	    b_src_data->action = file_action_transparent;
-
-	if (!b_src_data || b_src_data->action == file_action_transparent)
-	{
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", s1);
-	    if
-	    (
-		pp->parent
-	    &&
-		project_file_find(pp->parent, s1, view_path_simple)
-	    )
-	    {
-		project_error
-		(
-		    pp->parent,
-		    scp,
-		    i18n("make $filename transparent, fail, too deep")
-		);
-	    }
 	    else
 	    {
-		change_error(bcp, scp, i18n("no $filename"));
+		scp = sub_context_new();
+		sub_var_set_string(scp, "File_Name", s1);
+		if
+		(
+		    pp->parent
+		&&
+		    project_file_find(pp->parent, s1, view_path_simple)
+		)
+		{
+		    project_error
+		    (
+			pp->parent,
+			scp,
+			i18n("make $filename transparent, fail, too deep")
+		    );
+		}
+		else
+		{
+		    change_error(bcp, scp, i18n("no $filename"));
+		}
+		sub_context_delete(scp);
+		++number_of_errors;
+		continue;
 	    }
-	    sub_context_delete(scp);
-	    ++number_of_errors;
-	    continue;
 	}
+	assert(b_src_data);
 
 	pp_src_data = 0;
 	switch (b_src_data->action)
@@ -748,7 +676,7 @@ make_transparent_main(void)
     dd = change_development_directory_get(cp, 0);
     for (j = 0; ; ++j)
     {
-	fstate_src      pp_src_data;
+	fstate_src_ty   *pp_src_data;
 
 	c_src_data = change_file_nth(cp, j);
 	if (!c_src_data)

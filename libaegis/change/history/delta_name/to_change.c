@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,8 @@
 long
 change_history_change_by_name(change_ty *cp, string_ty *delta_name, int errok)
 {
-    cstate          cstate_data;
-    cstate_branch_history_list h;
+    cstate_ty       *cstate_data;
+    cstate_branch_history_list_ty *h;
     size_t          j;
     string_ty       *best;
     double          best_weight;
@@ -46,8 +46,8 @@ change_history_change_by_name(change_ty *cp, string_ty *delta_name, int errok)
     best_weight = 0.6;
     for (j = 0; j < h->length; ++j)
     {
-	cstate_branch_history he;
-	cstate_branch_history_name_list nlp;
+	cstate_branch_history_ty *he;
+	cstate_branch_history_name_list_ty *nlp;
 	size_t		k;
 
 	he = h->list[j];

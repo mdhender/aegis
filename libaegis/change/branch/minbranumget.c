@@ -27,15 +27,15 @@
 long
 change_branch_minimum_branch_number_get(change_ty *cp)
 {
-	cstate		cstate_data;
-	cstate_branch	bp;
+    cstate_ty       *cstate_data;
+    cstate_branch_ty *bp;
 
-	cstate_data = change_cstate_get(cp);
-	bp = cstate_data->branch;
-	assert(bp);
-	if (!bp)
-		return 1;
-	if (bp->minimum_branch_number < 1)
-		bp->minimum_branch_number = 1;
-	return bp->minimum_branch_number;
+    cstate_data = change_cstate_get(cp);
+    bp = cstate_data->branch;
+    assert(bp);
+    if (!bp)
+	return 1;
+    if (bp->minimum_branch_number < 1)
+	bp->minimum_branch_number = 1;
+    return bp->minimum_branch_number;
 }

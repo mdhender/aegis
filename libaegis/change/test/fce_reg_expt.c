@@ -27,7 +27,7 @@
 void
 change_force_regression_test_exemption(change_ty *cp)
 {
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
 
     assert(cp->reference_count >= 1);
     cstate_data = change_cstate_get(cp);
@@ -38,7 +38,7 @@ change_force_regression_test_exemption(change_ty *cp)
 void
 change_force_regression_test_exemption_undo(change_ty *cp)
 {
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
 
     assert(cp->reference_count >= 1);
     cstate_data = change_cstate_get(cp);

@@ -26,8 +26,8 @@
 #include <main.h>
 
 struct change_ty; /* forward */
-struct fstate_src; /* forward */
+struct fstate_src_ty; /* forward */
 
-void emit_edit_number(struct change_ty *, struct fstate_src *);
+void emit_edit_number(struct change_ty *, struct fstate_src_ty *);
 
 #endif /* AEGET_EMIT_EDIT_NUMBER_H */

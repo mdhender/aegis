@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,34 +28,34 @@
 string_ty *
 change_developer_name(change_ty *cp)
 {
-	cstate		cstate_data;
-	cstate_history	history_data;
-	long		pos;
+    cstate_ty       *cstate_data;
+    cstate_history_ty *history_data;
+    long            pos;
 
-	trace(("change_developer_name(cp = %08lX)\n{\n"/*}*/, (long)cp));
-	assert(cp->reference_count >= 1);
-	cstate_data = change_cstate_get(cp);
-	assert(cstate_data->history);
-	history_data = 0;
-	for (pos = cstate_data->history->length - 1; pos >= 0 ; --pos)
+    trace(("change_developer_name(cp = %08lX)\n{\n", (long)cp));
+    assert(cp->reference_count >= 1);
+    cstate_data = change_cstate_get(cp);
+    assert(cstate_data->history);
+    history_data = 0;
+    for (pos = cstate_data->history->length - 1; pos >= 0 ; --pos)
+    {
+	history_data = cstate_data->history->list[pos];
+	switch (history_data->what)
 	{
-		history_data = cstate_data->history->list[pos];
-		switch (history_data->what)
-		{
-		default:
-			history_data = 0;
-			continue;
+	default:
+	    history_data = 0;
+	    continue;
 
-		case cstate_history_what_develop_begin:
-		case cstate_history_what_develop_begin_undo:
-		case cstate_history_what_develop_end:
-		case cstate_history_what_develop_end_undo:
-			break;
-		}
-		break;
+	case cstate_history_what_develop_begin:
+	case cstate_history_what_develop_begin_undo:
+	case cstate_history_what_develop_end:
+	case cstate_history_what_develop_end_undo:
+	    break;
 	}
-	trace(("return \"%s\";\n",
-		history_data ? history_data->who->str_text : ""));
-	trace((/*{*/"}\n"));
-	return (history_data ? history_data->who : 0);
+	break;
+    }
+    trace(("return \"%s\";\n",
+	history_data ? history_data->who->str_text : ""));
+    trace(("}\n"));
+    return (history_data ? history_data->who : 0);
 }

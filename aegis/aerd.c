@@ -26,6 +26,7 @@
 #include <ael/project/developers.h>
 #include <aerd.h>
 #include <arglex2.h>
+#include <arglex/project.h>
 #include <commit.h>
 #include <error.h>
 #include <help.h>
@@ -87,18 +88,12 @@ remove_developer_list(void)
 	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, remove_developer_usage);
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    remove_developer_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    /* fall through... */
+
+	case arglex_token_string:
+	    arglex_parse_project(&project_name, remove_developer_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -224,18 +219,9 @@ remove_developer_main(void)
 	    break;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, remove_developer_usage);
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    remove_developer_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, remove_developer_usage);
+	    continue;
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:

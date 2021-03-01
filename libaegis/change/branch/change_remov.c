@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,8 @@
 void
 change_branch_change_remove(change_ty *cp, long change_number)
 {
-    cstate	    cstate_data;
-    cstate_branch_change_list lp;
+    cstate_ty       *cstate_data;
+    cstate_branch_change_list_ty *lp;
     size_t	    j;
 
     trace(("change_branch_change_remove(cp = %8.8lX, change_number = %ld)\n{\n",
@@ -59,7 +59,7 @@ change_branch_change_remove(change_ty *cp, long change_number)
 
     if (cstate_data->branch->sub_branch)
     {
-	cstate_branch_sub_branch_list lp2;
+	cstate_branch_sub_branch_list_ty *lp2;
 
 	/*
 	 * Remove the name from the list, if it is on the list.

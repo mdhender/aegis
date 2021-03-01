@@ -31,7 +31,7 @@ void
 change_run_integrate_begin_undo_command(change_ty *cp)
 {
     sub_context_ty  *scp;
-    pconf           pconf_data;
+    pconf_ty        *pconf_data;
     string_ty       *the_command;
     string_ty       *dir;
 

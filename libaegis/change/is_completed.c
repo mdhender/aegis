@@ -28,7 +28,7 @@
 int
 change_is_completed(change_ty *cp)
 {
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
 
     if (cp->bogus)
 	return 0;

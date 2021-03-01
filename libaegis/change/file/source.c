@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2000, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2000, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,8 +32,8 @@ string_ty *
 change_file_source(change_ty *cp, string_ty *file_name)
 {
     string_ty       *result;
-    cstate	    cstate_data;
-    fstate_src	    src;
+    cstate_ty       *cstate_data;
+    fstate_src_ty   *src;
 
     /*
      * For changes which are not somewhere between `being developed'

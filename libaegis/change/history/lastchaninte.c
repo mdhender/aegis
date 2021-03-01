@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,14 +26,14 @@
 long
 change_history_last_change_integrated(change_ty *cp)
 {
-	cstate		cstate_data;
-	cstate_branch	bp;
-	cstate_branch_history	history_data;
+    cstate_ty       *cstate_data;
+    cstate_branch_ty *bp;
+    cstate_branch_history_ty *history_data;
 
-	cstate_data = change_cstate_get(cp);
-	bp = cstate_data->branch;
-	if (!bp || !bp->history || !bp->history->length)
-		return 0;
-	history_data = bp->history->list[bp->history->length - 1];
-	return history_data->change_number;
+    cstate_data = change_cstate_get(cp);
+    bp = cstate_data->branch;
+    if (!bp || !bp->history || !bp->history->length)
+	return 0;
+    history_data = bp->history->list[bp->history->length - 1];
+    return history_data->change_number;
 }

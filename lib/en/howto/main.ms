@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999-2002 Peter Miller;
+.\"	Copyright (C) 1999-2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -350,7 +350,9 @@
 .so cheat.so
 .BP
 .so first_time.so
-.BP
+.bp
+.so recreate.so
+.bp
 .so new_project.so
 .BP
 .so move_projec.so

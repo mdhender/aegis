@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999-2002 Peter Miller;
+ *	Copyright (C) 1999-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,11 +33,11 @@
 
 
 void
-change_run_history_create_command(change_ty *cp, fstate_src src)
+change_run_history_create_command(change_ty *cp, fstate_src_ty *src)
 {
     sub_context_ty  *scp;
     string_ty	    *hp;
-    pconf	    pconf_data;
+    pconf_ty        *pconf_data;
     string_ty	    *the_command;
     time_t	    mtime;
     string_ty	    *name_of_encoded_file;

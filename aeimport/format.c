@@ -1,21 +1,21 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
- *	All rights reserved.
+ *      aegis - project change supervisor
+ *      Copyright (C) 2001, 2002 Peter Miller;
+ *      All rights reserved.
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 2 of the License, or
+ *      (at your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program; if not, write to the Free Software
+ *      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to manipulate formats
  */
@@ -30,12 +30,12 @@
 
 
 void
-format_delete(format_ty	*fp)
+format_delete(format_ty *fp)
 {
     assert(fp);
     assert(fp->vptr);
     if (fp->vptr->destructor)
-	fp->vptr->destructor(fp);
+        fp->vptr->destructor(fp);
     fp->vptr = 0; /* paranoia */
     mem_free(fp);
 }
@@ -44,8 +44,8 @@ format_delete(format_ty	*fp)
 typedef struct context_ty context_ty;
 struct context_ty
 {
-    format_ty	    *fp;
-    string_ty	    *base;
+    format_ty       *fp;
+    string_ty       *base;
     format_search_list_ty *fslp;
 };
 
@@ -57,42 +57,42 @@ searcher(void *arg, dir_walk_message_ty msg, string_ty *filename,
     static string_ty *the_config_file;
 
     if (!the_config_file)
-	the_config_file = str_from_c("config");
+        the_config_file = str_from_c("config");
     if (msg == dir_walk_file)
     {
-	context_ty	*context;
-	format_ty	*fp;
+        context_ty      *context;
+        format_ty       *fp;
 
-	context = arg;
-	fp = context->fp;
-	if (fp->vptr->is_a_candidate(fp, filename))
-	{
-	    string_ty	    *relative;
-	    string_ty	    *sanitized;
-	    format_search_ty *fsp;
-	    format_version_ty *fvp;
+        context = (context_ty *)arg;
+        fp = context->fp;
+        if (fp->vptr->is_a_candidate(fp, filename))
+        {
+            string_ty       *relative;
+            string_ty       *sanitized;
+            format_search_ty *fsp;
+            format_version_ty *fvp;
 
-	    relative = os_below_dir(context->base, filename);
-	    sanitized = fp->vptr->sanitize(fp, relative);
-	    str_free(relative);
-	    if (str_equal(sanitized, the_config_file))
-		fvp = 0;
-	    else
-		fvp = fp->vptr->read_versions(fp, filename, sanitized);
-	    fsp = format_search_new();
-	    fsp->filename_physical = str_copy(filename);
-	    fsp->filename_logical = sanitized;
-	    fsp->root = fvp;
-	    format_search_list_append(context->fslp, fsp);
-	}
+            relative = os_below_dir(context->base, filename);
+            sanitized = fp->vptr->sanitize(fp, relative);
+            str_free(relative);
+            if (str_equal(sanitized, the_config_file))
+                fvp = 0;
+            else
+                fvp = fp->vptr->read_versions(fp, filename, sanitized);
+            fsp = format_search_new();
+            fsp->filename_physical = str_copy(filename);
+            fsp->filename_logical = sanitized;
+            fsp->root = fvp;
+            format_search_list_append(context->fslp, fsp);
+        }
     }
 }
 
 
 format_search_list_ty *
-format_search(format_ty	*fp, string_ty *base)
+format_search(format_ty *fp, string_ty *base)
 {
-    context_ty	    context;
+    context_ty      context;
 
     context.fp = fp;
     context.base = base;

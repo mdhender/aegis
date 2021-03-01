@@ -41,8 +41,8 @@
 void
 change_test_times_clear(change_ty *cp)
 {
-	cstate_architecture_times tp;
-	cstate		cstate_data;
+	cstate_architecture_times_ty *tp;
+	cstate_ty       *cstate_data;
 	size_t		j;
 	string_ty	*variant;
 
@@ -69,8 +69,8 @@ change_test_times_clear(change_ty *cp)
 	variant = change_architecture_name(cp, 1);
 	for (j = 0; ; ++j)
 	{
-		fstate_src	src_data;
-		fstate_src_architecture_times_list atlp;
+		fstate_src_ty   *src_data;
+		fstate_src_architecture_times_list_ty *atlp;
 		size_t		k;
 
 		src_data = change_file_nth(cp, j);
@@ -85,7 +85,7 @@ change_test_times_clear(change_ty *cp)
 		 */
 		for (k = 0; k < atlp->length; ++k)
 		{
-			fstate_src_architecture_times atp;
+			fstate_src_architecture_times_ty *atp;
 
 			atp = atlp->list[k];
 			if

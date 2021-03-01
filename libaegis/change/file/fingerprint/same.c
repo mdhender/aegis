@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -45,7 +45,7 @@
  */
 
 int
-change_fingerprint_same(fingerprint fp, string_ty *path, int check_always)
+change_fingerprint_same(fingerprint_ty *fp, string_ty *path, int check_always)
 {
 	time_t		oldest;
 	time_t		newest;

@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001, 2002 Peter Miller;
+.\"	Copyright (C) 2001-2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -144,11 +144,7 @@ delta in the project's history to copy the file from,
 just as for the \fIaecp\fP(1) command.
 You may also use a delta name instead of a delta number.
 .so o_dir.so
-.TP 8n
-\fB\-File\fP \fIfilename\fP
-Read the change set from the specified file.
-The default is to read it from the standard input.
-The filename `-' is understood to mean the standard input.
+.so o_file_cs.so
 .TP 8n
 \fB\-Project\fP \fIname\fP
 This option may be used to set the project name.  If not specified the
@@ -180,10 +176,7 @@ actually unpacking it first.
 The output is reminiscent of the \fIaegis -list change-details\fP output.
 .SS Options
 The following options are understood by the list variant:
-.TP 8n
-\fB\-File\fP \fIfilename\fP
-Read the change set from the specified file.
-The default is to read it from the standard input.
+.so o_file_cs.so
 .so o_output.so
 Only useful with the \-List option.
 .SH OPTIONS

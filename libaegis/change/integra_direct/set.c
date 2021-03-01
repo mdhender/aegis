@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@
 void
 change_integration_directory_set(change_ty *cp, string_ty *s)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
 
     /*
      * To cope with automounters, directories are stored as given,

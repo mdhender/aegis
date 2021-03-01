@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2002 Peter Miller;
+.\"	Copyright (C) 2002, 2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -137,11 +137,7 @@ delta in the project's history to copy the file from,
 just as for the \fIaecp\fP(1) command.
 You may also use a delta name instead of a delta number.
 .so o_dir.so
-.TP 8n
-\fB\-File\fP \fIfilename\fP
-Read the change set from the specified file.
-The default is to read it from the standard input.
-The filename `-' is understood to mean the standard input.
+.so o_file_cs.so
 .so o_project.so
 .SS Security
 Downloading a tarball and automatically committing it to the
@@ -180,10 +176,7 @@ The list variant can be used to list the contents of a tarball without
 actually unpacking it first.
 .SS Options
 The following options are understood by the list variant:
-.TP 8n
-\fB\-File\fP \fIfilename\fP
-Read the change set from the specified file.
-The default is to read it from the standard input.
+.so o_file_cs.so
 .so o_output.so
 Only useful with the \-List option.
 .SH OPTIONS

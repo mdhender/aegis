@@ -58,7 +58,7 @@ change_number_get(change_ty *cp, wstring_list_ty *arg)
 static string_ty *
 change_description_get(change_ty *cp, wstring_list_ty *arg)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
     string_ty	    *s;
     size_t	    len;
 
@@ -78,7 +78,7 @@ change_description_get(change_ty *cp, wstring_list_ty *arg)
 static string_ty *
 get_delta(change_ty *cp, wstring_list_ty *arg)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
 
     cstate_data = change_cstate_get(cp);
     switch (cstate_data->state)
@@ -101,7 +101,7 @@ get_delta(change_ty *cp, wstring_list_ty *arg)
 static string_ty *
 get_development_directory(change_ty *cp, wstring_list_ty *arg)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
 
     cstate_data = change_cstate_get(cp);
     switch (cstate_data->state)
@@ -124,7 +124,7 @@ get_development_directory(change_ty *cp, wstring_list_ty *arg)
 static string_ty *
 get_developer(change_ty *cp, wstring_list_ty *arg)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
 
     cstate_data = change_cstate_get(cp);
     switch (cstate_data->state)
@@ -147,7 +147,7 @@ get_developer(change_ty *cp, wstring_list_ty *arg)
 static string_ty *
 get_integration_directory(change_ty *cp, wstring_list_ty *arg)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
 
     cstate_data = change_cstate_get(cp);
     if (cstate_data->state != cstate_state_being_integrated)
@@ -187,7 +187,7 @@ calc_date_string(time_t when, wstring_list_ty *arg)
 static string_ty *
 get_integrate_pass_date(change_ty *cp, wstring_list_ty *arg)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
     time_t	    when;
 
     cstate_data = change_cstate_get(cp);
@@ -202,7 +202,7 @@ get_integrate_pass_date(change_ty *cp, wstring_list_ty *arg)
 static string_ty *
 get_integrator(change_ty *cp, wstring_list_ty *arg)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
 
     cstate_data = change_cstate_get(cp);
     switch (cstate_data->state)
@@ -225,7 +225,7 @@ get_integrator(change_ty *cp, wstring_list_ty *arg)
 static string_ty *
 get_reviewer(change_ty *cp, wstring_list_ty *arg)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
 
     cstate_data = change_cstate_get(cp);
     switch (cstate_data->state)
@@ -248,7 +248,7 @@ get_reviewer(change_ty *cp, wstring_list_ty *arg)
 static string_ty *
 get_state(change_ty *cp, wstring_list_ty *arg)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
 
     cstate_data = change_cstate_get(cp);
     return str_from_c(cstate_state_ename(cstate_data->state));
@@ -258,7 +258,7 @@ get_state(change_ty *cp, wstring_list_ty *arg)
 static string_ty *
 get_cause(change_ty *cp, wstring_list_ty *arg)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
 
     cstate_data = change_cstate_get(cp);
     return str_from_c(change_cause_ename(cstate_data->cause));

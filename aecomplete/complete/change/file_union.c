@@ -150,7 +150,7 @@ perform(complete_ty *cp, shell_ty *sh)
 	path = os_path_cat(prefix_dir, name);
 	if (!this_thing->source_ok)
 	{
-	    fstate_src      src;
+	    fstate_src_ty   *src;
 
 	    src =
                 project_file_find(this_thing->cp->pp, path, view_path_extreme);

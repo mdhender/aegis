@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,20 +26,20 @@
 int
 change_history_delta_validate(change_ty *cp, long delta_number)
 {
-	cstate		cstate_data;
-	cstate_branch_history_list h;
-	size_t		j;
+    cstate_ty       *cstate_data;
+    cstate_branch_history_list_ty *h;
+    size_t          j;
 
-	cstate_data = change_cstate_get(cp);
-	if (!cstate_data->branch)
-		return 0;
-	h = cstate_data->branch->history;
-	if (!h)
-		return 0;
-	for (j = 0; j < h->length; ++j)
-	{
-		if (h->list[j]->delta_number == delta_number)
-			return 1;
-	}
+    cstate_data = change_cstate_get(cp);
+    if (!cstate_data->branch)
 	return 0;
+    h = cstate_data->branch->history;
+    if (!h)
+	return 0;
+    for (j = 0; j < h->length; ++j)
+    {
+	if (h->list[j]->delta_number == delta_number)
+    	    return 1;
+    }
+    return 0;
 }

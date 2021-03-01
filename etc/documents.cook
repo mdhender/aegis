@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002, 2003 Peter Miller;
+ *	Copyright (C) 2002-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -116,6 +116,7 @@ source_files +=
 		[match_mask lib/%/readme/main.man [source_files]]
 	];
 
+lib/%/changes/main.d: lib/%/readme/new.so;
 lib/%/readme/main.d: lib/%/readme/new.so;
 lib/%/refman/main.d: lib/%/readme/new.so;
 
@@ -228,6 +229,7 @@ archive/%2.html: lib/en/%2/main.ms
 }
 
 archive/%2.pdf: lib/en/%2/main.mm etc/page-list.awk
+	set shallow
 {
 	roffpp
 		[prepost "-I" "/lib/en/%2" [search_list]]
@@ -271,6 +273,7 @@ lib/%1/%2/%2.txt: lib/%1/%2/main.man: etc/ssp.awk
 		[prepost "-I" "/lib/%1/%2" [search_list]]
 		[prepost "-I" /[arch]/etc [search_list]]
 		[prepost "-I" "/etc" [search_list]]
+		[prepost "-I" "/lib/%1/readme" [search_list]] /* for changes */
 		[resolve lib/%1/%2/main.man]
 	| groff -Tascii -t -P-bchu -man
 	| [awk] -f [resolve etc/ssp.awk]

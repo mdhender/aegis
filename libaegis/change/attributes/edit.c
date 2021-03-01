@@ -31,10 +31,10 @@
 
 
 void
-change_attributes_edit(cattr *dp, int et)
+change_attributes_edit(cattr_ty **dp, int et)
 {
 	sub_context_ty	*scp;
-	cattr		d;
+	cattr_ty	*d;
 	string_ty	*filename;
 	string_ty	*msg;
 

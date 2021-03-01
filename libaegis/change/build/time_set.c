@@ -32,14 +32,14 @@ void
 change_build_time_set(change_ty *cp)
 {
     long	    j, k;
-    cstate_architecture_times tp;
-    cstate	    cstate_data;
-    pconf	    pconf_data;
+    cstate_architecture_times_ty *tp;
+    cstate_ty       *cstate_data;
+    pconf_ty        *pconf_data;
 
     /*
      * set the build_time in the change state.
      */
-    trace(("change_build_time_set(cp = %8.8lX)\n{\n"/*}*/, (long)cp));
+    trace(("change_build_time_set(cp = %8.8lX)\n{\n", (long)cp));
     assert(cp->reference_count >= 1);
     pconf_data = change_pconf_get(cp, 1);
     cstate_data = change_cstate_get(cp);
@@ -108,5 +108,5 @@ change_build_time_set(change_ty *cp)
     cstate_data->test_time = 0;
     cstate_data->test_baseline_time = 0; /* XXX */
     cstate_data->regression_test_time = 0;
-    trace((/*{*/"}\n"));
+    trace(("}\n"));
 }

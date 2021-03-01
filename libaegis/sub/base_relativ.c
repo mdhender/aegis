@@ -60,7 +60,7 @@ wstring_ty *
 sub_base_relative(sub_context_ty *scp, wstring_list_ty *arg)
 {
     wstring_ty	    *result;
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
     change_ty	    *cp;
     string_list_ty  search_path;
     string_ty	    *s;

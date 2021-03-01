@@ -1,21 +1,21 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
- *	All rights reserved.
+ *      aegis - project change supervisor
+ *      Copyright (C) 2001, 2002 Peter Miller;
+ *      All rights reserved.
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 2 of the License, or
+ *      (at your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program; if not, write to the Free Software
+ *      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: lexical analysis of RCS files
  */
@@ -33,7 +33,7 @@
 static input_ty *ip;
 static int      keyword_expected;
 static symtab_ty *stp;
-static int	error_count;
+static int      error_count;
 
 typedef struct table_ty table_ty;
 struct table_ty
@@ -69,17 +69,17 @@ rcs_lex_open(string_ty *fn)
 {
     if (!stp)
     {
-	table_ty        *tp;
+        table_ty        *tp;
 
-	stp = symtab_alloc(SIZEOF(table));
-	for (tp = table; tp < ENDOF(table); ++tp)
-	{
-	    string_ty       *name;
+        stp = symtab_alloc(SIZEOF(table));
+        for (tp = table; tp < ENDOF(table); ++tp)
+        {
+            string_ty       *name;
 
-	    name = str_from_c(tp->name);
-	    symtab_assign(stp, name, tp);
-	    str_free(name);
-	}
+            name = str_from_c(tp->name);
+            symtab_assign(stp, name, tp);
+            str_free(name);
+        }
     }
 
     /*
@@ -99,7 +99,7 @@ void
 rcs_lex_close(void)
 {
     if (error_count)
-       	quit(1);
+        quit(1);
     input_delete(ip);
     ip = 0;
 }
@@ -120,9 +120,9 @@ rcs_lex_error(sub_context_ty *scp, const char *s)
 
     if (++error_count >= 20)
     {
-	/* re-use substitution context */
-	sub_var_set_string(scp, "File_Name", input_name(ip));
-	fatal_intl(scp, i18n("$filename: too many errors"));
+        /* re-use substitution context */
+        sub_var_set_string(scp, "File_Name", input_name(ip));
+        fatal_intl(scp, i18n("$filename: too many errors"));
     }
 }
 
@@ -419,128 +419,129 @@ int
 format_rcs_gram_lex(void)
 {
     static stracc_t buffer;
-    int		    c;
-    ctab_ty	    d;
+    int             c;
+    ctab_ty         d;
 
     for (;;)
     {
-	c = input_getc(ip);
-	if (c < 0)
-	{
-	    trace(("EOF\n"));
-	    return 0;
-	}
-	d = ctab[c];
-	switch (d)
-	{
-	default:
-	    trace(("JUNK\n"));
-	    return JUNK;
+        c = input_getc(ip);
+        if (c < 0)
+        {
+            trace(("EOF\n"));
+            return 0;
+        }
+        d = ctab[c];
+        switch (d)
+        {
+        default:
+            trace(("JUNK\n"));
+            return JUNK;
 
-	case ctab_is_space:
-	    break;
+        case ctab_is_space:
+            break;
 
-	case ctab_is_alpha:
-	    stracc_open(&buffer);
-	    for (;;)
-	    {
-		stracc_char(&buffer, c);
-		c = input_getc(ip);
-		if (c < 0)
-		    break;
-		d = ctab[c];
-		switch (d)
-		{
-		case ctab_is_alpha:
-		case ctab_is_digit:
-		    continue;
+        case ctab_is_alpha:
+            stracc_open(&buffer);
+            for (;;)
+            {
+                stracc_char(&buffer, c);
+                c = input_getc(ip);
+                if (c < 0)
+                    break;
+                d = ctab[c];
+                switch (d)
+                {
+                case ctab_is_alpha:
+                case ctab_is_digit:
+                    continue;
 
-		default:
-		    if (c >= 0)
-		       	input_ungetc(ip, c);
-		    break;
-		}
-		break;
-	    }
-	    format_rcs_gram_lval.lv_string = stracc_close(&buffer);
-	    if (keyword_expected)
-	    {
-		table_ty *tp =
+                default:
+                    if (c >= 0)
+                        input_ungetc(ip, c);
+                    break;
+                }
+                break;
+            }
+            format_rcs_gram_lval.lv_string = stracc_close(&buffer);
+            if (keyword_expected)
+            {
+                table_ty *tp =
+		    (table_ty *)
 		    symtab_query(stp, format_rcs_gram_lval.lv_string);
-		if (tp)
-		{
-		    str_free(format_rcs_gram_lval.lv_string);
-		    format_rcs_gram_lval.lv_string = 0;
-		    keyword_expected = 0;
-		    trace(("%s\n", tp->name));
-		    return tp->value;
-		}
-	    }
-	    trace(("IDENTIFIER \"%s\"\n",
-		format_rcs_gram_lval.lv_string->str_text));
-	    return IDENTIFIER;
+                if (tp)
+                {
+                    str_free(format_rcs_gram_lval.lv_string);
+                    format_rcs_gram_lval.lv_string = 0;
+                    keyword_expected = 0;
+                    trace(("%s\n", tp->name));
+                    return tp->value;
+                }
+            }
+            trace(("IDENTIFIER \"%s\"\n",
+                format_rcs_gram_lval.lv_string->str_text));
+            return IDENTIFIER;
 
-	case ctab_is_digit:
-	    stracc_open(&buffer);
-	    for (;;)
-	    {
-		stracc_char(&buffer, c);
-		c = input_getc(ip);
-		if (c < 0)
-		    break;
-		d = ctab[c];
-		switch (d)
-		{
-		case ctab_is_digit:
-		    continue;
+        case ctab_is_digit:
+            stracc_open(&buffer);
+            for (;;)
+            {
+                stracc_char(&buffer, c);
+                c = input_getc(ip);
+                if (c < 0)
+                    break;
+                d = ctab[c];
+                switch (d)
+                {
+                case ctab_is_digit:
+                    continue;
 
-		default:
-		    if (c >= 0)
-		       	input_ungetc(ip, c);
-		    break;
-		}
-		break;
-	    }
-	    format_rcs_gram_lval.lv_string = stracc_close(&buffer);
-	    trace(("NUMBER \"%s\"\n",
-		format_rcs_gram_lval.lv_string->str_text));
-	    return NUMBER;
+                default:
+                    if (c >= 0)
+                        input_ungetc(ip, c);
+                    break;
+                }
+                break;
+            }
+            format_rcs_gram_lval.lv_string = stracc_close(&buffer);
+            trace(("NUMBER \"%s\"\n",
+                format_rcs_gram_lval.lv_string->str_text));
+            return NUMBER;
 
-	case ctab_is_string:
-	    stracc_open(&buffer);
-	    for (;;)
-	    {
-		c = input_getc(ip);
-		if (c < 0)
-			break;
-		d = ctab[c];
-		if (d == ctab_is_string)
-		{
-		    c = input_getc(ip);
-		    if (c < 0)
-		       	break;
-		    d = ctab[c];
-		    if (d != ctab_is_string)
-		    {
-		       	input_ungetc(ip, c);
-		       	break;
-		    }
-		}
-		stracc_char(&buffer, c);
-	    }
-	    format_rcs_gram_lval.lv_string = stracc_close(&buffer);
-	    trace(("STRING\n"));
-	    return STRING;
+        case ctab_is_string:
+            stracc_open(&buffer);
+            for (;;)
+            {
+                c = input_getc(ip);
+                if (c < 0)
+                        break;
+                d = ctab[c];
+                if (d == ctab_is_string)
+                {
+                    c = input_getc(ip);
+                    if (c < 0)
+                        break;
+                    d = ctab[c];
+                    if (d != ctab_is_string)
+                    {
+                        input_ungetc(ip, c);
+                        break;
+                    }
+                }
+                stracc_char(&buffer, c);
+            }
+            format_rcs_gram_lval.lv_string = stracc_close(&buffer);
+            trace(("STRING\n"));
+            return STRING;
 
-	case ctab_is_colon:
-	    trace(("COLON\n"));
-	    return COLON;
+        case ctab_is_colon:
+            trace(("COLON\n"));
+            return COLON;
 
-	case ctab_is_semi:
-	    keyword_expected = 1;
-	    trace(("SEMI\n"));
-	    return SEMI;
-	}
+        case ctab_is_semi:
+            keyword_expected = 1;
+            trace(("SEMI\n"));
+            return SEMI;
+        }
     }
 }
 

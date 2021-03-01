@@ -26,6 +26,8 @@
 
 #include <aeca.h>
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <cattr.h>
 #include <change.h>
 #include <change/attributes.h>
@@ -90,8 +92,8 @@ change_attributes_list(void)
 {
     string_ty	    *project_name;
     project_ty	    *pp;
-    cattr	    cattr_data;
-    cstate	    cstate_data;
+    cattr_ty	    *cattr_data;
+    cstate_ty	    *cstate_data;
     long	    change_number;
     change_ty	    *cp;
     user_ty	    *up;
@@ -111,53 +113,22 @@ change_attributes_list(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-	    {
-		option_needs_number
-		(
-		    arglex_token_change,
-		    change_attributes_usage
-		);
-	    }
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_change,
-		    change_attributes_usage
-		);
-	    }
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change
+	    (
+		&project_name,
+		&change_number,
+		change_attributes_usage
+	    );
+	    continue;
 
 	case arglex_token_project:
-	    if (project_name)
-		duplicate_option(change_attributes_usage);
-	    if (arglex() != arglex_token_string)
-	    {
-		option_needs_name
-		(
-	    	    arglex_token_project,
-		    change_attributes_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, change_attributes_usage);
+	    continue;
 
 	case arglex_token_description_only:
 	    if (description_only)
@@ -194,7 +165,7 @@ change_attributes_list(void)
      * build the cattr data
      */
     cstate_data = change_cstate_get(cp);
-    cattr_data = (cattr)cattr_type.alloc();
+    cattr_data = (cattr_ty *)cattr_type.alloc();
     change_attributes_copy(cattr_data, cstate_data);
 
     /*
@@ -231,7 +202,7 @@ static void
 check_permissions(change_ty *cp, user_ty *up)
 {
     project_ty	    *pp;
-    cstate	    cstate_data;
+    cstate_ty	    *cstate_data;
 
     pp = cp->pp;
     cstate_data = change_cstate_get(cp);
@@ -252,20 +223,20 @@ check_permissions(change_ty *cp, user_ty *up)
 }
 
 
-static cattr
+static cattr_ty *
 cattr_fix_arch(change_ty *cp)
 {
-    cstate	    cstate_data;
-    cattr	    cattr_data;
+    cstate_ty	    *cstate_data;
+    cattr_ty	    *cattr_data;
     string_ty       *un;
     size_t          j;
-    pconf	    pconf_data;
+    pconf_ty        *pconf_data;
 
     /*
      * Extract current change attributes.
      */
     cstate_data = change_cstate_get(cp);
-    cattr_data = (cattr)cattr_type.alloc();
+    cattr_data = (cattr_ty *)cattr_type.alloc();
     change_attributes_copy(cattr_data, cstate_data);
 
     /*
@@ -284,7 +255,7 @@ cattr_fix_arch(change_ty *cp)
     un = uname_variant_get();
     for (j = 0; j < pconf_data->architecture->length; ++j)
     {
-	pconf_architecture pca;
+	pconf_architecture_ty *pca;
 
 	pca = pconf_data->architecture->list[j];
 	if (!pca)
@@ -352,9 +323,9 @@ change_attributes_main(void)
     sub_context_ty  *scp;
     string_ty	    *project_name;
     project_ty	    *pp;
-    cattr	    cattr_data;
-    cstate	    cstate_data;
-    pconf	    pconf_data;
+    cattr_ty	    *cattr_data;
+    cstate_ty	    *cstate_data;
+    pconf_ty        *pconf_data;
     long	    change_number;
     change_ty	    *cp;
     user_ty	    *up;
@@ -448,18 +419,9 @@ change_attributes_main(void)
 	    break;
 
 	case arglex_token_project:
-	    if (project_name)
-		duplicate_option(change_attributes_usage);
-	    if (arglex() != arglex_token_string)
-	    {
-		option_needs_name
-		(
-		    arglex_token_project,
-		    change_attributes_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, change_attributes_usage);
+	    continue;
 
 	case arglex_token_edit:
 	    if (edit == edit_foreground)
@@ -538,7 +500,7 @@ change_attributes_main(void)
     {
 	if (description_only)
 	{
-	    cattr_data = (cattr)cattr_type.alloc();
+	    cattr_data = (cattr_ty *)cattr_type.alloc();
 	    os_become_orig();
 	    cattr_data->description = read_whole_file(input);
 	    os_become_undo();
@@ -571,7 +533,7 @@ change_attributes_main(void)
 	edit = edit_foreground;
     }
     if (edit != edit_not_set && !cattr_data)
-	cattr_data = (cattr)cattr_type.alloc();
+	cattr_data = (cattr_ty *)cattr_type.alloc();
 
     /*
      * locate project data

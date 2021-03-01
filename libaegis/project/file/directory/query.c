@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,19 +43,44 @@ project_file_directory_query(project_ty *pp, string_ty *file_name,
 	string_list_constructor(result_out);
     for (j = 0;; ++j)
     {
-	fstate_src	src_data;
+	fstate_src_ty   *src_data;
 
 	src_data = project_file_nth(pp, j, as_view_path);
 	if (!src_data)
 	    break;
-	if (src_data->usage == file_usage_build)
-	    continue;
-	if (os_isa_path_prefix(file_name, src_data->file_name))
+	switch (src_data->usage)
 	{
-	    if (src_data->action != file_action_remove)
-	       	string_list_append(result_in, src_data->file_name);
-	    else if (result_out)
-	       	string_list_append(result_out, src_data->file_name);
+	case file_usage_source:
+	case file_usage_config:
+	case file_usage_test:
+	case file_usage_manual_test:
+#ifndef DEBUG
+	default:
+#endif
+	    if (os_isa_path_prefix(file_name, src_data->file_name))
+	    {
+		switch (src_data->action)
+		{
+		case file_action_remove:
+		    if (result_out)
+			string_list_append(result_out, src_data->file_name);
+		    break;
+
+		case file_action_create:
+		case file_action_modify:
+		case file_action_insulate:
+		case file_action_transparent:
+#ifndef DEBUG
+		default:
+#endif
+		    string_list_append(result_in, src_data->file_name);
+		    break;
+		}
+	    }
+	    break;
+
+	case file_usage_build:
+	    break;
 	}
     }
     trace(("}\n"));

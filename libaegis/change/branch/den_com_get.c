@@ -27,21 +27,21 @@
 string_ty *
 change_branch_develop_end_notify_command_get(change_ty *cp)
 {
-	cstate		cstate_data;
-	cstate_branch	bp;
+    cstate_ty       *cstate_data;
+    cstate_branch_ty *bp;
 
-	cstate_data = change_cstate_get(cp);
-	bp = cstate_data->branch;
-	assert(bp);
-	if
-	(
-		bp->develop_end_notify_command
-	&&
-		!bp->develop_end_notify_command->str_length
-	)
-	{
-		str_free(bp->develop_end_notify_command);
-		bp->develop_end_notify_command = 0;
-	}
-	return bp->develop_end_notify_command;
+    cstate_data = change_cstate_get(cp);
+    bp = cstate_data->branch;
+    assert(bp);
+    if
+    (
+	bp->develop_end_notify_command
+    &&
+	!bp->develop_end_notify_command->str_length
+    )
+    {
+	str_free(bp->develop_end_notify_command);
+	bp->develop_end_notify_command = 0;
+    }
+    return bp->develop_end_notify_command;
 }

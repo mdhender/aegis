@@ -28,6 +28,8 @@
 #include <ael/change/by_state.h>
 #include <aerb.h>
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <change.h>
 #include <change/file.h>
 #include <commit.h>
@@ -98,21 +100,12 @@ review_begin_list(void)
 	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, review_begin_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_string:
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    review_begin_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex_parse_project(&project_name, review_begin_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -154,8 +147,8 @@ review_begin_list(void)
 static void
 review_begin_main(void)
 {
-    cstate	    cstate_data;
-    cstate_history  history_data;
+    cstate_ty	    *cstate_data;
+    cstate_history_ty *history_data;
     string_ty	    *project_name;
     project_ty	    *pp;
     long	    change_number;
@@ -176,50 +169,25 @@ review_begin_main(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, review_begin_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_change,
-		    review_begin_usage
-		);
-	    }
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change
+	    (
+		&project_name,
+		&change_number,
+		review_begin_usage
+	    );
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, review_begin_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_string:
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    review_begin_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex_parse_project(&project_name, review_begin_usage);
+	    continue;
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
@@ -310,7 +278,7 @@ review_begin_main(void)
      */
     for (j = 0;; ++j)
     {
-	fstate_src	src_data;
+	fstate_src_ty   *src_data;
 	string_ty	*path;
 	string_ty	*path_d;
 	int		same;
@@ -323,13 +291,22 @@ review_begin_main(void)
 
 	file_required = 1;
 	diff_file_required = 1;
-	if (src_data->usage == file_usage_build)
+	switch (src_data->usage)
 	{
+	case file_usage_build:
 	    file_required = 0;
 	    diff_file_required = 0;
+	    break;
+
+	case file_usage_source:
+	case file_usage_config:
+	case file_usage_test:
+	case file_usage_manual_test:
+	    break;
 	}
-	if (src_data->action == file_action_remove)
+	switch (src_data->action)
 	{
+	case file_action_remove:
 	    file_required = 0;
 
 	    /*
@@ -337,6 +314,13 @@ review_begin_main(void)
 	     */
 	    if (src_data->move && change_file_find(cp, src_data->move))
 		diff_file_required = 0;
+	    break;
+
+	case file_action_create:
+	case file_action_modify:
+	case file_action_insulate:
+	case file_action_transparent:
+	    break;
 	}
 
 	path = change_file_path(cp, src_data->file_name);

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 string_ty *
 change_creator_name(change_ty *cp)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
     string_ty       *who;
 
     trace(("change_creator_name(cp = %08lX)\n{\n", (long)cp));

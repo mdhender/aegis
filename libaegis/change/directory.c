@@ -28,7 +28,7 @@
 string_ty *
 change_directory_get(change_ty *cp, int resolve)
 {
-    cstate	cstate_data;
+    cstate_ty       *cstate_data;
 
     cstate_data = change_cstate_get(cp);
     switch (cstate_data->state)

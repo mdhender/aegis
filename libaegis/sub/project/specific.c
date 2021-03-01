@@ -31,7 +31,7 @@
 
 
 static string_ty *
-pconf_project_specific_find(pconf pconf_data, string_ty *name)
+pconf_project_specific_find(pconf_ty *pconf_data, string_ty *name)
 {
     size_t	    k;
 
@@ -40,7 +40,7 @@ pconf_project_specific_find(pconf pconf_data, string_ty *name)
 	return 0;
     for (k = 0; k < pconf_data->project_specific->length; ++k)
     {
-	pconf_project_specific psp;
+	pconf_project_specific_ty *psp;
 
 	psp = pconf_data->project_specific->list[k];
 	assert(psp);
@@ -81,7 +81,7 @@ sub_project_specific(sub_context_ty *scp, wstring_list_ty *arg)
     string_ty	    *value;
     wstring_ty	    *result;
     change_ty	    *cp;
-    pconf	    pconf_data;
+    pconf_ty        *pconf_data;
 
     trace(("sub_project_specific()\n{\n" /*}*/));
     cp = sub_context_change_get(scp);

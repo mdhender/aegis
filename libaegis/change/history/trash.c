@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,7 @@
 void
 change_history_trashed_fingerprints(change_ty *cp, string_list_ty *slp)
 {
-    pconf	    config;
+    pconf_ty        *config;
     size_t	    j;
     sub_context_ty  *scp;
 

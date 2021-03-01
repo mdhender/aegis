@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -57,7 +57,7 @@ func(void *arg, dir_walk_message_ty msg, string_ty *path, struct stat *st)
 void
 change_development_directory_chmod_read_only(change_ty *cp)
 {
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
     string_ty       *dd;
 
     cstate_data = change_cstate_get(cp);

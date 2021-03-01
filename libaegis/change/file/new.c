@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,25 +26,25 @@
 #include <trace.h>
 
 
-fstate_src
+fstate_src_ty *
 change_file_new(change_ty *cp, string_ty *file_name)
 {
-	fstate		fstate_data;
-	fstate_src	src_data;
-	fstate_src	*src_data_p;
-	type_ty		*type_p;
+    fstate_ty       *fstate_data;
+    fstate_src_ty   *src_data;
+    fstate_src_ty   **src_data_p;
+    type_ty         *type_p;
 
-	trace(("change_file_new(cp = %08lX)\n{\n"/*}*/, (long)cp));
-	fstate_data = change_fstate_get(cp);
-	assert(fstate_data->src);
-	src_data_p = fstate_src_list_type.list_parse(fstate_data->src, &type_p);
-	assert(type_p == &fstate_src_type);
-	src_data = fstate_src_type.alloc();
-	*src_data_p = src_data;
-	src_data->file_name = str_copy(file_name);
-	assert(cp->fstate_stp);
-	symtab_assign(cp->fstate_stp, file_name, src_data);
-	trace(("return %08lX;\n", (long)src_data));
-	trace((/*{*/"}\n"));
-	return src_data;
+    trace(("change_file_new(cp = %08lX)\n{\n", (long)cp));
+    fstate_data = change_fstate_get(cp);
+    assert(fstate_data->src);
+    src_data_p = fstate_src_list_type.list_parse(fstate_data->src, &type_p);
+    assert(type_p == &fstate_src_type);
+    src_data = fstate_src_type.alloc();
+    *src_data_p = src_data;
+    src_data->file_name = str_copy(file_name);
+    assert(cp->fstate_stp);
+    symtab_assign(cp->fstate_stp, file_name, src_data);
+    trace(("return %08lX;\n", (long)src_data));
+    trace(("}\n"));
+    return src_data;
 }

@@ -51,6 +51,7 @@ You will need to install \fItardy\fP, for manipulating tarballs.
 .IP \(bu 2n
 You will need to install \fIptx\fP(1), for the permuted indexes in the
 documentation.
+This is now part of GNU coreutils.
 .IP \(bu 2n
 You need psutils (e.g. http://www.dcs.ed.ac.uk/home/ajcd/psutils/) for
 the psselect utility, to manipulate the documentation files, mostly to

@@ -36,7 +36,7 @@ change_run_annotate_diff_command(change_ty *cp, user_ty *up,
     string_ty *index_name, const char *diff_option)
 {
     sub_context_ty  *scp;
-    pconf	    pconf_data;
+    pconf_ty        *pconf_data;
     string_ty	    *dd;
     string_ty	    *the_command;
 

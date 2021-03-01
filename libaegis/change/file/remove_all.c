@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@
 void
 change_file_remove_all(change_ty *cp)
 {
-	fstate		fstate_data;
+	fstate_ty       *fstate_data;
 
 	trace(("change_file_remove_all(cp = %08lX)\n{\n"/*}*/, (long)cp));
 	fstate_data = change_fstate_get(cp);

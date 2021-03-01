@@ -36,7 +36,7 @@ xml_change_pconf(string_ty *project_name, long change_number, output_ty *op)
     project_ty      *pp;
     user_ty         *up;
     change_ty       *cp;
-    pconf           pconf_data;
+    pconf_ty        *pconf_data;
 
     trace(("xml_change_cstate()\n{\n"));
 

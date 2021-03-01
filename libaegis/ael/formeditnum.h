@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,6 @@
 
 struct output_ty; /* existence */
 
-void list_format_edit_number(struct output_ty *, fstate_src);
+void list_format_edit_number(struct output_ty *, fstate_src_ty *);
 
 #endif /* LIBAEGIS_AEL_FORMEDITNUM_H */

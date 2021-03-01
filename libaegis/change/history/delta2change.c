@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,14 +28,14 @@
 long
 change_history_change_by_delta(change_ty *cp, long delta_number)
 {
-    cstate	    cstate_data;
-    cstate_branch_history_list h;
+    cstate_ty       *cstate_data;
+    cstate_branch_history_list_ty *h;
     size_t	    j;
     sub_context_ty  *scp;
 
     cstate_data = change_cstate_get(cp);
     if (!cstate_data->branch)
-	    goto useless;
+	goto useless;
     h = cstate_data->branch->history;
     if (!h)
 	goto useless;
@@ -43,7 +43,7 @@ change_history_change_by_delta(change_ty *cp, long delta_number)
 	goto useless;
     for (j = 0; j < h->length; ++j)
     {
-	cstate_branch_history he;
+	cstate_branch_history_ty *he;
 
 	he = h->list[j];
 	if (he->delta_number == delta_number)

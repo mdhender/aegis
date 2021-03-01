@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,25 +29,25 @@
 void
 change_file_remove(change_ty *cp, string_ty *file_name)
 {
-	fstate		fstate_data;
-	int		j;
-	fstate_src	src_data;
+    fstate_ty       *fstate_data;
+    int             j;
+    fstate_src_ty   *src_data;
 
-	trace(("change_file_remove(cp = %08lX, file_name = \"%s\")\n{\n"/*}*/,
-		(long)cp, file_name->str_text));
-	fstate_data = change_fstate_get(cp);
-	assert(fstate_data->src);
-	assert(cp->fstate_stp);
-	symtab_delete(cp->fstate_stp, file_name);
-	for (j = 0; j < fstate_data->src->length; ++j)
-	{
-		src_data = fstate_data->src->list[j];
-		if (!str_equal(src_data->file_name, file_name))
-			continue;
-		fstate_src_type.free(src_data);
-		fstate_data->src->list[j] =
-			fstate_data->src->list[--fstate_data->src->length];
-		break;
-	}
-	trace((/*{*/"}\n"));
+    trace(("change_file_remove(cp = %08lX, file_name = \"%s\")\n{\n",
+	(long)cp, file_name->str_text));
+    fstate_data = change_fstate_get(cp);
+    assert(fstate_data->src);
+    assert(cp->fstate_stp);
+    symtab_delete(cp->fstate_stp, file_name);
+    for (j = 0; j < fstate_data->src->length; ++j)
+    {
+	src_data = fstate_data->src->list[j];
+	if (!str_equal(src_data->file_name, file_name))
+	    continue;
+	fstate_src_type.free(src_data);
+	fstate_data->src->list[j] =
+	    fstate_data->src->list[--fstate_data->src->length];
+	break;
+    }
+    trace(("}\n"));
 }

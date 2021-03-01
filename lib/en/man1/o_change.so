@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991-1993, 2003 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -22,20 +22,4 @@
 .TP 8n
 \fB-Change\fP \fInumber\fP
 This option may be used to specify a particular change within a project.
-When no
-.B -Change
-option is specified,
-the
-.I AEGIS_CHANGE
-environment variable is consulted.
-If that does not exist,
-the user's
-.I $HOME/.aegisrc
-file is examined for a default change field (see
-.IR aeuconf (5)
-for more information).
-If that does not exist,
-when the user is only working on one change within a project,
-that is the default change number.
-Otherwise,
-it is an error.
+See \fIaegis\fP(1) for a complete description of this option.

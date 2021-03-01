@@ -28,22 +28,22 @@
 void
 change_branch_sub_branch_list_get(change_ty *cp, long **list, size_t *len)
 {
-	cstate		cstate_data;
-	cstate_branch_sub_branch_list lp;
+    cstate_ty       *cstate_data;
+    cstate_branch_sub_branch_list_ty *lp;
 
-	trace(("change_branch_list_get(cp = %8.8lX)\n{\n"/*}*/, (long)cp));
-	cstate_data = change_cstate_get(cp);
-	assert(cstate_data->branch);
-	lp = cstate_data->branch->sub_branch;
-	if (!lp)
-	{
-		*list = 0;
-		*len = 0;
-	}
-	else
-	{
-		*list = lp->list;
-		*len = lp->length;
-	}
-	trace((/*{*/"}\n"));
+    trace(("change_branch_list_get(cp = %8.8lX)\n{\n", (long)cp));
+    cstate_data = change_cstate_get(cp);
+    assert(cstate_data->branch);
+    lp = cstate_data->branch->sub_branch;
+    if (!lp)
+    {
+	*list = 0;
+	*len = 0;
+    }
+    else
+    {
+	*list = lp->list;
+	*len = lp->length;
+    }
+    trace(("}\n"));
 }

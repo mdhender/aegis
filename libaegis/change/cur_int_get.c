@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,10 +26,10 @@
 long
 change_current_integration_get(change_ty *cp)
 {
-	cstate		cstate_data;
+    cstate_ty       *cstate_data;
 
-	cstate_data = change_cstate_get(cp);
-	if (!cstate_data->branch)
-		return 0;
-	return cstate_data->branch->currently_integrating_change;
+    cstate_data = change_cstate_get(cp);
+    if (!cstate_data->branch)
+	return 0;
+    return cstate_data->branch->currently_integrating_change;
 }

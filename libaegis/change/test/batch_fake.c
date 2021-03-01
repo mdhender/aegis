@@ -43,7 +43,7 @@ change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
     string_ty	    *dir;
     int		    (*run_test_command)(change_ty *, user_ty *, string_ty *,
 			string_ty *, int, int);
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
     batch_result_list_ty *result;
     int		    persevere;
 
@@ -103,7 +103,7 @@ change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
     {
 	string_ty	*fn;
 	string_ty	*fn_abs;
-	fstate_src	src_data;
+	fstate_src_ty   *src_data;
 	int		inp;
 	int		exit_status;
 	sub_context_ty	*scp;
@@ -140,7 +140,19 @@ change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up, int bl,
 	/*
 	 * figure the command execution flags
 	 */
-	inp = (src_data->usage == file_usage_manual_test);
+	inp = 0;
+	switch (src_data->usage)
+	{
+	case file_usage_source:
+	case file_usage_config:
+	case file_usage_build:
+	case file_usage_test:
+	    break;
+
+	case file_usage_manual_test:
+	    inp = 1;
+	    break;
+	}
 
 	/*
 	 * run the command

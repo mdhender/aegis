@@ -1,0 +1,129 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2003 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: Howto, Recreate Old Versions
+.\"
+.nh 1 "How to Recreate Old Versions"
+.LP
+It is possible to recreate old versions of your project.
+This is done using the delta number assigned to every completed change.
+.nh 2 "aecp"
+.LP
+Recreating the sources is usually done to recreate a bug.  To this end,
+it is also usually done from within an existing change.  The \fIaecp\fP(1)
+command is used to copy histprical file versions into
+a change.
+.LP
+The \fIaecp\fP(1) command has some options which are used to perform
+the source recreation:
+.LP
+\fB\-DELta\fP \fInumber\fP
+.in +0.25i
+This option tells \fIaecp\fP(1) to extract an historical version of the
+files, rather than the head revision (the one visable in the baseline).
+'in -0.25i
+.LP
+\fB\-BRanch\fP \fInumber\fP
+.in +0.25i
+If the
+historical version is on a different branch than the one the current
+change is on, use this option.  The branch number is to the left of the
+\&"D" in version strings.
+'in -0.25i
+.nh 2 "Finding Delta Numbers"
+.LP
+You can find delta numbers in a number of ways:
+.LP
+\(bu
+The ``\fIael change-details\fP'' command will list change details.
+If changes are completed, their delta number will appear at the top of
+the listing.
+.LP
+\(bu
+The ``\fIael project-history\fP'' command lists all integration for a
+project, including their change numbers and delta numbers.
+.LP
+\(bu
+The \fIaeannotate\fP(1) command lists the file source, annotationg each
+line with the developer, the date and the version.  To the right of the
+"D" in the version is the delta number.
+.LP
+\(bu
+The \fI#{version}\fP substitution (see \fIaesub\fP(5) for more information)
+is covered in the next section.
+.LP
+In addition, you may need to use the \fB\-BRanch\fP option, if the
+historical version is on a different branch than the one the current
+change is on.  The branch number is to the left of the "D" in version strings.
+.nh 2 "${version}"
+.LP
+The \fIbuild_\%command\fP field in the project \fIconfig\fP file may be
+given the \fI${version}\fP substitution, which you may use to embed the
+version string into your executables.  You could, for example, have this
+string printed when yoiur program is given the \fB\-version\fP command
+line option.  For example:
+.E(
+% \f[CB]aegis --version\fP
+aegis version 4.15.D012
+%
+.E)
+.LP
+Armed with this version string, you can recreate the sources for the
+version being executed.  The command
+.E(
+% \f[CB]aecp --change=4.15.D012 .\fP
+%
+.E)
+would be issued from inside a suitable change.  This form of the
+\fIaecp \-change\fP option combines the \fB\-BRanch\fP and \fB\-DELta\fP
+options into a single command line option.
+.nh 2 "Out Of Date"
+.LP
+Once you have recreated your sources and rebuilt your project, and
+presumably fixed the bug you were hunting, there are a couple more steps.
+.LP
+\(bu
+The first is to remove unchanged sources.
+Do this with the
+.E(
+% \f[CB]aecpu -unchanged\fP
+%
+.E)
+command.  This removes from your change all files which were not changed
+by this change.  This cuts down on the clutter and makes the next step
+much easier.
+.LP
+\(bu
+The next step is to merge the files.
+Because you are working with historical versions of the files,
+Aegis will think they are out-of-date and want you to merge them.
+Do this is the usual way (using the \fIaem\fP(1) command).
+Remember that Aegis will stash a backup copy with a ``,B'' suffix
+before merging.
+.LP
+You may find the following command
+.E(
+% \f[CB]ael cf | grep '('\fP
+%
+.E)
+useful for finding out-of-date files.
+.LP
+\(bu
+Once Aegis thinks all the files are up-to-date
+you then need to rebuild and retest before completing development.

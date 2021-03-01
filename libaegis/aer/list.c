@@ -43,11 +43,11 @@
 
 
 static void
-process(string_ty *dir, const char *nondir, rptidx_where_list result)
+process(string_ty *dir, const char *nondir, rptidx_where_list_ty *result)
 {
 	string_ty	*fn;
 	int		err;
-	rptidx		data;
+	rptidx_ty	*data;
 
 	trace(("process((dir = \"%s\", nondir = \"%s\"))\n{\n"/*}*/,
 		dir->str_text, nondir));
@@ -70,9 +70,9 @@ process(string_ty *dir, const char *nondir, rptidx_where_list result)
 
 		for (j = 0; j < data->where->length; ++j)
 		{
-			rptidx_where	in;
-			rptidx_where	out;
-			rptidx_where	*out_p;
+			rptidx_where_ty	*in;
+			rptidx_where_ty	*out;
+			rptidx_where_ty	**out_p;
 			type_ty		*type_p;
 
 			in = data->where->list[j];
@@ -113,11 +113,11 @@ process(string_ty *dir, const char *nondir, rptidx_where_list result)
 static int
 cmp(const void *va, const void *vb)
 {
-	rptidx_where	a;
-	rptidx_where	b;
+	rptidx_where_ty	*a;
+	rptidx_where_ty	*b;
 
-	a = *(rptidx_where *)va;
-	b = *(rptidx_where *)vb;
+	a = *(rptidx_where_ty **)va;
+	b = *(rptidx_where_ty **)vb;
 	return strcasecmp(a->name->str_text, b->name->str_text);
 }
 
@@ -125,8 +125,8 @@ cmp(const void *va, const void *vb)
 void
 report_list(void (*usage)(void))
 {
-	string_list_ty		path;
-	rptidx_where_list result;
+	string_list_ty  path;
+	rptidx_where_list_ty *result;
 	size_t		j;
 	output_ty	*name_col;
 	output_ty	*desc_col;
@@ -169,7 +169,7 @@ report_list(void (*usage)(void))
 	 */
 	for (j = 0; j < result->length; ++j)
 	{
-		rptidx_where	p;
+		rptidx_where_ty *p;
 
 		p = result->list[j];
 		output_put_str(name_col, p->name);

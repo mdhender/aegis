@@ -27,14 +27,14 @@
 void
 change_branch_umask_set(change_ty *cp, int n)
 {
-	cstate		cstate_data;
-	cstate_branch	bp;
+    cstate_ty       *cstate_data;
+    cstate_branch_ty *bp;
 
-	n = (n & 5) | 022;
-	if (n == 023)
-		n = 022;
-	cstate_data = change_cstate_get(cp);
-	bp = cstate_data->branch;
-	assert(bp);
-	bp->umask = n;
+    n = (n & 5) | 022;
+    if (n == 023)
+	n = 022;
+    cstate_data = change_cstate_get(cp);
+    bp = cstate_data->branch;
+    assert(bp);
+    bp->umask = n;
 }

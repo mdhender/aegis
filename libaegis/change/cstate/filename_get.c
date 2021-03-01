@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,9 +28,8 @@
 string_ty *
 change_cstate_filename_get(change_ty *cp)
 {
-	assert(cp->reference_count >= 1);
-	if (!cp->cstate_filename)
-		cp->cstate_filename =
-			project_change_path_get(cp->pp, cp->number);
-	return cp->cstate_filename;
+    assert(cp->reference_count >= 1);
+    if (!cp->cstate_filename)
+       	cp->cstate_filename = project_change_path_get(cp->pp, cp->number);
+    return cp->cstate_filename;
 }

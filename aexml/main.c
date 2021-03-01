@@ -25,6 +25,8 @@
 #include <ac/string.h>
 
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <col.h>
 #include <env.h>
 #include <error.h>
@@ -285,31 +287,14 @@ xml_main(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (change_number)
-		duplicate_option(xml_usage);
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, xml_usage);
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty *scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/*NOTREACHED*/
-	    }
-	    break;
+	    arglex();
+	    arglex_parse_change(&project_name, &change_number, xml_usage);
+	    continue;
 
 	case arglex_token_project:
-	    if (project_name)
-		duplicate_option(xml_usage);
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, xml_usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, xml_usage);
+	    continue;
 
 	case arglex_token_output:
 	    if (outfile)

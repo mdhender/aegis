@@ -147,7 +147,7 @@ get_change_list(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     num = 0;
     for (j = 0; ; ++j)
     {
-	cstate          cstate_data;
+	cstate_ty       *cstate_data;
 	long            change_number;
 	change_ty       *cp;
 

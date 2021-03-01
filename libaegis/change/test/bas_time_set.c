@@ -28,48 +28,40 @@
 void
 change_test_baseline_time_set(change_ty *cp, time_t when)
 {
-	long		j, k;
-	cstate_architecture_times tp;
-	cstate		cstate_data;
+    long            j, k;
+    cstate_architecture_times_ty *tp;
+    cstate_ty       *cstate_data;
 
-	/*
-	 * set the test_baseline_time in the architecture variant record
-	 */
-	assert(cp->reference_count >= 1);
-	tp = change_find_architecture_variant(cp);
-	tp->test_baseline_time = when;
+    /*
+     * set the test_baseline_time in the architecture variant record
+     */
+    assert(cp->reference_count >= 1);
+    tp = change_find_architecture_variant(cp);
+    tp->test_baseline_time = when;
 
-	/*
-	 * set the test_baseline_time in the change state.
-	 * figure the oldest time of all variants.
-	 * if one is missing, then is zero.
-	 */
-	cstate_data = change_cstate_get(cp);
-	cstate_data->test_baseline_time = tp->test_baseline_time;
-	if (!when)
-		return;
-	for (j = 0; j < cstate_data->architecture->length; ++j)
+    /*
+     * set the test_baseline_time in the change state.
+     * figure the oldest time of all variants.
+     * if one is missing, then is zero.
+     */
+    cstate_data = change_cstate_get(cp);
+    cstate_data->test_baseline_time = tp->test_baseline_time;
+    if (!when)
+	    return;
+    for (j = 0; j < cstate_data->architecture->length; ++j)
+    {
+	for (k = 0; k < cstate_data->architecture_times->length; ++k)
 	{
-		for (k = 0; k < cstate_data->architecture_times->length; ++k)
-		{
-			tp = cstate_data->architecture_times->list[k];
-			if
-			(
-				str_equal
-				(
-					cstate_data->architecture->list[j],
-					tp->variant
-				)
-			)
-				break;
-		}
-		if (k >= cstate_data->architecture_times->length)
-		{
-			cstate_data->test_baseline_time = 0;
-			break;
-		}
-		if (tp->test_baseline_time < cstate_data->test_baseline_time)
-			cstate_data->test_baseline_time =
-				tp->test_baseline_time;
+	    tp = cstate_data->architecture_times->list[k];
+	    if (str_equal(cstate_data->architecture->list[j], tp->variant))
+		break;
 	}
+	if (k >= cstate_data->architecture_times->length)
+	{
+	    cstate_data->test_baseline_time = 0;
+	    break;
+	}
+	if (tp->test_baseline_time < cstate_data->test_baseline_time)
+	    cstate_data->test_baseline_time = tp->test_baseline_time;
+    }
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,46 +23,66 @@
 #include <change/file.h>
 
 
+static int
+candidate(fstate_src_ty *src)
+{
+    switch (src->usage)
+    {
+    case file_usage_source:
+    case file_usage_config:
+    case file_usage_test:
+    case file_usage_manual_test:
+	switch (src->action)
+	{
+	case file_action_create:
+	case file_action_modify:
+	    return 1;
+
+	case file_action_remove:
+	case file_action_transparent:
+	case file_action_insulate:
+	    break;
+	}
+	break;
+
+    case file_usage_build:
+	break;
+    }
+    return 0;
+}
+
+
 void
 change_file_list_metrics_check(change_ty *cp)
 {
-	size_t		j;
-	fstate_src	src_data;
+    size_t          j;
+    fstate_src_ty   *src_data;
 
-	for (j = 0; ; ++j)
-	{
-		metric_list	mlp;
+    for (j = 0; ; ++j)
+    {
+	metric_list_ty  *mlp;
 
-		src_data = change_file_nth(cp, j);
-		if (!src_data)
-			break;
+	src_data = change_file_nth(cp, j);
+	if (!src_data)
+	    break;
 
-		/*
-		 * Only verify the metrics for primary source files,
-		 * and only for creates and modifies.
-		 */
-		if
-		(
-			src_data->usage == file_usage_build
-		||
-			(
-				src_data->action != file_action_create
-			&&
-				src_data->action != file_action_modify
-			)
-		)
-			continue;
+	/*
+	 * Only verify the metrics for primary source files,
+	 * and only for creates and modifies.
+	 */
+	if (candidate(src_data))
+	    continue;
 
-		/*
-		 * Read the file.
-		 * The contents will be checked.
-		 */
-		mlp = change_file_metrics_get(cp, src_data->file_name);
+	/*
+	 * Read the file.
+	 * The contents will be checked.
+	 */
+	mlp = change_file_metrics_get(cp, src_data->file_name);
 
-		/*
-		 * Throw the data away,
-		 * we only wanted the checking side-effect.
-		 */
-		metric_list_type.free(mlp);
-	}
+	/*
+	 * Throw the data away,
+	 * we only wanted the checking side-effect.
+	 */
+	metric_list_type.free(mlp);
+    }
 }

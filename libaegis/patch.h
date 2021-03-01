@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,29 +23,30 @@
 #ifndef LIBAEGIS_PATCH_H
 #define LIBAEGIS_PATCH_H
 
+#include <common.h>
 #include <patch/hunk_list.h>
 #include <str_list.h>
 
 typedef struct patch_ty patch_ty;
 struct patch_ty
 {
-	string_list_ty	name;
-	int		action;
-	int		usage;
-	patch_hunk_list_ty actions;
+    string_list_ty  name;
+    file_action_ty  action;
+    file_usage_ty   usage;
+    patch_hunk_list_ty actions;
 };
 
 typedef struct patch_list_ty patch_list_ty;
 struct patch_list_ty
 {
-	string_ty	*project_name;
-	long		change_number;
-	string_ty	*brief_description;
-	string_ty	*description;
+    string_ty       *project_name;
+    long            change_number;
+    string_ty       *brief_description;
+    string_ty       *description;
 
-	size_t		length;
-	size_t		maximum;
-	patch_ty	**item;
+    size_t          length;
+    size_t          maximum;
+    patch_ty        **item;
 };
 
 struct input_ty; /* forward */

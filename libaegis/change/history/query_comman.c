@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@ change_run_history_query_command(change_ty *cp, string_ty *filename)
 {
     sub_context_ty  *scp;
     string_ty	    *hp;
-    pconf	    pconf_data;
+    pconf_ty        *pconf_data;
     string_ty	    *the_command;
     string_ty	    *result;
 

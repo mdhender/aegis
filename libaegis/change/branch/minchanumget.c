@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,18 +25,17 @@
 
 
 long
-change_branch_minimum_change_number_get(cp)
-	change_ty	*cp;
+change_branch_minimum_change_number_get(change_ty *cp)
 {
-	cstate		cstate_data;
-	cstate_branch	bp;
+    cstate_ty       *cstate_data;
+    cstate_branch_ty *bp;
 
-	cstate_data = change_cstate_get(cp);
-	bp = cstate_data->branch;
-	assert(bp);
-	if (!bp)
-		return 10;
-	if (bp->minimum_change_number < 1)
-		bp->minimum_change_number = 10;
-	return bp->minimum_change_number;
+    cstate_data = change_cstate_get(cp);
+    bp = cstate_data->branch;
+    assert(bp);
+    if (!bp)
+	return 10;
+    if (bp->minimum_change_number < 1)
+	bp->minimum_change_number = 10;
+    return bp->minimum_change_number;
 }

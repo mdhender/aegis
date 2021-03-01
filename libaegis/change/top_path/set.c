@@ -32,7 +32,7 @@
 void
 change_top_path_set(change_ty *cp, string_ty *s)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
 
     /*
      * To cope with automounters, directories are stored as given,

@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1996, 1999, 2001-2003 Peter Miller;
+#	Copyright (C) 1991-1996, 1999, 2001-2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -102,6 +102,8 @@ alias	aeifail	'aegis -ifail \!* -v'
 alias	aeipass	'aegis -ipass \!* -v'
 alias	ael	'aegis -l \!* -v'
 alias	aem	'aegis -diff -only_merge \!* -v'
+alias   aemt    'aegis -mt \!* -v'
+alias   aemtu   'aegis -mtu \!* -v'
 alias	aemv	'aegis -mv \!* -v'
 alias	aemvu	'aegis -mvu \!* -v'
 alias	aena	'aegis -na \!* -v'

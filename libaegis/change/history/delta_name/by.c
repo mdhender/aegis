@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,71 +28,71 @@
 long
 change_history_delta_by_name(change_ty *cp, string_ty *delta_name, int errok)
 {
-	cstate		cstate_data;
-	cstate_branch_history_list h;
-	size_t		j;
-	string_ty	*best;
-	double		best_weight;
+    cstate_ty       *cstate_data;
+    cstate_branch_history_list_ty *h;
+    size_t          j;
+    string_ty       *best;
+    double          best_weight;
 
-	cstate_data = change_cstate_get(cp);
-	if (!cstate_data->branch)
-		goto useless;
-	h = cstate_data->branch->history;
-	if (!h)
-		goto useless;
-	if (!h->length)
-		goto useless;
-	best = 0;
-	best_weight = 0.6;
-	for (j = 0; j < h->length; ++j)
+    cstate_data = change_cstate_get(cp);
+    if (!cstate_data->branch)
+	goto useless;
+    h = cstate_data->branch->history;
+    if (!h)
+	goto useless;
+    if (!h->length)
+	goto useless;
+    best = 0;
+    best_weight = 0.6;
+    for (j = 0; j < h->length; ++j)
+    {
+	cstate_branch_history_ty *he;
+	cstate_branch_history_name_list_ty *nlp;
+	size_t          k;
+
+	he = h->list[j];
+	nlp = he->name;
+	if (!nlp || !nlp->length)
+	    continue;
+	for (k = 0; k < nlp->length; ++k)
 	{
-		cstate_branch_history he;
-		cstate_branch_history_name_list nlp;
-		size_t		k;
+	    string_ty       *s;
+	    double          weight;
 
-		he = h->list[j];
-		nlp = he->name;
-		if (!nlp || !nlp->length)
-			continue;
-		for (k = 0; k < nlp->length; ++k)
-		{
-			string_ty	*s;
-			double		weight;
-
-			s = nlp->list[k];
-			if (str_equal(s, delta_name))
-				return he->delta_number;
-			weight = fstrcmp(s->str_text, delta_name->str_text);
-			if (weight > best_weight)
-				best = s;
-		}
+	    s = nlp->list[k];
+	    if (str_equal(s, delta_name))
+		return he->delta_number;
+	    weight = fstrcmp(s->str_text, delta_name->str_text);
+	    if (weight > best_weight)
+		best = s;
 	}
-	if (errok)
-		return 0;
-	if (best)
+    }
+    if (errok)
+	return 0;
+    if (best)
+    {
+	sub_context_ty	*scp;
+
+	scp = sub_context_new();
+	sub_var_set_string(scp, "Name", delta_name);
+	sub_var_set_string(scp, "Guess", best);
+	change_fatal(cp, scp, i18n("no delta $name, closest is $guess"));
+	/* NOTREACHED */
+	sub_context_delete(scp);
+    }
+    else
+    {
+	useless:
+	if (!errok)
 	{
 	    sub_context_ty	*scp;
 
 	    scp = sub_context_new();
 	    sub_var_set_string(scp, "Name", delta_name);
-	    sub_var_set_string(scp, "Guess", best);
-	    change_fatal(cp, scp, i18n("no delta $name, closest is $guess"));
+	    change_fatal(cp, scp, i18n("no delta $name"));
 	    /* NOTREACHED */
 	    sub_context_delete(scp);
 	}
-	else
-	{
-		useless:
-		if (!errok)
-		{
-			sub_context_ty	*scp;
-
-			scp = sub_context_new();
-			sub_var_set_string(scp, "Name", delta_name);
-			change_fatal(cp, scp, i18n("no delta $name"));
-			/* NOTREACHED */
-			sub_context_delete(scp);
-		}
-	}
-	return 0;
+    }
+    return 0;
 }

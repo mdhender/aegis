@@ -25,6 +25,8 @@
 #include <ac/string.h>
 
 #include <arglex3.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <cattr.h>
 #include <change.h>
 #include <change/attributes.h>
@@ -32,6 +34,7 @@
 #include <error.h>
 #include <help.h>
 #include <os.h>
+#include <patch/file.h>
 #include <pconf.h>
 #include <progname.h>
 #include <project.h>
@@ -263,16 +266,18 @@ receive(void)
     project_ty	    *pp;
     change_ty	    *cp;
     string_ty	    *attribute_file_name;
-    cattr	    cattr_data;
-    cattr	    dflt;
+    cattr_ty	    *cattr_data;
+    cattr_ty	    *dflt;
     string_ty	    *dot;
     string_ty	    *devdir;
-    pconf	    pconf_data;
+    pconf_ty	    *pconf_data;
     string_ty	    *dd;
     int		    need_to_test;
     int		    could_have_a_trojan;
     const char      *delta;
     string_list_ty  files_source;
+    string_list_ty  files_config;
+    string_list_ty  files_build;
     string_list_ty  files_test_auto;
     string_list_ty  files_test_manual;
     int		    uncopy;
@@ -296,31 +301,14 @@ receive(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, usage);
-	    if (change_number)
-		duplicate_option_by_name(arglex_token_change, usage);
-	    change_number = arglex_value.alv_number;
-	    if (!change_number)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 0)
-	    {
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-	    }
-	    break;
+	    arglex();
+	    arglex_parse_change(&project_name, &change_number, usage);
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, usage);
-	    if (project_name)
-		duplicate_option_by_name(arglex_token_project, usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, usage);
+	    continue;
 
 	case arglex_token_file:
 	    if (ifn)
@@ -546,7 +534,7 @@ receive(void)
     for (j = 0; j < plp->length; ++j)
     {
 	patch_ty	*p;
-	fstate_src	p_src_data;
+	fstate_src_ty   *p_src_data;
 
 	p = plp->item[j];
 	assert(p->name.nstrings>=2);
@@ -554,23 +542,53 @@ receive(void)
 	    project_file_find(pp, p->name.string[0], view_path_extreme);
 	if (!p_src_data)
 	{
-	    if (p->action == file_action_remove)
+	    switch (p->action)
 	    {
+	    case file_action_remove:
 		/*
 		 * Removing a removed file would be an
-		 * error, so butcher the action field
-		 * and none of the selection loops will
-		 * use it.
+		 * error.  Get rid of it.
 		 */
-		p->action = -1;
-	    }
-	    else
+		plp->item[j] = plp->item[plp->length - 1];
+		plp->length--;
+		--j;
+		patch_delete(p);
+		continue;
+
+	    case file_action_insulate:
+	    case file_action_transparent:
+		assert(0);
+
+	    case file_action_create:
+		break;
+
+	    case file_action_modify:
+#ifndef DEBUG
+	    default:
+#endif
 		p->action = file_action_create;
+		break;
+	    }
 	}
 	else
 	{
-	    if (p->action != file_action_remove)
+	    switch (p->action)
+	    {
+	    case file_action_remove:
+		break;
+
+	    case file_action_modify:
+		break;
+
+	    case file_action_create:
+	    case file_action_insulate:
+	    case file_action_transparent:
+#ifndef DEBUG
+	    default:
+#endif
 		p->action = file_action_modify;
+		break;
+	    }
 	}
 	if (project_file_trojan_suspect(pp, p->name.string[0]))
 	    could_have_a_trojan = 1;
@@ -593,17 +611,39 @@ receive(void)
 	 */
 	p = plp->item[j];
 	assert(p->name.nstrings>=2);
-	if (p->action != file_action_modify)
+	switch (p->action)
+	{
+	case file_action_modify:
+	    break;
+
+	case file_action_create:
+	case file_action_remove:
+	case file_action_insulate:
+	case file_action_transparent:
+#ifndef DEBUG
+	default:
+#endif
 	    continue;
-	if (p->usage == file_usage_build)
+	}
+	switch (p->usage)
+	{
+	case file_usage_build:
 	    continue;
+
+	case file_usage_source:
+	case file_usage_config:
+	    break;
+
+	case file_usage_test:
+	case file_usage_manual_test:
+	    need_to_test = 1;
+	    break;
+	}
 
 	/*
 	 * add it to the list
 	 */
 	string_list_append_unique(&files_source, p->name.string[0]);
-	if (p->usage == file_usage_test || p->usage == file_usage_manual_test)
-	    need_to_test = 1;
     }
     uncopy = 0;
     if (files_source.nstrings)
@@ -647,8 +687,20 @@ receive(void)
 	 */
 	p = plp->item[j];
 	assert(p->name.nstrings>=2);
-	if (p->action != file_action_remove)
+	switch (p->action)
+	{
+	case file_action_remove:
+	    break;
+
+	case file_action_create:
+	case file_action_modify:
+	case file_action_insulate:
+	case file_action_transparent:
+#ifndef DEBUG
+	default:
+#endif
 	    continue;
+	}
 
 	/*
 	 * add it to the list
@@ -672,6 +724,8 @@ receive(void)
     /*
      * add the new files to the change
      */
+    string_list_constructor(&files_config);
+    string_list_constructor(&files_build);
     need_to_test = 0;
     for (j = 0; j < plp->length; ++j)
     {
@@ -682,8 +736,20 @@ receive(void)
 	 */
 	p = plp->item[j];
 	assert(p->name.nstrings>=2);
-	if (p->action != file_action_create)
+	switch (p->action)
+	{
+	case file_action_create:
+	    break;
+
+	case file_action_modify:
+	case file_action_remove:
+	case file_action_insulate:
+	case file_action_transparent:
+#ifndef DEBUG
+	default:
+#endif
 	    continue;
+	}
 
 	/*
 	 * add it to the list
@@ -692,6 +758,14 @@ receive(void)
 	{
 	case file_usage_source:
 	    string_list_append_unique(&files_source, p->name.string[0]);
+	    break;
+
+	case file_usage_config:
+	    string_list_append_unique(&files_config, p->name.string[0]);
+	    break;
+
+	case file_usage_build:
+	    string_list_append_unique(&files_build, p->name.string[0]);
 	    break;
 
 	case file_usage_test:
@@ -762,7 +836,35 @@ receive(void)
 	os_xargs(s, &files_source, dd);
 	str_free(s);
     }
+    if (files_build.nstrings)
+    {
+	s =
+	    str_format
+	    (
+		"aegis --new-file --build --project=%S --change=%ld --verbose "
+		    "--no-template",
+		project_name,
+		change_number
+	    );
+	os_xargs(s, &files_build, dd);
+	str_free(s);
+    }
+    if (files_config.nstrings)
+    {
+	s =
+	    str_format
+	    (
+		"aegis --new-file --config --project=%S --change=%ld --verbose "
+		    "--no-template",
+		project_name,
+		change_number
+	    );
+	os_xargs(s, &files_config, dd);
+	str_free(s);
+    }
     string_list_destructor(&files_source);
+    string_list_destructor(&files_config);
+    string_list_destructor(&files_build);
     string_list_destructor(&files_test_auto);
     string_list_destructor(&files_test_manual);
 
@@ -781,34 +883,44 @@ receive(void)
 
 	/* verbose progress message here? */
 	p = plp->item[j];
-	if (p->action != file_action_create && p->action != file_action_modify)
-	    continue;
-	if (p->usage == file_usage_build)
-	    continue;
-	assert(p->name.nstrings>=2);
-	trace(("%s\n", p->name.string[0]->str_text));
-	if (change_file_is_config(cp, p->name.string[0]))
+	switch (p->action)
 	{
+	case file_action_create:
+	case file_action_modify:
+	    break;
+
+	case file_action_remove:
+	case file_action_insulate:
+	case file_action_transparent:
+	    continue;
+	}
+	switch (p->usage)
+	{
+	case file_usage_build:
+	    continue;
+
+	case file_usage_source:
+	    if (change_file_is_config(cp, p->name.string[0]))
+	    {
+		could_have_a_trojan = 1;
+		config_seen = 1;
+	    }
+	    break;
+
+	case file_usage_config:
 	    could_have_a_trojan = 1;
 	    config_seen = 1;
-	}
-	if
-	(
-	    p->usage == file_usage_test
-	||
-	    p->usage == file_usage_manual_test
-	)
-	    could_have_a_trojan = 1;
+	    break;
 
-	if (p->action == file_action_remove)
-	{
-	    /* no need to do anything */
-	    continue;
+	case file_usage_test:
+	case file_usage_manual_test:
+	    could_have_a_trojan = 1;
+	    break;
 	}
+	assert(p->name.nstrings>=2);
+	trace(("%s\n", p->name.string[0]->str_text));
 
 	/*
-	 * Look for files which are being created.
-	 *
 	 * Recall that, somewhere above, we may have messed
 	 * with the `action' field, so we have to look at the
 	 * patch itself, and reconstruct whether it is creating
@@ -816,23 +928,26 @@ receive(void)
 	 */
 	if
 	(
-	    p->action == file_action_create
-	||
-	    (
-		p->actions.length == 1
-	    &&
-		p->actions.item[0]->before.length == 0
-	    &&
-		p->actions.item[0]->before.start_line_number == 0
-	    )
+	    p->actions.length == 1
+	&&
+	    p->actions.item[0]->before.length == 0
+	&&
+	    p->actions.item[0]->before.start_line_number == 0
 	)
+	    p->action = file_action_create;
+
+	/*
+	 * Apply the patch.
+	 */
+	switch (p->action)
 	{
+	case file_action_create:
 	    os_become_orig();
 	    patch_apply(p, (string_ty *)0, p->name.string[0]);
 	    os_become_undo();
-	}
-	else
-	{
+	    break;
+
+	case file_action_modify:
 	    /*
 	     * This is the normal case: modify an existing file.
 	     *
@@ -844,6 +959,15 @@ receive(void)
 	    patch_apply(p, orig, p->name.string[0]);
 	    os_become_undo();
 	    str_free(orig);
+	    break;
+
+	case file_action_remove:
+	    break;
+
+	case file_action_insulate:
+	case file_action_transparent:
+	    assert(0);
+	    break;
 	}
     }
     change_free(cp);

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@ change_pconf_path_get(change_ty *cp)
 	cp->pconf_path = change_file_source(cp, file_name);
 	if (!cp->pconf_path)
 	{
-	    cstate	    cstate_data;
+	    cstate_ty       *cstate_data;
 	    string_ty	    *dir;
 
 	    /*

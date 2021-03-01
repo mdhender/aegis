@@ -26,13 +26,13 @@
 int
 change_is_a_branch(change_ty *cp)
 {
-	cstate		cstate_data;
+    cstate_ty       *cstate_data;
 
-	cstate_data = change_cstate_get(cp);
-	return
-	(
-		cstate_data->branch != 0
-	&&
-		cstate_data->state == cstate_state_being_developed
-	);
+    cstate_data = change_cstate_get(cp);
+    return
+    (
+	cstate_data->branch != 0
+    &&
+	cstate_data->state == cstate_state_being_developed
+    );
 }

@@ -3859,6 +3859,70 @@ _ACEOF
 
 fi
 
+
+echo "$as_me:$LINENO: checking for curl_multi_perform in -lcurl" >&5
+echo $ECHO_N "checking for curl_multi_perform in -lcurl... $ECHO_C" >&6
+if test "${ac_cv_lib_curl_curl_multi_perform+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lcurl  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char curl_multi_perform ();
+int
+main ()
+{
+curl_multi_perform ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_curl_curl_multi_perform=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_lib_curl_curl_multi_perform=no
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_curl_curl_multi_perform" >&5
+echo "${ECHO_T}$ac_cv_lib_curl_curl_multi_perform" >&6
+if test $ac_cv_lib_curl_curl_multi_perform = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBCURL 1
+_ACEOF
+
+  LIBS="-lcurl $LIBS"
+
+fi
+
 for ac_prog in gmsgfmt msgfmt
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -4422,8 +4486,9 @@ fi
 
 
 
-for ac_header in fcntl.h iso646.h libgettext.h libintl.h limits.h locale.h \
-	magic.h memory.h mntent.h regex.h rxposix.h stddef.h stdlib.h \
+
+for ac_header in curl/curl.h fcntl.h iso646.h libgettext.h libintl.h limits.h \
+	locale.h magic.h memory.h mntent.h regex.h rxposix.h stddef.h stdlib.h \
 	string.h unistd.h wchar.h wctype.h widec.h zlib.h sys/clu.h \
 	sys/ioctl.h
 do
@@ -5194,11 +5259,12 @@ fi
 
 
 
+
 for ac_func in clu_info getpgrp gettext gettimeofday iswctype magic_file \
 	mbrtowc pathconf regcomp seteuid setlocale setresuid setreuid \
 	sighold sigprocmask snprintf strcasecmp strncasecmp strerror \
-	strftime strsignal strtoul tcgetpgrp vsnprintf wcrtomb wcslen \
-	wcwidth
+	strftime strsignal strtoul strverscmp tcgetpgrp vsnprintf wcrtomb \
+	wcslen wcwidth
 do
 as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`
 echo "$as_me:$LINENO: checking for $ac_func" >&5
@@ -5678,7 +5744,7 @@ echo $ECHO_N "checking for owner of aegis library files... $ECHO_C" >&6
     if test "$OSTYPE" != "cygwin32" -a "$OSTYPE" != "cygwin" ; then
     if test -f ${sharedstatedir}/lockfile -o -f ${libdir}/lockfile ; then
 	cat > conftest.$ac_ext << 'EOF'
-#line 5681 "configure"
+#line 5747 "configure"
 #include <sys/types.h>
 #include <sys/stat.h>
 main(ac,av)int ac; char **av;{struct stat st;

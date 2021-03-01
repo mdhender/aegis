@@ -2,7 +2,7 @@
 
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2003 Peter Miller.
+ *	Copyright (C) 1991-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -44,6 +44,9 @@
 /* Define to 1 if you have the `clu_info' function. */
 #undef HAVE_CLU_INFO
 
+/* Define to 1 if you have the <curl/curl.h> header file. */
+#undef HAVE_CURL_CURL_H
+
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
    */
 #undef HAVE_DIRENT_H
@@ -77,6 +80,9 @@
 
 /* Define to 1 if you have the `clu' library (-lclu). */
 #undef HAVE_LIBCLU
+
+/* Define to 1 if you have the `curl' library (-lcurl). */
+#undef HAVE_LIBCURL
 
 /* Define to 1 if you have the <libgettext.h> header file. */
 #undef HAVE_LIBGETTEXT_H
@@ -207,6 +213,9 @@
 
 /* Define to 1 if you have the `strtoul' function. */
 #undef HAVE_STRTOUL
+
+/* Define to 1 if you have the `strverscmp' function. */
+#undef HAVE_STRVERSCMP
 
 /* Define to 1 if you have the <sys/clu.h> header file. */
 #undef HAVE_SYS_CLU_H

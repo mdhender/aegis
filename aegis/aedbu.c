@@ -30,6 +30,8 @@
 #include <aedbu.h>
 #include <ael/change/by_state.h>
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <change.h>
 #include <change/branch.h>
 #include <change/file.h>
@@ -97,27 +99,12 @@ develop_begin_undo_list(void)
 	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-	    {
-		option_needs_name
-		(
-		    arglex_token_project,
-		    develop_begin_undo_usage
-		);
-	    }
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_string:
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    develop_begin_undo_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex_parse_project(&project_name, develop_begin_undo_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -137,8 +124,8 @@ develop_begin_undo_main(void)
     user_ty	    *admin_up;
     user_ty	    *up;
     change_ty	    *cp;
-    cstate	    cstate_data;
-    cstate_history  history_data;
+    cstate_ty	    *cstate_data;
+    cstate_history_ty *history_data;
     string_ty	    *dd;
     string_ty	    *usr_name;
 
@@ -162,62 +149,25 @@ develop_begin_undo_main(void)
 	    break;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-	    {
-		option_needs_number
-		(
-		    arglex_token_change,
-		    develop_begin_undo_usage
-		);
-	    }
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_change,
-		    develop_begin_undo_usage
-		);
-	    }
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change
+	    (
+		&project_name,
+		&change_number,
+		develop_begin_undo_usage
+	    );
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-	    {
-		option_needs_name
-		(
-		    arglex_token_project,
-		    develop_begin_undo_usage
-		);
-	    }
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_string:
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    develop_begin_undo_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex_parse_project(&project_name, develop_begin_undo_usage);
+	    continue;
 
 	case arglex_token_user:
 	    if (arglex() != arglex_token_string)

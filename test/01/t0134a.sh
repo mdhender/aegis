@@ -67,7 +67,8 @@ pass()
 fail()
 {
 	set +x
-	echo 'FAILED test of the test_exemption functionality' 1>&2
+	echo 'FAILED test of the test_exemption functionality' \
+		"($activity)" 1>&2
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
@@ -76,7 +77,8 @@ fail()
 no_result()
 {
 	set +x
-	echo 'NO RESULT when testing the test_exemption functionality' 1>&2
+	echo 'NO RESULT when testing the test_exemption functionality' \
+		"($activity)" 1>&2
 	echo $activity
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
@@ -305,7 +307,7 @@ if test $? -eq 0 ; then cat log; no_result; fi
 grep 'test -reg required' log > /dev/null
 if test $? -ne 0 ; then cat log; no_result; fi
 
-# But now if we aecp the only other test, the regression exemption is lifted
+# But now if we aecp the only other test, the regression exemption is granted
 activity="copy file 319"
 $bin/aegis -cp -baserel test/00/t0001a.sh  -v  > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -329,6 +331,7 @@ $bin/aegis -test -bl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # develop end should now be permitted
+# no aet -reg is required
 activity="develop end 346"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail ; fi

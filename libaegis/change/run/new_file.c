@@ -34,7 +34,7 @@ void
 change_run_new_file_command(change_ty *cp, string_list_ty *wlp, user_ty *up)
 {
     sub_context_ty  *scp;
-    pconf           pconf_data;
+    pconf_ty        *pconf_data;
     string_ty       *the_command;
     string_ty       *the_files;
     string_ty       *dd;

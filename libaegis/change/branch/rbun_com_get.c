@@ -27,21 +27,21 @@
 string_ty *
 change_branch_review_begin_undo_notify_command_get(change_ty *cp)
 {
-	cstate		cstate_data;
-	cstate_branch	bp;
+    cstate_ty       *cstate_data;
+    cstate_branch_ty *bp;
 
-	cstate_data = change_cstate_get(cp);
-	bp = cstate_data->branch;
-	assert(bp);
-	if
-	(
-		bp->review_begin_undo_notify_command
-	&&
-		!bp->review_begin_undo_notify_command->str_length
-	)
-	{
-		str_free(bp->review_begin_undo_notify_command);
-		bp->review_begin_undo_notify_command = 0;
-	}
-	return bp->review_begin_undo_notify_command;
+    cstate_data = change_cstate_get(cp);
+    bp = cstate_data->branch;
+    assert(bp);
+    if
+    (
+	bp->review_begin_undo_notify_command
+    &&
+	!bp->review_begin_undo_notify_command->str_length
+    )
+    {
+	str_free(bp->review_begin_undo_notify_command);
+	bp->review_begin_undo_notify_command = 0;
+    }
+    return bp->review_begin_undo_notify_command;
 }

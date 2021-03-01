@@ -140,7 +140,7 @@ list_user_changes(struct string_ty *project_name, long change_number,
 	for (n = 0;; ++n)
 	{
 	    change_ty	    *cp;
-	    cstate	    cstate_data;
+	    cstate_ty	    *cstate_data;
 
 	    if (!user_own_nth(up, project_name_get(pp), n, &change_number))
 		break;

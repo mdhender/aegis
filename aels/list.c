@@ -350,35 +350,68 @@ static void
 list_file(string_ty *long_name, string_ty *short_name, struct stat *st,
     string_ty *resolved_name)
 {
-    fstate_src	    c_src;
-    fstate_src	    p_src;
+    fstate_src_ty   *c_src;
+    fstate_src_ty   *p_src;
     string_ty	    *link =	    0;
 
     c_src = cp ? change_file_find(cp, long_name) : 0;
     if (c_src && c_src->about_to_be_created_by)
 	c_src = 0;
-    if
-    (
-	show_removed_files <= 0
-    &&
-	c_src
-    &&
-	(c_src->deleted_by || c_src->action == file_action_remove)
-    )
-	return;
+    if (c_src)
+    {
+	switch (c_src->action)
+	{
+	case file_action_remove:
+	    if (show_removed_files <= 0)
+		return;
+	    break;
+
+	case file_action_create:
+	case file_action_modify:
+	case file_action_insulate:
+	case file_action_transparent:
+#ifndef DEBUG
+	default:
+#endif
+	    /* should be file_action_remove */
+	    assert(!c_src->deleted_by);
+	    if (c_src->deleted_by)
+	    {
+		if (show_removed_files <= 0)
+		    return;
+	    }
+	    break;
+	}
+    }
 
     p_src = project_file_find(pp, long_name, view_path_simple);
-    if (p_src && p_src->about_to_be_created_by)
-	p_src = 0;
-    if
-    (
-	show_removed_files <= 0
-    &&
-	p_src
-    &&
-	(p_src->deleted_by || p_src->action == file_action_remove)
-    )
-	return;
+    if (p_src)
+    {
+	assert(!p_src->about_to_be_created_by); /* hidden by viewpath */
+	switch (p_src->action)
+	{
+	case file_action_remove:
+	    if (show_removed_files <= 0)
+		return;
+	    break;
+
+	case file_action_create:
+	case file_action_modify:
+	case file_action_insulate:
+	case file_action_transparent:
+#ifndef DEBUG
+	default:
+#endif
+	    /* should be file_action_remove */
+	    assert(!p_src->deleted_by);
+	    if (p_src->deleted_by)
+	    {
+		if (show_removed_files <= 0)
+		    return;
+	    }
+	    break;
+	}
+    }
 
     if (mode_col)
     {
@@ -426,7 +459,7 @@ list_file(string_ty *long_name, string_ty *short_name, struct stat *st,
 
     if (attr_col)
     {
-	fstate_src	src;
+	fstate_src_ty   *src;
 
 	if (c_src)
 	    output_fputc(attr_col, 'C');
@@ -437,16 +470,32 @@ list_file(string_ty *long_name, string_ty *short_name, struct stat *st,
 
 	if (c_src)
 	{
-	    if (c_src->action == file_action_create)
-		output_fputc(attr_col, 'c');
-	    else if (c_src->action == file_action_modify)
-		output_fputc(attr_col, 'm');
-	    else if (c_src->action == file_action_remove)
-		output_fputc(attr_col, 'r');
-	    else if (c_src->action == file_action_insulate)
-		output_fputc(attr_col, 'i');
-	    else
-		output_fputc(attr_col, '?');
+	    char            action_indicator;
+
+	    action_indicator = '?';
+	    switch (c_src->action)
+	    {
+	    case file_action_create:
+		action_indicator = 'c';
+		break;
+
+	    case file_action_modify:
+		action_indicator = 'm';
+		break;
+
+	    case file_action_remove:
+		action_indicator = 'r';
+		break;
+
+	    case file_action_insulate:
+		action_indicator = 'i';
+		break;
+
+	    case file_action_transparent:
+		action_indicator = 't';
+		break;
+	    }
+	    output_fputc(attr_col, action_indicator);
 	}
 	else
 	    output_fputc(attr_col, '-');
@@ -454,16 +503,36 @@ list_file(string_ty *long_name, string_ty *short_name, struct stat *st,
 	src = c_src ? c_src : p_src;
 	if (src)
 	{
-	    if (src->usage == file_usage_build)
-		output_fputc(attr_col, 'b');
-	    else if (src->usage == file_usage_source)
-		output_fputc(attr_col, 's');
-	    else if (src->usage == file_usage_test)
-		output_fputc(attr_col, 't');
-	    else if (src->usage == file_usage_manual_test)
-		output_fputc(attr_col, 'T');
-	    else
-		output_fputc(attr_col, '?');
+	    char            usage_indicator;
+
+	    usage_indicator = '?';
+	    switch (src->usage)
+	    {
+	    case file_usage_source:
+		usage_indicator = 's';
+		break;
+
+	    case file_usage_config:
+		usage_indicator = 'c';
+		break;
+
+	    case file_usage_build:
+		usage_indicator = 'b';
+		break;
+
+	    case file_usage_test:
+		usage_indicator = 't';
+		break;
+
+	    case file_usage_manual_test:
+		/*
+		 * should this be 'm' ?
+		 * all the others are lower case
+		 */
+		usage_indicator = 'T';
+		break;
+	    }
+	    output_fputc(attr_col, usage_indicator);
 	}
 	else
 	    output_fputc(attr_col, '-');

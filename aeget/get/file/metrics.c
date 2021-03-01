@@ -135,8 +135,8 @@ get_file_metrics(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     num_files = 0;
     for (j = 0; ; ++j)
     {
-	fstate_src      src;
-	metric_list     mlp;
+	fstate_src_ty   *src;
+	metric_list_ty  *mlp;
 
 	if (cp->bogus || !change_is_completed(cp))
 	    src = project_file_nth(pp, j, view_path_extreme);
@@ -153,7 +153,7 @@ get_file_metrics(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	    for (k = 0; k < mlp->length; ++k)
 	    {
 		static int      yes;
-		metric          mp;
+		metric_ty       *mp;
 
 		mp = mlp->list[k];
 		symtab_assign(stp, mp->name, &yes);
@@ -181,8 +181,8 @@ get_file_metrics(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     total_files = 0;
     for (j = 0; ; ++j)
     {
-	fstate_src      src;
-	metric_list     mlp;
+	fstate_src_ty   *src;
+	metric_list_ty  *mlp;
 
 	if (cp->bogus || !change_is_completed(cp))
 	    src = project_file_nth(pp, j, view_path_extreme);
@@ -200,7 +200,7 @@ get_file_metrics(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	    rp->filename = str_copy(src->file_name);
 	    for (k = 0; k < mlp->length; ++k)
 	    {
-		metric          mp;
+		metric_ty       *mp;
 		size_t          m;
 
 		mp = mlp->list[k];
@@ -274,7 +274,7 @@ get_file_metrics(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     {
 	const char      *html_class;
 	row_ty          *rp;
-	fstate_src      src;
+	fstate_src_ty   *src;
 	size_t          k;
 
 	rp = row[j];

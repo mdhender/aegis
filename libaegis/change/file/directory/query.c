@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,9 +31,9 @@ void
 change_file_directory_query(change_ty *cp, string_ty *file_name,
     string_list_ty *result_in, string_list_ty *result_out)
 {
-    fstate	    fstate_data;
+    fstate_ty       *fstate_data;
     int		    j;
-    fstate_src	    src_data;
+    fstate_src_ty   *src_data;
 
     trace(("change_file_dir(cp = %08lX, file_name = \"%s\")\n{\n",
 	(long)cp, file_name->str_text));
@@ -48,8 +48,17 @@ change_file_directory_query(change_ty *cp, string_ty *file_name,
 	src_data = fstate_data->src->list[j];
 	if (src_data->about_to_be_created_by && !src_data->deleted_by)
 	    continue;
-	if (src_data->usage == file_usage_build)
+	switch (src_data->usage)
+	{
+	case file_usage_build:
 	    continue;
+
+	case file_usage_source:
+	case file_usage_config:
+	case file_usage_test:
+	case file_usage_manual_test:
+	    break;
+	}
 	if (os_isa_path_prefix(file_name, src_data->file_name))
 	{
 	    if (!src_data->deleted_by)

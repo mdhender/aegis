@@ -35,28 +35,28 @@ struct sub_context_ty; /* existence */
 typedef struct project_ty project_ty;
 struct project_ty
 {
-	long		reference_count;
-	string_ty	*name;
-	string_ty	*home_path;
-	string_ty	*baseline_path_unresolved;
-	string_ty	*baseline_path;
-	string_ty	*history_path;
-	string_ty	*info_path;
-	string_ty	*pstate_path;
-	string_ty	*changes_path;
-	pstate		pstate_data;
-	int		is_a_new_file;
-	long		lock_magic;
-	struct change_ty *pcp;
-	int		uid, gid;
-	project_ty	*parent;
-	long		parent_bn;
-	struct string_list_ty *file_list[3];
-	/*
-	 * if you add anything to this structure,
-	 * make sure you fix project_free in project.c
-	 * and zero-out the item in project_alloc
-	 */
+    long            reference_count;
+    string_ty       *name;
+    string_ty       *home_path;
+    string_ty       *baseline_path_unresolved;
+    string_ty       *baseline_path;
+    string_ty       *history_path;
+    string_ty       *info_path;
+    string_ty       *pstate_path;
+    string_ty       *changes_path;
+    pstate_ty       *pstate_data;
+    int             is_a_new_file;
+    long            lock_magic;
+    struct change_ty *pcp;
+    int             uid, gid;
+    project_ty      *parent;
+    long            parent_bn;
+    struct string_list_ty *file_list[3];
+    /*
+     * if you add anything to this structure,
+     * make sure you fix project_free in project.c
+     * and zero-out the item in project_alloc
+     */
 };
 
 project_ty *project_alloc(string_ty *name);
@@ -80,7 +80,7 @@ string_ty *project_info_path_get(project_ty *);
 string_ty *project_changes_path_get(project_ty *);
 string_ty *project_change_path_get(project_ty *, long);
 string_ty *project_pstate_path_get(project_ty *);
-pstate project_pstate_get(project_ty *);
+pstate_ty *project_pstate_get(project_ty *);
 void project_pstate_write(project_ty *);
 void project_pstate_write_top(project_ty *);
 void project_pstate_lock_prepare(project_ty *);
@@ -89,7 +89,8 @@ void project_baseline_read_lock_prepare(project_ty *);
 void project_baseline_write_lock_prepare(project_ty *);
 void project_history_lock_prepare(project_ty *);
 void project_error(project_ty *, struct sub_context_ty *, const char *);
-void project_fatal(project_ty *, struct sub_context_ty *, const char *);
+void project_fatal(project_ty *, struct sub_context_ty *, const char *)
+    NORETURN;
 void project_verbose(project_ty *, struct sub_context_ty *, const char *);
 void project_change_append(project_ty *, long, int);
 void project_change_delete(project_ty *, long);
@@ -122,10 +123,10 @@ int break_up_version_string(const char *, long *, int, int *, int);
 void extract_version_from_project_name(string_ty **, long *, int, int *);
 int project_name_ok(string_ty *);
 
-struct pconf *project_pconf_get(project_ty *);
+struct pconf_ty *project_pconf_get(project_ty *);
 
 project_ty *project_new_branch(project_ty *, struct user_ty *, long,
-	string_ty *);
+    string_ty *);
 void project_file_list_invalidate(project_ty *);
 
 #endif /* PROJECT_H */

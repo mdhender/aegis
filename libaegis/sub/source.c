@@ -64,7 +64,7 @@ wstring_ty *
 sub_source(sub_context_ty *scp, wstring_list_ty *arg)
 {
 	wstring_ty	*result;
-	cstate		cstate_data;
+	cstate_ty       *cstate_data;
 	int		absolute;
 	string_ty	*fn;
 	string_ty	*s;

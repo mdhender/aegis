@@ -75,7 +75,7 @@ static batch_result_list_ty *
 change_test_run_list_inner(change_ty *cp, string_list_ty *wlp, user_ty *up,
     int bl, int current, int total)
 {
-    pconf	    pconf_data;
+    pconf_ty        *pconf_data;
     batch_result_list_ty *result;
 
     trace(("change_test_run_list_inner(cp = %08lX, wlp = %08lX, up = %08lX, "

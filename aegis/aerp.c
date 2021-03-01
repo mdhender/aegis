@@ -28,6 +28,8 @@
 #include <ael/change/by_state.h>
 #include <aerp.h>
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <change.h>
 #include <change/branch.h>
 #include <change/file.h>
@@ -92,21 +94,12 @@ review_pass_list(void)
 	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, review_pass_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_string:
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    review_pass_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex_parse_project(&project_name, review_pass_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -120,9 +113,9 @@ review_pass_list(void)
 static void
 check_permissions(change_ty *cp, user_ty *up)
 {
-    cstate	    cstate_data;
+    cstate_ty	    *cstate_data;
     project_ty	    *pp;
-    cstate_history  hp;
+    cstate_history_ty *hp;
 
     cstate_data = change_cstate_get(cp);
 
@@ -160,8 +153,8 @@ check_permissions(change_ty *cp, user_ty *up)
 static void
 review_pass_main(void)
 {
-    cstate	    cstate_data;
-    cstate_history  history_data;
+    cstate_ty	    *cstate_data;
+    cstate_history_ty *history_data;
     string_ty	    *project_name;
     project_ty	    *pp;
     long	    change_number;
@@ -186,50 +179,25 @@ review_pass_main(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, review_pass_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_change,
-		    review_pass_usage
-		);
-	    }
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change
+	    (
+		&project_name,
+		&change_number,
+		review_pass_usage
+	    );
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, review_pass_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_string:
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    review_pass_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex_parse_project(&project_name, review_pass_usage);
+	    continue;
 
 	case arglex_token_file:
 	    if (comment)
@@ -388,7 +356,7 @@ review_pass_main(void)
      */
     for (j = 0;; ++j)
     {
-	fstate_src	src_data;
+	fstate_src_ty   *src_data;
 	string_ty	*path;
 	string_ty	*path_d;
 	int		same;
@@ -404,6 +372,7 @@ review_pass_main(void)
 	switch (src_data->usage)
 	{
 	case file_usage_source:
+	case file_usage_config:
 	case file_usage_test:
 	case file_usage_manual_test:
 	    break;

@@ -25,6 +25,8 @@
 
 #include <aemv.h>
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <change/branch.h>
 #include <change/file.h>
 #include <commit.h>
@@ -88,35 +90,20 @@ move_file_list(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, move_file_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-		duplicate_option_by_name(arglex_token_change, move_file_usage);
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change(&project_name, &change_number, move_file_usage);
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, move_file_usage);
-	    if (project_name)
-		duplicate_option_by_name(arglex_token_project, move_file_usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    /* fall through... */
+
+	case arglex_token_string:
+	    arglex_parse_project(&project_name, move_file_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -133,9 +120,9 @@ move_file_innards(user_ty *up, change_ty *cp, string_ty *old_name,
     string_list_ty *wl_rm)
 {
     project_ty	    *pp;
-    fstate_src	    p_src_data;
-    fstate_src	    pn_src_data;
-    fstate_src	    c_src_data;
+    fstate_src_ty   *p_src_data;
+    fstate_src_ty   *pn_src_data;
+    fstate_src_ty   *c_src_data;
     static string_ty *config_name;
     string_ty	    *from;
     string_ty	    *to;
@@ -281,6 +268,7 @@ move_file_innards(user_ty *up, change_ty *cp, string_ty *old_name,
 	break;
 
     case file_usage_source:
+    case file_usage_config:
     case file_usage_build:
 	string_list_append(wl_nf, new_name);
 	break;
@@ -289,8 +277,17 @@ move_file_innards(user_ty *up, change_ty *cp, string_ty *old_name,
     /*
      * If the file is built, we are done.
      */
-    if (c_src_data->usage == file_usage_build)
+    switch (c_src_data->usage)
+    {
+    case file_usage_build:
 	return;
+
+    case file_usage_source:
+    case file_usage_config:
+    case file_usage_test:
+    case file_usage_manual_test:
+	break;
+    }
 
     /*
      * Copy the file into the development directory.
@@ -334,7 +331,7 @@ move_file_main(void)
     string_ty	    *new_name;
     string_ty	    *s1;
     string_ty	    *s2;
-    cstate	    cstate_data;
+    cstate_ty	    *cstate_data;
     string_ty	    *project_name;
     project_ty	    *pp;
     long	    change_number;
@@ -376,33 +373,17 @@ move_file_main(void)
 	    break;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, move_file_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-		duplicate_option_by_name(arglex_token_change, move_file_usage);
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change(&project_name, &change_number, move_file_usage);
+	    continue;
 
 	case arglex_token_project:
-	    if (project_name)
-		duplicate_option(move_file_usage);
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, move_file_usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, move_file_usage);
+	    continue;
 
 	case arglex_token_nolog:
 	    if (log_style == log_style_none)

@@ -25,6 +25,8 @@
 #include <ael/change/changes.h>
 #include <aenbr.h>
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <change.h>
 #include <change/branch.h>
 #include <commit.h>
@@ -80,18 +82,9 @@ new_branch_list(void)
 	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, new_branch_usage);
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    new_branch_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, new_branch_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -128,35 +121,23 @@ new_branch_main(void)
 	    continue;
 
 	case arglex_token_branch:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_branch, new_branch_usage);
+	case arglex_token_change:
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-		duplicate_option_by_name(arglex_token_branch, new_branch_usage);
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("branch $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_branch
+	    (
+		&project_name,
+		&change_number,
+		new_branch_usage
+	    );
+	    continue;
 
 	case arglex_token_project:
-	    if (project_name)
-		duplicate_option(new_branch_usage);
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, new_branch_usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, new_branch_usage);
+	    continue;
 
 	case arglex_token_directory:
 	    if (arglex() != arglex_token_string)

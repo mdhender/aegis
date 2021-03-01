@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1997, 1999, 2000, 2002 Peter Miller;
+ *	Copyright (C) 1991-1997, 1999, 2000, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,35 +31,38 @@ struct string_list_ty; /* existence */
  * This would be static to aegis/change_file.c if only aegis/aer/value/fstate.c
  * did not need it.  No other place should access this directly.
  */
-fstate change_fstate_get(change_ty *);
+fstate_ty *change_fstate_get(change_ty *);
 
-fstate_src change_file_find(change_ty *, string_ty *);
-fstate_src change_file_find_fuzzy(change_ty *, string_ty *);
+fstate_src_ty *change_file_find(change_ty *, string_ty *);
+fstate_src_ty *change_file_find_fuzzy(change_ty *, string_ty *);
 string_ty *change_file_path(change_ty *, string_ty *);
 string_ty *change_file_source(change_ty *, string_ty *);
 void change_file_remove(change_ty *, string_ty *);
-fstate_src change_file_new(change_ty *, string_ty *);
+fstate_src_ty *change_file_new(change_ty *, string_ty *);
 void change_file_remove_all(change_ty *);
-fstate_src change_file_nth(change_ty *, size_t);
+fstate_src_ty *change_file_nth(change_ty *, size_t);
 size_t change_file_count(change_ty *);
 void change_file_directory_query(change_ty *cp, string_ty *file_name,
-	struct string_list_ty *result_in, struct string_list_ty *result_out);
+    struct string_list_ty *result_in, struct string_list_ty *result_out);
 string_ty *change_file_directory_conflict(change_ty *cp,
-	string_ty *file_name);
+    string_ty *file_name);
 void change_search_path_get(change_ty *, struct string_list_ty *, int);
 
-void change_file_test_time_clear(change_ty *, fstate_src, string_ty *);
-void change_file_test_time_set(change_ty *, fstate_src, time_t, string_ty *);
-time_t change_file_test_time_get(change_ty *, fstate_src, string_ty *);
-void change_file_test_baseline_time_clear(change_ty *, fstate_src, string_ty *);
-void change_file_test_baseline_time_set(change_ty *, fstate_src, time_t,
+void change_file_test_time_clear(change_ty *, fstate_src_ty *, string_ty *);
+void change_file_test_time_set(change_ty *, fstate_src_ty *, time_t,
     string_ty *);
-time_t change_file_test_baseline_time_get(change_ty *, fstate_src, string_ty *);
+time_t change_file_test_time_get(change_ty *, fstate_src_ty *, string_ty *);
+void change_file_test_baseline_time_clear(change_ty *, fstate_src_ty *,
+    string_ty *);
+void change_file_test_baseline_time_set(change_ty *, fstate_src_ty *, time_t,
+    string_ty *);
+time_t change_file_test_baseline_time_get(change_ty *, fstate_src_ty *,
+    string_ty *);
 
-int change_fingerprint_same(fingerprint, string_ty *, int);
-void change_file_fingerprint_check(change_ty *, fstate_src);
-int change_file_up_to_date(struct project_ty *, fstate_src);
-struct metric_list *change_file_metrics_get(change_ty *,
+int change_fingerprint_same(fingerprint_ty *, string_ty *, int);
+void change_file_fingerprint_check(change_ty *, fstate_src_ty *);
+int change_file_up_to_date(struct project_ty *, fstate_src_ty *);
+struct metric_list_ty *change_file_metrics_get(change_ty *,
     struct string_ty *);
 void change_file_list_metrics_check(change_ty *);
 void change_file_template(change_ty *, string_ty *, struct user_ty *, int);

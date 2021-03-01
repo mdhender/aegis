@@ -33,7 +33,7 @@ xml_project_pstate(string_ty *project_name, long change_number, output_ty *op)
 {
     project_ty      *pp;
     project_ty      *ppp;
-    pstate          pstate_data;
+    pstate_ty       *pstate_data;
 
     trace(("xml_project_pstate()\n{\n"));
     if (change_number)

@@ -92,7 +92,7 @@ get_file_activity(change_ty *master_cp, string_ty *filename,
      */
     for (j = 0; ; ++j)
     {
-	cstate          cstate_data;
+	cstate_ty       *cstate_data;
 	long            change_number;
 	change_ty       *cp;
 	int             used;
@@ -128,7 +128,7 @@ get_file_activity(change_ty *master_cp, string_ty *filename,
 	    used = 0;
 	    for (file_num = 0; ; ++file_num)
 	    {
-		fstate_src      src;
+		fstate_src_ty   *src;
 		change_list_ty  *clp;
 
 		src = change_file_nth(cp, file_num);
@@ -201,9 +201,9 @@ get_file_activity(change_ty *master_cp, string_ty *filename,
 	num = 0;
 	for (k = 0; k < clp->length; ++k)
 	{
-	    cstate          cstate_data;
+	    cstate_ty       *cstate_data;
 	    change_ty       *cp;
-	    fstate_src      src;
+	    fstate_src_ty   *src;
 	    const char      *html_class;
 
 	    cp = clp->item[k];

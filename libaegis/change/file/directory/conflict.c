@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@ string_ty *
 change_file_directory_conflict(change_ty *cp, string_ty *file_name)
 {
 	size_t		j;
-	fstate_src	src_data;
+	fstate_src_ty   *src_data;
 
 	for (j = 0; ; ++j)
 	{

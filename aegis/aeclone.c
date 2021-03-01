@@ -26,6 +26,8 @@
 #include <ael/change/by_state.h>
 #include <aenc.h>
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <change.h>
 #include <change/branch.h>
 #include <change/file.h>
@@ -83,12 +85,12 @@ clone_list(void)
 	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, clone_usage);
-	    if (project_name)
-		duplicate_option_by_name(arglex_token_project, clone_usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    /* fall through... */
+
+	case arglex_token_string:
+	    arglex_parse_project(&project_name, clone_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -100,28 +102,6 @@ clone_list(void)
     if (project_name)
 	str_free(project_name);
     trace(("}\n"));
-}
-
-
-static long
-get_change_number(void)
-{
-    long	    cn;
-
-    cn = arglex_value.alv_number;
-    if (cn == 0)
-	cn = MAGIC_ZERO;
-    else if (cn < 1)
-    {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
-	sub_var_set_long(scp, "Number", cn);
-	fatal_intl(scp, i18n("change $number out of range"));
-	/* NOTREACHED */
-	sub_context_delete(scp);
-    }
-    return cn;
 }
 
 
@@ -138,13 +118,13 @@ clone_main(void)
     user_ty	    *up;
     change_ty	    *cp;
     change_ty	    *cp2;
-    cstate	    cstate_data;
-    cstate	    cstate_data2;
-    cstate_history  history_data;
+    cstate_ty       *cstate_data;
+    cstate_ty       *cstate_data2;
+    cstate_history_ty *history_data;
     string_ty	    *usr;
     string_ty	    *devdir;
     size_t	    j;
-    pconf	    pconf_data;
+    pconf_ty        *pconf_data;
     const char      *branch;
     int		    trunk;
     int		    grandparent;
@@ -177,32 +157,32 @@ clone_main(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, clone_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
 	    if (!change_number2)
 	    {
 		/* change to clone */
-		change_number2 = get_change_number();
-	    }
-	    else if (!change_number)
-	    {
-		/* change to create */
-		change_number = get_change_number();
+		arglex_parse_change_with_branch
+		(
+		    &project_name,
+		    &change_number2,
+		    &branch,
+		    clone_usage
+		);
 	    }
 	    else
-		duplicate_option_by_name(arglex_token_change, clone_usage);
-	    break;
+	    {
+		/* change to create */
+		arglex_parse_change(&project_name, &change_number, clone_usage);
+	    }
+	    continue;
 
 	case arglex_token_project:
-	    if (project_name)
-		duplicate_option(clone_usage);
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, clone_usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, clone_usage);
+	    continue;
 
 	case arglex_token_directory:
 	    if (devdir)
@@ -485,11 +465,11 @@ clone_main(void)
 	change_verbose(cp, 0, i18n("copy change source files"));
 	for (j = 0;; ++j)
 	{
-	    string_ty	*from;
-	    string_ty	*to;
-	    fstate_src	src_data;
-	    fstate_src	src_data2;
-	    fstate_src	p_src_data;
+	    string_ty       *from;
+	    string_ty       *to;
+	    fstate_src_ty   *src_data;
+	    fstate_src_ty   *src_data2;
+	    fstate_src_ty   *p_src_data;
 
 	    /*
 	     * find the file
@@ -499,24 +479,34 @@ clone_main(void)
 	    src_data2 = change_file_nth(cp2, j);
 	    if (!src_data2)
 		break;
-	    if (src_data2->action == file_action_insulate)
+	    switch (src_data2->action)
+	    {
+	    case file_action_insulate:
 		continue;
-	    if
-	    (
-		src_data2->action == file_action_transparent
-	    &&
-		change_was_a_branch(cp2)
-	    )
-		continue;
-	    if
-	    (
-		src_data2->usage == file_usage_build
-	    &&
-		src_data2->action != file_action_create
-	    &&
-		src_data2->action != file_action_remove
-	    )
-		continue;
+
+	    case file_action_transparent:
+		if (change_was_a_branch(cp2))
+		    continue;
+		break;
+
+	    case file_action_modify:
+		switch (src_data2->usage)
+		{
+		case file_usage_build:
+		    continue;
+
+		case file_usage_source:
+		case file_usage_config:
+		case file_usage_test:
+		case file_usage_manual_test:
+		    break;
+		}
+		break;
+
+	    case file_action_create:
+	    case file_action_remove:
+		break;
+	    }
 
 	    /*
 	     * find the file in the project
@@ -525,10 +515,23 @@ clone_main(void)
 		project_file_find(pp, src_data2->file_name, view_path_extreme);
 	    if (!p_src_data)
 	    {
-		if (src_data2->action == file_action_remove)
+		switch (src_data2->action)
+		{
+		case file_action_remove:
 		    continue;
-		if (src_data2->action != file_action_transparent)
+
+		case file_action_transparent:
+		case file_action_create:
+		    break;
+
+		case file_action_modify:
+		case file_action_insulate:
+#ifndef DEBUG
+		default:
+#endif
 		    src_data2->action = file_action_create;
+		    break;
+		}
 	    }
 
 	    /*
@@ -540,23 +543,21 @@ clone_main(void)
 	    if (src_data2->move)
 		src_data->move = str_copy(src_data2->move);
 
-	    /*
-	     * removed files aren't copied,
-	     * they have whiteout instead.
-	     */
-	    if (src_data->action == file_action_remove)
+	    switch (src_data->action)
 	    {
+	    case file_action_remove:
+		/*
+		 * removed files aren't copied,
+		 * they have whiteout instead.
+		 */
 		change_file_whiteout_write(cp, src_data->file_name, up);
 		continue;
-	    }
 
-	    /*
-	     * Transparent files are copied, but from the project's
-	     * parent, not from the other change.
-	     */
-	    if (src_data->action == file_action_transparent)
-	    {
+	    case file_action_transparent:
 		/*
+		 * Transparent files are copied, but from the project's
+		 * parent, not from the other change.
+		 *
 		 * construct the paths to the files
 		 */
 		from = project_file_path(pp->parent, src_data2->file_name);
@@ -595,6 +596,11 @@ clone_main(void)
 		 * Go on to the next file.
 		 */
 		continue;
+
+	    case file_action_create:
+	    case file_action_modify:
+	    case file_action_insulate:
+		break;
 	    }
 
 	    /*
@@ -788,7 +794,7 @@ clone_main(void)
 	string_list_constructor(&wl_mt);
 	for (j = 0;; ++j)
 	{
-	    fstate_src	c_src;
+	    fstate_src_ty   *c_src;
 
 	    c_src = change_file_nth(cp, j);
 	    if (!c_src)
@@ -804,6 +810,7 @@ clone_main(void)
 		    break;
 
 		case file_usage_source:
+		case file_usage_config:
 		case file_usage_build:
 		    string_list_append(&wl_nf, c_src->file_name);
 		    break;

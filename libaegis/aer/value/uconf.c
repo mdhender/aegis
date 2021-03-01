@@ -36,7 +36,7 @@
 static rpt_value_ty *
 build_result(struct passwd *pw)
 {
-    uconf	    tmp;
+    uconf_ty	    *tmp;
     rpt_value_ty    *result;
     string_ty	    *name;
     rpt_value_ty    *value;

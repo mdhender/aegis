@@ -36,7 +36,7 @@
 void
 get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 {
-    fstate_src      src;
+    fstate_src_ty   *src;
     int             baseline_file_exists;
     int             hold_bogus;
 
@@ -170,18 +170,29 @@ get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     }
     else
     {
-	if (!change_is_completed(cp) && src->action == file_action_create)
+	switch (src->action)
 	{
-	    printf("<dt>\n");
-	    printf("Baseline\n");
-	    printf("<dd>\n");
-	    printf("The file does not yet exist in the baseline.\n");
-	    printf("It is being created by this change, which is not\n");
-	    printf("yet integrated\n");
-	    printf("<p>\n");
-	}
-	else
-	{
+	case file_action_create:
+	    if (!change_is_completed(cp))
+	    {
+		printf("<dt>\n");
+		printf("Baseline\n");
+		printf("<dd>\n");
+		printf("The file does not yet exist in the baseline.\n");
+		printf("It is being created by this change, which is not\n");
+		printf("yet integrated\n");
+		printf("<p>\n");
+		break;
+	    }
+	    /* fall through... */
+
+	case file_action_modify:
+	case file_action_remove:
+	case file_action_insulate:
+	case file_action_transparent:
+#ifndef DEBUG
+	default:
+#endif
 	    printf("<dt>\n");
 	    cp->bogus = 1;
 	    emit_file_href(cp, filename, 0);
@@ -193,6 +204,7 @@ get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	    printf("master version.\n");
 	    printf("<p>\n");
 	    baseline_file_exists = 1;
+	    break;
 	}
     }
 
@@ -216,15 +228,22 @@ get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	    auto delta;
 	    delta=cs.delta_number;
 
-	    if (action == "create")
+	    switch (action)
 	    {
+	    case file_action_create:
 		printf("<dt>\n");
 		print("Pre Change " ## cn);
 		printf("<dd>\n");
 		printf("The file did not exist prior to this change.\n");
-	    }
-	    else
-	    {
+		break;
+
+	    case file_action_modify:
+	    case file_action_remove:
+	    case file_action_insulate:
+	    case file_action_transparent:
+#ifndef DEBUG
+	    default:
+#endif
 		auto d;
 		d = delta -1;
 		printf("<dt>\n");
@@ -238,11 +257,19 @@ get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 		printf("of the file in the project baseline looked\n");
 		printf("<strong>before</strong> change " ## cn ## "\n");
 		printf("was integrated.\n");
+		break;
 	    }
 
 	    printf("<dt>\n");
-	    if (action != "remove")
+	    switch (action)
 	    {
+	    case file_action_modify:
+	    case file_action_create:
+	    case file_action_insulate:
+	    case file_action_transparent:
+#ifndef DEBUG
+	    default:
+#endif
 		href = script_name ## "?file@pre+" ## "delta@" ## delta ## "+";
 		href ##= quote_url(fn);
 		href ##= "+project@" ## quote_url(pn);
@@ -253,12 +280,13 @@ get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 		printf("of the file in the project baseline looked\n");
 		printf("<strong>after</strong> change " ## cn ## "\n");
 		printf("was integrated.\n");
-	    }
-	    else
-	    {
+		break;
+
+	    case file_action_remove:
 		print("Post Change " ## change_number());
 		printf("<dd>The file was removed from the project in\n");
 		printf("this change.\n");
+		break;
 	    }
 	}
 	if (cs.state != "awaiting_development")
@@ -276,10 +304,23 @@ get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 
 	    if (cs.state == "completed")
 	    {
-		if (action != "create")
+		switch (action)
+		{
+		case file_action_remove:
 		    printf("<td width=\"100\" align=\"center\">Before</td>\n");
-		if (action != "remove")
+		    break;
+
+		case file_action_create:
 		    printf("<td width=\"100\" align=\"center\">After</td>\n");
+		    break;
+
+		case file_action_modify:
+		case file_action_insulate:
+		case file_action_transparent:
+		    printf("<td width=\"100\" align=\"center\">Before</td>\n");
+		    printf("<td width=\"100\" align=\"center\">After</td>\n");
+		    break;
+		}
 	    }
 	    else
 		printf("<td width=\"100\" align=\"center\">Change</td>\n");
@@ -293,23 +334,16 @@ get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 
 	    if (cs.state == "completed")
 	    {
-		if (action != "create")
+		switch (action)
 		{
+		case file_action_create:
+		    break;
+
+		case file_action_remove:
 		    printf("<tr>\n");
 		    printf("<td>Before</td>\n");
 		    printf("<td align=\"center\">*</td>\n");
 
-		    if (action != "remove")
-		    {
-			href = script_name ## "?file@diff+";
-			href ##= "delta1@" ## pre_d ## "+";
-			href ##= "delta2@" ## post_d ## "+";
-			href ##= quote_url(fn);
-			href ##= "+project@" ## quote_url(pn);
-
-			print("<td align=\"center\"><a href=\"" ## href ##
-			    "\">diff</a></td>");
-		    }
 		    if (baseline_file_exists)
 		    {
 			href = script_name ## "?file@diff+";
@@ -321,21 +355,47 @@ get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 			    "\">diff</a></td>");
 		    }
 		    printf("</tr>\n");
-		}
-		if (action != "remove")
-		{
+		    break;
+
+		case file_action_modify:
+		case file_action_insulate:
+		case file_action_transparent:
+#ifndef DEBUG
+		default:
+#endif
 		    printf("<tr>\n");
-		    printf("<td>After</td>\n");
-		    if (action != "create")
+		    printf("<td>Before</td>\n");
+		    printf("<td align=\"center\">*</td>\n");
+
+		    href = script_name ## "?file@diff+";
+		    href ##= "delta1@" ## pre_d ## "+";
+		    href ##= "delta2@" ## post_d ## "+";
+		    href ##= quote_url(fn);
+		    href ##= "+project@" ## quote_url(pn);
+
+		    print("<td align=\"center\"><a href=\"" ## href ##
+			"\">diff</a></td>");
+		    if (baseline_file_exists)
 		    {
 			href = script_name ## "?file@diff+";
-			href ##= "delta1@" ## post_d ## "+";
-			href ##= "delta2@" ## pre_d ## "+";
+			href ##= "delta1@" ## pre_d ## "+";
+			href ##= "delta2@" ## "baseline" ## "+";
 			href ##= quote_url(fn);
 			href ##= "+project@" ## quote_url(pn);
 			print("<td align=\"center\"><a href=\"" ## href ##
 			    "\">diff</a></td>");
 		    }
+		    printf("</tr>\n");
+		    break;
+		}
+		switch (action)
+		{
+		case file_action_remove:
+		    break;
+
+		case file_action_create:
+		    printf("<tr>\n");
+		    printf("<td>After</td>\n");
 		    printf("<td align=\"center\">*</td>\n");
 		    if (baseline_file_exists)
 		    {
@@ -348,6 +408,36 @@ get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 			    "\">diff</a></td>");
 		    }
 		    printf("</tr>\n");
+		    break;
+
+		case file_action_modify:
+		case file_action_insulate:
+		case file_action_transparent:
+#ifndef DEBUG
+		default:
+#endif
+		    printf("<tr>\n");
+		    printf("<td>After</td>\n");
+		    href = script_name ## "?file@diff+";
+		    href ##= "delta1@" ## post_d ## "+";
+		    href ##= "delta2@" ## pre_d ## "+";
+		    href ##= quote_url(fn);
+		    href ##= "+project@" ## quote_url(pn);
+		    print("<td align=\"center\"><a href=\"" ## href ##
+			"\">diff</a></td>");
+		    printf("<td align=\"center\">*</td>\n");
+		    if (baseline_file_exists)
+		    {
+			href = script_name ## "?file@diff+";
+			href ##= "delta1@" ## post_d ## "+";
+			href ##= "delta2@" ## "baseline" ## "+";
+			href ##= quote_url(fn);
+			href ##= "+project@" ## quote_url(pn);
+			print("<td align=\"center\"><a href=\"" ## href ##
+			    "\">diff</a></td>");
+		    }
+		    printf("</tr>\n");
+		    break;
 		}
 	    }
 	    if (cs.state != "completed")
@@ -378,8 +468,18 @@ get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 
 		if (cs.state == "completed")
 		{
-		    if (action != "create")
+		    switch (action)
 		    {
+		    case file_action_create:
+			break;
+
+		    case file_action_modify:
+		    case file_action_remove:
+		    case file_action_insulate:
+		    case file_action_transparent:
+#ifndef DEBUG
+		    default:
+#endif
 			href = script_name ## "?file@diff+";
 			href ##= "delta1@" ## "baseline" ## "+";
 			href ##= "delta2@" ## pre_d  ## "+";
@@ -387,6 +487,7 @@ get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 			href ##= "+project@" ## quote_url(pn);
 			print("<td align=\"center\"><a href=\"" ## href ##
 			    "\">diff</a></td>");
+			break;
 		    }
 		    href = script_name ## "?file@diff+";
 		    href ##= "delta1@" ## "baseline" ## "+";

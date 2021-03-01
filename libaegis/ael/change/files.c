@@ -37,11 +37,10 @@
 
 
 void
-list_change_files(string_ty *project_name,
-                  long change_number,
-                  string_list_ty *args)
+list_change_files(string_ty *project_name, long change_number,
+    string_list_ty *args)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
     project_ty	    *pp;
     change_ty	    *cp;
     user_ty	    *up;
@@ -115,8 +114,8 @@ list_change_files(string_ty *project_name,
      */
     for (j = 0;; ++j)
     {
-	fstate_src	src_data;
-	fstate_src	psrc_data;
+	fstate_src_ty   *src_data;
+	fstate_src_ty	*psrc_data;
 
 	src_data = change_file_nth(cp, j);
 	if (!src_data)
@@ -125,8 +124,17 @@ list_change_files(string_ty *project_name,
 	psrc_data = 0;
 	if (option_terse_get())
 	{
-	    if (src_data->action == file_action_remove)
+	    switch (src_data->action)
+	    {
+	    case file_action_remove:
 		continue;
+
+	    case file_action_create:
+	    case file_action_modify:
+	    case file_action_insulate:
+	    case file_action_transparent:
+		break;
+	    }
 	}
 	else
 	{
@@ -234,13 +242,26 @@ list_change_files(string_ty *project_name,
 	}
 	if (src_data->move)
 	{
-	    output_end_of_line(file_name_col);
-	    output_fputs(file_name_col, "Moved ");
-	    if (src_data->action == file_action_create)
-		output_fputs(file_name_col, "from ");
-	    else
-		output_fputs(file_name_col, "to ");
-	    output_fputs(file_name_col, src_data->move->str_text);
+	    switch (src_data->action)
+	    {
+	    case file_action_create:
+		output_end_of_line(file_name_col);
+		output_fputs(file_name_col, "Moved from ");
+		output_fputs(file_name_col, src_data->move->str_text);
+		break;
+
+	    case file_action_remove:
+		output_end_of_line(file_name_col);
+		output_fputs(file_name_col, "Moved to ");
+		output_fputs(file_name_col, src_data->move->str_text);
+		break;
+
+	    case file_action_modify:
+	    case file_action_insulate:
+	    case file_action_transparent:
+		assert(0);
+		break;
+	    }
 	}
 	col_eoln(colp);
     }

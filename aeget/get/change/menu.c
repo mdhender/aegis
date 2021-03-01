@@ -33,7 +33,7 @@
 void
 get_change_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 {
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
 
     html_header(cp->pp);
 

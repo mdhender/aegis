@@ -44,7 +44,7 @@ change_top_path_get(change_ty *cp, int resolve)
 	assert(cp->reference_count >= 1);
 	if (!cp->top_path_unresolved)
 	{
-		cstate		cstate_data;
+		cstate_ty       *cstate_data;
 		string_ty	*dir;
 
 		cstate_data = change_cstate_get(cp);

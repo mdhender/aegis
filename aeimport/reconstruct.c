@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 #include <change.h>
 #include <change/file.h>
 #include <commit.h>
+#include <error.h> /* for assert */
 #include <fstate.h>
 #include <lock.h>
 #include <os.h>
@@ -36,7 +37,7 @@
 
 
 static void
-process(change_ty *cp, fstate_src src, user_ty *up)
+process(change_ty *cp, fstate_src_ty *src, user_ty *up)
 {
     project_ty	    *pp;
     string_ty	    *bl;
@@ -62,8 +63,21 @@ process(change_ty *cp, fstate_src src, user_ty *up)
 
     path = os_path_cat(bl, src->file_name);
     trace(("src->action = %s;\n", file_action_ename(src->action)));
-    if (src->action != file_action_remove)
+    switch (src->action)
     {
+    case file_action_remove:
+	break;
+
+    case file_action_insulate:
+    case file_action_transparent:
+	assert(0);
+	break;
+
+    case file_action_create:
+    case file_action_modify:
+#ifndef DEBUG
+    default:
+#endif
 	/*
 	 * Extract the file
 	 */
@@ -82,6 +96,7 @@ process(change_ty *cp, fstate_src src, user_ty *up)
 
     if (pp->parent)
     {
+	string_ty	*path_in = 0;
 	string_ty	*path_d;
 	static string_ty *dev_null;
 
@@ -92,14 +107,26 @@ process(change_ty *cp, fstate_src src, user_ty *up)
 	    dev_null = str_from_c("/dev/null");
 	path_d = str_format("%S,D", path);
 	trace_string(path_d->str_text);
-	change_run_diff_command
-	(
-	    cp,
-	    up,
-	    dev_null,
-	    (src->action != file_action_remove ? path : dev_null),
-	    path_d
-	);
+	switch (src->action)
+	{
+	case file_action_insulate:
+	case file_action_transparent:
+	    assert(0);
+	    /* fall through... */
+
+	case file_action_remove:
+	    path_in = dev_null;
+	    break;
+
+	case file_action_create:
+	case file_action_modify:
+#ifndef DEBUG
+	default:
+#endif
+	    path_in = path;
+	    break;
+	}
+	change_run_diff_command(cp, up, dev_null, path_in, path_d);
 
 	/*
 	 * Fingerprint the difference file.
@@ -148,7 +175,7 @@ reconstruct(string_ty *project_name)
     up = project_user(pp);
     for (j = 0; ; ++j)
     {
-	fstate_src	src;
+	fstate_src_ty   *src;
 
 	src = project_file_nth(pp, j, view_path_simple);
 	if (!src)

@@ -76,7 +76,7 @@ int
 change_run_test_command(change_ty *cp, user_ty *up, string_ty *filename,
     string_ty *dir, int inp, int bl)
 {
-    pconf           pconf_data;
+    pconf_ty        *pconf_data;
     string_ty       *the_command;
 
     assert(cp->reference_count >= 1);
@@ -92,7 +92,7 @@ int
 change_run_development_test_command(change_ty *cp, user_ty *up,
     string_ty *filename, string_ty *dir, int inp, int bl)
 {
-    pconf           pconf_data;
+    pconf_ty        *pconf_data;
     string_ty       *the_command;
 
     assert(cp->reference_count >= 1);

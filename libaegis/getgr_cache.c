@@ -49,7 +49,7 @@ group_null(void)
 #ifndef SOURCE_FORGE_HACK
 	result->gr_name = 0;
 	result->gr_passwd = 0;
-	result->gr_gid = (__gid_t)-1;
+	result->gr_gid = ~0;
 	result->gr_mem = 0;
 #else
 	/*

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,11 +25,11 @@
 
 
 void
-change_file_fingerprint_check(change_ty *cp, fstate_src src_data)
+change_file_fingerprint_check(change_ty *cp, fstate_src_ty *src_data)
 {
 	string_ty       *path;
 	int		same;
-	cstate		cstate_data;
+	cstate_ty       *cstate_data;
 
 	/*
 	 * only useful in the 'being developed' and 'being integrated'

@@ -60,7 +60,7 @@ xml_project_fstate(struct string_ty *project_name, long change_number,
     output_fputs(op, "<fstate>\n<src>\n");
     for (j = 0; ; ++j)
     {
-	fstate_src      src;
+	fstate_src_ty   *src;
 
 	src = project_file_nth(pp, j, view_path_simple);
 	if (!src)

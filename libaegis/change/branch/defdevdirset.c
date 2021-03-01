@@ -27,17 +27,17 @@
 void
 change_branch_default_development_directory_set(change_ty *cp, string_ty *s)
 {
-	cstate		cstate_data;
-	cstate_branch	bp;
+    cstate_ty       *cstate_data;
+    cstate_branch_ty *bp;
 
-	cstate_data = change_cstate_get(cp);
-	bp = cstate_data->branch;
-	assert(bp);
-	if (bp->default_development_directory)
-	{
-		str_free(bp->default_development_directory);
-		bp->default_development_directory = 0;
-	}
-	if (s)
-		bp->default_development_directory = str_copy(s);
+    cstate_data = change_cstate_get(cp);
+    bp = cstate_data->branch;
+    assert(bp);
+    if (bp->default_development_directory)
+    {
+	str_free(bp->default_development_directory);
+	bp->default_development_directory = 0;
+    }
+    if (s)
+	bp->default_development_directory = str_copy(s);
 }

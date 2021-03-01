@@ -30,37 +30,37 @@
 void
 change_bind_existing(change_ty *cp)
 {
-	change_ty	*pcp;
-	cstate		pcsp;
-	cstate_branch_change_list lp;
-	size_t		j;
+    change_ty       *pcp;
+    cstate_ty       *pcsp;
+    cstate_branch_change_list_ty *lp;
+    size_t          j;
 
-	/*
-	 * verify the change number given on the command line
-	 */
-	trace(("change_bind_existing(cp = %08lX)\n{\n"/*}*/, (long)cp));
-	assert(cp->reference_count >= 1);
-	if (cp->number == TRUNK_CHANGE_NUMBER)
-	{
-		trace((/*{*/"}\n"));
-		return;
-	}
-	pcp = project_change_get(cp->pp);
-	pcsp = change_cstate_get(pcp);
-	if (!pcsp->branch)
-	{
-		assert(0);
-		pcsp->branch = cstate_branch_type.alloc();
-	}
-	if (!pcsp->branch->change)
-		pcsp->branch->change = cstate_branch_change_list_type.alloc();
-	lp = pcsp->branch->change;
-	for (j = 0; j < lp->length; ++j)
-	{
-		if (lp->list[j] == cp->number)
-			break;
-	}
-	if (j >= lp->length)
-		change_fatal(cp, 0, i18n("unknown change"));
-	trace((/*{*/"}\n"));
+    /*
+     * verify the change number given on the command line
+     */
+    trace(("change_bind_existing(cp = %08lX)\n{\n", (long)cp));
+    assert(cp->reference_count >= 1);
+    if (cp->number == TRUNK_CHANGE_NUMBER)
+    {
+	trace(("}\n"));
+	return;
+    }
+    pcp = project_change_get(cp->pp);
+    pcsp = change_cstate_get(pcp);
+    if (!pcsp->branch)
+    {
+	assert(0);
+	pcsp->branch = cstate_branch_type.alloc();
+    }
+    if (!pcsp->branch->change)
+	pcsp->branch->change = cstate_branch_change_list_type.alloc();
+    lp = pcsp->branch->change;
+    for (j = 0; j < lp->length; ++j)
+    {
+	if (lp->list[j] == cp->number)
+    	    break;
+    }
+    if (j >= lp->length)
+	change_fatal(cp, 0, i18n("unknown change"));
+    trace(("}\n"));
 }

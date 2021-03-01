@@ -427,7 +427,7 @@ check_it ok $workproj/info/change/0/002.branch/0/004.fs
 # and a symlink to the correct place should be constructed
 # during the build
 #
-rm $workchan/bogus
+rm -f $workchan/bogus
 if test $? -ne 0 ; then no_result; fi
 
 #

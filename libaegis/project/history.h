@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995-1998, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1995-1998, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,6 +42,7 @@ long project_current_integration_get(project_ty *);
 void project_current_integration_set(project_ty *, long);
 long project_next_delta_number(project_ty *);
 long project_change_number_to_delta_number(project_ty *, long);
+long project_delta_number_to_change_number(project_ty *, long);
 void project_copyright_years_merge(project_ty *, struct change_ty *);
 void project_copyright_years_get(project_ty *pp, int *ary, int ary_len_max,
 	int *ary_len);

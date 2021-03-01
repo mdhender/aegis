@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 string_ty *
 change_metrics_filename_pattern_get(change_ty *cp)
 {
-	pconf		pconf_data;
+	pconf_ty        *pconf_data;
 
 	/*
 	 * Get the project config file.  Don't insist that it exists,

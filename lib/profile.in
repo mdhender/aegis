@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1996, 1999, 2001-2003 Peter Miller;
+#	Copyright (C) 1991-1996, 1999, 2001-2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -175,6 +175,14 @@ ael()
 aem()
 {
 	aegis -diff -only_merge "$@" -v
+}
+aemt()
+{
+        aegis -mt "$@" -v
+}
+aemtu()
+{
+        aegis -mtu "$@" -v
 }
 aemv()
 {
@@ -358,7 +366,9 @@ aefinish()
 	unset -f aeipass
 	unset -f ael
 	unset -f aem
-	unset -f aemv
+        unset -f aemt
+        unset -f aemtu
+        unset -f aemv
 	unset -f aemvu
 	unset -f aena
 	unset -f aenbr
@@ -377,9 +387,12 @@ aefinish()
 	unset -f aentu
 	unset -f ae_p
 	unset -f aepa
+        unset -f aepwd
 	unset -f aeq
 	unset -f aer
 	unset -f aera
+        unset -f aerb
+        unset -f aerbu
 	unset -f aerd
 	unset -f aerfail
 	unset -f aeri
@@ -391,6 +404,7 @@ aefinish()
 	unset -f aerpu
 	unset -f aerrv
 	unset -f aet
+        unset -f aev
 	unset AEGIS
 	unset AEGIS_PROJECT
 	unset AEGIS_CHANGE

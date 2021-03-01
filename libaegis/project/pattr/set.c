@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 
 
 void
-project_pattr_set(project_ty *pp, pattr pattr_data)
+project_pattr_set(project_ty *pp, pattr_ty *pattr_data)
 {
     if (pattr_data->description)
 	project_description_set(pp, pattr_data->description);

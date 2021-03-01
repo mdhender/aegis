@@ -1,21 +1,21 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 2001-2003 Peter Miller;
- *	All rights reserved.
+ *      aegis - project change supervisor
+ *      Copyright (C) 2001-2003 Peter Miller;
+ *      All rights reserved.
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 2 of the License, or
+ *      (at your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program; if not, write to the Free Software
+ *      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to manipulate gram.ys
  */
@@ -59,8 +59,8 @@
 %token USERS_END
 
 %union {
-    string_ty	    *lv_string;
-    long	    lv_long;
+    string_ty       *lv_string;
+    long            lv_long;
 }
 
 %type <lv_long> date_and_time number
@@ -82,13 +82,13 @@ find(int n)
     format_version_ty *fvp;
 
     assert(itp);
-    fvp = itab_query(itp, n);
+    fvp = (format_version_ty *)itab_query(itp, n);
     if (!fvp)
     {
-	fvp = format_version_new();
-	itab_assign(itp, n, fvp);
-	fvp->filename_physical = str_copy(pfn);
-	fvp->filename_logical = str_copy(lfn);
+        fvp = format_version_new();
+        itab_assign(itp, n, fvp);
+        fvp->filename_physical = str_copy(pfn);
+        fvp->filename_logical = str_copy(lfn);
     }
     return fvp;
 }
@@ -98,12 +98,12 @@ static int
 count_the_dots(string_ty *s)
 {
     const char      *cp;
-    int		    result;
+    int             result;
 
     result = 0;
     for (cp = s->str_text; *cp; ++cp)
-	if (*cp == '.')
-    	    ++result;
+        if (*cp == '.')
+            ++result;
     return result;
 }
 
@@ -112,35 +112,35 @@ static void
 walker(itab_ty *itp2, itab_key_ty key, void *data, void *aux)
 {
     format_version_ty *fvp;
-    int		    ndots;
-    size_t	    j;
+    int             ndots;
+    size_t          j;
 
-    fvp = data;
+    fvp = (format_version_ty *)data;
     if (fvp->after_branch)
     {
-	ndots = count_the_dots(fvp->edit);
-	for (j = 0; j < fvp->after_branch->length; ++j)
-	{
-	    format_version_ty *after;
+        ndots = count_the_dots(fvp->edit);
+        for (j = 0; j < fvp->after_branch->length; ++j)
+        {
+            format_version_ty *after;
 
-	    after = fvp->after_branch->item[j];
-	    if (after->edit && count_the_dots(after->edit) <= ndots)
-	    {
-		fvp->after = after;
-		if (j + 1 < fvp->after_branch->length)
-		{
-		    fvp->after_branch->item[j] =
-		       	fvp->after_branch->item[fvp->after_branch->length - 1];
-		}
-		fvp->after_branch->length--;
-		if (fvp->after_branch->length == 0)
-		{
-		    format_version_list_delete(fvp->after_branch, 0);
-		    fvp->after_branch = 0;
-		}
-		break;
-	    }
-	}
+            after = fvp->after_branch->item[j];
+            if (after->edit && count_the_dots(after->edit) <= ndots)
+            {
+                fvp->after = after;
+                if (j + 1 < fvp->after_branch->length)
+                {
+                    fvp->after_branch->item[j] =
+                        fvp->after_branch->item[fvp->after_branch->length - 1];
+                }
+                fvp->after_branch->length--;
+                if (fvp->after_branch->length == 0)
+                {
+                    format_version_list_delete(fvp->after_branch, 0);
+                    fvp->after_branch = 0;
+                }
+                break;
+            }
+        }
     }
 }
 
@@ -197,78 +197,78 @@ summary
 
 delta_begin
     : DELTA_BEGIN STRING STRING date_and_time STRING number number
-	{
-	    format_version_ty *before;
+        {
+            format_version_ty *before;
 
-	    /*
-	     * $2 some kind of state info, we ignore it
-	     * $3 sid
-	     * $4 time_t
-	     * $5 who
-	     * $6 number of this delta
-	     * $7 number of predecessor
-	     */
-	    before = $7 ? find($7) : 0;
-	    str_free($2);
-	    current = find($6);
-	    current->edit = $3;
-	    current->when = $4;
-	    current->who = $5 ;
-	    current->before = before;
-	    if (before)
-	    {
-		if (!before->after_branch)
-		{
-		    before->after_branch = format_version_list_new();
-		}
-		format_version_list_append(before->after_branch, current);
-	    }
-	}
+            /*
+             * $2 some kind of state info, we ignore it
+             * $3 sid
+             * $4 time_t
+             * $5 who
+             * $6 number of this delta
+             * $7 number of predecessor
+             */
+            before = $7 ? find($7) : 0;
+            str_free($2);
+            current = find($6);
+            current->edit = $3;
+            current->when = $4;
+            current->who = $5 ;
+            current->before = before;
+            if (before)
+            {
+                if (!before->after_branch)
+                {
+                    before->after_branch = format_version_list_new();
+                }
+                format_version_list_append(before->after_branch, current);
+            }
+        }
     ;
 
 date_and_time
     : STRING STRING
-	{
-	    string_list_ty  sl;
-	    string_ty	    *s;
-	    time_t	    t;
+        {
+            string_list_ty  sl;
+            string_ty       *s;
+            time_t          t;
 
-	    /*
-	     * Convert from the emminently sensable YY/MM/DD
-	     * into the hideous american MM/DD/YY
-	     */
-	    str2wl(&sl, $1, "/", 0);
-	    str_free($1);
-	    while (sl.nstrings < 3)
-		string_list_append(&sl, str_from_c(""));
-	    s =
-		str_format
-		(
-	    	    "%S/%S/%S %S GMT",
-	    	    sl.string[1],
-	    	    sl.string[2],
-	    	    sl.string[0],
-	    	    $2
-		);
-	    string_list_destructor(&sl);
-	    str_free($2);
-	    t = date_scan(s->str_text);
-	    if (t == (time_t)-1)
-		fatal_date_unknown(s->str_text);
-	    str_free(s);
-	    $$ = t;
-	}
+            /*
+             * Convert from the emminently sensable YY/MM/DD
+             * into the hideous american MM/DD/YY
+             */
+            str2wl(&sl, $1, "/", 0);
+            str_free($1);
+            while (sl.nstrings < 3)
+                string_list_append(&sl, str_from_c(""));
+            s =
+                str_format
+                (
+                    "%S/%S/%S %S GMT",
+                    sl.string[1],
+                    sl.string[2],
+                    sl.string[0],
+                    $2
+                );
+            string_list_destructor(&sl);
+            str_free($2);
+            t = date_scan(s->str_text);
+            if (t == (time_t)-1)
+                fatal_date_unknown(s->str_text);
+            str_free(s);
+            $$ = t;
+        }
     ;
 
 number
     : STRING
-	{
-    	    char *cp = 0;
-    	    $$ = strtol($1->str_text, &cp, 10);
-    	    if ($1->str_length && *cp != 0)
-       		yyerror("number expected");
-    	    str_free($1);
-	}
+        {
+            char *cp = 0;
+            $$ = strtol($1->str_text, &cp, 10);
+            if ($1->str_length && *cp != 0)
+                yyerror("number expected");
+            str_free($1);
+        }
     ;
 
 delta_lines
@@ -287,23 +287,23 @@ delta_line
 
 comment
     : COMMENT
-	{
-	    string_ty       *s;
+        {
+            string_ty       *s;
 
-	    assert(current);
-	    if (current)
-	    {
-		if (current->description)
-		{
-		    s = str_format("%S\n%S", current->description, $1);
-		    str_free(current->description);
-		    current->description = s;
-		}
-		else
-		    current->description = str_copy($1);
-	    }
-	    str_free($1);
-	}
+            assert(current);
+            if (current)
+            {
+                if (current->description)
+                {
+                    s = str_format("%S\n%S", current->description, $1);
+                    str_free(current->description);
+                    current->description = s;
+                }
+                else
+                    current->description = str_copy($1);
+            }
+            str_free($1);
+        }
     ;
 
 mr
@@ -324,14 +324,14 @@ ignored
 
 delta_end
     : DELTA_END ignore_arguments
-	{
-	    assert(current);
-	    if (!current->description)
-	    {
-		current->description = str_from_c("no description");
-	    }
-	    current = 0;
-	}
+        {
+            assert(current);
+            if (!current->description)
+            {
+                current->description = str_from_c("no description");
+            }
+            current = 0;
+        }
     ;
 
 users
@@ -358,7 +358,7 @@ flag
 ignore_arguments
     : /* empty */
     | ignore_arguments STRING
-	{ str_free($2); }
+        { str_free($2); }
     ;
 
 title
@@ -399,5 +399,5 @@ E_stuff
 textlines_opt
     : /* empty */
     | textlines_opt TEXTLINE
-	{ str_free($2); }
+        { str_free($2); }
     ;

@@ -37,6 +37,16 @@ echo 'URL: http://www.canb.auug.org.au/~millerp/aegis.html'
 echo 'BuildRoot: /tmp/aegis-build-root'
 echo 'Icon: aegis.xpm'
 
+#
+# Build-time prerequisites, things you have to have installed so that
+# this package will build successfully, correctly and completely.
+#
+# We want -lmagic, too, but it isn't an RPM package yet.  It will be
+# file-devel or magic-devel, eventually.
+#
+echo 'BuildPrereq: bison, curl-devel, diffutils, gawk, gettext >= 0.11.4'
+echo 'BuildPrereq: groff >= 1.15, perl, tk, zlib-devel'
+
 prefix=/usr
 #
 # RPM only has install-time relocatable packages.  It has no support for

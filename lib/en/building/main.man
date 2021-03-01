@@ -331,8 +331,10 @@ For some reason, AIX has a very short command line length limit by default.
 You can extend this by using the command
 .RS
 .ft CW
+.nf
 $ \f(CBsystune ncargs 0x8000\fP
 $
+.fi
 .ft R
 .RE
 You will need to do this to build Aegis.

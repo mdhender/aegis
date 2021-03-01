@@ -1,21 +1,21 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 1999-2003 Peter Miller;
- *	All rights reserved.
+ *      aegis - project change supervisor
+ *      Copyright (C) 1999-2003 Peter Miller;
+ *      All rights reserved.
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 2 of the License, or
+ *      (at your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program; if not, write to the Free Software
+ *      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to manipulate headers
  *
@@ -50,17 +50,17 @@ struct wide_output_header_ty
 {
     wide_output_ty  inherited;
     wide_output_ty  *deeper;
-    int		    delete_on_close;
-    wstring_ty	    *title1;
-    wstring_ty	    *title2;
-    int		    is_a_printer;
-    int		    line_number;
-    int		    length;
-    int		    width;
-    int		    column;
-    int		    page_number;
-    time_t	    page_time;
-    int		    already_top_diverted;
+    int             delete_on_close;
+    wstring_ty      *title1;
+    wstring_ty      *title2;
+    int             is_a_printer;
+    int             line_number;
+    int             length;
+    int             width;
+    int             column;
+    int             page_number;
+    time_t          page_time;
+    int             already_top_diverted;
 };
 
 
@@ -74,17 +74,17 @@ wide_output_header_destructor(wide_output_ty *fp)
     /* bottom of page processing? */
     this_thing = (wide_output_header_ty *)fp;
     if (this_thing->delete_on_close)
-	wide_output_delete(this_thing->deeper);
+        wide_output_delete(this_thing->deeper);
     this_thing->deeper = 0;
     if (this_thing->title1)
     {
-	wstr_free(this_thing->title1);
-	this_thing->title1 = 0;
+        wstr_free(this_thing->title1);
+        this_thing->title1 = 0;
     }
     if (this_thing->title2)
     {
-	wstr_free(this_thing->title2);
-	this_thing->title2 = 0;
+        wstr_free(this_thing->title2);
+        this_thing->title2 = 0;
     }
     trace(("}\n"));
 }
@@ -103,19 +103,19 @@ wide_output_header_filename(wide_output_ty *fp)
 static wstring_ty *
 wstr_subset_of_max_width(wstring_ty *ws, int max)
 {
-    wchar_t	    *s;
-    int		    s_wid;
-    int		    c_wid;
+    wchar_t         *s;
+    int             s_wid;
+    int             c_wid;
 
     s = ws->wstr_text;
     s_wid = 0;
     while (*s)
     {
-	c_wid = s_wid + wcwidth(*s);
-	if (c_wid > max)
-	    break;
-	++s;
-	s_wid = c_wid;
+        c_wid = s_wid + wcwidth(*s);
+        if (c_wid > max)
+            break;
+        ++s;
+        s_wid = c_wid;
     }
     return wstr_n_from_wc(ws->wstr_text, s - ws->wstr_text);
 }
@@ -124,18 +124,18 @@ wstr_subset_of_max_width(wstring_ty *ws, int max)
 static wstring_ty *
 wstr_spaces(int n)
 {
-    wchar_t	    *buffer;
-    wstring_ty	    *result;
-    int		    j;
+    wchar_t         *buffer;
+    wstring_ty      *result;
+    int             j;
 
     trace(("mark\n"));
     if (n <= 0)
-	return wstr_from_c("");
+        return wstr_from_c("");
     trace(("mark\n"));
-    buffer = mem_alloc(n * sizeof(wchar_t));
+    buffer = (wchar_t *)mem_alloc(n * sizeof(wchar_t));
     trace(("mark\n"));
     for (j = 0; j < n; ++j)
-	buffer[j] = ' ';
+        buffer[j] = ' ';
     trace(("mark\n"));
     result = wstr_n_from_wc(buffer, n);
     trace(("mark\n"));
@@ -150,11 +150,11 @@ left_and_right(wide_output_header_ty *this_thing,
                wstring_ty *lhs,
                const char *rhs)
 {
-    wstring_ty	    *tmp1;
-    wstring_ty	    *tmp2;
-    wstring_ty	    *tmp3;
-    int		    w3;
-    int		    frac;
+    wstring_ty      *tmp1;
+    wstring_ty      *tmp2;
+    wstring_ty      *tmp3;
+    int             w3;
+    int             frac;
 
     trace(("left_and_right()\n{\n"));
     tmp3 = wstr_from_c(rhs);
@@ -182,13 +182,13 @@ left_and_right(wide_output_header_ty *this_thing,
 static void
 top_of_page_processing(wide_output_header_ty *this_thing)
 {
-    char	    tmp1[30];
+    char            tmp1[30];
 
     /*
      * advance the page number
      */
     if (this_thing->already_top_diverted)
-	return;
+        return;
     this_thing->already_top_diverted = 1;
     trace(("wide_output_header::top_of_page(this_thing = %08lX)\n{\n",
            (long)this_thing));
@@ -199,10 +199,10 @@ top_of_page_processing(wide_output_header_ty *this_thing)
      */
     if (this_thing->is_a_printer)
     {
-	if (this_thing->page_number > 1)
-	    wide_output_putwc(this_thing->deeper, (wchar_t)'\f');
-	wide_output_putwc(this_thing->deeper, (wchar_t)'\n');
-	wide_output_putwc(this_thing->deeper, (wchar_t)'\n');
+        if (this_thing->page_number > 1)
+            wide_output_putwc(this_thing->deeper, (wchar_t)'\f');
+        wide_output_putwc(this_thing->deeper, (wchar_t)'\n');
+        wide_output_putwc(this_thing->deeper, (wchar_t)'\n');
     }
     wide_output_putwc(this_thing->deeper, (wchar_t)'\n');
 
@@ -212,7 +212,7 @@ top_of_page_processing(wide_output_header_ty *this_thing)
     trace(("mark\n"));
     sprintf(tmp1, "Page %d", this_thing->page_number);
     if (!this_thing->title1)
-	this_thing->title1 = wstr_from_c("");
+        this_thing->title1 = wstr_from_c("");
     left_and_right(this_thing, this_thing->title1, tmp1);
 
     /*
@@ -221,7 +221,7 @@ top_of_page_processing(wide_output_header_ty *this_thing)
     trace(("mark\n"));
     sprintf(tmp1, "%.24s", ctime(&this_thing->page_time));
     if (!this_thing->title2)
-	this_thing->title2 = wstr_from_c("");
+        this_thing->title2 = wstr_from_c("");
     left_and_right(this_thing, this_thing->title2, tmp1);
 
     /*
@@ -261,97 +261,97 @@ wide_output_header_write(wide_output_ty *fp, const wchar_t *data, size_t len)
      * processing simply falls out cleanly.
      */
     trace(("wide_output_header::write(fp = %08lX, data = %08lX, "
-	"len = %ld)\n{\n", (long)fp, (long)data, (long)len));
+        "len = %ld)\n{\n", (long)fp, (long)data, (long)len));
     this_thing = (wide_output_header_ty *)fp;
     while (len > 0)
     {
-	wchar_t		wc;
+        wchar_t         wc;
 
-	wc = *data++;
-	--len;
-	wc = (wchar_t)wc;
-	if (wc == '\f')
-	{
-	    /*
-	     * If we are at the top of the page,
-	     * emit the page header.
-	     */
-	    if
-	    (
-		this_thing->line_number == 0
-	    &&
-		this_thing->column == 0
-	    &&
-		!this_thing->already_top_diverted
-	    )
-		top_of_page_processing(this_thing);
-	    for (;;)
-	    {
-		/*
-		 * Forward the character to the output.
-		 * Keep track of the column for eoln()
-		 * purposes; it doesn't need to be exact,
-		 * so we aren't using wcwidth.
-		 */
-		wide_output_putwc(this_thing->deeper, (wchar_t)'\n');
+        wc = *data++;
+        --len;
+        wc = (wchar_t)wc;
+        if (wc == '\f')
+        {
+            /*
+             * If we are at the top of the page,
+             * emit the page header.
+             */
+            if
+            (
+                this_thing->line_number == 0
+            &&
+                this_thing->column == 0
+            &&
+                !this_thing->already_top_diverted
+            )
+                top_of_page_processing(this_thing);
+            for (;;)
+            {
+                /*
+                 * Forward the character to the output.
+                 * Keep track of the column for eoln()
+                 * purposes; it doesn't need to be exact,
+                 * so we aren't using wcwidth.
+                 */
+                wide_output_putwc(this_thing->deeper, (wchar_t)'\n');
 
-		/*
-		 * Keep track of the line number so
-		 * that we can work out when we get to
-		 * the end of the page (and implicitly,
-		 * the top of the next page).
-		 */
-		this_thing->column = 0;
-		this_thing->line_number++;
-		trace(("linum = %d;\n", this_thing->line_number));
-		if (this_thing->line_number >= this_thing->length)
-		{
-		    bottom_of_page_processing(this_thing);
-		    this_thing->line_number = 0;
-		    break;
-		}
-	    }
-	    continue;
-	}
+                /*
+                 * Keep track of the line number so
+                 * that we can work out when we get to
+                 * the end of the page (and implicitly,
+                 * the top of the next page).
+                 */
+                this_thing->column = 0;
+                this_thing->line_number++;
+                trace(("linum = %d;\n", this_thing->line_number));
+                if (this_thing->line_number >= this_thing->length)
+                {
+                    bottom_of_page_processing(this_thing);
+                    this_thing->line_number = 0;
+                    break;
+                }
+            }
+            continue;
+        }
 
-	/*
-	 * If we are at the top of the page,
-	 * emit the page header.
-	 */
-	if
-	(
-	    this_thing->line_number == 0
-	&&
-	    this_thing->column == 0
-	&&
-	    !this_thing->already_top_diverted
-	)
-	    top_of_page_processing(this_thing);
+        /*
+         * If we are at the top of the page,
+         * emit the page header.
+         */
+        if
+        (
+            this_thing->line_number == 0
+        &&
+            this_thing->column == 0
+        &&
+            !this_thing->already_top_diverted
+        )
+            top_of_page_processing(this_thing);
 
-	/*
-	 * Forward the character to the output.
-	 * Keep track of the column for eoln() purposes;
-	 * it doesn't need to be exact, so we aren't using wcwidth.
-	 */
-	wide_output_putwc(this_thing->deeper, wc);
-	this_thing->column++;
+        /*
+         * Forward the character to the output.
+         * Keep track of the column for eoln() purposes;
+         * it doesn't need to be exact, so we aren't using wcwidth.
+         */
+        wide_output_putwc(this_thing->deeper, wc);
+        this_thing->column++;
 
-	/*
-	 * If the character was a newline, keep track of the line number
-	 * so that we can work out when we get to the end of the page
-	 * (and implicitly, the top of the next page).
-	 */
-	if (wc == '\n')
-	{
-	    this_thing->column = 0;
-	    this_thing->line_number++;
-	    trace(("line_number = %d;\n", this_thing->line_number));
-	    if (this_thing->line_number >= this_thing->length)
-	    {
-		bottom_of_page_processing(this_thing);
-		this_thing->line_number = 0;
-	    }
-	}
+        /*
+         * If the character was a newline, keep track of the line number
+         * so that we can work out when we get to the end of the page
+         * (and implicitly, the top of the next page).
+         */
+        if (wc == '\n')
+        {
+            this_thing->column = 0;
+            this_thing->line_number++;
+            trace(("line_number = %d;\n", this_thing->line_number));
+            if (this_thing->line_number >= this_thing->length)
+            {
+                bottom_of_page_processing(this_thing);
+                this_thing->line_number = 0;
+            }
+        }
     }
     trace(("}\n"));
 }
@@ -403,7 +403,7 @@ wide_output_header_eoln(wide_output_ty *fp)
     trace(("wide_output_header::eoln(fp = %08lX)\n{\n", (long)fp));
     this_thing = (wide_output_header_ty *)fp;
     if (this_thing->column > 0)
-	wide_output_putwc(fp, (wchar_t)'\n');
+        wide_output_putwc(fp, (wchar_t)'\n');
     trace(("}\n"));
 }
 
@@ -429,7 +429,7 @@ wide_output_header_open(wide_output_ty *deeper, int delete_on_close)
     wide_output_header_ty *this_thing;
 
     trace(("wide_output_header::new(deeper = %08lX, doc = %d)\n{\n",
-	(long)deeper, delete_on_close));
+        (long)deeper, delete_on_close));
     result = wide_output_new(&vtbl);
     this_thing = (wide_output_header_ty *)result;
     this_thing->deeper = deeper;
@@ -447,23 +447,23 @@ wide_output_header_open(wide_output_ty *deeper, int delete_on_close)
     this_thing->is_a_printer = (this_thing->length > PRINTER_THRESHOLD);
     if (this_thing->is_a_printer)
     {
-	/*
-	 * Three blank lines at top (avoid perforation)
-	 * two title lines,
-	 * one blank line before columns.
-	 * Plus, 3 blank lines at bottom (avoid perforation).
-	 */
-	this_thing->length -= 9;
+        /*
+         * Three blank lines at top (avoid perforation)
+         * two title lines,
+         * one blank line before columns.
+         * Plus, 3 blank lines at bottom (avoid perforation).
+         */
+        this_thing->length -= 9;
     }
     else
     {
-	/*
-	 * One blank line at top,
-	 * two title lines,
-	 * one blank line before columns.
-	 * Leave the last line for the pager
-	 */
-	this_thing->length -= 5;
+        /*
+         * One blank line at top,
+         * two title lines,
+         * one blank line before columns.
+         * Leave the last line for the pager
+         */
+        this_thing->length -= 5;
     }
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
@@ -474,9 +474,9 @@ wide_output_header_open(wide_output_ty *deeper, int delete_on_close)
 static wstring_ty *
 censor(const char *s)
 {
-    wstring_ty	    *ws;
-    size_t	    j;
-    wstring_ty	    *ws2;
+    wstring_ty      *ws;
+    size_t          j;
+    wstring_ty      *ws2;
 
     /*
      * convert to a wide string
@@ -488,8 +488,8 @@ censor(const char *s)
      */
     language_human();
     for (j = 0; j < ws->wstr_length; ++j)
-	if (!iswprint(ws->wstr_text[j]))
-	    break;
+        if (!iswprint(ws->wstr_text[j]))
+            break;
     language_C();
 
     /*
@@ -498,9 +498,9 @@ censor(const char *s)
      */
     if (j < ws->wstr_length)
     {
-	ws2 = wstr_n_from_wc(ws->wstr_text, j);
-	wstr_free(ws);
-	ws = ws2;
+        ws2 = wstr_n_from_wc(ws->wstr_text, j);
+        wstr_free(ws);
+        ws = ws2;
     }
 
     /*
@@ -511,31 +511,31 @@ censor(const char *s)
 
 
 void
-wide_output_header_title(wide_output_ty *fp, const char	*title1,
+wide_output_header_title(wide_output_ty *fp, const char *title1,
     const char *title2)
 {
     wide_output_header_ty *this_thing;
 
     if (fp->vptr != &vtbl)
-	return;
+        return;
     trace(("wide_output_header::title(fp = %08lX, \"%s\", \"%s\")\n{\n",
-	(long)fp, (title1 ? title1 : ""), (title2 ? title2 : "")));
+        (long)fp, (title1 ? title1 : ""), (title2 ? title2 : "")));
     this_thing = (wide_output_header_ty *)fp;
     if (this_thing->title1)
     {
-	wstr_free(this_thing->title1);
-	this_thing->title1 = 0;
+        wstr_free(this_thing->title1);
+        this_thing->title1 = 0;
     }
     if (title1)
-	this_thing->title1 = censor(title1);
+        this_thing->title1 = censor(title1);
 
     if (this_thing->title2)
     {
-	wstr_free(this_thing->title2);
-	this_thing->title2 = 0;
+        wstr_free(this_thing->title2);
+        this_thing->title2 = 0;
     }
     if (title2)
-	this_thing->title2 = censor(title2);
+        this_thing->title2 = censor(title2);
     trace(("}\n"));
 }
 
@@ -546,16 +546,16 @@ wide_output_header_need(wide_output_ty *fp, int nlines)
     wide_output_header_ty *this_thing;
 
     if (nlines <= 0)
-	return;
+        return;
     if (fp->vptr != &vtbl)
-	return;
+        return;
     trace(("wide_output_header::need(fp = %08lX, nlines = %d)\n{\n",
-	(long)fp, nlines));
+        (long)fp, nlines));
     wide_output_flush(fp);
     this_thing = (wide_output_header_ty *)fp;
     if (this_thing->line_number > 0 &&
         this_thing->line_number + nlines > this_thing->length)
-	wide_output_putwc(fp, (wchar_t)'\f');
+        wide_output_putwc(fp, (wchar_t)'\f');
     trace(("}\n"));
 }
 
@@ -566,19 +566,19 @@ wide_output_header_need1(wide_output_ty *fp, int nlines)
     wide_output_header_ty *this_thing;
 
     if (nlines <= 0)
-	return;
+        return;
     if (fp->vptr != &vtbl)
-	return;
+        return;
     trace(("wide_output_header::need1(fp = %08lX, nlines = %d)\n{\n",
-	(long)fp, nlines));
+        (long)fp, nlines));
     wide_output_flush(fp);
     this_thing = (wide_output_header_ty *)fp;
     if (this_thing->line_number > 0)
     {
-	if (this_thing->line_number + nlines > this_thing->length)
-	    wide_output_putwc(fp, (wchar_t)'\f');
-	else
-	    wide_output_putwc(fp, (wchar_t)'\n');
+        if (this_thing->line_number + nlines > this_thing->length)
+            wide_output_putwc(fp, (wchar_t)'\f');
+        else
+            wide_output_putwc(fp, (wchar_t)'\n');
     }
     trace(("}\n"));
 }
@@ -590,13 +590,13 @@ wide_output_header_eject(wide_output_ty *fp)
     wide_output_header_ty *this_thing;
 
     if (fp->vptr != &vtbl)
-	return;
+        return;
     trace(("wide_output_header::eject(fp = %08lX)\n{\n", (long)fp));
     this_thing = (wide_output_header_ty *)fp;
     if (this_thing->column > 0)
-	wide_output_putwc(fp, (wchar_t)'\n');
+        wide_output_putwc(fp, (wchar_t)'\n');
     if (this_thing->line_number > 0)
-	wide_output_putwc(fp, '\f');
+        wide_output_putwc(fp, '\f');
     trace(("}\n"));
 }
 
@@ -607,7 +607,7 @@ wide_output_header_is_at_top_of_page(wide_output_ty *fp)
     wide_output_header_ty *this_thing;
 
     if (fp->vptr != &vtbl)
-	return 0;
+        return 0;
     wide_output_flush(fp);
     this_thing = (wide_output_header_ty *)fp;
     return (this_thing->line_number == 0 && this_thing->column == 0);

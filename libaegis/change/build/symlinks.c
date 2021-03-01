@@ -38,7 +38,7 @@ struct slink_info_ty
 {
     string_list_ty  stack;
     change_ty       *cp;
-    pconf           pconf_data;
+    pconf_ty        *pconf_data;
     int             minimum;
     user_ty         *up;
 };
@@ -102,13 +102,14 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
     slink_info_ty   *sip;
     string_ty       *dd_abs;
     long            j;
-    pconf_symlink_exceptions_list lp;
-    fstate_src      c_src;
-    fstate_src      p_src;
+    pconf_symlink_exceptions_list_ty *lp;
+    fstate_src_ty   *c_src;
+    fstate_src_ty   *p_src;
     int             p_src_set;
     string_ty       *s;
     string_ty       *s2;
     int             top_level_symlink;
+    int             is_a_removed_file;
 
     trace(("maintain(path = \"%s\", depth = %d)\n{\n", path->str_text,
 	depth & ~TOP_LEVEL_SYMLINK));
@@ -156,22 +157,43 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 	 * Don't make symlinks for files which are (supposed to
 	 * be) in the change.
 	 */
+	user_become_undo();
 	c_src = change_file_find(sip->cp, path);
+	user_become(sip->up);
 	if (c_src)
 	{
 	    trace(("mark\n"));
-	    if (c_src->action == file_action_transparent)
+	    switch (c_src->action)
 	    {
-		project_ty      *ppp;
-
-		ppp = sip->cp->pp->parent;
-		if (ppp && project_file_find(ppp, path, view_path_extreme))
+	    case file_action_transparent:
 		{
-		    s = project_file_path(ppp, path);
-		    goto normal_file;
+		    project_ty      *ppp;
+		    fstate_src_ty   *pp_src;
+
+		    ppp = sip->cp->pp->parent;
+		    if (ppp)
+		    {
+			user_become_undo();
+			pp_src =
+			    project_file_find(ppp, path, view_path_extreme);
+			if (pp_src)
+			{
+			    s = project_file_path(ppp, path);
+			    user_become(sip->up);
+			    goto normal_file;
+			}
+			user_become(sip->up);
+		    }
+		    if (depth == 0)
+			os_unlink_errok(dd_abs);
 		}
-		if (depth == 0)
-		    os_unlink_errok(dd_abs);
+		break;
+
+	    case file_action_create:
+	    case file_action_modify:
+	    case file_action_remove:
+	    case file_action_insulate:
+		break;
 	    }
 	    break;
 	}
@@ -240,25 +262,35 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 	 * Don't make symlinks for files which are (supposed to
 	 * be) in the change.
 	 */
+	user_become_undo();
 	c_src = change_file_find(sip->cp, path);
+	user_become(sip->up);
 	if (c_src)
 	{
 	    project_ty      *ppp;
 
-	    ppp = sip->cp->pp->parent;
-	    if
-	    (
-		ppp
-	    &&
-		depth
-	    &&
-		c_src->action == file_action_transparent
-	    &&
-		project_file_find(ppp, path, view_path_extreme)
-	    )
+	    switch (c_src->action)
 	    {
-		s = project_file_path(ppp, path);
-		goto normal_file;
+	    case file_action_transparent:
+		ppp = sip->cp->pp->parent;
+		if (ppp && depth)
+		{
+		    user_become_undo();
+		    if (project_file_find(ppp, path, view_path_extreme))
+		    {
+			s = project_file_path(ppp, path);
+			user_become(sip->up);
+			goto normal_file;
+		    }
+		    user_become(sip->up);
+		}
+		break;
+
+	    case file_action_create:
+	    case file_action_modify:
+	    case file_action_remove:
+	    case file_action_insulate:
+		break;
 	    }
 	    trace(("change file\n"));
 	    break;
@@ -271,10 +303,14 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 	if (sip->minimum)
 	{
 	    trace(("minimum\n"));
-	    user_become_undo();
-	    p_src = project_file_find(sip->cp->pp, path, view_path_extreme);
-	    p_src_set = 1;
-	    user_become(sip->up);
+	    if (!p_src_set)
+	    {
+		user_become_undo();
+		p_src = project_file_find(sip->cp->pp, path, view_path_extreme);
+		p_src_set = 1;
+		user_become(sip->up);
+		trace(("is%s a project file\n", (p_src ? "" : "n't")));
+	    }
 	    if (!p_src)
 		break;
 	}
@@ -304,17 +340,34 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 	    p_src = project_file_find(sip->cp->pp, path, view_path_simple);
 	    user_become(sip->up);
 	    p_src_set = 1;
+	    trace(("is%s a project file\n", (p_src ? "" : "n't")));
 	}
-	if
-	(
-	    p_src
-	&&
-	    (
-		p_src->action == file_action_remove
-	    ||
-		p_src->deleted_by
-	    )
-	)
+	is_a_removed_file = 0;
+	if (p_src)
+	{
+	    switch (p_src->action)
+	    {
+	    case file_action_remove:
+		is_a_removed_file = 1;
+		break;
+
+	    case file_action_create:
+	    case file_action_modify:
+	    case file_action_insulate:
+#ifndef DEBUG
+	    default:
+#endif
+		assert(!p_src->deleted_by);
+		if (p_src->deleted_by)
+		    is_a_removed_file = 1;
+		break;
+
+	    case file_action_transparent:
+		/* FIXME: the deeper file could be removed? */
+		break;
+	    }
+	}
+	if (is_a_removed_file)
 	{
 	    trace(("is a removed file\n"));
 	    break;
@@ -330,7 +383,9 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path,
 	     * so we ask Aegis what the path is supposed to be, rather
 	     * than what happens to be lying around in the file system.
 	     */
+	    user_become_undo();
 	    s = project_file_path(sip->cp->pp, path);
+	    user_become(sip->up);
 	    assert(s);
 	}
 	else

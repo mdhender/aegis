@@ -31,11 +31,10 @@
 
 
 void
-change_run_history_label_command(change_ty *cp,
-                                 fstate_src src,
-                                 string_ty *label)
+change_run_history_label_command(change_ty *cp, fstate_src_ty *src,
+    string_ty *label)
 {
-    pconf           pconf_data;
+    pconf_ty        *pconf_data;
     string_ty       *the_command;
     string_ty       *hp;
     sub_context_ty  *scp;

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,5 +32,9 @@
 #endif
 
 #include <math.h>
+
+#ifndef M_LN2
+#define M_LN2 0.69314718055994530942
+#endif
 
 #endif /* COMMON_AC_MATH_H */

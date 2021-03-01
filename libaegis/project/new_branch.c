@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -76,11 +76,11 @@ project_ty *
 project_new_branch(project_ty *ppp, user_ty *up, long change_number,
     string_ty *topdir)
 {
-    cstate	    cstate_data;
-    cstate_history  history_data;
+    cstate_ty       *cstate_data;
+    cstate_history_ty *history_data;
     change_ty	    *cp;
     long	    j;
-    pconf	    pconf_data;
+    pconf_ty        *pconf_data;
     string_ty	    *s;
     project_ty	    *pp;
 

@@ -75,9 +75,9 @@ outstanding_commentary(string_list_ty *wlp, long narch)
 const char *
 change_outstanding_builds(change_ty *cp, time_t t)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
     string_list_ty  wl;
-    cstate_architecture_times tp;
+    cstate_architecture_times_ty *tp;
     long	    j;
 
     assert(cp->reference_count >= 1);
@@ -101,9 +101,9 @@ change_outstanding_builds(change_ty *cp, time_t t)
 const char *
 change_outstanding_tests(change_ty *cp, time_t t)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
     string_list_ty  wl;
-    cstate_architecture_times tp;
+    cstate_architecture_times_ty *tp;
     long	    j;
 
     assert(cp->reference_count >= 1);
@@ -136,9 +136,9 @@ change_outstanding_tests(change_ty *cp, time_t t)
 const char *
 change_outstanding_tests_baseline(change_ty *cp, time_t t)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
     string_list_ty  wl;
-    cstate_architecture_times tp;
+    cstate_architecture_times_ty *tp;
     long	    j;
 
     assert(cp->reference_count >= 1);
@@ -171,9 +171,9 @@ change_outstanding_tests_baseline(change_ty *cp, time_t t)
 const char *
 change_outstanding_tests_regression(change_ty *cp, time_t t)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
     string_list_ty  wl;
-    cstate_architecture_times tp;
+    cstate_architecture_times_ty *tp;
     long	    j;
 
     assert(cp->reference_count >= 1);

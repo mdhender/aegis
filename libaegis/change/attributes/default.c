@@ -30,7 +30,7 @@
 
 
 void
-change_attributes_default(cattr a, project_ty *pp, pconf pc)
+change_attributes_default(cattr_ty *a, project_ty *pp, pconf_ty *pc)
 {
     trace(("change_attributes_defaults(a = %08lX, pp = %08lX, pc = %08lX)\n{\n",
 	(long)a, (long)pp, (long)pc));
@@ -78,7 +78,7 @@ change_attributes_default(cattr a, project_ty *pp, pconf pc)
 
     if (!a->architecture)
 	a->architecture =
-	    (cattr_architecture_list)cattr_architecture_list_type.alloc();
+	    (cattr_architecture_list_ty *)cattr_architecture_list_type.alloc();
     assert(pc->architecture);
     assert(pc->architecture->length);
     if (!a->architecture->length)
@@ -89,7 +89,7 @@ change_attributes_default(cattr a, project_ty *pp, pconf pc)
 	{
 	    type_ty	    *type_p;
 	    string_ty	    **str_p;
-	    pconf_architecture pca;
+	    pconf_architecture_ty *pca;
 
 	    pca = pc->architecture->list[j];
 	    if (pca->mode != pconf_architecture_mode_required)

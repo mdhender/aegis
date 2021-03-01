@@ -53,7 +53,7 @@ wstring_ty *
 sub_integration_directory(sub_context_ty *scp, wstring_list_ty *arg)
 {
     wstring_ty	    *result;
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
 
     trace(("sub_integration_directory()\n{\n"));
     if (arg->nitems != 1)

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,48 +28,48 @@
 void
 change_history_delta_name_delete(change_ty *cp, string_ty *delta_name)
 {
-	cstate		cstate_data;
-	cstate_branch_history_list h;
-	size_t		j;
+    cstate_ty       *cstate_data;
+    cstate_branch_history_list_ty *h;
+    size_t          j;
 
-	trace(("change_history_delta_name_delete(cp = %8.8lX, delta_name = \
-\"%s\")\n{\n"/*}{*/, (long)cp, delta_name->str_text));
-	cstate_data = change_cstate_get(cp);
-	assert(cstate_data->branch);
-	h = cstate_data->branch->history;
-	assert(h);
-	assert(h->length);
-	for (j = 0; j < h->length; ++j)
+    trace(("change_history_delta_name_delete(cp = %8.8lX, "
+	"delta_name = \"%s\")\n{\n", (long)cp, delta_name->str_text));
+    cstate_data = change_cstate_get(cp);
+    assert(cstate_data->branch);
+    h = cstate_data->branch->history;
+    assert(h);
+    assert(h->length);
+    for (j = 0; j < h->length; ++j)
+    {
+	cstate_branch_history_ty *he;
+	cstate_branch_history_name_list_ty *nlp;
+	size_t		k, m;
+
+	he = h->list[j];
+	nlp = he->name;
+	if (!nlp || !nlp->length)
+	    continue;
+	for (k = 0; k < nlp->length; ++k)
 	{
-		cstate_branch_history he;
-		cstate_branch_history_name_list nlp;
-		size_t		k, m;
+	    if (!str_equal(nlp->list[k], delta_name))
+		continue;
 
-		he = h->list[j];
-		nlp = he->name;
-		if (!nlp || !nlp->length)
-			continue;
-		for (k = 0; k < nlp->length; ++k)
-		{
-			if (!str_equal(nlp->list[k], delta_name))
-				continue;
+	    /*
+	     * remove the name from the list
+	     */
+	    str_free(nlp->list[k]);
+	    for (m = k + 1; m < nlp->length; ++m)
+		nlp->list[m - 1] = nlp->list[m];
+	    k--;
 
-			/*
-			 * remove the name from the list
-			 */
-			str_free(nlp->list[k]);
-			for (m = k + 1; m < nlp->length; ++m)
-				nlp->list[m - 1] = nlp->list[m];
-			k--;
-
-			nlp->length--;
-			if (nlp->length == 0)
-			{
-				he->name = 0;
-				cstate_branch_history_name_list_type.free(nlp);
-				break;
-			}
-		}
+	    nlp->length--;
+	    if (nlp->length == 0)
+	    {
+		he->name = 0;
+		cstate_branch_history_name_list_type.free(nlp);
+		break;
+	    }
 	}
-	trace((/*{*/"}\n"));
+    }
+    trace(("}\n"));
 }

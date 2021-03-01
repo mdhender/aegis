@@ -156,7 +156,7 @@ new_release_main(void)
     string_ty	    *hp;
     size_t	    j;
     size_t	    k;
-    pstate	    pstate_data[2];
+    pstate_ty	    *pstate_data[2];
     string_ty	    *home;
     string_ty	    *s1;
     string_ty	    *s2;
@@ -165,8 +165,8 @@ new_release_main(void)
     project_ty	    *pp[2];
     project_ty	    *ppp;
     change_ty	    *cp;
-    cstate_history  chp;
-    cstate	    cstate_data;
+    cstate_history_ty *chp;
+    cstate_ty       *cstate_data;
     copy_tree_arg_ty info;
     log_style_ty    log_style;
     user_ty	    *up;
@@ -800,9 +800,9 @@ new_release_main(void)
      */
     for (j = 0;; ++j)
     {
-	fstate_src	p_src_data;
-	fstate_src	p1_src_data;
-	fstate_src	c_src_data;
+	fstate_src_ty   *p_src_data;
+	fstate_src_ty   *p1_src_data;
+	fstate_src_ty   *c_src_data;
 
 	p_src_data = project_file_nth(pp[0], j, view_path_extreme);
 	if (!p_src_data)
@@ -865,7 +865,7 @@ new_release_main(void)
      */
     for (j = 0;; ++j)
     {
-	fstate_src	src_data;
+	fstate_src_ty   *src_data;
 	string_ty	*original;
 	string_ty	*path;
 	string_ty	*path_d;
@@ -880,8 +880,17 @@ new_release_main(void)
 	/*
 	 * generated files are not fingerprinted or differenced
 	 */
-	if (src_data->usage == file_usage_build)
+	switch (src_data->usage)
+	{
+	case file_usage_build:
 	    continue;
+
+	case file_usage_source:
+	case file_usage_config:
+	case file_usage_test:
+	case file_usage_manual_test:
+	    break;
+	}
 
 	/*
 	 * build the path to the source file
@@ -942,8 +951,8 @@ new_release_main(void)
      */
     for (j = 0;; ++j)
     {
-	fstate_src	c_src_data;
-	fstate_src	p_src_data;
+	fstate_src_ty   *c_src_data;
+	fstate_src_ty   *p_src_data;
 
 	c_src_data = change_file_nth(cp, j);
 	if (!c_src_data)

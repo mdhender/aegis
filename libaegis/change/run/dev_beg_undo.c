@@ -31,7 +31,7 @@
 void
 change_run_develop_begin_undo_command(change_ty *cp, user_ty *up)
 {
-    pconf           pconf_data;
+    pconf_ty        *pconf_data;
     string_ty       *the_command;
     string_ty       *dir;
 

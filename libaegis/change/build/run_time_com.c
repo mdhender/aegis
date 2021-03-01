@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,29 +31,29 @@
 void
 change_run_build_time_adjust_notify_command(change_ty *cp)
 {
-	sub_context_ty	*scp;
-	pconf		pconf_data;
-	string_ty	*the_command;
-	string_ty	*id;
+    sub_context_ty  *scp;
+    pconf_ty        *pconf_data;
+    string_ty       *the_command;
+    string_ty       *id;
 
-	assert(cp->reference_count >= 1);
-	assert(cp->cstate_data);
-	/* happens during aeipass, but after state is set to completed */
-	assert(cp->cstate_data->state == cstate_state_completed);
-	pconf_data = change_pconf_get(cp, 1);
-	assert(pconf_data);
-	the_command = pconf_data->build_time_adjust_notify_command;
-	if (!the_command)
-		return;
+    assert(cp->reference_count >= 1);
+    assert(cp->cstate_data);
+    /* happens during aeipass, but after state is set to completed */
+    assert(cp->cstate_data->state == cstate_state_completed);
+    pconf_data = change_pconf_get(cp, 1);
+    assert(pconf_data);
+    the_command = pconf_data->build_time_adjust_notify_command;
+    if (!the_command)
+	return;
 
-	scp = sub_context_new();
-	the_command = substitute(scp, cp, the_command);
-	sub_context_delete(scp);
+    scp = sub_context_new();
+    the_command = substitute(scp, cp, the_command);
+    sub_context_delete(scp);
 
-	id = change_integration_directory_get(cp, 0);
-	change_env_set(cp, 1);
-	project_become(cp->pp);
-	os_execute(the_command, OS_EXEC_FLAG_NO_INPUT, id);
-	project_become_undo();
-	str_free(the_command);
+    id = change_integration_directory_get(cp, 0);
+    change_env_set(cp, 1);
+    project_become(cp->pp);
+    os_execute(the_command, OS_EXEC_FLAG_NO_INPUT, id);
+    project_become_undo();
+    str_free(the_command);
 }

@@ -27,27 +27,27 @@
 void
 change_architecture_from_pconf(change_ty *cp)
 {
-	pconf		pconf_data;
-	long		j;
+    pconf_ty        *pconf_data;
+    long            j;
 
-	assert(cp->reference_count >= 1);
-	pconf_data = change_pconf_get(cp, 0);
-	change_architecture_clear(cp);
-	for (j = 0; j < pconf_data->architecture->length; ++j)
+    assert(cp->reference_count >= 1);
+    pconf_data = change_pconf_get(cp, 0);
+    change_architecture_clear(cp);
+    for (j = 0; j < pconf_data->architecture->length; ++j)
+    {
+	pconf_architecture_ty *ap;
+
+	ap = pconf_data->architecture->list[j];
+	if (ap->mode == pconf_architecture_mode_required)
 	{
-		pconf_architecture ap;
-
-		ap = pconf_data->architecture->list[j];
-		if (ap->mode == pconf_architecture_mode_required)
-		{
-			/*
-			 * We only transfer the architecture names marked
-			 * "required", but this is a project thing.
-			 * Once the architecture names are listed
-			 * against the change, they become mandatory
-			 * for the change.
-			 */
-			change_architecture_add(cp, ap->name);
-		}
+	    /*
+	     * We only transfer the architecture names marked
+	     * "required", but this is a project thing.
+	     * Once the architecture names are listed
+	     * against the change, they become mandatory
+	     * for the change.
+	     */
+	    change_architecture_add(cp, ap->name);
 	}
+    }
 }

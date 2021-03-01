@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 
 
 static void
-fimprove(fstate fstate_data, string_ty *filename, change_ty *cp)
+fimprove(fstate_ty *fstate_data, string_ty *filename, change_ty *cp)
 {
     size_t	    j;
 
@@ -39,15 +39,41 @@ fimprove(fstate fstate_data, string_ty *filename, change_ty *cp)
      */
     for (j = 0; j < fstate_data->src->length; ++j)
     {
-	fstate_src	src;
+	fstate_src_ty   *src;
 
 	src = fstate_data->src->list[j];
 
 	/*
 	 * Fix an ugly inconsistency in the file action.
 	 */
-	if (src->deleted_by && src->action == file_action_create)
+	if (src->deleted_by)
 	    src->action = file_action_remove;
+
+	/*
+	 * Historical 4.9 -> 4.10 transition.
+	 *
+	 * This is here to cope with cases where the users upgrade with
+	 * changes between 'being reviewed' and 'being integrated' states.
+	 *
+	 * This code must agree with the corresponding code in
+	 * libaegis/project.c
+	 */
+	switch (src->action)
+	{
+	case file_action_transparent:
+	case file_action_remove:
+	    break;
+
+	case file_action_create:
+	case file_action_modify:
+	case file_action_insulate:
+#ifndef DEBUG
+	default:
+#endif
+	    if (src->about_to_be_created_by || src->about_to_be_copied_by)
+		src->action = file_action_transparent;
+	    break;
+	}
 
 	/*
 	 * Historical 2.3 -> 3.0 transition.
@@ -143,10 +169,10 @@ fimprove(fstate fstate_data, string_ty *filename, change_ty *cp)
 }
 
 
-fstate
+fstate_ty *
 change_fstate_get(change_ty *cp)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
     string_ty	    *fn;
     size_t	    j;
 
@@ -178,7 +204,7 @@ change_fstate_get(change_ty *cp)
 	cp->fstate_stp = symtab_alloc(cp->fstate_data->src->length);
 	for (j = 0; j < cp->fstate_data->src->length; ++j)
 	{
-	    fstate_src	    p;
+	    fstate_src_ty   *p;
 
 	    p = cp->fstate_data->src->list[j];
 	    symtab_assign(cp->fstate_stp, p->file_name, p);

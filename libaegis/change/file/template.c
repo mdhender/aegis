@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2000, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2000, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,13 +32,13 @@
 #include <user.h>
 
 
-static pconf_file_template
+static pconf_file_template_ty *
 find(change_ty *cp, string_ty *file_name)
 {
-    pconf_file_template result;
+    pconf_file_template_ty *result;
     size_t	    j;
     size_t          k;
-    pconf	    pconf_data;
+    pconf_ty        *pconf_data;
 
     trace(("change_file_template_string(file_name = \"%s\")\n{\n",
 	file_name->str_text));
@@ -49,7 +49,7 @@ find(change_ty *cp, string_ty *file_name)
 	goto done;
     for (j = 0; j < pconf_data->file_template->length; ++j)
     {
-	pconf_file_template ftp;
+	pconf_file_template_ty *ftp;
 
 	ftp = pconf_data->file_template->list[j];
 	if (!ftp->pattern)
@@ -96,7 +96,7 @@ change_file_template(change_ty *cp, string_ty *filename, user_ty *up,
     int		    ok;
     string_ty	    *dd;
     string_ty	    *path;
-    pconf_file_template tp;
+    pconf_file_template_ty *tp;
     sub_context_ty  *scp;
 
     /*

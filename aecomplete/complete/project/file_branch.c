@@ -115,7 +115,7 @@ perform(complete_ty *cp, shell_ty *sh)
     prefix = str_catenate(base, shell_prefix_get(sh));
     for (j = 0; ; ++j)
     {
-	fstate_src      src;
+	fstate_src_ty   *src;
 	string_ty       *relfn;
 
 	src = change_file_nth(pcp, j);

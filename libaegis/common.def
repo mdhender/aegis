@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1993, 1997, 1998, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1993, 1997, 1998, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -82,7 +82,49 @@ type change_cause =
 	chain
 );
 type file_action = (create, modify, remove, insulate, transparent);
-type file_usage = (source, build, test, manual_test);
+
+/*
+ * The file usage type is used to remember a type of file.
+ *
+ * (Files are not particularly distinguished by whether ot not they are
+ * binary or plain text.  Aegis doesn't care, and thus file_usage makes
+ * no distinction.)
+ */
+type file_usage =
+(
+	/*
+         * Source files are a primary source, the preferred form of
+         * editing and storage of a fundamental project building block.
+	 */
+	source,
+
+	/*
+	 * Configuration files are in aepconf(5) format, but are in all
+	 * other respects primary source files.
+	 */
+	config,
+
+	/*
+	 * Build files are secondary source files, generated during the
+	 * build process (see aeb(1) for example) and tracked by Aegis.
+	 */
+	build,
+
+	/*
+         * Authomatic test files are by default shell scripts, but may
+         * in fact be any format desired (see aet(1) and aepconf(5) for
+         * more information).  They are in all other respects primary
+         * source files.
+	 */
+	test,
+
+	/*
+	 * Manual test files are by default shell scripts, but may in
+	 * fact be any format desired.  They are in all other respects
+	 * primary source files.
+	 */
+	manual_test
+);
 
 type metric =
 [

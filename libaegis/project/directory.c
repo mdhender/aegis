@@ -31,7 +31,7 @@ project_directory_get(project_ty *pp, int resolve)
     for (;;)
     {
 	change_ty	*cp;
-	cstate		cstate_data;
+	cstate_ty       *cstate_data;
 
 	if (!pp->parent)
 	    return project_baseline_path_get(pp, resolve);

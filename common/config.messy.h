@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998, 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1998, 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,6 +38,16 @@
 #define CONF_NO_seteuid
 #endif
 #endif
+#endif
+
+/*
+ * For libcurl to work, it must be able to run in the top process,
+ * not forked off in a setuid worker process.  (This isn't a problem
+ * for most modern systems.)
+ */
+#ifdef CONF_NO_seteuid
+#undef HAVE_CURL_CURL_H
+#undef HAVE_LIBCURL
 #endif
 
 /*

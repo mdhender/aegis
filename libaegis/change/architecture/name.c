@@ -35,7 +35,7 @@ change_architecture_name(change_ty *cp, int with_arch)
     assert(cp->reference_count >= 1);
     if (!cp->architecture_name)
     {
-	pconf		pconf_data;
+	pconf_ty        *pconf_data;
 	long		j;
 	string_ty	*result;
 	string_ty       *un;
@@ -64,7 +64,7 @@ change_architecture_name(change_ty *cp, int with_arch)
 	result = 0;
 	for (j = 0; j < pconf_data->architecture->length; ++j)
 	{
-	    pconf_architecture ap;
+	    pconf_architecture_ty *ap;
 
 	    ap = pconf_data->architecture->list[j];
 	    assert(ap->name);

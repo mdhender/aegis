@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,10 +28,10 @@
 void
 change_branch_change_add(change_ty *cp, long change_number, int is_a_branch)
 {
-    cstate	    cstate_data;
+    cstate_ty       *cstate_data;
     type_ty	    *type_p;
     long	    *addr;
-    cstate_branch_change_list lp;
+    cstate_branch_change_list_ty *lp;
     size_t	    j;
 
     /*
@@ -69,7 +69,7 @@ change_branch_change_add(change_ty *cp, long change_number, int is_a_branch)
 
     if (is_a_branch)
     {
-	cstate_branch_sub_branch_list lp2;
+	cstate_branch_sub_branch_list_ty *lp2;
 
 	/*
 	 * add it to the change list

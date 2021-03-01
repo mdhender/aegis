@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,11 +35,11 @@
 static int
 src_cmp(const void *s1p, const void *s2p)
 {
-    fstate_src	    s1;
-    fstate_src	    s2;
+    fstate_src_ty   *s1;
+    fstate_src_ty   *s2;
 
-    s1 = *(fstate_src *)s1p;
-    s2 = *(fstate_src *)s2p;
+    s1 = *(fstate_src_ty **)s1p;
+    s2 = *(fstate_src_ty **)s2p;
     return strcmp(s1->file_name->str_text, s2->file_name->str_text);
 }
 
@@ -105,7 +105,7 @@ change_cstate_write(change_ty *cp)
     assert(!cp->cstate_data->src);
     if (cp->fstate_data)
     {
-	fstate_src_list slp;
+	fstate_src_list_ty *slp;
 
 	/*
 	 * sort the files by name
@@ -164,7 +164,7 @@ change_cstate_write(change_ty *cp)
     assert(cp->cstate_data);
     if (cp->cstate_data->branch && cp->cstate_data->branch->change)
     {
-	cstate_branch_change_list lp;
+	cstate_branch_change_list_ty *lp;
 
 	lp = cp->cstate_data->branch->change;
 	qsort(lp->list, lp->length, sizeof(lp->list[0]), long_cmp);
@@ -176,28 +176,28 @@ change_cstate_write(change_ty *cp)
      */
     if (cp->cstate_data->branch && cp->cstate_data->branch->administrator)
     {
-	cstate_branch_administrator_list lp;
+	cstate_branch_administrator_list_ty *lp;
 
 	lp = cp->cstate_data->branch->administrator;
 	qsort(lp->list, lp->length, sizeof(lp->list[0]), string_cmp);
     }
     if (cp->cstate_data->branch && cp->cstate_data->branch->developer)
     {
-	cstate_branch_developer_list lp;
+	cstate_branch_developer_list_ty *lp;
 
 	lp = cp->cstate_data->branch->developer;
 	qsort(lp->list, lp->length, sizeof(lp->list[0]), string_cmp);
     }
     if (cp->cstate_data->branch && cp->cstate_data->branch->reviewer)
     {
-	cstate_branch_reviewer_list lp;
+	cstate_branch_reviewer_list_ty *lp;
 
 	lp = cp->cstate_data->branch->reviewer;
 	qsort(lp->list, lp->length, sizeof(lp->list[0]), string_cmp);
     }
     if (cp->cstate_data->branch && cp->cstate_data->branch->integrator)
     {
-	cstate_branch_integrator_list lp;
+	cstate_branch_integrator_list_ty *lp;
 
 	lp = cp->cstate_data->branch->integrator;
 	qsort(lp->list, lp->length, sizeof(lp->list[0]), string_cmp);

@@ -330,7 +330,7 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename)
 	{
 	    printf("<td valign=\"top\">(");
 	    emit_file_href(cp, s, "file@menu");
-	    printf("Menu)</a></td>\n");
+	    printf("Menu</a>)</td>\n");
 	}
 	else if (project_file_find(cp->pp, s, view_path_simple))
 	{
@@ -340,7 +340,7 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename)
 	    cp->bogus = 1;
 	    printf("<td valign=\"top\">(");
 	    emit_file_href(cp, s, "file@menu");
-	    printf("Menu)</a></td>\n");
+	    printf("Menu</a>)</td>\n");
 	    cp->bogus = hold_bogus;
 	}
 	str_free(s);
@@ -360,7 +360,7 @@ get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     string_list_ty  search_path;
     string_ty       *absolute_path;
     struct stat     st;
-    fstate_src      src;
+    fstate_src_ty   *src;
 
     /*
      * Make sure if the file actually exists in the given change
@@ -372,46 +372,57 @@ get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	src = change_file_find(cp, filename);
 	if (src)
 	{
-	    if (src->action == file_action_remove)
+	    switch (src->action)
 	    {
+	    case file_action_remove:
 		no_such_file(filename);
-	    }
-	    else if (change_is_completed(cp))
-	    {
-		int             delete_me;
-		string_ty       *s;
+		break;
 
-		/*
-		 * We need historical version.  We could get lucky,
-		 * it could be in the baseline or one of the ancestor
-		 * baselines.
-		 */
-		s = project_file_version_path(cp->pp, src, &delete_me);
-		assert(s);
-		if (!s)
+	    case file_action_create:
+	    case file_action_modify:
+	    case file_action_insulate:
+	    case file_action_transparent:
+#ifndef DEBUG
+	    default:
+#endif
+		if (change_is_completed(cp))
 		{
-		    no_such_file(filename);
-		    return;
-		}
-		os_become_orig();
-		emit_path(filename, s);
-		if (delete_me)
-		    os_unlink_errok(s);
-		os_become_undo();
-		str_free(s);
-	    }
-	    else
-	    {
-		string_ty       *s;
+		    int             delete_me;
+		    string_ty       *s;
 
-		/*
-		 * We can use the version in the development directory.
-		 */
-		s = change_file_path(cp, filename);
-		os_become_orig();
-		emit_path(filename, s);
-		os_become_undo();
-		str_free(s);
+		    /*
+		     * We need historical version.  We could get lucky,
+		     * it could be in the baseline or one of the ancestor
+		     * baselines.
+		     */
+		    s = project_file_version_path(cp->pp, src, &delete_me);
+		    assert(s);
+		    if (!s)
+		    {
+			no_such_file(filename);
+			return;
+		    }
+		    os_become_orig();
+		    emit_path(filename, s);
+		    if (delete_me)
+			os_unlink_errok(s);
+		    os_become_undo();
+		    str_free(s);
+		}
+		else
+		{
+		    string_ty       *s;
+
+		    /*
+		     * We can use the version in the development directory.
+		     */
+		    s = change_file_path(cp, filename);
+		    os_become_orig();
+		    emit_path(filename, s);
+		    os_become_undo();
+		    str_free(s);
+		}
+		break;
 	    }
 	    return;
 	}
@@ -466,23 +477,33 @@ get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     src = project_file_find(cp->pp, filename, view_path_simple);
     if (src)
     {
-	if (src->action == file_action_remove)
+	switch (src->action)
 	{
+	case file_action_remove:
 	    no_such_file(filename);
-	}
-	else
-	{
-	    int             delete_me;
-	    string_ty       *s;
+	    break;
 
-	    s = project_file_version_path(cp->pp, src, &delete_me);
-	    assert(s);
-	    os_become_orig();
-	    emit_path(filename, s);
-	    if (delete_me)
-		os_unlink_errok(s);
-	    os_become_undo();
-	    str_free(s);
+	case file_action_create:
+	case file_action_modify:
+	case file_action_insulate:
+	case file_action_transparent:
+#ifndef DEBUG
+	default:
+#endif
+	    {
+		int             delete_me;
+		string_ty       *s;
+
+		s = project_file_version_path(cp->pp, src, &delete_me);
+		assert(s);
+		os_become_orig();
+		emit_path(filename, s);
+		if (delete_me)
+		    os_unlink_errok(s);
+		os_become_undo();
+		str_free(s);
+	    }
+	    break;
 	}
 	return;
     }

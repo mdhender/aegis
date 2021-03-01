@@ -33,11 +33,11 @@
 void
 change_run_new_test_command(change_ty *cp, string_list_ty *wlp, user_ty *up)
 {
-    sub_context_ty	*scp;
-    pconf		pconf_data;
-    string_ty	*the_command;
-    string_ty	*the_files;
-    string_ty	*dd;
+    sub_context_ty  *scp;
+    pconf_ty        *pconf_data;
+    string_ty       *the_command;
+    string_ty       *the_files;
+    string_ty       *dd;
 
     trace(("change_run_change_file_command(cp = %08lX)\n{\n", (long)cp));
     assert(cp->reference_count >= 1);

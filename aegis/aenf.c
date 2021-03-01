@@ -28,6 +28,8 @@
 #include <ael/project/files.h>
 #include <aenf.h>
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <change/branch.h>
 #include <change/file.h>
 #include <col.h>
@@ -93,35 +95,20 @@ new_file_list(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, new_file_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-		duplicate_option_by_name(arglex_token_change, new_file_usage);
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change(&project_name, &change_number, new_file_usage);
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, new_file_usage);
-	    if (project_name)
-		duplicate_option_by_name(arglex_token_project, new_file_usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    /* fall through... */
+
+	case arglex_token_string:
+	    arglex_parse_project(&project_name, new_file_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -198,7 +185,7 @@ new_file_main(void)
 {
     string_ty	    *dd;
     string_list_ty  wl;
-    cstate	    cstate_data;
+    cstate_ty	    *cstate_data;
     size_t	    j;
     size_t	    k;
     string_ty	    *s1;
@@ -209,20 +196,20 @@ new_file_main(void)
     change_ty	    *cp;
     log_style_ty    log_style;
     user_ty	    *up;
-    int		    generated;
+    file_usage_ty   file_usage_value;
     int		    nerrs;
     string_list_ty  search_path;
     string_list_ty  wl2;
     int		    based;
     string_ty	    *base;
-    pconf	    pconf_data;
+    pconf_ty        *pconf_data;
     int		    use_template;
 
     trace(("new_file_main()\n{\n"));
     arglex();
     project_name = 0;
     change_number = 0;
-    generated = 0;
+    file_usage_value = file_usage_source;
     string_list_constructor(&wl);
     log_style = log_style_append_default;
     nerrs = 0;
@@ -247,35 +234,17 @@ new_file_main(void)
 	    break;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, new_file_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-		duplicate_option_by_name(arglex_token_change, new_file_usage);
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change(&project_name, &change_number, new_file_usage);
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, new_file_usage);
-	    if (project_name)
-		duplicate_option_by_name(arglex_token_project, new_file_usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, new_file_usage);
+	    continue;
 
 	case arglex_token_nolog:
 	    if (log_style == log_style_none)
@@ -284,9 +253,9 @@ new_file_main(void)
 	    break;
 
 	case arglex_token_build:
-	    if (generated)
+	    if (file_usage_value != file_usage_source)
 		duplicate_option(new_file_usage);
-	    generated = 1;
+	    file_usage_value = file_usage_build;
 	    break;
 
 	case arglex_token_wait:
@@ -469,7 +438,12 @@ new_file_main(void)
 	string_ty	*e;
 
 	fn = wl.string[j];
-	if (generated && change_file_is_config(cp, fn))
+	if
+	(
+	    file_usage_value == file_usage_build
+	&&
+	    change_file_is_config(cp, fn)
+	)
 	{
 	    sub_context_ty  *scp;
 
@@ -600,7 +574,7 @@ new_file_main(void)
      */
     for (j = 0; j < wl.nstrings; ++j)
     {
-	fstate_src	src_data;
+	fstate_src_ty   *src_data;
 
 	s1 = wl.string[j];
 	s2 = change_file_directory_conflict(cp, s1);
@@ -644,15 +618,26 @@ new_file_main(void)
 	src_data = change_file_find(cp, s1);
 	if (src_data)
 	{
-	    if (src_data->action != file_action_remove)
+	    switch (src_data->action)
 	    {
 		sub_context_ty  *scp;
 
+	    case file_action_remove:
+		break;
+
+	    case file_action_create:
+	    case file_action_modify:
+	    case file_action_insulate:
+	    case file_action_transparent:
+#ifndef DEBUG
+	    default:
+#endif
 		scp = sub_context_new();
 		sub_var_set_string(scp, "File_Name", s1);
 		change_error(cp, scp, i18n("file $filename dup"));
 		sub_context_delete(scp);
 		++nerrs;
+		break;
 	    }
 	}
 	else
@@ -697,7 +682,7 @@ new_file_main(void)
      */
     for (j = 0; j < wl.nstrings; ++j)
     {
-	fstate_src	src_data;
+	fstate_src_ty   *src_data;
 
 	s1 = wl.string[j];
 
@@ -715,10 +700,7 @@ new_file_main(void)
 
 	src_data = change_file_new(cp, s1);
 	src_data->action = file_action_create;
-	if (generated)
-	    src_data->usage = file_usage_build;
-	else
-	    src_data->usage = file_usage_source;
+	src_data->usage = file_usage_value;
     }
 
     /*

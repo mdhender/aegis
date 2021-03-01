@@ -750,7 +750,7 @@ lock_sync(user_ty *up)
  *	user_ustate_get
  *
  * SYNOPSIS
- *	ustate user_ustate_get(user_ty *up);
+ *	ustate_ty *user_ustate_get(user_ty *up);
  *
  * DESCRIPTION
  *	The user_ustate_get function is used to
@@ -764,7 +764,7 @@ lock_sync(user_ty *up)
  *	pointer to ustate structure in dynamic memory
  */
 
-static ustate
+static ustate_ty *
 user_ustate_get(user_ty *up)
 {
     trace(("user_ustate_get(up = %08lX)\n{\n", (long)up));
@@ -786,13 +786,13 @@ user_ustate_get(user_ty *up)
 	}
 	else
 	{
-	    up->ustate_data = (ustate)ustate_type.alloc();
+	    up->ustate_data = (ustate_ty *)ustate_type.alloc();
 	    up->ustate_is_new = 1;
 	}
 	gonzo_become_undo();
 	if (!up->ustate_data->own)
 	    up->ustate_data->own =
-		(ustate_own_list)ustate_own_list_type.alloc();
+		(ustate_own_list_ty *)ustate_own_list_type.alloc();
     }
     trace(("return %08lX;\n", (long)up->ustate_data));
     trace(("}\n"));
@@ -801,7 +801,7 @@ user_ustate_get(user_ty *up)
 
 
 static void
-fix_default_change(uconf uconf_data)
+fix_default_change(uconf_ty *uconf_data)
 {
     if
     (
@@ -835,7 +835,7 @@ fix_default_change(uconf uconf_data)
  */
 
 static void
-merge_uconf(uconf data, uconf tmp)
+merge_uconf(uconf_ty *data, uconf_ty *tmp)
 {
     if (!data->default_project_name && tmp->default_project_name)
     {
@@ -940,9 +940,9 @@ merge_uconf(uconf data, uconf tmp)
 
 
 static void
-read_and_merge(uconf data, string_ty *filename)
+read_and_merge(uconf_ty *data, string_ty *filename)
 {
-    uconf	    uconf_new;
+    uconf_ty	    *uconf_new;
 
     /*
      * Read the file.
@@ -965,7 +965,7 @@ read_and_merge(uconf data, string_ty *filename)
  *	user_uconf_get
  *
  * SYNOPSIS
- *	uconf user_uconf_get(user_ty *up);
+ *	uconf_ty *user_uconf_get(user_ty *up);
  *
  * DESCRIPTION
  *	The user_uconf_get function is used to
@@ -979,7 +979,7 @@ read_and_merge(uconf data, string_ty *filename)
  *	pointer to uconf structure in dynamic memory
  */
 
-uconf
+uconf_ty *
 user_uconf_get(user_ty *up)
 {
     trace(("user_uconf_get(up = %08lX)\n{\n", (long)up));
@@ -1221,10 +1221,10 @@ user_ustate_write(user_ty *up)
 void
 user_own_add(user_ty *up, string_ty *project_name, long change_number)
 {
-    ustate	    ustate_data;
+    ustate_ty	    *ustate_data;
     int		    j;
-    ustate_own	    own_data =	    0;
-    ustate_own	    *own_data_p;
+    ustate_own_ty   *own_data =	    0;
+    ustate_own_ty   **own_data_p;
     long	    *change_p;
     type_ty	    *type_p;
 
@@ -1261,7 +1261,7 @@ user_own_add(user_ty *up, string_ty *project_name, long change_number)
      */
     if (!own_data->changes)
 	own_data->changes =
-	    (ustate_own_changes_list)ustate_own_changes_list_type.alloc();
+	    (ustate_own_changes_list_ty *)ustate_own_changes_list_type.alloc();
 
     /*
      * Add another item to the changes list for the project.
@@ -1300,7 +1300,7 @@ user_own_add(user_ty *up, string_ty *project_name, long change_number)
 int
 user_own_nth(user_ty *up, string_ty *project_name, long n, long *change_number)
 {
-    ustate	    ustate_data;
+    ustate_ty	    *ustate_data;
     int		    j;
     int		    result;
 
@@ -1321,7 +1321,7 @@ user_own_nth(user_ty *up, string_ty *project_name, long n, long *change_number)
      */
     for (j = 0; j < ustate_data->own->length; ++j)
     {
-	ustate_own	own_data;
+	ustate_own_ty   *own_data;
 
 	own_data = ustate_data->own->list[j];
 	if (str_equal(project_name, own_data->project_name))
@@ -1369,10 +1369,10 @@ user_own_nth(user_ty *up, string_ty *project_name, long n, long *change_number)
 void
 user_own_remove(user_ty *up, string_ty *project_name, long change_number)
 {
-    ustate	    ustate_data;
+    ustate_ty	    *ustate_data;
     int		    j;
     int		    k;
-    ustate_own	    own_data;
+    ustate_own_ty   *own_data;
 
     trace(("usate_own_remove()\n{\n"));
     ustate_data = user_ustate_get(up);
@@ -1395,7 +1395,7 @@ user_own_remove(user_ty *up, string_ty *project_name, long change_number)
      */
     if (!own_data->changes)
 	own_data->changes =
-	    (ustate_own_changes_list)ustate_own_changes_list_type.alloc();
+	    (ustate_own_changes_list_ty *)ustate_own_changes_list_type.alloc();
 
     /*
      * Search for the change in the ``changes'' list.
@@ -1645,7 +1645,7 @@ user_default_change(user_ty *up)
      */
     if (!change_number)
     {
-	uconf		uconf_data;
+	uconf_ty	*uconf_data;
 
 	uconf_data = user_uconf_get(up);
 	if (uconf_data->mask & uconf_default_change_number_mask)
@@ -1659,14 +1659,14 @@ user_default_change(user_ty *up)
      */
     if (!change_number)
     {
-	ustate		ustate_data;
+	ustate_ty	*ustate_data;
 	int		j;
 
 	ustate_data = user_ustate_get(up);
 	assert(ustate_data->own);
 	for (j = 0; j < ustate_data->own->length; ++j)
 	{
-	    ustate_own	    own_data;
+	    ustate_own_ty   *own_data;
 	    string_ty	    *project_name;
 
 	    own_data = ustate_data->own->list[j];
@@ -1730,7 +1730,7 @@ user_default_change(user_ty *up)
 	string_ty	*d;
 	long		j;
 	change_ty	*cp2;
-	cstate		cstate_data;
+	cstate_ty       *cstate_data;
 
 	/*
 	 * get the current directory
@@ -1831,7 +1831,7 @@ user_default_project_by_user(user_ty *up)
      */
     if (!result)
     {
-	uconf		uconf_data;
+	uconf_ty	*uconf_data;
 
 	uconf_data = user_uconf_get(up);
 	if (uconf_data->default_project_name)
@@ -1906,7 +1906,7 @@ user_default_project_by_user(user_ty *up)
 	    long	    k;
 	    project_ty	    *pp;
 	    change_ty	    *cp3;
-	    cstate	    cstate_data;
+	    cstate_ty       *cstate_data;
 
 	    /*
 	     * get pathname of the current directory
@@ -2054,7 +2054,7 @@ user_default_project()
 string_ty *
 user_default_development_directory(user_ty *up)
 {
-    uconf	    uconf_data;
+    uconf_ty	    *uconf_data;
     string_ty	    *path;
 
     /*
@@ -2109,7 +2109,7 @@ user_default_development_directory(user_ty *up)
 string_ty *
 user_default_project_directory(user_ty *up)
 {
-    uconf	    uconf_data;
+    uconf_ty	    *uconf_data;
     string_ty	    *path;
 
     /*
@@ -2384,7 +2384,7 @@ user_delete_file_query(user_ty *up, string_ty *filename, int isdir)
     trace(("user_delete_file_query()\n{\n"));
     if (cmd_line_pref == del_pref_unset)
     {
-	uconf		uconf_data;
+	uconf_ty	*uconf_data;
 
 	uconf_data = user_uconf_get(up);
 	switch (uconf_data->delete_file_preference)
@@ -2441,7 +2441,7 @@ user_delete_file_query(user_ty *up, string_ty *filename, int isdir)
 int
 user_diff_preference(user_ty *up)
 {
-    uconf	    uconf_data;
+    uconf_ty	    *uconf_data;
 
     uconf_data = user_uconf_get(up);
     if (!(uconf_data->mask & uconf_diff_preference_mask))
@@ -2453,7 +2453,7 @@ user_diff_preference(user_ty *up)
 int
 user_pager_preference(user_ty *up)
 {
-    uconf	    uconf_data;
+    uconf_ty	    *uconf_data;
 
     uconf_data = user_uconf_get(up);
     return (uconf_data->pager_preference == uconf_pager_preference_foreground);
@@ -2488,7 +2488,7 @@ user_persevere_argument(void (*usage)(void))
 int
 user_persevere_preference(user_ty *up, int dflt)
 {
-    uconf	    uconf_data;
+    uconf_ty	    *uconf_data;
 
     if (uconf_persevere_option >= 0)
 	return uconf_persevere_option;
@@ -2510,7 +2510,7 @@ user_persevere_preference(user_ty *up, int dflt)
 uconf_log_file_preference_ty
 user_log_file_preference(user_ty *up, uconf_log_file_preference_ty dflt)
 {
-    uconf	    uconf_data;
+    uconf_ty	    *uconf_data;
 
     uconf_data = user_uconf_get(up);
     if (uconf_data->mask & uconf_log_file_preference_mask)
@@ -2549,7 +2549,7 @@ user_lock_wait(user_ty *up)
 {
     if (uconf_lock_wait_option < 0)
     {
-	uconf		uconf_data;
+	uconf_ty	*uconf_data;
 	uconf_lock_wait_preference_ty result;
 
 	if (!up)
@@ -2603,7 +2603,7 @@ user_whiteout(user_ty *up)
 {
     if (uconf_whiteout_option < 0)
     {
-	uconf		uconf_data;
+	uconf_ty	*uconf_data;
 	uconf_whiteout_preference_ty result;
 
 	if (!up)
@@ -2652,7 +2652,7 @@ user_symlink_pref(user_ty *up, int proj_files_changed)
 	}
 	else
 	{
-	    uconf	    uconf_data;
+	    uconf_ty	    *uconf_data;
 	    uconf_symbolic_link_preference_ty result;
 
 	    if (!up)
@@ -2700,7 +2700,7 @@ user_relative_filename_preference(user_ty *up,
 {
     if (user_relative_filename_preference_option < 0)
     {
-	uconf		uconf_data;
+	uconf_ty	*uconf_data;
 
 	if (!up)
 	    up = user_executing((project_ty *)0);
@@ -2778,7 +2778,7 @@ clean_up(string_ty *s)
 string_ty *
 user_email_address(user_ty *up)
 {
-    uconf	    uconf_data;
+    uconf_ty	    *uconf_data;
 
     uconf_data = user_uconf_get(up);
     if (!uconf_data->email_address)
@@ -2831,7 +2831,7 @@ user_email_address(user_ty *up)
 string_ty *
 user_editor_command(user_ty *up)
 {
-    uconf	    uconf_data;
+    uconf_ty	    *uconf_data;
     char	    *editor;
 
     trace(("user_editor_command()\n{\n"));
@@ -2882,7 +2882,7 @@ user_editor_command(user_ty *up)
 string_ty *
 user_visual_command(user_ty *up)
 {
-    uconf	    uconf_data;
+    uconf_ty	    *uconf_data;
 
     trace(("user_visual_command()\n{\n"));
     if (!up)
@@ -2927,7 +2927,7 @@ user_visual_command(user_ty *up)
 string_ty *
 user_pager_command(user_ty *up)
 {
-    uconf	    uconf_data;
+    uconf_ty	    *uconf_data;
 
     trace(("user_pager_command()\n{\n"));
     if (!up)
@@ -2953,7 +2953,7 @@ user_pager_command(user_ty *up)
 void
 user_uconf_write_xml(user_ty *up, output_ty *op)
 {
-    uconf	    uconf_data;
+    uconf_ty	    *uconf_data;
 
     up = user_executing((project_ty *)0);
     user_email_address(up); /* establish email_address field */

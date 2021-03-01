@@ -27,43 +27,41 @@
 
 
 int
-change_branch_history_nth(change_ty *cp,
-                          long n,
-                          long *cnp,
-                          long *dnp,
-                          string_list_ty *name)
+change_branch_history_nth(change_ty *cp, long n, long *cnp, long *dnp,
+    string_list_ty *name)
 {
-	cstate		cstate_data;
-	cstate_branch_history_list lp;
-	int		result;
+    cstate_ty       *cstate_data;
+    cstate_branch_history_list_ty *lp;
+    int             result;
 
-	trace(("change_branch_history_nth(cp = %8.8lX, n = %ld)\n{\n"/*}*/,
-		(long)cp, n));
-	cstate_data = change_cstate_get(cp);
-	assert(cstate_data->branch);
-	if (!cstate_data->branch->history)
-		cstate_data->branch->history =
-			cstate_branch_history_list_type.alloc();
-	lp = cstate_data->branch->history;
-	if (n < 0 || n >= lp->length)
-		result = 0;
-	else
+    trace(("change_branch_history_nth(cp = %8.8lX, n = %ld)\n{\n",
+	(long)cp, n));
+    cstate_data = change_cstate_get(cp);
+    assert(cstate_data->branch);
+    if (!cstate_data->branch->history)
+	cstate_data->branch->history =
+    	    cstate_branch_history_list_type.alloc();
+    lp = cstate_data->branch->history;
+    if (n < 0 || n >= lp->length)
+	result = 0;
+    else
+    {
+	cstate_branch_history_ty * hp;
+
+	hp = lp->list[n];
+	*cnp = hp->change_number;
+	*dnp = hp->delta_number;
+	string_list_constructor(name);
+	if (hp->name)
 	{
-		cstate_branch_history hp;
-		hp = lp->list[n];
-		*cnp = hp->change_number;
-		*dnp = hp->delta_number;
-		string_list_constructor(name);
-		if (hp->name)
-		{
-			size_t		j;
+	    size_t          j;
 
-			for (j = 0; j < hp->name->length; ++j)
-				string_list_append(name, hp->name->list[j]);
-		}
-		result = 1;
+	    for (j = 0; j < hp->name->length; ++j)
+	       	string_list_append(name, hp->name->list[j]);
 	}
-	trace(("return %d;\n", result));
-	trace((/*{*/"}\n"));
-	return result;
+	result = 1;
+    }
+    trace(("return %d;\n", result));
+    trace(("}\n"));
+    return result;
 }

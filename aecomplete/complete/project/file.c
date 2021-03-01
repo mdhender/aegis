@@ -111,7 +111,7 @@ perform(complete_ty *cp, shell_ty *sh)
     prefix = str_catenate(base, shell_prefix_get(sh));
     for (j = 0; ; ++j)
     {
-	fstate_src      src;
+	fstate_src_ty   *src;
 	string_ty       *relfn;
 
 	src = project_file_nth(this_thing->cp->pp, j, view_path_simple);
@@ -132,7 +132,7 @@ perform(complete_ty *cp, shell_ty *sh)
 	 */
 	if (this_thing->overwriting)
 	{
-	    fstate_src      csrc;
+	    fstate_src_ty   *csrc;
 
 	    csrc = change_file_find(this_thing->cp, src->file_name);
 	    if (csrc)

@@ -28,6 +28,8 @@
 #include <aed.h>
 #include <ael/change/files.h>
 #include <arglex2.h>
+#include <arglex/change.h>
+#include <arglex/project.h>
 #include <change/branch.h>
 #include <change/file.h>
 #include <col.h>
@@ -93,41 +95,22 @@ difference_list(void)
 	    continue;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, difference_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-		duplicate_option_by_name(arglex_token_change, difference_usage);
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty  *scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change
+	    (
+		&project_name,
+		&change_number,
+		difference_usage
+	    );
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, difference_usage);
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    difference_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, difference_usage);
+	    continue;
 	}
 	arglex();
     }
@@ -145,8 +128,8 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 {
     string_ty       *dd1;
     string_ty       *dd2;
-    cstate          cstate_data;
-    cstate          cstate2_data;
+    cstate_ty       *cstate_data;
+    cstate_ty       *cstate2_data;
     size_t          j;
     project_ty      *pp;
     change_ty       *cp;
@@ -234,19 +217,43 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
     {
 	for (j = 0;; ++j)
 	{
-	    fstate_src      src1_data;
-	    fstate_src      src2_data;
+	    fstate_src_ty   *src1_data;
+	    fstate_src_ty   *src2_data;
 
 	    src1_data = change_file_nth(cp, j);
 	    if (!src1_data)
 		break;
-	    if (src1_data->action != file_action_modify)
+	    switch (src1_data->action)
+	    {
+	    case file_action_create:
+	    case file_action_modify:
+		break;
+
+	    case file_action_remove:
+	    case file_action_insulate:
+	    case file_action_transparent:
+#ifndef DEBUG
+	    default:
+#endif
 		continue;
+	    }
 	    src2_data = change_file_find(acp, src1_data->file_name);
 	    if (!src2_data)
 		continue;
-	    if (src2_data->action != file_action_modify)
+	    switch (src2_data->action)
+	    {
+	    case file_action_create:
+	    case file_action_modify:
+		break;
+
+	    case file_action_remove:
+	    case file_action_insulate:
+	    case file_action_transparent:
+#ifndef DEBUG
+	    default:
+#endif
 		continue;
+	    }
 	    string_list_append(wl, src1_data->file_name);
 	}
 	if (!wl->nstrings)
@@ -311,8 +318,8 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 	 */
 	for (j = 0; j < wl->nstrings; ++j)
 	{
-	    fstate_src      src1_data;
-	    fstate_src      src2_data;
+	    fstate_src_ty   *src1_data;
+	    fstate_src_ty   *src2_data;
 	    string_ty       *s1;
 
 	    s1 = wl->string[j];
@@ -328,10 +335,20 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 		++number_of_errors;
 		continue;
 	    }
-	    if (src1_data->action != file_action_modify)
+	    switch (src1_data->action)
 	    {
 		sub_context_ty  *scp;
 
+	    case file_action_create:
+	    case file_action_modify:
+		break;
+
+	    case file_action_remove:
+	    case file_action_insulate:
+	    case file_action_transparent:
+#ifndef DEBUG
+	    default:
+#endif
 		scp = sub_context_new();
 		sub_var_set_string(scp, "File_Name", s1);
 		change_error(cp, scp, i18n("bad cp undo $filename"));
@@ -351,10 +368,20 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 		++number_of_errors;
 		continue;
 	    }
-	    if (src2_data->action != file_action_modify)
+	    switch (src2_data->action)
 	    {
 		sub_context_ty  *scp;
 
+	    case file_action_create:
+	    case file_action_modify:
+		break;
+
+	    case file_action_remove:
+	    case file_action_insulate:
+	    case file_action_transparent:
+#ifndef DEBUG
+	    default:
+#endif
 		scp = sub_context_new();
 		sub_var_set_string(scp, "File_Name", s1);
 		change_error(acp, scp, i18n("bad cp undo $filename"));
@@ -387,8 +414,8 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
     os_throttle();
     for (j = 0; j < wl->nstrings; ++j)
     {
-	fstate_src      src1_data;
-	fstate_src      src2_data;
+	fstate_src_ty   *src1_data;
+	fstate_src_ty   *src2_data;
 	string_ty       *original;
 	string_ty       *most_recent;
 	string_ty       *input;
@@ -517,7 +544,7 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 static int
 project_file_exists(project_ty *pp, string_ty *filename)
 {
-    fstate_src      p_src_data;
+    fstate_src_ty   *p_src_data;
 
     p_src_data = project_file_find(pp, filename, view_path_extreme);
     return !!p_src_data;
@@ -527,7 +554,7 @@ project_file_exists(project_ty *pp, string_ty *filename)
 static int
 change_file_exists(change_ty *cp, string_ty *filename)
 {
-    fstate_src      c_src_data;
+    fstate_src_ty   *c_src_data;
 
     c_src_data = change_file_find(cp, filename);
     return
@@ -550,7 +577,7 @@ difference_main(void)
     string_ty       *s1 = 0;
     string_ty       *s2;
     string_list_ty  need_new_build;
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
     size_t          j;
     size_t          k;
     string_ty       *project_name;
@@ -623,41 +650,23 @@ difference_main(void)
 	    break;
 
 	case arglex_token_change:
-	    if (arglex() != arglex_token_number)
-		option_needs_number(arglex_token_change, difference_usage);
+	    arglex();
 	    /* fall through... */
 
 	case arglex_token_number:
-	    if (change_number)
-		duplicate_option_by_name(arglex_token_change, difference_usage);
-	    change_number = arglex_value.alv_number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    else if (change_number < 1)
-	    {
-		sub_context_ty  *scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", change_number);
-		fatal_intl(scp, i18n("change $number out of range"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	    }
-	    break;
+	    arglex_parse_change_with_branch
+	    (
+		&project_name,
+		&change_number,
+		&branch,
+		difference_usage
+	    );
+	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, difference_usage);
-	    if (project_name)
-	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_project,
-		    difference_usage
-		);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, difference_usage);
+	    continue;
 
 	case arglex_token_nolog:
 	    if (log_style == log_style_none)
@@ -933,7 +942,7 @@ difference_main(void)
 	    change_fatal(cp, 0, i18n("no files"));
 	for (j = 0;; ++j)
 	{
-	    fstate_src      src_data;
+	    fstate_src_ty   *src_data;
 
 	    src_data = change_file_nth(cp, j);
 	    if (!src_data)
@@ -1054,8 +1063,8 @@ difference_main(void)
     mergable_files = 0;
     for (j = 0; j < wl.nstrings; ++j)
     {
-	fstate_src      src1_data;
-	fstate_src      src2_data;
+	fstate_src_ty   *src1_data;
+	fstate_src_ty   *src2_data;
 
 	/*
 	 * find the relevant change src data
@@ -1075,6 +1084,7 @@ difference_main(void)
 	    continue;
 
 	case file_usage_source:
+	case file_usage_config:
 	case file_usage_test:
 	case file_usage_manual_test:
 	    /* keep these ones */
@@ -1165,13 +1175,13 @@ difference_main(void)
 	 */
 	for (j = 0; j < wl.nstrings; ++j)
 	{
-	    fstate_src      src1_data;
-	    fstate_src      src2_data;
+	    fstate_src_ty   *src1_data;
+	    fstate_src_ty   *src2_data;
 	    string_ty       *original;
 	    string_ty       *curfile;
 	    string_ty       *outname;
 	    string_ty       *most_recent;
-	    fstate_src      reconstruct;
+	    fstate_src_ty   *reconstruct;
 
 	    /*
 	     * find the relevant change src data
@@ -1195,6 +1205,7 @@ difference_main(void)
 		continue;
 
 	    case file_usage_source:
+	    case file_usage_config:
 	    case file_usage_test:
 	    case file_usage_manual_test:
 		/* keep these ones */
@@ -1285,7 +1296,7 @@ difference_main(void)
 	    reconstruct->edit = history_version_copy(src1_data->edit_origin);
 	    if (cp->pp != pp2)
 	    {
-		fstate_src      p_src_data;
+		fstate_src_ty   *p_src_data;
 
 		p_src_data = project_file_find(cp->pp, s1, view_path_extreme);
 		assert
@@ -1470,8 +1481,8 @@ difference_main(void)
 	 */
 	for (j = 0; j < wl.nstrings; ++j)
 	{
-	    fstate_src      src1_data;
-	    fstate_src      src2_data;
+	    fstate_src_ty   *src1_data;
+	    fstate_src_ty   *src2_data;
 	    string_ty       *original;
 	    string_ty       *input;
 	    string_ty       *path;
@@ -1489,8 +1500,17 @@ difference_main(void)
 	    /*
 	     * generated files are not differenced
 	     */
-	    if (src1_data->usage == file_usage_build)
+	    switch (src1_data->usage)
+	    {
+	    case file_usage_build:
 		continue;
+
+	    case file_usage_source:
+	    case file_usage_config:
+	    case file_usage_test:
+	    case file_usage_manual_test:
+		break;
+	    }
 
 	    switch (src1_data->action)
 	    {
@@ -1530,12 +1550,26 @@ difference_main(void)
 	     * the other timestamps if the fingerprint has
 	     * changed.
 	     */
-	    if (src1_data->action != file_action_remove && !integrating)
+	    switch (src1_data->action)
 	    {
-		change_file_fingerprint_check(cp, src1_data);
-		assert(src1_data->file_fp);
-		assert(src1_data->file_fp->youngest > 0);
-		assert(src1_data->file_fp->oldest > 0);
+	    case file_action_remove:
+		break;
+
+	    case file_action_create:
+	    case file_action_modify:
+	    case file_action_insulate:
+	    case file_action_transparent:
+#ifndef DEBUG
+	    default:
+#endif
+		if (!integrating)
+		{
+		    change_file_fingerprint_check(cp, src1_data);
+		    assert(src1_data->file_fp);
+		    assert(src1_data->file_fp->youngest > 0);
+		    assert(src1_data->file_fp->oldest > 0);
+		}
+		break;
 	    }
 
 	    /*

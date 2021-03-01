@@ -289,10 +289,25 @@ stack_nth(int n)
 int
 stack_eliminate(string_ty *filename)
 {
-    fstate_src      src;
+    fstate_src_ty   *src;
 
     src = project_file_find(pp, filename, view_path_simple);
-    return (src && src->action == file_action_remove);
+    if (!src)
+	return 0;
+    switch (src->action)
+    {
+    case file_action_create:
+    case file_action_modify:
+	break;
+
+    case file_action_remove:
+	return 1;
+
+    case file_action_insulate:
+    case file_action_transparent:
+	break;
+    }
+    return 0;
 }
 
 
@@ -302,7 +317,7 @@ cmdline_grammar(int argc, char **argv)
     extern int yyparse(void);
     size_t	    j;
     user_ty	    *up;
-    cstate	    cstate_data;
+    cstate_ty	    *cstate_data;
     tree_ty	    *tp2;
     int		    based;
 

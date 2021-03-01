@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,7 @@ change_run_patch_diff_command(change_ty *cp, user_ty  *up, string_ty *original,
     string_ty *input, string_ty *output, string_ty *index_name)
 {
     sub_context_ty  *scp;
-    pconf	    pconf_data;
+    pconf_ty        *pconf_data;
     string_ty	    *dd;
     string_ty	    *the_command;
 

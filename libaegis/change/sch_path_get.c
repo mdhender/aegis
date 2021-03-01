@@ -31,7 +31,7 @@
 void
 change_search_path_get(change_ty *cp, string_list_ty *wlp, int resolve)
 {
-    cstate          cstate_data;
+    cstate_ty       *cstate_data;
     project_ty      *ppp;
     string_ty       *s;
 

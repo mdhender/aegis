@@ -1,21 +1,21 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 1999-2003 Peter Miller;
- *	All rights reserved.
+ *      aegis - project change supervisor
+ *      Copyright (C) 1999-2003 Peter Miller;
+ *      All rights reserved.
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 2 of the License, or
+ *      (at your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program; if not, write to the Free Software
+ *      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to manipulate wchar_t output through a common API
  */
@@ -36,7 +36,7 @@ wide_output_delete(wide_output_ty *fp)
     size_t          ncb;
 
     trace(("wide_output_delete(fp = %08lX)\n{\ntype is wide_output_%s\n",
-	(long)fp, fp->vptr->type_name));
+        (long)fp, fp->vptr->type_name));
     wide_output_flush(fp);
 
     /*
@@ -46,14 +46,14 @@ wide_output_delete(wide_output_ty *fp)
     fp->ncallbacks = 0;
     while (ncb > 0)
     {
-	wide_output_callback_record *crp;
+        wide_output_callback_record *crp;
 
-	--ncb;
-	crp = &fp->callback[ncb];
-	crp->func(fp, crp->arg);
+        --ncb;
+        crp = &fp->callback[ncb];
+        crp->func(fp, crp->arg);
     }
     if (fp->callback)
-	mem_free(fp->callback);
+        mem_free(fp->callback);
     fp->ncallbacks = 0;
     fp->ncallbacks_max = 0;
     fp->callback = 0;
@@ -62,7 +62,7 @@ wide_output_delete(wide_output_ty *fp)
      * now run the destructor
      */
     if (fp->vptr->destructor)
-	fp->vptr->destructor(fp);
+        fp->vptr->destructor(fp);
 
     /*
      * now get rid of it
@@ -84,7 +84,7 @@ wide_output_filename(wide_output_ty *fp)
     string_ty       *result;
 
     trace(("wide_output_filename(fp = %08lX)\n{\ntype is wide_output_%s\n",
-	    (long)fp, fp->vptr->type_name));
+            (long)fp, fp->vptr->type_name));
     assert(fp);
     assert(fp->vptr);
     assert(fp->vptr->filename);
@@ -112,10 +112,10 @@ type is wide_output_%s\n", (long)fp, (long)wc, fp->vptr->type_name));
     assert(fp->buffer_position <= fp->buffer_end);
     if (fp->buffer_position >= fp->buffer_end)
     {
-	assert(fp->vptr);
-	assert(fp->vptr->write);
-	fp->vptr->write(fp, fp->buffer, fp->buffer_size);
-	fp->buffer_position = fp->buffer;
+        assert(fp->vptr);
+        assert(fp->vptr->write);
+        fp->vptr->write(fp, fp->buffer, fp->buffer_size);
+        fp->buffer_position = fp->buffer;
     }
     *(fp->buffer_position)++ = wc;
     trace(("}\n"));
@@ -131,9 +131,9 @@ wide_output_putws(wide_output_ty *fp, const wchar_t *ws)
 type is wide_output_%s\n", (long)fp, (long)ws, fp->vptr->type_name));
     assert(ws);
     for (wse = ws; *wse; ++wse)
-	;
+        ;
     if (wse > ws)
-	fp->vptr->write(fp, ws, wse - ws);
+        fp->vptr->write(fp, ws, wse - ws);
     trace(("}\n"));
 }
 
@@ -150,24 +150,24 @@ type wide_output_%s\n", (long)fp, (long)data, (long)len, fp->vptr->type_name));
     assert(fp->vptr->write);
     if (fp->buffer_position + len <= fp->buffer_end)
     {
-	memcpy(fp->buffer_position, data, len * sizeof(wchar_t));
-	fp->buffer_position += len;
+        memcpy(fp->buffer_position, data, len * sizeof(wchar_t));
+        fp->buffer_position += len;
     }
     else
     {
-	size_t          nwc;
+        size_t          nwc;
 
-	nwc = fp->buffer_position - fp->buffer;
-	fp->vptr->write(fp, fp->buffer, nwc);
-	fp->buffer_position = fp->buffer;
+        nwc = fp->buffer_position - fp->buffer;
+        fp->vptr->write(fp, fp->buffer, nwc);
+        fp->buffer_position = fp->buffer;
 
-	if (len < fp->buffer_size)
-	{
-	    memcpy(fp->buffer, data, len * sizeof(wchar_t));
-	    fp->buffer_position += len;
-	}
-	else
-	    fp->vptr->write(fp, data, len);
+        if (len < fp->buffer_size)
+        {
+            memcpy(fp->buffer, data, len * sizeof(wchar_t));
+            fp->buffer_position += len;
+        }
+        else
+            fp->vptr->write(fp, data, len);
     }
     trace(("}\n"));
 }
@@ -182,12 +182,12 @@ type is wide_output_%s\n", (long)fp, fp->vptr->type_name));
     assert(fp->vptr);
     if (fp->buffer_position > fp->buffer)
     {
-	size_t		nwc;
+        size_t          nwc;
 
-	nwc = fp->buffer_position - fp->buffer;
-	assert(fp->vptr->write);
-	fp->vptr->write(fp, fp->buffer, nwc);
-	fp->buffer_position = fp->buffer;
+        nwc = fp->buffer_position - fp->buffer;
+        assert(fp->vptr->write);
+        fp->vptr->write(fp, fp->buffer, nwc);
+        fp->buffer_position = fp->buffer;
     }
     assert(fp->vptr->flush);
     fp->vptr->flush(fp);
@@ -241,16 +241,16 @@ type is wide_output_%s\n", (long)fp, fp->vptr->type_name));
     assert(fp);
     if
     (
-	fp->buffer_position > fp->buffer
+        fp->buffer_position > fp->buffer
     &&
-	fp->buffer_position[-1] != '\n'
+        fp->buffer_position[-1] != '\n'
     &&
-	fp->buffer_position < fp->buffer_end
+        fp->buffer_position < fp->buffer_end
     )
     {
-	*(fp->buffer_position)++ = '\n';
-	trace(("}\n"));
-	return;
+        *(fp->buffer_position)++ = '\n';
+        trace(("}\n"));
+        return;
     }
 
     /*
@@ -260,12 +260,12 @@ type is wide_output_%s\n", (long)fp, fp->vptr->type_name));
     assert(fp->vptr);
     if (fp->buffer_position > fp->buffer)
     {
-	size_t		nwc;
+        size_t          nwc;
 
-	nwc = fp->buffer_position - fp->buffer;
-	assert(fp->vptr->write);
-	fp->vptr->write(fp, fp->buffer, nwc);
-	fp->buffer_position = fp->buffer;
+        nwc = fp->buffer_position - fp->buffer;
+        assert(fp->vptr->write);
+        fp->vptr->write(fp, fp->buffer, nwc);
+        fp->buffer_position = fp->buffer;
     }
 
     /*
@@ -285,11 +285,13 @@ wide_output_delete_callback(wide_output_ty *fp, wide_output_callback_ty func,
 
     if (fp->ncallbacks >= fp->ncallbacks_max)
     {
-	size_t		nbytes;
+        size_t          nbytes;
 
-	fp->ncallbacks_max = fp->ncallbacks_max * 2 + 4;
-	nbytes = fp->ncallbacks_max * sizeof(fp->callback[0]);
-	fp->callback = mem_change_size(fp->callback, nbytes);
+        fp->ncallbacks_max = fp->ncallbacks_max * 2 + 4;
+        nbytes = fp->ncallbacks_max * sizeof(fp->callback[0]);
+        fp->callback =
+            (wide_output_callback_record *)
+	    mem_change_size(fp->callback, nbytes);
     }
     crp = &fp->callback[fp->ncallbacks++];
     crp->func = func;
@@ -302,7 +304,7 @@ wide_output_put_wstr(wide_output_ty *fp, wstring_ty *ws)
 {
     assert(fp);
     if (!ws || !ws->wstr_length)
-	return;
+        return;
     wide_output_write(fp, ws->wstr_text, ws->wstr_length);
 }
 
@@ -313,7 +315,7 @@ wide_output_put_str(wide_output_ty *fp, string_ty *s)
     wstring_ty      *ws;
 
     if (!s || !s->str_length)
-	return;
+        return;
     ws = wstr_n_from_c(s->str_text, s->str_length);
     wide_output_put_wstr(fp, ws);
     wstr_free(ws);
@@ -326,7 +328,7 @@ wide_output_put_cstr(wide_output_ty *fp, const char *s)
     wstring_ty      *ws;
 
     if (!s || !*s)
-	return;
+        return;
     ws = wstr_from_c(s);
     wide_output_put_wstr(fp, ws);
     wstr_free(ws);

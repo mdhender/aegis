@@ -24,6 +24,7 @@
 
 #include <ael/project/projects.h>
 #include <arglex3.h>
+#include <arglex/project.h>
 #include <change_set/find.h>
 #include <change_set/list.h>
 #include <commit.h>
@@ -137,7 +138,7 @@ import_main(void)
     project_ty	    *version_pp[SIZEOF(version_number)];
     string_ty	    *version_string;
     long	    j;
-    pattr	    pattr_data;
+    pattr_ty	    *pattr_data;
     const char      *format_name =  0;
     format_ty	    *format;
     format_search_list_ty *fslp;
@@ -162,14 +163,9 @@ import_main(void)
 	    continue;
 
 	case arglex_token_project:
-	    if (project_name)
-		duplicate_option(import_usage);
-	    if (arglex() != arglex_token_string)
-	    {
-		option_needs_name(arglex_token_project, import_usage);
-	    }
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, import_usage);
+	    continue;
 
 	case arglex_token_directory:
 	    if (home)

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 
 
 void
-change_cstate_improve(cstate d)
+change_cstate_improve(cstate_ty *d)
 {
     trace(("improve(d = %8.8lX)\n{\n", (long)d));
     if (!d->history)

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002, 2003 Peter Miller;
+ *	Copyright (C) 2002-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 
 #include <annotate.h>
 #include <arglex3.h>
+#include <arglex/project.h>
 #include <change.h>
 #include <change/branch.h>
 #include <change/file.h>
@@ -163,7 +164,7 @@ process(project_ty *pp, string_ty *filename, line_list_t *buffer)
     for (j = 0; j < felp->length; ++j)
     {
 	file_event_ty	*fep;
-	fstate_src	src_data;
+	fstate_src_ty   *src_data;
 	string_ty	*ifn;
 	int		ifn_unlink;
 	input_ty	*ifp;
@@ -463,7 +464,7 @@ emit_range(output_ty *line_col, output_ty *source_col, line_t *line_array,
 	 */
 	for (k = 0; ; ++k)
 	{
-	    fstate_src	src;
+	    fstate_src_ty   *src;
 
 	    src = change_file_nth(lp->cp, k);
 	    if (!src)
@@ -545,7 +546,7 @@ emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
 	cp = columns.item + j;
 	symtab_keys(cp->stp, &keys);
 	col_need(ofp, keys.nstrings > 10 ? 10 : (int)keys.nstrings);
-	string_list_sort(&keys);
+	string_list_sort_version(&keys);
 	for (k = 0; k < keys.nstrings; ++k)
 	{
 	    string_ty	    *key;
@@ -596,9 +597,9 @@ emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
 	col_need(ofp, keys.nstrings > 10 ? 10 : (int)keys.nstrings);
 	for (j = 0; j < keys.nstrings; ++j)
 	{
-	    string_ty	*key;
-	    long		*data;
-	    fstate_src	src;
+	    string_ty       *key;
+	    long            *data;
+	    fstate_src_ty   *src;
 
 	    key = keys.string[j];
 	    if (str_equal(key, filename))
@@ -643,12 +644,9 @@ annotate(void)
 	    continue;
 
 	case arglex_token_project:
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_project, usage);
-	    if (project_name)
-		duplicate_option_by_name(arglex_token_project, usage);
-	    project_name = str_from_c(arglex_value.alv_string);
-	    break;
+	    arglex();
+	    arglex_parse_project(&project_name, usage);
+	    continue;
 
 	case arglex_token_string:
 	    if (filename)

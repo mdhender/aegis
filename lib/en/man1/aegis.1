@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1994, 1997-1999, 2001, 2002 Peter Miller;
+.\"	Copyright (C) 1991-1994, 1997-1999, 2001-2003 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -583,19 +583,59 @@ the function selectors.
 .so o_page.so
 .so o_verbose.so
 .PP
-The following options are available to all listings.
-These options may appear anywhere on the command line following
-the function selectors.
-.so o_terse.so
-.so o_unforma.so
-.PP
 The following options are available to
 .I most
 functions.
 These options may appear anywhere on the command line following
 the function selectors.
-.so o_change.so
 .so o_project.so
+.TP 8n
+\fB\-Change\fP \fInumber\fP
+This option may be used to specify a particular change within a project.
+When no
+.B -Change
+option is specified,
+the
+.I AEGIS_CHANGE
+environment variable is consulted.
+If that does not exist,
+the user's
+.I $HOME/.aegisrc
+file is examined for a default change field (see
+.IR aeuconf (5)
+for more information).
+If that does not exist,
+when the user is only working on one change within a project,
+that is the default change number.
+Otherwise,
+it is an error.
+.TP 8n
+\fB\-Change\fP \fIproject\fP\fB\.C\fInumber\fP
+As a shortcut, it is possible to combine the \fB-\Project\fP and
+\fB\-Change\fP options into a single option.
+.TP 8n
+\fB\-Change\fP \fIbranch\fP\fB\.C\fInumber\fP
+Several functions accept a \fB\-BRanch\fP option; it is possible to
+combine the \fB\-BRanch\fP and \fB\-Change\fP options in a single option.
+(This intentinally has the same form as the \fI${version}\fP substitution
+output for incomplete changes.)
+.TP 8n
+\fB\-Change\fP \fIbranch\fP\fB\.D\fInumber\fP
+Several functions accept both the \fB\-BRanch\fP and \fB\-Delta\fP options
+(or \fB\-BRanch\fP and \fB\-Change-From-Delta\fP options); it is possible
+to combine them in a single option.  (This intentinally has the same
+form as the \fI${version}\fP substitution output for completed changes.)
+.TP 8n
+\fB\-Change\fP \fIproject\fP\fB\.D\fInumber\fP
+It is possible to combine the \fB\-Project\fP and
+\fB\-Change-From-Delta\fP options as a single option.
+.SH Listings
+The following options are available to all listings.
+These options may appear anywhere on the command line following
+the function selectors.
+.so o_terse.so
+.so o_unforma.so
+.SH Abbreviations
 .ds R) no
 .so o__rules.so
 .SH EXIT STATUS

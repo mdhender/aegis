@@ -37,7 +37,7 @@
 static int
 change_maximum_filename_length(change_ty *cp)
 {
-    pconf           pconf_data;
+    pconf_ty        *pconf_data;
 
     assert(cp->reference_count >= 1);
     pconf_data = change_pconf_get(cp, 0);
@@ -72,7 +72,7 @@ contains_moronic_ms_restrictions(string_ty *fn)
 static int
 is_a_dos_filename(change_ty *cp, string_ty *fn)
 {
-    pconf           pconf_data;
+    pconf_ty        *pconf_data;
     string_list_ty  wl;
     int             result;
     size_t          j;
@@ -134,7 +134,7 @@ is_a_dos_filename(change_ty *cp, string_ty *fn)
 static int
 is_a_windows_filename(change_ty *cp, string_ty *fn)
 {
-    pconf           pconf_data;
+    pconf_ty        *pconf_data;
     char            *s;
 
     pconf_data = change_pconf_get(cp, 0);
@@ -166,7 +166,7 @@ is_a_windows_filename(change_ty *cp, string_ty *fn)
 static int
 filename_pattern_test(change_ty *cp, string_ty *fn)
 {
-    pconf           pconf_data;
+    pconf_ty        *pconf_data;
     size_t          j;
 
     assert(cp->reference_count >= 1);
@@ -210,7 +210,7 @@ filename_pattern_test(change_ty *cp, string_ty *fn)
 static int
 change_filename_in_charset(change_ty *cp, string_ty *fn)
 {
-    pconf           pconf_data;
+    pconf_ty        *pconf_data;
     char            *s;
 
     assert(cp->reference_count >= 1);
@@ -320,7 +320,7 @@ change_filename_in_charset(change_ty *cp, string_ty *fn)
 static int
 change_filename_shell_safe(change_ty *cp, string_ty *fn)
 {
-    pconf           pconf_data;
+    pconf_ty        *pconf_data;
     char            *s;
 
     /*

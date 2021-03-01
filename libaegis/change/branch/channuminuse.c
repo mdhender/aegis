@@ -28,29 +28,29 @@
 int
 change_branch_change_number_in_use(change_ty *cp, long cn)
 {
-	int		result;
-	cstate		cstate_data;
-	cstate_branch_change_list lp;
-	size_t		j;
+    int             result;
+    cstate_ty       *cstate_data;
+    cstate_branch_change_list_ty *lp;
+    size_t          j;
 
-	trace(("change_branch_change_number_in_use(cp = %8.8lX, cn = %ld)\n{\n",
-	    (long)cp, cn));
-	result = 0;
-	cstate_data = change_cstate_get(cp);
-	assert(cstate_data->branch);
-	lp = cstate_data->branch->change;
-	if (lp)
+    trace(("change_branch_change_number_in_use(cp = %8.8lX, cn = %ld)\n{\n",
+	(long)cp, cn));
+    result = 0;
+    cstate_data = change_cstate_get(cp);
+    assert(cstate_data->branch);
+    lp = cstate_data->branch->change;
+    if (lp)
+    {
+	for (j = 0; j < lp->length; ++j)
 	{
-		for (j = 0; j < lp->length; ++j)
-		{
-			if (lp->list[j] == cn)
-			{
-				result = 1;
-				break;
-			}
-		}
+	    if (lp->list[j] == cn)
+	    {
+	       	result = 1;
+	       	break;
+	    }
 	}
-	trace(("return %d;\n", result));
-	trace(("}\n"));
-	return result;
+    }
+    trace(("return %d;\n", result));
+    trace(("}\n"));
+    return result;
 }

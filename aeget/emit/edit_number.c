@@ -29,7 +29,7 @@
 
 
 void
-emit_edit_number(change_ty *cp, fstate_src src_data)
+emit_edit_number(change_ty *cp, fstate_src_ty *src_data)
 {
     if (src_data->edit_origin && src_data->edit)
     {

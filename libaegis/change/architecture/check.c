@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001-2003 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,8 +30,8 @@
 void
 change_check_architectures(change_ty *cp)
 {
-    cstate	    cstate_data;
-    pconf	    pconf_data;
+    cstate_ty       *cstate_data;
+    pconf_ty        *pconf_data;
     size_t	    j, k;
     int		    error_count;
 
@@ -51,7 +51,8 @@ change_check_architectures(change_ty *cp)
 	variant = cstate_data->architecture->list[j];
 	for (k = 0; k < pconf_data->architecture->length; ++k)
 	{
-	    pconf_architecture ap;
+	    pconf_architecture_ty *ap;
+
 	    ap = pconf_data->architecture->list[k];
 	    if (str_equal(variant, ap->name))
 	    {

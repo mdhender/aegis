@@ -21,17 +21,18 @@
  */
 
 #include <change/file.h>
+#include <error.h> /* for assert */
 #include <project/file.h>
 #include <trace.h>
 
 
-fstate_src
+fstate_src_ty *
 project_file_find(project_ty *pp, string_ty *file_name,
     view_path_ty as_view_path)
 {
     project_ty      *ppp;
     change_ty       *cp;
-    fstate_src      src_data;
+    fstate_src_ty   *src_data;
 
     trace(("project_file_find(pp = %8.8lX, file_name = \"%s\")\n{\n",
 	(long)pp, file_name->str_text));
@@ -59,16 +60,28 @@ project_file_find(project_ty *pp, string_ty *file_name,
 		 * underlying file is shown), and removed files are
 		 * omitted from the result.
 		 */
-		if
-		(
-		    src_data->deleted_by
-		||
-		    src_data->action == file_action_remove
-		)
+		switch (src_data->action)
 		{
+		case file_action_remove:
 		    trace(("return NULL;\n"));
 		    trace(("}\n"));
 		    return 0;
+
+		case file_action_create:
+		case file_action_modify:
+		case file_action_insulate:
+		case file_action_transparent:
+#ifndef DEBUG
+		default:
+#endif
+		    assert(!src_data->deleted_by);
+		    if (src_data->deleted_by)
+		    {
+			trace(("return NULL;\n"));
+			trace(("}\n"));
+			return 0;
+		    }
+		    break;
 		}
 		/* fall through... */
 
@@ -78,28 +91,39 @@ project_file_find(project_ty *pp, string_ty *file_name,
 		 * (the underlying file is shown), but removed files
 		 * are retained.
 		 */
-		if (src_data->action == file_action_transparent)
+		switch (src_data->action)
+		{
+		case file_action_transparent:
 		    continue;
 
-		/*
-		 * Remember if the file has been removed.
-		 * (Takes precedence over the next two.)
-		 */
-		if
-		(
-		    src_data->deleted_by
-		||
-		    src_data->action == file_action_remove
-		)
+		case file_action_remove:
+		    /*
+		     * Remember if the file has been removed.
+		     */
 		    break;
 
-		/*
-		 * These two are transparent, for locking purposes.
-		 */
-		if (src_data->about_to_be_copied_by)
-		    continue;
-		if (src_data->about_to_be_created_by)
-		    continue;
+		case file_action_create:
+		case file_action_modify:
+		case file_action_insulate:
+#ifndef DEBUG
+		default:
+#endif
+		    /* should be file_action_remove */
+		    assert(!src_data->deleted_by);
+		    if (src_data->deleted_by)
+			break;
+
+		    /* should be file_action_transparent */
+		    assert(!src_data->about_to_be_copied_by);
+		    if (src_data->about_to_be_copied_by)
+			continue;
+
+		    /* should be file_action_transparent */
+		    assert(!src_data->about_to_be_created_by);
+		    if (src_data->about_to_be_created_by)
+			continue;
+		    break;
+		}
 		break;
 	    }
     	    trace(("return %8.8lX;\n", (long)src_data));

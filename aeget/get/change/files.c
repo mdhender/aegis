@@ -25,6 +25,7 @@
 #include <change.h>
 #include <change/file.h>
 #include <emit/edit_number.h>
+#include <error.h> /* for assert */
 #include <get/change/files.h>
 #include <http.h>
 #include <project.h>
@@ -54,7 +55,7 @@ get_change_files(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 
     for (j = 0; ; ++j)
     {
-	fstate_src      src;
+	fstate_src_ty   *src;
 
 	if (cp->bogus)
 	    src = project_file_nth(cp->pp, j, view_path_simple);
@@ -100,12 +101,30 @@ get_change_files(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	}
 	if (src->move)
 	{
-	    printf("<br>\nMoved %s ",
-		(src->action == file_action_create ? "from" : "to"));
-	    emit_file_href(cp, src->move, "menu");
-	    printf("<span class=\"filename\">");
-	    html_encode_string(src->move);
-	    printf("</span></a>");
+	    switch (src->action)
+	    {
+	    case file_action_create:
+		printf("<br>\nMoved from ");
+		emit_file_href(cp, src->move, "menu");
+		printf("<span class=\"filename\">");
+		html_encode_string(src->move);
+		printf("</span></a>");
+		break;
+
+	    case file_action_remove:
+		printf("<br>\nMoved to ");
+		emit_file_href(cp, src->move, "menu");
+		printf("<span class=\"filename\">");
+		html_encode_string(src->move);
+		printf("</span></a>");
+		break;
+
+	    case file_action_modify:
+	    case file_action_insulate:
+	    case file_action_transparent:
+		assert(0);
+		break;
+	    }
 	}
 	printf("</td></tr>\n");
     }

@@ -163,7 +163,7 @@ list_project_history(string_ty *project_name,
 		output_fprintf(delta_col, "%4ld", dn);
 		if (!option_terse_get())
 		{
-			cstate		cstate_data;
+			cstate_ty       *cstate_data;
 			time_t		t;
 			change_ty	*cp;
 
