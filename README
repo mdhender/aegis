@@ -6,20 +6,19 @@ readme(aegis)					    readme(aegis)
 
 NAME
 	aegis -	project	change supervisor
-	Copyright (C) 1990, 1991, 1992,	1993 Peter Miller.
+	Copyright (C) 1991, 1992, 1993,	1994, 1995 Peter Miller;
 	All rights reserved.
 
-	The aegis program is distributed under the terms of the
-	GNU General Public License.  See the LICENSE section,
-	below, for more	details.
+	Aegis is distributed under the terms of	the GNU	General
+	Public License.	 See the LICENSE section, below, for more
+	details.
 
 	aegis (ee.j.iz)	n., a protection, a defence.
 
 DESCRIPTION
-	The aegis program is a CASE tool with a	difference.  In
-	the spirit of the UNIX Operating System, the aegis
-	program	is a small component designed to work with other
-	programs.
+	Aegis is a CASE	tool with a difference.	 In the	spirit of
+	the UNIX Operating System, Aegis is a small component
+	designed to work with other programs.
 
 	Many CASE systems attempt to provide everything, from
 	bubble charts to source	control	to compilers.  Users are
@@ -32,32 +31,33 @@ DESCRIPTION
 	(such as make),	source control tools (such as RCS).  You
 	may substitute the tool	of your	choice if you don't like
 	the ones supplied with the system - gcc, jove, cake, to
-	name just a few.  The aegis program adds to this list
-	with software configuration management,	and true to UNIX
-	philosophy, the	aegis program does not dictate the choice
-	of any of the other tools (although it may stretch them
-	to their limits).
+	name just a few.  Aegis	adds to	this list with software
+	configuration management, and true to UNIX philosophy,
+	Aegis does not dictate the choice of any of the	other
+	tools (although	it may stretch them to their limits).
 
-	Enough hype, what is it	that the aegis program does?
-	Just what is software configuration management?	 This
-	question is sufficiently broad as to require a book in
-	answer.	 In essence, the aegis program is a project
-	change supervisor.  It provides	a framework within which
-	a team of developers may work on many changes to a
-	program	independently, and the aegis program coordinates
-	integrating these changes back into the	master source of
-	the program, with as little disruption as possible.
-	Resolution of contention for source files, a major
-	headache for any project with more than	one developer, is
-	one of the aegis program's major functions.
+	Enough hype, what is it	that Aegis does?  Just what is
+	software configuration management?  This question is
+	sufficiently broad as to require a book	in answer.  In
+	essence, Aegis is a project change supervisor.	It
+	provides a framework within which a team of developers
+	may work on many changes to a program independently, and
+	Aegis coordinates integrating these changes back into the
+	master source of the program, with as little disruption
+	as possible.  Resolution of contention for source files,
+	a major	headache for any project with more than	one
+	developer, is one of Aegis's major functions.
 
-	It should be noted that	the aegis program is a
-	developer's tool, in the same sense as make or RCS are
-	developer's tools.  It is not a	manager's tool - it does
-	not provide progress tracking or manage	work allocation.
+	It should be noted that	Aegis is a developer's tool, in
+	the same sense as make or RCS are developer's tools.  It
+	is not a manager's tool	- it does not provide progress
+	tracking or manage work	allocation.
 
+BENEFITS
+	So why should you use Aegis?
 
-
+	Aegis uses a particular	model of the development of
+	software projects.  This model has a master source (or
 
 
 
@@ -70,26 +70,20 @@ DESCRIPTION
 readme(aegis)					    readme(aegis)
 
 
-BENEFITS
-	So why should you use the aegis	program?
-
-	The aegis program uses a particular model of the
-	development of software	projects.  This	model has a
-	master source (or baseline) of a project, and a	team of
-	developers creating changes to be made to this baseline.
-	When a change is complete, it is integrated with the
-	baseline, to become the	new baseline.  Each change must
-	be atomic and self-contained, no change	is allowed to
-	cause the baseline to cease to work.  "Working"	is
-	defined	as passing it's	own tests.  The	tests are
-	considered part	of the baseline.  The aegis program
-	provides support for the developer so that an entire copy
-	of the baseline	need not be taken to change a few files,
-	only those files which are to be changed need to be
-	copied.
+	baseline) of a project,	and a team of developers creating
+	changes	to be made to this baseline.  When a change is
+	complete, it is	integrated with	the baseline, to become
+	the new	baseline.  Each	change must be atomic and self-
+	contained, no change is	allowed	to cause the baseline to
+	cease to work.	"Working" is defined as	passing	it's own
+	tests.	The tests are considered part of the baseline.
+	Aegis provides support for the developer so that an
+	entire copy of the baseline need not be	taken to change	a
+	few files, only	those files which are to be changed need
+	to be copied.
 
 	In order to ensure that	changes	are unable to cause the
-	baseline to cease to work, aegis mandates that changes be
+	baseline to cease to work, Aegis mandates that changes be
 	accompanied by at least	one test, and that all such tests
 	be known to complete successfully.  These steadily
 	accumulated tests form an ever increasing regression test
@@ -99,7 +93,7 @@ BENEFITS
 	project, doing so potentially compromises the "working"
 	definition of the baseline.
 
-	The win	in using the aegis program is that there are O(n)
+	The win	in using Aegis is that there are O(n)
 	interactions between developers	and the	baseline.
 	Contrast this with a master source which is being edited
 	directly by the	developers - there are O(n!)
@@ -112,18 +106,24 @@ BENEFITS
 	release	snapshots" we are always forced	to provide.
 
 	The above advantages are all very well - for management
-	types.	Why should Joe Average Programmer use the aegis
-	program?  Recall that RCS provides file	locking, but only
-	for one	file at	a time.	 The aegis program provides the
-	file locking, atomically, for the set of files in the
-	change.	 Recall	also that RCS locks the	file the instant
-	you start editing it.  This makes popular files	a project
-	bottleneck.  The aegis program allows concurrent editing,
-	and a resolution mechanism just	before the change must be
+	types.	Why should Joe Average Programmer use Aegis?
+	Recall that RCS	provides file locking, but only	for one
+	file at	a time.	 Aegis provides	the file locking,
+	atomically, for	the set	of files in the	change.	 Recall
+	also that RCS locks the	file the instant you start
+	editing	it.  This makes	popular	files a	project
+	bottleneck.  Aegis allows concurrent editing, and a
+	resolution mechanism just before the change must be
 	integrated, meaning fewer delays for J.A.Programmer.
 
+NEW IN THIS RELEASE
+	A number of features have been added to	Aegis with this
+	release.  A few	of them	are detailed here:
 
-
+	* The merging behaviour	of the aed(1) command has
+	changed.  If any files require merging,	it only	merges.
+	In this	way, merged files are not lost in the rest of the
+	output.	 Also, there are now command line options and
 
 
 
@@ -136,60 +136,60 @@ BENEFITS
 readme(aegis)					    readme(aegis)
 
 
-ARCHIVE	SITE
-	The latest version of aegis is available by anonymous FTP
-	from:
-	    Host:   ftp.cse.nau.edu (134.114.64.70)
-	    Dir:    /pub/Aegis
-	    File:   aegis.2.1.tar.Z	# the complete source
-	    File:   aegis.2.1.patch.Z	# patch	to take	2.0 to 2.1
-	    File:   aegis.2.1.ps.Z	# PostScript of	the User Guide
+	user preferences so that you can select	to only	merge or
+	only difference.  See aed(1) and aeuconf(5) for	more
+	nformation.
 
-	To use anonymous FTP, give "anonymous" as the user name
-	(omit the quotes) and your email address as the	password.
+	* It is	now possible to	assign symbolic	names to project
+	deltas.	 This means that you may now recreate earlier
+	project	baselines by name.
 
-	My grateful thanks to Paul Balyoz <pab@ftp.cse.nau.edu>
-	for his	generosity in providing	this archive space.
+	* All commands which accept a -Edit option now check for
+	most errors before commencing the edit.	 This avoids
+	wasted edits in	many error cases.
 
-	This directory also contains a few other pieces	of
-	software written by me.	 Some are referred to in the
-	aegis documentation.  Please have a look if you	are
-	interested.
+	* Fuzzy	file name matches are now used to improve the
+	error messages from aecp, aerm,	etc.
 
-	For those of you without FTP, I	recommend the use of an
-	ftp-by-email server.  Here is a	list of	a few (there are
-	many more):
-		ftpmail@decwrl.dec.com
-		ftpmail@cs.uow.edu.au
+	* Version number separators in project names are
+	preserved across new releases.	Particularly, you can use
+	a minus	('-') between the name and the major version
+	number.
 
-	In general, you	can get	a help message about how to use
-	each system by sending email with a subject of "help" and
-	a message body containing just the word	"help".
+	* A new	``copyright_years'' project attribute has been
+	added.	This is	a list of years	maintained at integrate
+	begin time, to automate	the insertion of list of
+	copyright years	into copyright messages	and
+	documentation.	There is a new ${Copyright_Years}
+	substitution and the copyright years are also listed in
+	the ``aegis -list version'' listing.  See aesub(5) and
+	ael(1) for more	information.
 
-MAILING	LIST
-	A mailing list has been	created	so that	users of aegis
-	may exchange ideas about how to	use the	aegis program.
-	Discussion may include,	but is not limited to: bugs,
-	enhancements, and applications.	 The list is not
-	moderated.
+	* It is	now possible to	specify	patterns for acceptable
+	and unacceptable filenames in the project config file.
+	See aepconf(5) for more	information.
 
-	The address of the mailing list	is
-		aegis-users@bmr.gov.au
+	* Four more functions have been	added to the report
+	language: length, split, substr	and wrap.  See aer(5) for
+	more information.
 
-	To subscribe to	this mailing list, send	an email message
-	to majordomo@bmr.gov.au	with a message body containing
-	the single line
-		subscribe aegis-users
-	Please note that bmr.gov.au is an Internet site, so if
-	you have an address which is not readily derived from
-	your mail headers (majordomo is	only a Perl program,
-	after all) you will need to use	a message of the form:
-		subscribe aegis-users address
-	where address is an email address which	makes sense from
-	an Internet site.
+	* The tests distributed	with  are now more stable on very
+	fast hosts.  See the environment variables section of
+	aeb(1) for more	information.
 
-	The software which handles this	mailing	list CANNOT send
-	you a copy of the aegis	program.  Please use FTP or ftp-
+	* The lib/config.example directory of the distribution
+	now contains files with	example	portions of the	project
+	config file.  May thanks to David R Shue
+	<shue@ll.mit.edu> for this suggestion.
+
+	Changes	made in	the previous release included:
+
+	This release of	Aegis provides 3 of the	most commonly
+	requested features: support for	heterogeneous
+	development, support for a greater range of DMTs, support
+	for user-defined reports.
+
+	* Aegis	now supports heterogeneous development.	 Now you
 
 
 
@@ -202,60 +202,60 @@ MAILING	LIST
 readme(aegis)					    readme(aegis)
 
 
-	by-email, instead.
+	can be sure that your project not only always builds and
+	tests sucessfully, but that it does so across a
+	configurable set of system or hardware architectures.
+	See the	Heterogeneous Development secion of the	Tips and
+	Traps chapter of the User Guide	for more information.
 
-COMPARISON WITH	CVS
-	One of the most	common questions about aegis is	"How does
-	it compare with	CVS?"
+	* Aegis	can now	cope with a wider range	of Dependency
+	Maintenance Tools (DMTs).  It now has the ability to fill
+	development directories	with symbolic links to all files
+	in the baseline	which are not present in the development
+	directory.  This allows	DMTs to	assume all files are
+	present	below the current directory, allowing DMTs such
+	as cake	and GNU	Make to	be used.  See the Dependency
+	Maintenance Tool section of the	User Guide and aeb(1) for
+	more information.
 
-	The CVS	program	aims to	provide	a repository, RCS for
-	sets of	files.	The aegis program aims to provide a
-	baseline, a repository,	consistency of the baseline, and
-	validation of changes being made to the	baseline.
+	* Aegis	now has	a report generator, so you can create
+	your own reports.  Many	"canned" reports are included in
+	this distribution; of particular interest to many will be
+	the File_Activity report, which	details	currently active
+	files.	See aer(1) for more information.
 
-	A simplistic way of thinking of	this is	"CVS is	over
-	RCS", but "aegis is over RCS and make".	 Actually CVS
-	requires RCS, whereas aegis may	be configured to use
-	almost any history tool; similarly for the dependency
-	maintenance tool, aegis	may be configured to use almost
-	any sufficiently capable tool (unfortunately traditional
-	make isn't sufficiently	capable, but the name is well
-	known and evokes the appropriate functional image).
+	* Aegis	is now configured using	a shell	script called
+	configure, distributed with the	package.  This shell
+	script is generated using GNU Autoconf.	 See the BUILDING
+	file for more information.
 
-	The most significant point of departure	is around the
-	"cvs checkin" functionality.  In CVS, this is
-	unconditional; a developer can add a poorly though-out
-	code change, or	even indulge in	a little vandalism, with
-	nothing	to prevent it.	In contrast, the aegis program
-	breaks this step into several pieces: the change must be
-	be known to build, the change must have	tests and those
-	tests be known to have run and passed, the change must
-	then be	reviewed (double check), and then built	and
-	tested again (triple check).
+	* The AEGIS environment	variable has been renamed
+	AEGIS_PATH, to bring it	in line	with the AEGIS_PROJECT
+	and AEGIS_CHANGE environment variable names.  The old
+	name will keep working for some	time, but aegis	will warn
+	you.
 
-	For a more detailed discussion,	see appendix C of the
-	User Guide.
+	* Filename lengths are now configurable.  The 14
+	character portability limit is still the default, but a
+	higher limit is	configurable for each project, up to the
+	filesystem filename limit.  See	aepconf(5) for more
+	information.
 
-NEW IN THIS RELEASE
-	A number of features have been added to	aegis with this
-	release.  A few	of them	are detailed here:
+	* It is	now possible to	specify	that filenames must be
+	within the minimum character set mandated by POSIX.  The
+	default	is as before, to allow any printing character.
+	See aepconf(5) for more	information.
 
-	* Can now ask for history to maintained	for file
-	generated by the build.	 This is useful	for generating
-	patch files.
+	* Limits on the	length of project names	have been
+	relaxed.  Project names	are now	only limited by	the
+	filesystem filename limit.
 
+	* It is	now possible to	specify	the command to run tests,
+	allowing a project to use a specialized	test facility,
+	rather than be forced to use shell scripts.  See aet(1)
+	and for	more information.
 
-	Plus the usual crop of bug fixes and tinkering.	 For
-	excruciating detail, and also acknowledgements of those
-	who generously sent me feedback, please	see the	CHANGES
-	file included in this distribution.
-
-BUILDING
-	Instructions on	how to build and test the aegis	program
-	are to be found	in the BUILDING	file included in this
-	distribution.
-
-
+	* The commands which accept the	-Edit now preserve the
 
 
 
@@ -268,60 +268,60 @@ BUILDING
 readme(aegis)					    readme(aegis)
 
 
-SOME HISTORY
-	The idea for aegis did not come	full-blown into	my head
-	in the shower, as some of my programs do, but rather from
-	working	in a software shop which used a	simplistic form
-	of something similar.  That system was held together by
-	chewing-gum and	string,	it was written in a disgusting
-	variant	of Basic, and by golly the damn	thing worked
-	(mostly).  The aegis program is	nothing	like it, owes
-	none of	its code to that system, and is	far more
-	versatile.
+	edited text in the event of a failure.
 
-	Since that company decided to close down our section, we
-	all moved on simultaneously (all 60 of us), sometimes
-	working	together, and sometimes	not, but always	keeping
-	in touch.  With	suggestions and	conversations with some
-	of them	early in 1990, the manual entries for aegis took
-	shape, and formed most of the design document for aegis.
+	* The commands which delete files now accept a
+	-Interactive option, which causes them to prompt the user
+	for confirmation of file deletion.  This can be	made the
+	default	by an appropriate setting of the aliases or
+	individual users preferences files.  See aenfu(1),
+	aentu(1), aecpu(1), and	aeuconf(5) for more information.
 
-	Since getting the first	glimmerings of a functional aegis
-	late in	1990 it	is increasingly	obvious	that I never want
-	to be without it ever again.  All of my	sources	that I
-	modify are instantly placed under aegis, as is anything	I
-	distribute.  All code I	write for myself, and all new
-	code I write for my employer, goes under aegis.	 Why?
-	Because	it has fewer bugs!
+	* The aecp(1) command now accepts directory names,
+	allowing whole directory trees to be copied into a
+	change.	 The aecpu(1) command now has a	-UNChanged option
+	which allows the unchanged files to be uncopied.
 
-	Example: one of	the sources I carry with me from job to
-	job is "cook", my dependency maintenance tool.	Cook had
-	existed	for 3 years before aegis appeared on the scene,
-	and I used it daily.  When I placed cook under aegis, I
-	found 6	bugs!  Since then I have found a few more.  Not
-	only are there now fewer bugs, but they	never come back,
-	because	the regression test suite always grows.
+	* The aeb command now accepts file names, allowing
+	partial	builds to be performed.	 See aeb(1) for	more
+	information.
 
-LICENSE
-	The aegis program is free software; you	can redistribute
-	it and/or modify it under the terms of the GNU General
-	Public License as published by the Free	Software
-	Foundation; either version 2 of	the License, or	(at your
-	option)	any later version.
+	* There	is a new aechown(1) command to facilitate
+	reassigning the	developer of a change which is in the
+	being developed	state.
 
-	The aegis program is distributed in the	hope that it will
-	be useful, but WITHOUT ANY WARRANTY; without even the
-	implied	warranty of MERCHANTABILITY or FITNESS FOR A
-	PARTICULAR PURPOSE.  See the GNU General Public	License
-	for more details.
+	* It is	now possible for project administrators	to assign
+	changes	to specific developers.	 See aedb(1) for more
+	information.
 
-	You should have	received a copy	of the GNU General Public
-	License	along with this	program; if not, write to the
-	Free Software Foundation, Inc.,	675 Mass Ave, Cambridge,
-	MA 02139, USA.
+	Plus the usual crop of bug fixes and tinkering.	 For
+	excruciating detail, and also acknowledgements of those
+	who generously sent me feedback, please	see the
+	aux/CHANGES.2.3	file included in this distribution.
 
-	It should be in	the LICENSE file included in this
-	distribution.
+ARCHIVE	SITE
+	The latest version of Aegis is available by anonymous FTP
+	from:
+	    Host:   ftp.nau.edu	(134.114.64.90)
+	    Dir:    /pub/Aegis
+	    File:   aegis.2.3.tar.Z	# the complete source
+	    File:   aegis.2.3.patch.Z	# patch	to take	2.2 to 2.3
+	    File:   aegis.2.3.ps.Z	# PostScript of	the User Guide
+	    File:   aegis.2.3.faq	# Frequently Asked Questions
+
+	To use anonymous FTP, give "anonymous" as the user name
+	(omit the quotes) and your email address as the	password.
+
+	My grateful thanks to Paul Balyoz <pab@ftp.cse.nau.edu>
+	for his	generosity in providing	this archive space.
+
+	This directory also contains a few other pieces	of
+	software written by me.	 Some are referred to in the
+	Aegis documentation.  Please have a look if you	are
+	interested.
+
+	For those of you without FTP, I	recommend the use of an
+	ftp-by-email server.  Here is a	list of	a few (there are
 
 
 
@@ -334,63 +334,129 @@ LICENSE
 readme(aegis)					    readme(aegis)
 
 
-AUTHOR
-	Peter Miller   UUCP	  uunet!munnari!bmr.gov.au!pmiller
-	/\/\*	       Internet	  pmiller@bmr.gov.au
+	many more):
+		ftpmail@decwrl.dec.com
+		ftpmail@cs.uow.edu.au
 
+	In general, you	can get	a help message about how to use
+	each system by sending email with a subject of "help" and
+	a message body containing just the word	"help".
 
+MAILING	LIST
+	A mailing list has been	created	so that	users of Aegis
+	may exchange ideas about how to	use Aegis.  Discussion
+	may include, but is not	limited	to: bugs, enhancements,
+	and applications.  The list is not moderated.
 
+	The address of the mailing list	is
+		aegis-users@agso.gov.au
 
+	To subscribe to	this mailing list, send	an email message
+	to majordomo@agso.gov.au with a	message	body containing
+	the single line
+		subscribe aegis-users
+	Please note that agso.gov.au is	an Internet site, so if
+	you have an address which is not readily derived from
+	your mail headers (majordomo is	only a Perl program,
+	after all) you will need to use	a message of the form:
+		subscribe aegis-users address
+	where address is an email address which	makes sense from
+	an Internet site.
 
+	The software which handles this	mailing	list CANNOT send
+	you a copy of Aegis.  Please use FTP or	ftp-by-email,
+	instead.
 
+BUILDING
+	Instructions on	how to build and test Aegis are	to be
+	found in the BUILDING file included in this distribution.
 
+SOME HISTORY
+	The idea for Aegis did not come	full-blown into	my head
+	in the shower, as some of my programs do, but rather from
+	working	in a software shop which used a	simplistic form
+	of something similar.  That system was held together by
+	chewing-gum and	string,	it was written in a disgusting
+	variant	of Basic, and by golly the damn	thing worked
+	(mostly).  Aegis is nothing like it, owes none of its
+	code to	that system, and is far	more versatile.	 It turns
+	out that the system used is nothing new, and is	described
+	in many	SCM textbooks; it is the result	of systematically
+	resolving development issues for large-ish teams.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	Since that company decided to close down our section (the
+	company	was under attack by a hostile takeover bid) we
+	all moved on simultaneously (all 60 of us), sometimes
+	working	together, and sometimes	not, but always	keeping
 
 
 
 								6
+
+
+
+
+
+readme(aegis)					    readme(aegis)
+
+
+	in touch.  With	suggestions and	conversations with some
+	of them	early in 1990, the manual entries for Aegis took
+	shape, and formed most of the design document for Aegis.
+
+	Since getting the first	glimmerings of a functional Aegis
+	late in	1990 it	is increasingly	obvious	that I never want
+	to be without it ever again.  All of my	sources	that I
+	modify are instantly placed under Aegis, as is anything	I
+	distribute.  All code I	write for myself, and all new
+	code I write for my employer, goes under Aegis.	 Why?
+	Because	it has fewer bugs!
+
+	Example: one of	the sources I carry with me from job to
+	job is "cook", my dependency maintenance tool.	Cook had
+	existed	for 3 years before Aegis appeared on the scene,
+	and I used it daily.  When I placed cook under Aegis, I
+	found 6	bugs!  Since then I have found a few more.  Not
+	only are there now fewer bugs, but they	never come back,
+	because	the regression test suite always grows.
+
+LICENSE
+	Aegis is free software;	you can	redistribute it	and/or
+	modify it under	the terms of the GNU General Public
+	License	as published by	the Free Software Foundation;
+	either version 2 of the	License, or (at	your option) any
+	later version.
+
+	Aegis is distributed in	the hope that it will be useful,
+	but WITHOUT ANY	WARRANTY; without even the implied
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+	PURPOSE.  See the GNU General Public License for more
+	details.
+
+	You should have	received a copy	of the GNU General Public
+	License	along with this	program; if not, write to the
+	Free Software Foundation, Inc.,	675 Mass Ave, Cambridge,
+	MA 02139, USA.
+
+	It should be in	the LICENSE file included in this
+	distribution.
+
+AUTHOR
+	Peter Miller	   UUCP:   uunet!munnari!agso.gov.au!pmiller
+	/\/\*	       Internet:   pmiller@agso.gov.au
+
+
+
+
+
+
+
+
+
+
+
+
+
+								7
 
 

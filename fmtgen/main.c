@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,11 +21,10 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <ac/stdlib.h>
 
 #include <arglex.h>
 #include <error.h>
-#include <id.h>
 #include <lex.h>
 #include <option.h>
 #include <parse.h>
@@ -41,7 +40,12 @@ usage()
 	char	*progname;
 
 	progname = option_progname_get();
-	fprintf(stderr, "usage: %s [ <option>... ] <file.def> <file.c> <file.h>\n", progname);
+	fprintf
+	(
+		stderr,
+		"usage: %s [ <option>... ] <file.def> <file.c> <file.h>\n",
+		progname
+	);
 	fprintf(stderr, "       %s -Help\n", progname);
 	exit(1);
 }
@@ -105,8 +109,8 @@ help()
 "	of 0 if there are no errors.",
 "",
 "COPYRIGHT",
-"	The %s program is Copyright (C) 1990, 1991, 1992, 1993 Peter Miller.",
-"	All rights reserved.",
+"	The %s program is Copyright (C) 1990, 1991, 1992, 1993,",
+"	1994 Peter Miller.  All rights reserved.",
 "",
 "	The %s program comes with ABSOLUTELY NO WARRANTY; for",
 "	details use the 'aegis -VERSion Warranty' command.  This",
@@ -115,8 +119,8 @@ help()
 "	-VERSion Redistribution' command.",
 "",
 "AUTHOR",
-"	Peter Miller   UUCP     uunet!munnari!bmr.gov.au!pmiller",
-"	/\\/\\*          Internet pmiller@bmr.gov.au",
+"	Peter Miller   UUCP     uunet!munnari!agso.gov.au!pmiller",
+"	/\\/\\*          Internet pmiller@agso.gov.au",
 		0
 	};
 
@@ -156,9 +160,8 @@ main(argc, argv)
 	char	*filename[3];
 	int	j;
 
-	str_initialize();
 	arglex_init(argc, argv, argtab);
-	id_initialize();
+	str_initialize();
 	for (j = 0; j < SIZEOF(filename); ++j)
 		filename[j] = 0;
 	if (arglex() == arglex_token_help)

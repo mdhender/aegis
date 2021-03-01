@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -17,12 +17,12 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * MANIFEST: functions to add or remove a new file to a change
+ * MANIFEST: functions to implement new file
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include <ac/stdlib.h>
+#include <ac/unistd.h>
 
 #include <ael.h>
 #include <aenf.h>
@@ -51,8 +51,18 @@ new_file_usage()
 	char		*progname;
 
 	progname = option_progname_get();
-	fprintf(stderr, "usage: %s -New_File <filename>... [ <option>... ]\n", progname);
-	fprintf(stderr, "       %s -New_File -List [ <option>... ]\n", progname);
+	fprintf
+	(
+		stderr,
+		"usage: %s -New_File <filename>... [ <option>... ]\n",
+		progname
+	);
+	fprintf
+	(
+		stderr,
+		"       %s -New_File -List [ <option>... ]\n",
+		progname
+	);
 	fprintf(stderr, "       %s -New_File -Help\n", progname);
 	quit(1);
 }
@@ -65,143 +75,7 @@ new_file_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -New_File - add new files to a change",
-"",
-"SYNOPSIS",
-"	%s -New_File <file-name>... [ <option>... ]",
-"	%s -New_File -List [ <option>... ]",
-"	%s -New_File -Help",
-"",
-"DESCRIPTION",
-"	The %s -New_File command is used to add new files to a",
-"	change.",
-"",
-"	The %s program will attempt to intuit the file names",
-"	intended.  All file names are stored within %s as",
-"	relative to the root of the baseline directory tree.  The",
-"	development directory and the integration directory are",
-"	shadows of the baseline directory, and so these relative",
-"	names aply there, too.	Files named on the command line",
-"	are first converted to absolute paths if necessary.  They",
-"	are then compared with the baseline path, and the",
-"	development directory path, and the integration directory",
-"	path, to determine a root-relative name.  It is an error",
-"	if the file named is outside one of these directory",
-"	trees.",
-"",
-"	The named files will be added to the list of files in the",
-"	change.  For each file named, a new file is created in the",
-"	development directory, if it does not exist already.  The",
-"	config file will be searched for a template for the new",
-"	file.  If a template is found, the new file will be",
-"	initialized to the template, otherwise it will be created",
-"	empty.  If the file already exists, it will not be altered.",
-"	See aepconf(5) for more information.",
-"",
-"OPTIONS",
-"	The following options are understood",
-"",
-"	-Build",
-"		This option may be used to specify that the file",
-"		is constructed during a build (often only an",
-"		integrate build), so that history of it may be",
-"		kept.  This is useful for generating patch files,",
-"		where a history of generated files is important.",
-"		Files created in this way may not be copied into",
-"		a change, though they may be deleted.  Avoid",
-"		using files of this type, if at all possible.",
-"",
-"	-Change <number>",
-"		This option may be used to specify a particular",
-"		change within a project.  When no -Change option is",
-"		specified, the AEGIS_CHANGE environment variable is",
-"		consulted.  If that does not exist, the user's",
-"		$HOME/.aegisrc file is examined for a default change",
-"		field (see aeuconf(5) for more information).  If",
-"		that does not exist, when the user is only working",
-"		on one change within a project, that is the default",
-"		change number.  Otherwise, it is an error.",
-"",
-"	-Help",
-"		This option may be used to obtain more",
-"		information about how to use the %s program.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified, the",
-"		AEGIS_PROJECT environment variable is consulted.  If",
-"		that does not exist, the user's $HOME/.aegisrc file",
-"		is examined for a default project field (see",
-"		aeuconf(5) for more information).  If that does not",
-"		exist, when the user is only working on changes",
-"		within a single project, the project name defaults",
-"		to that project.  Otherwise, it is an error.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List",
-"		option this option causes column headings to be",
-"		added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aenf '%s -nf \\!* -v'",
-"	sh$	aenf(){%s -nf $* -v}",
-"",
-"ERRORS",
-"	It is an error if the change is not in the",
-"	'being_developed' state.",
-"	It is an error if the change is not assigned to the",
-"	current user.",
-"	It is an error if the file is already part of the change.",
-"	It is an error if the file is already part of the",
-"	baseline.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.	The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aenf.h>
 	};
 
 	help(text, SIZEOF(text), new_file_usage);
@@ -271,7 +145,6 @@ new_file_main()
 	int		j;
 	string_ty	*s1;
 	string_ty	*s2;
-	pconf		pconf_data;
 	string_ty	*project_name;
 	project_ty	*pp;
 	long		change_number;
@@ -279,6 +152,7 @@ new_file_main()
 	int		nolog;
 	user_ty		*up;
 	int		generated;
+	int		nerrs;
 
 	trace(("new_file_main()\n{\n"/*}*/));
 	project_name = 0;
@@ -286,6 +160,7 @@ new_file_main()
 	generated = 0;
 	wl_zero(&wl);
 	nolog = 0;
+	nerrs = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -300,19 +175,18 @@ new_file_main()
 			s2 = os_pathname(s1, 1);
 			str_free(s1);
 			if (wl_member(&wl, s2))
-				fatal("file \"%s\" named more than once", arglex_value.alv_string);
-			s1 = os_entryname(s2);
-			os_become_undo();
-			if (s1->str_length > PATH_ELEMENT_MAX - 2)
 			{
-				fatal
+				error
 				(
-					"file \"%s\" basename too long (by %ld)",
-					arglex_value.alv_string,
-					s1->str_length - (PATH_ELEMENT_MAX - 2)
+					"file \"%s\" named more than once",
+					arglex_value.alv_string
 				);
+				++nerrs;
+				os_become_undo();
+				str_free(s2);
+				break;
 			}
-			str_free(s1);
+			os_become_undo();
 			wl_append(&wl, s2);
 			str_free(s2);
 			break;
@@ -359,6 +233,15 @@ new_file_main()
 		}
 		arglex();
 	}
+	if (nerrs)
+	{
+		fatal
+		(
+			"found %d error%s, no new files added",
+			nerrs,
+			(nerrs == 1 ? "" : "s")
+		);
+	}
 	if (!wl.wl_nwords)
 		fatal("no files named");
 
@@ -391,21 +274,29 @@ new_file_main()
 	lock_take();
 	cstate_data = change_cstate_get(cp);
 	pstate_data = project_pstate_get(pp);
-	pconf_data = change_pconf_get(cp);
 
 	/*
-	 * It is an error if the change is not in the in_development state.
+	 * It is an error if the change is not in the being_developed state.
 	 * It is an error if the change is not assigned to the current user.
 	 */
 	if (cstate_data->state != cstate_state_being_developed)
-		change_fatal(cp, "not in 'being_developed' state");
+	{
+		change_fatal
+		(
+			cp,
+"this change is in the '%s' state, \
+it must be in the 'being developed' state to create new files with it",
+			cstate_state_ename(cstate_data->state)
+		);
+	}
 	if (!str_equal(change_developer_name(cp), user_name(up)))
 	{
 		change_fatal
 		(
 			cp,
-			"user \"%S\" is not the developer",
-			user_name(up)
+"user \"%S\" is not the developer, only user \"%S\" may add a new file",
+			user_name(up),
+			change_developer_name(cp)
 		);
 	}
 
@@ -442,17 +333,55 @@ new_file_main()
 
 		s1 = wl.wl_word[j];
 		if (change_src_find(cp, s1))
-			change_fatal(cp, "file \"%S\" already exists", s1);
-		src_data = project_src_find(pp, s1);
-		if
+		{
+			change_error
+			(
+				cp,
+				"file \"%S\" is already part of this change",
+				s1
+			);
+			++nerrs;
+		}
+		else
+		{
+			src_data = project_src_find(pp, s1);
+			if (src_data && !src_data->deleted_by)
+			{
+				project_error
+				(
+					pp,
+					"file \"%S\" already exists",
+					s1
+				);
+				++nerrs;
+			}
+		}
+	}
+
+	/*
+	 * check that each filename is OK
+	 */
+	for (j = 0; j < wl.wl_nwords; ++j)
+	{
+		string_ty	*e;
+
+		e = change_filename_check(cp, wl.wl_word[j], 1);
+		if (e)
+		{
+			change_error(cp, "%S", e);
+			++nerrs;
+			str_free(e);
+		}
+	}
+	if (nerrs)
+	{
+		change_fatal
 		(
-			src_data
-		&&
-			!src_data->about_to_be_created_by
-		&&
-			!src_data->deleted_by
-		)
-			project_fatal(pp, "file \"%S\" already exists", s1);
+			cp,
+			"found %d error%s, no new files added",
+			nerrs,
+			(nerrs == 1 ? "" : "s")
+		);
 	}
 
 	/*
@@ -466,6 +395,8 @@ new_file_main()
 		s1 = wl.wl_word[j];
 		os_mkdir_between(dd, s1, 02755);
 		s2 = str_format("%S/%S", dd, s1);
+		if (os_symlink_query(s2))
+			os_unlink(s2);
 		if (!os_exists(s2))
 		{
 			int		fd;
@@ -485,6 +416,20 @@ new_file_main()
 					template->str_text,
 					template->str_length
 				);
+				if
+				(
+					template->str_length
+				&&
+					(
+						template->str_text
+						[
+							template->str_length - 1
+						]
+					!=
+						'\n'
+					)
+				)
+					glue_write(fd, "\n", 1);
 				str_free(template);
 			}
 			glue_close(fd);
@@ -515,10 +460,7 @@ new_file_main()
 	 * the number of files changed, or the version did,
 	 * so stomp on the validation fields.
 	 */
-	cstate_data->build_time = 0;
-	cstate_data->test_time = 0;
-	cstate_data->test_baseline_time = 0;
-	cstate_data->regression_test_time = 0;
+	change_build_times_clear(cp);
 
 	/*
 	 * release the locks
@@ -531,7 +473,7 @@ new_file_main()
 	 * run the change file command
 	 */
 	if (!nolog)
-		log_open(change_logfile_get(cp), up);
+		log_open(change_logfile_get(cp), up, log_style_append);
 	change_run_change_file_command(cp, &wl, up);
 
 	/*

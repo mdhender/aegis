@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,14 +23,13 @@
 #ifndef MEM_H
 #define MEM_H
 
-#include <stddef.h>
+#include <ac/stddef.h>
 #include <main.h>
 
-char *mem_alloc _((size_t));
-char *mem_alloc_clear _((size_t));
-void mem_change_size _((char **, size_t));
-void mem_free _((char *));
-char *enlarge _((size_t *, char **, size_t));
+void *mem_alloc _((size_t));
+void *mem_alloc_clear _((size_t));
+void *mem_change_size _((void *, size_t));
+void mem_free _((void *));
 char *mem_copy_string _((char *));
 
 #endif /* MEM_H */

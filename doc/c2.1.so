@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -79,8 +79,16 @@ pat%
 The contents of the
 .I config
 file will not be described in this section,
-as it is covered in the
-.I "Project Configuration File"
+mostly because it is a rather complex subject;
+so complex it requires four chapters to describe:
+the
+.IR "History Tool"
+chapter, the
+.IR "Dependency Maintenance Tool"
+chapter, the
+.I "Difference Tools"
+chapter and the
+.I "Project Attributes"
 chapter.
 The contents of the
 .I Howto.cook
@@ -204,7 +212,9 @@ file is included using the
 form.
 This is very important for builds in later changes,
 and is discussed more fully in the
-.I "Tips and Traps"
+.I "Using Cook"
+section of the
+.I "Dependency Maintenance Tool"
 chapter.
 .LP
 The files are processed, compiled and linked together using the
@@ -339,7 +349,7 @@ This is so that the project team can be confident at all times
 that a project works\**.
 .FS
 As discussed in the
-.I "Tips and Traps"
+.I "How Aegis Works"
 chapter,
 aegis has the objective of ensuring that projects always work,
 where "works" is defined as passing all tests in the project's baseline.
@@ -1182,7 +1192,7 @@ pass
 .E)
 .LP
 Everything is ready.
-Now the change cane be built and tested,
+Now the change can be built and tested,
 just like the earlier changes.
 .E(
 sam% \f(CBaeb\fP
@@ -1524,7 +1534,7 @@ pat%
 .LP
 The change is tested against the baseline.
 .E(
-pat% \f(CBaet\fP
+pat% \f(CBaet -bl\fP
 aegis: logging to "/u/pat/example.004/aegis.log"
 aegis: sh /u/pat/example.004/test/00/t0001a.sh
 1,2c1,4
@@ -1749,6 +1759,7 @@ jan%
 Perform the regression tests, too.
 This is important for a merged change,
 to make sure you didn't break the functionality
+of the code
 you merged with.
 .E(
 jan% \f(CBaet -reg\fP

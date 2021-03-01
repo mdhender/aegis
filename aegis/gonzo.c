@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,12 +21,12 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
+#include <ac/stdlib.h>
+#include <ac/string.h>
+#include <ac/unistd.h>
 
 #include <commit.h>
-#include <conf.h>
+#include <env.h>
 #include <error.h>
 #include <gonzo.h>
 #include <gstate.h>
@@ -54,6 +54,7 @@ struct gonzo_ty
 };
 
 static	size_t		ngonzos;
+static	size_t		ngonzos_max;
 static	gonzo_ty	**gonzo;
 static	int		done_tail;
 
@@ -67,12 +68,43 @@ gonzo_user()
 
 	if (!u)
 	{
+#ifdef AEGIS_USER
 		string_ty	*s;
 
 		s = str_from_c(AEGIS_USER);
 		u = user_symbolic((project_ty *)0, s);
-		u->umask = 022;
 		str_free(s);
+#else
+		u = user_numeric2(AEGIS_USER_UID, AEGIS_USER_GID);
+#endif
+		u->umask = 022;
+
+		if (u->uid >= AEGIS_MIN_UID)
+		{
+			fatal
+			(
+"This program has been mis-configured.  \
+The AEGIS_USER_UID (currently defined as %d) must be less than \
+the AEGIS_MIN_UID (currently defined as %d).  \
+It is important that the AEGIS_USER_UID not be able to own projects.  \
+This is a fatal error.",
+				u->uid,
+				AEGIS_MIN_UID
+			);
+		}
+		if (u->gid >= AEGIS_MIN_GID)
+		{
+			fatal
+			(
+"This program has been mis-configured.  \
+The AEGIS_USER_GID (currently defined as %d) must be less than \
+the AEGIS_MIN_GID (currently defined as %d).  \
+It is important that the AEGIS_USER_GID not be able to own projects.  \
+This is a fatal error.",
+				u->gid,
+				AEGIS_MIN_GID
+			);
+		}
 	}
 	return u;
 }
@@ -122,13 +154,18 @@ gonzo_library_append(s)
 	gp->dir = dir;
 	gp->temporary = is_temporary(dir);
 	gp->gstate_filename = str_format("%S/state", gp->dir);
-	*(gonzo_ty **)
-	enlarge
-	(
-		&ngonzos,
-		(char **)&gonzo, sizeof(gonzo_ty *)
-	) =
-		gp;
+	trace(("gonzo = %08lX;\n", (long)gonzo));
+	trace(("ngonzos = %ld;\n", ngonzos));
+
+	if (ngonzos >= ngonzos_max)
+	{
+		size_t		nbytes;
+
+		ngonzos_max = ngonzos_max * 2 + 4;
+		nbytes = ngonzos_max * sizeof(gonzo_ty *);
+		gonzo = mem_change_size(gonzo, nbytes);
+	}
+	gonzo[ngonzos++] = gp;
 	trace((/*{*/"}\n"));
 }
 
@@ -177,7 +214,7 @@ gonzo_gstate_get(gp)
 				gp->gstate_filename,
 				0644,
 				user_id(gonzo_user()),
-				user_gid(gonzo_user())
+				(gp->temporary ? -1 : user_gid(gonzo_user()))
 			);
 			gp->gstate_data =
 				gstate_read_file(gp->gstate_filename->str_text);
@@ -355,6 +392,7 @@ do_tail()
 	char		*cp;
 	wlist		path;
 	size_t		j;
+	size_t		max;
 
 	/*
 	 * only do this once
@@ -366,15 +404,34 @@ do_tail()
 	 * fetch the environment variable
 	 */
 	trace(("do_tail()\n{\n"/*}*/));
-	s1 = str_from_c(option_progname_get());
+	s1 = str_format("%s_PATH", option_progname_get());
 	s2 = str_upcase(s1);
 	str_free(s1);
 	cp = getenv(s2->str_text);
 	str_free(s2);
+	if (!cp)
+	{
+		trace(("mark\n"));
+		s1 = str_from_c(option_progname_get());
+		s2 = str_upcase(s1);
+		str_free(s1);
+		cp = getenv(s2->str_text);
+		if (cp)
+		{
+			verbose
+			(
+"warning: the %s environment variable is obsolete, please use %s_PATH instead",
+				s2->str_text,
+				s2->str_text
+			);
+		}
+		str_free(s2);
+	}
 	if (cp)
 	{
+		trace(("mark\n"));
 		s1 = str_from_c(cp);
-		str2wl(&path, s1, ":");
+		str2wl(&path, s1, ":", 1);
 		str_free(s1);
 		for (j = 0; j < path.wl_nwords; ++j)
 		{
@@ -385,6 +442,7 @@ do_tail()
 		wl_free(&path);
 	}
 
+	trace(("mark\n"));
 	if (os_testing_mode())
 	{
 		if (!ngonzos)
@@ -394,6 +452,7 @@ do_tail()
 "There was no -LIBrary option specified.  This is mandatory in \"test\" mode."
 			);
 		}
+		max = ngonzos;
 	}
 	else
 	{
@@ -401,8 +460,39 @@ do_tail()
 		 * always have the system one last
 		 *	(this is where locks are taken)
 		 */
-		gonzo_library_append(LIB);
+		gonzo_library_append(gonzo_library_path());
+		max = ngonzos - 1;
 	}
+
+	/*
+	 * build a new environment variable
+	 */
+	trace(("mark\n"));
+	wl_zero(&path);
+	for (j = 0; j < max; ++j)
+		wl_append(&path, gonzo[j]->dir);
+	s1 = str_format("%s_PATH", option_progname_get());
+	s2 = str_upcase(s1);
+	str_free(s1);
+	s1 = wl2str(&path, 0, 32767, ":");
+	wl_free(&path);
+	env_set(s2->str_text, s1->str_text);
+	str_free(s1);
+	str_free(s2);
+
+	/*
+	 * zap the obsolete one, if present
+	 */
+	trace(("mark\n"));
+	s1 = str_from_c(option_progname_get());
+	s2 = str_upcase(s1);
+	str_free(s1);
+	env_unset(s2->str_text);
+	str_free(s2);
+
+	/*
+	 * do not repeat
+	 */
 	done_tail = 1;
 	trace((/*{*/"}\n"));
 }
@@ -624,12 +714,13 @@ gonzo_project_add(pp)
 
 	trace(("gonzo_project_add(pp = %08lX)\n{\n"/*}*/, pp));
 	gp = gonzo_nth(0);
-	gstate_where_list_type.list_parse
-	(
-		gp->gstate_data->where,
-		&type_p,
-		(void **)&addr_p
-	);
+	addr_p =
+		gstate_where_list_type.list_parse
+		(
+			gp->gstate_data->where,
+			&type_p
+		);
+	assert(type_p == &gstate_where_type);
 	addr = (gstate_where)gstate_where_type.alloc();
 	*addr_p = addr;
 	trace_pointer(addr);
@@ -779,9 +870,9 @@ gonzo_ustate_path_sub(gp, project_name)
 
 
 string_ty *
-gonzo_ustate_path(project_name, user_name)
+gonzo_ustate_path(project_name, login_name)
 	string_ty	*project_name;
-	string_ty	*user_name;
+	string_ty	*login_name;
 {
 	gonzo_ty	*gp;
 	size_t		j;
@@ -793,7 +884,7 @@ gonzo_ustate_path(project_name, user_name)
 	 *	the user state file contains an index into the project files
 	 *	and is thus kept in the same directory
 	 */
-	trace(("gonzo_ustate_path(project_name = \"%s\", user_name = \"%s\")\n{\n"/*}*/, project_name->str_text, user_name->str_text));
+	trace(("gonzo_ustate_path(project_name = \"%s\", login_name = \"%s\")\n{\n"/*}*/, project_name->str_text, login_name->str_text));
 	for (j = 0; ; ++j)
 	{
 		gp = gonzo_nth(j);
@@ -828,7 +919,7 @@ gonzo_ustate_path(project_name, user_name)
 	/*
 	 * build the user state file name
 	 */
-	result = str_format("%S/user/%S", gp->dir, user_name);
+	result = str_format("%S/user/%S", gp->dir, login_name);
 	trace(("return \"%s\";\n", result->str_text));
 	trace((/*{*/"}\n"));
 	return result;
@@ -850,4 +941,29 @@ gonzo_become_undo()
 	trace(("gonzo_become_undo()\n{\n"/*}*/));
 	user_become_undo();
 	trace((/*{*/"}\n"));
+}
+
+
+char *
+gonzo_library_path()
+{
+	return LIB;
+}
+
+
+void
+gonzo_report_path(p)
+	wlist		*p;
+{
+	long		j;
+	gonzo_ty	*gp;
+
+	wl_zero(p);
+	for (j = 0; ; ++j)
+	{
+		gp = gonzo_nth(j);
+		if (!gp)
+			break;
+		wl_append(p, gp->dir);
+	}
 }

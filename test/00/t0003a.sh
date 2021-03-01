@@ -1,7 +1,7 @@
-#! /bin/sh
+#!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991, 1992, 1993 Peter Miller.
+#	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,13 @@
 
 unset AEGIS_PROJECT
 unset AEGIS_CHANGE
+unset AEGIS_PATH
+unset AEGIS
 umask 022
 
 USER=${USER:-${LOGNAME:-`whoami`}}
+
+if test "$1" != "" ; then bin="./$1/bin"; else bin="./bin"; fi
 
 fail()
 {
@@ -41,16 +45,22 @@ trap "fail" 1 2 3 15
 PAGER=cat
 export PAGER
 
-./bin/aegis -vers -help > /dev/null
+AEGIS_FLAGS="delete_file_preference = no_keep; \
+	diff_preference = automatic_merge;"
+export AEGIS_FLAGS
+AEGIS_THROTTLE=2
+export AEGIS_THROTTLE
+
+$bin/aegis -vers -help > /dev/null
 if test $? -ne 0 ; then fail; fi
 
-./bin/aegis -vers > /dev/null
+$bin/aegis -vers > /dev/null
 if test $? -ne 0 ; then fail; fi
 
-./bin/aegis -vers r | cat
+$bin/aegis -vers r | cat
 if test $? -ne 0 ; then fail; fi
 
-./bin/aegis -vers w | cat
+$bin/aegis -vers w | cat
 if test $? -ne 0 ; then fail; fi
 
 #

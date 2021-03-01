@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,12 +21,11 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <ac/stdlib.h>
 
 #include <aepa.h>
 #include <arglex2.h>
 #include <commit.h>
-#include <conf.h>
 #include <error.h>
 #include <help.h>
 #include <lock.h>
@@ -35,6 +34,7 @@
 #include <pattr.h>
 #include <project.h>
 #include <trace.h>
+#include <undo.h>
 #include <user.h>
 
 
@@ -46,7 +46,7 @@ project_attributes_usage()
 	char		*progname;
 
 	progname = option_progname_get();
-	fprintf(stderr, "usage: %s -Project_Attributes <attr-file> [ <option>... ]\n", progname);
+	fprintf(stderr, "usage: %s -Project_Attributes -File <attr-file> [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Project_Attributes -Edit [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Project_Attributes -List [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Project_Attributes -Help\n", progname);
@@ -61,111 +61,7 @@ project_attributes_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -Project_Attributes - modify the attributes of a",
-"	project",
-"",
-"SYNOPSIS",
-"	%s -Project_Attributes <attr-file> [ <option>... ]",
-"	%s -Project_Attributes -Edit [ <option>... ]",
-"	%s -Project_Attributes -List [ <option>... ]",
-"	%s -Project_Attributes -Help",
-"",
-"DESCRIPTION",
-"	The %s -Project_Attributes command is used to set,",
-"	edit or list the attributes of a project.",
-"",
-"	The output of the -List variant is suitable for use as",
-"	input at a later time.",
-"",
-"	See aepattr(5) for a description of the file format.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-Edit",
-"		Edit the attributes with a text editor, this is",
-"		usually more convenient than supplying a text",
-"		file.  The EDITOR environment variable will be",
-"		consulted for the name of the editor to use;",
-"		defaults to vi(1) if not set.  Warning: not well",
-"		behaved when faced with errors, the temporary",
-"		file is always deleted.",
-"",
-"	-Help",
-"		This option may be used to obtain more",
-"		information about how to use the %s program.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified, the",
-"		AEGIS_PROJECT environment variable is consulted.  If",
-"		that does not exist, the user's $HOME/.aegisrc file",
-"		is examined for a default project field (see",
-"		aeuconf(5) for more information).  If that does not",
-"		exist, when the user is only working on changes",
-"		within a single project, the project name defaults",
-"		to that project.  Otherwise, it is an error.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List",
-"		option this option causes column headings to be",
-"		added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aepa '%s -pa \\!* -v'",
-"	sh$	aepa(){%s -pa $* -v}",
-"",
-"ERRORS",
-"	It is an error if the current user is not an",
-"	administrator of the specified project.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.	The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aepa.h>
 	};
 
 	help(text, SIZEOF(text), project_attributes_usage);
@@ -207,7 +103,36 @@ pattr_copy(a, s)
 		a->umask = s->umask;
 	if (!(a->mask & pattr_default_test_exemption_mask))
 		a->default_test_exemption = s->default_test_exemption;
+	
+	if (!a->copyright_years && s->copyright_years)
+	{
+		size_t		j;
 
+		a->copyright_years = pattr_copyright_years_list_type.alloc();
+		for (j = 0; j < s->copyright_years->length; ++j)
+		{
+			long		*year_p;
+			type_ty		*type_p;
+
+			year_p =
+				pattr_copyright_years_list_type.list_parse
+				(
+					a->copyright_years,
+					&type_p
+				);
+			assert(type_p = &integer_type);
+			*year_p = s->copyright_years->list[j];
+		}
+	}
+
+	if
+	(
+		!a->forced_develop_begin_notify_command
+	&&
+		s->forced_develop_begin_notify_command
+	)
+		a->forced_develop_begin_notify_command =
+			str_copy(s->forced_develop_begin_notify_command);
 	if (!a->develop_end_notify_command && s->develop_end_notify_command)
 		a->develop_end_notify_command =
 			str_copy(s->develop_end_notify_command);
@@ -324,16 +249,24 @@ pattr_edit(dp)
 {
 	pattr		d;
 	string_ty	*filename;
+	string_ty	*msg;
 	
 	/*
 	 * write attributes to temporary file
 	 */
 	d = *dp;
 	assert(d);
-	filename = os_edit_filename();
+	filename = os_edit_filename(1);
 	os_become_orig();
 	pattr_write_file(filename->str_text, d);
 	pattr_type.free(d);
+
+	/*
+	 * error message to issue if anything goes wrong
+	 */
+	msg = str_format("attributes text left in the \"%S\" file", filename);
+	undo_message(msg);
+	str_free(msg);
 
 	/*
 	 * edit the file
@@ -344,10 +277,31 @@ pattr_edit(dp)
 	 * read it in again
 	 */
 	d = pattr_read_file(filename->str_text);
-	os_unlink(filename);
+	commit_unlink_errok(filename);
 	os_become_undo();
 	str_free(filename);
 	*dp = d;
+}
+
+
+static void check_permissions _((project_ty *, user_ty *));
+
+static void
+check_permissions(pp, up)
+	project_ty	*pp;
+	user_ty		*up;
+{
+	/*
+	 * it is an error if the user is not an administrator
+	 */
+	if (!project_administrator_query(pp, user_name(up)))
+	{
+		project_fatal
+		(
+			pp,
+		     "attributes may only be changed by a project administrator"
+		);
+	}
 }
 
 
@@ -376,8 +330,27 @@ project_attributes_main()
 			continue;
 
 		case arglex_token_string:
+			error
+			(
+"warning: please use the -File option when specifying an attributes file, \
+the unadorned form is now obsolescent"
+			);
 			if (pattr_data)
 				fatal("too many files named");
+			goto read_input_file;
+
+		case arglex_token_file:
+			if (pattr_data)
+				goto duplicate;
+			if (arglex() != arglex_token_string)
+			{
+				error
+				(
+				 "the -File option requires a filename argument"
+				);
+				project_attributes_usage();
+			}
+			read_input_file:
 			os_become_orig();
 			pattr_data = pattr_read_file(arglex_value.alv_string);
 			os_become_undo();
@@ -385,25 +358,35 @@ project_attributes_main()
 			break;
 
 		case arglex_token_project:
+			if (project_name)
+				goto duplicate;
 			if (arglex() != arglex_token_string)
 				project_attributes_usage();
-			if (project_name)
-				fatal("duplicate -Project option");
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 
 		case arglex_token_edit:
 			if (edit)
-				fatal("duplicate %s option", arglex_value.alv_string);
+			{
+				duplicate:
+				fatal
+				(
+					"duplicate %s option",
+					arglex_value.alv_string
+				);
+			}
 			edit++;
 			break;
 		}
 		arglex();
 	}
+	if (!edit && !pattr_data)
+	{
+		error("warning: no -File specified, assuming -Editr desired");
+		++edit;
+	}
 	if (edit && !pattr_data)
 		pattr_data = (pattr)pattr_type.alloc();
-	if (!pattr_data)
-		fatal("no project attributes file named");
 
 	/*
 	 * locate project data
@@ -425,6 +408,12 @@ project_attributes_main()
 	if (edit)
 	{
 		/*
+		 * make sure they are allowed to,
+		 * to avoid a wasted edit
+		 */
+		check_permissions(pp, up);
+
+		/*
 		 * copy things from project
 		 */
 		pstate_data = project_pstate_get(pp);
@@ -444,17 +433,14 @@ project_attributes_main()
 	pstate_data = project_pstate_get(pp);
 
 	/*
-	 * it is an error if the user is not an administrator
+	 * make sure they are allowed to
+	 * (even if edited, it could have changed while editing)
 	 */
-	if (!project_administrator_query(pp, user_name(up)))
-	{
-		project_fatal
-		(
-			pp,
-		     "attributes may only be changed by a project administrator"
-		);
-	}
+	check_permissions(pp, up);
 
+	/*
+	 * copy the attributes across
+	 */
 	if (pattr_data->description)
 	{
 		if (pstate_data->description)
@@ -515,6 +501,41 @@ project_attributes_main()
 	if (pattr_data->mask & pattr_default_test_exemption_mask)
 		pstate_data->default_test_exemption =
 			pattr_data->default_test_exemption;
+
+	if (pattr_data->copyright_years)
+	{
+		size_t		j;
+
+		if (pstate_data->copyright_years)
+			pstate_copyright_years_list_type.free
+			(
+				pstate_data->copyright_years
+			);
+		pstate_data->copyright_years =
+			pstate_copyright_years_list_type.alloc();
+		for (j = 0; j < pattr_data->copyright_years->length; ++j)
+		{
+			long		*year_p;
+			type_ty		*type_p;
+			
+			year_p =
+				pstate_copyright_years_list_type.list_parse
+				(
+					pstate_data->copyright_years,
+					&type_p
+				);
+			assert(type_p == &integer_type);
+			*year_p = pattr_data->copyright_years->list[j];
+		}
+	}
+
+	if (pattr_data->forced_develop_begin_notify_command)
+	{
+		if (pstate_data->forced_develop_begin_notify_command)
+			str_free(pstate_data->forced_develop_begin_notify_command);
+		pstate_data->forced_develop_begin_notify_command =
+			str_copy(pattr_data->forced_develop_begin_notify_command);
+	}
 
 	if (pattr_data->develop_end_notify_command)
 	{

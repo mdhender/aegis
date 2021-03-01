@@ -1,0 +1,403 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1995 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: Frequently Asked Questions, with answers
+.\"
+.\" The output of processing this document is meant to
+.\" be in USENET Digest format, as described in RFC1153.
+.\"
+.ll 70
+.ds sep ----------------------------------------------------------------------
+.de H
+.ft R
+.in 0
+.sp
+\\*[sep]
+.ds sep ------------------------------
+.sp
+.nr hd*level 0\\$1
+.\"
+.\" clear lower counters
+.nr hd*i 1 1
+.while \\n+[hd*i]<8 .if \\n[hd*level]<\\n[hd*i] .nr H\\n[hd*i] 0 1
+.\"
+.\" increment current counter
+.nr H\\n[hd*level] +1
+.\"
+.\" hd*mark is the text written to the left of the header.
+.ds hd*mark \\n[H1].
+.nr hd*i 1 1
+.while \\n+[hd*i]<8 .if \\n[hd*level]>(\\n[hd*i]-1) .as hd*mark \\n[H\\n[hd*i]].
+Subject: \\*[hd*mark]
+'in 8n
+\\$2
+.in 0
+.sp
+..
+.de e(
+.ft R
+.in +8n
+.ft CW
+.nf
+..
+.de e)
+.fi
+.ft R
+.in -8n
+..
+.so ../doc/version.so
+.nf
+Subject: Aegis Frequently Asked Questions (FAQ)
+From: Peter Miller <pmiller@agso.gov.au>
+Newsgroups: comp.software-eng,comp.software.config-mgmt,comp.software.testing,comp.sources.d,alt.sources.d
+.sp
+Submitted-by: Peter Miller <pmiller@agso.gov.au>
+Archive-name: aegis.\*(v)/FAQ
+.fi
+.sp
+This message contains answers to a number of frequently
+asked questions about Aegis.
+If you don't know what Aegis is, read on.
+.sp
+Suggestions for additions or improvements to this FAQ are most welcome.
+.sp 2
+.ce 1
+Contents
+.nf
+.so faq.toc.so
+.fi
+.H 1 "What is Aegis?"
+Aegis is a transaction-based software configuration management system.
+It provides a framework within which
+a team of developers may work on many changes to a
+program independently, and Aegis coordinates integrating
+these changes back into the master source of the program,
+with as little disruption as possible.
+.sp
+For a more complete description,
+see the README file or the User Guide.
+Both are available from the anonymous FTP site (see below).
+.H 2 "What operating systems are supported?"
+Aegis will run on almost any version of UNIX.
+The distribution contains a configure script generate by GNU autoconf
+to adapt to your site.
+.sp
+There is no Aegis port to OS/2, MS-DOS or VMS.
+The author has no expertise is these operating systems.
+If you do have such expertise, you are welcome to donate a port of Aegis,
+and I will try to include your work in the next release.
+.H 2 "Where can I get Aegis?"
+Aegis is available by anonymous FTP from
+.TS
+center,tab(;);
+l l s
+l l s
+l l l.
+Host:;ftp.nau.edu
+Dir:;/pub/Aegis
+File:;aegis.\*(v).README;
+File:;aegis.\*(v).tar.gz;# the complete source
+File:;aegis.\*(v).ps.gz;# the User Guide
+File:;aegis.\*(v).faq;# this FAQ list
+.TE
+.H 2 "Is Aegis actively being maintained?"
+Yes, Aegis is actively being maintained by the author.
+You can contact him by email
+.ce 1
+Peter Miller <pmiller@agso.gov.au>
+.H 2 "Is there an Aegis mailing list?"
+Yes.
+Discussion may include,
+but is not limited to:
+bugs, enhancements, and applications.
+The list is not moderated.
+.sp
+The address of the mailing list is
+.e(
+aegis-users@agso.gov.au
+.e)
+.sp
+.if n DO NOT
+.if t \fB Do not\fP
+send email to the list if you wish to subscribe.
+.sp
+To subscribe to this mailing list,
+send an email message to \f(CWmajordomo@agso.gov.au\fP with
+a message body containing the single line
+.e(
+subscribe aegis-users
+.e)
+Please note that \f(CWagso.gov.au\fP is an Internet site,
+so if you have an address which is not readily derived from
+your mail headers (majordomo is only a Perl program, after all)
+you will need to use a message of the form:
+.e(
+subscribe aegis-users \fIaddress\fP
+.e)
+where \fIaddress\fP is an email address which
+makes sense from an Internet site.
+.sp
+The software which handles this mailing list
+.if n CANNOT
+.if t \fBcannot\fP
+send you a copy of \fIAegis\fP.
+Please use FTP or ftp-by-email, instead.
+.H 2 "How does Aegis compare with program X?"
+For all X, ``The author has no experience with X.
+If you wish to contribute a comparison between Aegis and X,
+it will be considered for addition here.''
+.H 1 "Configuration and initial build problems"
+Aegis is accompanied by a set of regression tests,
+and the BUILDING instructions included in the distribution
+detail how to run these tests.
+.H 2 "Changing Makefile and common/congig.h"
+It is a Bad Idea to change the Makefile or the common/config file by hand.
+This is because much of the work done by the configure script
+in inter-related.
+.sp
+In particular, if you change the C compiler (CC)
+you absolutely must do this with the involvement of the configure script.
+.H 2 "RCS"
+The tests distributed with Aegis use RCS as their history tool.
+It is important that you use version 5.6 or later.
+.sp
+There seems to be a problem with the version of RCS distributed with HP/UX,
+even though it claims to be RCS-5.6.0.1.
+You will need to get the latest GNU RCS if you are on a HP box.
+.H 2 "SCCS"
+The tests do not automatically detect that you have SCCS.
+You will need to go out and grab RCS even if you already have
+SCCS installed at your site.
+.H 1 "Testing"
+One of the things many sites like about Aegis,
+is that it provides mandatory testing.
+This enforcement of testing is optional,
+and is configurable pre-project.
+.sp
+Please note that even if Aegis' testing framework is
+not useful to your project,
+the other aspects of Aegis' process still are
+(e.g. concurrent development, mandatory reviews, etc.).
+.H 2 "Can I use something besides a shell script?"
+Yes, the ``test_command'' field of the project config file
+may be set to whatever command you like,
+see aepconf(5) for more information.
+.sp
+A shell script is the default,
+because you can run anything out of the shell script.
+In particular, you can set up a temporary directory
+within which to run the tests.
+If you ``cd'' into this temporary directory when running tests,
+cleanup, no matter what the fallout, even a core dump,
+is thus a simple matter of ``rm -rf'' of the temporary directory.
+.H 2 "Testing curses programs"
+I don't have a curses program tester,
+nor do I know of one.
+It seems to me that the ``screen'' program contains all the necessary elements,
+however additional code would be required to make it a suitable test harness.
+.sp
+If anyone has found suitable curses testers, even commercial ones,
+I would be happy to list (FTP) locations here.
+.H 2 "Testing X11 programs"
+I don't have an X11 program tester,
+however several commercial ones seem to be advertised heavily.
+.sp
+If anyone has found suitable X11 testers, even commercial ones,
+I would be happy to list additional (FTP) locations here.
+.H 3 "replayXt"
+ReplayXt is a library that allows Intrinsics (or Xt) based application
+to be executed from a script file.  In particular, applications based
+on the Athena and the Motif toolkits can be played.
+The author is Jan Newmarch <jan@pandonia.canberra.edu.au>
+.sp
+replayXt is available by anonymous FTP from
+.TS
+center,tab(;);
+l l.
+Host:;ftp.x.org
+Dir:;/contrib/devel_tools
+File:;replayXt.README
+File:;replayXt.1.1.tar.z
+.TE
+.sp
+The author has not personally used this system,
+and so can make no comment on it.
+This entry originated from Simon Pickup <simon@adacel.com.au>
+.H 2 "Testing embedded systems"
+Yes, embedded system can be developed with Aegis,
+Naturally,
+you will need a suitable cross compiler.
+.sp
+To test embedded software,
+you will need suitable testing hardware:
+.sp
+1. you will need to be able to (automatically) download the software into
+suitable hardware - probably with RAM emulating the ROM of the
+distributed product.
+.sp
+2. you will need to be able to simulate the various inputs
+and capture the various outputs,
+if you don't want to do manual testing.
+.sp
+3. you will probably have to write the testing program yourself,
+to allow scripting the inputs and outputs.
+.sp
+4. The gotcha is that in diverting input and output,
+you will need to manually test the device drivers, because the tests
+will probably not exercise them.
+.sp
+The author has worked in an environment like this,
+and Aegis is definitely intended to be useful in this situation. 
+.H 1 "Miscellaneous"
+This section contains a whole bunch of things which do not yet belong
+anywhere else.
+.H 2 "How do you pronounce ``Aegis''?"
+There are many alternatives for pronouncing this word,
+and all focus on the myriad of sounds available for the "ae" vowel.
+Alternatives include: maestro, aerial, encyclopaedia, etc.
+The author has chosen the pronunciation found in the
+majority of dictionaries: ee.j.iz.
+That is "ee" as in "tree",
+a "j" as in "job",
+and "iz" as in "prism".
+.H 2 "How do I automate the integration queue?"
+There is a shell script in the aegis library directory (usually
+/usr/local/lib/aegis/integrate_q.sh)
+which can be run from \fIcron\fP(1) daily, or whatever.
+This shell script is a good starting point
+for customising automatic integrations.
+.sp
+Please note that the integration phase also serves to answer the question
+``who reviews the reviewers?''
+Monitoring review quality is essential to maintain product quality.
+.H 2 "How do I enforce coding standards?"
+The ``diff_command'' field of the project config file
+need not only difference the file,
+it can also be overloaded to do other things.
+If the difference command files
+for any source file,
+the change may not leave the being developed state.
+.sp
+For example,
+if you wanted to check that line lengths were always 80 characters or less,
+you could run the hypothetical ``cklinlen'' command
+at diff time, using
+.e(
+diff_command = "cklinlen $in && fcomp -w -s $orig $in -o $out";
+.e)
+Checking other coding standards are also possible
+using the same basic method.
+.H 2 "How do I get dates printed before and after build commands?"
+Just as the diff_command file of the project config file
+can be extended, so can the build_command field.
+.e(
+build_command = "set +e; date; cook ...; x=$?; date; exit $x";
+.e)
+You need to be careful about the \f(CW-e\fP flag,
+because Aegis invokes the shell to run
+the commands with the \f(CW-e\fP option,
+to abort after the first error.
+.H 2 "How do I stop Aegis automatically merging?"
+The merging behaviour is controlled by the ``diff_preference'' field
+of the user config file.
+See \fIaeuconf\fP(5) for more information.
+There are also three command line options
+to the \fIaed\fP(1) command which can override the preferences,
+see \fIaed\fP(1) for more information.
+.sp
+To stop the automatic merging, add the line
+.e(
+diff_preference = no_merge;
+.e)
+to the .aegisrc file in your more directory.
+To specifically perform a merge after that,
+you will need to use the ``aed -merge_only'' command.
+.H 2 "Do I have to type all the config examples in the User Guide?"
+No, you do not.
+The lib/config.example directory contains a number of files
+with the config command from the User  Guide ready for inserying into your
+project config file.
+.H 2 "Is there a way to recreate a previous baseline?"
+For example, let's say we have shipped one version to
+a customer and since then made 30 changes to the baseline.
+When the customer calls in with a failure report that we can't reproduce,
+how can I easily rebuild the baseline from 30 changes ago to help track
+down the error?
+.sp
+Yes, it is possible to reacreate a previous baseline.
+You need to follow these steps:
+.sp
+1. Determine which delta was shipped to the customer.
+This is easiest if you embed the version supplied by Aegis
+into your executables at build time.
+.sp
+2. Create a change a change (you want to fix the bug, right?)
+and start developing it.
+.sp
+3. Copy all of the project files into the change,
+using the delta number determined in step 1.
+Use these commands:
+.e(
+aecd
+aecp . -delta N
+.e)
+where N is the delta number from the first step.
+Files created since the delta will be copied into you chage as empty files,
+leave them alone for a while.
+.sp
+Note that you need Aegis 2.3 for directory copying to work correctly.
+Eariler versions will need to use
+.e(
+aecd
+aecp `aegis -list project_files -terse` -delta N
+.e)
+Note the backward quotes.  The above can be abbreviated,
+its just long so you can see what it is doing.
+.sp
+4. Build the change as normal.
+This will completely rebuild the version sent to the customer.
+Note that a number of things are beyonf Aegis' scope,
+like operating system updates and compiler updates.
+These can have an effect in accurately reproducing what was
+sent to the customer.
+.sp
+5. Find the bug and fix it, as you would normally do.
+.sp
+5. Merge the change.
+This will bring the files up to the most recent version,
+and merge the bug fix with the current version.
+.sp
+6. You can no uncopy all of the files which are unchanged.
+Aegis provides a fast way to do this
+.e(
+aecpu -unchanged
+.e)
+This command behaves like aecpu, but it goes hunting for files which
+are the same between the baseline and the development directory.
+Note that you must do this step after the merge.
+.\"
+.\" This is the end of the digest.
+.\" All contents must be before this point.
+.\"
+.sp
+\*[sep]
+.sp
+End of aegis.\*(v).faq Digest
+.br
+***************************

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,9 +21,9 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
+#include <ac/stdlib.h>
+#include <ac/time.h>
+#include <ac/unistd.h>
 
 #include <aed.h>
 #include <ael.h>
@@ -44,6 +44,8 @@
 #include <user.h>
 #include <word.h>
 
+#define NOT_SET (-1)
+
 
 static void difference_usage _((void));
 
@@ -53,8 +55,18 @@ difference_usage()
 	char		*progname;
 
 	progname = option_progname_get();
-	fprintf(stderr, "usage: %s -DIFFerence [ <option>... ][ <filename>... ]\n", progname);
-	fprintf(stderr, "       %s -DIFFerence -List [ <option>... ]\n", progname);
+	fprintf
+	(
+		stderr,
+		"usage: %s -DIFFerence [ <option>... ][ <filename>... ]\n",
+		progname
+	);
+	fprintf
+	(
+		stderr,
+		"       %s -DIFFerence -List [ <option>... ]\n",
+		progname
+	);
 	fprintf(stderr, "       %s -DIFFerence -Help\n", progname);
 	quit(1);
 }
@@ -67,168 +79,7 @@ difference_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -DIFFerence - find differences between development",
-"	directory and baseline",
-"",
-"SYNOPSIS",
-"	%s -DIFFerence [ <option>... ][ <filename>... ]",
-"	%s -DIFFerence -List [ <option>... ]",
-"	%s -DIFFerence -Help",
-"",
-"DESCRIPTION",
-"	The %s -DIFFerence command is used to find differences",
-"	between the development directory and the baseline.  The",
-"	differences will be in files with a \",D\" suffix.  The",
-"	command used to perform the differences is in the project",
-"	config file (see aepconf(5) for more information).",
-"",
-"	If no files are named on the command line, all files in",
-"	the change will be differenced.",
-"",
-"	The %s program will attempt to determine the project",
-"	file names from the file names given on the command line.",
-"	All file names are stored within %s projects as",
-"	relative to the root of the baseline directory tree.  The",
-"	development directory and the integration directory are",
-"	shadows of this baseline directory, and so these relative",
-"	names apply here, too.  Files named on the command line",
-"	are first converted to absolute paths if necessary.  They",
-"	are then compared with the baseline path, the development",
-"	directory path, and the integration directory path, to",
-"	determine a baseline-relative name.  It is an error if",
-"	the file named is outside one of these directory trees.",
-"",
-"CONFLICT RESOLUTION",
-"	If the version of a file in the change is not the same as",
-"	the verion of the file in the baseline, it is out-of-",
-"	date; some other change has altered the file while this",
-"	change was being developed.",
-"",
-"	When a difference is requested for an out-of-date file, a",
-"	merge is performed between the common ancestor, the",
-"	verion in the baseline, and the version in the",
-"	development directory.  The command used to perform the",
-"	merge is in the project config file (see aepconf(5) for",
-"	more information).",
-"",
-"	After the merge is performed the version of the file will",
-"	be changed to be the current version, and a new build",
-"	will be required.",
-"",
-"	The difference output in the ,D files contains the result",
-"	of the merge.  You should edit them, to make sure the",
-"	automatic merge has produced sensible results, and then",
-"	rename them to be the corresponding source file.",
-"",
-"	This merge process works most of the time.  Usually two",
-"	changes to two logically separate areas of functionality",
-"	will alter two logically separate parts of any files they",
-"	may have in common.  There are pathological cases where",
-"	this merge process is spectacularly useless, but these",
-"	are surprizingly rare in practice.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-ANticipate <change-number>",
-"		This option is used to nominate a source for the",
-"		reference files, rather than the baseline.  This",
-"		may be used to synchronize with a change without",
-"		having to wait for it to arrive in the baseline.",
-"		It is an error if the anticipated change is not",
-"		in one of the 'being reviewed' or 'awaiting",
-"		integration' or 'being integrated' states.  A",
-"		merge is always performed, because the",
-"		anticipated change is \"about\" to make any common",
-"		file out-of-date.  You will still have to perform",
-"		a \"real\" merge later.",
-"",
-"	-Change <number>",
-"		This option may be used to specify a particular",
-"		change within a project.  When no -Change option is",
-"		specified, the AEGIS_CHANGE environment variable is",
-"		consulted.  If that does not exist, the user's",
-"		$HOME/.aegisrc file is examined for a default change",
-"		field (see aeuconf(5) for more information).  If",
-"		that does not exist, when the user is only working",
-"		on one change within a project, that is the default",
-"		change number.  Otherwise, it is an error.",
-"",
-"	-Help",
-"		This option may be used to obtain more",
-"		information about how to use the %s program.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified, the",
-"		AEGIS_PROJECT environment variable is consulted.  If",
-"		that does not exist, the user's $HOME/.aegisrc file",
-"		is examined for a default project field (see",
-"		aeuconf(5) for more information).  If that does not",
-"		exist, when the user is only working on changes",
-"		within a single project, the project name defaults",
-"		to that project.  Otherwise, it is an error.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List",
-"		option this option causes column headings to be",
-"		added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aed '%s -diff \\!* -v'",
-"	sh$	aed(){%s -diff $* -v}",
-"",
-"ERRORS",
-"	It is an error if the change is not in the 'being",
-"	developed' state.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.	The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aed.h>
 	};
 
 	help(text, SIZEOF(text), difference_usage);
@@ -299,7 +150,6 @@ anticipate(project_name, change_number, acn, nolog, wl)
 	string_ty	*dd1;
 	string_ty	*dd2;
 	string_ty	*bl;
-	pconf		pconf_data;
 	cstate		cstate_data;
 	cstate		cstate2_data;
 	size_t		j;
@@ -343,21 +193,39 @@ anticipate(project_name, change_number, acn, nolog, wl)
 	cstate_data = change_cstate_get(cp);
 	cstate2_data = change_cstate_get(acp);
 	if (cstate_data->state != cstate_state_being_developed)
-		change_fatal(cp, "not in 'being_developed' state");
+	{
+		change_fatal
+		(
+			cp,
+"this change is in the '%s' state, \
+it must be in the 'being developed' state to do a difference",
+			cstate_state_ename(cstate_data->state)
+		);
+	}
 	if
 	(
 		cstate2_data->state < cstate_state_being_reviewed
 	||
 		cstate2_data->state > cstate_state_being_integrated
 	)
-		change_fatal(acp, "not in an appropriate state");
+	{
+		change_fatal
+		(
+			acp,
+"this change is in the '%s' state, it must be in one of the 'being reviewed', \
+'awaiting integration' or 'being integrated' states to be anticipated",
+			cstate_state_ename(cstate2_data->state)
+		);
+	}
 	if (!str_equal(change_developer_name(cp), user_name(up)))
 	{
 		change_fatal
 		(
 			cp,
-			"user \"%S\" is not the developer",
-			user_name(up)
+"user \"%S\" is not the developer, \
+only user \"%S\" may difference this change",
+			user_name(up),
+			change_developer_name(cp)
 		);
 	}
 
@@ -473,8 +341,8 @@ anticipate(project_name, change_number, acn, nolog, wl)
 	 * diff each file
 	 */
 	if (!nolog)
-		log_open(change_logfile_get(cp), up);
-	pconf_data = change_pconf_get(cp);
+		log_open(change_logfile_get(cp), up, log_style_snuggle);
+	os_throttle();
 	for (j = 0; j < wl->wl_nwords; ++j)
 	{
 		cstate_src	src1_data;
@@ -511,7 +379,7 @@ anticipate(project_name, change_number, acn, nolog, wl)
 			 * If they are based on different versions,
 			 * need to get the original out of history
 			 */
-			original = os_edit_filename();
+			original = os_edit_filename(0);
 			original_unlink = 1;
 			user_become(up);
 			undo_unlink_errok(original);
@@ -589,7 +457,6 @@ difference_main()
 	string_ty	*s2;
 	wlist		need_new_build;
 	pstate		pstate_data;
-	pconf		pconf_data;
 	cstate		cstate_data;
 	size_t		j;
 	string_ty	*project_name;
@@ -599,6 +466,8 @@ difference_main()
 	int		nolog;
 	user_ty		*up;
 	long		acn;
+	int		merge_select;
+	size_t		mergable_files;
 
 	trace(("difference_main()\n{\n"/*}*/));
 	wl_zero(&wl);
@@ -607,6 +476,7 @@ difference_main()
 	change_number = 0;
 	nolog = 0;
 	acn = 0;
+	merge_select = NOT_SET;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -683,10 +553,42 @@ difference_main()
 			{
 				fatal
 				(
-				    "anticiptae change number %ld out of range",
+				    "anticipate change number %ld out of range",
 					acn
 				);
 			}
+			break;
+
+		case arglex_token_merge_not:
+			if (merge_select == uconf_diff_preference_no_merge)
+				goto duplicate;
+			if (merge_select != NOT_SET)
+			{
+				too_many_merges:
+				error
+				(
+"you may only specify one of the -No_Merge, \
+-Automatic_Merge or -Only_Merge options"
+				);
+				difference_usage();
+			}
+			merge_select = uconf_diff_preference_no_merge;
+			break;
+
+		case arglex_token_merge_only:
+			if (merge_select == uconf_diff_preference_only_merge)
+				goto duplicate;
+			if (merge_select != NOT_SET)
+				goto too_many_merges;
+			merge_select = uconf_diff_preference_only_merge;
+			break;
+
+		case arglex_token_merge_automatic:
+			if (merge_select == uconf_diff_preference_automatic_merge)
+				goto duplicate;
+			if (merge_select != NOT_SET)
+				goto too_many_merges;
+			merge_select = uconf_diff_preference_automatic_merge;
 			break;
 		}
 		arglex();
@@ -694,6 +596,8 @@ difference_main()
 
 	if (acn)
 	{
+		if (merge_select != NOT_SET)
+			fatal("you may not specify a merge option with -ANticipate");
 		anticipate(project_name, change_number, acn, nolog, &wl);
 		trace((/*{*/"}\n"));
 		return;
@@ -712,6 +616,8 @@ difference_main()
 	 * locate user data
 	 */
 	up = user_executing(pp);
+	if (merge_select == NOT_SET)
+		merge_select = user_diff_preference(up);
 
 	/*
 	 * locate change data
@@ -734,14 +640,24 @@ difference_main()
 	pstate_data = project_pstate_get(pp);
 	cstate_data = change_cstate_get(cp);
 	if (cstate_data->state != cstate_state_being_developed)
-		change_fatal(cp, "not in 'being_developed' state");
+	{
+		change_fatal
+		(
+			cp,
+"this change is in the '%s' state, \
+it must be in the 'being developed' state to do a difference",
+			cstate_state_ename(cstate_data->state)
+		);
+	}
 	if (!str_equal(change_developer_name(cp), user_name(up)))
 	{
 		change_fatal
 		(
 			cp,
-			"user \"%S\" is not the developer",
-			user_name(up)
+"user \"%S\" is not the developer, \
+only user \"%S\" may difference this change",
+			user_name(up),
+			change_developer_name(cp)
 		);
 	}
 
@@ -753,7 +669,13 @@ difference_main()
 	{
 		assert(cstate_data->src);
 		if (!cstate_data->src->length)
-			change_fatal(cp, "no files");
+		{
+			change_fatal
+			(
+				cp,
+	 "this change has no files, you must add some before you can difference"
+			);
+		}
 		for (j = 0; j < cstate_data->src->length; ++j)
 		{
 			cstate_src	src_data;
@@ -775,9 +697,23 @@ difference_main()
 		{
 			s1 = wl.wl_word[j];
 			assert(s1->str_text[0] == '/');
-			s2 = os_below_dir(change_development_directory_get(cp, 1), s1);
+			s2 =
+				os_below_dir
+				(
+					change_development_directory_get(cp, 1),
+					s1
+				);
 			if (!s2)
-				s2 = os_below_dir(project_baseline_path_get(pp, 1), s1);
+				s2 =
+					os_below_dir
+					(
+						project_baseline_path_get
+						(
+							pp,
+							1
+						),
+						s1
+					);
 			if (!s2)
 				change_fatal(cp, "path \"%S\" unrelated", s1);
 			str_free(s1);
@@ -803,22 +739,13 @@ difference_main()
 	}
 
 	/*
-	 * diff each file
+	 * look for files which need to be merged
 	 */
-	if (!nolog)
-		log_open(change_logfile_get(cp), up);
-	pconf_data = change_pconf_get(cp);
-	dd = change_development_directory_get(cp, 1);
-	bl = project_baseline_path_get(pp, 1);
+	mergable_files = 0;
 	for (j = 0; j < wl.wl_nwords; ++j)
 	{
 		cstate_src	src1_data;
 		pstate_src	src2_data;
-		string_ty	*original;
-		string_ty	*input;
-		string_ty	*curfile;
-		string_ty	*outname;
-		int		ignore;
 
 		/*
 		 * find the relevant change src data
@@ -828,174 +755,87 @@ difference_main()
 		assert(src1_data);
 
 		/*
-		 * generated files are not differenced
+		 * generated files are not merged
+		 * created or deleted files are not merged
 		 */
 		if (src1_data->usage == file_usage_build)
 			continue;
+		if (src1_data->action != file_action_modify)
+			continue;
 
 		/*
-		 * build various paths
+		 * find the relevant baseline src data
+		 * note that someone may have deleted it from under you
+		 *
+		 * If the edit numbers match (is up to date)
+		 * then do not merge this one.
 		 */
-		curfile = str_format("%S/%S", dd, s1);
-		trace_string(curfile->str_text);
-		outname = str_format("%S,D", curfile);
-		trace_string(outname->str_text);
+		src2_data = project_src_find(pp, s1);
+		if (!src2_data)
+			continue;
+		if (str_equal(src1_data->edit_number, src2_data->edit_number))
+			continue;
+		
+		/*
+		 * this one needs merging
+		 */
+		++mergable_files;
+	}
 
-		switch (src1_data->action)
+	/*
+	 * figure what to do if the user (indirectly)
+	 * selected the automatic_merge option
+	 */
+	if (merge_select == uconf_diff_preference_automatic_merge)
+	{
+		if (mergable_files)
+			merge_select = uconf_diff_preference_only_merge;
+		else
+			merge_select = uconf_diff_preference_no_merge;
+	}
+
+	if (!nolog)
+		log_open(change_logfile_get(cp), up, log_style_snuggle);
+	dd = change_development_directory_get(cp, 0);
+	bl = project_baseline_path_get(pp, 0);
+	os_throttle();
+
+	if (merge_select == uconf_diff_preference_only_merge)
+	{
+		/*
+		 * merge each file
+		 */
+		for (j = 0; j < wl.wl_nwords; ++j)
 		{
-		case file_action_create:
-			/*
-			 * check if someone created it ahead of you
-			 */
-			src2_data = project_src_find(pp, s1);
-			if (src2_data)
-			{
-				change_fatal
-				(
-					cp,
-					"file \"%S\" already in baseline",
-					s1
-				);
-			}
+			cstate_src	src1_data;
+			pstate_src	src2_data;
+			string_ty	*original;
+			string_ty	*curfile;
+			string_ty	*outname;
+			string_ty	*most_recent;
 
 			/*
-			 * do nothing if we can
+			 * find the relevant change src data
 			 */
-			user_become(up);
-			ignore =
-				(
-					src1_data->diff_time
-				&&
-					src1_data->diff_file_time
-				&&
-					os_exists(curfile)
-				&&
-					src1_data->diff_time == os_mtime(curfile)
-				&&
-					os_exists(outname)
-				&&
-					src1_data->diff_file_time == os_mtime(outname)
-				);
-			user_become_undo();
-			if (ignore)
-				break;
+			s1 = wl.wl_word[j];
+			src1_data = change_src_find(cp, s1);
+			assert(src1_data);
 
 			/*
-			 * difference the file
-			 * from nothing
+			 * generated files are not merged
+			 * created or deleted files are not merged
 			 */
-			if
-			(
-				src1_data->move
-			&&
-				project_src_find(pp, src1_data->move)
-			)
-			{
-				original =
-					str_format
-					(
-						"%S/%S",
-						bl,
-						src1_data->move
-					);
-			}
-			else
-				original = str_from_c("/dev/null");
-			change_run_diff_command
-			(
-				cp,
-				up,
-				original,
-				curfile,
-				outname
-			);
-			str_free(original);
-			user_become(up);
-			src1_data->diff_time = os_mtime(curfile);
-			src1_data->diff_file_time = os_mtime(outname);
-			user_become_undo();
-			break;
+			if (src1_data->usage == file_usage_build)
+				continue;
+			if (src1_data->action != file_action_modify)
+				continue;
 
-		case file_action_remove:
-			/*
-			 * check if someone deleted it ahead of you
-			 */
-			src2_data = project_src_find(pp, s1);
-			if (!src2_data)
-			{
-				change_fatal
-				(
-					cp,
-					"file \"%S\" no longer in baseline",
-					s1
-				);
-			}
-
-			/*
-			 * do nothing if we can
-			 */
-			user_become(up);
-			ignore =
-				(
-					src1_data->diff_file_time
-				&&
-					os_exists(outname)
-				&&
-					src1_data->diff_file_time == os_mtime(outname)
-				);
-			user_become_undo();
-			if (ignore)
-				break;
-
-			/*
-			 * create directory for diff file
-			 */
-			user_become(up);
-			os_mkdir_between(dd, s1, 02755);
-			user_become_undo();
-
-			/*
-			 * difference the file
-			 * to nothing
-			 */
-			original = str_format("%S/%S", bl, s1);
-			if
-			(
-				src1_data->move
-			&&
-				change_src_find(cp, src1_data->move)
-			)
-			{
-				input =
-					str_format
-					(
-						"%S/%S",
-						dd,
-						src1_data->move
-					);
-			}
-			else
-				input = str_from_c("/dev/null");
-			change_run_diff_command
-			(
-				cp,
-				up,
-				original,
-				input,
-				outname
-			);
-			str_free(original);
-			str_free(input);
-			user_become(up);
-			src1_data->diff_time = 0;
-			src1_data->diff_file_time = os_mtime(outname);
-			user_become_undo();
-			break;
-
-		case file_action_modify:
 			/*
 			 * find the relevant baseline src data
 			 * note that someone may have deleted it from under you
+			 *
+			 * If the edit numbers match (is up to date)
+			 * then do not merge this one.
 			 */
 			src2_data = project_src_find(pp, s1);
 			if (!src2_data)
@@ -1008,7 +848,190 @@ difference_main()
 				);
 			}
 			if (str_equal(src1_data->edit_number, src2_data->edit_number))
+				continue;
+
+			/*
+			 * build various paths
+			 */
+			curfile = str_format("%S/%S", dd, s1);
+			trace_string(curfile->str_text);
+			outname = str_format("%S,D", curfile);
+			trace_string(outname->str_text);
+
+			/*
+			 * name for temp file
+			 */
+			original = os_edit_filename(0);
+			user_become(up);
+			undo_unlink_errok(original);
+			user_become_undo();
+
+			/*
+			 * get the version out of history
+			 */
+			change_run_history_get_command
+			(
+				cp,
+				s1,
+				src1_data->edit_number,
+				original,
+				up
+			);
+
+			/*
+			 * use the diff3-command
+			 */
+			most_recent = str_format("%S/%S", bl, s1);
+			change_run_diff3_command
+			(
+				cp,
+				up,
+				original,
+				most_recent,
+				curfile,
+				outname
+			);
+			str_free(most_recent);
+
+			/*
+			 * Remember to remove the temporary file when
+			 * finished.
+			 */
+			user_become(up);
+			os_unlink(original);
+			user_become_undo();
+			str_free(original);
+
+			/*
+			 * Set the edit number in the change
+			 * to the latest baseline edit number.
+			 */
+			str_free(src1_data->edit_number);
+			src1_data->edit_number =
+				str_copy(src2_data->edit_number);
+
+			/*
+			 * Invalidate the build-time field.
+			 * Invalidate the diff-time fields.
+			 * (because need new build)
+			 */
+			wl_append(&need_new_build, src1_data->file_name);
+			change_build_times_clear(cp);
+			src1_data->diff_time = 0;
+			src1_data->diff_file_time = 0;
+
+			str_free(curfile);
+			str_free(outname);
+		}
+
+		/*
+		 * if any merges were performed,
+		 * write the data back
+		 */
+		if (need_new_build.wl_nwords)
+		{
+			change_cstate_write(cp);
+			commit();
+			lock_release();
+
+			for (j = 0; j < need_new_build.wl_nwords; ++j)
 			{
+				change_error
+				(
+					cp,
+		  "file \"%S\" was out of date, see \"%S,D\" for merged source",
+					need_new_build.wl_word[j],
+					need_new_build.wl_word[j]
+				);
+			}
+
+			change_error
+			(
+				cp,
+				"merged %ld file%s, new '%s -Build' required",
+				(long)need_new_build.wl_nwords,
+				(need_new_build.wl_nwords == 1 ? "" : "s"),
+				option_progname_get()
+			);
+		}
+		wl_free(&need_new_build);
+	}
+	else
+	{
+		switch (mergable_files)
+		{
+		case 0:
+			break;
+
+		case 1:
+			change_error
+			(
+				cp,
+				"warning: there is a file which needs merging"
+			);
+			break;
+
+		default:
+			change_error
+			(
+				cp,
+			      "warning: there are %ld files which need merging",
+				(long)mergable_files
+			);
+			break;
+		}
+
+		/*
+		 * diff each file
+		 */
+		for (j = 0; j < wl.wl_nwords; ++j)
+		{
+			cstate_src	src1_data;
+			pstate_src	src2_data;
+			string_ty	*original;
+			string_ty	*input;
+			string_ty	*curfile;
+			string_ty	*outname;
+			int		ignore;
+
+			/*
+			 * find the relevant change src data
+			 */
+			s1 = wl.wl_word[j];
+			src1_data = change_src_find(cp, s1);
+			assert(src1_data);
+
+			/*
+			 * generated files are not differenced
+			 */
+			if (src1_data->usage == file_usage_build)
+				continue;
+
+			/*
+			 * build various paths
+			 */
+			curfile = str_format("%S/%S", dd, s1);
+			trace_string(curfile->str_text);
+			outname = str_format("%S,D", curfile);
+			trace_string(outname->str_text);
+
+			switch (src1_data->action)
+			{
+			case file_action_create:
+				/*
+				 * check if someone created it ahead of you
+				 */
+				src2_data = project_src_find(pp, s1);
+				if (src2_data && !src2_data->deleted_by)
+				{
+					change_fatal
+					(
+						cp,
+					      "file \"%S\" already in baseline",
+						s1
+					);
+				}
+
 				/*
 				 * do nothing if we can
 				 */
@@ -1021,20 +1044,201 @@ difference_main()
 					&&
 						os_exists(curfile)
 					&&
-						src1_data->diff_time == os_mtime(curfile)
+						(
+							src1_data->diff_time
+						==
+							os_mtime(curfile)
+						)
 					&&
 						os_exists(outname)
 					&&
-						src1_data->diff_file_time == os_mtime(outname)
+						(
+							src1_data->diff_file_time
+						==
+							os_mtime(outname)
+						)
 					);
 				user_become_undo();
 				if (ignore)
 					break;
 
 				/*
-				 * If the edit number of the file in the change
-				 * files table matches the edit number in the
-				 * baseline files table,
+				 * difference the file
+				 * from nothing
+				 */
+				if
+				(
+					src1_data->move
+				&&
+					project_src_find(pp, src1_data->move)
+				)
+				{
+					original =
+						str_format
+						(
+							"%S/%S",
+							bl,
+							src1_data->move
+						);
+				}
+				else
+					original = str_from_c("/dev/null");
+				change_run_diff_command
+				(
+					cp,
+					up,
+					original,
+					curfile,
+					outname
+				);
+				str_free(original);
+				user_become(up);
+				src1_data->diff_time = os_mtime(curfile);
+				src1_data->diff_file_time = os_mtime(outname);
+				user_become_undo();
+				break;
+
+			case file_action_remove:
+				/*
+				 * check if someone deleted it ahead of you
+				 */
+				src2_data = project_src_find(pp, s1);
+				if (!src2_data || src2_data->deleted_by)
+				{
+					change_fatal
+					(
+						cp,
+					    "file \"%S\" no longer in baseline",
+						s1
+					);
+				}
+
+				/*
+				 * do nothing if we can
+				 */
+				user_become(up);
+				ignore =
+					(
+						src1_data->diff_file_time
+					&&
+						os_exists(outname)
+					&&
+						(
+							src1_data->diff_file_time
+						==
+							os_mtime(outname)
+						)
+					);
+				user_become_undo();
+				if (ignore)
+					break;
+
+				/*
+				 * create directory for diff file
+				 */
+				user_become(up);
+				os_mkdir_between(dd, s1, 02755);
+				user_become_undo();
+
+				/*
+				 * difference the file
+				 * to nothing
+				 */
+				original = str_format("%S/%S", bl, s1);
+				if
+				(
+					src1_data->move
+				&&
+					change_src_find(cp, src1_data->move)
+				)
+				{
+					input =
+						str_format
+						(
+							"%S/%S",
+							dd,
+							src1_data->move
+						);
+				}
+				else
+					input = str_from_c("/dev/null");
+				change_run_diff_command
+				(
+					cp,
+					up,
+					original,
+					input,
+					outname
+				);
+				str_free(original);
+				str_free(input);
+				user_become(up);
+				src1_data->diff_time = 0;
+				src1_data->diff_file_time = os_mtime(outname);
+				user_become_undo();
+				break;
+
+			case file_action_modify:
+				/*
+				 * Find the relevant baseline src
+				 * data.  Note that someone may have
+				 * deleted it from under you.
+				 */
+				src2_data = project_src_find(pp, s1);
+				if (!src2_data)
+				{
+					change_fatal
+					(
+						cp,
+					    "file \"%S\" no longer in baseline",
+						s1
+					);
+				}
+
+				/*
+				 * we did merges earlier,
+				 * should not be necessary here
+				 */
+				assert
+				(
+					str_equal
+					(
+						src1_data->edit_number,
+						src2_data->edit_number
+					)
+				);
+
+				/*
+				 * do nothing if we can
+				 */
+				user_become(up);
+				ignore =
+					(
+						src1_data->diff_time
+					&&
+						src1_data->diff_file_time
+					&&
+						os_exists(curfile)
+					&&
+						(
+							src1_data->diff_time
+						==
+							os_mtime(curfile)
+						)
+					&&
+						os_exists(outname)
+					&&
+						(
+							src1_data->diff_file_time
+						==
+							os_mtime(outname)
+						)
+					);
+				user_become_undo();
+				if (ignore)
+					break;
+
+				/*
 				 * use the diff-command
 				 */
 				original = str_format("%S/%S", bl, s1);
@@ -1051,108 +1255,28 @@ difference_main()
 				src1_data->diff_time = os_mtime(curfile);
 				src1_data->diff_file_time = os_mtime(outname);
 				user_become_undo();
+				break;
 			}
-			else
-			{
-				string_ty	*most_recent;
-
-				/*
-				 * name for temp file
-				 */
-				original = os_edit_filename();
-				user_become(up);
-				undo_unlink_errok(original);
-				user_become_undo();
-
-				/*
-				 * get the version out of history
-				 */
-				change_run_history_get_command
-				(
-					cp,
-					s1,
-					src1_data->edit_number,
-					original,
-					up
-				);
-
-				/*
-				 * use the diff3-command
-				 */
-				most_recent = str_format("%S/%S", bl, s1);
-				change_run_diff3_command
-				(
-					cp,
-					up,
-					original,
-					most_recent,
-					curfile,
-					outname
-				);
-				str_free(most_recent);
-
-				/*
-				 * Remember to remove the temporary file when
-				 * finished.
-				 */
-				user_become(up);
-				os_unlink(original);
-				user_become_undo();
-				str_free(original);
-
-				/*
-				 * Set the edit number in the change
-				 * to the latest baseline edit number.
-				 */
-				str_free(src1_data->edit_number);
-				src1_data->edit_number =
-					str_copy(src2_data->edit_number);
-
-				/*
-				 * Invalidate the build-time field.
-				 * Invalidate the diff-time fields.
-				 * (because need new build)
-				 */
-				wl_append(&need_new_build, src1_data->file_name);
-				cstate_data->build_time = 0;
-				src1_data->diff_time = 0;
-				src1_data->diff_file_time = 0;
-			}
-			break;
+			str_free(curfile);
+			str_free(outname);
 		}
-		str_free(curfile);
-		str_free(outname);
-	}
 
-	/*
-	 * If the change row (or change file table) changed,
-	 * write it out.
-	 * Release advisory lock.
-	 */
-	change_cstate_write(cp);
-	commit();
-	lock_release();
+		/*
+		 * If the change row (or change file table) changed,
+		 * write it out.
+		 * Release advisory lock.
+		 */
+		change_cstate_write(cp);
+		commit();
+		lock_release();
 
-	/*
-	 * verbose success message
-	 */
-	if (wl.wl_nwords == cstate_data->src->length)
-		change_verbose(cp, "difference complete");
-	else
-		change_verbose(cp, "partial difference done");
-	if (need_new_build.wl_nwords)
-	{
-		for (j = 0; j < need_new_build.wl_nwords; ++j)
-		{
-			change_error
-			(
-				cp,
-			"file \"%S\" was out of date, see \"%S,D\" for details",
-				need_new_build.wl_word[j],
-				need_new_build.wl_word[j]
-			);
-		}
-		error("new '%s -Build' required", option_progname_get());
+		/*
+		 * verbose success message
+		 */
+		if (wl.wl_nwords == cstate_data->src->length)
+			change_verbose(cp, "difference complete");
+		else
+			change_verbose(cp, "partial difference done");
 	}
 	change_free(cp);
 	project_free(pp);

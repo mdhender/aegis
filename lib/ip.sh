@@ -1,7 +1,7 @@
-#! /bin/sh
+#!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993 Peter Miller.
+#	Copyright (C) 1992, 1993, 1995 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,10 @@
 #	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 # MANIFEST: command used to notify by email that a change has passed integration
+#
+# Suggested project attribute:
+# integrate_pass_notify_command =
+#	"$lib/ip.sh $p $c $developer $reviewer $integrator";
 #
 aegis=aegis
 case $# in
@@ -63,7 +67,7 @@ if [ $? -ne 0 ]; then quit; fi
 #
 # mail it to the developer and the reviewer
 #
-mail $developer $reviewer < $tmp
+mail $developer $reviewer $integrator < $tmp
 if [ $? -ne 0 ]; then quit; fi
 
 #

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@ void undo_chmod _((string_ty *path, int mode));
 void undo_chmod_errok _((string_ty *path, int mode));
 void undo_unlink_errok _((string_ty *path));
 void undo_rmdir_errok _((string_ty *path));
+void undo_message _((string_ty *));
 void undo _((void));
 void undo_quitter _((int));
 void undo_cancel _((void));

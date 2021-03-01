@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,8 @@
 #ifndef STR_H
 #define STR_H
 
-#include <stddef.h>
-#include <s-v-arg.h>
+#include <ac/stddef.h>
+#include <ac/stdarg.h>
 #include <main.h>
 
 typedef unsigned long str_hash_ty;

@@ -47,8 +47,11 @@ The
 command is used to
 notify \*(n) that a change has passed review.
 .PP
-The change will be advanced from the 'being_reviewed' state
-to the 'awaiting_integration' state.
+The change will be advanced from the
+.I "being reviewed"
+state to the
+.I "awaiting integration"
+state.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so
@@ -67,7 +70,9 @@ sh$	aerpass(){\*(n) -rpass $* -v}
 .fi
 .SH ERRORS
 It is an error if
-the change is not in the 'being_reviewed' state.
+the change is not in the
+.I "being reviewed"
+state.
 .br
 It is an error if
 the current user is not a reviewer of the project.
@@ -76,4 +81,31 @@ Its is an error if
 the current user developed the change and the project is configured to
 disallow developers to review their own changes (default).
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aecd (1)
+change directory
+.TP 8n
+.IR aede (1)
+complete development of a change
+.TP 8n
+.IR aedeu (1)
+recall a change for further development
+.TP 8n
+.IR aeib (1)
+begin integrating a change
+.TP 8n
+.IR aenrv (1)
+add a reviewer to a project
+.TP 8n
+.IR aerf (1)
+fail review of a change
+.TP 8n
+.IR aerpu (1)
+rescind a change review pass
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
  * MANIFEST: lexical analysis of command line arguments
  */
 
-#include <stddef.h>
-#include <string.h>
+#include <ac/stddef.h>
+#include <ac/string.h>
 #include <ctype.h>
 
 #include <arglex.h>
@@ -396,6 +396,8 @@ arglex()
 	int		nhit;
 	static char	*pushback;
 	char		*arg;
+	string_ty	*s1;
+	string_ty	*s2;
 
 	trace(("arglex()\n{\n"));
 	if (pushback)
@@ -496,6 +498,7 @@ arglex()
 		break;
 
 	case 1:
+		one:
 		arglex_token = hit[0]->t_token;
 		if (partial)
 			arg = partial;
@@ -504,24 +507,34 @@ arglex()
 		break;
 
 	default:
-		{
-			string_ty	*s1;
-			string_ty	*s2;
+		/*
+		 * not an error if they are all the same
+		 * e.g. due to cultural spelling differences
+		 * with the same abbreviation.
+		 */
+		for (j = 1; j < nhit; ++j)
+			if (hit[0]->t_token != hit[j]->t_token)
+				break;
+		if (j >= nhit)
+			goto one;
 
-			s1 = str_from_c(hit[0]->t_name);
-			for (j = 1; j < nhit; ++j)
-			{
-				s2 = str_format("%S, %s", s1, hit[j]->t_name);
-				str_free(s1);
-				s2 = s2;
-			}
-			fatal
-			(
-				"option \"%s\" abmiguous (%s)",
-				arg,
-				s1->str_text
-			);
+		/*
+		 * build a list of the names
+		 * and complain that it is ambiguous
+		 */
+		s1 = str_from_c(hit[0]->t_name);
+		for (j = 1; j < nhit; ++j)
+		{
+			s2 = str_format("%S, %s", s1, hit[j]->t_name);
+			str_free(s1);
+			s2 = s2;
 		}
+		fatal
+		(
+			"option \"%s\" abmiguous (%s)",
+			arg,
+			s1->str_text
+		);
 	}
 
 	/*

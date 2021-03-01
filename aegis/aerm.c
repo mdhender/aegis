@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <ac/stdlib.h>
 
 #include <ael.h>
 #include <aerm.h>
@@ -36,6 +36,7 @@
 #include <os.h>
 #include <project.h>
 #include <trace.h>
+#include <undo.h>
 #include <user.h>
 #include <word.h>
 
@@ -60,8 +61,18 @@ remove_file_usage()
 	char		*progname;
 
 	progname = option_progname_get();
-	fprintf(stderr, "usage: %s -ReMove_file <filename>... [ <option>... ]\n", progname);
-	fprintf(stderr, "       %s -ReMove_file -List [ <option>... ]\n", progname);
+	fprintf
+	(
+		stderr,
+		"usage: %s -ReMove_file <filename>... [ <option>... ]\n",
+		progname
+	);
+	fprintf
+	(
+		stderr,
+		"       %s -ReMove_file -List [ <option>... ]\n",
+		progname
+	);
 	fprintf(stderr, "       %s -ReMove_file -Help\n", progname);
 	quit(1);
 }
@@ -86,128 +97,7 @@ remove_file_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -ReMove_file - add files to be deleted to a chasnge",
-"",
-"SYNOPSIS",
-"	%s -ReMove_file <filename>... [ <option>... ]",
-"	%s -ReMove_file -List [ <option>... ]",
-"	%s -ReMove_file -Help",
-"",
-"DESCRIPTION",
-"	The %s -ReMove_file command is used to add files to be",
-"	deleted to a change.",
-"",
-"	The %s program will attempt to intuit the file names",
-"	intended.  All file names are stored within %s as",
-"	relative to the root of the baseline directory tree.  The",
-"	development directory and the integration directory are",
-"	shadows of the baseline dirdctory, and so these relative",
-"	names aply there, too.  Files named on the command line",
-"	are first converted to absolute paths if necessary.  They",
-"	are then compared with the baseline path, and the",
-"	development directory path, and the integration directory",
-"	path, to determine a root-relative name.  It is an error",
-"	if the file named is outside one of these directory",
-"	trees.",
-"",
-"	The file will be added to the list of files in the",
-"	change, and will be remoed from the baseline at",
-"	integration time.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-Change <number>",
-"		This option may be used to specify a particular",
-"		change within a project.  When no -Change option is",
-"		specified, the AEGIS_CHANGE environment variable is",
-"		consulted.  If that does not exist, the user's",
-"		$HOME/.aegisrc file is examined for a default change",
-"		field (see aeuconf(5) for more information).  If",
-"		that does not exist, when the user is only working",
-"		on one change within a project, that is the default",
-"		change number.  Otherwise, it is an error.",
-"",
-"	-Help",
-"		This option may be used to obtain more",
-"		information about how to use the %s program.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified, the",
-"		AEGIS_PROJECT environment variable is consulted.  If",
-"		that does not exist, the user's $HOME/.aegisrc file",
-"		is examined for a default project field (see",
-"		aeuconf(5) for more information).  If that does not",
-"		exist, when the user is only working on changes",
-"		within a single project, the project name defaults",
-"		to that project.  Otherwise, it is an error.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List",
-"		option this option causes column headings to be",
-"		added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aerm '%s -rm \\!* -v'",
-"	sh$	aerm(){%s -rm $* -v}",
-"",
-"ERRORS",
-"	It is an error if the change is not in the",
-"	'being_developed' state.",
-"	It is an error if the change is not assigned to the",
-"	current user.",
-"	It is an error if the filesa does not exist in the",
-"	baseline.",
-"	It is an error if the file is already part of the change.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.  The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aerm.h>
 	};
 
 	help(text, SIZEOF(text), remove_file_usage);
@@ -305,7 +195,6 @@ remove_file_main()
 	cstate_src	c_src_data;
 	pstate_src	p_src_data;
 	int		j;
-	pconf		pconf_data;
 	pstate		pstate_data;
 	string_ty	*project_name;
 	project_ty	*pp;
@@ -315,6 +204,7 @@ remove_file_main()
 	user_ty		*up;
 	string_ty	*dd;
 	string_ty	*bl;
+	int		number_of_errors;
 
 	trace(("remove_file_main()\n{\n"/*}*/));
 	project_name = 0;
@@ -335,7 +225,13 @@ remove_file_main()
 			s2 = os_pathname(s1, 1);
 			os_become_undo();
 			if (wl_member(&wl, s2))
-				fatal("file \"%s\" named more than once", arglex_value.alv_string);
+			{
+				fatal
+				(
+					"file \"%s\" named more than once",
+					arglex_value.alv_string
+				);
+			}
 			wl_append(&wl, s2);
 			str_free(s2);
 			str_free(s1);
@@ -364,7 +260,13 @@ remove_file_main()
 
 		case arglex_token_nolog:
 			if (nolog)
-				fatal("duplicate %s option", arglex_value.alv_string);
+			{
+				fatal
+				(
+					"duplicate %s option",
+					arglex_value.alv_string
+				);
+			}
 			nolog = 1;
 			break;
 		}
@@ -401,7 +303,6 @@ remove_file_main()
 	change_cstate_lock_prepare(cp);
 	lock_take();
 	cstate_data = change_cstate_get(cp);
-	pconf_data = change_pconf_get(cp);
 	pstate_data = project_pstate_get(pp);
 
 	/*
@@ -409,14 +310,23 @@ remove_file_main()
 	 * It is an error if the change is not assigned to the current user.
 	 */
 	if (cstate_data->state != cstate_state_being_developed)
-		change_fatal(cp, "not in 'being_developed' state");
+	{
+		change_fatal
+		(
+			cp,
+"this change is in the '%s' state, \
+it must be in the 'being developed' state to remove a file with it",
+			cstate_state_ename(cstate_data->state)
+		);
+	}
 	if (!str_equal(change_developer_name(cp), user_name(up)))
 	{
 		change_fatal
 		(
 			cp,
-			"user \"%S\" is not the developer",
-			user_name(up)
+	  "user \"%S\" is not the developer, only user \"%S\" may remove files",
+			user_name(up),
+			change_developer_name(cp)
 		);
 	}
 
@@ -448,29 +358,83 @@ remove_file_main()
 	 * 2. is in the baseline
 	 * add it to the change
 	 */
+	number_of_errors = 0;
 	for (j = 0; j < wl.wl_nwords; ++j)
 	{
 		s1 = wl.wl_word[j];
 		if (change_src_find(cp, s1))
-			change_fatal(cp, "file \"%S\" already in change", s1);
+		{
+			change_error(cp, "file \"%S\" already in change", s1);
+			++number_of_errors;
+			continue;
+		}
 		p_src_data = project_src_find(pp, s1);
-		if (!p_src_data || p_src_data->deleted_by)
-			project_fatal(pp, "file \"%S\" does not exist", s1);
+		if
+		(
+			!p_src_data
+		||
+			p_src_data->deleted_by
+		||
+			p_src_data->about_to_be_created_by
+		)
+		{
+			p_src_data = project_src_find_fuzzy(pp, s1);
+			if (p_src_data)
+			{
+				project_error
+				(
+					pp,
+			     "file \"%S\" unknown, closest was the \"%S\" file",
+					s1,
+					p_src_data->file_name
+				);
+			}
+			else
+				project_error(pp, "file \"%S\" unknown", s1);
+			++number_of_errors;
+			continue;
+		}
 		c_src_data = change_src_new(cp);
 		c_src_data->file_name = str_copy(s1);
 		c_src_data->action = file_action_remove;
 		c_src_data->usage = p_src_data->usage;
 		c_src_data->edit_number = str_copy(p_src_data->edit_number);
 	}
+	if (number_of_errors)
+	{
+		change_fatal
+		(
+			cp,
+			"found %d fatal error%s, no files removed",
+			number_of_errors,
+			(number_of_errors == 1 ? "" : "s")
+		);
+	}
+
+	/*
+	 * Create each file in the development directory,
+	 * and make it be gibberish, to generate syntax errors if it is used.
+	 * Create any necessary directories along the way.
+	 */
+	user_become(up);
+	for (j = 0; j < wl.wl_nwords; ++j)
+	{
+		s1 = wl.wl_word[j];
+		os_mkdir_between(dd, s1, 02755);
+		s2 = str_format("%S/%S", dd, s1);
+		if (os_exists(s2))
+			os_unlink(s2);
+		undo_unlink_errok(s2);
+		os_junkfile(s2, 0644 & ~change_umask(cp));
+		str_free(s2);
+	}
+	user_become_undo();
 
 	/*
 	 * the number of files changed, or the version did,
 	 * so stomp on the validation fields.
 	 */
-	cstate_data->build_time = 0;
-	cstate_data->test_time = 0;
-	cstate_data->test_baseline_time = 0;
-	cstate_data->regression_test_time = 0;
+	change_build_times_clear(cp);
 
 	/*
 	 * write the data and release the lock
@@ -483,7 +447,7 @@ remove_file_main()
 	 * run the change file command
 	 */
 	if (!nolog)
-		log_open(change_logfile_get(cp), up);
+		log_open(change_logfile_get(cp), up, log_style_append);
 	change_run_change_file_command(cp, &wl, up);
 
 	/*

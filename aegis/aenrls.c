@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,8 @@
 
 #include <ctype.h>
 #include <stdio.h>
-#include <string.h>
+#include <ac/string.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -59,8 +60,18 @@ new_release_usage()
 	char	*progname;
 
 	progname = option_progname_get();
-	fprintf(stderr, "usage: %s -New_ReLeaSe <name> [ <option>... ]\n", progname);
-	fprintf(stderr, "       %s -New_ReLeaSe -List [ <option>... ]\n", progname);
+	fprintf
+	(
+		stderr,
+		"usage: %s -New_ReLeaSe <name> [ <option>... ]\n",
+		progname
+	);
+	fprintf
+	(
+		stderr,
+		"       %s -New_ReLeaSe -List [ <option>... ]\n",
+		progname
+	);
 	fprintf(stderr, "       %s -New_ReLeaSe -Help\n", progname);
 	quit(1);
 }
@@ -73,177 +84,7 @@ new_release_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -New_ReLeaSe - create a new project from an existing",
-"	project.",
-"",
-"SYNOPSIS",
-"	%s -New_ReLeaSe <project-name> [ <new-project-name> ][ <option>... ]",
-"	%s -New_ReLeaSe -List [ <option>... ]",
-"	%s -New_ReLeaSe -Help",
-"",
-"DESCRIPTION",
-"	The %s -New_ReLeaSe command is used to create a new",
-"	project from an existing project.",
-"",
-"	If no new-project-name is specified, it will be derived",
-"	from the project given as follows: any minor version dot",
-"	suffix will be removed from the name, then any major",
-"	version dot suffix will be removed from the name.  A major",
-"	version dot suffix will be appended, and then a minor",
-"	version dot suffix will be appended.  As an example,",
-"	\"foo.1.0\" would become \"foo.1.1\" assuming the default",
-"	minor version incriment, and \"foo\" would become \"foo.1.1\"",
-"	assiming the same minor version incriment.",
-"",
-"	The entire project baseline will be copied.  The project",
-"	state will be as if change 1 had already been integrated,",
-"	naming every file (in the old project) as a new file.  The",
-"	history files will reflect this.  No build will be",
-"	necessary; it is assumed that the old baseline was built",
-"	sucessfully.  Change numbers will commence at 2, as will",
-"	build numbers.  Test numbers will commence where the old",
-"	project left off (because all the earlier test numbers",
-"	were used by the old project).",
-"",
-"	The default is for the minor version number to be",
-"	incrimented.  If the major version number is incrimented",
-"	or set, the minor version number will be set to zero if it",
-"	is not explicitly given.",
-"",
-"	The pointer to the new project will be added to the first",
-"	element of the search path, or /usr/local/lib/%s if",
-"	none is set.  If this is inappropriate, use the",
-"	-LIBrary option to explicitly set the desired location.",
-"	See the -LIBrary option for more information.",
-"",
-"	The project directory, under which the project baseline",
-"	and history and state and change data are kept, will be",
-"	created at this time.  If the -DIRectory option is not",
-"	given, the project directory will be created in the",
-"	directory specified by the default_project_directory field",
-"	of the project user's aeuconf(5), or if not set in project",
-"	user's home directory; in either case with the same name",
-"	as the project.",
-"",
-"	All staff will be copied from the old project to the new",
-"	project without change, as will all of the project",
-"	attributes.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-DIRectory <path>",
-"		This option may be used to specify which directory",
-"		is to be used.  It is an error if the current user",
-"		does not have appropriate permissions to create",
-"		the directory path given.  This must be an",
-"		absolute path.",
-"",
-"		Caution: If you are using an automounter do not",
-"		use `pwd` to make an absolute path, it usually",
-"		gives the wrong answer.",
-"",
-"	-Help",
-"		This option may be used to obtain more information",
-"		about how to use the %s program.",
-"",
-"	-LIBrary <abspath>",
-"		This option may be used to specify a directory to",
-"		be searched for global state files and user state",
-"		files.  (See aegstate(5) and aeustate(5) for more",
-"		information.)  Several library options may be",
-"		present on the command line, and are search in the",
-"		order given.  Appended to this explicit search",
-"		path are the directories specified by the AEGIS",
-"		enviroment variable (colon separated), and",
-"		finally, /usr/local/lib/%s is always searched.",
-"		All paths specified, either on the command line or",
-"		in the AEGIS environment variable, must be",
-"		absolute.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-MAJor [ <number> ]",
-"		Specify that the major version number is to be",
-"		incrimented, or set to the given number if",
-"		specified.",
-"",
-"	-MINOr [ <number> ]",
-"		Specify that the minor version number is to be",
-"		incrimented, or set to the given number if",
-"		specified.",
-"",
-"	-Not_Logging",
-"		This option may be used to disable the automatic",
-"		logging of output and errors to a file.  This is",
-"		often useful when several %s commands are",
-"		combined in a shell script.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List option",
-"		this option causes column headings to be added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aenrls '%s -nrls \\!* -v'",
-"	sh$	aenrls(){%s -nrls $* -v}",
-"",
-"ERRORS",
-"	It is an error if the old project named does not exist.",
-"",
-"	It is an error if the old project named has not yet had",
-"	any changes integrated.",
-"",
-"	It is an error if the old project named has any changes",
-"	not in the completed state.",
-"",
-"	It is an error if the current user is not an administrator",
-"	of the old project.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.  The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aenrls.h>
 	};
 
 	help(text, SIZEOF(text), new_release_usage);
@@ -262,27 +103,29 @@ new_release_list()
 }
 
 
-static void remove_suffix _((char *, char *));
+static void remove_suffix _((char *, char *, int *));
 
 static void
-remove_suffix(str, suf)
-	char	*str;
-	char	*suf;
+remove_suffix(str, suf, punct)
+	char		*str;
+	char		*suf;
+	int		*punct;
 {
-	size_t	str_len;
-	size_t	suf_len;
+	size_t		str_len;
+	size_t		suf_len;
+	char		*cp;
 
+	*punct = '.';
 	str_len = strlen(str);
 	suf_len = strlen(suf);
-	if
-	(
-		str_len > suf_len + 1
-	&&
-		ispunct(str[str_len - suf_len - 1])
-	&&
-		!strcmp(str + str_len - suf_len, suf)
-	)
-		str[str_len - suf_len - 1] = 0;
+	if (str_len <= suf_len + 1)
+		return;
+	cp = str + str_len - suf_len - 1;
+	if (ispunct(*cp) && !strcmp(cp + 1, suf))
+	{
+		*punct = (unsigned char)*cp;
+		*cp = 0;
+	}
 }
 
 
@@ -296,15 +139,29 @@ build_new_name(s, major_old, minor_old, major_new, minor_new)
 	long		major_new;
 	long		minor_new;
 {
-	char		tmp[1000];
+	char		*tmp;
 	char		suffix[20];
+	int		min_sep;
+	int		maj_sep;
+	string_ty	*result;
 
-	strcpy(tmp, s->str_text);
+	tmp = mem_copy_string(s->str_text);
 	sprintf(suffix, "%ld", minor_old);
-	remove_suffix(tmp, suffix);
+	remove_suffix(tmp, suffix, &min_sep);
 	sprintf(suffix, "%ld", major_old);
-	remove_suffix(tmp, suffix);
-	return str_format("%s.%ld.%ld", tmp, major_new, minor_new);
+	remove_suffix(tmp, suffix, &maj_sep);
+	result =
+		str_format
+		(
+			"%s%c%ld%c%ld",
+			tmp,
+			maj_sep,
+			major_new,
+			min_sep,
+			minor_new
+		);
+	mem_free(tmp);
+	return result;
 }
 
 
@@ -328,9 +185,10 @@ copy_tree_callback(arg, message, path, st)
 {
 	string_ty	*s1;
 	string_ty	*s2;
-	copy_tree_arg_ty	*info;
+	copy_tree_arg_ty *info;
 
-	trace(("copy_tree_callback(arg = %08lX, message = %d, path = %08lX, st = %08lX)\n{\n"/*}*/, arg, message, path, st));
+	trace(("copy_tree_callback(arg = %08lX, message = %d, path = %08lX, \
+st = %08lX)\n{\n"/*}*/, arg, message, path, st));
 	info = (copy_tree_arg_ty *)arg;
 	trace_string(path->str_text);
 	s1 = os_below_dir(info->from, path);
@@ -381,7 +239,7 @@ new_release_main()
 	string_ty	*hp;
 	long		major_new;
 	long		minor_new;
-	int		j;
+	size_t		j;
 	pstate		pstate_data[2];
 	string_ty	*home;
 	string_ty	*s1;
@@ -393,8 +251,7 @@ new_release_main()
 	cstate_history	chp;
 	pstate_history	php;
 	cstate		cstate_data;
-	copy_tree_arg_ty	info;
-	pconf		pconf_data;
+	copy_tree_arg_ty info;
 	int		nolog;
 	user_ty		*up;
 	user_ty		*pup;
@@ -431,7 +288,11 @@ new_release_main()
 			if (home)
 			{
 				duplicate:
-				fatal("duplicate %s option", arglex_value.alv_string);
+				fatal
+				(
+					"duplicate %s option",
+					arglex_value.alv_string
+				);
 			}
 			s1 = str_from_c(arglex_value.alv_string);
 			os_become_orig();
@@ -626,6 +487,27 @@ You may optionally specify a second name as the name of the new project."
 	pstate_data[1]->umask = pstate_data[0]->umask;
 	pstate_data[1]->default_test_exemption =
 		pstate_data[0]->default_test_exemption;
+
+	if (pstate_data[0]->copyright_years)
+	{
+		pstate_data[1]->copyright_years =
+			pstate_copyright_years_list_type.alloc();
+		for (j = 0; j < pstate_data[0]->copyright_years->length; ++j)
+		{
+			long		*year_p;
+			type_ty		*type_p;
+
+			year_p =
+				pstate_copyright_years_list_type.list_parse
+				(
+					pstate_data[1]->copyright_years,
+					&type_p
+				);
+			assert(type_p == &integer_type);
+			*year_p = pstate_data[0]->copyright_years->list[j];
+		}
+	}
+
 	/* administrators */
 	for (j = 0; j < pstate_data[0]->administrator->length; ++j)
 	{
@@ -676,13 +558,19 @@ You may optionally specify a second name as the name of the new project."
 			str_copy(pstate_data[0]->develop_end_notify_command);
 	if (pstate_data[0]->develop_end_undo_notify_command)
 		pstate_data[1]->develop_end_undo_notify_command =
-			str_copy(pstate_data[0]->develop_end_undo_notify_command);
+			str_copy
+			(
+				pstate_data[0]->develop_end_undo_notify_command
+			);
 	if (pstate_data[0]->review_pass_notify_command)
 		pstate_data[1]->review_pass_notify_command =
 			str_copy(pstate_data[0]->review_pass_notify_command);
 	if (pstate_data[0]->review_pass_undo_notify_command)
 		pstate_data[1]->review_pass_undo_notify_command =
-			str_copy(pstate_data[0]->review_pass_undo_notify_command);
+			str_copy
+			(
+				pstate_data[0]->review_pass_undo_notify_command
+			);
 	if (pstate_data[0]->review_fail_notify_command)
 		pstate_data[1]->review_fail_notify_command =
 			str_copy(pstate_data[0]->review_fail_notify_command);
@@ -702,13 +590,27 @@ You may optionally specify a second name as the name of the new project."
 	 */
 	if (!home)
 	{
+		int	max;
+
 		s2 = user_default_project_directory(pup);
 		assert(s2);
+		os_become_orig();
+		max = os_pathconf_name_max(s2);
+		os_become_undo();
+		if (project_name[1]->str_length > max)
+		{
+			fatal
+			(
+				"project name \"%S\" too long (by %ld)",
+				project_name[1],
+				project_name[1]->str_length - max
+			);
+		}
 		home = str_format("%S/%S", s2, project_name[1]);
 		str_free(s2);
+		project_verbose(pp[1], "project directory \"%S\"", home);
 	}
 	project_home_path_set(pp[1], home);
-	project_verbose(pp[1], "project directory \"%S\"", home);
 	str_free(home);
 
 	/*
@@ -807,15 +709,14 @@ You may optionally specify a second name as the name of the new project."
 	 */
 	if (!nolog)
 	{
-		user_ty	*pup;
+		user_ty	*pup1;
 
 		s1 = str_format("%S/%s.log", bl, option_progname_get());
-		pup = project_user(pp[1]);
-		log_open(s1, pup);
-		user_free(pup);
+		pup1 = project_user(pp[1]);
+		log_open(s1, pup1, log_style_create);
+		user_free(pup1);
 		str_free(s1);
 	}
-	pconf_data = change_pconf_get(cp);
 	for (j = 0; j < cstate_data->src->length; ++j)
 	{
 		cstate_src	c_src_data;

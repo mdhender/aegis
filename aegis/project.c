@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,12 +21,14 @@
  */
 
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include <ac/string.h>
+#include <ac/stdlib.h>
+#include <ac/stdarg.h>
 
 #include <change.h>
 #include <commit.h>
 #include <error.h>
+#include <fstrcmp.h>
 #include <gonzo.h>
 #include <lock.h>
 #include <mem.h>
@@ -34,10 +36,10 @@
 #include <os.h>
 #include <project.h>
 #include <pstate.h>
-#include <s-v-arg.h>
 #include <trace.h>
 #include <user.h>
 #include <undo.h>
+#include <word.h>
 
 
 static void improve _((pstate));
@@ -325,7 +327,40 @@ project_bind_existing(pp)
 	assert(!pp->home_path);
 	s = gonzo_project_home_path_from_name(pp->name);
 	if (!s)
-		fatal("project \"%s\" unknown", pp->name->str_text);
+	{
+		wlist		wl;
+		string_ty	*best;
+		double		best_weight;
+		int		j;
+
+		gonzo_project_list(&wl);
+		best = 0;
+		best_weight = 0.6;
+		for (j = 0; j < wl.wl_nwords; ++j)
+		{
+			double		w;
+
+			s = wl.wl_word[j];
+			w = fstrcmp(pp->name->str_text, s->str_text);
+			if (w > best_weight)
+			{
+				best = s;
+				best_weight = w;
+			}
+		}
+		if (best)
+		{
+			fatal
+			(
+       "project \"%S\" unknown, closest was the \"%S\" project",
+				pp->name,
+				best
+			);
+		}
+		else
+			fatal("project \"%S\" unknown", pp->name);
+	}
+
 	/*
 	 * To cope with automounters, directories are stored as given,
 	 * or are derived from the home directory in the passwd file.
@@ -343,22 +378,9 @@ project_bind_new(pp)
 	project_ty	*pp;
 {
 	/*
-	 * make sure name is appropriate length
-	 */
-	trace(("project_bind_new()\n{\n"/*}*/));
-	if (pp->name->str_length > PATH_ELEMENT_MAX - 4)
-	{
-		fatal
-		(
-			"project name \"%s\" too long (by %d)",
-			pp->name->str_text,
-			pp->name->str_length - (PATH_ELEMENT_MAX - 4)
-		);
-	}
-
-	/*
 	 * make sure does not already exist
 	 */
+	trace(("project_bind_new()\n{\n"/*}*/));
 	if (gonzo_project_home_path_from_name(pp->name))
 		fatal("project name \"%s\" already in use", pp->name->str_text);
 
@@ -662,6 +684,109 @@ project_src_find(pp, file_name)
 
 
 pstate_src
+project_src_find_fuzzy(pp, file_name)
+	project_ty	*pp;
+	string_ty	*file_name;
+{
+	pstate		pstate_data;
+	int		j;
+	pstate_src	src_data;
+	pstate_src	best;
+	double		best_weight;
+	double		weight;
+
+	/*
+	 * This is used to find names when project_src_find does not.
+	 * Deleted and almost created files are thus ignored.
+	 */
+	trace(("project_src_find_fuzzy(pp = %08lX, fn = \"%s\")\n{\n"/*}*/,
+		pp, file_name->str_text));
+	pstate_data = project_pstate_get(pp);
+	assert(pstate_data->src);
+	best = 0;
+	best_weight = 0.6;
+	for (j = 0; j < pstate_data->src->length; ++j)
+	{
+		src_data = pstate_data->src->list[j];
+		if (src_data->about_to_be_created_by || src_data->deleted_by)
+			continue;
+		weight =
+			fstrcmp
+			(
+				src_data->file_name->str_text,
+				file_name->str_text
+			);
+		if (weight > best_weight)
+		{
+			best = src_data;
+			best_weight = weight;
+		}
+	}
+	trace(("return %08lX;\n", best));
+	trace((/*{*/"}\n"));
+	return best;
+}
+
+
+static int leading_path_prefix _((string_ty *, string_ty *));
+
+static int
+leading_path_prefix(s1, s2)
+	string_ty	*s1;
+	string_ty	*s2;
+{
+	return
+	(
+		!s1->str_length
+	||
+		(
+			s1->str_length < s2->str_length
+		&&
+			!memcmp(s1->str_text, s2->str_text, s1->str_length)
+		&&
+			s2->str_text[s1->str_length] == '/'
+		)
+	);
+}
+
+
+int
+project_src_dir(pp, file_name, result)
+	project_ty	*pp;
+	string_ty	*file_name;
+	wlist		*result;
+{
+	pstate		pstate_data;
+	int		j;
+	pstate_src	src_data;
+
+	trace(("project_src_dir(pp = %08lX, file_name = \"%s\")\n{\n"/*}*/,
+		(long)pp, file_name->str_text));
+	wl_zero(result);
+	pstate_data = project_pstate_get(pp);
+	assert(pstate_data->src);
+	for (j = 0; j < pstate_data->src->length; ++j)
+	{
+		src_data = pstate_data->src->list[j];
+		if
+		(
+			src_data->deleted_by == 0
+		&&
+			src_data->about_to_be_created_by == 0
+		&&
+			src_data->usage != file_usage_build
+		&&
+			leading_path_prefix(file_name, src_data->file_name)
+		)
+			wl_append(result, src_data->file_name);
+	}
+	trace(("return %d;\n", (result->wl_nwords != 0)));
+	trace((/*{*/"}\n"));
+	return (result->wl_nwords != 0);
+}
+
+
+pstate_src
 project_src_new(pp, file_name)
 	project_ty	*pp;
 	string_ty	*file_name;
@@ -674,8 +799,14 @@ project_src_new(pp, file_name)
 	trace(("project_src_new(pp = %08lX, file_name = \"%s\")\n{\n"/*}*/, pp, file_name->str_text));
 	pstate_data = project_pstate_get(pp);
 	assert(pstate_data->src);
-	pstate_src_list_type.list_parse(pstate_data->src, &type_p, (void **)&addr);
-	src_data = (pstate_src)pstate_src_type.alloc();
+	addr =
+		pstate_src_list_type.list_parse
+		(
+			pstate_data->src,
+			&type_p
+		);
+	assert(type_p == &pstate_src_type);
+	src_data = pstate_src_type.alloc();
 	*addr = src_data;
 	src_data->file_name = str_copy(file_name);
 	trace(("return %08lX;\n", src_data));
@@ -742,12 +873,13 @@ project_administrator_add(pp, name)
 
 	trace(("project_administrator_add(pp = %08lX, name = \"%s\")\n{\n"/*}*/, pp, name->str_text));
 	pstate_data = project_pstate_get(pp);
-	pstate_administrator_list_type.list_parse
-	(
-		pstate_data->administrator,
-		&type_p,
-		(void **)&who_p
-	);
+	who_p =
+		pstate_administrator_list_type.list_parse
+		(
+			pstate_data->administrator,
+			&type_p
+		);
+	assert(type_p == &string_type);
 	*who_p = str_copy(name);
 	trace((/*{*/"}\n"));
 }
@@ -807,12 +939,13 @@ project_developer_add(pp, name)
 	string_ty	**who_p;
 
 	pstate_data = project_pstate_get(pp);
-	pstate_developer_list_type.list_parse
-	(
-		pstate_data->developer,
-		&type_p,
-		(void **)&who_p
-	);
+	who_p =
+		pstate_developer_list_type.list_parse
+		(
+			pstate_data->developer,
+			&type_p
+		);
+	assert(type_p == &string_type);
 	*who_p = str_copy(name);
 }
 
@@ -871,12 +1004,13 @@ project_integrator_add(pp, name)
 	string_ty	**who_p;
 
 	pstate_data = project_pstate_get(pp);
-	pstate_integrator_list_type.list_parse
-	(
-		pstate_data->integrator,
-		&type_p,
-		(void **)&who_p
-	);
+	who_p =
+		pstate_integrator_list_type.list_parse
+		(
+			pstate_data->integrator,
+			&type_p
+		);
+	assert(type_p == &string_type);
 	*who_p = str_copy(name);
 }
 
@@ -935,12 +1069,13 @@ project_reviewer_add(pp, name)
 	string_ty	**who_p;
 
 	pstate_data = project_pstate_get(pp);
-	pstate_reviewer_list_type.list_parse
-	(
-		pstate_data->reviewer,
-		&type_p,
-		(void **)&who_p
-	);
+	who_p =
+		pstate_reviewer_list_type.list_parse
+		(
+			pstate_data->reviewer,
+			&type_p
+		);
+	assert(type_p == &string_type);
 	*who_p = str_copy(name);
 }
 
@@ -982,13 +1117,14 @@ project_history_new(pp)
 	trace(("project_history_new()\n{\n"/*}*/));
 	pstate_data = project_pstate_get(pp);
 	assert(pstate_data->history);
-	pstate_history_list_type.list_parse
-	(
-		pstate_data->history,
-		&type_p,
-		(void **)&history_data_p
-	);
-	history_data = (pstate_history)pstate_history_type.alloc();
+	history_data_p =
+		pstate_history_list_type.list_parse
+		(
+			pstate_data->history,
+			&type_p
+		);
+	assert(type_p == &pstate_history_type);
+	history_data = pstate_history_type.alloc();
 	*history_data_p = history_data;
 	trace(("return %08lX;\n", history_data));
 	trace((/*{*/"}\n"));
@@ -1088,12 +1224,13 @@ project_change_append(pp, cn)
 
 	pstate_data = project_pstate_get(pp);
 	assert(pstate_data->change);
-	pstate_change_list_type.list_parse
-	(
-		pstate_data->change,
-		&type_p,
-		(void **)&change_p
-	);
+	change_p =
+		pstate_change_list_type.list_parse
+		(
+			pstate_data->change,
+			&type_p
+		);
+	assert(type_p == &integer_type);
 	*change_p = cn;
 }
 
@@ -1264,6 +1401,83 @@ project_delta_exists(pp, delta_number)
 	trace(("return %d;\n", result));
 	trace((/*{*/"}\n"));
 	return result;
+}
+
+
+long
+project_delta_name_to_number(pp, delta_name)
+	project_ty	*pp;
+	char		*delta_name;
+{
+	pstate		pstate_data;
+	size_t		j, k;
+	pstate_history	history_data;
+	string_ty	*name;
+	string_ty	*best_name;
+	double		best_weight;
+
+	trace(("project_delta_name(pp = %08lX, delta_name = \"%s\")\n{\n"/*}*/,
+		pp, delta_name));
+	name = str_from_c(delta_name);
+	pstate_data = project_pstate_get(pp);
+	if (!pstate_data->history || pstate_data->history->length <= 0)
+		project_fatal(pp, "delta \"%s\" unknown", delta_name);
+	best_name = 0;
+	best_weight = 0.6;
+	for (j = 0; j < pstate_data->history->length; ++j)
+	{
+		history_data = pstate_data->history->list[j];
+		if (!history_data->name)
+			continue;
+		for (k = 0; k < history_data->name->length; ++k)
+		{
+			string_ty	*s;
+			double		w;
+
+			/*
+			 * see if there is an exact match
+			 */
+			s = history_data->name->list[k];
+			if (str_equal(s, name))
+			{
+				str_free(name);
+				trace(("return %ld;\n",
+					history_data->delta_number));
+				trace((/*{*/"}\n"));
+				return history_data->delta_number;
+			}
+
+			/*
+			 * remember fuzzy matches
+			 * for the error message later
+			 */
+			w = fstrcmp(s->str_text, delta_name);
+			if (w > best_weight)
+			{
+				best_name = s;
+				best_weight = w;
+			}
+		}
+	}
+
+	/*
+	 * no such name
+	 */
+	str_free(name);
+	if (best_name)
+	{
+		project_fatal
+		(
+			pp,
+			"delta \"%s\" unknown, closest is \"%S\"",
+			delta_name,
+			best_name
+		);
+		/*NOTREACHED*/
+	}
+	project_fatal(pp, "delta \"%s\" unknown", delta_name);
+	/*NOTREACHED*/
+	return 0;
 }
 
 

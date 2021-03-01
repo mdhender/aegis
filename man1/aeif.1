@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1995 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -56,8 +56,11 @@ command is used to
 inform \*(n) that a change has failed integration.
 .PP
 The change will be returned
-from the 'being_integrated' state
-to the 'being_developed' state.
+from the
+.I "being integrated"
+state to the
+.I "being developed"
+state.
 The change will cease to be assigned to the current user,
 and will be reassigned to the originating developer.
 The integration directory will be deleted.
@@ -70,6 +73,7 @@ for more information.
 The following options are understood:
 .so o_change.so
 .so o_edit.so
+.so o_file.so
 .so o_help.so
 .so o_keep.so
 .so o_list.so
@@ -86,9 +90,23 @@ sh$	aeifail(){\*(n) -ifail $* -v}
 .fi
 .SH ERRORS
 It is an error if
-the change is not in the 'being_integrated' state.
+the change is not in the
+.I "being integrated"
+state.
 .br
 It is an error if
 the change is not assigned to the current user.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aeib (1)
+begin integration of a change
+.TP 8n
+.IR aeip (1)
+pass integration of a change
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

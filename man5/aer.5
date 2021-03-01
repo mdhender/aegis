@@ -1,0 +1,804 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1994, 1995 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: manual page describing the report scripting language
+.\"
+.so z_name.so
+.TH aer 5 \*(N)
+.SH NAME
+aer \- report script language definition
+.SH DESCRIPTION
+This manual entry describes the report generator script language used by the
+.IR aer (1)
+command.
+The language resembles C, with a touch of
+.I awk
+and
+.I perl
+for flavour.
+It also closely resembles the appearance of \*(n)' database files.
+.PP
+This language grew out of the need to have a general purpose programming
+language to describe reports,
+and yet be as familiar as possible to the people who will be using it.
+.SH WORDS AND SYMBOLS
+This section describes the various words and symbols
+understood by the language.
+.SS Names
+A name is a contiguous set of alphanumeric characters, including underscore (_).
+It must not start with a digit.
+Names may be of any length.
+Names are case sensitive,
+so uppercase and lowercase letters are unique.
+.PP
+Here are some examples of names
+.TS
+center,box,tab(;);
+c c c.
+print;sqrt;if
+how_long;UpperCase;dig57
+.TE
+.PP
+Some words are
+.I reserved
+as keywords.
+These are the words which appear in
+.B bold
+in the statement descriptions,
+below.
+.SS Integer Constants
+An integer constant may be decimal,
+any sequence of digits.
+Constants may be octal,
+any sequence of octal digits starting with a zero.
+Constant may be hexadecimal,
+any sequence of hexadecimal digits,
+starting with a \f(CW0x\fP prefix.
+These are represented by the internal \f(CWlong\fP type,
+so significance is limited.
+.PP
+Here are some examples of integer constants:
+.TS
+center,box,tab(;);
+r r r.
+43;015;0xbeEf
+2147483647;017777777777;0x7FFFFFFF
+.TE
+.SS Floating Point Constants
+A floating point constant
+has an integer part,
+a fraction part and an exponent part.
+.PP
+Here are some examples of floating point constants:
+.TS
+center,box,tab(;);
+r r r.
+1.2e3;4.2e+1;1.628e-94
+0.567;5e6;.67
+.TE
+.SS String Constants
+A string constant is represented as characters within double quotes (").
+All characters in the script file are required to be printable,
+so special characters are represented by
+.I "escape sequences."
+These escape sequences are:
+.TS
+center,box,tab(;);
+lf(CW) l.
+\e";the \f(CW"\fP character
+\e\e;the \f(CW\e\fP character
+\en;Newline
+\ef;Form Feed
+\er;Carriage Return
+\eb;Backspace
+\et;Horizontal Tab
+\e\fInnn\fP;octal character value
+.TE
+.PP
+Here are some examples of string constants:
+.TS
+center,box,tab(;);
+c c c.
+"Hello, World!";"Go away";""
+"The End\n";"slosh is \e\e";"Say \e"Please\e""
+.TE
+.SS Symbols
+The non-alphanumeric characters are used to represent symbols,
+usually expression operators or statement terminators.
+The symbols used include:
+.TS
+center,box;
+cf(CW) cf(CW) cf(CW) cf(CW) cf(CW).
+!	!=	!~	##	##=
+%	%=	&	&&	&=
+(	)	*	**	**=
+*=	+	++	+=	,
+-	--	-=	.	/
+/=	:	;	<	<<
+<<=	<=	\&=	==	>
+>=	>>	>>=	?	[
+]	^	^=	{	|
+|=	||	}	~	~~
+.TE
+.SS White Space
+White space serves to separate words and symbols,
+and has no other significance.
+The language is free-form.
+White space includes the
+\s-2SPACE\s+2,
+\s-2TAB\s+2,
+\s-2FF\s+2,
+and
+\s-2NEWLINE\s+2
+characters.
+.SS Comments
+Comments are delimited by \f(CW/*\fP and \f(CW*/\fP pairs,
+and are treated as a single white space character.
+.SH STATEMENTS
+Statement serve to control the flow of execution of the program,
+or the existence of variables.
+.SS The Expression Statement
+The commonest statement consists of an expression
+terminated by a semicolon.
+The expression is evaluated,
+and any result is discarded.
+.PP
+Examples of this statement include
+.RS
+.nf
+.ft CW
+.ta 0.5i 1i 1.5i
+x = 42;
+print("Hello, World!\n");
+.ft R
+.fi
+.RE
+.SS The If Statement
+The
+.I if
+statement is used to conditionally execute portions of code.
+Examples if the
+.I if
+statement include:
+.RS
+.nf
+.ft CW
+.ta 0.5i 1i 1.5i
+if (x == 42)
+	x = 1;
+if (x * x < 1)
+	print("no");
+else
+	print("yes");
+.ft R
+.fi
+.RE
+.SS The For Statement
+The
+.I for
+statement has two forms.
+The first form is described as
+.RS
+.nf
+.ft CW
+.ta 0.5i 1i 1.5i
+for (\fIexpr1\fP; \fIexpr2\fP; \fIexpr3\fP)
+	\fIstmt\fP
+.ft R
+.fi
+.RE
+The
+.I expr1
+is done before the loop begins.
+The
+.I expr2
+controls, the loop;
+if it does not evaluate to \f(CWtrue\fP
+the loop terminates.
+The loop body is the
+.IR stmt .
+The loop increment is done by the
+.IR expr3 ,
+and the the test is performed again.
+.PP
+Each of the expressions is optional;
+any or all may be omitted.
+.PP
+Here is an example of a
+.I for
+loop:
+.RS
+.nf
+.ft CW
+.ta 0.5i 1i 1.5i
+for (j = 0; j < 10; ++j)
+	print(j);
+.ft R
+.fi
+.RE
+.PP
+The second form of the
+.I for
+statement looks like this:
+.RS
+.nf
+.ft CW
+for (name in keys(passwd))
+	print(name, passwd[name].pw_comment);
+.ft R
+.fi
+.FE
+.SS The Break Statement
+The
+.I break
+statement is used to break out of a loop.
+.PP
+Here is an example of a
+.I break
+statement:
+.RS
+.nf
+.ft CW
+.ta 0.5i 1i 1.5i
+for (j = 0; ; j = 2 * j + 4)
+{
+	print(j);
+	if (j >= 0x800)
+		break;
+}
+.ft R
+.fi
+.RE
+The
+.I break
+statement works within all loop statements.
+.SS The Continue Statement
+The
+.I continue
+statement is used to terminate the loop body and start another repetition.
+.PP
+Here is an example of a
+.I continue
+statement:
+.RS
+.nf
+.ft CW
+.ta 0.5i 1i 1.5i
+for (j = 0; j < 1000; j = 2 * j + 4)
+{
+	if (j < 42)
+		continue;
+	print(j);
+}
+.ft R
+.fi
+.RE
+The
+.I continue
+statement works within all loop statements.
+.SS The While Statement
+The
+.I while
+statement is another loop construct.
+The condition is evaluated before the loop body.
+.RS
+.nf
+.ft CW
+.ta 0.5i 1i 1.5i
+line = 0;
+while (line < 7)
+{
+	print("");
+	++line;
+}
+.ft R
+.fi
+.RE
+.SS The Do Statement
+The
+.I do
+statement is another loop construct.
+The condition is evaluate after the loop body.
+.RS
+.nf
+.ft CW
+.ta 0.5i 1i 1.5i
+do
+	print("yuck");
+while
+	(line++ < 7);
+.ft R
+.fi
+.RE
+.SS The Compound Statement
+The
+.I compound
+statement is a way of grouping other statements
+together.
+It is enclosed in curly braces.
+.RS
+.nf
+.ft CW
+.ta 0.5i 1i 1.5i
+if ( lines < 7)
+{
+	print("This\en");;
+	print("could\en");;
+	print("have\en");;
+	print("been\en");;
+	print("seven\en");;
+	print("blank\en");;
+	print("lines.\en");;
+}
+.ft R
+.fi
+.RE
+.SS The Local Statement
+The
+.I local
+statement is used to declare variables
+and initialize them to be nul.
+.RS
+.nf
+.ft CW
+.ta 0.5i 1i 1.5i
+local x, y, z;
+x = 42;
+.ft R
+.fi
+.RE
+All user-defined variables must be declared before they are used.
+.SS The Null Statement
+The
+.I null
+statement does nothing.
+It consists of a single semicolon.
+It is most often seen as a loop body.
+.RS
+.ft CW
+.nf
+.ta 0.5i 1i 1.5i
+for (n = 0, bit = 1; n < bit_num; ++n, bit <<= 1)
+	;
+.fi
+.ft R
+.RE
+.SH EXPRESSIONS
+Expressions are much the same as in C,
+using the same operators.
+The following table describes operator precedence
+and associativity:
+.sp
+.TS
+tab(;);
+lf(CW)w(0.5i) lw(2.5i) lf(CW)w(1i).
+.;member selection;\fIvalue\fP . \fImember\fP
+[ ];subscripting;\fIvalue\fP [ \fIexpr\fP ]
+( );function call;\fIexpr\fP ( \fIexpr_list\fP )
+( );grouping;( \fIexpr\fP )
+.TE
+.sp
+.TS
+tab(;);
+lf(CW)w(0.5i) lw(2.5i) lf(CW)w(1i).
+++;post increment;\fIlvalue\fP ++
+++;pre increment;++\fIlvalue\fP
+--;post decrement;\fIlvalue\fP --
+--;pre decrement;--\fIlvalue\fP
+~;compliment;~ \fIexpr\fP
+!;not;! \fIexpr\fP
+-;unary minus;- \fIexpr\fP
++;unary plus;+ \fIexpr\fP
+.TE
+.sp
+.TS
+tab(;);
+lf(CW)w(0.5i) lw(2.5i) lf(CW)w(1i).
+**;exponentiation;\fIexpr\fP ** \fIexpr\fP
+.TE
+.sp
+.TS
+tab(;);
+lf(CW)w(0.5i) lw(2.5i) lf(CW)w(1i).
+*;multiply;\fIexpr\fP * \fIexpr\fP
+/;divide;\fIexpr\fP / \fIexpr\fP
+%;modulo (remainder);\fIexpr\fP % \fIexpr\fP
+~~;matches;\fIexpr\fP ~~ \fIexpr\fP
+!~;does not match;\fIexpr\fP !~ \fIexpr\fP
+in;list member;\fIexpr\fP in \fIexpr\fP
+.TE
+.sp
+.TS
+tab(;);
+lf(CW)w(0.5i) lw(2.5i) lf(CW)w(1i).
++;addition (plus);\fIexpr\fP + \fIexpr\fP
+-;subtraction (minus);\fIexpr\fP - \fIexpr\fP
+##;list and string join;\fIexpr\fP ## \fIexpr\fP
+.TE
+.sp
+.TS
+tab(;);
+lf(CW)w(0.5i) lw(2.5i) lf(CW)w(1i).
+<<;shift left;\fIexpr\fP << \fIexpr\fP
+>>;shift right;\fIexpr\fP >> \fIexpr\fP
+.TE
+.sp
+.TS
+tab(;);
+lf(CW)w(0.5i) lw(2.5i) lf(CW)w(1i).
+<;less than;\fIexpr\fP < \fIexpr\fP
+<=;less than or equal;\fIexpr\fP <= \fIexpr\fP
+>;greater than;\fIexpr\fP > \fIexpr\fP
+>=;greater than or equal;\fIexpr\fP >= \fIexpr\fP
+.TE
+.sp
+.TS
+tab(;);
+lf(CW)w(0.5i) lw(2.5i) lf(CW)w(1i).
+==;equal;\fIexpr\fP == \fIexpr\fP
+!=;not equal;\fIexpr\fP != \fIexpr\fP
+.TE
+.sp
+.TS
+tab(;);
+lf(CW)w(0.5i) lw(2.5i) lf(CW)w(1i).
+&;bitwise AND;\fIexpr\fP & \fIexpr\fP
+.TE
+.sp
+.TS
+tab(;);
+lf(CW)w(0.5i) lw(2.5i) lf(CW)w(1i).
+^;bitwise exclusive OR;\fIexpr\fP ^ \fIexpr\fP
+.TE
+.sp
+.TS
+tab(;);
+lf(CW)w(0.5i) lw(2.5i) lf(CW)w(1i).
+|;bitwise inclusive OR;\fIexpr\fP | \fIexpr\fP
+.TE
+.sp
+.TS
+tab(;);
+lf(CW)w(0.5i) lw(2.5i) lf(CW)w(1i).
+? :;arithmetic if;\fIexpr\fP ? \fIexpr\fP : \fIexpr\fP
+.TE
+.sp
+.TS
+tab(;);
+lf(CW)w(0.5i) lw(2.5i) lf(CW)w(1i).
+\&=;simple assignment;\fIexpr\fP = \fIexpr\fP
+*=;multiply and assign;\fIexpr\fP *= \fIexpr\fP
+/=;divide and assign;\fIexpr\fP /= \fIexpr\fP
+%=;modulo and assign;\fIexpr\fP %= \fIexpr\fP
++=;add and assign;\fIexpr\fP += \fIexpr\fP
+-=;subtract and assign;\fIexpr\fP -= \fIexpr\fP
+<<=;shift left and assign;\fIexpr\fP <<= \fIexpr\fP
+>>=;shift right and assign;\fIexpr\fP >>= \fIexpr\fP
+&=;AND and assign;\fIexpr\fP &= \fIexpr\fP
+^=;exclusive OR and assign;\fIexpr\fP ^= \fIexpr\fP
+|=;inclusive OR and assign;\fIexpr\fP |= \fIexpr\fP
+.TE
+.sp
+.TS
+tab(;);
+lf(CW)w(0.5i) lw(2.5i) lf(CW)w(1i).
+,;comma (sequencing);\fIexpr\fP , \fIexpr\fP
+.TE
+.PP
+Most of these operators behave as they do in C, but
+some of these operators will require some explanation.
+.SS Exponentiation
+The \f(CW**\fP operator raises the left argument to the right'th power.
+It is right associative.
+.SS Match
+The \f(CW~~\fP operator compares two strings.
+It returns a number between 0.0 and 1.0.
+Zero means completely different,
+one means identical.
+Case is significant.
+.SS Not Match
+The \f(CW!~\fP is used to compare two strings,
+and returns the opposite of the \f(CW~~\fP operator;
+one if completely different, and zero if identical.
+.SS String Join
+The \f(CW##\fP operator is used to join two strings together.
+.SH TYPES
+There are several types used within the report language.
+.TP 8n
+array
+Values of this type contain other values,
+indexed by a string.
+If you attempt to index by an arithmetic type,
+it will be silently converted to a string.
+Use the
+.I keys
+function to determine all of the keys;
+use the
+.I count
+function to determine how many entries an array has.
+The type of an array element is not restricted,
+only the index must be a string.
+.TP 8n
+boolean
+This type has two values: \f(CWtrue\fP and \f(CWfalse\fP.
+These value arise from the boolean operators described
+earlier.
+.TP 8n
+integer
+This type is represented by the
+.I long
+C type.
+It has a limited range of values (usually -2e9 to 2e9 approximately).
+If used in a string context,
+it will be silently converted to a string.
+For exact control of the format,
+used the
+.I sprintf
+function.
+.TP 8n
+list
+Values of this type contain a list of other values.
+The type of these values is not restricted.
+The array index operator (e[e]) may be used to access list elements;
+indexes start at zero (0).
+.TP 8n
+string
+Values of this type are an arbitrary string of C characters,
+except the NUL character (\0).
+Strings may be of any length.
+.TP 8n
+struct
+Values of this type contain additional values.
+These values are accessed using the "dot" operator.
+These values may also be treated as if they were arrays.
+.TP 8n
+real
+This type is represented the the
+.I double
+C type.
+If used in a string context,
+it will be silently converted to a string.
+For exact control of the format,
+used the
+.I sprintf
+function.
+.SH FUNCTIONS
+There are a number of built-in functions.
+.TP 8n
+change_number
+This function is used to determine the change number.
+It may be set by the
+.B -Change
+command line option,
+or it may default.
+The return value is an integer.
+.TP 8n
+change_number_set
+This function maybe used to determine if the
+change number was set by the
+.B -Change
+command line option.
+The return value is a boolean.
+.TP 8n
+columns
+This function is used to define the report columns.
+Each argument is a structure containing some or all of the following fields:
+.TS
+center,tab(;);
+l lw(4i).
+left;T{
+the left margin, counting characters from 0 on the left
+T}
+right;T{
+the right margin, plus one
+T}
+width;T{
+the width in characters,
+defaults to 7 if right not specified
+T}
+padding;T{
+white space between columns,
+defaults to 1 if not set
+T}
+title;T{
+the title for this column,
+separate multiple lines with \en
+T}
+.TE
+The columns must be defined before the
+.I print
+function is used.
+.TP 8n
+count
+This function is used to count the number of elements in a list or array.
+.TP 8n
+keys
+This function may be given an array or a list as argument.
+It returns a list of keys which may be used to index the argument.
+Most often seen in for loops.
+.TP 8n
+length
+This function is used to find the length of a string.
+.TP 8n
+need
+This function is used to insert a page break into the report
+if the required number of lines is not available before the end of page.
+If sufficient lines are available,
+only a single blank line will be inserted.
+The return value is void.
+.TP 8n
+print
+This function is used to print into the defined columns.
+Columns will wrap around.
+.TP 8n
+project_name
+This function is used to determine the project name.
+It may be set by the
+.B -Project
+command line option,
+or it may default.
+The return value is a string.
+.TP 8n
+project_name_set
+This function maybe used to determine if the
+project name was set by the
+.B -Project
+command line option.
+The return value is a boolean.
+.TP 8n
+sort
+This function must be given a list as argument.
+The values are sorted into ascending order.
+A new list is returned.
+.TP 8n
+page_length
+This function may be used to determine the length of the output page
+in lines.
+The return value is an integer.
+.TP 8n
+page_width
+This function may be used to determine the width of the output page
+in columns.
+The return value is an integer.
+.TP 8n
+split
+This function is used to split a string into a list of strings.
+The first argument is the string to split,
+the second argument is the character to split around.
+.TP 8n
+sprintf
+This function is used to build strings.
+It is similar to the
+.IR sprintf (3)
+function.
+.TP 8n
+substr
+This function is used to extract substrings from strings.
+The first argument is a string,
+the second argument is the starting position,
+starting from 0,
+and the third argument is the length.
+.TP 8n
+terse
+This function may be used to determine of the
+.B -TERse
+command line option was used.
+The return type is a boolean.
+.TP 8n
+title
+This function is used to set the title of the report.
+It takes at most two arguments,
+one for each available title line.
+.TP 8n
+typeof
+This function is used to 
+determine the type of a value.
+The return type is a string
+containing the name of the type,
+as described in the
+.TP 8n
+wrap
+This function is used to wrap a string into a list of strings.
+The first argument is the wring to wrap,
+the second argument is the maxmium width of the output strings.
+.I TYPES
+section.
+.SH VARIABLES
+There are a number of built-in variables.
+.TP 8n
+arg
+This variable is a list
+containing the arguments passed on the
+.IR aer (1)
+command line.
+.TP 8n
+group
+This variable is an array containing all of the entries
+in the
+.I /etc/group
+file.
+Each entry is a structure with fields as documented in the
+.IR group (5)
+manual entry.
+The
+.I gr_mem
+element is a list of strings.
+This array may be indexed by either a string,
+treated as a group name,
+or by an integer,
+treated as a GID.
+.TP 8n
+passwd
+This variable is an array containing all of the entries
+in the
+.I /etc/passwd
+file.
+Each entry is a structure with fields as documented in the
+.IR passwd (5)
+manual entry.
+This array may be indexed by either a string,
+treated as a user name,
+or by an integer,
+treated as a uid.
+.TP 8n
+project
+This variable is an array containing one entry for each \*(n) project,
+indexed by name.
+Each array element is a structure, containing
+.TS
+center,tab(;);
+l l.
+name;the project name
+directory;the root of the project directory tree
+state;the project state
+.TE
+The project state contains the fields documented in the
+.IR aepstate (5)
+manual entry.
+Except:
+the
+.I "change"
+field is not a list of change numbers,
+it is an array indexed by change number of change states,
+as documented in the
+.IR aecstate (5)
+manual entry.
+.SH FILES
+The reports are kept in the
+.I /usr/local/lib/aegis/report
+directory.
+The reports are associated with a name by the
+.I /usr/local/lib/report.index
+file.
+Their names use the command line argument abbreviation scheme,
+so that report names may be abbreviated.
+.SH SEE ALSO
+.TP 8n
+.IR aer (1)
+report generator
+.TP 8n
+.IR aecstate (5)
+change state description
+.TP 8n
+.IR aepstate (5)
+project state description
+.TP 8n
+.IR aerptidx (5)
+report index file format
+.so ../man1/z_cr.so

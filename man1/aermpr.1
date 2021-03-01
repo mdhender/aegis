@@ -21,8 +21,6 @@
 .\"
 .so z_name.so
 .TH "\*(n) -ReMove_PRoject" 1 \*(N)
-.if n .ad l
-.if n .hy 0
 .SH NAME
 \*(n) -ReMove_PRoject \- remove project
 .SH SYNOPSIS
@@ -52,10 +50,11 @@ remove a project, either entirely,
 or just from \*(n)' supervision.
 .SH OPTIONS
 The following options are understood:
+.so o_help.so
+.so o_interact.so
 .so o_keep.so
 .so o_lib.so
 .so o_list.so
-.so o_help.so
 .so o_project.so
 .so o_terse.so
 .so o_verbose.so
@@ -79,4 +78,13 @@ inclusive.
 It is an error if
 the current user is not an administrator.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aenpr (1)
+create a new project
+.TP 8n
+.IR aenrls (1)
+create a new project from an existing project
 .so z_cr.so

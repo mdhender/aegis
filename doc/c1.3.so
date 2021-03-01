@@ -76,8 +76,8 @@ The tests can then compare actual outputs with expected outputs.
 As an example,
 you could be writing a
 .I sed (1)
-look-alike.
-It is a public domain clone of the 
+look-alike,
+a public domain clone of the 
 .UX
 sed utility.
 You could write tests which exercise every feature (insertion, deletion, etc.)
@@ -109,6 +109,17 @@ In more recent times there is increasing use of graphical interfaces.
 .LP
 In developing these types of programs it is still possible to use aegis,
 but several options need to be explored.
+.nh 4 "Testing Via Emulators"
+.LP
+There are screen emulators for both full-screen text and X11 available.
+Using these emulators,
+it is possible to test the user interface,
+and test via the user interface.
+As yet,
+the author knows on no freely available emulators suitable for
+testing via aegis.
+If you find one,
+please let me know.
 .nh 4 "Limited Testing"
 .LP
 You may choose to use aegis simply for its ability to provide

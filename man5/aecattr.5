@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,19 @@ modifiable portion of a change.
 A change attributes file contains the following fields:
 .so aecattr.so
 .SH SEE ALSO
-.IR aenc (1),
-.IR aeca (1).
-.so z_cr.so
+.TP 8n
+.IR aenc (1)
+create a new change
+.TP 8n
+.IR aeca (1)
+modify the attributes of a change
+.TP 8n
+.IR aegis (5)
+\*(n) file format syntax
+.TP 8n
+.IR aecstate (5)
+change state file format
+.TP 8n
+.IR aepattr (5)
+project attributes file format
+.so ../man1/z_cr.so

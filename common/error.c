@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,22 +22,20 @@
 
 #include <ctype.h>
 #include <errno.h>
-#include <stddef.h>
+#include <ac/stddef.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <ac/stdlib.h>
+#include <ac/string.h>
 
 #include <grp.h>
 #include <pwd.h>
-#include <unistd.h>
+#include <ac/unistd.h>
+#include <ac/stdarg.h>
 
 #include <arglex.h>
 #include <error.h>
+#include <mprintf.h>
 #include <option.h>
-#include <s-v-arg.h>
-
-
-#define HUGE_BUFFER 6000
 
 
 static void error_get_id _((int *, int *));
@@ -204,11 +202,49 @@ wrap(s)
 }
 
 
-static void id _((char *));
+static void double_jeopardy _((void));
 
 static void
-id(s)
+double_jeopardy()
+{
+	char	buffer[200];
+
+	sprintf
+	(
+		buffer,
+		"while attempting to construct an error message: %s (fatal)",
+		strerror(errno)
+	);
+	wrap(buffer);
+	quit(1);
+}
+
+
+static char *copy_string _((char *));
+
+static char *
+copy_string(s)
 	char		*s;
+{
+	char		*cp;
+
+	errno = 0;
+	cp = malloc(strlen(s) + 1);
+	if (!cp)
+	{
+		if (!errno)
+			errno = ENOMEM;
+		double_jeopardy();
+	}
+	strcpy(cp, s);
+	return cp;
+}
+
+
+static char *id _((void));
+
+static char *
+id()
 {
 	int		uid;
 	struct passwd	*pw;
@@ -216,6 +252,7 @@ id(s)
 	int		gid;
 	struct group	*gr;
 	char		gidn[20];
+	char		buffer[100];
 
 	errid(&uid, &gid);
 	pw = getpwuid(uid);
@@ -230,7 +267,8 @@ id(s)
 	else
 		sprintf(gidn, "gid %d", gid);
 
-	sprintf(s, " [%s, %s]", uidn, gidn);
+	sprintf(buffer, " [%s, %s]", uidn, gidn);
+	return copy_string(buffer);
 }
 
 
@@ -239,7 +277,7 @@ id(s)
  *	error - place a message on the error stream
  *
  *  SYNOPSIS
- *	void error(char *s, ...);
+ *	void error(char *fmt, ...);
  *
  *  DESCRIPTION
  *	Error places a message on the error output stream.
@@ -255,16 +293,18 @@ id(s)
 
 /*VARARGS1*/
 void
-error(s sva_last)
-	char		*s;
+error(fmt sva_last)
+	char		*fmt;
 	sva_last_decl
 {
 	va_list		ap;
-	char		buffer[HUGE_BUFFER];
+	char		*buffer;
 
-	sva_init(ap, s);
-	vsprintf(buffer, s, ap);
+	sva_init(ap, fmt);
+	buffer = vmprintf_errok(fmt, ap);
 	va_end(ap);
+	if (!buffer)
+		double_jeopardy();
 	wrap(buffer);
 }
 
@@ -274,7 +314,7 @@ error(s sva_last)
  *	nerror - place a system fault message on the error stream
  *
  *  SYNOPSIS
- *	void nerror(char *s, ...);
+ *	void nerror(char *fmt, ...);
  *
  *  DESCRIPTION
  *	Nerror places a message on the error output stream.
@@ -291,23 +331,29 @@ error(s sva_last)
 
 /*VARARGS1*/
 void
-nerror(s sva_last)
-	char		*s;
+nerror(fmt sva_last)
+	char		*fmt;
 	sva_last_decl
 {
-	char		buffer[HUGE_BUFFER];
+	char		*s1;
+	char		*s2;
 	va_list		ap;
 	int		n;
 
 	n = errno;
-	sva_init(ap, s);
-	vsprintf(buffer, s, ap);
+	sva_init(ap, fmt);
+	s1 = vmprintf_errok(fmt, ap);
 	va_end(ap);
-	strcat(buffer, ": ");
-	strcat(buffer, strerror(n));
+	if (!s1)
+		double_jeopardy();
+	s1 = copy_string(s1);
 	if (n == EPERM || n == EACCES)
-		id(buffer + strlen(buffer));
-	wrap(buffer);
+		s2 = id();
+	else
+		s2 = copy_string("");
+	error("%s: %s%s", s1, strerror(n), s2);
+	free(s1);
+	free(s2);
 }
 
 
@@ -316,7 +362,7 @@ nerror(s sva_last)
  *	nfatal - place a system fault message on the error stream and exit
  *
  *  SYNOPSIS
- *	void nfatal(char *s, ...);
+ *	void nfatal(char *fmt, ...);
  *
  *  DESCRIPTION
  *	Nfatal places a message on the error output stream and exits.
@@ -335,24 +381,29 @@ nerror(s sva_last)
 
 /*VARARGS1*/
 void
-nfatal(s sva_last)
-	char		*s;
+nfatal(fmt sva_last)
+	char		*fmt;
 	sva_last_decl
 {
-	char		buffer[HUGE_BUFFER];
+	char		*s1;
+	char		*s2;
 	va_list		ap;
 	int		n;
 
 	n = errno;
-	sva_init(ap, s);
-	vsprintf(buffer, s, ap);
+	sva_init(ap, fmt);
+	s1 = vmprintf_errok(fmt, ap);
 	va_end(ap);
-	strcat(buffer, ": ");
-	strcat(buffer, strerror(n));
+	if (!s1)
+		double_jeopardy();
+	s1 = copy_string(s1);
+
 	if (n == EPERM || n == EACCES)
-		id(buffer + strlen(buffer));
-	wrap(buffer);
-	quit(1);
+		s2 = id();
+	else
+		s2 = "";
+
+	fatal("%s: %s%s", s1, strerror(n), s2);
 }
 
 
@@ -361,7 +412,7 @@ nfatal(s sva_last)
  *	fatal - place a message on the error stream and exit
  *
  *  SYNOPSIS
- *	void fatal(char *s, ...);
+ *	void fatal(char *fmt, ...);
  *
  *  DESCRIPTION
  *	Fatal places a message on the error output stream and exits.
@@ -379,16 +430,18 @@ nfatal(s sva_last)
 
 /*VARARGS1*/
 void
-fatal(s sva_last)
-	char		*s;
+fatal(fmt sva_last)
+	char		*fmt;
 	sva_last_decl
 {
 	va_list		ap;
-	char		buffer[HUGE_BUFFER];
+	char		*buffer;
 
-	sva_init(ap, s);
-	vsprintf(buffer, s, ap);
+	sva_init(ap, fmt);
+	buffer = vmprintf_errok(fmt, ap);
 	va_end(ap);
+	if (!buffer)
+		double_jeopardy();
 	wrap(buffer);
 	quit(1);
 }
@@ -433,7 +486,7 @@ assert_failed(s, file, line)
  *	verbose - place a verbose message on the error stream
  *
  *  SYNOPSIS
- *	void verbose(char *s, ...);
+ *	void verbose(char *fmt, ...);
  *
  *  DESCRIPTION
  *	The verbose function places a verbose message on the error stream.
@@ -449,16 +502,18 @@ assert_failed(s, file, line)
 
 /*VARARGS1*/
 void
-verbose(s sva_last)
-	char		*s;
+verbose(fmt sva_last)
+	char		*fmt;
 	sva_last_decl
 {
 	va_list		ap;
-	char		buffer[HUGE_BUFFER];
+	char		*buffer;
 
-	sva_init(ap, s);
-	vsprintf(buffer, s, ap);
+	sva_init(ap, fmt);
+	buffer = vmprintf_errok(fmt, ap);
 	va_end(ap);
+	if (!buffer)
+		double_jeopardy();
 	if (option_verbose_get())
 		wrap(buffer);
 }

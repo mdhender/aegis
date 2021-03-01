@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,8 +21,8 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include <ac/stdlib.h>
+#include <ac/unistd.h>
 
 #include <ael.h>
 #include <aent.h>
@@ -64,138 +64,7 @@ new_test_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -New_Test - add a new test to a change",
-"",
-"SYNOPSIS",
-"	%s -New_Test [ <option>... ]",
-"	%s -New_Test -List [ <option>... ]",
-"	%s -New_Test -Help",
-"",
-"DESCRIPTION",
-"	The %s -New_Test command is used to add a new test to a",
-"	change.  A new file is created in the development directory.",
-"	The config file will be searched for a template for the new",
-"	file.  If a template is found, the new file will be",
-"	initialized to the template, otherwise it will be created",
-"	empty.  See aepconf(5) for more information.",
-"",
-"	New tests default to automatic unless otherwise",
-"	specified.",
-"",
-"	It is not possible to choose your own test number, or",
-"	test file name.	 All tests within a project are numbered",
-"	uniquely.  Test files are named as",
-"	\"test/XX/tXXXX[am].sh\", where XX is the first 2 digits of",
-"	the test number, XXXX is the whole test number, and [am]",
-"	is a for automatic tests and m for manual tests.",
-"",
-"	Tests may be modified in future	by adding them to a",
-"	change with the	aecp(1)	command.  Tests	are treated just",
-"	like any other source file, and	are subject to the same",
-"	process.",
-"",
-"OPTIONS",
-"	The following options are understood;",
-"",
-"	-AUTOmatic",
-"		This option may be uset to specify manual tests.",
-"		Automatic tests require no human assitance.",
-"",
-"	-Change <number>",
-"		This option may be used to specify a particular",
-"		change within a project.  When no -Change option is",
-"		specified, the AEGIS_CHANGE environment variable is",
-"		consulted.  If that does not exist, the user's",
-"		$HOME/.aegisrc file is examined for a default change",
-"		field (see aeuconf(5) for more information).  If",
-"		that does not exist, when the user is only working",
-"		on one change within a project, that is the default",
-"		change number.  Otherwise, it is an error.",
-"",
-"	-Help",
-"		This option may be used to obtain more",
-"		information about how to use the %s program.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-MANual",
-"		This option may be used to specify manual tests.",
-"		Manual tests require some human intervention,",
-"		e.g.:  confirmation of some screen behaviour",
-"		(X11, for instance), or some user action, \"unplug",
-"		ethernet cable now\".",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified, the",
-"		AEGIS_PROJECT environment variable is consulted.  If",
-"		that does not exist, the user's $HOME/.aegisrc file",
-"		is examined for a default project field (see",
-"		aeuconf(5) for more information).  If that does not",
-"		exist, when the user is only working on changes",
-"		within a single project, the project name defaults",
-"		to that project.  Otherwise, it is an error.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List",
-"		option this option causes column headings to be",
-"		added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aent '%s -nt \\!* -v'",
-"	sh$	aent(){%s -nt $* -v}",
-"",
-"ERRORS",
-"	It is an error if the change is not in the",
-"	'being_developed' state.",
-"	It is an error if the change is not assigned to the",
-"	current user.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.	The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aent.h>
 	};
 
 	help(text, SIZEOF(text), new_test_usage);
@@ -288,7 +157,11 @@ new_test_main()
 			if (manual_flag)
 			{
 				duplicate:
-				fatal("duplicate %s option", arglex_value.alv_string);
+				fatal
+				(
+					"duplicate %s option",
+					arglex_value.alv_string
+				);
 			}
 			manual_flag = 1;
 			break;
@@ -364,14 +237,23 @@ new_test_main()
 	 * It is an error if the change is not assigned to the current user.
 	 */
 	if (cstate_data->state != cstate_state_being_developed)
-		change_fatal(cp, "not in 'being_developed' state");
+	{
+		change_fatal
+		(
+			cp,
+"this change is in the '%s' state, \
+it must be in the 'being developed' state to create a new test with it",
+			cstate_state_ename(cstate_data->state)
+		);
+	}
 	if (!str_equal(change_developer_name(cp), user_name(up)))
 	{
 		change_fatal
 		(
 			cp,
-			"user \"%S\" is not the developer",
-			user_name(up)
+"user \"%S\" is not the developer, only user \"%S\" may add a new test",
+			user_name(up),
+			change_developer_name(cp)
 		);
 	}
 
@@ -380,7 +262,6 @@ new_test_main()
 	 * Create any necessary directories along the way.
 	 */
 	dd = change_development_directory_get(cp, 1);
-	change_pconf_get(cp);
 	s1 =
 		str_format
 		(
@@ -434,10 +315,7 @@ new_test_main()
 	 * the number of files changed, or the version did,
 	 * so stomp on the validation fields.
 	 */
-	cstate_data->build_time = 0;
-	cstate_data->test_time = 0;
-	cstate_data->test_baseline_time = 0;
-	cstate_data->regression_test_time = 0;
+	change_build_times_clear(cp);
 
 	/*
 	 * The change now has at least one test,

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,8 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <ac/stdlib.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -53,7 +54,7 @@ review_fail_usage()
 	char		*progname;
 
 	progname = option_progname_get();
-	fprintf(stderr, "usage: %s -Review_FAIL <reason-file> [ <option>... ]\n", progname);
+	fprintf(stderr, "usage: %s -Review_FAIL -File <reason-file> [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Review_FAIL -Edit [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Review_FAIL -List [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Review_FAIL -Help\n", progname);
@@ -68,136 +69,7 @@ review_fail_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -Review_FAIL - fail a change review",
-"",
-"SYNOPSIS",
-"	%s -Review_FAIL <reason-file> [ <option>... ]",
-"	%s -Review_FAIL -Edit [ <option>... ]",
-"	%s -Review_FAIL -List [ <option>... ]",
-"	%s -Review_FAIL -Help",
-"",
-"DESCRIPTION",
-"	The %s -Review_FAIL command is used to inform",
-"	%s that a change has failed review.",
-"",
-"	The change will be returned from the 'being_reviewed'",
-"	state to the 'being_developed' state.  The change will",
-"	cease to be assigned to the current user, and will be",
-"	reassigned to the originating developer.",
-"",
-"	The developer will be notified by mail.	 See the",
-"	integrate_fail_notify_command in aepconf(5) for more",
-"	information.",
-"",
-"	The reason-file will contain a description of why the",
-"	change was failed.  The file is in plain text.	It is",
-"	recommened that you only use newline to terminate",
-"	paragraphs, as with will result in better formatting in",
-"	the various listings.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-Change <number>",
-"		This option may be used to specify a particular",
-"		change within a project.  When no -Change option is",
-"		specified, the AEGIS_CHANGE environment variable is",
-"		consulted.  If that does not exist, the user's",
-"		$HOME/.aegisrc file is examined for a default change",
-"		field (see aeuconf(5) for more information).  If",
-"		that does not exist, when the user is only working",
-"		on one change within a project, that is the default",
-"		change number.  Otherwise, it is an error.",
-"",
-"	-Edit",
-"		Edit the attributes with a text editor, this is",
-"		usually more convenient than supplying a text",
-"		file.  The EDITOR environment variable will be",
-"		consulted for the name of the editor to use;",
-"		defaults to vi(1) if not set.  Warning: not well",
-"		behaved when faced with errors, the temporary",
-"		file is always deleted.",
-"",
-"	-Help",
-"		This option may be used to obtain more",
-"		information about how to use the %s program.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified, the",
-"		AEGIS_PROJECT environment variable is consulted.  If",
-"		that does not exist, the user's $HOME/.aegisrc file",
-"		is examined for a default project field (see",
-"		aeuconf(5) for more information).  If that does not",
-"		exist, when the user is only working on changes",
-"		within a single project, the project name defaults",
-"		to that project.  Otherwise, it is an error.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List",
-"		option this option causes column headings to be",
-"		added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aerf '%s -rf \\!* -v'",
-"	sh$	aerf(){%s -rf $* -v}",
-"",
-"ERRORS",
-"	It is an error if the change is not in the",
-"	'being_reviewed' state.",
-"	It is an error if the current user is not a reviewer for",
-"	the project.",
-"	It is an error if the current user developed the change",
-"	and the project is configured to disallow developers to",
-"	review their own changes (default).",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.	The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aerf.h>
 	};
 
 	help(text, SIZEOF(text), review_fail_usage);
@@ -320,6 +192,59 @@ rf_func(arg, message, path, st)
 }
 
 
+static void check_permissions _((change_ty *, user_ty *));
+
+static void
+check_permissions(cp, up)
+	change_ty	*cp;
+	user_ty		*up;
+{
+	cstate		cstate_data;
+	project_ty	*pp;
+	pstate		pstate_data;
+
+	cstate_data = change_cstate_get(cp);
+	pp = cp->pp;
+	pstate_data = project_pstate_get(pp);
+
+	/*
+	 * it is an error if the change is not in the 'being_reviewed' state.
+	 */
+	if (cstate_data->state != cstate_state_being_reviewed)
+	{
+		change_fatal
+		(
+			cp,
+"this change is in the '%s' state, \
+it must be in the 'being reviewed' state to fail review",
+			cstate_state_ename(cstate_data->state)
+		);
+	}
+	if (!project_reviewer_query(pp, user_name(up)))
+	{
+		project_fatal
+		(
+			pp,
+			"user \"%S\" is not a reviewer",
+			user_name(up)
+		);
+	}
+	if
+	(
+		!pstate_data->developer_may_review
+	&&
+		str_equal(change_developer_name(cp), user_name(up))
+	)
+	{
+		change_fatal
+		(
+			cp,
+			"the developer of a change may not also review it"
+		);
+	}
+}
+
+
 static void review_fail_main _((void));
 
 static void
@@ -352,8 +277,27 @@ review_fail_main()
 			continue;
 
 		case arglex_token_string:
+			error
+			(
+"warning: please use the -File option when specifying a reason file, \
+the unadorned form is now obsolescent"
+			);
 			if (comment)
 				fatal("too many files named");
+			goto read_input_file;
+
+		case arglex_token_file:
+			if (comment)
+				goto duplicate;
+			if (arglex() != arglex_token_string)
+			{
+				error
+				(
+				 "the -File option requires a filename argument"
+				);
+				review_fail_usage();
+			}
+			read_input_file:
 			os_become_orig();
 			comment = read_whole_file(arglex_value.alv_string);
 			os_become_undo();
@@ -373,29 +317,35 @@ review_fail_main()
 			break;
 
 		case arglex_token_project:
+			if (project_name)
+				goto duplicate;
 			if (arglex() != arglex_token_string)
 				review_fail_usage();
-			if (project_name)
-				fatal("duplicate -Project option");
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 
 		case arglex_token_edit:
 			if (edit)
-				fatal("duplicate %s option", arglex_value.alv_string);
+			{
+				duplicate:
+				fatal
+				(
+					"duplicate %s option",
+					arglex_value.alv_string
+				);
+			}
 			edit++;
 			break;
 		}
 		arglex();
 	}
-	if (edit)
+	if (edit && comment)
+		fatal("may not use both -Edit and -File options");
+	if (!edit && !comment)
 	{
-		if (comment)
-			fatal("may not use -Edit and also name a comment file");
-		comment = os_edit_new();
+		error("warning: no -File specified, assuming -Edit desired");
+		++edit;
 	}
-	if (!comment)
-		fatal("no comment file supplied");
 
 	/*
 	 * locate project data
@@ -420,6 +370,16 @@ review_fail_main()
 	change_bind_existing(cp);
 
 	/*
+	 * create the commant, if necessary
+	 * check permissions first
+	 */
+	if (edit)
+	{
+		check_permissions(cp, up);
+		comment = os_edit_new();
+	}
+
+	/*
 	 * lock the change for writing
 	 */
 	project_pstate_lock_prepare(pp);
@@ -430,26 +390,10 @@ review_fail_main()
 	pstate_data = project_pstate_get(pp);
 
 	/*
-	 * it is an error if the change is not in the 'being_reviewed' state.
+	 * check they are allowed to
+	 * (even if edited, may have changed while editing)
 	 */
-	if (cstate_data->state != cstate_state_being_reviewed)
-		change_fatal(cp, "not in 'being_reviewed' state");
-	if (!project_reviewer_query(pp, user_name(up)))
-	{
-		project_fatal
-		(
-			pp,
-			"user \"%S\" is not a reviewer",
-			user_name(up)
-		);
-	}
-	if
-	(
-		!pstate_data->developer_may_review
-	&&
-		str_equal(change_developer_name(cp), user_name(up))
-	)
-		change_fatal(cp, "developer may not review");
+	check_permissions(cp, up);
 
 	/*
 	 * change the state
@@ -460,10 +404,7 @@ review_fail_main()
 	history_data = change_history_new(cp, up);
 	history_data->what = cstate_history_what_review_fail;
 	history_data->why = comment;
-	cstate_data->build_time = 0;
-	cstate_data->test_time = 0;
-	cstate_data->test_baseline_time = 0;
-	cstate_data->regression_test_time = 0;
+	change_build_times_clear(cp);
 
 	/*
 	 * add it back into the user's change list
@@ -502,7 +443,10 @@ review_fail_main()
 		if (p_src_data->about_to_be_created_by)
 		{
 			assert(p_src_data->about_to_be_created_by == change_number);
-			project_src_remove(pp, c_src_data->file_name);
+			if (p_src_data->deleted_by)
+				p_src_data->about_to_be_created_by = 0;
+			else
+				project_src_remove(pp, c_src_data->file_name);
 		}
 	}
 

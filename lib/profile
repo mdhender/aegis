@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991, 1992, 1993 Peter Miller.
+#	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -19,12 +19,8 @@
 #
 # MANIFEST: Bourne shell user config for aegis
 #
-AEGIS=$HOME/lib/aegis
-export AEGIS
-aea()
-{
-	aegis -a $* -v
-}
+AEGIS_PATH=$HOME/lib/aegis
+export AEGIS_PATH
 aeb()
 {
 	aegis -b $* -v
@@ -36,6 +32,10 @@ aeca()
 aecd()
 {
 	cd `aegis -cd $* -v`
+}
+aechown()
+{
+	aegis -chown $* -v
 }
 aecp()
 {
@@ -73,9 +73,9 @@ aedmore()
 {
 	more `find . -name "*,D" -print | sort`
 }
-aega()
+aedn()
 {
-	aegis -ga $* -v
+	aegis -dn $* -v
 }
 aeib()
 {
@@ -96,6 +96,10 @@ aeipass()
 ael()
 {
 	aegis -l $* -v
+}
+aem()
+{
+	aegis -diff -only_merge $* -v
 }
 aemv()
 {
@@ -141,9 +145,21 @@ aent()
 {
 	aegis -nt $* -v
 }
+aentu()
+{
+	aegis -ntu $* -v
+}
 aepa()
 {
 	aegis -pa $* -v
+}
+aeq()
+{
+	aegis -q $* -v
+}
+aer()
+{
+	aegis -rpt $* -v
 }
 aera()
 {
@@ -172,6 +188,10 @@ aermu()
 aerpass()
 {
 	aegis -rpass $* -v
+}
+aerpu()
+{
+	aegis -rpu $* -v
 }
 aermpr()
 {

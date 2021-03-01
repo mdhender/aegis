@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,8 +21,9 @@
  */
 
 #include <stdio.h>
-#include <stddef.h>
-#include <string.h>
+#include <ac/stddef.h>
+#include <ac/string.h>
+#include <ac/stdarg.h>
 #include <ctype.h>
 
 #include <col.h>
@@ -32,7 +33,6 @@
 #include <option.h>
 #include <os.h>
 #include <pager.h>
-#include <s-v-arg.h>
 #include <trace.h>
 
 
@@ -56,6 +56,7 @@ struct col_ty
 };
 
 static	size_t	ncols;
+static	size_t	ncols_max;
 static	col_ty	**col;
 static	char	*filename;
 static	FILE	*fp;
@@ -68,8 +69,9 @@ static	int	page_length;
 static	int	is_a_printer;
 static	char	*title1;
 static	char	*title2;
-static	long	page_time;
+static	time_t	page_time;
 static	int	unf;
+static	int	tab_width;
 
 
 /*
@@ -135,6 +137,7 @@ col_open(s)
 	}
 	time(&page_time);
 	unf = option_unformatted_get();
+	tab_width = option_tab_width_get();
 	trace((/*{*/"}\n"));
 }
 
@@ -294,7 +297,16 @@ col_create(min, max)
 
 	assert(min < max);
 	cp = (col_ty *)mem_alloc(sizeof(col_ty));
-	*(col_ty **)enlarge(&ncols, (char **)&col, sizeof(col_ty *)) = cp;
+	if (ncols >= ncols_max)
+	{
+		size_t		nbytes;
+
+		ncols_max = ncols_max * 2 + 4;
+		nbytes = ncols_max * sizeof(col_ty *);
+		col = mem_change_size(col, nbytes);
+	}
+	col[ncols++] = cp;
+
 	cp->min = min;
 	cp->max = max;
 	cp->text_length_max = 0;
@@ -348,7 +360,12 @@ col_save_char(cp, c)
 		else
 		{
 			cp->text_length_max += 100;
-			mem_change_size(&cp->text, cp->text_length_max + 1);
+			cp->text =
+				mem_change_size
+				(
+					cp->text,
+					cp->text_length_max + 1
+				);
 		}
 	}
 	cp->text[cp->text_length++] = c;
@@ -390,6 +407,9 @@ col_putchar(cp, c)
 		break;
 
 	case '\t':
+		/*
+		 * Internally, treat tabs as 8 characters wide.
+		 */
 		for (;;)
 		{
 			col_save_char(cp, ' ');
@@ -594,24 +614,28 @@ col_emit_char(c)
 		break;
 
 	case '\t':
-		in_col = (in_col + 8) & -8;
+		/*
+		 * Internally, treat tabs as 8 characters wide.
+		 * (This case should never be exersized.)
+		 */
+		in_col = (in_col + 8) & ~7;
 		break;
 
 	default:
-		if (!unf)
+		if (!unf && tab_width)
 		{
 			while
 			(
-				((out_col + 8) & ~7) <= in_col
-			&&
 				out_col + 1 < in_col
+			&&
+				((out_col / tab_width + 1) * tab_width) <= in_col
 			)
 			{
 				if (filename != pager)
 					glue_fputc('\t', fp);
 				else
 					putc('\t', fp);
-				out_col = (out_col + 8) & -8;
+				out_col = (out_col / tab_width + 1) * tab_width;
 			}
 		}
 		while (out_col < in_col)

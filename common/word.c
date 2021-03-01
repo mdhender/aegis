@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,12 +21,11 @@
  */
 
 #include <ctype.h>
-#include <stddef.h>
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
+#include <ac/stddef.h>
+#include <ac/string.h>
+#include <ac/stdlib.h>
+#include <ac/time.h>
 
-#include <main.h>
 #include <string.h>
 #include <word.h>
 #include <error.h>
@@ -52,13 +51,44 @@ wl_append(wlp, w)
 	wlist		*wlp;
 	string_ty	*w;
 {
-	*(string_ty **)
-	enlarge
-	(
-		&wlp->wl_nwords,
-		(char **)&wlp->wl_word, sizeof(string_ty *)
-	) =
-		str_copy(w);
+	size_t		nbytes;
+
+	if (wlp->wl_nwords >= wlp->wl_nwords_max)
+	{
+		/*
+		 * always 8 less than a power of 2, which is
+		 * most efficient for many memory allocators
+		 */
+		wlp->wl_nwords_max = wlp->wl_nwords_max * 2 + 8;
+		nbytes = wlp->wl_nwords_max * sizeof(string_ty *);
+		wlp->wl_word = mem_change_size(wlp->wl_word, nbytes);
+	}
+	wlp->wl_word[wlp->wl_nwords++] = str_copy(w);
+}
+
+
+void
+wl_prepend(wlp, w)
+	wlist		*wlp;
+	string_ty	*w;
+{
+	size_t		nbytes;
+	size_t		j;
+
+	if (wlp->wl_nwords >= wlp->wl_nwords_max)
+	{
+		/*
+		 * always 8 less than a power of 2, which is
+		 * most efficient for many memory allocators
+		 */
+		wlp->wl_nwords_max = wlp->wl_nwords_max * 2 + 8;
+		nbytes = wlp->wl_nwords_max * sizeof(string_ty *);
+		wlp->wl_word = mem_change_size(wlp->wl_word, nbytes);
+	}
+	for (j = wlp->wl_nwords; j > 0; --j)
+		wlp->wl_word[j] = wlp->wl_word[j - 1];
+	wlp->wl_nwords++;
+	wlp->wl_word[0] = str_copy(w);
 }
 
 
@@ -82,13 +112,14 @@ void
 wl_free(wlp)
 	wlist		*wlp;
 {
-	int		j;
+	size_t		j;
 
 	for (j = 0; j < wlp->wl_nwords; j++)
 		str_free(wlp->wl_word[j]);
-	if (wlp->wl_nwords)
-		free(wlp->wl_word);
+	if (wlp->wl_word)
+		mem_free(wlp->wl_word);
 	wlp->wl_nwords = 0;
+	wlp->wl_nwords_max = 0;
 	wlp->wl_word = 0;
 }
 
@@ -114,7 +145,7 @@ wl_member(wlp, w)
 	wlist		*wlp;
 	string_ty	*w;
 {
-	int		j;
+	size_t		j;
 
 	for (j = 0; j < wlp->wl_nwords; j++)
 		if (str_equal(wlp->wl_word[j], w))
@@ -146,7 +177,7 @@ wl_copy(to, from)
 	wlist		*to;
 	wlist		*from;
 {
-	int		j;
+	size_t		j;
 
 	wl_zero(to);
 	for (j = 0; j < from->wl_nwords; j++)
@@ -159,7 +190,7 @@ wl_copy(to, from)
  *	wl2str - form a string from a word list
  *
  * SYNOPSIS
- *	string_ty *wl2str(wlist *wlp, int start, int stop);
+ *	string_ty *wl2str(wlist *wlp, int start, int stop, char *sep);
  *
  * DESCRIPTION
  *	Wl2str is used to form a string from a word list.
@@ -173,18 +204,23 @@ wl_copy(to, from)
  */
 
 string_ty *
-wl2str(wl, start, stop)
+wl2str(wl, start, stop, sep)
 	wlist		*wl;
 	int		start;
 	int		stop;
+	char		*sep;
 {
 	int		j;
 	static char	*tmp;
 	static size_t	tmplen;
 	size_t		length;
+	size_t		seplen;
 	char		*pos;
 	string_ty	*s;
 
+	if (!sep)
+		sep = " ";
+	seplen = strlen(sep);
 	length = 0;
 	for (j = start; j <= stop && j < wl->wl_nwords; j++)
 	{
@@ -192,25 +228,15 @@ wl2str(wl, start, stop)
 		if (s->str_length)
 		{
 			if (length)
-				++length;
+				length += seplen;
 			length += s->str_length;
 		}
 	}
 
-	if (!tmp)
+	if (tmplen < length)
 	{
 		tmplen = length;
-		if (tmplen < 16)
-			tmplen = 16;
-		tmp = mem_alloc(tmplen);
-	}
-	else
-	{
-		if (tmplen < length)
-		{
-			tmplen = length;
-			mem_change_size(&tmp, tmplen);
-		}
+		tmp = mem_change_size(tmp, tmplen);
 	}
 
 	pos = tmp;
@@ -220,7 +246,10 @@ wl2str(wl, start, stop)
 		if (s->str_length)
 		{
 			if (pos != tmp)
-				*pos++ = ' ';
+			{
+				memcpy(pos, sep, seplen);
+				pos += seplen;
+			}
 			memcpy(pos, s->str_text, s->str_length);
 			pos += s->str_length;
 		}
@@ -236,10 +265,14 @@ wl2str(wl, start, stop)
  *	str2wl - string to word list
  *
  * SYNOPSIS
- *	void str2wl(wlist *wlp, string_ty *s);
+ *	void str2wl(wlist *wlp, string_ty *s, char *sep, int ewhite);
  *
  * DESCRIPTION
  *	Str2wl is used to form a word list from a string.
+ *	wlp	- where to put the word list
+ *	s	- string to break
+ *	sep	- separators, default to " " if 0 given
+ *	ewhite	- supress extra white space around separators
  *
  * RETURNS
  *	The string is broken on spaces into words,
@@ -250,14 +283,20 @@ wl2str(wl, start, stop)
  */
 
 void
-str2wl(slp, s, sep)
+str2wl(slp, s, sep, ewhite)
 	wlist		*slp;
 	string_ty	*s;
 	char		*sep;
+	int		ewhite;
 {
 	char		*cp;
 	int		more;
 
+	if (!sep)
+	{
+		sep = " \t\n\f\r";
+		ewhite = 1;
+	}
 	wl_zero(slp);
 	cp = s->str_text;
 	more = 0;
@@ -267,35 +306,25 @@ str2wl(slp, s, sep)
 		char		*cp1;
 		char		*cp2;
 
-		while (isspace(*cp))
-			cp++;
+		if (ewhite)
+			while (isspace(*cp))
+				cp++;
 		if (!*cp && !more)
 			break;
 		more = 0;
 		cp1 = cp;
-		if (sep)
+		while (*cp && !strchr(sep, *cp))
+			cp++;
+		if (*cp)
 		{
-			while (*cp && !strchr(sep, *cp))
-				cp++;
-			if (*cp)
-			{
-				cp2 = cp + 1;
-				more = 1;
-			}
-			else
-				cp2 = cp;
-			while (cp > cp1 && isspace(cp[-1]))
-				cp--;
+			cp2 = cp + 1;
+			more = 1;
 		}
 		else
-		{
-			while (*cp && !isspace(*cp))
-				cp++;
-			if (*cp)
-				cp2 = cp + 1;
-			else
-				cp2 = cp;
-		}
+			cp2 = cp;
+		if (ewhite)
+			while (cp > cp1 && isspace(cp[-1]))
+				cp--;
 		w = str_n_from_c(cp1, cp - cp1);
 		wl_append(slp, w);
 		str_free(w);
@@ -324,7 +353,7 @@ wl_append_unique(wlp, wp)
 	wlist		*wlp;
 	string_ty	*wp;
 {
-	int		j;
+	size_t		j;
 
 	for (j = 0; j < wlp->wl_nwords; j++)
 		if (str_equal(wlp->wl_word[j], wp))
@@ -352,8 +381,8 @@ wl_delete(wlp, wp)
 	wlist		*wlp;
 	string_ty	*wp;
 {
-	int		j;
-	int		k;
+	size_t		j;
+	size_t		k;
 
 	for (j = 0; j < wlp->wl_nwords; ++j)
 	{
@@ -368,10 +397,63 @@ wl_delete(wlp, wp)
 	}
 }
 
+
 void
 wl_zero(wlp)
 	wlist		*wlp;
 {
 	wlp->wl_nwords = 0;
+	wlp->wl_nwords_max = 0;
 	wlp->wl_word = 0;
+}
+
+
+int
+wl_equal(a, b)
+	wlist		*a;
+	wlist		*b;
+{
+	size_t		j, k;
+
+	for (j = 0; j < a->wl_nwords; ++j)
+	{
+		for (k = 0; k < b->wl_nwords; ++k)
+			if (str_equal(a->wl_word[j], b->wl_word[k]))
+				break;
+		if (k >= b->wl_nwords)
+			return 0;
+	}
+	for (j = 0; j < b->wl_nwords; ++j)
+	{
+		for (k = 0; k < a->wl_nwords; ++k)
+			if (str_equal(b->wl_word[j], a->wl_word[k]))
+				break;
+		if (k >= a->wl_nwords)
+			return 0;
+	}
+	return 1;
+}
+
+
+int
+wl_subset(a,b)
+	wlist		*a;
+	wlist		*b;
+{
+	size_t		j, k;
+
+	/*
+	 * test if "a is a subset of b"
+	 */
+	if (a->wl_nwords > b->wl_nwords)
+		return 0;
+	for (j = 0; j < a->wl_nwords; ++j)
+	{
+		for (k = 0; k < b->wl_nwords; ++k)
+			if (str_equal(a->wl_word[j], b->wl_word[k]))
+				break;
+		if (k >= b->wl_nwords)
+			return 0;
+	}
+	return 1;
 }

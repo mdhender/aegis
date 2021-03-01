@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <ac/stdlib.h>
 
 #include <aera.h>
 #include <ael.h>
@@ -60,99 +60,7 @@ remove_administrator_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -Remove_Administrator - remove administrators from",
-"	a project",
-"",
-"SYNOPSIS",
-"	%s -Remove_Administrator user-name ... [ option...  ]",
-"	%s -Remove_Administrator -List [ option...  ]",
-"	%s -Remove_Administrator -Help",
-"",
-"DESCRIPTION",
-"	The %s -Remove_Administrator command is used to remove",
-"	administrators from a project.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-Help",
-"		This option may be used to obtain more",
-"		information about how to use the %s program.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified, if",
-"		the user is only working on changes within a single",
-"		project, the project name defaults to that project;",
-"		if the user is currently working on changes to more",
-"		than one project, or is not working on changes to",
-"		any project, the user's $HOME/.%src file is",
-"		examined for a default project field (see aeuconf(5)",
-"		for more information).",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List",
-"		option this option causes column headings to be",
-"		added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aera '%s -ra \\!* -v'",
-"	sh$	aera(){%s -ra $* -v}",
-"",
-"ERRORS",
-"	It is an error if the current user is not an",
-"	administrator of the project.",
-"",
-"	It is an error if an attempt is made to remove the last",
-"	administrator from the project.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.  The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aera.h>
 	};
 
 	help(text, SIZEOF(text), remove_administrator_usage);

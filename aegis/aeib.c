@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,8 +21,10 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <ac/stdlib.h>
+#include <ac/string.h>
+#include <ac/time.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -68,148 +70,7 @@ integrate_begin_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -Integrate_Begin - begin integrating a change",
-"",
-"SYNOPSIS",
-"	%s -Integrate_Begin <change-number> [ <option>... ]",
-"	%s -Integrate_Begin -List [ <option>... ]",
-"	%s -Integrate_Begin -Help",
-"",
-"DESCRIPTION",
-"	The %s -Integrate_Begin command is used to begin the",
-"	integration of a change into the baseline of a project.",
-"",
-"	The change will advance from the 'awaiting_integration'",
-"	state to the 'being_integrated' state.",
-"",
-"	A copy of the baseline is created in an integration",
-"	directory and the the files of the change are added to",
-"	the integration directory; time stamps on the files are",
-"	preserved.  The '%s -Change_Directory' command may be",
-"	used to locate this directory.	The change will be",
-"	assigned to the current user.",
-"",
-"	The change will be assigned a delta number.  Delta",
-"	numbers are incrimented once for each %s",
-"	-Intgerate_Begin command for the project.  If an",
-"	integration is subsequently aborted with either the %s",
-"	-Integrate_Begin_Undo or %s -Integrate_FAIL command,",
-"	the delta number will not be re-used.",
-"",
-"	It is not possible to choose the integration directory,",
-"	as there are many constraints upon it, including the fact",
-"	that it must be on the same device as the baseline",
-"	directory, and that many UNIX implementations don't allow",
-"	renaming directories up and down the trees.  The",
-"	integration directory will be in the project directory,",
-"	and named for the delta number.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-Change <number>",
-"		This option may be used to specify a particular",
-"		change within a project.  When no -Change option is",
-"		specified, the AEGIS_CHANGE environment variable is",
-"		consulted.  If that does not exist, the user's",
-"		$HOME/.aegisrc file is examined for a default change",
-"		field (see aeuconf(5) for more information).  If",
-"		that does not exist, when the user is only working",
-"		on one change within a project, that is the default",
-"		change number.  Otherwise, it is an error.",
-"",
-"	-Help",
-"		This option may be used to obtain more",
-"		information about how to use the %s program.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-MINimum",
-"		This option may be used to cause only the source",
-"		files to be copied into the integration",
-"		directory.  The default is to copy all files,",
-"		unless the change requires the deletion of a",
-"		file.",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified, the",
-"		AEGIS_PROJECT environment variable is consulted.  If",
-"		that does not exist, the user's $HOME/.aegisrc file",
-"		is examined for a default project field (see",
-"		aeuconf(5) for more information).  If that does not",
-"		exist, when the user is only working on changes",
-"		within a single project, the project name defaults",
-"		to that project.  Otherwise, it is an error.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List",
-"		option this option causes column headings to be",
-"		added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aeib '%s -ib \\!* -v'",
-"	sh$	aeib(){%s -ib $* -v}",
-"",
-"ERRORS",
-"	It is an error if the change is not in the",
-"	'awaiting_integration' state.",
-"	It is an error if the current user is not an integrator",
-"	of the project.",
-"	It is an error if there is an integration in progress for",
-"	the project.",
-"	It is an error if the current user developed the change",
-"	and the project is configured to disallow developers to",
-"	integrate their own changes (default).",
-"	It is an error if the current user reviewed the change",
-"	and the project is configured to disallow reviewers to",
-"	integrate their such changes (default).",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.	The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aeib.h>
 	};
 
 	help(text, SIZEOF(text), integrate_begin_usage);
@@ -316,8 +177,6 @@ st = %08lX)\n{\n"/*}*/, message, path, st));
 			src->deleted_by
 		||
 			src->about_to_be_created_by
-		||
-			src->usage == file_usage_build
 		)
 			break;
 
@@ -412,8 +271,6 @@ st = %08lX)\n{\n"/*}*/, message, path, st));
 			if (!src)
 				break;
 		}
-		if (src && src->usage == file_usage_build)
-			break;
 
 		/*
 		 * don't link change files
@@ -530,8 +387,6 @@ st = %08lX)\n{\n"/*}*/, message, path, st));
 			src->deleted_by
 		||
 			src->about_to_be_created_by
-		||
-			src->usage == file_usage_build
 		)
 			break;
 
@@ -631,8 +486,6 @@ copy_tree_callback(arg, message, path, st)
 		src = project_src_find(cp->pp, s1);
 		if ((st->st_mode & 07000) && !src)
 			break;
-		if (src && src->usage == file_usage_build)
-			break;
 
 		/*
 		 * Don't copy files which don't belong to us.
@@ -676,6 +529,40 @@ copy_tree_callback(arg, message, path, st)
 	str_free(s2);
 	str_free(s1);
 	trace((/*{*/"}\n"));
+}
+
+
+static void insert_this_year _((pstate));
+
+static void
+insert_this_year(pstate_data)
+	pstate		pstate_data;
+{
+	time_t		now;
+	struct tm	*tm;
+	int		year;
+	size_t		j;
+	long		*year_p;
+	type_ty		*type_p;
+
+	time(&now);
+	tm = localtime(&now);
+	year = 1900 + tm->tm_year;
+
+	if (!pstate_data->copyright_years)
+		pstate_data->copyright_years =
+			pstate_copyright_years_list_type.alloc();
+	for (j = 0; j < pstate_data->copyright_years->length; ++j)
+		if (pstate_data->copyright_years->list[j] == year)
+			return;
+	year_p =
+		pstate_copyright_years_list_type.list_parse
+		(
+			pstate_data->copyright_years,
+			&type_p
+		);
+	assert(type_p == &integer_type);
+	*year_p = year;
 }
 
 
@@ -783,7 +670,7 @@ integrate_begin_main()
 	lock_take();
 	pstate_data = project_pstate_get(pp);
 	cstate_data = change_cstate_get(cp);
-	pconf_data = change_pconf_get(cp);
+	pconf_data = change_pconf_get(cp, 1);
 
 	/*
 	 * make sure they are allowed to
@@ -798,7 +685,15 @@ integrate_begin_main()
 		);
 	}
 	if (cstate_data->state != cstate_state_awaiting_integration)
-		change_fatal(cp, "not in 'awaiting_integration' state");
+	{
+		change_fatal
+		(
+			cp,
+"this change is in the '%s' state, \
+it must be in the 'awaiting integration' state to begin integration",
+			cstate_state_ename(cstate_data->state)
+		);
+	}
 
 	/*
 	 * make sure only one integration at a time
@@ -809,7 +704,8 @@ integrate_begin_main()
 		project_fatal
 		(
 			pp,
-			"change %ld: currently active integration",
+"change %ld is the currently active integration, \
+only one integration may be performed at a time",
 			pstate_data->currently_integrating_change
 		);
 	}
@@ -821,6 +717,11 @@ integrate_begin_main()
 	 */
 	cstate_data->delta_number = pstate_data->next_delta_number;
 	pstate_data->next_delta_number++;
+
+	/*
+	 * include the current year in the copyright_years field
+	 */
+	insert_this_year(pstate_data);
 
 	/*
 	 * Create the integration directory.
@@ -1004,6 +905,7 @@ integrate_begin_main()
 	cstate_data->state = cstate_state_being_integrated;
 	history_data = change_history_new(cp, up);
 	history_data->what = cstate_history_what_integrate_begin;
+	change_build_times_clear(cp);
 
 	/*
 	 * write the data out

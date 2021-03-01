@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,17 +29,22 @@ typedef struct wlist wlist;
 struct wlist
 {
 	size_t		wl_nwords;
+	size_t		wl_nwords_max;
 	string_ty	**wl_word;
 };
 
 int wl_member _((wlist *, string_ty *));
-string_ty *wl2str _((wlist *, int, int));
-void str2wl _((wlist *, string_ty *, char *));
+string_ty *wl2str _((wlist *, int, int, char *));
+void str2wl _((wlist *, string_ty *, char *, int));
+void wl_prepend _((wlist *, string_ty *));
 void wl_append _((wlist *, string_ty *));
 void wl_append_unique _((wlist *, string_ty *));
 void wl_copy _((wlist *, wlist *));
 void wl_delete _((wlist *, string_ty *));
 void wl_free _((wlist *));
 void wl_zero _((wlist *));
+
+int wl_equal _((wlist *, wlist *));
+int wl_subset _((wlist *, wlist *));
 
 #endif /* WORD_H */

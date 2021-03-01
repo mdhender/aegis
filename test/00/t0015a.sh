@@ -1,7 +1,7 @@
-#! /bin/sh
+#!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1993 Peter Miller.
+#	Copyright (C) 1993, 1994, 1995 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,8 @@
 
 unset AEGIS_PROJECT
 unset AEGIS_CHANGE
+unset AEGIS_PATH
+unset AEGIS
 umask 022
 
 USER=${USER:-${LOGNAME:-`whoami`}}
@@ -31,10 +33,16 @@ work=${AEGIS_TMP:-/tmp}/$$
 PAGER=cat
 export PAGER
 
+AEGIS_FLAGS="delete_file_preference = no_keep; \
+	diff_preference = automatic_merge;"
+export AEGIS_FLAGS
+AEGIS_THROTTLE=2
+export AEGIS_THROTTLE
+
 here=`pwd`
 if test $? -ne 0 ; then exit 1; fi
-mkdir $work
-if test $? -ne 0 ; then exit 1; fi
+
+if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
 
 fail()
 {
@@ -56,6 +64,8 @@ pass()
 }
 trap "fail" 1 2 3 15
 
+mkdir $work
+if test $? -ne 0 ; then fail; fi
 cd $work
 if test $? -ne 0 ; then fail; fi
 
@@ -71,7 +81,7 @@ tmp=$work/tmp
 # make a new project
 #	and check files it should have made
 #
-$here/bin/aegis -newpro foo -dir $workproj -lib $worklib
+$bin/aegis -newpro foo -dir $workproj -lib $worklib
 if test $? -ne 0 ; then fail; fi
 
 #
@@ -83,7 +93,7 @@ developer_may_review = true;
 developer_may_integrate = true;
 reviewer_may_integrate = true;
 end
-$here/bin/aegis -proatt $tmp -proj foo -lib $worklib
+$bin/aegis -proatt -f $tmp -proj foo -lib $worklib
 if test $? -ne 0 ; then fail; fi
 
 #
@@ -95,28 +105,28 @@ brief_description = "This change is used to test the aegis functionality \
 with respect to change descriptions.";
 cause = internal_bug;
 end
-$here/bin/aegis -new_change $tmp -project foo -lib $worklib
+$bin/aegis -new_change -f $tmp -project foo -lib $worklib
 if test $? -ne 0 ; then fail; fi
 
 #
 # add a new developer
 #
-$here/bin/aegis -newdev $USER -p foo -lib $worklib
+$bin/aegis -newdev $USER -p foo -lib $worklib
 if test $? -ne 0 ; then fail; fi
 
 #
 # begin development of a change
 #	check it made the files it should
 #
-$here/bin/aegis -devbeg 1 -p foo -dir $workchan -lib $worklib
+$bin/aegis -devbeg 1 -p foo -dir $workchan -lib $worklib
 if test $? -ne 0 ; then fail; fi
 
 #
 # add a new files to the change
 #
-$here/bin/aegis -new_file $workchan/main.c -nl -lib $worklib -p foo
+$bin/aegis -new_file $workchan/main.c -nl -lib $worklib -p foo
 if test $? -ne 0 ; then fail; fi
-$here/bin/aegis -new_file $workchan/config -nl -lib $worklib -p foo
+$bin/aegis -new_file $workchan/config -nl -lib $worklib -p foo
 if test $? -ne 0 ; then fail; fi
 cat > $workchan/main.c << 'end'
 void
@@ -132,9 +142,9 @@ link_integration_directory = true;
 history_get_command =
 	"co -u'$e' -p $h,v > $o";
 history_create_command =
-	"ci -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
+	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
 history_put_command =
-	"ci -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
+	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
 history_query_command =
 	"rlog -r $h,v | awk '/^head:/ {print $$2}'";
 
@@ -147,7 +157,7 @@ end
 #
 # create a new test
 #
-$here/bin/aegis -nt -lib $worklib -p foo
+$bin/aegis -nt -lib $worklib -p foo
 if test $? -ne 0 ; then fail; fi
 cat > $workchan/test/00/t0001a.sh << 'end'
 #!/bin/sh
@@ -184,62 +194,57 @@ pass
 end
 
 #
-# let the clock tick over, so the build will be happy
-#
-sleep 1
-
-#
 # build the change
 #
-$here/bin/aegis -build -nl -lib $worklib -p foo > /dev/null 2>&1
+$bin/aegis -build -nl -lib $worklib -p foo > /dev/null 2>&1
 if test $? -ne 0 ; then fail; fi
 
 #
 # difference the change
 #
-$here/bin/aegis -diff -nl -lib $worklib -p foo > /dev/null 2>&1
+$bin/aegis -diff -nl -lib $worklib -p foo > /dev/null 2>&1
 if test $? -ne 0 ; then fail; fi
 
 #
 # test the change
 #
-$here/bin/aegis -test -nl -lib $worklib -p foo > /dev/null 2>&1
+$bin/aegis -test -nl -lib $worklib -p foo > /dev/null 2>&1
 if test $? -ne 0 ; then fail; fi
 
 #
 # finish development of the change
 #
-$here/bin/aegis -dev_end -lib $worklib -p foo
+$bin/aegis -dev_end -lib $worklib -p foo
 if test $? -ne 0 ; then fail; fi
 
 #
 # add a new reviewer
 #
-$here/bin/aegis -newrev $USER -p foo -lib $worklib
+$bin/aegis -newrev $USER -p foo -lib $worklib
 if test $? -ne 0 ; then fail; fi
 
 #
 # pass the review
 #
-$here/bin/aegis -review_pass -chan 1 -proj foo -lib $worklib
+$bin/aegis -review_pass -chan 1 -proj foo -lib $worklib
 if test $? -ne 0 ; then fail; fi
 
 #
 # add an integrator
 #
-$here/bin/aegis -newint $USER -p foo -lib $worklib
+$bin/aegis -newint $USER -p foo -lib $worklib
 if test $? -ne 0 ; then fail; fi
 
 #
 # start integrating
 #
-$here/bin/aegis -ib 1 -p foo -lib $worklib
+$bin/aegis -ib 1 -p foo -lib $worklib
 if test $? -ne 0 ; then fail; fi
 
 #
 # integrate build
 #
-$here/bin/aegis -ibu -lib $worklib -p foo
+$bin/aegis -ibu -lib $worklib -p foo
 if test $? -ne 0 ; then fail; fi
 
 #

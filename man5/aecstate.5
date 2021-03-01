@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -95,38 +95,98 @@ This field records the last change integrated into the project.
 If it disagrees with the project, a 'project_file_command' (from pconf)
 needs to be executed at the next build.
 .TP 8n
-test_time = integer;
+test_time = time;
 .br
 This field records the time the last successful
 .I "\*(n) -Test"
-command was run.
+command was run for all architectures.
 It is only present in the
 .I being_developed
 and
 .I being_integrated
 states.
 .TP 8n
-test_baseline_time = integer;
+test_baseline_time = time;
 .br
 This field records the time the last successful
 .I "\*(n) -Test -BaseLine"
-command was run.
+command was run for all architectures.
 It is only present in the
 .I being_developed
 and
 .I being_integrated
 states.
 .TP 8n
-build_time = integer;
+regression_test_time = time;
 .br
-This field records the last time the last successful
-.I "\*(n) -Build"
-command was run.
+This field records the time the last successful
+.I "\*(n) -Test -REGression"
+command was run for all architectures.
 It is only present in the
 .I being_developed
 and
 .I being_integrated
 states.
+.TP 8n
+build_time = time;
+.br
+This field records the last time the last successful
+.I "\*(n) -Build"
+command was run for all architectures.
+It is only present in the
+.I being_developed
+and
+.I being_integrated
+states.
+.TP 8n
+architecture_times = [{ ... }];
+.br
+This field records the time of various operations
+for each variant named in the
+.I architecture
+field.
+It is only present in the
+.I being_developed
+and
+.I being_integrated
+states.
+.RS
+.TP 8n
+variant = string;
+.br
+This field is one of the patterns named in the
+.I architecture
+field.
+.TP 8n
+node = string;
+.br
+This field is the computer on which the command was run
+which last changed this structure.
+.TP 8n
+test_time = time;
+.br
+This field records the last time the last successful
+.I "\*(n) -Test"
+command was run for this specific pattern instance.
+.TP 8n
+test_baseline_time = time;
+.br
+This field records the last time the last successful
+.I "\*(n) -Test -BaseLine"
+command was run for this specific pattern instance.
+.TP 8n
+regression_test_time = time;
+.br
+This field records the last time the last successful
+.I "\*(n) -Test -REGression"
+command was run for this specific pattern instance.
+.TP 8n
+build_time = time;
+.br
+This field records the last time the last successful
+.I "\*(n) -Build"
+command was run for this specific pattern instance.
+.RE
 .TP 8n
 development_directory = string;
 .br
@@ -152,7 +212,7 @@ in the form of state transitions.
 The history records have the form
 .RS 8n
 .TP 8n
-when = integer;
+when = time;
 .br
 This field records the time the state transition occurred.
 .TP 8n
@@ -203,7 +263,7 @@ usage = (source, test, manual_test);
 .br
 This field describes what function the file serves.
 .TP 8n
-diff_time = integer;
+diff_time = time;
 .br
 This field records the last time modified of the change file
 when the last
@@ -219,7 +279,7 @@ It is not present for files which are being deleted.
 This field is used to determine if a difference has been done,
 and if the file has been tampered with before state transitions.
 .TP 8n
-diff_file_time = integer;
+diff_file_time = time;
 .br
 This field records the last time modified of the difference file
 when the last
@@ -241,4 +301,14 @@ a combination of deleting the old name and creating the new name is used.
 With deleted files, this field is used to say where it went.
 With new files, this field is used to say where it came from.
 .RE
-.so z_cr.so
+.SH SEE ALSO
+.TP 8n
+.IR aenc (1)
+create a new change
+.TP 8n
+.IR aegis (5)
+\*(n) file format syntax
+.TP 8n
+.IR aecattr (5)
+change attributes file format
+.so ../man1/z_cr.so

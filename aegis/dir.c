@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -73,6 +73,7 @@ arg = %08lX)\n{\n"/*}*/, path, callback, arg));
 		{
 			s = str_format("%S/%S", path, wl.wl_word[j]);
 			dir_walk(s, callback, arg);
+			str_free(s);
 		}
 		wl_free(&wl);
 		callback(arg, dir_walk_dir_after, path, &st);

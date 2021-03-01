@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -49,6 +49,14 @@ If this path is relative,
 it is relative to \fI$HOME\fP.
 The default is \fI$HOME\fP.
 .TP 8n
+delete_file_preference = (no_keep, interactive, keep);
+.br
+All of the commands which delete files will
+consult this field to determine if the file should be deleted.
+Defaults to
+.I no_keep
+if not set.
+.TP 8n
 default_project_name = string;
 .br
 The name of a project.
@@ -65,4 +73,45 @@ field
 are unrelated.
 Specifying both does not mean that single change within that single project,
 they have nothing to do with each other.
-.so z_cr.so
+.TP 8n
+diff_preference = (automatic_merge, no_merge, only_merge);
+.RS
+The
+.IR aed(1)
+command will consult this field to determine what to do:
+.TP 8n
+.B no_merge
+means only diff the files,
+even if some have out of date versions.
+.TP 8n
+.B only_merge
+means merge those files with out of date versions,
+and do not do anything else,
+even if they need to be diffed.
+.TP 8n
+.B autmoatic_merge
+means to do
+.I only_merge
+if any source files require merging,
+otherwise do
+.IR no_merge .
+It never combines merges and differences in the same pass.
+.PP
+The corresponding command line options to the
+.IR aed (1)
+command take precedence,
+this field is only consulted if you do not give
+a corresponding command line argument.
+Defaults to
+.I automatic_merge
+if not set.
+ */
+.RE
+.SH SEE ALSO
+.TP 8n
+.IR aegis (5)
+\*(n) file format syntax
+.TP 8n
+.IR aed (1)
+difference and merge files
+.so ../man1/z_cr.so

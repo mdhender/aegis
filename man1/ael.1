@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -127,6 +127,9 @@ List of changes owned by the current user.
 Version
 .br
 List version of a project or change.
+This includes the major and minor version number,
+and the previous version number if available.
+The list of copyright years is also printed.
 .PP
 Most of these lists are available from other \*(n) functions.
 Many \*(n) functions provide more specific lists.
@@ -152,4 +155,22 @@ sh$	ael(){\*(n) -l $* -v}
 It is an error if
 the list name given is unknown.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aedb (1)
+begin development of a change (listing option)
+.TP 8n
+.IR aeib (1)
+begin integration of a change (listing option)
+.TP 8n
+.IR aer (1)
+report generator
+.TP 8n
+.IR aerp (1)
+pass review of a change (listing option)
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

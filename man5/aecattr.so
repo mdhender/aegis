@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -102,3 +102,9 @@ regression_test_exempt = boolean;
 This field is true if it is not necessary
 to perform a full regression test on the change.
 If absent, defaults to true for all causes except improvements.
+.TP 8n
+architecture = [ string ];
+.br
+This field is a list of names of
+system and machine architectures on which the change
+must successfully build and test.

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@ struct project_ty;
 void gonzo_gstate_write _((void));
 
 void gonzo_library_append _((char *path));
+char *gonzo_library_path _((void));
 
 struct string_ty *gonzo_project_home_path_from_name _((struct string_ty *));
 void gonzo_project_list _((struct wlist *result));
@@ -46,5 +47,7 @@ string_ty *gonzo_ustate_path _((string_ty *project_name, string_ty *user_name));
 
 void gonzo_become _((void));
 void gonzo_become_undo _((void));
+
+void gonzo_report_path _((struct wlist *));
 
 #endif /* GONZO_H */

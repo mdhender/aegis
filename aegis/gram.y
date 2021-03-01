@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,12 +22,17 @@
 
 %{
 
-#include <stdlib.h>
+#include <ac/stdlib.h>
 
 #include <gram.h>
 #include <lex.h>
 #include <mem.h>
 #include <parse.h>
+#include <trace.h>
+
+#ifdef DEBUG
+#define YYDEBUG 1
+#endif
 
 %}
 
@@ -47,7 +52,16 @@
 %%
 
 file
-	: field_list
+	: turn_debug_on field_list
+	;
+
+turn_debug_on
+	: /* empty */
+		{
+#ifdef DEBUG
+			yydebug = trace_pretest_;
+#endif
+		}
 	;
 
 field_list

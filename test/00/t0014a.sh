@@ -1,7 +1,7 @@
-#! /bin/sh
+#!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1993 Peter Miller.
+#	Copyright (C) 1993, 1994, 1995 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,8 @@
 
 unset AEGIS_PROJECT
 unset AEGIS_CHANGE
+unset AEGIS_PATH
+unset AEGIS
 umask 022
 
 USER=${USER:-${LOGNAME:-`whoami`}}
@@ -31,14 +33,22 @@ work=${AEGIS_TMP:-/tmp}/$$
 PAGER=cat
 export PAGER
 
+AEGIS_FLAGS="delete_file_preference = no_keep; \
+	diff_preference = automatic_merge;"
+export AEGIS_FLAGS
+AEGIS_THROTTLE=2
+export AEGIS_THROTTLE
+
 here=`pwd`
 if test $? -ne 0 ; then exit 1; fi
+
+if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
 
 fail()
 {
 	set +x
-	cd $here
 	echo FAILED test of -Develop_Begin_Undo functionality 1>&2
+	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
 	exit 1
@@ -46,8 +56,8 @@ fail()
 pass()
 {
 	set +x
-	cd $here
 	echo PASSED 1>&2
+	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
 	exit 0
@@ -55,7 +65,7 @@ pass()
 trap "fail" 1 2 3 15
 
 mkdir $work
-if test $? -ne 0 ; then exit 1; fi
+if test $? -ne 0 ; then fail; fi
 cd $work
 if test $? -ne 0 ; then fail; fi
 
@@ -66,7 +76,7 @@ workchan=$work/bar
 #
 # new project
 #
-$here/bin/aegis -npr foo -lib $worklib -dir $workproj
+$bin/aegis -npr foo -lib $worklib -dir $workproj
 if test $? -ne 0 ; then fail; fi
 
 #
@@ -77,32 +87,32 @@ brief_description = "please hit me";
 cause = internal_enhancement;
 fubar
 if test $? -ne 0 ; then fail; fi
-$here/bin/aegis -nc ncf -lib $worklib -p foo
+$bin/aegis -nc -f ncf -lib $worklib -p foo
 if test $? -ne 0 ; then fail; fi
 
 #
 # make current user a developer
 #
-$here/bin/aegis -nd $USER -lib $worklib -p foo
+$bin/aegis -nd $USER -lib $worklib -p foo
 if test $? -ne 0 ; then fail; fi
 
 #
 # develop begin
 #
-$here/bin/aegis -db -lib $worklib -p foo -c 1 -dir $workchan
+$bin/aegis -db -lib $worklib -p foo -c 1 -dir $workchan
 if test $? -ne 0 ; then fail; fi
 if test ! -d $workchan ; then fail ; fi
 
 #
 # add a file just to spice it up a little
 #
-$here/bin/aegis -nf $workchan/snot -lib $worklib -p foo -c 1
+$bin/aegis -nf $workchan/snot -lib $worklib -p foo -c 1
 if test $? -ne 0 ; then fail; fi
 
 #
 # develop begin undo
 #
-$here/bin/aegis -dbu -lib $worklib -p foo -c 1
+$bin/aegis -dbu -lib $worklib -p foo -c 1
 if test $? -ne 0 ; then fail; fi
 if test -d $workchan ; then fail ; fi
 

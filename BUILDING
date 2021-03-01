@@ -6,8 +6,8 @@ build(aegis)					     build(aegis)
 
 NAME
 	aegis -	project	change supervisor
-	Copyright (C) 1990, 1991, 1992,	1993 Peter Miller.
-	All rights reserved.
+	Copyright (C) 1990, 1991, 1992,	1993, 1994, 1995 Peter
+	Miller;	All rights reserved.
 
 	The aegis program is distributed under the terms of the
 	GNU General Public License.  See the LICENSE section,
@@ -16,48 +16,48 @@ NAME
 	aegis (ee.j.iz)	n., a protection, a defence.
 
 SPACE REQUIREMENTS
-	You will need up to 10MB to unpack and build the aegis
+	You will need up to 15MB to unpack and build the aegis
 	program.  (This	is the worst case seen so far, most
-	systems	have binaries about 60%	as big as this,	6MB is
+	systems	have binaries about 60%	as big as this,	10MB is
 	more typical.)	Your mileage may vary.
 
 SITE CONFIGURATION
-	The file common/conf.h needs to	be created to match your
-	site.  Select an appropriate file from the conf
-	directory.  The	files in this directory	are named for the
-	various	systems	encountered to date by the author.  The
-	file most closely resembling your system should	be copied
-	into the common/conf.h file.  You can copy it or use a
-	symbolic link; copying is recommended because you may
-	need to	edit.
+	The aegis package is configured	using the configure shell
+	script included	in this	distribution.
 
-	The common/conf.h file is extensively commented.  Read
-	the comments and change	what you need to.  Please read
-	this file carefully.
+	The configure shell script attempts to guess correct
+	values for various system-dependent variables used during
+	compilation, and creates the Makefile and common/config.h
+	files.	It also	creates	a shell	script config.status that
+	you can	run in the future to recreate the current
+	configuration.
 
-	Be careful in changing the settings if you are using a
-	conf file accurately named for your system; aegis
-	exersizes functionality	unfamiliar to many.  There are
-	known cases where systems have the necessary facilities,
-	but they are nowhere documented.  If you are unsure, try
-	it unchanged first, and	then edit if you find that there
-	are problems.
+	Normally, you just cd to the directory containing aegis'
+	source code and	type
+		% ./configure
+		...lots	of output...
+		%
+	If you're using	csh on an old version of System	V, you
+	might need to type
+		% sh configure
+		...lots	of output...
+		%
+	instead	to prevent csh from trying to execute configure
+	itself.
 
-	Another	file which may require editing is the Makefile
-	file.  The first few lines contain comments describing
-	what may require changing.  In general these changes will
-	relate to the name of your favorite C compiler,	and where
-	it keeps its include files.
+	Running	configure takes	a minute or two.  While	it is
+	running, it prints some	messages that tell what	it is
+	doing.	If you don't want to see the messages, run
+	configure with its standard output redirected to
+	/dev/null; for example,
+		% ./configure >	/dev/null
+		%
 
-	The top	of the Makefile	file is	arranged as macro
-	definitions, with alternatives for each	known system in
-	comments.  Search for your system's name, editing the
-	macro definition as required.
-
-
-
-
-
+	By default, configure will arrange for the make	install
+	command	to install the aegis package's files in
+	/usr/local/bin,	/usr/local/man,	and /usr/local/lib/aegis.
+	You can	specify	an installation	prefix other than
+	/usr/local by giving configure the option --prefix=PATH.
 
 
 
@@ -70,60 +70,60 @@ SITE CONFIGURATION
 build(aegis)					     build(aegis)
 
 
-KNOWN SYSTEMS
-	This distribution of aegis is known to build on	the
-	following systems:
+	You can	specify	separate installation prefixes for
+	architecture-specific files and	architecture-independent
+	files.	If you give configure the option --exec-
+	prefix=PATH the	aegis package will use PATH as the prefix
+	for installing programs	and libraries.	Data files and
+	documentation will still use the regular prefix.
+	Normally, all files are	installed using	the same prefix.
 
-	SunOS 4.1
-		The native cc(1) and also gcc(1) are known to
-		work for Sun4s.	 The appropriate configuration is
-		contained in the conf/SunOS-4.1	file.  Sun seem
-		to be having chronic problems with locking; you
-		may need to get	the very latest	set of locking
-		patches	and apply them.	 See also the tmpfs note,
-		below.
+	configure ignores any other arguments that you give it.
 
-	ConvexOS 10.0
-		The native cc(1) works just fine.  The
-		appropriate configuration is contained in the
-		conf/ConvexOS-10 file.	Note that there	is no
-		"bin" user on ConvexOS,	so the owner of	aegis '
-		library	files is "daemon"; you will need to map
-		user and group "bin" to	"daemon" in the
-		instructions below.
+	On systems that	require	unusual	options	for compilation
+	or linking that	the aegis package's configure script does
+	not know about,	you can	give configure initial values for
+	variables by setting them in the environment.  In Bourne-
+	compatible shells, you can do that on the command line
+	like this:
+		$ CC='gcc -traditional'	LIBS=-lposix ./configure
+		...lots	of output...
+		$
+	Here are the make variables that you might want	to
+	override with environment variables when running
+	configure.
 
-	DG/UX 5.4.1
-		The native cc(1) works just fine.  The
-		appropriate configuration is contained in the
-		conf/dgux-5.4.1	file.
+	Variable: CC
+		C compiler program.  The default is cc.
 
-	ULTRIX 4.2
-		It has the seteuid and setegid calls, but the
-		shell has no functions!	 Complain to your vendor.
-		You will need to change	the SHELL macro
-		definition in the Makefile file	to use sh5(1)
-		instead.  The appropriate configuration	is
-		contained in the conf/ULTRIX-4.2 file.
+	Variable: INSTALL
+		Program	to use to install files.  The default is
+		install	if you have it,	cp otherwise.
 
-	Pyramid	SMP DC/OSx 1.0-92b023
-		This system is pretty horrendous.  The native cc
-		is known to work, but gives a staggering number
-		of warnings, just ignore them.	Gcc is also known
-		to work, and gives far fewer stupid warnings.
-		The appropriate	configuration is contained in the
-		conf/dcosx file.
+	Variable: LIBS
+		Libraries to link with,	in the form -lfoo -lbar.
+		The configure script will append to this, rather
+		than replace it.
 
-	HP-UX A.08.07
-		The author has been advised that the aegis
-		program	works on this system.  Could another
-		person confirm this, please.  The appropriate
-		configuration is contained in the conf/hpux-8.07
-		file.
+	If you need to do unusual things to compile the	package,
+	the author encourages you to figure out	how configure
+	could check whether to do them,	and mail diffs or
+	instructions to	the author so that they	can be included
+	in the next release.
 
-	SCO 2.4
-		The author has been advised that the aegis
-		program	works on this system.  Could another
-		person confirm this, please.  The appropriate
+   PRIVILEGES
+	There are a number of items in the generated Makefile and
+	common/config.h	file which affect the way aegis	works.
+	If they	are altered too	far, aegis will	not be able to
+	function correctly.
+
+	AEGIS_MIN_UID
+		This specifies the minimum unprivileged	uid on
+		your system.  UIDs less	than this may not own
+		projects, or play any other role in an aegis
+		project.  The default value is 100.
+
+
 
 
 
@@ -136,60 +136,60 @@ KNOWN SYSTEMS
 build(aegis)					     build(aegis)
 
 
-		configuration is contained in the conf/SCO-2.4
-		file.
+	AEGIS_MIN_GID
+		This specifies the minimum unprivileged	GID on
+		your system.  GIDs less	than this may not own
+		projects, or play any other role in an aegis
+		project.  The default value is 10.
 
-	Sun Solaris 2.1
-		The author has been advised that the aegis
-		program	works on this system.  Could another
-		person confirm this, please; and tell the author
-		how they did it, there seems to	be some	black
-		magic involved.	 The appropriate configuration is
-		contained in the conf/SunOS-5.1	file.
+	AEGIS_USER_UID
+		This is	the owner of files used	by aegis to
+		record pointers	to your	projects.  It is not used
+		to own projects	(i.e. it must be less than
+		AEGIS_MIN_UID).	 If possible, the configure
+		script tries to	work out what value was	used
+		previously, but	you must specify the --prefix
+		option correctly for this to work.  Because of
+		operating system inconsistencies, this is
+		specified numerically so that aegis will work
+		across NFS.  The default value is 3.
 
-	Linux 0.99
-		The author has been advised that the aegis
-		programs works on this system.	Could another
-		person confirm this, please.  The appropriate
-		configuration is contained in the conf/Linux-0.99
-		file.
+	AEGIS_USER_GID
+		This is	the group of files used	by aegis to
+		record pointers	to your	projects.  It is not used
+		as the group for projects (i.e.	it must	be less
+		than AEGIS_MIN_GID).  If possible, the configure
+		script tries to	work out what value was	used
+		previously, but	you must specify the --prefix
+		option correctly for this to work.  Because of
+		operating system inconsistencies, this is
+		specified numerically so that aegis will work
+		across NFS.  The default value is 3.
 
-	Silicon	Graphics IRIX 4.0.5G
-		The author has been advised that the aegis
-		programs works on this system.	Could another
-		person confirm this, please.  The appropriate
-		configuration is contained in the conf/IRIX-4.0
-		file.
+	DEFAULT_UMASK
+		When aegis runs	commands for you, or creates
+		files or directories for you, it will use the
+		defined	project	umask.	This is	a project
+		attribute, and may be altered using the	aepa(1)
+		command.  The DEFAULT_UMASK is the umask
+		initially given	to all new projects created by
+		the aenpr(1) command.  The default value of
+		DEFAULT_UMASK is 026.  See the comments	in the
+		common/config.h	file for an explanation	of the
+		alternatives.
 
-	If the instructions for	any of the above systems do not
-	work, after you	have double-checked everything,	the
-	author would like to know.
+	It is required that aegis run set-uid-root for all of its
+	functionality to be available.	It is NOT possible to
+	create an "aegis" account and make aegis run set-uid-
+	aegis.	This is	because	aegis does things as various
+	different user IDs, sometimes as many as 3 in the one
+	command.  This allows aegis to use UNIX	security rather
+	than inventing its own,	and also allows	aegis to work
+	across NFS.  To	be able	to do these things, aegis must be
+	set-uid-root.  Appendix	D of the Aegis User Guide
+	explains why aegis must	run set-uid-root; please read it
+	if you have concerns.
 
-UNKNOWN	SYSTEMS
-	Please let the author know of any other	systems	you get
-	aegis working on, and the modifications	necessary.
-	Please include the differences to the Makefile file, and
-	the whole common/conf.h	file you used.	Included any
-	other files you	edited or added.  Include the output of
-	the "uname -rs"	command, if your flavour of UNIX has such
-	a command.
-
-	While the aegis	program	was developed using gcc, this is
-	not the	default	in the Makefile	file.  The code	uses ANSI
-	C features without compromising	the ability to be
-	compiled on older C compilers.	Functions mandated by the
-	ANSI C standard	are used, because many systems provided
-	them, one way or another.  Please let the author know of
-	any others you think should be added to	the common/ansi.c
-	file.
-
-	You may	need to	use some ANSI C	header files which the
-	aegis code uses, but which some	systems	(as yet) fail to
-	provide.  You will find	lines at the top of the	Makefile
-	file similar to
-		H = -I/usr/include -Ih
-	Change this to suit your system	and your compiler.  The
-	"h" directory must be searched last as it is intended to
 
 
 
@@ -202,43 +202,75 @@ UNKNOWN	SYSTEMS
 build(aegis)					     build(aegis)
 
 
-	supplement your	system,	not replace it.
-
-	You will need to check the include files in the	"h"
-	directory to see that they are suitable	for your system.
-	You may	want to	delete any that	your system already has.
-
 BUILDING AEGIS
 	All you	should need to do is use the
 		% make
 		...lots	of output...
 		%
 	command	and wait.  When	this finishes you should see a
-	directory called bin containing	two files: aegis and
-	fmtgen.	 The fmtgen file is a program used in
-	constructing aegis and is not for general consumption.
+	directory called bin containing	three files: aegis,
+	fmtgen and txt2c.
+
+	aegis	The aegis program is a project change supervisor.
+
+	fmtgen	The fmtgen program is a	utility	used to	build the
+		aegis package; it is not intended for general use
+		and should not be installed.
+
+	txt2c	The txt2c program is a utility used to build the
+		aegis package; it is not intended for general use
+		and should not be installed.
+
+	You can	remove the program binaries and	object files from
+	the source directory by	using the
+		% make clean
+		...lots	of output...
+		%
+	command.  To remove all	of the above files, and	also
+	remove the Makefile and	common/config.h	and config.status
+	files, use the
+		% make distclean
+		...lots	of output...
+		%
+	command.
+
+	The file aux/configure.in is used to create configure by
+	a GNU program called autoconf.	You only need to know
+	this if	you want to regenerate configure using a newer
+	version	of autoconf.
 
 OTHER USEFUL SOFTWARE
 	Before describing how to test aegis, you may need to grab
 	some other free	software, because the tests require it in
 	some cases, and	because	it is generally	useful in others.
 
-	cook
-		This is	a dependency maintenance tool (DMT).  An
+	cook	This is	a dependency maintenance tool (DMT).  An
 		example	of a well-known	DMT is make(1),	however
 		this old faithful is not sufficiently capable to
 		meet the demands placed	on it by the aegis
 		program, but cook certainly is.	 The cook package
 		is written by the same author as aegis.	 The cook
-		package	is necessary for test 11 to pass.  It is
-		also used in the documentation.	 The cook program
-		may be found at	the same archive site as the
-		aegis program, and in the same directory.  The
-		cook program is	available under	the terms of the
-		GNU General Public License.
+		package	is necessary if	test 11	is to be
+		meaningful.  It	is also	used in	the
+		documentation.	The cook program may be	found at
+		the same archive site as the aegis program, and
+		in the same directory.	The cook program is
+		available under	the terms of the GNU General
 
-	RCS
-		This is	a source control package, and is
+
+
+								4
+
+
+
+
+
+build(aegis)					     build(aegis)
+
+
+		Public License.
+
+	RCS	This is	a source control package, and is
 		available from any of the GNU archives.	 The
 		tests use RCS as the history mechanism,	so it is
 		necessary to have RCS for most of the tests to
@@ -252,34 +284,19 @@ OTHER USEFUL SOFTWARE
 		differences are	also helpful for reviewing
 		changes.
 
-	groff
-		This GNU software replaces the documentation
+	groff	This GNU software replaces the documentation
 		tools which (sometimes)	come with UNIX.	 They
 		produce	superior error messages, and support a
-
-
-
-								4
-
-
-
-
-
-build(aegis)					     build(aegis)
-
-
 		wider range of functionality and fonts.	 The
 		aegis User Guide was prepared with groff.
 
-	bison
-		This GNU software is a replacement for yacc(1).
-		Some systems have very sick yaccs, and this may
+	bison	This GNU software is a replacement for yacc(1).
+		Some systems have very sick yaccs, and bison may
 		be necessary if	your system include files
 		disagree strongly with your system's yacc.  The
-		Makefile has bison setup in comments.
+		generated Makefile will	use bison if you have it.
 
-	fhist
-		This software, available under the terms of the
+	fhist	This software, available under the terms of the
 		GNU General Public License, is a set of	file
 		history	and comparison utilities.  It was
 		originally written by David I. Bell, and is based
@@ -305,8 +322,21 @@ TESTING	AEGIS
 
 	The test/00/t0011a.sh file assumes the cook(1) command by
 	the author is somewhere	in the command search path.  This
+
+
+
+								5
+
+
+
+
+
+build(aegis)					     build(aegis)
+
+
 	test reproduces	the example used in Chapter 3 of the User
-	Guide.
+	Guide.	If the cook(1) command is not available, this
+	test gives a pass result without testing anything.
 
 	If you are using Sun's tmpfs file system as your /tmp
 	directory, the tests will fail.	 This is because the
@@ -322,24 +352,12 @@ TESTING	AEGIS
 	if you are using Bourne	shell.	Remember, this must be
 	done before running the	tests.
 
-
-
-
-								5
-
-
-
-
-
-build(aegis)					     build(aegis)
-
-
 	If the tests fail due to errors	complaining of "user too
 	privileged" you	will need to adjust the	AEGIS_MIN_UID
-	define in the common/conf.h file.  Similarly for "group
-	too privileged", although this is rarer.  This error
-	message	will also occur	if you run the tests as	root: the
-	tests must be run as a mortal each time.
+	defined	in the common/config.h file.  Similarly	for
+	"group too privileged",	although this is rarer.	 This
+	error message will also	occur if you run the tests as
+	root: the tests	must be	run as a mortal	each time.
 
 TESTING	SET-UID-ROOT
 	If the aegis program is	not set-uid-root then it runs in
@@ -351,18 +369,17 @@ TESTING	SET-UID-ROOT
 
 	You will need to do a little of	the install, to	create
 	the directory which will contain aegis'	lock file.
-		# mkdir	/usr/local/lib/aegis
-		# chmod	755 /usr/local/lib/aegis
-		# chown	bin /usr/local/lib/aegis
-		# chgrp	bin /usr/local/lib/aegis
+		# make install-libdir
+		mkdir /usr/local/lib/aegis
+		chown 3	/usr/local/lib/aegis
+		chgrp 3	/usr/local/lib/aegis
+		chmod 0755 /usr/local/lib/aegis
+		chown root bin/aegis
+		chmod 4755 bin/aegis
 		#
-	You will need to change	aegis to be set-uid-root.  This
-	may be done with the following commands:
-		# chown	root bin/aegis
-		# chmod	u+s bin/aegis
-		#
-	Once aegis is set-uid-root, it is tested again,	in the
-	same manner as before.
+	As you can see,	the previous command also changed aegis
+	to be set-uid-root.  Once this has been	done, aegis
+	should be tested again,	in the same manner as before.
 		% make sure
 		...lots	of output...
 		Passed All Tests
@@ -371,23 +388,6 @@ TESTING	SET-UID-ROOT
 	You should test	aegis as a mortal in both passes, rather
 	than as	root, to be sure the set-uid-root functionality
 	is working correctly.
-
-	It is required that aegis run set-uid-root for all of its
-	functionality to be available.	It is NOT possible to
-	create an "aegis" account and make aegis run set-uid-
-	aegis.	This is	because	aegis does things as various
-	different user IDs, sometimes as many as 3 in the one
-	command.  This allows aegis to use UNIX	security rather
-	than inventing its own,	and also allows	aegis to work
-	across NFS.  To	be able	to do these things, aegis must be
-	set-uid-root.  Believe me, folks, if I could have done it
-	without	set-uid-root, I	would have!
-
-INSTALLING AEGIS
-	Put the	aegis program somewhere	where users will
-	automatically pick it up, such as in the /usr/local/bin
-	directory.  Use	the command
-		# cp bin/aegis /usr/local/bin
 
 
 
@@ -400,42 +400,44 @@ INSTALLING AEGIS
 build(aegis)					     build(aegis)
 
 
-		#
-	Don't forget to	make sure that the copy	is set-uid-root,
-	some versions of cp do not transfer the	set-uid	bit of
-	the mode.
+	It is required that aegis run set-uid-root for all of its
+	functionality to be available.	It is NOT possible to
+	create an "aegis" account and make aegis run set-uid-
+	aegis.	This is	because	aegis does things as various
+	different user IDs, sometimes as many as 3 in the one
+	command.  This allows aegis to use UNIX	security rather
+	than inventing its own,	and also allows	aegis to work
+	across NFS.  To	be able	to do these things, aegis must be
+	set-uid-root.  Appendix	D of the Aegis User Guide
+	explains why aegis must	run set-uid-root; please read it
+	if you have concerns.
 
-	The manuals can	be installed using the commands
-		# sh man1/install.sh /usr/local/man/man1
-		# sh man5/install.sh /usr/local/man/man5
-		#
-	but this is very site specific.	 You can select	a
-	different path by changing the last argument.
+INSTALLING AEGIS
+	As explained in	the SITE CONFIGURATION section,	above,
+	the aegis package is installed under the /usr/local tree
+	by default.  Use the --prefix=PATH option to configure if
+	you want some other path.
 
-	By default, aegis is configured	to use
-	/usr/local/lib/aegis as	the place it stores the	table
-	containing the mapping from project name to project
-	directory, and indexes into this table.	 The aegis
-	program	also has example .cshrc	and .profile files, and
-	generic	notification scripts.  These can be copied to
-	this library as	follows:
-		# mkdir	/usr/local/lib/aegis
-		# chmod	755 /usr/local/lib/aegis
-		# chown	bin /usr/local/lib/aegis
-		# chgrp	bin /usr/local/lib/aegis
-		# cp lib/* /usr/local/lib/aegis
-		# chmod	a+r /usr/local/lib/aegis/*
-		# chmod	a+x /usr/local/lib/aegis/*.sh
-		#
-	This is	only an	example, and you may want to place this
-	somewhere else.	 Control of the	placement of this
-	directory may be found in the first few	lines of the
-	Makefile file.
+	All that is required to	install	the aegis package is to
+	use the
+		% make install
+		...lots	of output...
+		%
+	command.  Control of the directories used may be found in
+	the first few lines of the Makefile file if you	want to
+	bypass the configure script.
 
-	All of the above install can be	done automatically, using
-	the "make install" command as root.  Control of	the
-	directories used may be	found in the first few lines of
-	the Makefile file.
+	The above procedure assumes that the soelim(1) command is
+	somewhere in the command search	PATH.  The soelim(1)
+	command	is available as	part of	the GNU	Roff package,
+	mentioned previously in	the PRINTED MANUALS section.  If
+	you don't have it, but you do have the cook package, then
+	a link from roffpp to soelim will also work.
+
+	The above procedure also assumes that the
+	$(prefix)/man/man1 and $(prefix)/man/man5 directories
+	already	exist.	If they	do not,	you will need to mkdir
+	them manually.
 
 USER CONFIGURATION
 	The aegis command is assumed to	be in a	generally
@@ -450,10 +452,8 @@ USER CONFIGURATION
 	functions).  Users should add
 		. /usr/local/lib/aegis/profile
 	to the end of their .profile file for the recommended
-	aliases.
-
-	The /usr/local/lib/aegis/state file contains pointers to
-	"system" projects.  Users may add their	own project
+	aliases.  (This	profile	assumes	that users are using a
+	Bourne shell which understands functions.)
 
 
 
@@ -466,6 +466,8 @@ USER CONFIGURATION
 build(aegis)					     build(aegis)
 
 
+	The /usr/local/lib/aegis/state file contains pointers to
+	"system" projects.  Users may add their	own project
 	pointers (to their own projects) by putting a search path
 	into the AEGIS environment variable.  The system part is
 	always automatically appended by aegis.	 The default,
@@ -488,10 +490,12 @@ PRINTED	MANUALS
 
 	To print copies	of the README and BUILDING files, the
 	following commands may be used
-		% groff	-t -man	aux/*.man | lpr
+		% cd aux
+		% groff	-t -man	*.man |	lpr
+		% cd ..
 		%
 	This will produce about	12 pages.  The "-t" flag means
-	preprocess with	tbl(1).
+	preprocess with	the tbl(1) filter.
 
 	To print copies	of the manual entries, the following
 	commands may be	used
@@ -502,8 +506,7 @@ PRINTED	MANUALS
 		% cd ..
 		%
 	This will produce about	60 pages.  The "-s" flag means
-	preprocess with	soelim(1), and the "-t"	flag means
-	preprocess with	tbl(1).
+	preprocess with	the soelim(1) filter.
 
 	To print a copy	of the User Guide, the following commands
 	may be used
@@ -511,15 +514,12 @@ PRINTED	MANUALS
 		% groff	-s -t -p -ms aegis.ms |	lpr
 		% cd ..
 		%
-	This will produce about	90 pages.  The "-s" flag means
-	preprocess with	soelim(1), the "-t" flag means preprocess
-	with tbl(1), and the "-p" flag means preprocess	with
-	pic(1).	 Alternatively,	you could get a	PostScript copy
-	of the User Guide from the archive site.
+	This will produce about	90 pages.  The "-p" flag means
+	preprocess with	the pic(1) filter.  Alternatively, you
+	could get a PostScript copy of the User	Guide from the
+	archive	site.
 
-	Please note the	the User Guide is still	in the process of
-	being written.	Some sections of the User Guide	are
-	incomplete.  Feedback on the form and content of this
+	Please note while the User Guide is largely complete,
 
 
 
@@ -532,31 +532,33 @@ PRINTED	MANUALS
 build(aegis)					     build(aegis)
 
 
-	document would be most welcome.
+	some sections are still	being written.	Feedback on the
+	form and content of this document would	be most	welcome.
 
 TIME SYNCHRONIZATION
 	The aegis program uses time stamps to remember whether
 	various	events have happened and when.	If you are using
 	aegis in a networked environment, typically a server and
-	dataless workstations, you need	to make	absolutely sure
+	data-less workstations,	you need to make absolutely sure
 	that all of the	machines agree about the time.
 
 	If possible, use the time daemon.  Otherwise, use
-	rdate(8) via cron(8) every hour	or so.
+	rdate(8) via cron(8) every hour	or less.
 
 GETTING	HELP
 	If you need assistance with the	aegis program, please do
 	not hesitate to	contact	the author at
-		Peter Miller <pmiller@bmr.gov.au>
+		Peter Miller <pmiller@agso.gov.au>
 	Any and	all feedback is	welcome.
 
 	When reporting problems, please	include	the version
 	number given by	the
 		% aegis	-version
-		aegis version a.b.cccc
+		aegis version 2.3.D020
 		...
 		%
-	command.
+	command.  Please run this command to get the exact
+	number,	do not send the	text of	this example.
 
    Runtime Checking
 	In the common/main.h file, the is a define of DEBUG in
@@ -583,9 +585,7 @@ GETTING	HELP
 		-sr" is	usually	sufficient (but	not all	systems
 		have it).
 
-	2. The Version Number
-		In any information you send, please include the
-		version	number reported	in the
+
 
 
 
@@ -598,6 +598,9 @@ GETTING	HELP
 build(aegis)					     build(aegis)
 
 
+	2. The Version Number
+		In any information you send, please include the
+		version	number reported	in the
 		common/patchlevel.h file, or `aegis -vers` if you
 		can get	it to compile.
 
@@ -615,16 +618,17 @@ build(aegis)					     build(aegis)
 	5. Building
 		Did you	have problems building aegis?  This could
 		have been the instructions included, it	could
-		have been the Makefile,	it could have been
-		problems configuring it, or anything else.
+		have been the configure	script,	it could have
+		been the Makefile, or anything else.
 
 	6. Testing, Non-Set-Uid
 		Did you	have problems with the tests?  You could
 		have had problems running them,	or some	of them
 		could have failed.  If some tests fail but not
-		others,	please let me know which ones failed.
-		(The -k	option to make can be usful in this
-		case.)
+		others,	please let me know which ones failed, and
+		include	the fact that aegis was	not set-uid-root
+		at the time.  The -k option to make can	be useful
+		if some	tests fail but not others.
 
 	7. Testing, Set-Uid-Root
 		Did you	have problems with the tests when aegis
@@ -647,11 +651,7 @@ build(aegis)					     build(aegis)
 	Guide is incomplete, it	is something the author	is
 	working	on "at this moment".
 
-	9. The Example Project
-		After reading the User Guide, it is often useful
-		to manually run	through	the example in chapter 3.
-		You will need to do more than one change,
-		hopefully several; the first change is not
+
 
 
 
@@ -664,6 +664,11 @@ build(aegis)					     build(aegis)
 build(aegis)					     build(aegis)
 
 
+	9. The Example Project
+		After reading the User Guide, it is often useful
+		to manually run	through	the example in chapter 3.
+		You will need to do more than one change,
+		hopefully several; the first change is not
 		representative of the system.  Did you manually
 		do the example?	 Did you find flaws in the User
 		Guide or manual	entries?
@@ -704,13 +709,8 @@ LICENSE
 	distribution.
 
 AUTHOR
-	Peter Miller   UUCP	  uunet!munnari!bmr.gov.au!pmiller
-	/\/\*	       Internet	  pmiller@bmr.gov.au
-
-
-
-
-
+	Peter Miller	   UUCP:   uunet!munnari!agso.gov.au!pmiller
+	/\/\*	       Internet:   pmiller@agso.gov.au
 
 
 

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,15 +21,18 @@
  */
 
 #include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdio.h>
+#include <ac/stdlib.h>
+#include <ac/string.h>
+
 #include <pwd.h>
 #include <grp.h>
-#include <unistd.h>
+#include <ac/unistd.h>
 
+#include <arglex2.h>
 #include <commit.h>
-#include <conf.h>
 #include <error.h>
+#include <fstrcmp.h>
 #include <gonzo.h>
 #include <lock.h>
 #include <mem.h>
@@ -44,6 +47,67 @@
 
 static	size_t	nusers;
 static	user_ty	**user;
+
+
+/*
+ * NAME
+ *	user_set_project - set the project associated with a user
+ *
+ * SYNOPSIS
+ *	void user_set_project(user_ty *, project_ty *);
+ *
+ * DESCRIPTION
+ *	The user_set_project is used to set the project associated
+ *	with each user.  Should only be called for uses without a project
+ *	associated.
+ *
+ * CAVEATS
+ *	Only do this AFTER adding the user structure to the list,
+ *	because the project may construct the same user
+ *	when it reads it's state file to find the umask.
+ */
+
+static void user_set_project _((user_ty *, project_ty *));
+
+static void
+user_set_project(up, pp)
+	user_ty		*up;
+	project_ty	*pp;
+{
+	struct group	*gr;
+	char		*name;
+
+	/*
+	 * set the project
+	 */
+	trace(("user_set_project(up = %08lX, pp = %08lX)\n{\n"/*}*/,
+		(long)up, (long)pp));
+	assert(up);
+	assert(pp);
+	up->pp = project_copy(pp);
+
+	/*
+	 * set the group from the project
+	 *	(cannonical name is first in /etc/group file)
+	 */
+	name = project_group(pp)->str_text;
+	gr = getgrnam(name);
+	if (!gr)
+		fatal("group \"%s\" unknown", name);
+	up->gid = gr->gr_gid;
+	gr = getgrgid(up->gid);
+	if (!gr)
+		fatal("gid %d unknown", up->gid);
+	assert(up->group);
+	str_free(up->group);
+	up->group = str_from_c(gr->gr_name);
+
+	/*
+	 * set the umask from the project
+	 */
+	up->umask = project_umask(pp);
+	trace((/*{*/"}\n"));
+}
 
 
 /*
@@ -80,6 +144,9 @@ user_numeric(pp, uid)
 	user_ty		*up;
 	struct passwd	*pw;
 	struct group	*gr;
+	size_t		nbytes;
+	char		*full_name;
+	char		*comma;
 
 	/*
 	 * see if we already know her
@@ -91,6 +158,8 @@ user_numeric(pp, uid)
 		if (up->uid == uid)
 		{
 			up = user_copy(up);
+			if (!up->pp && pp)
+				user_set_project(up, pp);
 			goto ret;
 		}
 	}
@@ -107,34 +176,31 @@ user_numeric(pp, uid)
 		fatal("uid %d unknown", uid);
 	up = (user_ty *)mem_alloc_clear(sizeof(user_ty));
 	up->reference_count = 1;
-	if (pp)
-		up->pp = project_copy(pp);
 	up->uid = uid;
 	up->gid = pw->pw_gid;
 	up->umask = DEFAULT_UMASK;
 	up->name = str_from_c(pw->pw_name);
 	up->home = str_from_c(pw->pw_dir);
+	up->pp = 0;
 	if (pw->pw_gecos && pw->pw_gecos[0])
-		up->full_name = str_from_c(pw->pw_gecos);
-#ifndef CONF_NO_pw_comment
+		full_name = pw->pw_gecos;
+#ifdef HAVE_pw_comment
 	else if (pw->pw_comment && pw->pw_comment[0])
-		up->full_name = str_from_c(pw->pw_comment);
+		full_name = pw->pw_comment;
 #endif
 	else
-		up->full_name = str_from_c(pw->pw_name);
-	if (pp)
-	{
-		gr = getgrnam(project_group(pp)->str_text);
-		if (!gr)
-		{
-			fatal
-			(
-				"group \"%s\" unknown",
-				project_group(pp)->str_text
-			);
-		}
-		up->gid = gr->gr_gid;
-	}
+		full_name = pw->pw_name;
+
+	/*
+	 * Some systems add lots of other stuff to the full name field
+	 * in the passwd file.  We are only interested in the name.
+	 */
+	comma = strchr(full_name, ',');
+	if (comma)
+		up->full_name = str_n_from_c(full_name, comma - full_name);
+	else
+		up->full_name = str_from_c(full_name);
+
 	gr = getgrgid(up->gid);
 	if (!gr)
 		fatal("gid %d unknown", up->gid);
@@ -143,22 +209,115 @@ user_numeric(pp, uid)
 	/*
 	 * add it to the list
 	 */
-	*(user_ty **)enlarge(&nusers, (char **)&user, sizeof(user_ty *)) = up;
+	nbytes = (nusers + 1) * sizeof(user_ty *);
+	user = mem_change_size(user, nbytes);
+	user[nusers++] = up;
 
 	/*
-	 * Find the umask.
+	 * Set the user's project, if known.
 	 *
 	 * Only do this AFTER adding it to the list,
 	 * because the project may construct the same user
 	 * when it reads it's state file to find the umask.
 	 */
 	if (pp)
-		up->umask = project_umask(pp);
+		user_set_project(up, pp);
 
 	/*
 	 * here for all exits
 	 */
 	ret:
+	trace(("return %08lX;\n", up));
+	trace((/*{*/"}\n"));
+	return up;
+}
+
+
+/*
+ * NAME
+ *	user_numeric2
+ *
+ * SYNOPSIS
+ *	user_ty *user_numeric2(int uid, int gid);
+ *
+ * DESCRIPTION
+ *	The user_numeric2 function is used to
+ *	create a user structure for the aegis/gonzo.c file.
+ *	It has a known uid and gid, and will succeed, even
+ *	if there are no relvant entriesin system tables.
+ *
+ * ARGUMENTS
+ *	uid	- system user id
+ *	gid	- system group id
+ *
+ * RETURNS
+ *	pointer to user structure in dynamic memory
+ *
+ * CAVEAT
+ *	Release the user structure with the user_free() function when done.
+ *
+ *	It is essential this function only be called once;
+ *	unlike user_numeric, it does not check for multiple invokations.
+ */
+
+user_ty *
+user_numeric2(uid, gid)
+	int		uid;
+	int		gid;
+{
+	user_ty		*up;
+	struct passwd	*pw;
+	struct group	*gr;
+	size_t		nbytes;
+
+	/*
+	 * craete the user structure
+	 */
+	trace(("user_numeric2(uid = %d, gid = %d)\n{\n"/*}*/, uid, gid));
+	up = (user_ty *)mem_alloc_clear(sizeof(user_ty));
+	up->reference_count = 1;
+	up->uid = uid;
+	up->gid = gid;
+	up->umask = 022;
+	up->pp = 0;
+
+	/*
+	 * try the passwd file,
+	 *	otherwise default to something sensable
+	 */
+	pw = getpwuid(uid);
+	if (pw)
+	{
+		up->name = str_from_c(pw->pw_name);
+		up->home = str_from_c(pw->pw_dir);
+	}
+	else
+	{
+		up->name = str_format("uid %d", uid);
+		up->home = str_from_c("/");
+	}
+	up->full_name = str_copy(up->name);
+
+	/*
+	 * try the group file,
+	 *	otherwise default to something sensable
+	 */
+	gr = getgrgid(up->gid);
+	if (!gr)
+		up->group = str_format("gid %d", gid);
+	else
+		up->group = str_from_c(gr->gr_name);
+
+	/*
+	 * add it to the list
+	 */
+	nbytes = (nusers + 1) * sizeof(user_ty *);
+	user = mem_change_size(user, nbytes);
+	user[nusers++] = up;
+
+	/*
+	 * here for all exits
+	 */
 	trace(("return %08lX;\n", up));
 	trace((/*{*/"}\n"));
 	return up;
@@ -204,7 +363,40 @@ user_symbolic(pp, name)
 		name->str_text));
 	pw = getpwnam(name->str_text);
 	if (!pw)
-		fatal("user \"%s\" unknown", name->str_text);
+	{
+		string_ty	*best;
+		double		best_weight;
+		double		weight;
+
+		best = 0;
+		best_weight = 0.6;
+		setpwent();
+		for (;;)
+		{
+			pw = getpwent();
+			if (!pw)
+				break;
+			weight = fstrcmp(name->str_text, pw->pw_name);
+			if (weight > best_weight)
+			{
+				if (best)
+					str_free(best);
+				best = str_from_c(pw->pw_name);
+				best_weight = weight;
+			}
+		}
+		if (best)
+		{
+			fatal
+			(
+			     "user \"%S\" unknown, closest was the \"%S\" user",
+				name,
+				best
+			);
+		}
+		else
+			fatal("user \"%S\" unknown", name);
+	}
 	result = user_numeric(pp, pw->pw_uid);
 	trace(("return %08lX;\n", result));
 	trace((/*{*/"}\n"));
@@ -615,15 +807,65 @@ user_uconf_get(up)
 			str_format("%S/.%src", up->home, option_progname_get());
 	if (!up->uconf_data)
 	{
+		string_ty	*s1;
+		string_ty	*s2;
+		uconf		data;
+		uconf		tmp;
+
+		/*
+		 * read the environment variable
+		 */
+		s1 = str_format("%s_flags", option_progname_get());
+		s2 = str_upcase(s1);
+		str_free(s1);
+		data = parse_env(s2->str_text, &uconf_type);
+		str_free(s2);
+		up->uconf_data = data;
+
+		/*
+		 * read the file
+		 */
 		user_become(up);
 		if (os_exists(up->uconf_path))
-		{
-			up->uconf_data =
-				uconf_read_file(up->uconf_path->str_text);
-		}
+			tmp = uconf_read_file(up->uconf_path->str_text);
 		else
-			up->uconf_data = (uconf)uconf_type.alloc();
+			tmp = (uconf)uconf_type.alloc();
 		user_become_undo();
+
+		/*
+		 * merge the two
+		 */
+		if (!data->default_project_name && tmp->default_project_name)
+			data->default_project_name =
+				str_copy(tmp->default_project_name);
+		if (!data->default_change_number && tmp->default_change_number)
+			data->default_change_number =
+				tmp->default_change_number;
+		if
+		(
+			!data->default_development_directory
+		&&
+			tmp->default_development_directory
+		)
+			data->default_development_directory =
+				str_copy(tmp->default_development_directory);
+		if
+		(
+			!data->default_project_directory
+		&&
+			tmp->default_project_directory
+		)
+			data->default_project_directory =
+				str_copy(tmp->default_project_directory);
+		if
+		(
+			!(data->mask & uconf_delete_file_preference_mask)
+		&&
+			(tmp->mask & uconf_delete_file_preference_mask)
+		)
+			data->delete_file_preference =
+				tmp->delete_file_preference;
+		uconf_type.free(tmp);
 	}
 	trace(("return %08lX;\n", up->uconf_data));
 	trace((/*{*/"}\n"));
@@ -694,6 +936,9 @@ user_full_name(name)
 {
 	struct passwd	*pw;
 	char		*result;
+	char		*comma;
+	static char	*trimmed;
+	static size_t	trimmed_max;
 
 	trace(("user_full_name(name = \"%s\")\n{\n"/*}*/, name->str_text));
 	pw = getpwnam(name->str_text);
@@ -701,12 +946,32 @@ user_full_name(name)
 		result = "";
 	else if (pw->pw_gecos && pw->pw_gecos[0])
 		result = pw->pw_gecos;
-#ifndef CONF_NO_pw_comment
+#ifdef HAVE_pw_comment
 	else if (pw->pw_comment && pw->pw_comment[0])
 		result = pw->pw_comment;
 #endif
 	else
 		result = "";
+
+	/*
+	 * Some systems add lots of other stuff to the full name field
+	 * in the passwd file.  We are only interested in the name.
+	 */
+	comma = strchr(result, ',');
+	if (comma)
+	{
+		size_t		len;
+
+		len = comma - result;
+		if (len + 1 > trimmed_max)
+		{
+			trimmed_max = len + 1;
+			trimmed = mem_change_size(trimmed, trimmed_max);
+		}
+		memcpy(trimmed, result, len);
+		trimmed[len] = 0;
+		result = trimmed;
+	}
 	trace(("return \"%s\";\n", result));
 	trace((/*{*/"}\n"));
 	return result;
@@ -826,13 +1091,14 @@ user_own_add(up, project_name, change_number)
 	 */
 	if (j >= ustate_data->own->length)
 	{
-		ustate_own_list_type.list_parse
-		(
-			ustate_data->own,
-			&type_p,
-			(void **)&own_data_p
-		);
-		own_data = (ustate_own)ustate_own_type.alloc();
+		own_data_p =
+			ustate_own_list_type.list_parse
+			(
+				ustate_data->own,
+				&type_p
+			);
+		assert(type_p == &ustate_own_type);
+		own_data = ustate_own_type.alloc();
 		*own_data_p = own_data;
 		own_data->project_name = str_copy(project_name);
 	}
@@ -848,12 +1114,13 @@ user_own_add(up, project_name, change_number)
 	/*
 	 * Add another item to the changes list for the project.
 	 */
-	ustate_own_changes_list_type.list_parse
-	(
-		own_data->changes,
-		&type_p,
-		(void **)&change_p
-	);
+	change_p =
+		ustate_own_changes_list_type.list_parse
+		(
+			own_data->changes,
+			&type_p
+		);
+	assert(type_p == &integer_type);
 	*change_p = change_number;
 	up->ustate_modified = 1;
 	trace((/*{*/"}\n"));
@@ -1103,16 +1370,21 @@ project_dot_change(s, p)
 	string_ty	*s;
 	string_ty	*p;
 {
+	char		*suffix;
+
 	if
 	(
-		s->str_length > p->str_length + 1
-	&&
-		!memcmp(s->str_text, p->str_text, p->str_length)
-	&&
-		s->str_text[p->str_length] == '.'
+		s->str_length <= p->str_length + 1
+	||
+		memcmp(s->str_text, p->str_text, p->str_length)
+	||
+		s->str_text[p->str_length] != '.'
 	)
-		return is_a_change_number(s->str_text + p->str_length + 1);
-	return 0;
+		return 0;
+	suffix = s->str_text + p->str_length + 1;
+	while (isupper((unsigned char)*suffix))
+		++suffix;
+	return is_a_change_number(suffix);
 }
 
 
@@ -1213,7 +1485,7 @@ user_default_change(up)
 		/*
 		 * break it into file names
 		 */
-		str2wl(&part, cwd, "/");
+		str2wl(&part, cwd, "/", 0);
 		str_free(cwd);
 
 		/*
@@ -1335,7 +1607,7 @@ user_default_project()
 			/*
 			 * break into pieces
 			 */
-			str2wl(&part, cwd, "/");
+			str2wl(&part, cwd, "/", 0);
 			str_free(cwd);
 
 			/*
@@ -1598,4 +1870,202 @@ user_become_undo()
 	trace(("user_become_undo()\n{\n"/*}*/));
 	os_become_undo();
 	trace((/*{*/"}\n"));
+}
+
+
+enum del_pref
+{
+	del_pref_unset,
+	del_pref_no_keep,
+	del_pref_interactive,
+	del_pref_keep
+};
+typedef enum del_pref del_pref;
+
+static del_pref cmd_line_pref = del_pref_unset;
+
+
+void
+user_delete_file_argument()
+{
+	if (cmd_line_pref != del_pref_unset)
+	{
+		fatal
+		(
+       "you may only specify one of the -No_Keep, -Interactive or -Keep options"
+		);
+	}
+	switch (arglex_token)
+	{
+	default:
+		assert(0);
+
+	case arglex_token_keep:
+		cmd_line_pref = del_pref_keep;
+		break;
+
+	case arglex_token_interactive:
+		cmd_line_pref = del_pref_interactive;
+		break;
+
+	case arglex_token_no_keep:
+		cmd_line_pref = del_pref_no_keep;
+		break;
+	}
+}
+
+
+static int ask _((string_ty *, int));
+
+static int
+ask(filename, isdir)
+	string_ty	*filename;
+	int		isdir;
+{
+	typedef struct table_ty table_ty;
+	struct table_ty
+	{
+		char		*name;
+		del_pref	set;
+		int		result;
+	};
+
+	/*
+	 * The order of items in the table needs to be considered
+	 * carefully.  The ``unset'' items must come before the ``set''
+	 * items; particularly those with similar names.  Do not sort
+	 * this table alphabetically.
+	 */
+	static table_ty table[] =
+	{
+		{ "No",		del_pref_unset,		0, },
+		{ "False",	del_pref_unset,		0, },
+		{ "Never",	del_pref_keep,		0, },
+		{ "None",	del_pref_keep,		0, },
+
+		{ "Yes",	del_pref_unset,		1, },
+		{ "True",	del_pref_unset,		1, },
+		{ "All",	del_pref_no_keep,	1, },
+		{ "Always",	del_pref_no_keep,	1, },
+	};
+
+	table_ty	*tp;
+	char		buffer[100];
+	char		*bp;
+	int		c;
+
+	for (;;)
+	{
+		printf
+		(
+			"Delete the \"%s\" %s? ",
+			filename->str_text,
+			(isdir ? "directory" : "file")
+		);
+		fflush(stdout);
+
+		bp = buffer;
+		for (;;)
+		{
+			c = getchar();
+			if (c == '\n' || c == EOF)
+				break;
+			if (bp < ENDOF(buffer) - 1)
+				*bp++ = c;
+		}
+		*bp = 0;
+
+		for (tp = table; tp < ENDOF(table); ++tp)
+		{
+			if (arglex_compare(tp->name, buffer))
+			{
+				if (tp->set != del_pref_unset)
+					cmd_line_pref = tp->set;
+				return tp->result;
+			}
+		}
+		printf("Please answer 'yes', 'no', 'all' or 'none'.\n");
+	}
+}
+
+
+int
+user_delete_file_query(up, filename, isdir)
+	user_ty		*up;
+	string_ty	*filename;
+	int		isdir;
+{
+	int		result;
+
+	/*
+	 * if the preference was not set on the command line,
+	 * read it fron the user config file
+	 */
+	trace(("user_delete_file_query()\n{\n"/*}*/));
+	if (cmd_line_pref == del_pref_unset)
+	{
+		uconf		uconf_data;
+
+		uconf_data = user_uconf_get(up);
+		switch (uconf_data->delete_file_preference)
+		{
+		default:
+			cmd_line_pref = del_pref_no_keep;
+			break;
+
+		case uconf_delete_file_preference_interactive:
+			cmd_line_pref = del_pref_interactive;
+			break;
+
+		case uconf_delete_file_preference_keep:
+			cmd_line_pref = del_pref_keep;
+			break;
+		}
+	}
+
+	/*
+	 * if the preference is to ask but we are in the background,
+	 * delete the files without asking.
+	 */
+	if
+	(
+		cmd_line_pref == del_pref_interactive
+	&&
+		(!isatty(0) || !isatty(1) || os_background())
+	)
+		cmd_line_pref = del_pref_no_keep;
+
+	/*
+	 * figure the result
+	 */
+	switch (cmd_line_pref)
+	{
+	default:
+		result = 1;
+		break;
+
+	case del_pref_interactive:
+		result = ask(filename, isdir);
+		break;
+
+	case del_pref_keep:
+		result = 0;
+		break;
+	}
+	trace(("return %d;\n", result));
+	trace((/*{*/"}\n"));
+	return result;
+}
+
+
+int
+user_diff_preference(up)
+	user_ty		*up;
+{
+	uconf		uconf_data;
+
+	uconf_data = user_uconf_get(up);
+	if (!(uconf_data->mask & uconf_diff_preference_mask))
+		return uconf_diff_preference_automatic_merge;
+	return uconf_data->diff_preference;
 }

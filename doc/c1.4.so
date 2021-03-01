@@ -38,7 +38,7 @@ and
 are not explained.
 .LP
 There is also the assumption that the reader is familiar with the issues surrounding team development of software;
-coordination and multiple copy issues, for example, are not explained.
+coordination and multiple version issues, for example, are not explained.
 .LP
 This manual is broken into a number of sections.
 .IP "Chapter 2"
@@ -77,3 +77,16 @@ of the aegis program.
 is a quick reference for placing an existing project under aegis.
 .IP "Appendix B"
 is a glossary of terms.
+.br
+.ne 2i
+.nh 2 "GNU GPL"
+.LP
+Aegis is distributed under the terms and conditions of
+the GNU General Public License.
+Programs which are developed using Aegis are not automatically
+subject to the GNU GPL.
+Only programs which are derivative works based on GNU GPL code
+are automatically subject to the GNU GPL.
+We still encourage software authors to distribute their work under
+terms like those of the GNU GPL,
+but doing so is not required to use Aegis.

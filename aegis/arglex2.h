@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,6 +34,7 @@ enum
 	arglex_token_change,
 	arglex_token_change_attributes,
 	arglex_token_change_directory,
+	arglex_token_change_owner,
 	arglex_token_copy_file,
 	arglex_token_copy_file_undo,
 	arglex_token_defaults,
@@ -46,17 +47,23 @@ enum
 	arglex_token_difference,
 	arglex_token_directory,
 	arglex_token_edit,
+	arglex_token_file,
 	arglex_token_force,
 	arglex_token_independent,
 	arglex_token_integrate_begin,
 	arglex_token_integrate_begin_undo,
 	arglex_token_integrate_fail,
 	arglex_token_integrate_pass,
+	arglex_token_interactive,
 	arglex_token_keep,
+	arglex_token_library,
 	arglex_token_list,
 	arglex_token_log,
 	arglex_token_major,
 	arglex_token_manual,
+	arglex_token_merge_automatic,
+	arglex_token_merge_not,
+	arglex_token_merge_only,
 	arglex_token_minimum,
 	arglex_token_minor,
 	arglex_token_move_file,
@@ -72,9 +79,10 @@ enum
 	arglex_token_new_reviewer,
 	arglex_token_new_test,
 	arglex_token_new_test_undo,
+	arglex_token_no_keep,
 	arglex_token_nolog,
-	arglex_token_overwriting,
 	arglex_token_output,
+	arglex_token_overwriting,
 	arglex_token_page_length,
 	arglex_token_page_width,
 	arglex_token_project,
@@ -87,14 +95,17 @@ enum
 	arglex_token_remove_integrator,
 	arglex_token_remove_project,
 	arglex_token_remove_reviewer,
+	arglex_token_report,
 	arglex_token_review_fail,
 	arglex_token_review_pass,
 	arglex_token_review_pass_undo,
+	arglex_token_tab_width,
 	arglex_token_terse,
 	arglex_token_test,
+	arglex_token_unchanged,
 	arglex_token_unformatted,
-	arglex_token_verbose,
-	arglex_token_library
+	arglex_token_user,
+	arglex_token_verbose
 };
 
 #endif /* ARGLEX2_H */

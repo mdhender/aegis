@@ -1,0 +1,94 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1994 Peter Miller.
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * MANIFEST: index of reports distributed with aegis
+ *
+ * If you want to add your own local reports, put pointers to them into
+ * the "/usr/local/lib/aegis/report.local" file.  This way they will
+ * not be clobbered next time aegis is upgraded.
+ */
+
+where =
+[
+	{
+		name = "Administrators";
+		description = "Report the administrators of a project";
+		filename = "report/proj_admin.rpt";
+	},
+	{
+		name = "Changes";
+		description = "Report the changes in a project";
+		filename = "report/chan_lists.rpt";
+	},
+	{
+		name = "Change_Files";
+		description = "Report the files in a change";
+		filename = "report/chan_files.rpt";
+	},
+	{
+		name = "Developers";
+		description = "Report the developers of a project";
+		filename = "report/proj_devel.rpt";
+	},
+	{
+		name = "File_Activity";
+		description =
+"Report the activity of the named files, or all project files by default.  \
+This can sometimes be slow to generate.";
+		filename = "report/file_activ.rpt";
+	},
+	{
+		name = "File_History";
+		description =
+"Report the history of the named files, or all project files by default.  \
+This can sometimes be slow to generate.";
+		filename = "report/file_hstry.rpt";
+	},
+	{
+		name = "Integrators";
+		description = "Report the integrators of a project";
+		filename = "report/proj_integ.rpt";
+	},
+	{
+		name = "Projects";
+		description =
+			"Report the names and descriptions of all projects";
+		filename = "report/proj_lists.rpt";
+	},
+	{
+		name = "Project_Files";
+		description = "Report all files in the baseline of a project";
+		filename = "report/proj_files.rpt";
+	},
+	{
+		name = "Project_Statistics";
+		description = "Report various statistics about a project";
+		filename = "report/proj_stats.rpt";
+	},
+	{
+		name = "Reviewers";
+		description = "Report the reviewers of a project";
+		filename = "report/proj_rvwrs.rpt";
+	},
+	{
+		name = "Project_Staff";
+		description = "Report the staff assigned to a project";
+		filename = "report/proj_staff.rpt";
+	},
+];

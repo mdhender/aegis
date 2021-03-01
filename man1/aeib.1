@@ -49,8 +49,11 @@ command is used to
 begin the integration of a change into the baseline of a project.
 .PP
 The change will advance
-from the 'awaiting_integration' state
-to the 'being_integrated' state.
+from the
+.I "awaiting integration"
+state to the
+.I "being integrated"
+state.
 .PP
 A copy of the baseline is created in an
 .IR "integration directory" 
@@ -99,7 +102,9 @@ sh$	aeib(){\*(n) -ib $* -v}
 .fi
 .SH ERRORS
 It is an error if
-the change is not in the 'awaiting_integration' state.
+the change is not in the
+.I "awaiting integration"
+state.
 .br
 It is an error if
 the current user is not an integrator of the project.
@@ -115,4 +120,34 @@ It is an error if
 the current user reviewed the change and the project is configured to
 disallow reviewers to integrate their such changes (default).
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aeb (1)
+build a change
+.TP 8n
+.IR aecd (1)
+change directory
+.TP 8n
+.IR aeibu (1)
+reverse the aeib command
+.TP 8n
+.IR aeif (1)
+fail integration of a change
+.TP 8n
+.IR aeip (1)
+pass integration of a change
+.TP 8n
+.IR aeni (1)
+add new integrators to a project
+.TP 8n
+.IR aerp (1)
+pass review of a change
+.TP 8n
+.IR aet (1)
+run tests
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

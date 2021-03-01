@@ -1,7 +1,7 @@
-#! /bin/sh
+#!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1993 Peter Miller.
+#	Copyright (C) 1993, 1994, 1995 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,8 @@
 
 unset AEGIS_PROJECT
 unset AEGIS_CHANGE
+unset AEGIS_PATH
+unset AEGIS
 umask 022
 
 USER=${USER:-${LOGNAME:-`whoami`}}
@@ -31,14 +33,22 @@ work=${AEGIS_TMP:-/tmp}/$$
 PAGER=cat
 export PAGER
 
+AEGIS_FLAGS="delete_file_preference = no_keep; \
+	diff_preference = automatic_merge;"
+export AEGIS_FLAGS
+AEGIS_THROTTLE=2
+export AEGIS_THROTTLE
+
 here=`pwd`
 if test $? -ne 0 ; then exit 1; fi
+
+if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
 
 fail()
 {
 	set +x
-	cd $here
 	echo FAILED test of -New_Change_Undo functionality 1>&2
+	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
 	exit 1
@@ -46,8 +56,8 @@ fail()
 pass()
 {
 	set +x
-	cd $here
 	echo PASSED 1>&2
+	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
 	exit 0
@@ -55,7 +65,7 @@ pass()
 trap "fail" 1 2 3 15
 
 mkdir $work
-if test $? -ne 0 ; then exit 1; fi
+if test $? -ne 0 ; then fail; fi
 cd $work
 if test $? -ne 0 ; then fail; fi
 
@@ -65,7 +75,7 @@ workproj=$work/foo
 #
 # create the project
 #
-$here/bin/aegis -npr foo -lib $worklib -dir $workproj
+$bin/aegis -npr foo -lib $worklib -dir $workproj
 if test $? -ne 0 ; then fail; fi
 
 #
@@ -76,14 +86,14 @@ brief_description = "hello";
 cause = internal_enhancement;
 fubar
 if test $? -ne 0 ; then fail; fi
-$here/bin/aegis -nc ncf -lib $worklib -p foo
+$bin/aegis -nc -f ncf -lib $worklib -p foo
 if test $? -ne 0 ; then fail; fi
 if test ! -f $workproj/info/change/0/001; then fail; fi
 
 #
 # remove the change
 #
-$here/bin/aegis -ncu -lib $worklib -p foo -c 1
+$bin/aegis -ncu -lib $worklib -p foo -c 1
 if test $? -ne 0 ; then fail; fi
 if test -f $workproj/info/change/0/001; then fail; fi
 

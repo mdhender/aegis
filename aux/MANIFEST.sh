@@ -1,7 +1,7 @@
-#! /bin/sh
+#!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993 Peter Miller.
+#	Copyright (C) 1992, 1993, 1994 Peter Miller.
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -37,13 +37,10 @@ do
 	BUILDING)
 		info="Instructions how to build, test and install aegis"
 		;;
-	BUILDpyr)
-		info="Additional build instructions for Pyramid"
+	aux/CHANGES.*)
+		info="Change history of aegis"
 		;;
-	CHANGES)
-		info="Change history of this release of aegis"
-		;;
-	Makefile)
+	Makefile*)
 		info="Instructions to make(1) how to build and test aegis"
 		;;
 	common/patchlevel.h)
@@ -55,8 +52,29 @@ do
 	aux/new.so)
 		info="Include redirection for release notes."
 		;;
+	aux/config.h*)
+		info="Template information for common/config.h.in"
+		;;
+	aux/template/*)
+		info="New file template"
+		;;
+	lib/aegis.icon)
+		info="X Bitmap of the aegis icon"
+		;;
+	lib/aegis.mask)
+		info="X Bitmap of the mask for the aegis icon"
+		;;
+
+	configure)
+		info="Shell script to automagically configure aegis"
+		;;
+
+	common/config.h.in)
+		info="Template for configuration definitions.";
+		;;
+
 	*)
-		info=`awk '
+		info=`gawk '
 /[ 	]MANIFEST:[ 	]/ {
 	for (j = 1; j < NF; ++j)
 		if ($j == "MANIFEST:")

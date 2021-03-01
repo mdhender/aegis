@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,9 +21,10 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
+#include <ac/stdlib.h>
+#include <ac/string.h>
+#include <ac/time.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -69,112 +70,7 @@ develop_begin_undo_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -Develop_Begin_Undo - undo the effects of aedb",
-"",
-"SYNOPSIS",
-"	%s -Develop_Begin_Undo <change-number> [ <option>... ]",
-"	%s -Develop_Begin_Undo -List [ <option>... ]",
-"	%s -Develop_Begin_Undo -Help",
-"",
-"DESCRIPTION",
-"	The %s -Develop_Begin_Undo command is used to reverse",
-"	the effects of the '%s -Develop_Begin' command.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-Change <number>",
-"		This option may be used to specify a particular",
-"		change within a project.  When no -Change option is",
-"		specified, the AEGIS_CHANGE environment variable is",
-"		consulted.  If that does not exist, the user's",
-"		$HOME/.aegisrc file is examined for a default change",
-"		field (see aeuconf(5) for more information).  If",
-"		that does not exist, when the user is only working",
-"		on one change within a project, that is the default",
-"		change number.  Otherwise, it is an error.",
-"",
-"	-Help",
-"		This option may be used to obtain more",
-"		information about how to use the %s program.",
-"",
-"	-Keep",
-"		This option may be used to retain files and/or",
-"		directories usually deleted by the command.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified, the",
-"		AEGIS_PROJECT environment variable is consulted.  If",
-"		that does not exist, the user's $HOME/.aegisrc file",
-"		is examined for a default project field (see",
-"		aeuconf(5) for more information).  If that does not",
-"		exist, when the user is only working on changes",
-"		within a single project, the project name defaults",
-"		to that project.  Otherwise, it is an error.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List",
-"		option this option causes column headings to be",
-"		added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aedbu '%s -dbu \\!* -v'",
-"	sh$	aedbu(){%s -dbu $* -v}",
-"",
-"ERRORS",
-"	It is an error if the change is no assigned to the",
-"	current user.",
-"	It is an error if the change is not in the",
-"	'being_developed' state.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.	The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aedbu.h>
 	};
 
 	help(text, SIZEOF(text), develop_begin_undo_usage);
@@ -230,18 +126,17 @@ develop_begin_undo_main()
 {
 	string_ty	*project_name;
 	long		change_number;
-	int		keep;
 	project_ty	*pp;
 	user_ty		*up;
 	change_ty	*cp;
 	pstate		pstate_data;
 	cstate		cstate_data;
 	cstate_history	history_data;
+	string_ty	*dd;
 
 	trace(("develop_begin_undo_main()\n{\n"/*}*/));
 	project_name = 0;
 	change_number = 0;
-	keep = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -251,15 +146,9 @@ develop_begin_undo_main()
 			continue;
 
 		case arglex_token_keep:
-			if (keep)
-			{
-				fatal
-				(
-					"duplicate %s option",
-					arglex_value.alv_string
-				);
-			}
-			keep++;
+		case arglex_token_interactive:
+		case arglex_token_no_keep:
+			user_delete_file_argument();
 			break;
 
 		case arglex_token_change:
@@ -328,14 +217,23 @@ develop_begin_undo_main()
 	 * It is an error if the change is not assigned to the current user.
 	 */
 	if (cstate_data->state != cstate_state_being_developed)
-		change_fatal(cp, "not in 'being_developed' state");
+	{
+		change_fatal
+		(
+			cp,
+"this change is in the '%s' state, \
+it must be in the 'being developed' state to undo develop begin",
+			cstate_state_ename(cstate_data->state)
+		);
+	}
 	if (!str_equal(change_developer_name(cp), user_name(up)))
 	{
 		change_fatal
 		(
 			cp,
-			"user \"%S\" is not the developer",
-			user_name(up)
+    "user \"%S\" is not the developer, only user \"%S\" may undo develop begin",
+			user_name(up),
+			change_developer_name(cp)
 		);
 	}
 
@@ -353,10 +251,7 @@ develop_begin_undo_main()
 	 * Clear the src field.
 	 */
 	cstate_data->state = cstate_state_awaiting_development;
-	cstate_data->build_time = 0;
-	cstate_data->test_time = 0;
-	cstate_data->test_baseline_time = 0;
-	cstate_data->regression_test_time = 0;
+	change_build_times_clear(cp);
 	while (cstate_data->src->length)
 		change_src_remove(cp, cstate_data->src->list[0]->file_name);
 
@@ -369,15 +264,13 @@ develop_begin_undo_main()
 	/*
 	 * remove the development directory
 	 */
-	if (!keep)
+	dd = change_development_directory_get(cp, 1);
+	if (user_delete_file_query(up, dd, 1))
 	{
-		string_ty	*dd;
-
 		change_verbose(cp, "remove development directory");
-		dd = change_development_directory_get(cp, 1);
-		change_become(cp);
+		user_become(up);
 		commit_rmdir_tree_errok(dd);
-		change_become_undo();
+		user_become_undo();
 	}
 
 	/*

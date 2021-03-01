@@ -73,7 +73,7 @@ option of the
 .B aepa
 command.
 This will invoke an editor (\fIvi\fP(1) by default)
-it edit the project attributes.
+to edit the project attributes.
 Alex edits them to look like this:
 .E(
 description = "Aegis Documentation Example Project";
@@ -145,9 +145,9 @@ aegis: project "example": change 1: created
 alex%
 .E)
 At this point,
-Alex walks down the hall to Jan's office,
-to ask Jan to develop the first change.
-Jan has had some practice using aegis,
+Alex walks down the hall to Pat's office,
+to ask Pat to develop the first change.
+Pat has had some practice using aegis,
 and can be relied on to do the rest of the project configuration speedily.
 .nh 3 "The Second Change"
 .LP
@@ -223,7 +223,7 @@ and this change will be worked on.
 .LP
 Only a few of the aegis commands available to administrators have
 been used in this example.
-The following table (very tersely) describes the aegis commands most useful to administrators.
+The following table lists the aegis commands most useful to administrators.
 .sp
 .TS
 center,tab(;);

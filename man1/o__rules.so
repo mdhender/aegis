@@ -19,6 +19,7 @@
 .\"
 .\" MANIFEST: description of option up/down case convention
 .\"
+.r)
 .PP
 All options may be abbreviated;
 the abbreviation is documented as the upper case letters,
@@ -42,6 +43,8 @@ after the function selectors.
 .ne 4
 .PP
 The GNU long option names are understood.
-Since all option names for aegis are long,
+Since all option names for
+.I \*(n)
+are long,
 this means ignoring the extra leading '-'.
 The "\fB--\fIoption\fB=\fIvalue\fR" convention is also understood.

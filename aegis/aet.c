@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <ac/stdlib.h>
 
 #include <ael.h>
 #include <aet.h>
@@ -49,7 +49,12 @@ test_usage()
 	char		*progname;
 
 	progname = option_progname_get();
-	fprintf(stderr, "usage: %s -Test [ <filename>... ][ <option>... ]\n", progname);
+	fprintf
+	(
+		stderr,
+		"usage: %s -Test [ <filename>... ][ <option>... ]\n",
+		progname
+	);
 	fprintf(stderr, "       %s -Test -List [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Test -Help\n", progname);
 	quit(1);
@@ -63,151 +68,7 @@ test_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -Test - run tests",
-"",
-"SYNOPSIS",
-"	%s -Test [ <file-name>... ][ <option>... ]",
-"	%s -Test -INDependent [ <file-name>... ][ <option>... ]",
-"	%s -Test -List [ <option>... ]",
-"	%s -Test -Help",
-"",
-"DESCRIPTION",
-"	The %s -Test command is used to run tests.  If no",
-"	files are named, all relevant tests are run.  By default",
-"	both automatic and manual tests are run.",
-"",
-"	The %s program will attempt to intuit the file names",
-"	intended.  All file names are stored within %s as",
-"	relative to the root of the baseline directory tree.  The",
-"	development directory and the integration directory are",
-"	shadows of the baseline directory, and so these relative",
-"	names aply there, too.	Files named on the command line",
-"	are first converted to absolute paths if necessary.  They",
-"	are then compared with the baseline path, and the",
-"	development directory path, and the integration directory",
-"	path, to determine a root-relative name.  It is an error",
-"	if the file named is outside one of these directory",
-"	trees.",
-"",
-"	Tests are executed by the Bourne shell.  The current directory",
-"	will be the top of the appropriate directory tree.  If",
-"	tests require temporary files, they should create them in",
-"	/tmp, as a test cannot expect to have write permission in",
-"	the current directory.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-AUTOmatic",
-"		This option may be uset to specify manual tests.",
-"		Automatic tests require no human assitance.",
-"",
-"	-BaseLine",
-"		This option may be used to specify that the",
-"		project baseline is the subject of the command.",
-"",
-"	-Change <number>",
-"		This option may be used to specify a particular",
-"		change within a project.  When no -Change option is",
-"		specified, the AEGIS_CHANGE environment variable is",
-"		consulted.  If that does not exist, the user's",
-"		$HOME/.aegisrc file is examined for a default change",
-"		field (see aeuconf(5) for more information).  If",
-"		that does not exist, when the user is only working",
-"		on one change within a project, that is the default",
-"		change number.  Otherwise, it is an error.",
-"",
-"	-Development_Directory",
-"		This option is ised to specify that the",
-"		development directory is the subject of the",
-"		command.  This is only useful for a change which",
-"		is in the 'being_integrated' state, when the",
-"		default is the integration directory.",
-"",
-"	-Help",
-"		This option may be used to obtain more",
-"		information about how to use the %s program.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-MANual",
-"		This option may be used to specify manual tests.",
-"		Manual tests require some human intervention,",
-"		e.g.:  confirmation of some screen behaviour",
-"		(X11, for instance), or some user action, \"unplug",
-"		ethernet cable now\".",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified, the",
-"		AEGIS_PROJECT environment variable is consulted.  If",
-"		that does not exist, the user's $HOME/.aegisrc file",
-"		is examined for a default project field (see",
-"		aeuconf(5) for more information).  If that does not",
-"		exist, when the user is only working on changes",
-"		within a single project, the project name defaults",
-"		to that project.  Otherwise, it is an error.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List",
-"		option this option causes column headings to be",
-"		added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aet '%s -t \\!* -v'",
-"	sh$	aet(){%s -t $* -v}",
-"",
-"ERRORS",
-"	It is an error if the change is not in one of the",
-"	'being_developed' or 'being_integrated' states.",
-"	It is an error if the change is not assigned to the",
-"	current user.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.	The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aet.h>
 	};
 
 	help(text, SIZEOF(text), test_usage);
@@ -269,8 +130,8 @@ static void test_main _((void));
 static void
 test_main()
 {
-	string_ty	*bl;
-	string_ty	*top;
+	string_ty	*bl;	/* resolved */
+	string_ty	*top;	/* unresolved */
 	int		baseline_flag;
 	int		devdir_flag;
 	int		regression_flag;
@@ -285,7 +146,7 @@ test_main()
 	pstate_src	p_src_data;
 	cstate		cstate_data;
 	cstate_src	c_src_data;
-	string_ty	*dir;
+	string_ty	*dir;	/* unresolved */
 	int		j;
 	int		npassed;
 	int		nfailed;
@@ -294,6 +155,8 @@ test_main()
 	long		change_number;
 	change_ty	*cp;
 	int		nolog;
+	int		(*run_test_command)_((change_ty *, user_ty *,
+				string_ty *, string_ty *, int));
 	user_ty		*up;
 
 	trace(("test_main()\n{\n"/*}*/));
@@ -334,7 +197,11 @@ test_main()
 			if (regression_flag)
 			{
 				duplicate:
-				fatal("duplicate %s option", arglex_value.alv_string);
+				fatal
+				(
+					"duplicate %s option",
+					arglex_value.alv_string
+				);
 			}
 			regression_flag = 1;
 			break;
@@ -400,11 +267,23 @@ test_main()
 	if (wl.wl_nwords)
 	{
 		if (automatic_flag)
-			fatal("may not name files and use the -AUTOmatic option");
+		{
+			fatal
+			(
+			      "may not name files and use the -AUTOmatic option"
+			);
+		}
 		if (manual_flag)
+		{
 			fatal("may not name files and use the -MANual option");
+		}
 		if (regression_flag)
-			fatal("may not name files and use the -REGression option");
+		{
+			fatal
+			(
+			     "may not name files and use the -REGression option"
+			);
+		}
 	}
 	else
 	{
@@ -451,6 +330,7 @@ test_main()
 	 * see if it is an appropriate thing to be doing
 	 */
 	bl = project_baseline_path_get(pp, 1);
+	run_test_command = change_run_test_command;
 	switch (cstate_data->state)
 	{
 	case cstate_state_being_developed:
@@ -459,16 +339,18 @@ test_main()
 			change_fatal
 			(
 				cp,
-				"user \"%S\" is not the developer",
-				user_name(up)
+	     "user \"%S\" is not the developer, only user \"%S\" may run tests",
+				user_name(up),
+				change_developer_name(cp)
 			);
 		}
 		if (baseline_flag)
-			dir = bl;
+			dir = project_baseline_path_get(pp, 0);
 		else
 		{
-			dir = change_development_directory_get(cp, 1);
+			dir = change_development_directory_get(cp, 0);
 			trace_string(dir->str_text);
+			run_test_command = change_run_development_test_command;
 		}
 		break;
 
@@ -478,23 +360,30 @@ test_main()
 			change_fatal
 			(
 				cp,
-				"user \"%S\" is not the integrator",
-				user_name(up)
+	    "user \"%S\" is not the integrator, only user \"%S\" may run tests",
+				user_name(up),
+				change_integrator_name(cp)
 			);
 		}
 		if (baseline_flag)
-			dir = bl;
+			dir = project_baseline_path_get(pp, 0);
 		else
 		{
 			if (devdir_flag)
-				dir = change_development_directory_get(cp, 1);
+				dir = change_development_directory_get(cp, 0);
 			else
-				dir = change_integration_directory_get(cp, 1);
+				dir = change_integration_directory_get(cp, 0);
 		}
 		break;
 
 	default:
-		change_fatal(cp, "not in 'being_developed' state");
+		change_fatal
+		(
+			cp,
+"this change is in the '%s' state, \
+it must be in the 'being developed' or 'being integrated' state to run tests",
+			cstate_state_ename(cstate_data->state)
+		);
 	}
 	assert(dir);
 
@@ -502,15 +391,16 @@ test_main()
 	 * see if this is a complete change test.
 	 * If it is, we can update the relevant test time field.
 	 */
+	os_throttle();
 	if (automatic_flag && manual_flag && !regression_flag && !wl.wl_nwords)
 	{
 		if (baseline_flag)
-			cstate_data->test_baseline_time = time((time_t *)0);
+			change_test_baseline_time_set(cp);
 		else
-			cstate_data->test_time = time((time_t *)0);
+			change_test_time_set(cp);
 	}
 	if (regression_flag)
-		cstate_data->regression_test_time = time((time_t *)0);
+		change_regression_test_time_set(cp);
 
 	/*
 	 * check that the named files make sense
@@ -522,23 +412,51 @@ test_main()
 		assert(s1->str_text[0] == '/');
 		s2 = os_below_dir(bl, s1);
 		if (!s2 && cstate_data->state == cstate_state_being_integrated)
-			s2 = os_below_dir(change_integration_directory_get(cp, 1), s1);
+		{
+			s2 =
+				os_below_dir
+				(
+					change_integration_directory_get(cp, 1),
+					s1
+				);
+		}
 		if (!s2)
-			s2 = os_below_dir(change_development_directory_get(cp, 1), s1);
+		{
+			s2 =
+				os_below_dir
+				(
+					change_development_directory_get(cp, 1),
+					s1
+				);
+		}
 		if (!s2)
 			change_fatal(cp, "path \"%S\" unrelated", s1);
 		c_src_data = change_src_find(cp, s2);
 		if (c_src_data)
 		{
-			if (c_src_data->action == file_action_remove)
-				change_fatal(cp, "file \"%S\" is being removed", s2);
 			if
 			(
 				c_src_data->usage != file_usage_test
 			&&
 				c_src_data->usage != file_usage_manual_test
 			)
-				change_fatal(cp, "file \"%S\" is not a test", s2);
+			{
+				change_fatal
+				(
+					cp,
+					"file \"%S\" is not a test",
+					s2
+				);
+			}
+			if (c_src_data->action == file_action_remove)
+			{
+				change_fatal
+				(
+					cp,
+					"file \"%S\" is being removed",
+					s2
+				);
+			}
 			wl_append(&cfile, s2);
 			if (c_src_data->usage == file_usage_manual_test)
 				nolog = 1;
@@ -554,14 +472,42 @@ test_main()
 			||
 				p_src_data->about_to_be_created_by
 			)
-				change_fatal(cp, "file \"%S\" unknown", s2);
+			{
+				p_src_data = project_src_find_fuzzy(pp, s2);
+				if (p_src_data)
+				{
+					project_fatal
+					(
+						pp,
+			     "file \"%S\" unknown, closest was the \"%S\" file",
+						s2,
+						p_src_data->file_name
+					);
+				}
+				else
+				{
+					change_fatal
+					(
+						cp,
+						"file \"%S\" unknown",
+						s2
+					);
+				}
+			}
 			if
 			(
 				p_src_data->usage != file_usage_test
 			&&
 				p_src_data->usage != file_usage_manual_test
 			)
-				project_fatal(pp, "file \"%S\" is not a test", s2);
+			{
+				project_fatal
+				(
+					pp,
+					"file \"%S\" is not a test",
+					s2
+				);
+			}
 			wl_append(&pfile, s2);
 			if (p_src_data->usage == file_usage_manual_test)
 				nolog = 1;
@@ -612,12 +558,22 @@ test_main()
 					)
 				||
 					(
-				     p_src_data->usage == file_usage_manual_test
+						(
+							p_src_data->usage
+						==
+							file_usage_manual_test
+						)
 					&&
 						manual_flag
 					)
 				)
-					wl_append(&pfile, p_src_data->file_name);
+				{
+					wl_append
+					(
+						&pfile,
+						p_src_data->file_name
+					);
+				}
 			}
 		}
 		else
@@ -627,7 +583,12 @@ test_main()
 				c_src_data = cstate_data->src->list[j];
 				if (c_src_data->action == file_action_remove)
 					continue;
-				if (baseline_flag && c_src_data->action != file_action_create)
+				if
+				(
+					baseline_flag
+				&&
+					c_src_data->action != file_action_create
+				)
 					continue;
 				if
 				(
@@ -638,14 +599,27 @@ test_main()
 					)
 				||
 					(
-				     c_src_data->usage == file_usage_manual_test
+						(
+							c_src_data->usage
+						==
+							file_usage_manual_test
+						)
 					&&
 						manual_flag
 					)
 				)
 				{
-					wl_append(&cfile, c_src_data->file_name);
-					if (c_src_data->usage == file_usage_manual_test)
+					wl_append
+					(
+						&cfile,
+						c_src_data->file_name
+					);
+					if
+					(
+						c_src_data->usage
+					==
+						file_usage_manual_test
+					)
 						nolog = 1;
 				}
 			}
@@ -672,36 +646,44 @@ test_main()
 			user_ty	*pup;
 
 			pup = project_user(pp);
-			log_open(change_logfile_get(cp), pup);
+			log_open
+			(
+				change_logfile_get(cp),
+				pup,
+				log_style_snuggle
+			);
 			user_free(pup);
 		}
 		else
-			log_open(change_logfile_get(cp), up);
+			log_open(change_logfile_get(cp), up, log_style_snuggle);
 	}
 	npassed = 0;
 	nfailed = 0;
+
+	/*
+	 * During long tests the automounter can unmount the
+	 * directories referenced by the ``dir'' and ``top''
+	 * variables.  To minimize this, it is essential that they are
+	 * unresolved, and thus always trigger the automounter.
+	 */
 	trace_string(dir->str_text);
 	if (cstate_data->state == cstate_state_being_integrated)
-		top = change_integration_directory_get(cp, 1);
+		top = change_integration_directory_get(cp, 0);
 	else
-		top = change_development_directory_get(cp, 1);
+		top = change_development_directory_get(cp, 0);
 	for (j = 0; j < cfile.wl_nwords; ++j)
 	{
+		int		inp;
 		int		result;
-		int		flags;
 
 		s1 = cfile.wl_word[j];
 		c_src_data = change_src_find(cp, s1);
 		assert(c_src_data);
-		s2 = str_format("%s %S/%S", os_shell(), top, s1);
-		if (c_src_data->usage == file_usage_manual_test)
-			flags = OS_EXEC_FLAG_INPUT;
-		else
-			flags = OS_EXEC_FLAG_NO_INPUT;
-		user_become(up);
-		result = os_execute_retcode(s2, flags, dir);
-		os_become_undo();
+		s2 = str_format("%S/%S", top, s1);
+		inp = (c_src_data->usage == file_usage_manual_test);
+		result = run_test_command(cp, up, s2, dir, inp);
 		str_free(s2);
+
 		if (baseline_flag)
 		{
 			if (result)
@@ -746,23 +728,20 @@ test_main()
 	 * Do each of the project's tests.
 	 * Log if no manual tests.
 	 */
+	top = project_baseline_path_get(pp, 0);
 	for (j = 0; j < pfile.wl_nwords; ++j)
 	{
 		int		result;
-		int		flags;
+		int		inp;
 
 		s1 = pfile.wl_word[j];
 		p_src_data = project_src_find(pp, s1);
 		assert(p_src_data);
-		s2 = str_format("%s %S/%S", os_shell(), bl, s1);
-		if (p_src_data->usage == file_usage_manual_test)
-			flags = OS_EXEC_FLAG_INPUT;
-		else
-			flags = OS_EXEC_FLAG_NO_INPUT;
-		user_become(up);
-		result = os_execute_retcode(s2, flags, dir);
-		os_become_undo();
+		s2 = str_format("%S/%S", top, s1);
+		inp = (p_src_data->usage == file_usage_manual_test);
+		result = run_test_command(cp, up, s2, dir, inp);
 		str_free(s2);
+
 		if (result)
 		{
 			change_verbose(cp, "test \"%S\" failed", s1);
@@ -776,6 +755,10 @@ test_main()
 			++npassed;
 		}
 	}
+
+	/*
+	 * verbose result message
+	 */
 	if (npassed)
 	{
 		change_verbose
@@ -829,12 +812,15 @@ test_independent()
 	string_ty	*project_name;
 	project_ty	*pp;
 	user_ty		*pup;
+	change_ty	*cp;
+	user_ty		*up;
 
 	trace(("test_independent()\n{\n"/*}*/));
 	project_name = 0;
 	automatic_flag = 0;
 	manual_flag = 0;
 	wl_zero(&wl);
+	arglex();
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -847,7 +833,11 @@ test_independent()
 			if (manual_flag)
 			{
 				duplicate:
-				fatal("duplicate %s option", arglex_value.alv_string);
+				fatal
+				(
+					"duplicate %s option",
+					arglex_value.alv_string
+				);
 			}
 			manual_flag = 1;
 			break;
@@ -889,9 +879,16 @@ test_independent()
 	if (wl.wl_nwords)
 	{
 		if (automatic_flag)
-			fatal("may not name files and use the -AUTOmatic option");
+		{
+			fatal
+			(
+			      "may not name files and use the -AUTOmatic option"
+			);
+		}
 		if (manual_flag)
+		{
 			fatal("may not name files and use the -MANual option");
+		}
 	}
 	else
 	{
@@ -911,6 +908,11 @@ test_independent()
 	str_free(project_name);
 	project_bind_existing(pp);
 	pup = user_symbolic(pp, project_owner(pp));
+
+	/*
+	 * locate user data
+	 */
+	up = user_executing(pp);
 
 	/*
 	 * grab some info
@@ -956,8 +958,6 @@ test_independent()
 	{
 		for (j = 0; j < pstate_data->src->length; ++j)
 		{
-			pstate_src	src_data;
-
 			src_data = pstate_data->src->list[j];
 			if
 			(
@@ -987,6 +987,16 @@ test_independent()
 	}
 
 	/*
+	 * create a fake change,
+	 * so can set environment variables 
+	 * for the test
+	 */
+	cp = change_alloc(pp, pstate_data->next_change_number);
+	change_bind_new(cp);
+	change_architecture_from_pconf(cp);
+	cp->bogus = 1;
+
+	/*
 	 * do each of the tests
 	 * (Logging is disabled, because there is no [logical] place
 	 * to put the log file; the user should redirect stdout and stderr.)
@@ -995,46 +1005,34 @@ test_independent()
 	nfailed = 0;
 	for (j = 0; j < wl.wl_nwords; ++j)
 	{
+		string_ty	*fn;
+		string_ty	*path;
+		int		inp;
 		int		result;
-		pstate_src	src_data;
-		int		flags;
 
-		src_data = project_src_find(pp, wl.wl_word[j]);
+		fn = wl.wl_word[j];
+		path = str_format("%S/%S", bl, fn);
+		src_data = project_src_find(pp, fn);
 		assert(src_data);
-		if (src_data->usage == file_usage_manual_test)
-			flags = OS_EXEC_FLAG_INPUT;
-		else
-			flags = OS_EXEC_FLAG_NO_INPUT;
-		project_become(pp);
-		result =
-			os_execute_retcode
-			(
-				src_data->file_name,
-				flags,
-				bl
-			);
-		os_become_undo();
+		inp = (src_data->usage == file_usage_manual_test);
+		result = change_run_test_command(cp, up, path, bl, inp);
+		str_free(path);
+
 		if (result)
 		{
-			project_verbose
-			(
-				pp,
-				"test \"%S\" failed",
-				src_data->file_name
-			);
+			project_verbose(pp, "test \"%S\" failed", fn);
 			++nfailed;
 		}
 		else
 		{
-			project_verbose
-			(
-				pp,
-				"test \"%S\" passed",
-				src_data->file_name
-			);
+			project_verbose(pp, "test \"%S\" passed", fn);
 			++npassed;
 		}
 	}
+
+	/*
+	 * verbose result message
+	 */
 	if (npassed)
 	{
 		project_verbose
@@ -1055,6 +1053,12 @@ test_independent()
 			((nfailed == 1) ? "" : "s")
 		);
 	}
+
+	/*
+	 * clean up and go home
+	 */
+	change_free(cp);
+	user_free(up);
 	project_free(pp);
 	user_free(pup);
 	trace((/*{*/"}\n"));

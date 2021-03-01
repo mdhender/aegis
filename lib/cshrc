@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991, 1992, 1993 Peter Miller.
+#	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -19,11 +19,11 @@
 #
 # MANIFEST: csh user config for aegis
 #
-setenv AEGIS $HOME/lib/aegis
-alias	aea	'aegis -a \!* -v'
+setenv AEGIS_PATH $HOME/lib/aegis
 alias	aeb	'aegis -b \!* -v'
 alias	aeca	'aegis -ca \!* -v'
 alias	aecd	'cd `aegis -cd \!* -v`'
+alias	aechown	'aegis -chown \!* -v'
 alias	aecp	'aegis -cp \!* -v'
 alias	aecpu	'aegis -cpu \!* -v'
 alias	aed	'aegis -diff \!* -v'
@@ -33,12 +33,13 @@ alias	aede	'aegis -de \!* -v'
 alias	aedeu	'aegis -deu \!* -v'
 alias	aedless	'less `find . -name "*,D" -print | sort`'
 alias	aedmore	'more `find . -name "*,D" -print | sort`'
-alias	aega	'aegis -ga \!* -v'
+alias	aedn	'aegis -dn \!* -v'
 alias	aeib	'aegis -ib \!* -v'
 alias	aeibu	'aegis -ibu \!* -v'
 alias	aeifail	'aegis -ifail \!* -v'
 alias	aeipass	'aegis -ipass \!* -v'
 alias	ael	'aegis -l \!* -v'
+alias	aem	'aegis -diff -only_merge \!* -v'
 alias	aemv	'aegis -mv \!* -v'
 alias	aena	'aegis -na \!* -v'
 alias	aenc	'aegis -nc \!* -v'
@@ -50,7 +51,10 @@ alias	aenpr	'aegis -npr \!* -v'
 alias	aenrls	'aegis -nrls \!* -v'
 alias	aenrv	'aegis -nrv \!* -v'
 alias	aent	'aegis -nt \!* -v'
+alias	aentu	'aegis -ntu \!* -v'
 alias	aepa	'aegis -pa \!* -v'
+alias	aeq	'aegis -q \!* -v'
+alias	aer	'aegis -rpt \!* -v'
 alias	aera	'aegis -ra \!* -v'
 alias	aerd	'aegis -rd \!* -v'
 alias	aerfail	'aegis -rfail \!* -v'
@@ -58,6 +62,7 @@ alias	aeri	'aegis -ri \!* -v'
 alias	aerm	'aegis -rm \!* -v'
 alias	aermu	'aegis -rmu \!* -v'
 alias	aerpass	'aegis -rpass \!* -v'
+alias	aerpu	'aegis -rpu \!* -v'
 alias	aermpr	'aegis -rmpr \!* -v'
 alias	aerrv	'aegis -rrv \!* -v'
 alias	aet	'aegis -t \!* -v'

@@ -129,6 +129,7 @@ done
 aegis: rlog -r /projects/example/history/Howto.cook,v | awk
         '/^head:/ {print $2}' > /tmp/aegis.15309
 \fI\&...lots of similar RCS output...\fP
+aegis: project "example": change 1: remove development directory
 aegis: sh /usr/local/lib/aegis/ip.sh example 1 pat robyn isa
 aegis: project "example": change 1: integrate pass
 isa%
@@ -138,6 +139,11 @@ All of the staff involved,
 will receive email to say that the change has been integrated.
 This notification is a shell script,
 so USENET could be usefully used instead.
+.PP
+You should note that the development directory has been deleted.
+It is expected that each development directory will only contain
+files necessary to develop the change.
+You should keep "precious" files somewhere else.
 .nh 3 "The Other Changes"
 .LP
 There is no difference to integrating any of the later changes.

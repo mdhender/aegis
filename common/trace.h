@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 #ifndef TRACE_H
 #define TRACE_H
 
-#include <stddef.h>
+#include <ac/stddef.h>
 
 #include <main.h>
 

@@ -29,8 +29,8 @@
 [
 .IR option ...
 ][
-]
 .I relative-path
+]
 .br
 .B \*(n)
 .B -Change_Directory
@@ -76,6 +76,25 @@ sh$	aecd(){cd `\*(n) -cd $* -v`}
 .fi
 .SH ERRORS
 It is an error if
-the specified change is not in a state where it has a directory to change to.
+the specified change is not in a state where it has a directory to
+change to.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aedb (1)
+begin development of a change
+.TP 8n
+.IR aeib (1)
+begin integration of a change
+.TP 8n
+.IR aerp (1)
+pass review of a change
+.TP 8n
+.IR aerf (1)
+fail review of a change
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

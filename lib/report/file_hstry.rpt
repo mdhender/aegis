@@ -1,0 +1,103 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1994 Peter Miller.
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * MANIFEST: report the history of files
+ */
+
+title("The File History Report", sprintf("Project \"%s\"", project_name()));
+columns
+(
+	{ name = "File Name\n-----------"; right = 0; },
+	{ name = ""; left = 2; width = 6; },
+	{ name = ""; width = 6; },
+	{ name = "Delta\n-----"; width = 5; },
+	{ name = "Time and Date\n-------------"; width = 13; },
+	{ name = "Change\n------"; width = 6; },
+	{ name = "Description\n-------------"; right = 0; }
+);
+auto ps;
+ps = project[project_name()].state;
+
+/*
+ * use the files named on the command line,
+ * or all project files if not specified
+ */
+auto file;
+if (count(arg) == 0)
+{
+	for (file in ps.src)
+		arg ##= file.file_name;
+}
+
+/*
+ * create an empty history for each file
+ */
+auto hist;
+for (file in arg)
+	hist[file] = [];
+
+/*
+ * scan all completed changes
+ * for any of the named files
+ */
+auto ph, cs, cf;
+for (ph in ps.history)
+{
+	cs = ps.change[ph.change_number];
+	for (cf in cs.src)
+	{
+		if (cf.file_name in arg)
+		{
+			if (cf.usage == build && cf.action == modify)
+				continue;
+			hist[cf.file_name] ##=
+				{
+					usage = cf.usage;
+					action = cf.action;
+					delta = ph.delta_number;
+					when = cs.history[count(cs.history) - 1].when;
+					change = ph.change_number;
+					description = cs.brief_description;
+				};
+		}
+	}
+}
+
+/*
+ * print the accumulated history
+ */
+auto fh;
+for (file in sort(keys(hist)))
+{
+	need(4);
+	print(file);
+	for (fh in hist[file])
+	{
+		print
+		(
+			"",
+			(fh.action == create ? fh.usage : ""),
+			fh.action,
+			sprintf("%4d", fh.delta),
+			fh.when,
+			sprintf("%4d", fh.change),
+			fh.description
+		);
+	}
+}

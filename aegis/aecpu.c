@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -17,12 +17,12 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * MANIFEST: copy files into a change, and undo
+ * MANIFEST: functions to impliment copy file undo
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include <ac/stdlib.h>
+#include <ac/unistd.h>
 
 #include <aecpu.h>
 #include <ael.h>
@@ -51,8 +51,18 @@ copy_file_undo_usage()
 	char		*progname;
 
 	progname = option_progname_get();
-	fprintf(stderr, "usage: %s -CoPy_file_Undo [ <option>... ] <filename>...\n", progname);
-	fprintf(stderr, "       %s -CoPy_file_Undo -List [ <option>... ]\n", progname);
+	fprintf
+	(
+		stderr,
+		"usage: %s -CoPy_file_Undo [ <option>... ] <filename>...\n",
+		progname
+	);
+	fprintf
+	(
+		stderr,
+		"       %s -CoPy_file_Undo -List [ <option>... ]\n",
+		progname
+	);
 	fprintf(stderr, "       %s -CoPy_file_Undo -Help\n", progname);
 	quit(1);
 }
@@ -65,133 +75,7 @@ copy_file_undo_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -CoPy_file_Undo - reverse action of aecp",
-"",
-"SYNOPSIS",
-"	%s -CoPy_file_Undo [ <option>... ] <filename>...",
-"	%s -CoPy_file_Undo -List [ <option>... ]",
-"	%s -CoPy_file_Undo -Help",
-"",
-"DESCRIPTION",
-"	The %s -CoPy_file_Undo command is used to remove a",
-"	file previously copied into a change.",
-"",
-"	The %s program will attempt to intuit the file names",
-"	intended.  All file names are stored within %s as",
-"	relative to the root of the baseline directory tree.  The",
-"	development directory and the integration directory are",
-"	shadows of the baseline directory, and so these relative",
-"	names aply there, too.	Files named on the command line",
-"	are first converted to absolute paths if necessary.  They",
-"	are then compared with the baseline path, and the",
-"	development directory path, and the integration directory",
-"	path, to determine a root-relative name.  It is an error",
-"	if the file named is outside one of these directory",
-"	trees.",
-"",
-"	The named files will be removed from the list of files in",
-"	the change.  The file is deleted from the development",
-"	directory unless the -Keep option is specified.  The -",
-"	Keep option should be used with great care, as you can",
-"	confuse tools such as make(1) by leaving these files in",
-"	place.",
-"",
-"	This command will cancel any build or test registrations,",
-"	because deleting a file logically invalidates them.  If the",
-"	config file was deleted, any diff registration will also be",
-"	cancelled.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-Change <number>",
-"		This option may be used to specify a particular",
-"		change within a project.  When no -Change option is",
-"		specified, the AEGIS_CHANGE environment variable is",
-"		consulted.  If that does not exist, the user's",
-"		$HOME/.aegisrc file is examined for a default change",
-"		field (see aeuconf(5) for more information).  If",
-"		that does not exist, when the user is only working",
-"		on one change within a project, that is the default",
-"		change number.  Otherwise, it is an error.",
-"",
-"	-Help",
-"		This option may be used to obtain more",
-"		information about how to use the %s program.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified, the",
-"		AEGIS_PROJECT environment variable is consulted.  If",
-"		that does not exist, the user's $HOME/.aegisrc file",
-"		is examined for a default project field (see",
-"		aeuconf(5) for more information).  If that does not",
-"		exist, when the user is only working on changes",
-"		within a single project, the project name defaults",
-"		to that project.  Otherwise, it is an error.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List",
-"		option this option causes column headings to be",
-"		added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aecpu '%s -cpu \\!* -v'",
-"	sh$	aecpu(){%s -cpu $* -v}",
-"",
-"ERRORS",
-"	It is an error if the change is not in the",
-"	'being_developed' state.",
-"	It is an error if the change is not assigned to the",
-"	current user.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.	The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aecpu.h>
 	};
 
 	help(text, SIZEOF(text), copy_file_undo_usage);
@@ -259,8 +143,6 @@ copy_file_undo_main()
 	int		j;
 	string_ty	*s1;
 	string_ty	*s2;
-	int		keep;
-	pconf		pconf_data;
 	string_ty	*project_name;
 	project_ty	*pp;
 	long		change_number;
@@ -269,13 +151,17 @@ copy_file_undo_main()
 	user_ty		*up;
 	int		config_seen;
 	string_ty	*config_name;
+	string_ty	*dd;
+	string_ty	*bl;
+	int		unchanged;
+	int		number_of_errors;
 
 	trace(("copy_file_undo_main()\n{\n"/*}*/));
 	wl_zero(&wl);
 	project_name = 0;
 	change_number = 0;
-	keep = 0;
 	nolog = 0;
+	unchanged = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -291,18 +177,21 @@ copy_file_undo_main()
 			os_become_undo();
 			str_free(s1);
 			if (wl_member(&wl, s2))
-				fatal("file \"%s\" named more than once", arglex_value.alv_string);
+			{
+				fatal
+				(
+					"file \"%s\" named more than once",
+					arglex_value.alv_string
+				);
+			}
 			wl_append(&wl, s2);
 			str_free(s2);
 			break;
 
 		case arglex_token_keep:
-			if (keep)
-			{
-				duplicate:
-				fatal("duplicate %s option", arglex_value.alv_string);
-			}
-			keep = 1;
+		case arglex_token_interactive:
+		case arglex_token_no_keep:
+			user_delete_file_argument();
 			break;
 
 		case arglex_token_change:
@@ -328,14 +217,27 @@ copy_file_undo_main()
 
 		case arglex_token_nolog:
 			if (nolog)
-				goto duplicate;
+			{
+				duplicate:
+				fatal
+				(
+					"duplicate %s option",
+					arglex_value.alv_string
+				);
+			}
 			nolog = 1;
+			break;
+
+		case arglex_token_unchanged:
+			if (unchanged)
+				goto duplicate;
+			unchanged = 1;
 			break;
 		}
 		arglex();
 	}
-	if (!wl.wl_nwords)
-		fatal("no files named");
+	if (!unchanged && !wl.wl_nwords)
+		fatal("no filenames specified");
 
 	/*
 	 * locate project data
@@ -366,22 +268,54 @@ copy_file_undo_main()
 	lock_take();
 	cstate_data = change_cstate_get(cp);
 	pstate_data = project_pstate_get(pp);
-	pconf_data = change_pconf_get(cp);
 
 	/*
 	 * It is an error if the change is not in the in_development state.
 	 * It is an error if the change is not assigned to the current user.
 	 */
 	if (cstate_data->state != cstate_state_being_developed)
-		change_fatal(cp, "not in 'being_developed' state");
+	{
+		change_fatal
+		(
+			cp,
+"this change is in the '%s' state, it must be in the \
+'being developed' state to be able to remove a copied file from it",
+			cstate_state_ename(cstate_data->state)
+		);
+	}
 	if (!str_equal(change_developer_name(cp), user_name(up)))
 	{
 		change_fatal
 		(
 			cp,
-			"user \"%S\" is not the developer",
-			user_name(up)
+   "user \"%S\" is not the developer, only user \"%S\" may work on this change",
+			user_name(up),
+			change_developer_name(cp)
 		);
+	}
+
+	/*
+	 * If no files were named and the -unchanged option was used,
+	 * add all of the modified files in the change.
+	 * It is an error if there are none.
+	 */
+	dd = change_development_directory_get(cp, 1);
+	if (!wl.wl_nwords)
+	{
+		assert(unchanged);
+		for (j = 0; j < cstate_data->src->length; ++j)
+		{
+			cstate_src	src;
+
+			src = cstate_data->src->list[j];
+			if (src->action != file_action_modify)
+				continue;
+			s1 = str_format("%S/%S", dd, src->file_name);
+			wl_append(&wl, s1);
+			str_free(s1);
+		}
+		if (!wl.wl_nwords)
+			change_fatal(cp, "no files being modified");
 	}
 
 	/*
@@ -393,13 +327,14 @@ copy_file_undo_main()
 	 */
 	config_seen = 0;
 	config_name = str_from_c(THE_CONFIG_FILE);
+	bl = project_baseline_path_get(pp, 1);
 	for (j = 0; j < wl.wl_nwords; ++j)
 	{
 		s1 = wl.wl_word[j];
 		assert(s1->str_text[0] == '/');
-		s2 = os_below_dir(change_development_directory_get(cp, 1), s1);
+		s2 = os_below_dir(dd, s1);
 		if (!s2)
-			s2 = os_below_dir(project_baseline_path_get(pp, 1), s1);
+			s2 = os_below_dir(bl, s1);
 		if (!s2)
 			change_fatal(cp, "path \"%S\" unrelated", s1);
 		str_free(s1);
@@ -414,6 +349,7 @@ copy_file_undo_main()
 	 * 1. is already part of the change
 	 * 2. is being modified by this change
 	 */
+	number_of_errors = 0;
 	for (j = 0; j < wl.wl_nwords; ++j)
 	{
 		cstate_src	src_data;
@@ -421,11 +357,53 @@ copy_file_undo_main()
 		s1 = wl.wl_word[j];
 		src_data = change_src_find(cp, s1);
 		if (!src_data)
-			change_fatal(cp, "file \"%S\" not in change", s1);
+		{
+			src_data = change_src_find_fuzzy(cp, s1);
+			if (src_data)
+			{
+				change_error
+				(
+					cp,
+		       "file \"%S\" not in change, closest was the \"%S\" file",
+					s1,
+					src_data->file_name
+				);
+			}
+			else
+			{
+				change_error
+				(
+					cp,
+					"file \"%S\" not in change",
+					s1
+				);
+			}
+			++number_of_errors;
+			continue;
+		}
 		if (src_data->action != file_action_modify)
-			change_fatal(cp, "file \"%S\" is not -CoPy_file", s1);
+		{
+			change_error
+			(
+				cp,
+		    "file \"%S\" was not added to this change using -CoPy_file",
+				s1
+			);
+			++number_of_errors;
+			continue;
+		}
 		if (config_seen)
 			src_data->diff_time = 0;
+	}
+	if (number_of_errors)
+	{
+		change_fatal
+		(
+			cp,
+			"found %d fatal error%s, no copied files removed",
+			number_of_errors,
+			(number_of_errors == 1 ? "" : "s")
+		);
 	}
 
 	/*
@@ -433,43 +411,74 @@ copy_file_undo_main()
 	 * if it still exists.
 	 * Remove the difference file, too.
 	 */
-	if (!keep)
+	for (j = 0; j < wl.wl_nwords; ++j)
 	{
-		string_ty	*dd;
+		int		exists;
 
-		dd = change_development_directory_get(cp, 1);
+		s1 = wl.wl_word[j];
+		s2 = str_format("%S/%S", dd, s1);
 		user_become(up);
-		for (j = 0; j < wl.wl_nwords; ++j)
-		{
-			s1 = wl.wl_word[j];
-			s2 = str_format("%S/%S", dd, s1);
-			if (os_exists(s2))
-				commit_unlink_errok(s2);
-			str_free(s2);
-
-			s2 = str_format("%S/%S,D", dd, s1);
-			if (os_exists(s2))
-				commit_unlink_errok(s2);
-			str_free(s2);
-		}
+		exists = os_exists(s2);
 		user_become_undo();
+
+		/*
+		 * skip the changed files
+		 * if the user asked us to work on unchanged files
+		 */
+		if (unchanged && exists)
+		{
+			string_ty	*blf;
+			int		different;
+
+			blf = str_format("%S/%S", bl, s1);
+			user_become(up);
+			different = files_are_different(s2, blf);
+			user_become_undo();
+			str_free(blf);
+			if (different)
+			{
+				wl_delete(&wl, s1);
+				--j;
+				str_free(s2);
+				continue;
+			}
+		}
+
+		/*
+		 * delete the file if it exists
+		 * and the users wants us to
+		 */
+		if (exists && user_delete_file_query(up, s1, 0))
+		{
+			user_become(up);
+			commit_unlink_errok(s2);
+			user_become_undo();
+		}
+		str_free(s2);
+
+		/*
+		 * always delete the difference file
+		 */
+		s2 = str_format("%S/%S,D", dd, s1);
+		user_become(up);
+		if (os_exists(s2))
+			commit_unlink_errok(s2);
+		user_become_undo();
+		str_free(s2);
 	}
 
 	/*
-	 * Remove each file to the change file,
+	 * Remove each file from the change file,
 	 * and write it back out.
 	 */
 	for (j = 0; j < wl.wl_nwords; ++j)
 		change_src_remove(cp, wl.wl_word[j]);
 
 	/*
-	 * the number of files changed, or the version did,
+	 * the number of files changed,
 	 * so stomp on the validation fields.
 	 */
-	cstate_data->build_time = 0;
-	cstate_data->test_time = 0;
-	cstate_data->test_baseline_time = 0;
-	cstate_data->regression_test_time = 0;
+	change_build_times_clear(cp);
 
 	/*
 	 * release the locks
@@ -482,13 +491,20 @@ copy_file_undo_main()
 	 * verbose success message
 	 */
 	for (j = 0; j < wl.wl_nwords; ++j)
-		change_verbose(cp, "file \"%S\" copy file undo", wl.wl_word[j]);
+	{
+		change_verbose
+		(
+			cp,
+			"file \"%S\" no longer in change",
+			wl.wl_word[j]
+		);
+	}
 
 	/*
 	 * run the change file command
 	 */
 	if (!nolog)
-		log_open(change_logfile_get(cp), up);
+		log_open(change_logfile_get(cp), up, log_style_append);
 	change_run_change_file_command(cp, &wl, up);
 	wl_free(&wl);
 	project_free(pp);

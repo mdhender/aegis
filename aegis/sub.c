@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,8 @@
 #include <arglex.h>
 #include <change.h>
 #include <error.h>
+#include <file.h>
+#include <gonzo.h>
 #include <mem.h>
 #include <option.h>
 #include <os.h>
@@ -32,6 +34,7 @@
 #include <sub.h>
 #include <trace.h>
 #include <word.h>
+
 
 typedef string_ty *(*fp)_((wlist *));
 
@@ -172,11 +175,18 @@ sub_baseline(arg)
 	wlist		*arg;
 {
 	string_ty	*result;
+	cstate		cstate_data;
 
 	trace(("sub_baseline()\n{\n"/*}*/));
+	cstate_data = change_cstate_get(cp);
 	if (arg->wl_nwords != 1)
 	{
 		suberr = "requires zero arguments";
+		result = 0;
+	}
+	else if (cstate_data->state != cstate_state_being_developed)
+	{
+		suberr = "not meaningful in current state";
 		result = 0;
 	}
 	else
@@ -291,13 +301,87 @@ sub_change(arg)
 	string_ty	*result;
 
 	trace(("sub_change()\n{\n"/*}*/));
+	result = 0;
 	if (arg->wl_nwords != 1)
-	{
 		suberr = "requires zero arguments";
-		result = 0;
-	}
+	else if (cp->bogus)
+		suberr = "not meaningful in current context";
 	else
 		result = str_format("%ld", cp->number);
+	trace(("return \"%s\";\n", result ? result->str_text : suberr));
+	trace((/*{*/"}\n"));
+	return result;
+}
+
+
+/*
+ * NAME
+ *	sub_copyright_years - the change substitution
+ *
+ * SYNOPSIS
+ *	string_ty *sub_copyright_years(wlist *arg);
+ *
+ * DESCRIPTION
+ *	The sub_copyright_years function implements the change
+ *	substitution.  The copyright_years substitution is replaced by
+ *	the range of copyright years in the projects state, and
+ *	maintained at integrate begin time.  Do not use this to insert
+ *	into new files, it is not guaranteed to be up-to-date until the
+ *	integrate build, use ${date %Y} instead.
+ *
+ * ARGUMENTS
+ *	arg	- list of arguments, including the function name as [0]
+ *
+ * RETURNS
+ *	a pointer to a string in dynamic memory;
+ *	or NULL on error, setting suberr appropriately.
+ */
+
+static string_ty *sub_copyright_years _((wlist *));
+
+static string_ty *
+sub_copyright_years(arg)
+	wlist		*arg;
+{
+	string_ty	*result;
+
+	trace(("sub_copyright_years()\n{\n"/*}*/));
+	result = 0;
+	if (arg->wl_nwords != 1)
+		suberr = "requires zero arguments";
+	else if (cp->bogus)
+		suberr = "not meaningful in current context";
+	else
+	{
+		pstate		pstate_data;
+
+		pstate_data = project_pstate_get(cp->pp);
+		if
+		(
+			!pstate_data->copyright_years
+		||
+			!pstate_data->copyright_years->length
+		)
+			result = str_from_c("");
+		else
+		{
+			pstate_copyright_years_list cylp;
+			wlist		wl;
+			size_t		j;
+			string_ty	*s;
+
+			cylp = pstate_data->copyright_years;
+			wl_zero(&wl);
+			for (j = 0; j < cylp->length; ++j)
+			{
+				s = str_format("%ld", cylp->list[j]);
+				wl_append(&wl, s);
+				str_free(s);
+			}
+			result = wl2str(&wl, 0, wl.wl_nwords, ", ");
+			wl_free(&wl);
+		}
+	}
 	trace(("return \"%s\";\n", result ? result->str_text : suberr));
 	trace((/*{*/"}\n"));
 	return result;
@@ -339,10 +423,10 @@ sub_date(arg)
 	time(&now);
 	if (arg->wl_nwords < 2)
 	{
-		char	*cp;
+		char	*time_string;
 
-		cp = ctime(&now);
-		result = str_n_from_c(cp, 24);
+		time_string = ctime(&now);
+		result = str_n_from_c(time_string, 24);
 	}
 	else
 	{
@@ -350,9 +434,8 @@ sub_date(arg)
 		char		buf[1000];
 		size_t		nbytes;
 		string_ty	*fmt;
-		extern size_t strftime _((char *, size_t, char *, struct tm *));
 
-		fmt = wl2str(arg, 1, 32767);
+		fmt = wl2str(arg, 1, 32767, (char *)0);
 		tm = localtime(&now);
 		nbytes = strftime(buf, sizeof(buf) - 1, fmt->str_text, tm);
 		if (!nbytes && fmt->str_length)
@@ -480,9 +563,9 @@ sub_developer(arg)
  *	string_ty *sub_developer_list(wlist *arg);
  *
  * DESCRIPTION
- *	The sub_developer_list function implements the developer_list substitution.
- *	The developer_list substitution is replaced by a space separated list
- *	of the project's developers.
+ *	The sub_developer_list function implements the developer_list
+ *	substitution.  The developer_list substitution is replaced by a
+ *	space separated list of the project's developers.
  *
  * ARGUMENTS
  *	arg	- list of arguments, including the function name as [0]
@@ -560,9 +643,10 @@ sub_developer_list(arg)
  *	string_ty *sub_development_directory(wlist *arg);
  *
  * DESCRIPTION
- *	The sub_development_directory function implements the development_directory substitution.
- *	The development_directory substitution is used to insert the absolute path
- *	of the development_directory.
+ *	The sub_development_directory function implements the
+ *	development_directory substitution.  The development_directory
+ *	substitution is used to insert the absolute path of the
+ *	development_directory.
  *
  * ARGUMENTS
  *	arg	- list of arguments, including the function name as [0]
@@ -778,9 +862,10 @@ sub_identifier(arg)
  *	string_ty *sub_integration_directory(wlist *arg);
  *
  * DESCRIPTION
- *	The sub_integration_directory function implements the integration_directory substitution.
- *	The integration_directory substitution is used to insert the absolute path
- *	of the integration_directory.
+ *      The sub_integration_directory function implements the
+ *	integration_directory substitution.  The integration_directory
+ *	substitution is used to insert the absolute path of the
+ *	integration_directory.
  *
  * ARGUMENTS
  *	arg	- list of arguments, including the function name as [0]
@@ -881,9 +966,9 @@ sub_integrator(arg)
  *	string_ty *sub_integrator_list(wlist *arg);
  *
  * DESCRIPTION
- *	The sub_integrator_list function implements the integrator_list substitution.
- *	The integrator_list substitution is replaced by a space separated list
- *	of the project's integrators.
+ *	The sub_integrator_list function implements the integrator_list
+ *	substitution.  The integrator_list substitution is replaced by
+ *	a space separated list of the project's integrators.
  *
  * ARGUMENTS
  *	arg	- list of arguments, including the function name as [0]
@@ -955,6 +1040,48 @@ sub_integrator_list(arg)
 
 /*
  * NAME
+ *	sub_library - the library substitution
+ *
+ * SYNOPSIS
+ *	string_ty *sub_library(wlist *arg);
+ *
+ * DESCRIPTION
+ *	The sub_library function implements the library substitution.
+ *	The library substitution is replaced by the absolute path of
+ *	aegis' library directory.
+ *
+ * ARGUMENTS
+ *	arg	- list of arguments, including the function name as [0]
+ *
+ * RETURNS
+ *	a pointer to a string in dynamic memory;
+ *	or NULL on error, setting suberr appropriately.
+ */
+
+static string_ty *sub_library _((wlist *));
+
+static string_ty *
+sub_library(arg)
+	wlist		*arg;
+{
+	string_ty	*result;
+
+	trace(("sub_library()\n{\n"/*}*/));
+	if (arg->wl_nwords != 1)
+	{
+		suberr = "requires zero arguments";
+		result = 0;
+	}
+	else
+		result = str_from_c(gonzo_library_path());
+	trace(("return \"%s\";\n", result ? result->str_text : suberr));
+	trace((/*{*/"}\n"));
+	return result;
+}
+
+
+/*
+ * NAME
  *	sub_project - the project substitution
  *
  * SYNOPSIS
@@ -988,6 +1115,61 @@ sub_project(arg)
 	}
 	else
 		result = str_copy(project_name_get(pp));
+	trace(("return \"%s\";\n", result ? result->str_text : suberr));
+	trace((/*{*/"}\n"));
+	return result;
+}
+
+
+/*
+ * NAME
+ *	sub_read_file - the read_file substitution
+ *
+ * SYNOPSIS
+ *	string_ty *sub_read_file(wlist *arg);
+ *
+ * DESCRIPTION
+ *	The sub_read_file function implements the read_file substitution.
+ *	The read_file substitution is replaced by the contents of the
+ *	named file.  An absolute path must be supplied.
+ *
+ * ARGUMENTS
+ *	arg	- list of arguments, including the function name as [0]
+ *
+ * RETURNS
+ *	a pointer to a string in dynamic memory;
+ *	or NULL on error, setting suberr appropriately.
+ */
+
+static string_ty *sub_read_file _((wlist *arg));
+
+static string_ty *
+sub_read_file(arg)
+	wlist		*arg;
+{
+	string_ty	*result;
+
+	trace(("sub_read_file()\n{\n"/*}*/));
+	assert(cp);
+	if (arg->wl_nwords != 2)
+	{
+		suberr = "requires one argument";
+		result = 0;
+	}
+	else
+	{
+		if (arg->wl_word[1]->str_text[0] != '/')
+		{
+			suberr = "absolute path required";
+			result = 0;
+		}
+		else
+		{
+			change_become(cp);
+			result = read_whole_file(arg->wl_word[1]->str_text);
+			change_become_undo();
+		}
+	}
 	trace(("return \"%s\";\n", result ? result->str_text : suberr));
 	trace((/*{*/"}\n"));
 	return result;
@@ -1055,9 +1237,9 @@ sub_reviewer(arg)
  *	string_ty *sub_reviewer_list(wlist *arg);
  *
  * DESCRIPTION
- *	The sub_reviewer_list function implements the reviewer_list substitution.
- *	The reviewer_list substitution is replaced by a space separated list
- *	of the project's reviewers.
+ *	The sub_reviewer_list function implements the reviewer_list
+ *	substitution.  The reviewer_list substitution is replaced by a
+ *	space separated list of the project's reviewers.
  *
  * ARGUMENTS
  *	arg	- list of arguments, including the function name as [0]
@@ -1129,6 +1311,48 @@ sub_reviewer_list(arg)
 
 /*
  * NAME
+ *	sub_shell - the shell substitution
+ *
+ * SYNOPSIS
+ *	string_ty *sub_shell(wlist *arg);
+ *
+ * DESCRIPTION
+ *      The sub_shell function implements the shell substitution.
+ *      The shell substitution is replaced by the absolute path of a
+ *	Bourne shell which understands functions.
+ *
+ *	Requires exactly zero arguments.
+ *
+ * ARGUMENTS
+ *	arg	- list of arguments, including the function name as [0]
+ *
+ * RETURNS
+ *	a pointer to a string in dynamic memory;
+ *	or NULL on error, setting suberr appropriately.
+ */
+
+static string_ty *sub_shell _((wlist *arg));
+
+static string_ty *
+sub_shell(arg)
+	wlist		*arg;
+{
+	string_ty	*result;
+
+	trace(("sub_shell()\n{\n"/*}*/));
+	result = 0;
+	if (arg->wl_nwords != 1)
+		suberr = "requires zero arguments";
+	else
+		result = str_from_c(os_shell());
+	trace(("return \"%s\";\n", result ? result->str_text : suberr));
+	trace((/*{*/"}\n"));
+	return result;
+}
+
+
+/*
+ * NAME
  *	sub_source - the source substitution
  *
  * SYNOPSIS
@@ -1161,68 +1385,156 @@ sub_source(arg)
 {
 	string_ty	*result;
 	cstate		cstate_data;
+	int		absolute;
+	string_ty	*fn;
+	int		being_integrated;
+	int		completed;
+	string_ty	*dir;
 
 	trace(("sub_source()\n{\n"/*}*/));
-	cstate_data = change_cstate_get(cp);
-	if (arg->wl_nwords != 2)
+	absolute = 0;
+	result = 0;
+	switch (arg->wl_nwords)
 	{
+	default:
 		suberr = "requires one argument";
-		result = 0;
+		goto done;
+
+	case 2:
+		break;
+
+	case 3:
+		dir = arg->wl_word[2];
+		if (arglex_compare("Relative", dir->str_text))
+			break;
+		if (arglex_compare("Absolute", dir->str_text))
+		{
+			absolute = 1;
+			break;
+		}
+		suberr = "second argument must be \"Absolute\" or \"Relative\"";
+		goto done;
+		break;
 	}
-	else if (cstate_data->state == cstate_state_awaiting_development)
+
+	/*
+	 * make sure we are in an appropriate state
+	 */
+	cstate_data = change_cstate_get(cp);
+	if (cstate_data->state == cstate_state_awaiting_development)
 	{
 		suberr = "not meaningful in current state";
-		result = 0;
+		goto done;
+	}
+	being_integrated =
+		(cstate_data->state == cstate_state_being_integrated);
+	completed = (cstate_data->state == cstate_state_completed);
+
+	/*
+	 * Make sure the named file exists
+	 * either in the change or in the project.
+	 */
+	fn = arg->wl_word[1];
+	dir = 0;
+	if (completed || !change_src_find(cp, fn))
+	{
+		if (!project_src_find(cp->pp, fn))
+		{
+			suberr = "source file unknown";
+			goto done;
+		}
+
+		/*
+		 * if the project is is the 'being developed' state,
+		 * need to qualify the file name with the baseline
+		 * directory name.
+		 *
+		 * If the change is in the 'being integrated' state,
+		 * don't do anything, as files in the project AND
+		 * files in the change are below the current
+		 * directory.
+		 */
+		if (!being_integrated)
+			dir = project_baseline_path_get(cp->pp, 0);
+		else
+		{
+			if (absolute)
+				dir = change_integration_directory_get(cp, 0);
+		}
 	}
 	else
 	{
 		/*
-		 * Make sure the named file exists
-		 * either in the change or in the project.
+		 * the file is in the change
 		 */
-		if (!change_src_find(cp, arg->wl_word[1]))
+		if (absolute)
 		{
-			if (project_src_find(cp->pp, arg->wl_word[1]))
-			{
-				/*
-				 * if the project is is the 'being
-				 * developed' state, need to qualify
-				 * the file name with the baseline
-				 * directory name.
-				 *
-				 * If the change is in the 'being
-				 * integrated' state, don't do
-				 * anything, as files in the
-				 * project AND files in the change
-				 * are below the current directory.
-				 */
-				if
-				(
-					cstate_data->state
-				<
-					cstate_state_being_integrated
-				)
-				{
-					result =
-						str_format
-						(
-							"%S/%S",
-					project_baseline_path_get(cp->pp, 0),
-							arg->wl_word[1]
-						);
-				}
-				else
-					result = str_copy(arg->wl_word[1]);
-			}
+			if (being_integrated)
+				dir = change_integration_directory_get(cp, 0);
 			else
-			{
-				suberr = "source file unknown";
-				result = 0;
-			}
+				dir = change_development_directory_get(cp, 0);
 		}
-		else
-			result = str_copy(arg->wl_word[1]);
 	}
+
+	/*
+	 * build the result
+	 */
+	if (dir)
+		result = str_format("%S/%S", dir, fn);
+	else
+		result = str_copy(fn);
+
+	/*
+	 * here for all exits
+	 */
+	done:
+	trace(("return \"%s\";\n", result ? result->str_text : suberr));
+	trace((/*{*/"}\n"));
+	return result;
+}
+
+
+/*
+ * NAME
+ *	sub_architecture - the architecture substitution
+ *
+ * SYNOPSIS
+ *	string_ty *sub_architecture(wlist *arg);
+ *
+ * DESCRIPTION
+ *	The sub_architecture function implements the architecture
+ *	substitution.  The architecture substitution is replaced by the
+ *	architecture variant pattern appropriate for the current
+ *	execution environment.  Requires no arguments.
+ *
+ * ARGUMENTS
+ *	arg	- list of arguments, including the function name as [0]
+ *
+ * RETURNS
+ *	a pointer to a string in dynamic memory;
+ *	or NULL on error, setting suberr appropriately.
+ */
+
+static string_ty *sub_architecture _((wlist *arg));
+
+static string_ty *
+sub_architecture(arg)
+	wlist		*arg;
+{
+	string_ty	*result;
+
+	trace(("sub_architecture()\n{\n"/*}*/));
+	if (arg->wl_nwords > 1)
+	{
+		suberr = "requires zero arguments";
+		result = 0;
+	}
+	else
+		result = str_copy(change_architecture_name(cp));
+
+	/*
+	 * here for all exits
+	 */
 	trace(("return \"%s\";\n", result ? result->str_text : suberr));
 	trace((/*{*/"}\n"));
 	return result;
@@ -1314,16 +1626,16 @@ sub_version(arg)
 
 	trace(("sub_version()\n{\n"/*}*/));
 	assert(cp);
+	result = 0;
 	if (arg->wl_nwords != 1)
-	{
 		suberr = "requires zero arguments";
-		result = 0;
-	}
 	else
 	{
 		pstate_data = project_pstate_get(pp);
 		cstate_data = change_cstate_get(cp);
-		if (cstate_data->state < cstate_state_being_integrated)
+		if (cp->bogus)
+			suberr = "not meaningful in current context";
+		else if (cstate_data->state < cstate_state_being_integrated)
 		{
 			result =
 				str_format
@@ -1355,9 +1667,11 @@ sub_version(arg)
 static table_ty	table[] =
 {
 	{ "Administrator_List",		sub_administrator_list,		},
+	{ "ARCHitecture",		sub_architecture,		},
 	{ "BaseLine",			sub_baseline,			},
 	{ "Basename",			sub_basename,			},
 	{ "Change",			sub_change,			},
+	{ "Copyright_Years",		sub_copyright_years,		},
 	{ "DAte",			sub_date,			},
 	{ "DELta",			sub_delta,			},
 	{ "DEVeloper",			sub_developer,			},
@@ -1366,6 +1680,7 @@ static table_ty	table[] =
 	{ "Dirname",			sub_dirname,			},
 	{ "DownCase",			sub_downcase,			},
 	/* Edit								*/
+	/* File_List							*/
 	/* File_Name							*/
 	/* History							*/
 	/* Input							*/
@@ -1373,13 +1688,17 @@ static table_ty	table[] =
 	{ "INTegration_Directory",	sub_integration_directory,	},
 	{ "INTegrator",			sub_integrator,			},
 	{ "INTegrator_List",		sub_integrator_list,		},
+	{ "LIBrary",			sub_library,			},
 	/* Most_Recent							*/
 	/* Output							*/
 	/* ORiginal							*/
 	{ "Project",			sub_project,			},
+	{ "Read_File",			sub_read_file,			},
 	{ "Reviewer",			sub_reviewer,			},
 	{ "Reviewer_List",		sub_reviewer_list,		},
+	{ "SHell",			sub_shell,			},
 	{ "Source",			sub_source,			},
+	{ "UName", /* undocumented */	sub_architecture,		},
 	{ "UpCase",			sub_upcase,			},
 	{ "Version",			sub_version,			},
 };
@@ -1561,7 +1880,7 @@ execute(arg)
 	{
 		string_ty	*s2;
 
-		s2 = wl2str(arg, 0, 32767);
+		s2 = wl2str(arg, 0, 32767, (char *)0);
 		fatal
 		(
 			"substitution ${%s} failed: %s",
@@ -1679,10 +1998,7 @@ collect(c)
 	if (collect_pos >= collect_size)
 	{
 		collect_size += (1L << 10);
-		if (!collect_buf)
-			collect_buf = mem_alloc(collect_size);
-		else
-			mem_change_size(&collect_buf, collect_size);
+		collect_buf = mem_change_size(collect_buf, collect_size);
 	}
 	collect_buf[collect_pos++] = c;
 }
@@ -2091,7 +2407,7 @@ substitute(acp, s)
 		if (pos >= buflen)
 		{
 			buflen += (1L << 10);
-			mem_change_size(&buffer, buflen);
+			buffer = mem_change_size(buffer, buflen);
 		}
 
 		/*
@@ -2179,9 +2495,9 @@ sub_var_set(name, fmt sva_last)
 		sub_var_size += 10;
 		nbytes = sub_var_size * sizeof(table_ty);
 		if (!sub_var_list)
-			sub_var_list = (table_ty *)mem_alloc(nbytes);
+			sub_var_list = mem_alloc(nbytes);
 		else
-			mem_change_size((char **)&sub_var_list, nbytes);
+			sub_var_list = mem_change_size(sub_var_list, nbytes);
 	}
 	svp = &sub_var_list[sub_var_pos++];
 	svp->name = name;

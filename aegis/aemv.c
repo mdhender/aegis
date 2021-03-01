@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1993 Peter Miller.
+ *	Copyright (C) 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * MANIFEST: functions to manipulate mvs
+ * MANIFEST: functions to implement move file
  */
 
 #include <stdio.h>
@@ -36,6 +36,7 @@
 #include <os.h>
 #include <project.h>
 #include <trace.h>
+#include <undo.h>
 #include <user.h>
 #include <word.h>
 
@@ -72,138 +73,7 @@ move_file_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	aegis -MoVe_file - copy a file into a change",
-"",
-"SYNOPSIS",
-"	aegis -MoVe_file [ <option>... ] <old-name> <new-name>",
-"	aegis -MoVe_file -List [ <option>... ]",
-"	aegis -MoVe_file -Help",
-"",
-"DESCRIPTION",
-"	The aegis -MoVe_file command is used to copy a file into",
-"	a change, while changing its name at the same time.",
-"",
-"	The aegis program will attempt to determine the project",
-"	file names from the file names given on the command line.",
-"	All file names are stored within aegis projects as",
-"	relative to the root of the baseline directory tree.  The",
-"	development directory and the integration directory are",
-"	shadows of this baseline directory, and so these relative",
-"	names apply here, too.  Files named on the command line",
-"	are first converted to absolute paths if necessary.  They",
-"	are then compared with the baseline path, the development",
-"	directory path, and the integration directory path, to",
-"	determine a baseline-relative name.  It is an error if",
-"	the file named is outside one of these directory trees.",
-"",
-"	The named files will be copied from the baseline (old-",
-"	file) into the development directory (new-file), and",
-"	added to the list of files in the change.",
-"",
-"	This command will cancel any build or test registrations,",
-"	because adding another file logically invalidates them.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-Change <number>",
-"		This option may be used to specify a particular",
-"		change within a project.  When no -Change option",
-"		is specified, the AEGIS_CHANGE environment",
-"		variable is consulted.  If that does not exist,",
-"		the user's $HOME/.aegisrc file is examined for a",
-"		default change field (see aeuconf(5) for more",
-"		information).  If that does not exist, when the",
-"		user is only working on one change within a",
-"		project, that is the default change number.",
-"		Otherwise, it is an error.",
-"",
-"	-Help",
-"		This option may be used to obtain more",
-"		information about how to use the aegis program.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-Not_Logging",
-"		This option may be used to disable the automatic",
-"		logging of output and errors to a file.  This is",
-"		often useful when several aegis commands are",
-"		combined in a shell script.",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified,",
-"		the AEGIS_PROJECT environment variable is",
-"		consulted.  If that does not exist, the user's",
-"		$HOME/.aegisrc file is examined for a default",
-"		project field (see aeuconf(5) for more",
-"		information).  If that does not exist, when the",
-"		user is only working on changes within a single",
-"		project, the project name defaults to that",
-"		project.  Otherwise, it is an error.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause aegis to produce",
-"		more output.  By default aegis only produces",
-"		output on errors.  When used with the -List",
-"		option this option causes column headings to be",
-"		added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aemv 'aegis -mv \\!* -v'",
-"	sh$	aemv(){aegis -mv $* -v}",
-"",
-"ERRORS",
-"	It is an error if the change is not in the being",
-"	developed state.",
-"	It is an error if the change is not assigned to the",
-"	current user.",
-"	It is an error if either file is already in the change.",
-"",
-"EXIT STATUS",
-"	The aegis command will exit with a status of 1 on any",
-"	error.  The aegis command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aemv.h>
 	};
 
 	help(text, SIZEOF(text), move_file_usage);
@@ -274,7 +144,6 @@ move_file_main()
 	cstate		cstate_data;
 	pstate		pstate_data;
 	wlist		wl;
-	pconf		pconf_data;
 	string_ty	*project_name;
 	project_ty	*pp;
 	long		change_number;
@@ -383,21 +252,29 @@ move_file_main()
 	lock_take();
 	cstate_data = change_cstate_get(cp);
 	pstate_data = project_pstate_get(pp);
-	pconf_data = change_pconf_get(cp);
 
 	/*
 	 * It is an error if the change is not in the in_development state.
 	 * It is an error if the change is not assigned to the current user.
 	 */
 	if (cstate_data->state != cstate_state_being_developed)
-		change_fatal(cp, "not in 'being_developed' state");
+	{
+		change_fatal
+		(
+			cp,
+"this change is in the '%s' state, \
+it must be in the 'being developed' state to rename files with it",
+			cstate_state_ename(cstate_data->state)
+		);
+	}
 	if (!str_equal(change_developer_name(cp), user_name(up)))
 	{
 		change_fatal
 		(
 			cp,
-			"user \"%S\" is not the developer",
-			user_name(up)
+       "user \"%S\" is not the developer, only user \"%S\" may add a file move",
+			user_name(up),
+			change_developer_name(cp)
 		);
 	}
 
@@ -464,7 +341,21 @@ move_file_main()
 	||
 		p_src_data->deleted_by
 	)
-		project_fatal(pp, "file \"%S\" unknown", old_name);
+	{
+		p_src_data = project_src_find_fuzzy(pp, old_name);
+		if (p_src_data)
+		{
+			project_fatal
+			(
+				pp,
+			     "file \"%S\" unknown, closest was the \"%S\" file",
+				old_name,
+				p_src_data->file_name
+			);
+		}
+		else
+			project_fatal(pp, "file \"%S\" unknown", old_name);
+	}
 	if
 	(
 		p_src_data->usage == file_usage_test
@@ -506,7 +397,17 @@ move_file_main()
 	to = str_format("%S/%S", dd, new_name);
 	user_become(up);
 	os_mkdir_between(dd, new_name, 02755);
+	undo_unlink_errok(to);
+	if (os_exists(to))
+		os_unlink(to);
 	copy_whole_file(from, to, 0);
+	str_free(from);
+	os_mkdir_between(dd, old_name, 02755);
+	from = str_format("%S/%S", dd, old_name);
+	undo_unlink_errok(from);
+	if (os_exists(from))
+		os_unlink(from);
+	os_junkfile(from, 0644 & ~change_umask(cp));
 	user_become_undo();
 	str_free(from);
 	str_free(to);
@@ -533,10 +434,7 @@ move_file_main()
 	 * the number of files changed,
 	 * so stomp on the validation fields.
 	 */
-	cstate_data->build_time = 0;
-	cstate_data->test_time = 0;
-	cstate_data->test_baseline_time = 0;
-	cstate_data->regression_test_time = 0;
+	change_build_times_clear(cp);
 
 	/*
 	 * release the locks
@@ -554,7 +452,7 @@ move_file_main()
 	 * run the change file command
 	 */
 	if (!nolog)
-		log_open(change_logfile_get(cp), up);
+		log_open(change_logfile_get(cp), up, log_style_append);
 	wl_zero(&wl);
 	wl_append(&wl, old_name);
 	wl_append(&wl, new_name);

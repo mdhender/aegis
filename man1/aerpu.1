@@ -47,8 +47,11 @@ The
 command is used to
 notify \*(n) that a change review pass has been rescinded.
 .PP
-The change will be moved from the 'awaiting_integration' state
-to the 'being_reviewed' state.
+The change will be moved from the
+.I "awaiting integration"
+state to the
+.I "being reviewed"
+state.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so
@@ -67,9 +70,20 @@ sh$	aerpu(){\*(n) -rp $* -v}
 .fi
 .SH ERRORS
 It is an error if
-the change is not in the 'awaiting_integration' state.
+the change is not in the
+.I "awaiting integration"
+state.
 .br
 It is an error if
 the current user is not the reviewer of the change.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aerp (1)
+pass review of a change
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

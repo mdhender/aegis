@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1995 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
 .SH SYNOPSIS
 .B \*(n)
 .B -Change_Attributes
+.B -File
 .I attr-file
 [
 .IR option ...
@@ -65,6 +66,7 @@ for a description of the file format.
 The following options are understood:
 .so o_change.so
 .so o_edit.so
+.so o_file.so
 .so o_help.so
 .so o_list.so
 .so o_project.so
@@ -82,4 +84,19 @@ sh$	aeca(){\*(n) -ca $* -v}
 It is an error if
 the current user is not an administrator of the specified project.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aepa (5)
+modify the attributes of a project
+.TP 8n
+.IR aecattr (5)
+change attributes file format
+.TP 8n
+.IR aecstate (5)
+change state file format
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

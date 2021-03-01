@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -396,7 +396,8 @@ commit()
 			break;
 	
 		case what_rmdir_tree_errok:
-			dir_walk(action->path1, rmdir_tree_callback, 0);
+			if (os_exists(action->path1))
+				dir_walk(action->path1, rmdir_tree_callback, 0);
 			break;
 		}
 		os_become_undo();

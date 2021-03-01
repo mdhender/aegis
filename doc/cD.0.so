@@ -1,0 +1,211 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1994 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: User Guide, Appendix D, Why is Aegis Set-Uid-Root?
+.\"
+.bp
+.2C
+.nh 1 "Appendix D: Why is Aegis Set-Uid-Root?"
+.LP
+The goal for aegis is to have a project that "works".
+There is a fairly long discussion about this earlier in this User Guide.
+One of the first
+things that must be done to ensure that a project is not subject to
+mystery break downs,
+is to make sure that the master source of the
+project cannot be in any way altered in an unauthorized fashion.
+Note this says "cannot",
+a stronger statement than "should not".
+.LP
+Aegis is more complicated than, say, set-group-id RCS,
+because of the flaw with set-group-id:
+the baseline is writable by the entire development team,
+so if a developer says "this development process stinks"
+he can always bypass it,
+and write the baseline directly.
+This is a
+.I very
+common source of project disasters.
+To prevent this,
+you must have the baseline read-only,
+and so the set-group-id trick does not work.
+(The idea here is that there is
+.I no
+way to bypass the QA portions of the process.
+Sure, set-group-id will prevent accidental edits on the baseline,
+if the developers are not members of the group,
+but it does not prevent
+.I deliberate
+checkin of unauthorized code.
+Again,
+the emphasis is on "cannot" rather than "should not".)
+.LP
+Also,
+using the set-group-id trick,
+you need multiple copies of RCS,
+one for each project.
+Aegis can handle many projects,
+each with a different owner and group,
+with a single set-uid-root executable.
+.LP
+Aegis has no internal model of security,
+it uses
+.UX
+security,
+and so becomes each user in turn,
+so
+.UX
+can determine the permissions.
+.nh 2 "Examples"
+.LP
+Here are a few examples of the uid changes in common aegis functions.
+Unix "permission denied" errors are not shown,
+but it should be clear where they would occur.
+.IP "new change (aenc):"
+become invoking user and read (edit) the change attribute file,
+validate the attribute file,
+then become the project owner to write the change
+state file and the project state file.
+.IP "develop begin (aedb):"
+become the project owner and read the project
+state file and the change state file,
+to see if the change exists and is available for development,
+and if the invoking user is on the developer access control list.
+Become the invoking user,
+but set the default group to the project group,
+and make a development directory.
+Become the project again,
+and update the change state file to say who
+is developing it and where.
+.IP "build (aeb):"
+become the project owner to read the project and change state files,
+check that the invoking user is the developer of the change,
+and that the change is in the
+.I "being developed"
+state.
+Become the invoking user,
+but set the default group to the project group,
+to invoke the build command.
+Become the project owner to update the change state to remember
+the build result (the exit status).
+.IP "copy file into change (aecp):"
+become the project owner to read the project and change state files.
+Check that the invoking user is the developer and that the change is in the
+.I "being developed"
+state,
+and that the file is not already in the change,
+and that the file exists in the baseline.
+Become the invoking user,
+but set the default group to the project group,
+and copy the file from the baseline into the development directory.
+Become the project owner,
+and update the change state file to remember that
+the file is included in the change.
+.IP "integrate pass (aeip):"
+become the project owner to read the project and change state files.
+Check that in invoking user is the integrator of the change,
+and that the change is in the
+.I "being integrated"
+state.
+Become the integrator to collect the integrate fail comments,
+then become the project owner to delete the integration directory,
+then become the developer to make the development directory writable again.
+Then become the project owner to write the change state file,
+to remember that the change is back in the
+.I "being developed"
+state.
+.LP
+All the mucking about with default groups is to ensure that the reviewers,
+other members of the same group,
+have access to the files when it comes time to review the change.
+The umask is also set (not shown) so that the desired level
+of "other" access is enforced.
+.LP
+As can be seen,
+each of the uid change either
+(a) allows
+.UX
+to enforce appropriate security, or
+(b) uses
+.UX
+security to ensure that
+unauthorized tampering of project files cannot occur.
+Each project has
+an owner and a group:
+members of the devlopment team obtain read-only
+access to the project files by membership to the appropriate group,
+to actually alter project files requires that the development procedure
+embodied by aegis is carried out.
+You could have a single account
+(not a user's account, usually, for obvious conflicts of interest)
+which owns all project sources,
+or you could have one account per project.
+You can have one group per project,
+if you don't want your various projects to be able to see each other's work,
+or you could have a single group for all projects.
+.nh 2 "Source Details"
+.LP
+For implementation details,
+see the \f(CWos_become\fP* functions in the
+.I "aegis/os.c"
+file.
+The \f(CWos_become_init\fP function is called very early in
+\f(CWmain\fP, in the
+.I aegis/main.c
+file.
+After that,
+all accesses are bracketed by \f(CWos_become\fP and \f(CWos_become_undo\fP
+function calls,
+sometimes indirectly as \f(CWproject_become\fP* or \f(CWuser_become\fP*, etc,
+functions.
+You need to actually become each user,
+because root is not root over NFS,
+and thus \f(CWchown\fP tricks do not work,
+and also because duplicating kernel
+permission checking in aegis is a little non-portable.
+.LP
+Note, also, that most system calls go via the interface sescribed in the
+.I aegis/glue.h
+file.
+This isolates the system calls for
+.UX
+variants which do
+not have the \f(CWseteuid\fP function,
+or do not have a correctly working one.
+The
+code in the
+.I aegis/glue.c
+file
+spawns "proxy" process which uses the \f(CWsetuid\fP function to become
+the user and stay that way.
+If the \f(CWseteuid\fP function is available, it is used instead,
+making aegis more efficient.
+This isolation, however,
+makes it possible for a system administrator to audit the aegis
+code
+(for trojans)
+with some degree of confidence.
+System calls should be confined to the
+.I aegis/log.c ,
+.I aegis/pager.c ,
+.I aegis/os.c 
+and
+.I aegis/glue.c
+files.
+System calls anywhere else are probably a Bad Thing.

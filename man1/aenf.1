@@ -22,7 +22,7 @@
 .so z_name.so
 .TH "\*(n) -New_File" 1 \*(N)
 .SH NAME
-\*(n) -New_File \- add new files to a change
+\*(n) -New_File \- add new files to be created by a change
 .SH SYNOPSIS
 .B \*(n)
 .B -New_File
@@ -96,7 +96,9 @@ sh$	aenf(){\*(n) -nf $* -v}
 .fi
 .SH ERRORS
 It is an error if
-the change is not in the 'being_developed' state.
+the change is not in the
+.I "being developed"
+state.
 .br
 It is an error if
 the change is not assigned to the current user.
@@ -107,4 +109,31 @@ the file is already part of the change.
 It is an error if
 the file is already part of the baseline.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aecp (1)
+copy files into a change
+.TP 8n
+.IR aedb (1)
+begin development of a change
+.TP 8n
+.IR aemv (1)
+rename a file as part of a change
+.TP 8n
+.IR aenfu (1)
+remove new files from a change
+.TP 8n
+.IR aent (1)
+add new tests to a change
+.TP 8n
+.IR aerm (1)
+add files to be deleted by a change
+.TP 8n
+.IR aepconf (5)
+project configuration file format
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -52,3 +52,27 @@ default_development_directory = string;
  * The default is $HOME.
  */
 default_project_directory = string;
+
+/*
+ * All of the commands which delete files will
+ * consult this field to determine if the file should be deleted.
+ * Defaults to ``no_keep'' if not set.
+ */
+delete_file_preference = (no_keep, interactive, keep);
+
+/*
+ * The aed command will consult this field to determine what to do:
+ *
+ *	"no_merge" means only diff the files, even if some have out of
+ *	date versions.
+ *
+ *	"only_merge" means merge those files with out of date versions,
+ *	and do not do anything else, even if they need to be diffed
+ *
+ *	"autmoatic_merge" means to do "only_merge" if any require
+ *	merging, otherwise do "no_merge".  It never combines merges
+ *	and differences in the same pass.
+ *
+ * The corresponding command line options to the aed command take precedence.
+ */
+diff_preference = (automatic_merge, no_merge, only_merge);

@@ -25,6 +25,9 @@
 
 #include <main.h>
 
+struct string_ty;
+
+void generate_code__init _((struct string_ty *));
 void parse _((char *in, char *c_out, char *h_out));
 
 #endif /* PARSE_H */

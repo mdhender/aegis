@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 .so z_name.so
 .TH "\*(n) -DIFFerence" 1 \*(N)
 .SH NAME
-\*(n) -DIFFerence \- find differences between development directory and baseline
+\*(n) -DIFFerence \- find differences between a change and the baseline
 .SH SYNOPSIS
 .B \*(n)
 .B -DIFFerence
@@ -48,10 +48,17 @@ The
 .I \*(n)
 .I -DIFFerence
 command is used to
-find differences between the development directory and the baseline.
-The differences will be in files with a "\f(CW,D\fP" suffix.
-The command used to perform the differences is in the
-project
+generate difference listings between source files in the
+the development directory and the baseline.
+The purpose is to enable reviewers to find each and every edit
+performed on the source files.
+The difference listings will be placed into files
+named for the sources files but
+with an additional "\f(CW,D\fP" suffix.
+.PP
+The command used to perform the differences is specified in the
+.I diff_command
+field of the project
 .I config
 file (see
 .IR aepconf (5)
@@ -62,17 +69,19 @@ all files in the change will be differenced.
 .so z_intuit.so
 .SH CONFLICT RESOLUTION
 If the version of a file in the change is not the same
-as the verion of the file in the baseline,
+as the version of the file in the baseline,
 it is out-of-date;
-some other change has altered the file while this change was being developed.
+some other change has altered the file while this change was
+being developed.
 .PP
 When a difference is requested for an out-of-date file,
 a merge is performed
 between the common ancestor,
-the verion in the baseline,
+the version in the baseline,
 and the version in the development directory.
-The command used to perform the merge is in the
-project
+The command used to perform the merge is specified by the
+.I diff3_command
+field of the project
 .I config
 file (see
 .IR aepconf (5)
@@ -80,6 +89,7 @@ for more information).
 .PP
 After the merge is performed
 the version of the file will be changed to be the current version,
+marking the file as up to date,
 and a new build will be required.
 .PP
 The difference output in the \fI,D\fP files
@@ -92,8 +102,21 @@ This merge process works most of the time.
 Usually two changes to two logically separate areas of functionality
 will alter two logically separate parts of any files they may
 have in common.
-There are pathological cases where this merge process is spectacularly useless,
-but these are surprizingly rare in practice.
+There are pathological cases where this merge process is spectacularly
+useless,
+but these are surprisingly rare in practice.
+.PP
+If any merges are required no differences will be performed.
+An error message and a non-zero exit status will also result.
+This is to ensure that developers notice that merges have been done,
+and that they reconcile the sources and the merged \fI,D\fP files
+before the next difference.
+See the
+.B -No_Merge
+and
+.B -Only_Merge
+options, below,
+for exact control of when merging is performed.
 .SH OPTIONS
 The following options are understood:
 .so o_anticip.so
@@ -101,6 +124,45 @@ The following options are understood:
 .so o_help.so
 .so o_list.so
 .so o_nolog.so
+.TP 8n
+.B -No_Merge
+.br
+This option is used to
+cause only file differences to be generated,
+even when file versions are out-of-date.
+If not set, the default is to use the
+.I diff_preference
+field of the
+.IR aeuconf (5)
+file.
+.TP 8n
+.B -Only_Merge
+.br
+This option is used to
+cause only file merges to be performed
+on files with out-of-date versions.
+Other source files are ignored.
+If not set, the default is to use the
+.I diff_preference
+field of the
+.IR aeuconf (5)
+file.
+.TP 8n
+.B -Automatic_Merge
+.br
+This option is used to
+perform
+.I -Only_Merge
+is any source files have out-of-date versions,
+otherwise
+.I -No_Merge is performed.
+Only merges or differences will be performed,
+it will never use a mixture.
+If not set, the default is to use the
+.I diff_preference
+field of the
+.IR aeuconf (5)
+file.
 .so o_project.so
 .so o_terse.so
 .so o_verbose.so
@@ -112,10 +174,31 @@ The recommended alias for this command is
 csh%	alias aed '\*(n) -diff \e!* -v'
 sh$	aed(){\*(n) -diff $* -v}
 .fi
+For user's convenience,
+particularly when they have selected the ``no merge'' preference,
+there is also a merge alias:
+.nf
+.ta 8n 16n
+csh%	alias aem '\*(n) -diff -only_merge \e!* -v'
+sh$	aem(){\*(n) -diff -only_merge $* -v}
+.fi
 .SH ERRORS
 It is an error if
 the change is not in the
-.I "'being developed'"
+.I "being developed"
 state.
+.br
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aedb (1)
+begin development of a change
+.TP 8n
+.IR aepconf (5)
+project configuration file format
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

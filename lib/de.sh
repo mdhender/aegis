@@ -1,7 +1,7 @@
-#! /bin/sh
+#!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993 Peter Miller.
+#	Copyright (C) 1992, 1993, 1995 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -20,16 +20,18 @@
 #
 # MANIFEST: command used to notify by email that a change is ready for review
 #
+# Suggested projet attribute:
+# develop_end_notify_command = "$lib/de.sh $p $c";
+#
 aegis=aegis
 case $# in
-3)
+2)
 	project=$1
 	change=$2
-	developer=$3
 	;;
 
 *)
-	echo "Usage: $0 <project> <change> <developer>" 1>&2
+	echo "Usage: $0 <project> <change>" 1>&2
 	exit 1
 	;;
 esac

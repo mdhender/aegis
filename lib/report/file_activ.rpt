@@ -1,0 +1,123 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1994 Peter Miller.
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * MANIFEST: report the active files in a project
+ */
+
+title("The File Activity Report", sprintf("Project \"%s\"", project_name()));
+
+/*
+ * get the project state
+ */
+auto ps;
+ps = project[project_name()].state;
+
+/*
+ * default to all project files
+ * if not files named on the command line
+ */
+auto file;
+if (count(arg) == 0)
+{
+	for (file in ps.src)
+		arg ##= file.file_name;
+}
+
+/*
+ * check the files in every active change
+ */
+auto cn, cs, ch;
+auto active;
+active = {};
+for (cn in  keys(ps.change))
+{
+	cs = ps.change[cn];
+	if (cs.state < being_developed || cs.state >= completed)
+		continue;
+	for (file in cs.src)
+	{
+		if (!(file.file_name in arg))
+			continue;
+		if (file.usage == build && file.action == modify)
+			continue;
+		if (!(file.file_name in keys(active)))
+			active[file.file_name] = [];
+		auto developer, integrator;
+		for (ch in cs.history)
+		{
+			if (ch.what == develop_begin)
+				developer = ch.who;
+			else if (ch.what == integrate_begin)
+				integrator = ch.who;
+			else if (ch.what == integrate_begin_undo)
+				integrator = "";
+			else if (ch.what == integrate_fail)
+				integrator = "";
+		}
+		active[file.file_name] ##=
+			{
+				change = cn;
+				usage = file.usage;
+				action = file.action;
+				description = cs.brief_description;
+				state = cs.state;
+				developer = developer;
+				integrator = integrator;
+			};
+	}
+}
+
+/*
+ * list all of the active files
+ */
+columns
+(
+	{ name = "File Name\n-----------"; right = 0; },
+	{ name = ""; left = 2; width = 6; },
+	{ name = ""; width = 6; },
+	{ name = "Change\n------"; width = 6; },
+	{ name = "State\n-------"; width = 10; },
+	{ name = "Staff\n-------"; width = 8; },
+	{ name = "Description\n-------------"; right = 0; }
+);
+auto fn;
+for (fn in sort(keys(active)))
+{
+	need(4);
+	print(fn);
+	for (file in active[fn])
+	{
+		print
+		(
+			"",
+			file.action,
+			file.usage,
+			sprintf("%4d", file.change),
+			file.state,
+			(
+				file.integrator
+			?
+				(file.developer ## " " ## file.integrator)
+			:
+				file.developer
+			),
+			file.description
+		);
+	}
+}

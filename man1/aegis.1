@@ -1,6 +1,6 @@
-.\"
+'\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,9 @@
 .SH DESCRIPTION
 The
 .I \*(n)
-program is used to
+program
+is a transaction base software configuration management system.
+It is used to
 supervise the development and integration of changes into projects.
 .SH FUNCTIONS
 The following functions are available:
@@ -70,6 +72,18 @@ See
 .IR aecd (1)
 for more information.
 .TP 8n
+.B -Change_Owner
+.br
+The
+.I "\*(n) -Change_Owner"
+command is used to
+facilitate reassignment of the developer of a change in the
+.I "being developed"
+state.
+See
+.IR aechown (1)
+for more information.
+.TP 8n
 .B -CoPy_file
 .br
 The 
@@ -90,6 +104,16 @@ See
 .IR aecpu (1)
 for more information.
 .TP 8n
+.B -Delta_Name
+.br
+The
+.I "\*(n) -Delta_Name"
+command is used to
+add a symbolic name to a project delta.
+See
+.IR aedn (1)
+for more information.
+.TP 8n
 .B -Develop_Begin
 .br
 The 
@@ -106,7 +130,7 @@ The
 .I "\*(n) -Develop_Begin_Undo"
 command is used to
 cease development of a change.
-.See
+See
 .IR aedbu (1)
 for more information.
 .TP 8n
@@ -146,7 +170,7 @@ for more information.
 The 
 .I "\*(n) -Integrate_Begin"
 command is used to
-being integrating a change.
+begin integrating a change.
 See
 .IR aeib (1)
 for more information.
@@ -174,7 +198,7 @@ for more information.
 .B -Integrate_Pass
 .br
 The 
-.I "\*(n) -Integrate_Pass"
+.I "\*(n) -Integrate_PASS"
 command is used to
 pass a change integration.
 See
@@ -307,7 +331,7 @@ for more information.
 The 
 .I "\*(n) -New_Test"
 command is used to
-add a new test to a change
+add a new test to a change.
 See
 .IR aent (1)
 for more information.
@@ -328,6 +352,9 @@ The
 .I "\*(n) -Project_Attributes"
 command is used to
 modify the attributes of a project.
+See
+.IR aepa (1)
+for more information.
 .TP 8n
 .B -Remove_Administrator
 .br
@@ -399,6 +426,15 @@ See
 .IR aerrv (1)
 for more information.
 .TP 8n
+.B -RePorT
+.br
+The
+.I "\*(n) -RePort"
+command is used to
+generate reports from \*(n)' database.
+These reports may be written by users,
+or be distributed with \*(n).
+.TP 8n
 .B -Review_Fail
 .br
 The 
@@ -412,7 +448,7 @@ for more information.
 .B -Review_Pass
 .br
 The 
-.I "\*(n) -Review_Pass"
+.I "\*(n) -Review_PASS"
 command is used to
 pass a change review.
 See
@@ -449,19 +485,71 @@ See
 .IR aev (1)
 for more information.
 .PP
-All function are case insensitive.
-Functions may be abbreviated;
+All function selectors are case insensitive.
+Function selectors may be abbreviated;
 the abbreviation is the upper case letters.
-Functions must appear as the first command line argument.
+Function selectors must appear as the first command line argument.
 .SH OPTIONS
 The following options are available to all functions.
 These options may appear anywhere on the command line following
 the function selectors.
 .so o_lib.so
 .so o_page.so
+.so o_verbose.so
+.PP
+The following options are available to all listings.
+These options may appear anywhere on the command line following
+the function selectors.
 .so o_terse.so
 .so o_unforma.so
-.so o_verbose.so
+.PP
+The following options are available to
+.I most
+functions.
+These options may appear anywhere on the command line following
+the function selectors.
+.so o_change.so
+.so o_project.so
+.ds R) no
 .so o__rules.so
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aegis (5)
+\*(n) file format syntax
+.TP 8n
+.IR aecattr (5)
+change attributes file format
+.TP 8n
+.IR aecstate (5)
+change state file format
+.TP 8n
+.IR aedir (5)
+directory structures
+.TP 8n
+.IR aegstate (5)
+\*(n) state file format
+.TP 8n
+.IR aepattr (5)
+project attributes file format
+.TP 8n
+.IR aepconf (5)
+project configuration file format
+.TP 8n
+.IR aepstate (5)
+project state file format
+.TP 8n
+.IR aer (5)
+report script language definition
+.TP 8n
+.IR aesub (5)
+available command substitutions
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
+.TP 8n
+.IR aeustate (5)
+user state file format
 .so z_cr.so

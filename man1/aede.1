@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -47,9 +47,59 @@ The
 command is used to
 notify \*(n) of the completion of the development of a change.
 .PP
+This command checks that you have successfully completed
+an '\*(n) -Build' command since any change source file was edited.
+See
+.IR aeb (1)
+for more information.
+.PP
+This command checks that you have successfully completed
+an '\*(n) -DIFFerence' command since any change source file was edited.
+See
+.IR aed (1)
+for more information.
+.PP
+This command checks that you have successfully completed
+an '\*(n) -Test' command
+since the last successful build,
+unless the change has a
+.I test_exempt
+attribute.
+This command checks that you have successfully completed
+an '\*(n) -Test -BaseLine' command,
+unless the change has a
+.I test_baseline_exempt
+attribute.
+This command checks that you have successfully completed
+an '\*(n) -Test -REGression' command,
+unless the change has a
+.I test_regression_exempt
+attribute.
+See
+.IR aet (1)
+and
+.IR aecattr (5)
+for more information.
+.PP
+If the change includes the project
+.I config
+file,
+this command checks project file names,
+to make sure they conform to the
+.I maximum_filename_length
+and
+.I posix_filename_charset
+field settings.
+See
+.IR aepconf (5)
+for more information.
+.PP
 Successful execution of the command advances the change
-from the 'being_developed' state
-to the 'being_reviewed' state.
+from the
+.I "being developed"
+state to the
+.I "being reviewed"
+state.
 .PP
 The ownership of files in the development directory
 is changed to the project owner and group,
@@ -79,7 +129,9 @@ It is an error if
 the change is not assigned to the current user.
 .br
 It is an error if
-The change is not in the 'being_developed' state.
+The change is not in the
+.I "being developed"
+state.
 .br
 It is an error if
 there has been no successful
@@ -101,4 +153,37 @@ there has been no successful
 .I "'\*(n) -Test -BaseLine'"
 command since a change file was last edited.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aeb (1)
+build a change
+.TP 8n
+.IR aeca (1)
+list or modify attributes of a change
+.TP 8n
+.IR aed (1)
+difference a change
+.TP 8n
+.IR aedb (1)
+begin development of a change
+.TP 8n
+.IR aedeu (1)
+recall a change for further development
+.TP 8n
+.IR aerf (1)
+fail a change review
+.TP 8n
+.IR aerp (1)
+pass a change review
+.TP 8n
+.IR aet (1)
+test a change
+.TP 8n
+.IR aepconf (5)
+project configuration file format
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

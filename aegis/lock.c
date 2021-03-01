@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,8 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include <unistd.h>
-#include <string.h>
+#include <ac/unistd.h>
+#include <ac/string.h>
 #include <signal.h>
 
 #include <error.h>
@@ -33,6 +33,7 @@
 #include <lock.h>
 #include <mem.h>
 #include <os.h>
+#include <r250.h>
 #include <trace.h>
 
 
@@ -64,6 +65,7 @@ typedef enum lock_mux_ty lock_mux_ty;
 
 static	string_ty	*path;
 static	size_t		nplaces;
+static	size_t		nplaces_max;
 static	struct flock	*place;
 static	int		fd = -1;
 static	long		magic;
@@ -99,6 +101,24 @@ flock_construct(p, type, start, length)
 }
 
 
+static int flock_equal _((struct flock *, struct flock *));
+
+static int
+flock_equal(p1, p2)
+	struct flock	*p1;
+	struct flock	*p2;
+{
+	return
+	(
+		p1->l_type == p2->l_type
+	&&
+		p1->l_start == p2->l_start
+	&&
+		p1->l_len == p2->l_len
+	);
+}
+
+
 static void lock_prepare _((long, long, int));
 
 static void
@@ -107,16 +127,49 @@ lock_prepare(start, length, exclusive)
 	long		length;
 	int		exclusive;
 {
+	int		j;
 	struct flock	p;
 
+	/*
+	 * construct the lock structure
+	 */
 	trace(("lock_prepare(start = %ld, length = %ld, excl = %d)\n{\n"/*}*/,
 		start, length, exclusive));
 	assert(start > lock_master);
 	assert(length > 0);
 	flock_construct(&p, (exclusive ? F_WRLCK : F_RDLCK), start, length);
-	*(struct flock *)
-	enlarge(&nplaces, (char **)&place, sizeof(struct flock)) =
-		p;
+
+	/*
+	 * if we have already got this one, don't add it to the list.
+	 *
+	 * While most systems are tolerant of asking for a lock twice,
+	 * some are not equally tolerant of releasing it more then once.
+	 */
+	for (j = 0; j < nplaces; ++j)
+	{
+		if (flock_equal(&p, &place[j]))
+		{
+			trace((/*{*/"}\n"));
+			return;
+		}
+	}
+
+	/*
+	 * Append the lock to the list of
+	 * locks to be taken.
+	 *
+	 * The locks are taken in one go
+	 * to avoid deadlocks.
+	 */
+	if (nplaces >= nplaces_max)
+	{
+		size_t		nbytes;
+
+		nplaces_max = nplaces_max * 2 + 4;
+		nbytes = nplaces_max * sizeof(p);
+		place = mem_change_size(place, nbytes);
+	}
+	place[nplaces++] = p;
 	trace((/*{*/"}\n"));
 }
 
@@ -346,6 +399,7 @@ lock_take()
 	int		flags;
 	struct flock	p;
 	int		j, k;
+	int		nsecs;
 
 	/*
 	 * get the file descriptor of the lock file
@@ -495,6 +549,16 @@ lock_take()
 		 */
 		p = place[j];
 		verbose("waiting for %s lock", lock_description(&p));
+
+		/*
+		 * sleep for a random number of seconds.
+		 * This is necessary, because it is possible for two
+		 * processes to be trying for the same lock
+		 * and they alternate in the next wait.
+		 */
+		nsecs = r250() % 5;
+		if (nsecs)
+			sleep(nsecs);
 
 		/*
 		 * block on the lock that stopped us before

@@ -22,7 +22,7 @@
 .so z_name.so
 .TH "\*(n) -New_File_Undo" 1 \*(N)
 .SH NAME
-\*(n) -New_File_Undo \- remove new files form a change
+\*(n) -New_File_Undo \- remove new files from a change
 .SH SYNOPSIS
 .B \*(n)
 .B -New_File_Undo
@@ -59,6 +59,7 @@ option is used.
 The following options are understood:
 .so o_change.so
 .so o_help.so
+.so o_interact.so
 .so o_keep.so
 .so o_list.so
 .so o_project.so
@@ -74,7 +75,9 @@ sh$	aenfu(){\*(n) -nfu $* -v}
 .fi
 .SH ERRORS
 It is an error if
-the change is not in the 'being_developed' state.
+the change is not in the
+.I "being developed"
+state.
 .br
 It is an error if
 the change is not assigned to the current user.
@@ -85,4 +88,16 @@ the file is not in the change.
 It is an error if
 the file was not added to the change with the '\*(n) -New_File' command.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aenf (1)
+add new files to a change
+.TP 8n
+.IR aepconf (5)
+project configuration file format
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

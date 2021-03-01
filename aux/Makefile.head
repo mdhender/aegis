@@ -1,0 +1,114 @@
+#
+#	aegis - a project change supervisor
+#	Copyright (C) 1990, 1991, 1992, 1993, 1994 Peter Miller.
+#	All rights reserved.
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+# MANIFEST: instructions to make, how to build the aegis package
+#
+
+#
+# directory containing the source
+#
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+#
+# the name of the install program to use
+#
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+
+#
+# the name of the compiler to use
+#
+CC = @CC@
+
+#
+# The compiler flags to use
+#
+CFLAGS = -O
+
+#
+# The linker flags to use
+#
+LDFLAGS = -s
+
+#
+# prefix for installation path
+#
+prefix = /usr/local
+exec_prefix = $(prefix)
+
+#
+# where to put the library directory
+#	(contains data, don't use exec_prefix)
+#
+libdir = $(prefix)/lib/aegis
+
+#
+# where to put the executables
+#
+bindir = $(exec_prefix)/bin
+
+#
+# where to put the manuals
+#
+mandir = $(prefix)/man
+
+#
+# Which yacc to use
+#
+YACC = @YACC@
+
+#
+# extra libraries required for your system
+#
+LIBS = @LIBS@
+
+#
+# shell to use to run tests and commands
+#
+SH = @SH@
+
+#
+# command used to construct libraries
+#
+AR = ar
+
+#
+# program used to place index within libraries
+#
+RANLIB = @RANLIB@
+
+#
+# Suitable owner for storing aegis' global files, so that aegis may
+# access them when they are on NFS mounted partitions (when root is
+# mapped to the [inconsistently numbered] "nobody" user).
+#
+# Do not confuse this with the fact that aegis must be set-uid-root.
+# Aegis MUST be set-uid-root to manipulate file ownerships, etc.
+# See the Aegis User Guide, Appendix D, for more detail.
+#
+AEGIS_UID = @AEGIS_UID@
+AEGIS_GID = @AEGIS_GID@
+
+#
+# You should not need to alter anything below this point.
+#------------------------------------------------------------
+
+all: bin/aegis

@@ -27,3 +27,11 @@
 .if n .po 0
 .hy 0
 .if n .ad l
+.de r)
+.if !'\\*(R)'no' \{\
+.PP
+See also
+.IR \*(n) (1)
+for options common to all \*(n) commands.
+.\}
+..

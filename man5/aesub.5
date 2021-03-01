@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993 Peter Miller.
+.\"	Copyright (C) 1993, 1994, 1995 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -109,10 +109,23 @@ and some which are specific to the command being substituted.
 Specific entries will be defined in the relevant manual section.
 .PP
 The following lists contains those substitutions which are always understood:
+.\" -------------------- A --------------------
 .TP 8n
 Administrator_List
 .br
 Space separated list of the project's administrators.
+.TP 8n
+ARCHitecture
+.br
+This substitution is replaced by the architecture name
+appropriate for the current execution environment.
+Requires no arguments.
+See the
+.I architecture
+field of
+.IR aepconf (5)
+for more information.
+.\" -------------------- B --------------------
 .TP 8n
 BaseLine
 .br
@@ -126,10 +139,24 @@ The value of the substitution will be the last element of the pathname.
 This is similar to the
 .IR basename (1)
 command.
+.\" -------------------- C --------------------
 .TP 8n
 Change
 .br
 The change number.
+.TP 8n
+Copyright_Years
+.br
+Inserts a comma separated list of copyright years from the project attributes.
+This list of years is maintained by
+.I aegis
+at integrate begin,
+and so is only guaranteed to be up-to-date
+in the'\fIbeing integrated\fP' state.
+Do not use this substitution in new file templates,
+it is not guaranteed to be up-to-date in the '\fIbeing developed\fP' state;
+use the ${date %Y} substitution in new file templates.
+.\" -------------------- D --------------------
 .TP 8n
 DAte
 .br
@@ -187,6 +214,11 @@ DownCase
 This substitution takes one argument.
 The value of the substitution will be the argument with
 any upper case letters mapped to lower case.
+.\" -------------------- E --------------------
+.\" -------------------- F --------------------
+.\" -------------------- G --------------------
+.\" -------------------- H --------------------
+.\" -------------------- I --------------------
 .TP 8n
 IDentifier
 .br
@@ -214,10 +246,36 @@ state.
 INTegrator_List
 .br
 Space separated list of the project's integrators.
+.\" -------------------- J --------------------
+.\" -------------------- K --------------------
+.\" -------------------- L --------------------
+.TP 8n
+LIBrary
+.br
+The absolute path of aegis' library directory.
+.\" -------------------- M --------------------
+.\" -------------------- N --------------------
+.\" -------------------- O --------------------
+.\" -------------------- P --------------------
 .TP 8n
 Project
 .br
 The name of the project.
+.\" -------------------- Q --------------------
+.\" -------------------- R --------------------
+.TP 8n
+Read_File
+.br
+Read a file and substitute the contents of the file.
+Requires exactly one argument, the pathname of the file to be read.
+If the pathname is a project source file,
+you will need to use the
+.I source
+substitution to resolve the path.
+It is a fatal error if the file does not exist,
+or is not readable.
+It is a fatal error if the pathname is not absolute
+(because the current directory is undefined).
 .TP 8n
 Reviewer
 .br
@@ -231,12 +289,33 @@ state.
 Reviewer_List
 .br
 Space separated list of the project's reviewers.
+.\" -------------------- S --------------------
+.TP 8n
+SHell
+.br
+The absolute path of a Bourne shell
+which understands functions.
+Requires exactly zero arguments.
+.TP 8n
+Source
+.br
+Resolve the argument filename into a pathname.
+It is an error if the file is not a source file.
+An optional second argument may be "Absolute" or "Relative",
+and may be abbreviated.
+Relative will attempt to provide a development-directory-relative pathname
+whenever possible,
+absolute will always result in an absolute path.
+The default is "Relative".
+.\" -------------------- T --------------------
+.\" -------------------- U --------------------
 .TP 8n
 UpCase
 .br
 This substitution takes one argument.
 The value of the substitution will be the argument with
 any lower case letters mapped to upper case.
+.\" -------------------- V --------------------
 .TP 8n
 Version
 .br
@@ -253,6 +332,10 @@ where "a" is the project's major version number,
 If the change is in any other state,
 the version will be of the form "\fIa\fB.\fIb\fB.C\fIccc\fR",
 where "ccc" is the change number.
+.\" -------------------- W --------------------
+.\" -------------------- X --------------------
+.\" -------------------- Y --------------------
+.\" -------------------- Z --------------------
 .SH DATE
 This section describes the format specifiers accepted by the
 date substitution.
@@ -337,4 +420,4 @@ time zone abbreviation
 Using an undefined format specifier will
 produce random results,
 depending on the version of UNIX you are on.
-.so z_cr.so
+.so ../man1/z_cr.so

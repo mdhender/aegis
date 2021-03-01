@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1993 Peter Miller.
+ *	Copyright (C) 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@
 #include <help.h>
 #include <lock.h>
 #include <option.h>
+#include <os.h>
 #include <project.h>
 #include <str.h>
 #include <trace.h>
@@ -70,112 +71,7 @@ remove_project_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -ReMove_PRoject - remove project",
-"",
-"SYNOPSIS",
-"	%s -ReMove_Project <project-name> [ <option>...  ]",
-"	%s -ReMove_Project -List [ <option>...  ]",
-"	%s -ReMove_Project -Help",
-"",
-"DESCRIPTION",
-"	The %s -ReMove_PRoject command is used to remove a",
-"	project, either entirely, or just from %s' supervision.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-Keep",
-"		This option may be used to retain files and/or",
-"		directories usually deleted by the command.",
-"",
-"	-LIBrary <abspath>",
-"		This option may be used to specify a directory to be",
-"		searched for global state files and user state",
-"		files.  (See aegstate(5) and aeustate(5) for more",
-"		information.) Several library options may be present",
-"		on the command line, and are search in the order",
-"		given.  Appended to this explicit search path are",
-"		the directories specified by the AEGIS enviroment",
-"		variable (colon separated), and finally,",
-"		/usr/local/lib/%s is always searched.  All paths",
-"		specified, either on the command line or in the",
-"		AEGIS environment variable, must be absolute.",
-"",
-"	-List",
-"		This option may be used to obtain a list of suitable",
-"		subjects for this command.  The list may be more",
-"		general than expected.",
-"",
-"	-Help",
-"		This option may be used to obtain more information",
-"		about how to use the %s program.",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified, the",
-"		AEGIS_PROJECT environment variable is consulted.  If",
-"		that does not exist, the user's $HOME/.aegisrc file",
-"		is examined for a default project field (see",
-"		aeuconf(5) for more information).  If that does not",
-"		exist, when the user is only working on changes",
-"		within a single project, the project name defaults",
-"		to that project.  Otherwise, it is an error.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to produce",
-"		the bare minimum of information.  It is usually",
-"		useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces output",
-"		on errors.  When used with the -List option this",
-"		option causes column headings to be added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aermpr '%s -rmpr \\!* -v'",
-"	sh$	aermpr(){%s -rmpr $* -v}",
-"",
-"ERRORS",
-"	It is an error if the project has any changes between the",
-"	being developed and being integrated states, inclusive.",
-"	It is an error if the current user is not an administrator.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any error.",
-"	The %s command will only exit with a status of 0 if there",
-"	are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aermpr.h>
 	};
 
 	help(text, SIZEOF(text), remove_project_usage);
@@ -207,10 +103,9 @@ remove_project_main()
 	change_ty	*cp;
 	cstate		cstate_data;
 	user_ty		*up;
-	int		keep;
+	int		still_exists;
 
 	trace(("remove_project_main()\n{\n"/*}*/));
-	keep = 0;
 	project_name = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
@@ -221,16 +116,9 @@ remove_project_main()
 			continue;
 
 		case arglex_token_keep:
-			if (keep)
-			{
-				error
-				(
-					"duplicate \"%s\" option",
-					arglex_value.alv_string
-				);
-				remove_project_usage();
-			}
-			keep = 1;
+		case arglex_token_interactive:
+		case arglex_token_no_keep:
+			user_delete_file_argument();
 			break;
 
 		case arglex_token_project:
@@ -257,9 +145,16 @@ remove_project_main()
 	project_bind_existing(pp);
 
 	/*
+	 * see if the user already deleted it
+	 */
+	os_become_orig();
+	still_exists = os_exists(project_pstate_path_get(pp));
+	os_become_undo();
+
+	/*
 	 * locate user data
 	 */
-	up = user_executing(pp);
+	up = user_executing(still_exists ? pp : (project_ty *)0);
 
 	/*
 	 * lock the project
@@ -267,11 +162,18 @@ remove_project_main()
 	project_pstate_lock_prepare(pp);
 	gonzo_gstate_lock_prepare_new();
 	lock_take();
-	pstate_data = project_pstate_get(pp);
+
+	/*
+	 * avoid reading any project state information
+	 * if it is already gone
+	 */
+	if (!still_exists)
+		goto nuke;
 
 	/*
 	 * it is an error if any of the changes are active
 	 */
+	pstate_data = project_pstate_get(pp);
 	nerr = 0;
 	for (j = 0; j < pstate_data->change->length; ++j)
 	{
@@ -313,7 +215,7 @@ remove_project_main()
 	/*
 	 * remove the project directory
 	 */
-	if (!keep)
+	if (user_delete_file_query(up, project_home_path_get(pp), 1))
 	{
 		project_verbose(pp, "remove project directory");
 		project_become(pp);
@@ -324,6 +226,7 @@ remove_project_main()
 	/*
 	 * tell gonzo to forget about this project
 	 */
+	nuke:
 	gonzo_project_delete(pp);
 	gonzo_gstate_write();
 

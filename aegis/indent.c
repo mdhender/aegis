@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,11 +22,11 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <ac/stdarg.h>
 
 #include <error.h>
 #include <glue.h>
 #include <indent.h>
-#include <s-v-arg.h>
 #include <trace.h>
 
 

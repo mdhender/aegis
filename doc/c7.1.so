@@ -22,13 +22,13 @@
 .nh 2 "The Model"
 .LP
 The model of the software development process
-used by aegis was not plucked from thin air in some ivory tower.
-It evolved and grew with time in a real-live software development environment,
+used by aegis
+evolved and grew with time in a commercial software development environment,
 and it has continued to be used and developed.
 Unfortunately,
 this environment was the largest experienced by the author to date,
-and consisted of only about forty software engineers hammering away
-at a project.\**
+and consisted of only about forty software engineers working on
+a single project.\**
 .FS
 "Unfortunately,"
 because many real-world projects are far larger,
@@ -42,13 +42,13 @@ no.)
 .FE
 .nh 3 "The Baseline"
 .LP
-Most CASE systems revolve around a repository.
-A place where
+Most CASE systems revolve around a repository:
+a place where
 .I stuff
 is kept.
 This
 .I stuff
-is the raw data that is chewed over to produce the final
+is the raw material that is processed in some way to produce the final
 product,
 whatever that may be.
 This
@@ -93,7 +93,7 @@ contains the per-project configuration information;
 the directory is
 called
 .I test ,
-and contains all of the the tests.
+and contains all of the tests.
 The contents and structure of the
 .I test
 directory are also dictated by aegis.
@@ -184,7 +184,7 @@ Tests are treated just like any other source file,
 and are subject to the same process.
 All files in the baseline are consistent with each other.
 .LP
-Thus the baseline may be considered to the the 
+Thus the baseline may be considered to be the 
 .I closure
 of the source files,
 in mathematical terms.
@@ -193,12 +193,15 @@ it is the source files
 and all implications flowing from those source files,
 such as object files and executables.
 All files in the baseline are consistent with each other;
-this means that development builds may expect to be able to take
-objects files from the baseline rather than rebuild them
+this means that development builds can take
+object files from the baseline rather than rebuild them
 within the development directory.
 .LP
 The baseline is readable by all staff,
-and usually writable by none.
+and usually writable by no-one.
+When it is necessary to write to the baseline,
+this is done by aegis,
+as will be shown below.
 .LP
 In many ways,
 the baseline may be thought of as a database,
@@ -266,7 +269,7 @@ or will establish that new functionality works
 Tests are shell scripts,
 and as such are capable of testing anything which has functionality
 accessable from the command line.
-the ability to run background processes allows even client-server
+The ability to run background processes allows even client-server
 models to be tested.
 Tests are thus text files, and are treated as source files;
 they may be modified by the same process as any other source file.
@@ -403,9 +406,8 @@ The change compiles,
 it has tests and it passes those tests,
 and the changes are to the current version of the baseline.
 The reviewer may thus concentrate on issues of completeness,
-design,
+implementation,
 and standards - to name only a few.
-Check lists can be very helpful.
 .nh 4 "Awaiting Integration"
 .LP
 A change is in this state after a reviewer has indicated that a change is

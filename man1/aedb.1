@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -49,14 +49,17 @@ command is used to
 commence development of a change.
 .PP
 The development directory for the change will be created automatically;
-below the directory specified in the default_\%development_\%directory field of
+below the directory specified in the default_\%development_\%directory
+field of
 .IR aeuconf (5),
 or if not set
-below the directory specified in the default_\%development_\%directory field of
+below the directory specified in the default_\%development_\%directory
+field of
 .IR aepattr (5),
 or if not set
 below the current user's home directory.
-It is rare to need to know the exact pathname of the development directory,
+It is rare to need to know the exact pathname of the
+development directory,
 as the
 .IR aecd (1)
 command can take you there at any time.
@@ -67,6 +70,40 @@ specified change from the
 state to the
 .I "being developed"
 state.
+.SH ADMINISTRATOR OVERRIDE
+It is possible for project administrators to use the
+.B -User
+option to force a developer to start developing a change.
+Some sites prefer to work this way.
+Note that developers still have the ability to use the
+.IR aedbu (1)
+command.
+.PP
+Warning:
+capricious use of this command will rapidly alienate developers.
+The defaulting rules, particularly for the change number,
+depend on \*(n) and the developer agreeing on
+what the developer is currently working on.
+.PP
+The
+.I forced_\%develop_\%begin_\%notify_\%command
+project attribute (see
+.IR aepattr (5)
+for more information)
+will be run when an administrator uses the
+.B -User
+option,
+in an attempt to minimize the surprizes for developers.
+A suitable command is
+.RS
+.nf
+\f(CWforced_develop_begin_notify_command =
+    "$lib/db_forced.sh $p $c $developer";\fP
+.fi
+.RE
+This command will send e-mail to the developer,
+informing her that the change has been assigned to her.
+.so o_symlnk.so
 .SH OPTIONS
 The following options are understood:
 .so o_change.so
@@ -75,6 +112,8 @@ The following options are understood:
 .so o_list.so
 .so o_project.so
 .so o_terse.so
+.so o_user.so
+This option may only be used by a project administrator.
 .so o_verbose.so
 .so o__rules.so
 .SH RECOMMENDED ALIAS
@@ -96,4 +135,55 @@ state.
 It is an error if
 the current user is not a developer of the specified project.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aeb (1)
+build a change
+.TP 8n
+.IR aecd (1)
+change directory
+.TP 8n
+.IR aecp (1)
+copy files into a change
+.TP 8n
+.IR aed (1)
+find differences between a change and the baseline
+.TP 8n
+.IR aedbu (1)
+undo the effects of aedb
+.TP 8n
+.IR aede (1)
+complete development of a change
+.TP 8n
+.IR aemv (1)
+rename a file as part of a change
+.TP 8n
+.IR aenc (1)
+add a new change to a project
+.TP 8n
+.IR aend (1)
+add a new developer to a project
+.TP 8n
+.IR aenf (1)
+add new files to a change
+.TP 8n
+.IR aent (1)
+add a new test to a change
+.TP 8n
+.IR aepa (1)
+modify the attributes of a project
+.TP 8n
+.IR aerm (1)
+add files to be deleted to a change
+.TP 8n
+.IR aet (1)
+run tests
+.TP 8n
+.IR aepattr (5)
+project attributes file format
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

@@ -70,7 +70,9 @@ sh$	aerm(){\*(n) -rm $* -v}
 .fi
 .SH ERRORS
 It is an error if
-the change is not in the 'being_developed' state.
+the change is not in the
+.I "being developed"
+state.
 .br
 It is an error if
 the change is not assigned to the current user.
@@ -81,4 +83,25 @@ the file does not exist in the baseline.
 It is an error if
 the file is already part of the change.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aecp (1)
+copy files into a change
+.TP 8n
+.IR aedb (1)
+begin development of a change
+.TP 8n
+.IR aemv (1)
+rename a file as part of a change
+.TP 8n
+.IR aenf (1)
+add files to be created to a change
+.TP 8n
+.IR aermu (1)
+remove files to be deleted from a change
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1995 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -26,3 +26,59 @@ command will exit with a status of 1 on any error.
 The
 .I \*(n)
 command will only exit with a status of 0 if there are no errors.
+.SH ENVIRONMENT VARIABLES
+The
+.I \*(n)
+command understands the following environment variables:
+.TP 8n
+AEGIS_PATH
+A colon-separated list of library directories.
+See the
+.B -LIBrary
+option for a description how this environment variable is used.
+.TP 8n
+AEGIS_PROJECT
+Names a default project.
+See the
+.B -Project
+option for a description how this environment variable is used.
+.TP 8n
+AEGIS_CHANGE
+Specifies a default change.
+See the
+.B -Change
+option for a description how this environment variable is used.
+.TP 8n
+AEGIS_THROTTLE
+Specifies the number of seconds to delay execution within commands
+which set timestamps.
+This is intended to be used within the tests distributed with aegis,
+but can also be of use within some shell scripts.
+.TP 8n
+COLS
+Specifies the page width for errors and listings.
+See the
+.B -Page_Width
+option for a description how this environment variable is used.
+.TP 8n
+EDITOR
+Specifies the program use to edit files when
+the
+.B -Edit
+option is used.
+Defaults to
+.I vi
+if not set.
+.TP 8n
+LINES
+Specifies the page length for listings.
+See the
+.B -Page_Length
+option for a description how this environment variable is used.
+.TP 8n
+PAGER
+Specifies the program to use to view listings and help.
+Not used if output is to a file or a pipe.
+Defaults to
+.I "more"
+if not set.

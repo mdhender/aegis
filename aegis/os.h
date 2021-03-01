@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef OS_H
 #define OS_H
 
-#include <time.h>
+#include <ac/time.h>
 
 #include <main.h>
 #include <str.h>
@@ -60,11 +60,11 @@ int os_chmod_query _((string_ty *));
 void os_link _((string_ty *from, string_ty *to));
 int os_testing_mode _((void));
 void os_become_init _((void));
-void os_become _((int uid, int gid, int umask));
+void os_become _((int uid, int gid, int umsk));
 void os_become_undo _((void));
 void os_become_orig _((void));
-void os_become_query _((int *uid, int *gid, int *umask));
-void os_become_orig_query _((int *uid, int *gid, int *umask));
+void os_become_query _((int *uid, int *gid, int *umsk));
+void os_become_orig_query _((int *uid, int *gid, int *umsk));
 
 int os_become_active _((void));
 #define os_become_must_be_active() \
@@ -83,6 +83,13 @@ char *os_shell _((void));
 
 void os_edit _((string_ty *));
 string_ty *os_edit_new _((void));
-string_ty *os_edit_filename _((void));
+string_ty *os_edit_filename _((int));
+
+int os_pathconf_name_max _((string_ty *));
+void os_symlink _((string_ty *, string_ty *));
+string_ty *os_readlink _((string_ty *));
+int os_symlink_query _((string_ty *));
+void os_junkfile _((string_ty *path, int mode));
+void os_throttle _((void));
 
 #endif /* OS_H */

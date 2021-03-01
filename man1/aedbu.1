@@ -54,6 +54,7 @@ command.
 The following options are understood:
 .so o_change.so
 .so o_help.so
+.so o_interact.so
 .so o_keep.so
 .so o_list.so
 .so o_project.so
@@ -72,6 +73,17 @@ It is an error if
 the change is no assigned to the current user.
 .br
 It is an error if
-the change is not in the 'being_developed' state.
+the change is not in the
+.I "being developed"
+state.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aedb (1)
+begin development of a change
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

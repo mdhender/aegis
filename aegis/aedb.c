@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,9 +21,10 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
+#include <ac/stdlib.h>
+#include <ac/string.h>
+#include <ac/time.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -55,8 +56,18 @@ develop_begin_usage()
 	char		*progname;
 
 	progname = option_progname_get();
-	fprintf(stderr, "usage: %s -Develop_Begin <change_number> [ <option>... ]\n", progname);
-	fprintf(stderr, "       %s -Develop_Begin -List [ <option>... ]\n", progname);
+	fprintf
+	(
+		stderr,
+		"usage: %s -Develop_Begin <change_number> [ <option>... ]\n",
+		progname
+	);
+	fprintf
+	(
+		stderr,
+		"       %s -Develop_Begin -List [ <option>... ]\n",
+		progname
+	);
 	fprintf(stderr, "       %s -Develop_Begin -Help\n", progname);
 	quit(1);
 }
@@ -69,135 +80,7 @@ develop_begin_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -Develop_Begin - begin development of a change",
-"",
-"SYNOPSIS",
-"	%s -Develop_Begin <change-number> [ <option>... ]",
-"	%s -Develop_Begin -List [ <option>... ]",
-"	%s -Develop_Begin -Help",
-"",
-"DESCRIPTION",
-"	The %s -Develop_Begin command is used to commence",
-"	development of a change.",
-"",
-"	The development directory for the change will be created",
-"	automatically; below the directory specified in the",
-"	default_development_directory field of aeuconf(5), or if",
-"	not set below the directory specified in the default_-",
-"	development_directory field of aepattr(5), or if not set",
-"	below the current user's home directory.  It is rare to",
-"	need to know the exact pathname of the development",
-"	directory, as the aecd(1) command can take you there at",
-"	any time.",
-"",
-"	Successful execution of this command will move the",
-"	specified change from the awaiting development state to",
-"	the being developed state.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-Change <number>",
-"		This option may be used to specify a particular",
-"		change within a project.  When no -Change option",
-"		is specified, the AEGIS_CHANGE environment",
-"		variable is consulted.  If that does not exist,",
-"		the user's $HOME/.%src file is examined for a",
-"		default change field (see aeuconf(5) for more",
-"		information).  If that does not exist, when the",
-"		user is only working on one change within a",
-"		project, that is the default change number.",
-"		Otherwise, it is an error.",
-"",
-"	-DIRectory <path>",
-"		This option may be used to specify which directory",
-"		is to be used.  It is an error if the current user",
-"		does not have appropriate permissions to create",
-"		the directory path given.  This must be an",
-"		absolute path.",
-"",
-"		Caution: If you are using an automounter do not",
-"		use `pwd` to make an absolute path, it usually",
-"		gives the wrong answer.",
-"",
-"	-Help",
-"		This option may be used to obtain more information",
-"		about how to use the %s program.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified,",
-"		the AEGIS_PROJECT environment variable is",
-"		consulted.  If that does not exist, the user's",
-"		$HOME/.%src file is examined for a default",
-"		project field (see aeuconf(5) for more",
-"		information).  If that does not exist, when the",
-"		user is only working on changes within a single",
-"		project, the project name defaults to that",
-"		project.  Otherwise, it is an error.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List option",
-"		this option causes column headings to be added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aedb '%s -db \\!* -v'",
-"	sh$	aedb(){%s -db $* -v}",
-"",
-"ERRORS",
-"	It is an error if the change does not exist.",
-"	It is an error if the change is not in the awaiting",
-"	development state.",
-"	It is an error if the current user is not a developer of",
-"	the specified project.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.  The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aedb.h>
 	};
 
 	help(text, SIZEOF(text), develop_begin_usage);
@@ -261,11 +144,15 @@ develop_begin_main()
 	long		change_number;
 	change_ty	*cp;
 	user_ty		*up;
+	pconf		pconf_data;
+	string_ty	*usr;
+	user_ty		*up2;
 
 	trace(("develop_begin_main()\n{\n"/*}*/));
 	project_name = 0;
 	change_number = 0;
 	devdir = 0;
+	usr = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -312,6 +199,14 @@ develop_begin_main()
 				fatal("duplicate -Project option");
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
+
+		case arglex_token_user:
+			if (usr)
+				fatal("duplicate -User option");
+			if (arglex() != arglex_token_string)
+				develop_begin_usage();
+			usr = str_from_c(arglex_value.alv_string);
+			break;
 		}
 		arglex();
 	}
@@ -327,8 +222,34 @@ develop_begin_main()
 
 	/*
 	 * locate user data
+	 *
+	 *	up = user to own the change
+	 *	up2 = administrator forcing
 	 */
-	up = user_executing(pp);
+	if (usr)
+	{
+		up = user_symbolic(pp, usr);
+		up2 = user_executing(pp);
+		if (up == up2)
+		{
+			user_free(up2);
+			up2 = 0;
+		}
+		else if (!project_administrator_query(pp, user_name(up2)))
+		{
+			project_fatal
+			(
+				pp,
+				"user \"%S\" is not an administrator",
+				user_name(up2)
+			);
+		}
+	}
+	else
+	{
+		up = user_executing(pp);
+		up2 = 0;
+	}
 
 	/*
 	 * locate change data
@@ -339,7 +260,7 @@ develop_begin_main()
 	 * even though we could sometimes work this out for ourself.
 	 */
 	if (!change_number)
-		fatal("change number must be stated explicitly");
+		fatal("the change number must be stated explicitly");
 	cp = change_alloc(pp, change_number);
 	change_bind_existing(cp);
 
@@ -361,7 +282,15 @@ develop_begin_main()
 	 * undevelop_begined state.
 	 */
 	if (cstate_data->state != cstate_state_awaiting_development)
-		change_fatal(cp, "not in 'awaiting_development' state");
+	{
+		change_fatal
+		(
+			cp,
+"this change is in the '%s' state, \
+it must be in the 'awaiting development' state to begin development",
+			cstate_state_ename(cstate_data->state)
+		);
+	}
 	if (!project_developer_query(pp, user_name(up)))
 	{
 		project_fatal
@@ -380,6 +309,15 @@ develop_begin_main()
 	cstate_data->state = cstate_state_being_developed;
 	history_data = change_history_new(cp, up);
 	history_data->what = cstate_history_what_develop_begin;
+	if (up2)
+	{
+		history_data->why =
+			str_format
+			(
+				"Forced by administrator \"%S\".",
+				user_name(up2)
+			);
+	}
 
 	/*
 	 * Update user change table to include this change in the list of
@@ -392,17 +330,62 @@ develop_begin_main()
 	 */
 	if (!devdir)
 	{
+		unsigned long	k;
+		int		max;
+		string_ty	*pn;
+
+		/*
+		 * If the user did not give the directory to use,
+		 * we must construct one.
+		 * The length is limited by the available filename
+		 * length limit, trim the project name if necessary.
+		 */
+		pn = project_name_get(pp);
 		s2 = user_default_development_directory(up);
 		assert(s2);
-		devdir =
-			str_format
-			(
-				"%S/%S.%3.3ld",
-				s2,
-				project_name_get(pp),
-				change_number
-			);
+		os_become_orig();
+		max = os_pathconf_name_max(s2);
+		os_become_undo();
+		for (k = 0;; ++k)
+		{
+			char		suffix[30];
+			char		*tp;
+			unsigned long	n;
+			int		len;
+			int		exists;
+
+			tp = suffix;
+			*tp++ = '.';
+			n = k;
+			for (;;)
+			{
+				*tp++ = (n & 15) + 'C';
+				n >>= 4;
+				if (!n)
+					break;
+			}
+			sprintf(tp, "%3.3ld", change_number);
+
+			len = strlen(suffix);
+			if (len > max)
+			{
+				/* unlikely in the extreme */
+				len = max - 1;
+				suffix[len] = 0;
+			}
+			len = max - len;
+			if (len > pn->str_length)
+				len = pn->str_length;
+			devdir = str_format("%S/%.*S%s", s2, len, pn, suffix);
+			os_become_orig();
+			exists = os_exists(devdir);
+			os_become_undo();
+			if (!exists)
+				break;
+			str_free(devdir);
+		}
 		str_free(s2);
+		change_verbose(cp, "development directory \"%S\"", devdir);
 	}
 	change_development_directory_set(cp, devdir);
 
@@ -413,15 +396,11 @@ develop_begin_main()
 	os_mkdir(devdir, 02755);
 	undo_rmdir_errok(devdir);
 	user_become_undo();
-	change_verbose(cp, "development directory \"%S\"", devdir);
 
 	/*
 	 * Clear the time fields.
 	 */
-	cstate_data->build_time = 0;
-	cstate_data->test_time = 0;
-	cstate_data->test_baseline_time = 0;
-	cstate_data->regression_test_time = 0;
+	change_build_times_clear(cp);
 
 	/*
 	 * Update change table row (and change history table).
@@ -439,6 +418,27 @@ develop_begin_main()
 	change_run_develop_begin_command(cp, up);
 
 	/*
+	 * run the forced develop begin notify command
+	 */
+	if (up2)
+		change_run_forced_develop_begin_notify_command(cp, up2);
+
+	/*
+	 * if symlinks are being used to pander to dumb DMT,
+	 * and they are not removed after each build,
+	 * create them now, rather than waiting for the first build.
+	 * This will present a more uniform interface to the developer.
+	 */
+	pconf_data = change_pconf_get(cp, 0);
+	if
+	(
+		pconf_data->create_symlinks_before_build
+	&&
+		!pconf_data->remove_symlinks_after_build
+	)
+		change_create_symlinks_to_baseline(cp, up);
+
+	/*
 	 * verbose success message
 	 */
 	change_verbose
@@ -450,6 +450,8 @@ develop_begin_main()
 	change_free(cp);
 	project_free(pp);
 	user_free(up);
+	if (up2)
+		user_free(up2);
 	trace((/*{*/"}\n"));
 }
 

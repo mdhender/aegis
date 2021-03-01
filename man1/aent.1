@@ -98,9 +98,32 @@ sh$	aent(){\*(n) -nt $* -v}
 .fi
 .SH ERRORS
 It is an error if
-the change is not in the 'being_developed' state.
+the change is not in the
+.I "being developed"
+state.
 .br
 It is an error if
 the change is not assigned to the current user.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aecp (1)
+copy an existing test into a change
+.TP 8n
+.IR aedb (1)
+begin development of a change
+.TP 8n
+.IR aentu (1)
+remove a new test from a change
+.TP 8n
+.IR aerm (1)
+remove an existing test as part of a change
+.TP 8n
+.IR aet (1)
+run tests
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

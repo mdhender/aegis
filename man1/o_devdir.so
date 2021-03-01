@@ -23,5 +23,7 @@
 .B -Development_Directory
 This option is used to specify that the development directory
 is the subject of the command.
-This is only useful for a change which is in the 'being_integrated' state,
+This is only useful for a change which is in the
+.I "being integrated"
+state,
 when the default is the integration directory.

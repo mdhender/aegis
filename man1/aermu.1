@@ -68,7 +68,9 @@ sh$	aermu(){\*(n) -rmu $* -v}
 .fi
 .SH ERRORS
 It is an error if
-the change is not in the 'being_developed' state.
+the change is not in the
+.I "being developed"
+state.
 .br
 It is an error if
 the change is not assigned to the current user.
@@ -82,4 +84,13 @@ the was not added to the change using the
 .I -ReMove_file
 command.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aerm (1)
+add files to be deleted to a change
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

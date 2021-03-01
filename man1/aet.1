@@ -61,8 +61,14 @@ If no files are named, all relevant tests are run.
 By default both automatic and manual tests are run.
 .so z_intuit.so
 .PP
-Tests are executed by 
-the Bourne shell.
+The command used to execute tests is defined by the
+.I test_command
+field in the project
+.I config
+file (see
+.IR aepconf (5)
+for more information),
+this defaults to using the Bourne shell if not set.
 The current directory will be the top of the appropriate directory tree.
 If tests require temporary files, they should create them in
 .IR /tmp ,
@@ -75,9 +81,11 @@ The following options are understood:
 .so o_change.so
 .so o_devdir.so
 .so o_help.so
+.so o_indep.so
 .so o_list.so
 .so o_manual.so
 .so o_project.so
+.so o_regress.so
 .so o_terse.so
 .so o_verbose.so
 .so o__rules.so
@@ -90,9 +98,40 @@ sh$	aet(){\*(n) -t $* -v}
 .fi
 .SH ERRORS
 It is an error if
-the change is not in one of the 'being_developed' or 'being_integrated' states.
+the change is not in one of the
+.I "being developed"
+or
+.I "being integrated"
+states.
 .br
 It is an error if
 the change is not assigned to the current user.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aeb (1)
+build a change
+.TP 8n
+.IR aeca (1)
+modify the attributes of a change
+.TP 8n
+.IR aedb (1)
+begin development of a change
+.TP 8n
+.IR aeib (1)
+begin integration of a change
+.TP 8n
+.IR aent (1)
+add a new test to a change
+.TP 8n
+.IR aecp (1)
+copy an existing test into a change
+.TP 8n
+.IR aepconf (5)
+project configuration file format
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

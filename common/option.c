@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,11 @@
  * MANIFEST: functions to manipulate command line options
  */
 
-#include <string.h>
+#include <ac/string.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <sys/ioctl.h>
+#include <ac/stdlib.h>
+
+#include <ac/termios.h>
 
 #include <error.h>
 #include <option.h>
@@ -37,6 +38,8 @@
 #define MAX_PAGE_LENGTH 30000
 #define DEFAULT_PAGE_LENGTH 24
 
+#define DEFAULT_TAB_WIDTH 8
+
 #define LEVEL_TERSE 1
 #define LEVEL_UNFORMATTED 2
 #define LEVEL_UNSET 3
@@ -46,15 +49,18 @@ static	int	page_length;
 static	char	*progname;
 static	int	verbose_flag = LEVEL_UNSET;
 static	int	page_width;
+static	int	tab_width;
 
 
 void
 option_progname_set(s)
 	char		*s;
 {
-	/* do NOT put tracing in this function */
-	assert(s);
-	assert(!progname);
+	/*
+	 * do NOT put tracing in this function
+	 * do NOT put asserts in this function
+	 *	they both depend on progname, which is not yet set
+	 */
 	for (;;)
 	{
 		progname = strrchr(s, '/');
@@ -302,4 +308,28 @@ option_page_length_get()
 	if (!page_length)
 		default_page_sizes();
 	return page_length;
+}
+
+
+void
+option_tab_width_set(n)
+	int		n;
+{
+	if (n < 0 || n > 40)
+		fatal("tab width of %d is out of range", n);
+	if (tab_width)
+		fatal("duplicate -Tab_Width option");
+	if (n < 2)
+		tab_width = -1;
+	else
+		tab_width = n;
+}
+
+
+int
+option_tab_width_get()
+{
+	if (!tab_width)
+		tab_width = DEFAULT_TAB_WIDTH;
+	return (tab_width < 2 ? 0 : tab_width);
 }

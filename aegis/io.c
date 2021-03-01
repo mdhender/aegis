@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,50 +20,12 @@
  * MANIFEST: functions to parse and write fundamental data types
  */
 
-#include <string.h>
-#include <time.h>
+#include <ctype.h>
+#include <ac/string.h>
 
 #include <indent.h>
 #include <str.h>
 #include <io.h>
-
-
-type_ty	integer_type =
-{
-	type_class_integer,
-	"integer",
-	0, /* alloc */
-	0, /* free */
-	0, /* enumerator */
-};
-
-
-type_ty string_type =
-{
-	type_class_string,
-	"string",
-	0, /* alloc */
-	0, /* free */
-	0, /* enum_parse */
-	0, /* list_parse */
-	0, /* struct_parse */
-};
-
-
-static int suffix _((char *s1, char *s2));
-
-static int
-suffix(s1, s2)
-	char	*s1;
-	char	*s2;
-{
-	size_t	len1;
-	size_t	len2;
-
-	len1 = strlen(s1);
-	len2 = strlen(s2);
-	return (len2 < len1 && !strcmp(s1 + len1 - len2, s2));
-}
 
 
 void
@@ -80,12 +42,28 @@ integer_write(name, this)
 	else
 		indent_printf("%ld", this);
 	if (name)
-	{
-		indent_printf(";");
-		if (suffix(name, "_time") || !strcmp(name, "when"))
-			indent_printf(" /* %.24s */", ctime(&this));
-		indent_printf("\n");
-	}
+		indent_printf(";\n");
+}
+
+
+void
+time_write(name, this)
+	char		*name;
+	time_t		this;
+{
+	if (!this && name)
+		return;
+	if (name)
+		indent_printf("%s = ", name);
+	/*
+	 * Time is always an arithmetic type, never a structure.
+	 * This works on every system the author has seen,
+	 * without loss of precision.
+	 * (Loss of fractions of a second is acceptable.)
+	 */
+	indent_printf("%ld", (long)this);
+	if (name)
+		indent_printf("; /* %.24s */\n", ctime(&this));
 }
 
 
@@ -130,7 +108,7 @@ string_write(name, this)
 		{
 			int	c;
 	
-			c = *s;
+			c = (unsigned char)*s;
 			if (c < ' ' || c > '~')
 			{
 				char	*cp;
@@ -146,10 +124,10 @@ string_write(name, this)
 				else
 				{
 					escape:
-					if (s[1] >= '0' && s[1] <= '9')
-						indent_printf("\\%03o", (unsigned char)c);
+					if (isdigit(s[1]))
+						indent_printf("\\%03o", c);
 					else
-						indent_printf("\\%o", (unsigned char)c);
+						indent_printf("\\%o", c);
 				}
 			}
 			else

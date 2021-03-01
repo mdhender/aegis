@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <ac/stdlib.h>
 
 #include <aeca.h>
 #include <arglex2.h>
@@ -35,7 +35,9 @@
 #include <option.h>
 #include <os.h>
 #include <trace.h>
+#include <undo.h>
 #include <user.h>
+#include <word.h>
 
 
 static void change_attributes_usage _((void));
@@ -46,9 +48,24 @@ change_attributes_usage()
 	char		*progname;
 
 	progname = option_progname_get();
-	fprintf(stderr, "usage: %s -Change_Attributes <attr-file> [ <option>... ]\n", progname);
-	fprintf(stderr, "       %s -Change_Attributes -Edit [ <option>... ]\n", progname);
-	fprintf(stderr, "       %s -Change_Attributes -List [ <option>... ]\n", progname);
+	fprintf
+	(
+		stderr,
+		"usage: %s -Change_Attributes -File <attr-file> [ <option>... ]\n",
+		progname
+	);
+	fprintf
+	(
+		stderr,
+		"       %s -Change_Attributes -Edit [ <option>... ]\n",
+		progname
+	);
+	fprintf
+	(
+		stderr,
+		"       %s -Change_Attributes -List [ <option>... ]\n",
+		progname
+	);
 	fprintf(stderr, "       %s -Change_Attributes -Help\n", progname);
 	quit(1);
 }
@@ -61,122 +78,7 @@ change_attributes_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -Change_Attributes - modify the attributes of a",
-"	change",
-"",
-"SYNOPSIS",
-"	%s -Change_Attributes <attr-file> [ <option>... ]",
-"	%s -Change_Attributes -Edit [ <option>... ]",
-"	%s -Change_Attributes -List [ <option>... ]",
-"	%s -Change_Attributes -Help",
-"",
-"DESCRIPTION",
-"	The %s -Change_Attributes command is used to set, edit",
-"	or list the attributes of a change.",
-"",
-"	The output of the -List variant is suitable for use as",
-"	input at a later time.",
-"",
-"	See aecattr(5) for a description of the file format.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-Change <number>",
-"		This option may be used to specify a particular",
-"		change within a project.  When no -Change option is",
-"		specified, the AEGIS_CHANGE environment variable is",
-"		consulted.  If that does not exist, the user's",
-"		$HOME/.aegisrc file is examined for a default change",
-"		field (see aeuconf(5) for more information).  If",
-"		that does not exist, when the user is only working",
-"		on one change within a project, that is the default",
-"		change number.  Otherwise, it is an error.",
-"",
-"	-Edit",
-"		Edit the attributes with a text editor, this is",
-"		usually more convenient than supplying a text",
-"		file.  The EDITOR environment variable will be",
-"		consulted for the name of the editor to use;",
-"		defaults to vi(1) if not set.  Warning: not well",
-"		behaved when faced with errors, the temporary",
-"		file is always deleted.",
-"",
-"	-Help",
-"		This option may be used to obtain more",
-"		information about how to use the %s program.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified, the",
-"		AEGIS_PROJECT environment variable is consulted.  If",
-"		that does not exist, the user's $HOME/.aegisrc file",
-"		is examined for a default project field (see",
-"		aeuconf(5) for more information).  If that does not",
-"		exist, when the user is only working on changes",
-"		within a single project, the project name defaults",
-"		to that project.  Otherwise, it is an error.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List",
-"		option this option causes column headings to be",
-"		added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aeca '%s -ca \\!* -v'",
-"	sh$	aeca(){%s -ca $* -v}",
-"",
-"ERRORS",
-"	It is an error if the current user is not an",
-"	administrator of the specified project.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.	The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aeca.h>
 	};
 
 	help(text, SIZEOF(text), change_attributes_usage);
@@ -220,6 +122,29 @@ cattr_copy(a, s)
 		a->test_baseline_exempt = s->test_baseline_exempt;
 		a->mask |= cattr_test_baseline_exempt_mask;
 	}
+	if (!a->architecture)
+		a->architecture =
+			(cattr_architecture_list)
+			cattr_architecture_list_type.alloc();
+	if (!a->architecture->length)
+	{
+		long		j;
+
+		for (j = 0; j < s->architecture->length; ++j)
+		{
+			type_ty		*type_p;
+			string_ty	**str_p;
+
+			str_p =
+				cattr_architecture_list_type.list_parse
+				(
+					a->architecture,
+					&type_p
+				);
+			assert(type_p == &string_type);
+			*str_p = str_copy(s->architecture->list[j]);
+		}
+	}
 }
 
 
@@ -262,10 +187,10 @@ change_attributes_list()
 			break;
 
 		case arglex_token_project:
-			if (arglex() != arglex_token_string)
-				change_attributes_usage();
 			if (project_name)
 				fatal("duplicate -Project option");
+			if (arglex() != arglex_token_string)
+				change_attributes_usage();
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -331,16 +256,24 @@ cattr_edit(dp)
 {
 	cattr		d;
 	string_ty	*filename;
+	string_ty	*msg;
 	
 	/*
 	 * write attributes to temporary file
 	 */
 	d = *dp;
 	assert(d);
-	filename = os_edit_filename();
+	filename = os_edit_filename(1);
 	os_become_orig();
 	cattr_write_file(filename->str_text, d);
 	cattr_type.free(d);
+
+	/*
+	 * an error message to issue if anything goes wrong
+	 */
+	msg = str_format("attributes text left in the \"%S\" file", filename);
+	undo_message(msg);
+	str_free(msg);
 
 	/*
 	 * edit the file
@@ -351,11 +284,45 @@ cattr_edit(dp)
 	 * read it in again
 	 */
 	d = cattr_read_file(filename->str_text);
-	os_unlink(filename);
+	commit_unlink_errok(filename);
 	os_become_undo();
 	cattr_verify(filename->str_text, d);
 	str_free(filename);
 	*dp = d;
+}
+
+
+static void check_permissions _((change_ty *, user_ty *));
+
+static void
+check_permissions(cp, up)
+	change_ty	*cp;
+	user_ty		*up;
+{
+	project_ty	*pp;
+	cstate		cstate_data;
+
+	pp = cp->pp;
+	cstate_data = change_cstate_get(cp);
+
+	if
+	(
+		!project_administrator_query(pp, user_name(up))
+	&&
+		(
+			cstate_data->state != cstate_state_being_developed
+		||
+			!str_equal(change_developer_name(cp), user_name(up))
+		)
+	)
+	{
+		change_fatal
+		(
+			cp,
+"attributes may only be changed by a project administrator, \
+or by the developer during development"
+		);
+	}
 }
 
 
@@ -368,6 +335,7 @@ change_attributes_main()
 	project_ty	*pp;
 	cattr		cattr_data = 0;
 	cstate		cstate_data;
+	pconf		pconf_data;
 	long		change_number;
 	change_ty	*cp;
 	user_ty		*up;
@@ -386,8 +354,27 @@ change_attributes_main()
 			continue;
 
 		case arglex_token_string:
+			error
+			(
+"warning: please use the -File option when specifying an attributes file, \
+the unadorned form is now obsolescent"
+			);
 			if (cattr_data)
 				fatal("too many files named");
+			goto read_attr_file;
+
+		case arglex_token_file:
+			if (cattr_data)
+				goto duplicate;
+			if (arglex() != arglex_token_string)
+			{
+				error
+				(
+				 "the -File option requires a filename argument"
+				);
+				change_attributes_usage();
+			}
+			read_attr_file:
 			os_become_orig();
 			cattr_data = cattr_read_file(arglex_value.alv_string);
 			os_become_undo();
@@ -408,25 +395,35 @@ change_attributes_main()
 			break;
 
 		case arglex_token_project:
+			if (project_name)
+				goto duplicate;
 			if (arglex() != arglex_token_string)
 				change_attributes_usage();
-			if (project_name)
-				fatal("duplicate -Project option");
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 
 		case arglex_token_edit:
 			if (edit)
-				fatal("duplicate \"%s\" option", arglex_value.alv_string);
+			{
+				duplicate:
+				fatal
+				(
+					"duplicate \"%s\" option",
+					arglex_value.alv_string
+				);
+			}
 			edit++;
 			break;
 		}
 		arglex();
 	}
+	if (!cattr_data && !edit)
+	{
+		error("warning: no -File specified, assuming -Edit desired");
+		++edit;
+	}
 	if (edit && !cattr_data)
 		cattr_data = (cattr)cattr_type.alloc();
-	if (!cattr_data)
-		fatal("no file named");
 
 	/*
 	 * locate project data
@@ -456,6 +453,12 @@ change_attributes_main()
 	if (edit)
 	{
 		/*
+		 * make sure they are allowed to,
+		 * to avoid a wasted edit
+		 */
+		check_permissions(cp, up);
+
+		/*
 		 * fill in any other fields
 		 */
 		cstate_data = change_cstate_get(cp);
@@ -473,33 +476,18 @@ change_attributes_main()
 	change_cstate_lock_prepare(cp);
 	lock_take();
 	cstate_data = change_cstate_get(cp);
+	pconf_data = change_pconf_get(cp, 0);
 
 	/*
-	 * It is an error if the change is not in the "being developed" state.
-	 * It is an error if the user is not an administrator or the developer.
+	 * make sure they are allowed to
+	 * (even if edited, could have changed during edit)
 	 */
-	if
-	(
-		!project_administrator_query(pp, user_name(up))
-	&&
-		(
-			cstate_data->state != cstate_state_being_developed
-		||
-			!str_equal(change_developer_name(cp), user_name(up))
-		)
-	)
-	{
-		change_fatal
-		(
-			cp,
-			"attributes may only be changed by a project \
-administrator, or by the developer during development"
-		);
-	}
+	check_permissions(cp, up);
 
 	/*
 	 * copy the attributes across
 	 */
+	trace(("mark\n"));
 	if (cattr_data->description)
 	{
 		if (cstate_data->description)
@@ -569,18 +557,110 @@ administrator, or by the developer during development"
 				cstate_data->test_exempt = 0;
 			if
 			(
-				(cattr_data->mask & cattr_test_baseline_exempt_mask)
+				(
+					cattr_data->mask
+				&
+					cattr_test_baseline_exempt_mask
+				)
 			&&
 				!cattr_data->test_baseline_exempt
 			)
 				cstate_data->test_baseline_exempt = 0;
 			if
 			(
-				(cattr_data->mask & cattr_regression_test_exempt_mask)
+				(
+					cattr_data->mask
+				&
+					cattr_regression_test_exempt_mask
+				)
 			&&
 				!cattr_data->regression_test_exempt
 			)
 				cstate_data->regression_test_exempt = 0;
+		}
+	}
+
+	/*
+	 * copy the architecture across
+	 */
+	if (cattr_data->architecture && cattr_data->architecture->length)
+	{
+		wlist		caarch;
+		wlist		pcarch;
+		long		j;
+
+		/*
+		 * make sure they did not name architectures
+		 * we have never heard of
+		 */
+		trace(("mark\n"));
+		wl_zero(&caarch);
+		for (j = 0; j < cattr_data->architecture->length; ++j)
+			wl_append(&caarch, cattr_data->architecture->list[j]);
+
+		wl_zero(&pcarch);
+		assert(pconf_data->architecture);
+		assert(pconf_data->architecture->length);
+		for (j = 0; j < pconf_data->architecture->length; ++j)
+		{
+			wl_append
+			(
+				&pcarch,
+				pconf_data->architecture->list[j]->name
+			);
+		}
+
+		if (!wl_subset(&caarch, &pcarch))
+		{
+			fatal
+			(
+			      "architecture contains variations not in project"
+			);
+		}
+		wl_free(&pcarch);
+
+		/*
+		 * developers may remove architecture exemptions
+		 * but may not grant them
+		 */
+		trace(("mark\n"));
+		if (!project_administrator_query(pp, user_name(up)))
+		{
+			wlist		csarch;
+
+			wl_zero(&csarch);
+			for (j = 0; j < cstate_data->architecture->length; ++j)
+			{
+				wl_append
+				(
+					&csarch,
+					cstate_data->architecture->list[j]
+				);
+			}
+
+			if (!wl_subset(&csarch, &caarch))
+			{
+				fatal
+				(
+			      "developers may not grant architecture exemptions"
+				);
+			}
+			wl_free(&csarch);
+		}
+		trace(("mark\n"));
+		wl_free(&caarch);
+
+		/*
+		 * copy the architecture names across
+		 */
+		change_architecture_clear(cp);
+		for (j = 0; j < cattr_data->architecture->length; ++j)
+		{
+			change_architecture_add
+			(
+				cp,
+				cattr_data->architecture->list[j]
+			);
 		}
 	}
 

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 .\" MANIFEST: User Guide, The Project Attributes
 .\"
 .bp
-.1C
+.2C
 .nh 1 "The Project Attributes"
 .LP
 The project attributes are manipulated using the
@@ -157,30 +157,33 @@ The aegis command is distributed with a set of shell scripts to
 perform these notifications by email.
 They are installed into the
 .I /usr/local/lib/aegis
-directory.
+directory, by default;
+the actual installed directory at your site is available as the
+.I ${LIBrary}
+substitution.
 The entries in the project attribute file look like this:
 .E(
 develop_end_notify_command =
-        "sh /usr/local/lib/aegis/de.sh $project $change \e
-        $developer";
+  "sh $lib/de.sh $project $change \e
+  $developer";
 develop_end_undo_notify_command =
-        "sh /usr/local/lib/aegis/deu.sh $project $change \e
-        $developer";
+  "sh $lib/deu.sh $project $change \e
+  $developer";
 review_pass_notify_command =
-        "sh /usr/local/lib/aegis/rp.sh $project $change \e
-        $developer $reviewer";
+  "sh $lib/rp.sh $project $change \e
+  $developer $reviewer";
 review_pass_undo_notify_command =
-        "sh /usr/local/lib/aegis/rpu.sh $project $change \e
-        $developer $reviewer";
+  "sh $lib/rpu.sh $project $change \e
+  $developer $reviewer";
 review_fail_notify_command =
-        "sh /usr/local/lib/aegis/rf.sh $project $change \e
-        $developer $reviewer";
+  "sh $lib/rf.sh $project $change \e
+  $developer $reviewer";
 integrate_pass_notify_command =
-        "sh /usr/local/lib/aegis/ip.sh $project $change \e
-        $developer $reviewer $integrator";
+  "sh $lib/ip.sh $project $change \e
+  $developer $reviewer $integrator";
 integrate_fail_notify_command =
-        "sh /usr/local/lib/aegis/if.sh $project $change \e
-        $developer $reviewer $integrator";
+  "sh $lib/if.sh $project $change \e
+  $developer $reviewer $integrator";
 .E)
 .nh 3 "Notification by USENET"
 .LP
@@ -188,23 +191,26 @@ The aegis command is distributed with a set of shell scripts to
 perform these notifications by USENET.
 They are installed into the
 .I /usr/local/lib/aegis
-directory.
+directory, by default;
+the actual installed directory at your site is available as the
+.I ${LIBrary}
+substitution.
 The entries in the project attribute file look like this:
 .E(
 develop_end_notify_command =
-        "sh /usr/local/lib/aegis/de.inews.sh $p $c alt.$p";
+  "sh $lib/de.inews.sh $p $c alt.$p";
 develop_end_undo_notify_command =
-        "sh /usr/local/lib/aegis/deu.inews.sh $p $c alt.$p";
+  "sh $lib/deu.inews.sh $p $c alt.$p";
 review_pass_notify_command =
-        "sh /usr/local/lib/aegis/rp.inews.sh $p $c alt.$p";
+  "sh $lib/rp.inews.sh $p $c alt.$p";
 review_pass_undo_notify_command =
-        "sh /usr/local/lib/aegis/rpu.inews.sh $p $c alt.$p";
+  "sh $lib/rpu.inews.sh $p $c alt.$p";
 review_fail_notify_command =
-        "sh /usr/local/lib/aegis/rf.inews.sh $p $c alt.$p";
+  "sh $lib/rf.inews.sh $p $c alt.$p";
 integrate_pass_notify_command =
-        "sh /usr/local/lib/aegis/ip.inews.sh $p $c alt.$p";
+  "sh $lib/ip.inews.sh $p $c alt.$p";
 integrate_fail_notify_command =
-        "sh /usr/local/lib/aegis/if.inews.sh $p $c alt.$p";
+  "sh $lib/if.inews.sh $p $c alt.$p";
 .E)
 .LP
 The last argument to each command is the newsgroup to post the article in,

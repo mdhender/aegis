@@ -23,3 +23,5 @@
 .B -INDependent
 This option is used to specify that the test is to be run independent
 of any particular change.
+If no tests are named,
+all tests in the baseline will be run.

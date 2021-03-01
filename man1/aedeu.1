@@ -49,7 +49,9 @@ command is used to
 recall a change for further development.
 .PP
 Successful execution of this command returns the change
-to the 'being_developed' state.
+to the
+.I "being developed"
+state.
 .PP
 The files are changed back to being owned by the current user,
 and cease to be read-only.
@@ -72,9 +74,28 @@ sh$	aedeu(){\*(n) -deu $* -v}
 .SH ERRORS
 It is an error if
 the change is not in one of
-the 'being_reviewed' or 'awaiting_integration' states.
+the
+.I "being reviewed"
+or
+.I "awaiting integration"
+states.
 .br
 It is an error if
 the change was not developed by the current user.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aede 1
+complete development of a change
+.TP
+.IR aerp 1
+pass review of a change
+.TP
+.IR aerf 1
+fail review of a change
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

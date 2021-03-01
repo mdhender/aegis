@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,20 @@
  * MANIFEST: wrappers around operating system functions
  */
 
-#include <stdlib.h>
+#include <ac/stdlib.h>
 #include <errno.h>
 #include <stdio.h>
-#include <string.h>
+#include <ac/string.h>
+#include <ac/limits.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <signal.h>
-#include <unistd.h>
+#include <ac/unistd.h>
 #include <utime.h>
+#include <pwd.h>
+#include <grp.h>
 
-#include <conf.h>
 #include <dir.h>
 #include <error.h>
 #include <file.h>
@@ -45,12 +48,21 @@
 #define MAX_CMD_RPT 36
 
 
-static int interrupted;
+static	int	interrupted;
+static	int	become_orig_uid;
+static	int	become_orig_gid;
+static	int	become_orig_umask;
+static	int	become_inited;
+static	int	become_testing;
+static	int	become_active;
+static	int	become_active_uid;
+static	int	become_active_gid;
+static	int	become_active_umask;
 
 
-static void interrupt _((int));
+static RETSIGTYPE interrupt _((int));
 
-static void
+static RETSIGTYPE
 interrupt(n)
 	int	n;
 {
@@ -65,7 +77,7 @@ os_waitpid_status(child, cmd)
 	char		*cmd;
 {
 	int		result;
-	void		(*hold)_((int));
+	RETSIGTYPE	(*hold)_((int));
 	int		a, b, c;
 	int		status;
 
@@ -121,9 +133,15 @@ os_exists(path)
 	string_ty	*path;
 {
 	struct stat	st;
+	int		oret;
 
 	os_become_must_be_active();
-	if (glue_stat(path->str_text, &st))
+#ifdef S_IFLNK
+	oret = glue_lstat(path->str_text, &st);
+#else
+	oret = glue_stat(path->str_text, &st);
+#endif
+	if (oret)
 	{
 		if (errno != ENOENT)
 			nfatal("stat(\"%s\")", path->str_text);
@@ -154,7 +172,7 @@ os_mkdir(path, mode)
 	 * the one intended (egid).
 	 */
 	os_become_query(&uid, &gid, &um);
-	if (glue_chown(path->str_text, -1, gid))
+	if (glue_chown(path->str_text, uid, gid))
 		nfatal("chgrp(\"%s\", %d)", path->str_text, gid);
 
 	/*
@@ -248,6 +266,7 @@ os_unlink(path)
 	string_ty	*path;
 {
 	struct stat	st;
+	int		oret;
 
 	trace(("os_unlink(path = %08lX)\n{\n"/*}*/, path));
 	os_become_must_be_active();
@@ -258,12 +277,12 @@ os_unlink(path)
 	 * because we are set-uid-root, and root can unlink directories!
 	 */
 #ifdef S_IFLNK
-	if (glue_lstat(path->str_text, &st))
-		nfatal("lstat(\"%s\")", path->str_text);
+	oret = glue_lstat(path->str_text, &st);
 #else
-	if (glue_stat(path->str_text, &st))
-		nfatal("stat(\"%s\")", path->str_text);
+	oret = glue_stat(path->str_text, &st);
 #endif
+	if (oret)
+		nfatal("stat(\"%s\")", path->str_text);
 	if ((st.st_mode & S_IFMT) == S_IFDIR)
 		fatal("unlink(\"%s\"): is a directory", path->str_text);
 	if (glue_unlink(path->str_text))
@@ -276,6 +295,7 @@ os_unlink_errok(path)
 	string_ty	*path;
 {
 	struct stat	st;
+	int		oret;
 
 	trace(("os_unlink_errok(path = %08lX)\n{\n"/*}*/, path));
 	os_become_must_be_active();
@@ -286,22 +306,17 @@ os_unlink_errok(path)
 	 * because we are set-uid-root, and root can unlink directories!
 	 */
 #ifdef S_IFLNK
-	if (glue_lstat(path->str_text, &st))
-	{
-		if (errno != ENOENT)
-			nfatal("lstat(\"%s\")", path->str_text);
-		nerror("warning: lstat(\"%s\")", path->str_text);
-		goto done;
-	}
+	oret = glue_lstat(path->str_text, &st);
 #else
-	if (glue_stat(path->str_text, &st))
+	oret = glue_stat(path->str_text, &st);
+#endif
+	if (oret)
 	{
 		if (errno != ENOENT)
 			nfatal("stat(\"%s\")", path->str_text);
 		nerror("warning: stat(\"%s\")", path->str_text);
 		goto done;
 	}
-#endif
 	if ((st.st_mode & S_IFMT) == S_IFDIR)
 	{
 		error
@@ -433,7 +448,7 @@ os_pathname(path, resolve)
 	int		c;
 	int		found;
 #ifdef S_IFLNK
-	wlist		loop;
+	int		loop;
 #endif
 
 	/*
@@ -460,7 +475,7 @@ os_pathname(path, resolve)
 	opos = 0;
 	found = 0;
 #ifdef S_IFLNK
-	wl_zero(&loop);
+	loop = 0;
 #endif
 	while (!found)
 	{
@@ -540,20 +555,12 @@ os_pathname(path, resolve)
 #ifdef S_IFLNK
 		if (resolve)
 		{
-			char		link[2000];
+			char		pointer[2000];
 			int		nbytes;
 			string_ty	*s;
 
 			s = str_n_from_c(tmp, opos);
-			if (wl_member(&loop, s))
-			{
-				fatal
-				(
-					"symbolic link loop \"%s\" detected",
-					s->str_text
-				);
-			}
-			nbytes = glue_readlink(s->str_text, link, sizeof(link) - 1);
+			nbytes = glue_readlink(s->str_text, pointer, sizeof(pointer) - 1);
 			if (nbytes < 0)
 			{
 				/*
@@ -582,11 +589,18 @@ os_pathname(path, resolve)
 						s->str_text
 					);
 				}
-				link[nbytes] = 0;
+				if (++loop > 1000)
+				{
+					fatal
+					(
+					   "symbolic link loop \"%s\" detected",
+						s->str_text
+					);
+				}
+				pointer[nbytes] = 0;
 	
-				wl_append(&loop, s);
 				str_free(s);
-				if (link[0] == '/')
+				if (pointer[0] == '/')
 					tmp[1] = 0;
 				else
 				{
@@ -599,7 +613,7 @@ os_pathname(path, resolve)
 					(
 						"%s/%s/%s",
 						tmp,
-						link,
+						pointer,
 						path->str_text + ipos
 					);
 				str_free(path);
@@ -619,13 +633,10 @@ os_pathname(path, resolve)
 		if (opos >= tmplen)
 		{
 			tmplen += 100;
-			mem_change_size(&tmp, tmplen);
+			tmp = mem_change_size(tmp, tmplen);
 		}
 		tmp[opos++] = c;
 	}
-#ifdef S_IFLNK
-	wl_free(&loop);
-#endif
 	str_free(path);
 	assert(opos >= 1);
 	assert(tmp[0] == '/');
@@ -770,7 +781,18 @@ os_setgid(gid)
 {
 	os_become_must_not_be_active();
 	if (setgid(gid))
-		nfatal("setgid(%d)", gid);
+	{
+		if (become_testing)
+		{
+			/*
+			 * don't use os_testing_mode(),
+			 * it could mess with errno
+			 */
+			nerror("warning: setgid(%d)", gid);
+		}
+		else
+			nfatal("setgid(%d)", gid);
+	}
 }
 
 
@@ -799,6 +821,77 @@ os_execute(cmd, flags, dir)
 }
 
 
+static void who_and_where _((int, int, string_ty *));
+
+static void
+who_and_where(uid, gid, dir)
+	int		uid;
+	int		gid;
+	string_ty	*dir;
+{
+	static int	last_uid;
+	static int	last_gid;
+	static string_ty *last_dir;
+	string_ty	*rdir;
+
+	if (!option_verbose_get())
+		return;
+	if (!last_dir)
+	{
+		os_become_orig_query(&last_uid, &last_gid, (int *)0);
+		last_dir = os_curdir();
+	}
+	rdir = os_pathname(dir, 1);
+	if (!str_equal(last_dir, rdir))
+	{
+		str_free(last_dir);
+		last_dir = rdir;
+		error("cd %s", dir->str_text);
+	}
+	else
+		str_free(rdir);
+
+	if (last_uid != uid || last_gid != gid)
+	{
+		struct passwd	*pw;
+		char		user[20];
+		struct group	*gr;
+		char		group[20];
+
+		last_uid = uid;
+		pw = getpwuid(uid);
+		if (pw)
+		{
+			sprintf
+			(
+				user,
+				"\"%.*s\"",
+				(int)(sizeof(user) - 3),
+				pw->pw_name
+			);
+		}
+		else
+			sprintf(user, "%d", uid);
+
+		last_gid = gid;
+		gr = getgrgid(gid);
+		if (gr)
+		{
+			sprintf
+			(
+				group,
+				"\"%.*s\"",
+				(int)(sizeof(group) - 3),
+				gr->gr_name
+			);
+		}
+		else
+			sprintf(group, "%d", gid);
+		error("user %s, group %s", user, group);
+	}
+}
+
+
 int
 os_execute_retcode(cmd, flags, dir)
 	string_ty	*cmd;
@@ -810,14 +903,14 @@ os_execute_retcode(cmd, flags, dir)
 	int		um;
 	int		child;
 	int		result = 0;
-	static char	dev_null[] = "/dev/null";
-	void		(*hold)_((int));
+	RETSIGTYPE	(*hold)_((int));
 	string_ty	*cmd2;
 	char		*shell;
 
 	trace(("os_execute_retcode()\n{\n"/*}*/));
 	os_become_must_be_active();
 	os_become_query(&uid, &gid, &um);
+	who_and_where(uid, gid, dir);
 	if (cmd->str_length > MAX_CMD_RPT)
 		cmd2 = str_format("%.*S...", MAX_CMD_RPT - 3, cmd);
 	else
@@ -859,16 +952,26 @@ os_execute_retcode(cmd, flags, dir)
 		os_chdir(dir);
 
 		/*
-		 * Redirect stdin from /dev/null.
+		 * Redirect stdin from a broken pipe.
 		 * (Don't redirect stdin if not logging, for manual tests.)
 		 */
-		if
-		(
-			!(flags & OS_EXEC_FLAG_INPUT)
-		&&
-			!freopen(dev_null, "r", stdin)
-		)
-			nfatal("open(\"%s\")", dev_null);
+		if (!(flags & OS_EXEC_FLAG_INPUT))
+		{
+			int	pfd[2];
+			int	n;
+
+			if (pipe(pfd))
+				nfatal("pipe");
+			if (close(0))
+				nfatal("close stdin");
+			n = dup(pfd[0]);
+			if (n < 0)
+				nfatal("dup");
+			if (n != 0)
+				fatal("dup gave %d, not 0 (bug)", n);
+			if (close(pfd[0]) || close(pfd[1]))
+				nfatal("close pipe ends");
+		}
 
 		/*
 		 * let the log file (user) know what we did
@@ -903,14 +1006,20 @@ time_t
 os_mtime(path)
 	string_ty	*path;
 {
-	struct stat	statbuf;
+	struct stat	st;
 	time_t		result;
+	int		oret;
 
 	trace(("os_mtime(path = %08lX)\n{\n"/*}*/, path));
 	os_become_must_be_active();
 	trace_string(path->str_text);
 
-	if (glue_stat(path->str_text, &statbuf))
+#ifdef S_IFLNK
+	oret = glue_lstat(path->str_text, &st);
+#else
+	oret = glue_stat(path->str_text, &st);
+#endif
+	if (oret)
 		nfatal("stat(\"%s\")", path->str_text);
 
 	/*
@@ -918,10 +1027,10 @@ os_mtime(path)
 	 * They may try to fake us out by using utime,
 	 * so check the inode change time, too.
 	 */
-	if (statbuf.st_ctime > statbuf.st_mtime)
-		result = statbuf.st_ctime;
+	if (st.st_ctime > st.st_mtime)
+		result = st.st_ctime;
 	else
-		result = statbuf.st_mtime;
+		result = st.st_mtime;
 	trace(("return %s", ctime(&result)));
 	trace((/*{*/"}\n"));
 	return result;
@@ -956,11 +1065,17 @@ os_chown_check(path, mode, uid, gid)
 {
 	struct stat	st;
 	int		nerrs;
+	int		oret;
 
 	trace(("os_chown_check(path = \"%s\")\n{\n"/*}*/, path->str_text));
 	os_become_must_be_active();
 	nerrs = 0;
-	if (glue_stat(path->str_text, &st))
+#ifdef S_IFLNK
+	oret = glue_lstat(path->str_text, &st);
+#else
+	oret = glue_stat(path->str_text, &st);
+#endif
+	if (oret)
 		nfatal("stat(\"%s\")", path->str_text);
 	if (os_testing_mode())
 	{
@@ -1011,7 +1126,7 @@ os_chown_check(path, mode, uid, gid)
 			);
 			++nerrs;
 		}
-		if (st.st_gid != gid)
+		if (gid >= 0 && st.st_gid != gid)
 		{
 			error
 			(
@@ -1050,10 +1165,16 @@ os_chmod_query(path)
 {
 	int		mode;
 	struct stat	st;
+	int		oret;
 
 	trace(("os_chmod_query(path = \"%s\")\n{\n"/*}*/, path->str_text));
 	os_become_must_be_active();
-	if (glue_stat(path->str_text, &st))
+#ifdef S_IFLNK
+	oret = glue_lstat(path->str_text, &st);
+#else
+	oret = glue_stat(path->str_text, &st);
+#endif
+	if (oret)
 		nfatal("stat(\"%s\")", path->str_text);
 	mode = st.st_mode & 07777;
 	trace(("return %05o;\n", mode));
@@ -1102,7 +1223,7 @@ os_execute_slurp(cmd, flags, dir)
 	string_ty	*s2;
 
 	trace(("os_execute_slurp()\n{\n"/*}*/));
-	s1 = os_edit_filename();
+	s1 = os_edit_filename(0);
 	trace_string(s1->str_text);
 	s2 = str_format("( %S ) > %S", cmd, s1);
 	os_execute(s2, flags, dir);
@@ -1114,17 +1235,6 @@ os_execute_slurp(cmd, flags, dir)
 	trace((/*{*/"}\n"));
 	return s2;
 }
-
-
-static	int	become_orig_uid;
-static	int	become_orig_gid;
-static	int	become_orig_umask;
-static	int	become_inited;
-static	int	become_testing;
-static	int	become_active;
-static	int	become_active_uid;
-static	int	become_active_gid;
-static	int	become_active_umask;
 
 
 static void whoami _((int *, int *));
@@ -1190,40 +1300,51 @@ os_become(uid, gid, um)
 	int	gid;
 	int	um;
 {
+	trace(("os_become(uid = %d, gid = %d, um = %03o)\n{\n"/*}*/, uid, gid, um));
 	if (become_active)
 		fatal("multiple user permissions set (bug)");
 	become_active = 1;
 	if (os_testing_mode())
-		return;
-	become_active_uid = uid;
-	become_active_gid = gid;
-	become_active_umask = um;
+	{
+		become_active_umask = um;
+		umask(um);
+	}
+	else
+	{
+		become_active_uid = uid;
+		become_active_gid = gid;
+		become_active_umask = um;
 #ifndef CONF_NO_seteuid
-	if (setegid(gid))
-		nfatal("setegid(%d)", gid);
-	if (seteuid(uid))
-		nfatal("seteuid(%d)", uid);
-	umask(um);
+		if (setegid(gid))
+			nfatal("setegid(%d)", gid);
+		if (seteuid(uid))
+			nfatal("seteuid(%d)", uid);
+		umask(um);
 #endif
+	}
+	trace((/*{*/"}\n"));
 }
 
 
 void
 os_become_undo()
 {
+	trace(("os_become_undo()\n{\n"/*}*/));
 	os_become_must_be_active();
 	assert(become_inited);
 	become_active = 0;
-	if (become_testing)
-		return;
+	if (!become_testing)
+	{
 #ifndef CONF_NO_seteuid
-	if (seteuid(0))
-		nfatal("seteuid(0)");
-	if (setegid(0))
-		nfatal("setegid(0)");
+		if (seteuid(0))
+			nfatal("seteuid(0)");
+		if (setegid(0))
+			nfatal("setegid(0)");
 #endif
-	become_active_uid = 0;
-	become_active_gid = 0;
+		become_active_uid = 0;
+		become_active_gid = 0;
+	}
+	trace((/*{*/"}\n"));
 }
 
 
@@ -1235,31 +1356,32 @@ os_become_orig()
 
 
 void
-os_become_query(uid, gid, umask)
+os_become_query(uid, gid, umsk)
 	int	*uid;
 	int	*gid;
-	int	*umask;
+	int	*umsk;
 {
 	os_become_must_be_active();
 	*uid = become_active_uid;
 	if (gid)
 		*gid = become_active_gid;
-	if (umask)
-		*umask = become_active_umask;
+	if (umsk)
+		*umsk = become_active_umask;
 }
 
 
 void
-os_become_orig_query(uid, gid, umask)
+os_become_orig_query(uid, gid, umsk)
 	int	*uid;
 	int	*gid;
-	int	*umask;
+	int	*umsk;
 {
-	*uid = become_orig_uid;
+	if (uid)
+		*uid = become_orig_uid;
 	if (gid)
 		*gid = become_orig_gid;
-	if (umask)
-		*umask = become_orig_umask;
+	if (umsk)
+		*umsk = become_orig_umask;
 }
 
 
@@ -1298,7 +1420,7 @@ os_become_must_not_be_active_gizzards(file, line)
 
 
 #ifdef SIGSTOP
-#ifdef CONF_NO_tcgetpgrp
+#ifndef HAVE_TCGETPGRP
 
 #include <sys/termio.h>
 
@@ -1322,7 +1444,7 @@ tcgetpgrp(fd)
 	return result;
 }
 
-#endif /* CONF_NO_tcgetpgrp */
+#endif /* !HAVE_TCGETPGRP */
 #endif /* SIGSTOP */
 
 
@@ -1349,7 +1471,7 @@ tcgetpgrp(fd)
 int
 os_background()
 {
-	void	(*x)_((int));
+	RETSIGTYPE	(*x)_((int));
 
 	/*
 	 * C shell
@@ -1383,9 +1505,12 @@ int
 os_readable(path)
 	string_ty	*path;
 {
+	int		fd;
 	os_become_must_be_active();
-	if (glue_access(path->str_text, R_OK))
+	fd = glue_open(path->str_text, 0, 0666);
+	if (fd < 0)
 		return errno;
+	glue_close(fd);
 	return 0;
 }
 
@@ -1463,9 +1588,9 @@ os_waitpid(child, status_p)
 			nret_max += 11;
 			nbytes = nret_max * sizeof(ret_ty);
 			if (!ret)
-				ret = (ret_ty *)mem_alloc(nbytes);
+				ret = mem_alloc(nbytes);
 			else
-				mem_change_size((char **)&ret, nbytes);
+				ret = mem_change_size(ret, nbytes);
 		}
 		ret[nret].pid = pid;
 		ret[nret].status = status;
@@ -1532,7 +1657,7 @@ os_edit_new()
 	string_ty	*result;
 	FILE		*fp;
 
-	filename = os_edit_filename();
+	filename = os_edit_filename(0);
 	os_become_orig();
 	fp = glue_fopen(filename->str_text, "w");
 	if (!fp)
@@ -1547,18 +1672,223 @@ os_edit_new()
 
 
 string_ty *
-os_edit_filename()
+os_edit_filename(at_home)
+	int		at_home;
 {
-	static int num;
-	char buffer[20];
+	static int	num;
+	string_ty	*buffer;
+	string_ty	*result;
+	char		*dir;
+	int		name_max;
 
-	sprintf(buffer, "%d-%d", getpid(), ++num);
-	return
+	if (at_home)
+	{
+		dir = getenv("HOME");
+		if (!dir || dir[0] != '/')
+			dir = "/tmp";
+	}
+	else
+		dir = "/tmp";
+	name_max = 14;
+	buffer = str_format("-%d-%d", getpid(), ++num);
+	result =
 		str_format
 		(
-			"/tmp/%.*s-%s",
-			13 - (int)strlen(buffer),
+			"%s/%.*s%S",
+			dir,
+			(int)(name_max - buffer->str_length),
 			option_progname_get(),
 			buffer
 		);
+	str_free(buffer);
+	return result;
+}
+
+
+int
+os_pathconf_name_max(path)
+	string_ty	*path;
+{
+	long		result;
+	char		*p;
+
+	p = path->str_text;
+	os_become_must_be_active();
+#ifdef _PC_NAME_MAX
+	result = glue_pathconf(p, _PC_NAME_MAX);
+	if (result < 0 && (errno == EINVAL || errno == ENOSYS))
+	{
+		/*
+		 * Probably NFS/2 mounted (NFS/3 added pathconf), so
+		 * we will *guess* it's the same as the root filesystem.
+		 * Default to 14 if root is also NFS mounted.
+		 */
+		p = "/";
+		result = glue_pathconf(p, _PC_NAME_MAX);
+		if (result < 0 && (errno == EINVAL || errno == ENOSYS))
+		{
+#ifdef HAVE_LONG_FILE_NAMES
+			result = 255;
+#else
+			result = 14;
+#endif
+		}
+	}
+	if (result < 0)
+		nfatal("pathconf(\"%s\", {NAME_MAX})", p);
+#if INT_MAX < LONG_MAX
+	if (result > INT_MAX)
+		result = INT_MAX;
+#endif
+#else
+
+	/*
+	 * system does not have pathconf
+	 */
+#ifdef HAVE_LONG_FILE_NAMES
+	result = 255;
+#else
+	result = 14;
+#endif
+#endif
+	return result;
+}
+
+
+void
+os_symlink(src, dst)
+	string_ty	*src;
+	string_ty	*dst;
+{
+	trace(("os_symlink()\n{\n"/*}*/));
+	os_become_must_be_active();
+#ifdef S_IFLNK
+	if (glue_symlink(src->str_text, dst->str_text))
+		nfatal("symlink(\"%s\", \"%s\")", src->str_text, dst->str_text);
+#else
+	fatal
+	(
+		"symlink(\"%s\", \"%s\"): symbolic links not available",
+		src->str_text,
+		dst->str_text
+	);
+#endif
+	trace((/*{*/"}\n"));
+}
+
+
+string_ty *
+os_readlink(path)
+	string_ty	*path;
+{
+	int		nbytes;
+	string_ty	*result;
+	char		buffer[2000];
+
+	trace(("os_readlink(\"%s\")\n{\n"/*}*/, path->str_text));
+	os_become_must_be_active();
+#ifdef S_IFLNK
+	nbytes = glue_readlink(path->str_text, buffer, sizeof(buffer));
+	if (nbytes < 0)
+		nfatal("readlink(\"%s\")", path->str_text);
+	if (nbytes == 0)
+		fatal("readlink(\"%s\") returned \"\"", path->str_text);
+	result = str_n_from_c(buffer, nbytes);
+#else
+	fatal
+	(
+		"readlink(\"%s\"): symbolic links not available",
+		src->str_text,
+		dst->str_text
+	);
+	result = str_copy(path);
+#endif
+	trace(("return \"%s\";\n", result->str_text));
+	trace((/*{*/"}\n"));
+	return result;
+}
+
+
+int
+os_symlink_query(path)
+	string_ty	*path;
+{
+	int		result;
+	struct stat	st;
+
+	trace(("os_symlink_query(\"%s\")\n{\n"/*}*/, path->str_text));
+	os_become_must_be_active();
+#ifdef S_IFLNK
+	result =
+		(
+			!glue_lstat(path->str_text, &st)
+		&&
+			(st.st_mode & S_IFMT) == S_IFLNK
+		);
+#else
+	result = 0;
+#endif
+	trace(("return %d;\n", result));
+	trace((/*{*/"}\n"));
+	return result;
+}
+
+
+void
+os_junkfile(path, mode)
+	string_ty	*path;
+	int		mode;
+{
+	os_become_must_be_active();
+	if (glue_junkfile(path->str_text))
+		nfatal("fill %s with gibberish", path->str_text);
+	if (glue_chmod(path->str_text, mode))
+		nfatal("chmod(\"%s\", 0%o)", path->str_text, mode);
+}
+
+
+/*
+ * NAME
+ *	os_throttle
+ *
+ * SYNOPSIS
+ *	void os_throttle(void);
+ *
+ * DESCRIPTION
+ *	This unlikely function is used to slow aegis down.  it is
+ *	primarily used for aegis' own tests, to ensure that the time
+ *	stamps are kosher even on ultra-fast machines.  It is also
+ *	useful in shell scripts, e.g. automatic integration queue
+ *	handling.
+ */
+
+void
+os_throttle()
+{
+	static int	nsecs;
+
+	if (nsecs == 0)
+	{
+		string_ty	*s1;
+		string_ty	*s2;
+		char		*cp;
+
+		s1 = str_format("%s_THROTTLE", option_progname_get());
+		s2 = str_upcase(s1);
+		str_free(s1);
+		cp = getenv(s2->str_text);
+		str_free(s2);
+		if (!cp)
+			nsecs = -1;
+		else
+		{
+			nsecs = atoi(cp);
+			if (nsecs <= 0)
+				nsecs = -1;
+			else if (nsecs > 5)
+				nsecs = 5;
+		}
+	}
+	if (nsecs > 0)
+		sleep(nsecs);
 }

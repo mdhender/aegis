@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,18 +23,25 @@
 %{
 
 #include <ctype.h>
-#include <string.h>
-#include <stdlib.h>
+#include <stdio.h>
+#include <ac/stdlib.h>
+#include <ac/string.h>
 
 #include <error.h>
-#include <id.h>
 #include <indent.h>
 #include <lex.h>
 #include <mem.h>
 #include <parse.h>
 #include <str.h>
+#include <symtab.h>
 #include <trace.h>
-#include <type.h>
+#include <type/enumeration.h>
+#include <type/integer.h>
+#include <type/list.h>
+#include <type/string.h>
+#include <type/structure.h>
+#include <type/time.h>
+#include <word.h>
 
 #ifdef DEBUG
 #define YYDEBUG 1
@@ -45,6 +52,7 @@ extern int yydebug;
 %}
 
 %token	TYPE
+%token	TIME
 %token	NAME
 %token	STRING
 %token	STRING_CONSTANT
@@ -56,63 +64,48 @@ extern int yydebug;
 {
 	string_ty	*lv_string;
 	long		lv_integer;
-	parse_list_ty	*lv_parse_list;
 	type_ty		*lv_type;
 }
 
-%type <lv_string> NAME
+%type <lv_string> NAME STRING_CONSTANT
 %type <lv_integer> INTEGER_CONSTANT
-%type <lv_parse_list> field_list enum_list
-%type <lv_type> type structure list enumeration
-%type <lv_string> type_name field field_name enum_name STRING_CONSTANT
+%type <lv_type> type structure list enumeration enum_list_begin
 
 %{
 
 typedef struct name_ty name_ty;
 struct name_ty
 {
-	string_ty	*name;
-	name_ty		*prev;
+	name_ty		*parent;
+	string_ty	*name_short;
+	string_ty	*name_long;
+	type_ty		*type;
 };
 
-static	parse_list_ty	*type_root;
-static	name_ty		*name_root;
-
-
-static void pl_append _((parse_list_ty **, string_ty *));
-
-static void
-pl_append(listp, s)
-	parse_list_ty	**listp;
-	string_ty	*s;
-{
-	parse_list_ty	*plp;
-
-	trace(("pl_append(listp = %08lX, s = \"%s\")\n{\n"/*}*/, listp, s->str_text));
-	while (*listp)
-		listp = &(*listp)->next;
-	plp = (parse_list_ty *)mem_alloc(sizeof(parse_list_ty));
-	plp->name = str_copy(s);
-	plp->next = 0;
-	*listp = plp;
-	trace((/*{*/"}\n"));
-}
+static name_ty	*current;
+static size_t	emit_length;
+static size_t	emit_length_max;
+static type_ty	**emit_list;
+static int	time_used;
+static symtab_ty *typedef_symtab;
+static wlist	initialize;
 
 
 static void push_name _((string_ty *));
 
 static void
 push_name(s)
-	string_ty *s;
+	string_ty	*s;
 {
-	name_ty	*np;
+	name_ty		*np;
 
 	trace(("push_name(s = \"%s\")\n{\n"/*}*/, s->str_text));
-	assert(name_root);
-	np = (name_ty *)mem_alloc(sizeof(name_ty));
-	np->name = str_format("%S_%S", name_root->name, s);
-	np->prev = name_root;
-	name_root = np;
+	np = mem_alloc(sizeof(name_ty));
+	np->name_short = str_copy(s);
+	np->name_long = str_format("%S_%S", current->name_long, s);
+	np->parent = current;
+	np->type = 0;
+	current = np;
 	trace((/*{*/"}\n"));
 }
 
@@ -121,15 +114,17 @@ static void push_name_abs _((string_ty *));
 
 static void
 push_name_abs(s)
-	string_ty *s;
+	string_ty	*s;
 {
-	name_ty	*np;
+	name_ty		*np;
 
 	trace(("push_name_abs(s = \"%s\")\n{\n"/*}*/, s->str_text));
-	np = (name_ty *)mem_alloc(sizeof(name_ty));
-	np->name = str_copy(s);
-	np->prev = name_root;
-	name_root = np;
+	np = mem_alloc(sizeof(name_ty));
+	np->name_short = str_copy(s);
+	np->name_long = str_copy(s);
+	np->parent = current;
+	np->type = 0;
+	current = np;
 	trace((/*{*/"}\n"));
 }
 
@@ -139,44 +134,43 @@ static void pop_name _((void));
 static void
 pop_name()
 {
-	name_ty	*np;
+	name_ty		*np;
 
 	trace(("pop_name()\n{\n"/*}*/));
-	np = name_root;
-	name_root = np->prev;
-	str_free(np->name);
-	free(np);
+	np = current;
+	current = np->parent;
+	str_free(np->name_short);
+	str_free(np->name_long);
+	mem_free(np);
 	trace((/*{*/"}\n"));
 }
 
 
-static string_ty *get_name _((void));
-
-static string_ty *
-get_name()
-{
-	return str_copy(name_root->name);
-}
-
-
-static void define_type _((string_ty *, type_ty *));
+static void define_type _((type_ty *));
 
 static void
-define_type(name, type)
-	string_ty *name;
-	type_ty	*type;
+define_type(type)
+	type_ty		*type;
 {
-	trace(("define_type(name = \"%s\")\n{\n"/*}*/, name->str_text));
+	size_t		nbytes;
+
+	trace(("define_type(type = %08lX)\n{\n"/*}*/, (long)type));
+	if (emit_length >= emit_length_max)
+	{
+		emit_length_max += 10;
+		nbytes = emit_length_max * sizeof(emit_list[0]);
+		emit_list = mem_change_size(emit_list, nbytes);
+	}
+	emit_list[emit_length++] = type;
 	type->included_flag = lex_in_include_file();
-	pl_append(&type_root, name);
 	trace((/*{*/"}\n"));
 }
 
 
-static char *basename _((char *));
+static char *base_name _((char *));
 
 static char *
-basename(s)
+base_name(s)
 	char		*s;
 {
 	static char	buffer[256];
@@ -200,51 +194,34 @@ basename(s)
 }
 
 
-void
-parse(definition_file, code_file, include_file)
-	char		*definition_file;
-	char		*code_file;
+static void generate_include_file _((char *));
+
+static void
+generate_include_file(include_file)
 	char		*include_file;
 {
-	string_ty	*s;
 	char		*cp1;
-	parse_list_ty	*tnp;
+	size_t		j;
+	string_ty	*s;
 
-	trace(("parse(def = \"%s\", c = \"%s\", h = \"%s\")\n{\n"/*}*/,
-		definition_file, code_file, include_file));
-#ifdef DEBUG
-	yydebug = trace_pretest_;
-#endif
-
-	s = str_from_c(basename(definition_file));
-	push_name_abs(s);
-
-	lex_open(definition_file);
-	trace(("yyparse()\n{\n"/*}*/));
-	yyparse();
-	trace((/*{*/"}\n"));
-	lex_close();
-
-	pop_name();
-
+	trace(("generate_include_file(h = \"%s\")\n{\n"/*}*/, include_file));
+	s = current->name_long;
 	indent_open(include_file);
-	cp1 = basename(include_file);
+	cp1 = base_name(include_file);
 	indent_putchar('\n');
 	indent_printf("#ifndef %s_H\n", cp1);
 	indent_printf("#define %s_H\n", cp1);
 	indent_putchar('\n');
-	indent_printf("#include <main.h>\n");
+	if (time_used)
+	{
+		indent_printf("#include <ac/time.h>\n");
+		indent_putchar('\n');
+	}
 	indent_printf("#include <type.h>\n");
 	indent_printf("#include <str.h>\n");
 	indent_printf("#include <parse.h>\n");
-	for (tnp = type_root; tnp; tnp = tnp->next)
-	{
-		type_ty	*tp;
-
-		if (!id_search(tnp->name, ID_CLASS_TYPE, (long *)&tp))
-			fatal("type \"%s\" lost!", tnp->name->str_text);
-		type_gen_include(tp, tnp->name);
-	}
+	for (j = 0; j < emit_length; ++j)
+		type_gen_include(emit_list[j]);
 	indent_putchar('\n');
 	indent_printf
 	(
@@ -258,19 +235,36 @@ parse(definition_file, code_file, include_file)
 		s->str_text,
 		s->str_text
 	);
+	indent_printf("void %s__rpt_init _((void));\n", s->str_text);
 	indent_putchar('\n');
 	indent_printf("#endif /* %s_H */\n", cp1);
 	indent_close();
+	trace((/*{*/"}\n"));
+}
 
+
+static void generate_code_file _((char *, char *));
+
+static void
+generate_code_file(code_file, include_file)
+	char		*code_file;
+	char		*include_file;
+{
+	char		*cp1;
+	size_t		j;
+	string_ty	*s;
+
+	trace(("generate_code_file(c = \"%s\", h = \"%s\")\n{\n"/*}*/,
+		code_file, include_file));
 	cp1 = strrchr(include_file, '/');
 	if (cp1)
 		cp1++;
 	else
 		cp1 = include_file;
-
+	s = current->name_short;
 	indent_open(code_file);
 	indent_putchar('\n');
-	indent_printf("#include <stddef.h>\n");
+	indent_printf("#include <ac/stddef.h>\n");
 	indent_printf("#include <stdio.h>\n");
 	indent_putchar('\n');
 	indent_printf("#include <%s>\n", cp1);
@@ -281,16 +275,15 @@ parse(definition_file, code_file, include_file)
 	indent_printf("#include <os.h>\n");
 	indent_printf("#include <trace.h>\n");
 	indent_printf("#include <type.h>\n");
-	cp1 = basename(code_file);
-	for (tnp = type_root; tnp; tnp = tnp->next)
+	cp1 = base_name(code_file);
+	for (j = 0; j < emit_length; ++j)
 	{
-		type_ty	*tp;
+		type_ty		*tp;
 
-		if (!id_search(tnp->name, ID_CLASS_TYPE, (long *)&tp))
-			fatal("type \"%s\" lost!", tnp->name->str_text);
-		if (tp->included_flag)
+		tp = emit_list[j];
+		if (tp->included_flag && tp->is_a_typedef)
 			continue;
-		type_gen_code(tp, tnp->name);
+		type_gen_code(tp);
 	}
 	indent_putchar('\n');
 	indent_printf("%s\n", cp1);
@@ -300,12 +293,15 @@ parse(definition_file, code_file, include_file)
 	indent_less();
 	indent_printf("{\n"/*}*/);
 	indent_printf("%s\1result;\n\n", cp1);
-	indent_printf("trace((\"%s_read_file(filename = \\\"%%s\\\")\\n{\\n\"/*}*/, filename));\n", cp1);
+	indent_printf
+	(
+   "trace((\"%s_read_file(filename = \\\"%%s\\\")\\n{\\n\"/*}*/, filename));\n",
+		cp1
+	);
 	indent_printf("os_become_must_be_active();\n");
 	indent_printf
 	(
-		"result = (%s)parse(filename, &%s_type);\n",
-		s->str_text,
+		"result = parse(filename, &%s_type);\n",
 		s->str_text
 	);
 	indent_printf("trace((\"return %%08lX;\\n\", result));\n");
@@ -320,7 +316,12 @@ parse(definition_file, code_file, include_file)
 	indent_printf("%s\1value;\n", s->str_text);
 	indent_less();
 	indent_printf("{\n"/*}*/);
-	indent_printf("trace((\"%s_write_file(filename = \\\"%%s\\\", value = %%08lX)\\n{\\n\"/*}*/, filename, value));\n", cp1);
+	indent_printf
+	(
+		"trace((\"%s_write_file(filename = \\\"%%s\\\", value = \
+%%08lX)\\n{\\n\"/*}*/, filename, (long)value));\n",
+		cp1
+	);
 	indent_printf("if (filename)\n");
 	indent_more();
 	indent_printf("os_become_must_be_active();\n");
@@ -330,9 +331,71 @@ parse(definition_file, code_file, include_file)
 	indent_printf("indent_close();\n");
 	indent_printf("trace((/*{*/\"}\\n\"));\n");
 	indent_printf(/*{*/"}\n");
-	indent_close();
 
+	indent_putchar('\n');
+	indent_printf("void\n");
+	indent_printf("%s__rpt_init()\n", s->str_text);
+	indent_printf("{\n"/*}*/);
+	indent_printf("trace((\"%s__rpt_init()\\n{\\n\"/*}*/));\n", cp1);
+	for (j = 0; j < initialize.wl_nwords; ++j)
+		indent_printf("%s\n", initialize.wl_word[j]->str_text);
+	indent_printf("trace((/*{*/\"}\\n\"));\n");
+	indent_printf(/*{*/"}\n");
+	indent_close();
+	trace((/*{*/"}\n"));
+}
+
+
+void
+generate_code__init(s)
+	string_ty	*s;
+{
+	wl_append(&initialize, s);
+}
+
+
+void
+parse(definition_file, code_file, include_file)
+	char		*definition_file;
+	char		*code_file;
+	char		*include_file;
+{
+	string_ty	*s;
+
+	/*
+	 * initial name is the basename of the definition file
+	 */
+	trace(("parse(def = \"%s\", c = \"%s\", h = \"%s\")\n{\n"/*}*/,
+		definition_file, code_file, include_file));
+#ifdef DEBUG
+	yydebug = trace_pretest_;
+#endif
+	s = str_from_c(base_name(definition_file));
+	push_name_abs(s);
 	str_free(s);
+	typedef_symtab = symtab_alloc(10);
+
+	/*
+	 * parse the definition file
+	 */
+	lex_open(definition_file);
+	trace(("yyparse()\n{\n"/*}*/));
+	yyparse();
+	trace((/*{*/"}\n"));
+	lex_close();
+
+	/*
+	 * remember to emit a structure containing its fields
+	 */
+	type_structure_toplevel(current->type);
+	define_type(current->type);
+
+	/*
+	 * generate the files
+	 */
+	generate_include_file(include_file);
+	generate_code_file(code_file, include_file);
+	pop_name();
 	trace((/*{*/"}\n"));
 }
 
@@ -342,14 +405,6 @@ parse(definition_file, code_file, include_file)
 
 description
 	: typedef_list field_list
-		{
-			string_ty	*s;
-			type_ty		*type;
-
-			s = get_name();
-			type = type_create_struct(s, $2, 1);
-			define_type(s, type);
-		}
 	;
 
 typedef_list
@@ -360,7 +415,8 @@ typedef_list
 typedef
 	: TYPE type_name '=' type ';'
 		{
-			str_free($2);
+			$4->is_a_typedef = 1;
+			symtab_assign(typedef_symtab, current->name_long, $4);
 			pop_name();
 		}
 	| '#' INCLUDE STRING_CONSTANT
@@ -373,7 +429,6 @@ typedef
 type_name
 	: NAME
 		{
-			$$ = $1;
 			push_name_abs($1);
 		}
 	;
@@ -381,8 +436,12 @@ type_name
 field
 	: field_name '=' type ';'
 		{
-			id_assign($1, ID_CLASS_FIELD, (long)$3);
-			$$ = $1;
+			type_member_add
+			(
+				current->parent->type,
+				current->name_short,
+				$3
+			);
 			pop_name();
 		}
 	;
@@ -391,120 +450,121 @@ field_name
 	: NAME
 		{
 			push_name($1);
-			$$ = $1;
+			str_free($1);
 		}
 	;
 
 type
 	: STRING
 		{
-			$$ = type_create_string();
+			$$ = type_new(&type_string, (string_ty *)0);
 		}
 	| INTEGER
 		{
-			$$ = type_create_integer();
+			$$ = type_new(&type_integer, (string_ty *)0);
+		}
+	| TIME
+		{
+			time_used = 1;
+			$$ = type_new(&type_time, (string_ty *)0);
 		}
 	| NAME
 		{
-			type_ty		*tp;
+			type_ty		*data;
 
-			if (id_search($1, ID_CLASS_TYPE, (long *)&tp))
-			{
-				/* $$ = type_create_ref(get_name(), $1); */
-				$$ = tp;
-			}
+			data = symtab_query(typedef_symtab, $1);
+			if (data)
+				$$ = data;
 			else
 			{
 				yyerror("type \"%s\" undefined", $1->str_text);
-				$$ = type_create_integer();
+				$$ = type_new(&type_integer, (string_ty *)0);
 			}
 			str_free($1);
 		}
 	| structure
-		{ $$ = $1; }
+		{
+			$$ = $1;
+			define_type($$);
+		}
 	| list
-		{ $$ = $1; }
+		{
+			$$ = $1;
+			define_type($$);
+		}
 	| enumeration
-		{ $$ = $1; }
+		{
+			$$ = $1;
+			define_type($$);
+		}
 	;
 
 structure
 	: '{' field_list '}'
 		{
-			string_ty	*s;
-
-			s = get_name();
-			$$ = type_create_struct(s, $2, 0);
-			define_type(s, $$);
+			$$ = current->type;
 		}
 	;
 
 field_list
 	: /* empty */
 		{
-			$$ = 0;
+			current->type =
+				type_new(&type_structure, current->name_long);
 		}
 	| field_list field
-		{
-			$$ = $1;
-			pl_append(&$$, $2);
-		}
 	;
 
 list
 	: '[' type ']'
 		{
-			string_ty	*s;
 			static string_ty	*list;
 
 			if (!list)
 				list = str_from_c("list");
 			push_name(list);
-			s = get_name();
-			$$ = type_create_list(s, $2);
-			define_type(s, $$);
+			$$ = type_new(&type_list, current->name_long);
+			type_member_add($$, (string_ty *)0, $2);
 			pop_name();
 		}
 	;
 
 enumeration
-	: '(' enum_list optional_comma ')'
+	: '(' enum_list_begin enum_list optional_comma ')'
 		{
-			string_ty *s;
+			$$ = $2;
+		}
+	;
 
-			s = get_name();
-			$$ = type_create_enum(s, $2);
-			define_type(s, $$);
+enum_list_begin
+	: /* empty */
+		{
+			$$ = type_new(&type_enumeration, current->name_long);
+			current->type = $$;
+		}
+	;
+
+enum_list
+	: enum_name
+	| enum_list ',' enum_name
+	;
+
+enum_name
+	: NAME
+		{
+			push_name($1);
+			str_free($1);
+			type_member_add
+			(
+				current->parent->type,
+				current->name_short,
+				(type_ty *)0
+			);
+			pop_name();
 		}
 	;
 
 optional_comma
 	: /* empty */
 	| ','
-	;
-
-enum_list
-	: enum_name
-		{
-			$$ = 0;
-			pl_append(&$$, $1);
-		}
-	| enum_list ',' enum_name
-		{
-			$$ = $1;
-			pl_append(&$$, $3);
-		}
-	;
-
-enum_name
-	: NAME
-		{
-			string_ty *s;
-
-			push_name($1);
-			s = get_name();
-			pop_name();
-			id_assign(s, ID_CLASS_ENUMEL, (long)$1);
-			$$ = s;
-		}
 	;

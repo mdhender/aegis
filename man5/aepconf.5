@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -38,6 +38,9 @@ build_command = string;
 This field describes how to build the project
 (actually, how to do an integration build).
 This field is mandatory.
+Used by the
+.IR aeb (1)
+command.
 All of the substitutions described by
 .IR aesub (5)
 are available.
@@ -45,17 +48,62 @@ are available.
 development_build_command = string;
 This field describes how to do a development build.
 If this field is absent, it defaults to the above.
+Used by the
+.IR aeb (1)
+command.
 All of the substitutions described by
 .IR aesub (5)
 are available.
 .TP 8n
+create_symlinks_before_build = boolean;
+.br
+This flag is true if aegis should create symlinks from the
+development directory to the baseline for all files in the baseline
+not in the development directory immediately before a
+development_build_command is issued.
+Usually use to trick dumb DMTs
+into believing the development directory contains an entire copy of
+the project,
+though sometimes the DMT is smart enough, the tools is
+must work with are not.
+Symlinks in the development directory which
+point to nonexistent files will be removed.
+Defaults to false if not set.
+.TP 8n
+remove_symlinks_after_build = boolean;
+.br
+This flag is true if aegis should remove symlinks which point from
+the development directory to the baseline directory immediately
+after a development_build_command is issued.
+Only consulted if
+the create_symlinks_before_build field is true,
+for the purpose of
+reversing the actions of the create_symlinks_before_build field.
+Defaults to false if not set.
+.TP 8n
+symlink_exceptions = [ string ];
+This field is used to name specific files for which symbolic links
+must not be made between the development directory and the baseline.
+These are usually state files for various tools.
+.TP 8n
 change_file_command = string;
 .RS 8n
 This field contains a command to be executed whenever
-a '\*(n) -CoPy_file', '\*(n) -CoPy_file_Undo', '\*(n) -New_File', '\*(n) -New_File_Undo', '\*(n) -ReMove_file'
+a '\*(n) -CoPy_file', '\*(n) -CoPy_file_Undo', '\*(n) -New_File',
+'\*(n) -New_File_Undo', '\*(n) -ReMove_file'
 or '\*(n) -ReMove_file_Undo'
 command is successful.
 If this field is absent, nothing is done.
+Used by the
+.IR aecp (1),
+.IR aecpu (1),
+.IR aenf (1),
+.IR aenfu (1),
+.IR aerm (1),
+.IR aermu (1),
+and
+.IR aemv (1)
+commands.
 All of the substitutions described by
 .IR aesub (5)
 are available;
@@ -77,6 +125,9 @@ above, when
 (b) some other change has been integrated into
 the baseline since the last build.
 If this field is absent, nothing is done.
+Used by the
+.IR aeb (1)
+command.
 All of the substitutions described by
 .IR aesub (5)
 are available.
@@ -86,11 +137,14 @@ This field contains a command to be executed whenever
 a '\*(n) -Integrate_Begin'
 command is successful.
 If this field is absent, nothing is done.
+Used by the
+.IR aeib (1)
+command.
 All of the substitutions described by
 .IR aesub (5)
 are available.
 .TP 8n
-link_integration_directory
+link_integration_directory = boolean;
 .br
 This flag is true if aegis should link the files from the baseline
 into the integration directory,
@@ -103,11 +157,17 @@ or
 etc)
 must unlink targets before rebuilding them;
 if this is not done the baseline will be corrupted.
+Used by the
+.IR aeib (1)
+command.
 .TP 8n
 history_create_command = string;
 .RS 8n
 This field is used to create a new history.
 The command is always executed as the project owner.
+Used by the
+.IR aeip (1)
+command.
 All of the substitutions described by
 .IR aesub (5)
 are available;
@@ -131,6 +191,11 @@ history_get_command = string;
 .RS 8n
 This field is used to get a file from history.
 The command may be executed by developers.
+Used by the
+.IR aeip (1)
+and
+.IR aecp (1)
+commands.
 All of the substitutions described by
 .IR aesub (5)
 are available;
@@ -160,6 +225,9 @@ history_put_command = string;
 .RS
 This field is used to add a new change to the history.
 The command is always executed as the project owner.
+Used by the
+.IR aeip (1)
+command.
 All of the substitutions described by
 .IR aesub (5)
 are available;
@@ -184,6 +252,11 @@ history_query_command = string;
 This field is used to query the topmost edit of a history file.
 Result to be printed on the standard output.
 This command may be executed by developers.
+Used by the
+.IR aeip (1)
+and
+.IR aecp (1)
+commands.
 All of the substitutions described by
 .IR aesub (5)
 are available;
@@ -203,6 +276,9 @@ diff_command = string;
 .RS
 This field is used to difference of 2 files.
 The command is always executed by developers.
+Used by the
+.IR aed (1)
+command.
 All of the substitutions described by
 .IR aesub (5)
 are available;
@@ -228,6 +304,9 @@ diff3_command = string;
 .RS 8n
 This field is used to difference 3 files.
 The command is always executed by developers.
+Used by the
+.IR aed (1)
+command.
 All of the substitutions described by
 .IR aesub (5)
 are available;
@@ -251,6 +330,122 @@ The absolute path of the file in the development directory.
 ${Output}
 .br
 The absolute path of the file in which to write the difference listing.
+.RE
+.TP 8n
+test_command = string;
+.RS
+This field is used to set the command to be executed by the
+.IR aet (1)
+command.
+Defaults to "$shell $file_name" if not set.
+.PP
+All of the substitutions described in
+.IR aesub (5)
+are available.
+In addition:
+.TP 8n.
+${File_Name}
+.br
+The absolute path of the test to be executed.
+.PP
+Note that tests are source files,
+and thus never have the execute bit set.
+.RE
+.TP 8n
+development_test_command = string;
+.RS
+This field is used to set the command to be executed by the
+.IR aet (1)
+command when a change is in the
+.I "being developed"
+state.
+Defaults to be the same as the
+.I test_command
+field if not set.
+.PP
+.B "Note:"
+It is a significantly bad idea to
+make tests behave differently in
+.I "being development"
+and
+.I "being integrated"
+states;
+avoid this at all costs.
+.PP
+All of the substitutions described in
+.IR aesub (5)
+are available.
+In addition:
+.TP
+${File_Name}
+.br
+The absolute path of the test to be executed.
+.PP
+Note that tests are source files,
+and thus never have the execute bit set.
+.RE
+.TP 8n
+architecture = [{ ... }];
+.br
+.RS
+This field is a list of
+system and machine architectures on which each change
+must successfully build and test.
+The structures listed have fields as follows:
+.TP 8n
+name = string;
+.br
+The name of the architecture.
+This name is available in the
+.I ${ARCHitecture}
+substitution (see
+.IR aesub (5)
+for more information),
+as well as being used internally by aegis.
+.TP 8n
+pattern = string;
+.br
+.RS
+The system and machine architecture are determined by using the
+.IR uname (2)
+system call.
+The 
+.IR uname (2)
+return value is assembled into a string of the
+form "\fIsysname\fB-\fIrelease\fB-\fIversion\fB-\fImachine\fR".
+.PP
+The pattern field must match this uname result string.
+The first match found is used.
+The pattern is a shell file name pattern,
+see
+.IR sh (1)
+for more information.
+.PP
+For example, the pattern
+.I SunOS-4.1*-*-sun4*
+matches a machine the author commonly uses,
+which returns
+.I "SunOS-4.1.3-8-sun4m"
+from the
+.IR uname (2)
+system call.
+.RE
+.PP
+If the architecture field is not set,
+it defaults to
+.RS
+.nf
+.ft CW
+architecture =
+[
+	{
+		name = "unspecified";
+		pattern = "*";
+	}
+];
+.ft R
+.fi
+.RE
 .RE
 .TP 8n
 file_template = [ { ... } ];
@@ -279,8 +474,124 @@ There are no substitutions.
 All of the substitutions described in
 .IR aesub (5)
 are available for the body string.
-In addition, ${File_Name} will be replaced by the name of the new file.
+In addition:
+.TP 8n
+${File_Name}
+.br
+will be replaced by the name of the new file.
 .RE
+.TP 8n
+maximum_filename_length = integer;
+.RS
+This field is used to limit the length of filenames.
+All new files may not have path components longer than this.
+Existing files are not affected.
+The last component must also allow for the ",D" suffix of difference files.
+Where this value is larger than the file system allows,
+the file system limit will be imposed.
+Defaults to 14 if not set.
+Legal values range from 9 to 255.
+.PP
+The file name lengths of project files will be checked
+at develop end
+if the project
+.I config
+file is in the change.
+See
+.I aede (1)
+for more information.
+.RE
+.TP 8n
+posix_filename_charset = boolean;
+.RS
+This file may be used to limit the characters allowed
+in filenames to only those explicitly allowed by POSIX.
+Defaults to false if not set.
+.PP
+For a filename to be portable across conforming implementations of
+IEEE Std 1003.1-1988,
+it shall consist only of alphanumeric
+characters, dot, hyphen or underscore.
+Hyphen shall not be used
+as the first character of a portable filename.
+.PP
+If this field is false,
+all characters are allowed
+except non-printing characters, space characters and leading hyphens.
+.RE
+.TP
+dos_filename_required = boolean;
+.br
+This field may be used to limit filenames so that they conform to
+the DOS 8+3 filename limits and to the DOS filename character set.
+Defaults to false if not set.
+This field is used in combination with the other filename fields,
+it does not replace them.
+.TP
+filename_pattern_accept = [ string ];
+.br
+This field is used to specify a list of patterns of acceptable filenames.
+The patterns are matched against each filename path element.
+The patterns are constructed from the usual shell filename wildcards.
+Defaults to "*" if not set.
+.TP
+filename_pattern_reject = [ string ];
+.br
+This field is used to specify a list of patterns of unacceptable filenames.
+The patterns are matched against each filename path element.
+The patterns are constructed from the usual shell filename wildcards.
+Defaults to "*,D" if not set.
+The pattern "*,D" is always appended.
+Where the
+.I filename_pattern_accept
+and
+filename_pattern_reject
+fields conflict,
+the reject takes precedence.
 .SH SEE ALSO
+.TP 8n
 .IR aeb (1)
-.so z_cr.so
+build a change
+.TP 8n
+.IR aecp (1)
+copy a file into a change
+.TP 8n
+.IR aecpu (1)
+reverse action of aecp
+.TP 8n
+.IR aed (1)
+find differences between a change and the baseline
+.TP 8n
+.IR aede (1)
+end development of a change
+.TP 8n
+.IR aeib (1)
+begin integration of a change
+.TP 8n
+.IR aeip (1)
+pass integration of a change
+.TP 8n
+.IR aemv (1)
+rename a file as part of a change
+.TP 8n
+.IR aenf (1)
+add new files to be created by a change
+.TP 8n
+.IR aenfu (1)
+remove new files from a change
+.TP 8n
+.IR aent (1)
+add a new test to be created by a change
+.TP 8n
+.IR aentu (1)
+remove new tests from a change
+.TP 8n
+.IR aet (1)
+run tests
+.TP 8n
+.IR aegis (5)
+\*(n) file format syntax
+.TP 8n
+.IR aesub (5)
+available command substitutions
+.so ../man1/z_cr.so

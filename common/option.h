@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,12 +25,6 @@
 
 #include <main.h>
 
-/*
- * This is set to 14 so that your project will be portable
- * to less privileged unix boxes.  Please don't mess with it.
- */
-#define PATH_ELEMENT_MAX 14
-
 #define MAX_PAGE_WIDTH 2000
 
 void option_progname_set _((char *));
@@ -47,5 +41,8 @@ void option_page_width_set _((int columns));
 int option_page_width_get _((void));
 void option_page_length_set _((int rows));
 int option_page_length_get _((void));
+
+void option_tab_width_set _((int));
+int option_tab_width_get _((void));
 
 #endif /* OPTION_H */

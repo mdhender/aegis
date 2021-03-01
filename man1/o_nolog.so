@@ -24,4 +24,5 @@
 .br
 This option may be used to disable the automatic logging of
 output and errors to a file.
-This is often useful when several \*(n) commands are combined in a shell script.
+This is often useful when several \*(n) commands are combined
+in a shell script.

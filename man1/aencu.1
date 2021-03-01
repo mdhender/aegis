@@ -50,11 +50,15 @@ remove a new change from a project.
 It wasn't called 
 .I "'\*(n) -Remove_Change'"
 in order to emphasize that fact the the change
-must be in the 'awaiting_development' state.
+must be in the
+.I "awaiting development"
+state.
 In practice it is possible,
 with a combination of commands,
 to remove any change which has not reached
-the 'completed' state.
+the
+.I "completed"
+state.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so
@@ -73,9 +77,20 @@ sh$	aencu(){\*(n) -ncu $* -v}
 .fi
 .SH ERRORS
 It is an error if
-the change is not in the 'awaiting_development' state.
+the change is not in the
+.I "awaiting development"
+state.
 .br
 It is an error if
 the current user is not an administrator of the project.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aenc (1)
+add a new change to a project
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

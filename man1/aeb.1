@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -22,12 +22,14 @@
 .so z_name.so
 .TH "\*(n) -Build" 1 \*(N)
 .SH NAME
-\*(n) -Build \- build a project
+\*(n) -Build \- build a change
 .SH SYNOPSIS
 .B \*(n)
 .B -Build
 [
 .IR option ...
+][
+.IR filename ...
 ]
 .br
 .B \*(n)
@@ -46,7 +48,8 @@ The
 .I -Build
 command is used to
 build a project.
-The project configuration file is consulted for the appropriate build command,
+The project configuration file is consulted for the
+appropriate build command,
 and that command is executed
 (see 
 .IR aepconf (5)
@@ -66,12 +69,32 @@ state,
 references to the development directory, above,
 should be read as the integration directory.
 Integration build commands are executed with the user and group
-set to the project's owing user and group.
+set to the project's owning user and group.
 That is,
 it is not necessary for an integrator to log in as someone else,
 the project account for instance,
 in order to do an integration.
 .so o_bld_lk.so
+.so o_symlnk.so
+.SH PARTIAL BUILD
+If files are named on the command line,
+these files are appended to the build command.
+This is known as a partial build.
+Partial builds are not legal in the
+.I "being integrated"
+state,
+but can often be useful in the
+.I "being developed"
+state.
+Partial builds are not recorded in the change status,
+because builds are decoupled from aegis it is not
+possible for aegis to know if any set of partial builds is equivalent
+to a full build.
+.so z_intuit.so
+.PP
+Warning:
+no locks are taken for a partial build,
+not even the build lock.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so
@@ -99,5 +122,28 @@ the change is not in one of the
 or
 .I "being integrated"
 states.
+.br
+It is an error if
+a partial build is requested and the change is in the
+.I "being integrated"
+state.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aedb (1)
+begin development of a change
+.TP 8n
+.IR aeib (1)
+begin integration of a change
+.TP 8n
+.IR aet (1)
+run tests
+.TP 8n
+.IR aepconf (5)
+project configuration file format
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

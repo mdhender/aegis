@@ -77,6 +77,15 @@ reviewer_may_integrate = boolean;
 developers_may_create_changes = boolean;
 
 /*
+ * This command is used to notify a developer that a change requires
+ * developing; it is issued when a project administrator uses an 'aedb
+ * -User' command to force development of a change by a specific user.
+ * All of the substitutions described in aesub(5) are available.  This
+ * field is optional.
+ */
+forced_develop_begin_notify_command = string;
+
+/*
  * notify that a change requires reviewing
  * All of the substitutions described in aesub(5) are available.
  * this field is optional
@@ -167,3 +176,11 @@ umask = integer;
  * no test exemption specified.
  */
 default_test_exemption = boolean;
+
+/*
+ * This field contains a list of copyright years, for use in copyright
+ * notices, etc.  It is updated each integrate_begin, if necessary, to
+ * include the current year.  Available as the ${Copyright_Years}
+ * substitution, and included in the version listing.
+ */
+copyright_years = [ integer ];

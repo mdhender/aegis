@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
  * MANIFEST: missing ANSI C library functions
  */
 
-#include <stddef.h>
+#include <ctype.h>
+#include <ac/stddef.h>
 #include <stdio.h>
-#include <string.h>
-#include <time.h>
+#include <ac/string.h>
+#include <ac/time.h>
 
 #include <main.h>
-#include <conf.h>
 
 
 /*
@@ -51,25 +51,25 @@
  *      be replaced by a decimal representation of the error number.
  */
 
-#ifdef CONF_NO_strerror
+#ifndef HAVE_STRERROR
 
 char *
 strerror(n)
-    int     n;
+	int		n;
 {
-    extern int sys_nerr;
-    extern char *sys_errlist[];
-    static char buffer[16];
+	extern int	sys_nerr;
+	extern char	*sys_errlist[];
+	static char	buffer[16];
 
-    if (n < 1 || n > sys_nerr)
-    {
-	sprintf(buffer, "Error %d", n);
-	return buffer;
-    }
-    return sys_errlist[n];
+	if (n < 1 || n > sys_nerr)
+	{
+		sprintf(buffer, "Error %d", n);
+		return buffer;
+	}
+	return sys_errlist[n];
 }
 
-#endif /* CONF_NO_strerror */
+#endif /* !HAVE_STRERROR */
 
 
 /*
@@ -137,9 +137,9 @@ strerror(n)
  *	This implementation will echo unknown directives into the output.
  */
 
-#ifdef CONF_NO_strftime
+#ifndef HAVE_STRFTIME
 
-#ifdef SYSV
+#ifndef HAVE_tm_zone
 extern char *tzname[2];
 #endif
 
@@ -473,13 +473,13 @@ strftime(buf, max, fmt, tm)
 			/*
 			 * the timezone name, if any
 			 */
-#ifdef SYSV
+#ifndef HAVE_tm_zone
 			if (tm->tm_isdst >= 0 && tm->tm_isdst <= 1)
 				strcpy(output, tzname[tm->tm_isdst]);
 			else
 				output[0] = 0;
 #else
-			/* Berkeley derivateives have extra tm field */
+			/* Berkeley derivatives have extra tm field */
 			strcpy(output, tm->tm_zone);
 #endif
 			break;
@@ -498,9 +498,11 @@ strftime(buf, max, fmt, tm)
 	return (cp - buf);
 }
 
-#endif /* CONF_NO_strftime */
+#endif /* !HAVE_STRFTIME */
 
-#ifdef CONF_HAS_setresuid
+#ifndef CONF_NO_seteuid
+#ifndef HAVE_SETEUID
+#ifdef HAVE_SETRESUID
 
 int
 seteuid(x)
@@ -516,9 +518,8 @@ setegid(x)
 	return setresgid(-1, x, -1);
 }
 
-#endif
-
-#ifdef CONF_HAS_setreuid
+#else
+#ifdef HAVE_SETREUID
 
 int
 seteuid(x)
@@ -534,4 +535,45 @@ setegid(x)
 	return setregid(-1, x);
 }
 
-#endif
+#endif /* HAVE_SETREUID */
+#endif /* !HAVE_SETRESUID */
+#endif /* !HAVE_SETEUID */
+#endif /* !CONF_NO_seteuid */
+
+#ifndef HAVE_STRCASECMP
+
+int
+strcasecmp(s1, s2)
+	const char	*s1;
+	const char	*s2;
+{
+	int		c1;
+	int		c2;
+
+	for (;;)
+	{
+		c1 = *s1++;
+		if (islower(c1))
+			c1 = toupper(c1);
+		c2 = *s2++;
+		if (islower(c2))
+			c2 = toupper(c2);
+		if (c1 != c2)
+		{
+			/*
+			 * if s1 is a leading substring of s2, must
+			 * return -1, even if the next character of s2
+			 * is negative.
+			 */
+			if (!c1)
+				return -1;
+			if (c1 < c2)
+				return -1;
+			return 1;
+		}
+		if (!c1)
+			return 0;
+	}
+}
+
+#endif /* !HAVE_STRCASECMP */

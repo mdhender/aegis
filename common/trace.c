@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,13 +21,13 @@
  */
 
 #include <stdio.h>
-#include <string.h>
-#include <stddef.h>
+#include <ac/string.h>
+#include <ac/stddef.h>
+#include <ac/stdarg.h>
 
 #include <error.h>
 #include <mem.h>
 #include <option.h>
-#include <s-v-arg.h>
 #include <str.h>
 #include <trace.h>
 
@@ -50,10 +50,10 @@ static	known_ty	*known;
 static	int		depth;
 
 
-static string_ty *basename _((char *));
+static string_ty *base_name _((char *));
 
 static string_ty *
-basename(file)
+base_name(file)
 	char		*file;
 {
 	char		*cp1;
@@ -81,7 +81,7 @@ trace_pretest(file, result)
 	string_ty	*s;
 	known_ty	*kp;
 
-	s = basename(file);
+	s = base_name(file);
 	for (kp = known; kp; kp = kp->next)
 	{
 		if (str_equal(s, kp->filename))
@@ -115,7 +115,7 @@ trace_where(file, line)
 	 * take new name fist, because will probably be same as last
 	 * thus saving a free and a malloc (which are slow)
 	 */
-	s = basename(file);
+	s = base_name(file);
 	if (file_name)
 		str_free(file_name);
 	file_name = s;
@@ -248,7 +248,7 @@ trace_enable(file)
 	string_ty	*s;
 	known_ty	*kp;
 
-	s = basename(file);
+	s = base_name(file);
 	for (kp = known; kp; kp = kp->next)
 	{
 		if (str_equal(s, kp->filename))

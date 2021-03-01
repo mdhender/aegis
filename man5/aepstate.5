@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -93,6 +93,9 @@ The delta number of the integration.
 .TP 8n
 change_number = integer;
 The number of the change which was integrated.
+.TP 8n
+name = [ string ];
+The names by which this delta is known.
 .RE
 .TP 8n
 change = [integer];
@@ -126,4 +129,14 @@ Always zero or more.
 version_previous = string;
 The version number this project was derived from.
 This is of most use when producing "patch" files.
-.so z_cr.so
+.SH SEE ALSO
+.TP 8n
+.IR aenpr (1)
+create a new project
+.TP 8n
+.IR aegis (5)
+\*(n) file format syntax
+.TP 8n
+.IR aepattr (5)
+project attributes file format
+.so ../man1/z_cr.so

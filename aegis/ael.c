@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,12 +23,13 @@
  * don't forget to update man1/ael.1
  */
 
-#include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+#include <ac/string.h>
+#include <ac/stdlib.h>
+#include <ac/time.h>
 
 #include <ael.h>
+#include <aer/func/now.h>
 #include <arglex2.h>
 #include <col.h>
 #include <change.h>
@@ -42,6 +43,8 @@
 #include <trace.h>
 #include <user.h>
 #include <word.h>
+
+#define ELAPSED_TIME_THRESHOLD (10L * 60L) /* ten minutes */
 
 
 typedef struct table_ty table_ty;
@@ -162,7 +165,12 @@ list_usage()
 	char		*progname;
 
 	progname = option_progname_get();
-	fprintf(stderr, "usage: %s -List [ <option>... ] <listname>\n", progname);
+	fprintf
+	(
+		stderr,
+		"usage: %s -List [ <option>... ] <listname>\n",
+		progname
+	);
 	fprintf(stderr, "       %s -List -List [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -List -Help\n", progname);
 	quit(1);
@@ -176,189 +184,7 @@ list_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -List - list (possibly) interesting things",
-"",
-"SYNOPSIS",
-"	%s -List [ <option>... ] <list-name>",
-"	%s -List -List [ <option>... ]",
-"	%s -List -Help",
-"",
-"DESCRIPTION",
-"	The %s -List command is used to list information.",
-"	There are a number of possible list-names, as follows",
-"	(abbreviations as for command line options):",
-"",
-"	Administrators",
-"		List the administrators of a project.",
-"",
-"	Change_Details",
-"		List full information about a change in large",
-"		format.",
-"",
-"	Change_Files",
-"		List all files in a change.",
-"",
-"	Change_History",
-"		List the history of a change.",
-"",
-"	Changes",
-"		List the changes of a project.",
-"",
-"	Default_Change",
-"		List the default change for the current user.",
-"",
-"	Default_Project",
-"		List the default project for the current user.",
-"",
-"	Developers",
-"		List the developers of a project.",
-"",
-"	Integrators",
-"		List the integrators of a project.",
-"",
-"	List_List",
-"		List all lists available.",
-"",
-"	Locks",
-"		List all currently active locks.",
-"",
-"	Outstanding_Changes",
-"		List all changes not yet completed.",
-"",
-"	All_Outstanding_Changes",
-"		List all changes not yet completed, for all",
-"		projects.",
-"",
-"	Project_Files",
-"		List all files in the baseline of a project.",
-"",
-"	Project_History",
-"		List the integration history of a project.",
-"",
-"	Projects",
-"		List all projects.",
-"",
-"	Reviewers",
-"		List the reviewers of a project.",
-"",
-"	Users_Changes",
-"		List of changes owned by the current user.",
-"",
-"	Version",
-"		List version of a project or change.",
-"",
-"	Most of these lists are available from other %s",
-"	functions.  Many %s functions provide more specific",
-"	lists.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-Change <number>",
-"		This option may be used to specify a particular",
-"		change within a project.  When no -Change option",
-"		is specified, the AEGIS_CHANGE environment",
-"		variable is consulted.  If that does not exist,",
-"		the user's $HOME/.%src file is examined for a",
-"		default change field (see aeuconf(5) for more",
-"		information).  If that does not exist, when the",
-"		user is only working on one change within a",
-"		project, that is the default change number.",
-"		Otherwise, it is an error.",
-"",
-"	-Help",
-"		This option may be used to obtain more",
-"		information about how to use the %s program.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-Page_Length <number>",
-"		This option may be used to set the page length of",
-"		listings.  The default, in order of preference,",
-"		is obtained from the system, from the LINES",
-"		environment variable, or set to 24 lines.",
-"",
-"	-Page_Width <number>",
-"		This option may be used to set the page width of",
-"		listings and error messages.  The default, in",
-"		order of preference, is obtained from the system,",
-"		from the COLS environment variable, or set to 79",
-"		characters.",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified,",
-"		the AEGIS_PROJECT environment variable is",
-"		consulted.  If that does not exist, the user's",
-"		$HOME/.%src file is examined for a default",
-"		project field (see aeuconf(5) for more",
-"		information).  If that does not exist, when the",
-"		user is only working on changes within a single",
-"		project, the project name defaults to that",
-"		project.  Otherwise, it is an error.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-UNFormatted",
-"		This option may be used with most listings to",
-"		specify that the column formatting is not to be",
-"		performed.  This is useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List",
-"		option this option causes column headings to be",
-"		added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias ael '%s -l \\!* -v'",
-"	sh$	ael(){%s -l $* -v}",
-"",
-"ERRORS",
-"	It is an error if the list name given is unknown.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.  The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/ael.h>
 	};
 
 	help(text, SIZEOF(text), list_usage);
@@ -461,7 +287,12 @@ list_main()
 			str_free(s1);
 			s1 = s2;
 		}
-		fatal("list name \"%s\" ambiguous (%s)", listname, s1->str_text);
+		fatal
+		(
+			"list name \"%s\" ambiguous (%s)",
+			listname,
+			s1->str_text
+		);
 	}
 	if (project_name)
 		str_free(project_name);
@@ -647,7 +478,13 @@ list_project_files(project_name, change_number)
 	 */
 	col_open((char *)0);
 	if (change_number)
-		line1 = str_format("Project \"%S\"  Change %ld", project_name, change_number);
+		line1 =
+			str_format
+			(
+				"Project \"%S\"  Change %ld",
+				project_name,
+				change_number
+			);
 	else
 		line1 = str_format("Project \"%S\"", project_name);
 	col_title(line1->str_text, "List of Project's Files");
@@ -1002,93 +839,6 @@ list_change_files(project_name, change_number)
 	trace((/*{*/"}\n"));
 }
 
-#define HOURS_PER_WORKING_DAY 7.5
-#define SECONDS_PER_WORKING_DAY (long)(HOURS_PER_WORKING_DAY * 60L * 60L)
-#define SECONDS_PER_DAY (24L * 60L * 60L)
-#define ELAPSED_TIME_THRESHOLD (10L * 60L) /* ten minutes */
-
-static double working_days _((time_t, time_t));
-
-static double
-working_days(start, finish)
-	time_t		start;
-	time_t		finish;
-{
-	time_t		duration;
-	double		working_days_frac;
-	long		working_days;
-	long		ndays;
-	long		nweeks;
-	struct tm 	*tm;
-
-	/*
-	 * elapsed time in seconds
-	 */
-	trace(("working_days(start = %ld, finish = %ld)\n{\n"/*}*/, start,
-		finish));
-	trace(("start = %s", ctime(&start)));
-	trace(("finish = %s", ctime(&finish)));
-	duration = finish - start;
-	if (duration < 0)
-		duration = 0;
-	trace(("duration = %ld;\n", duration));
-
-	/*
-	 * determine the number of whole calendar days
-	 */
-	ndays =
-		(
-			(duration + (SECONDS_PER_DAY - SECONDS_PER_WORKING_DAY))
-		/
-			SECONDS_PER_DAY
-		);
-	trace(("ndays = %ld;\n", ndays));
-
-	/*
-	 * determine the fractional part
-	 */
-	working_days_frac =
-		(
-			(double)(duration - ndays * SECONDS_PER_DAY)
-		/
-			SECONDS_PER_WORKING_DAY
-		);
-	trace(("working_days_frac = %g;\n", working_days_frac));
-
-	/*
-	 * 5 working days per working week
-	 */
-	nweeks = ndays / 7;
-	working_days = 5 * nweeks;
-	ndays -= nweeks * 7;
-	working_days += ndays;
-	trace(("working_days = %ld;\n", working_days));
-
-	/*
-	 * give credit for working over the weekend
-	 */
-	tm = localtime(&start);
-	ndays += tm->tm_wday;
-	trace(("ndays = %ld;\n", ndays));
-	if (ndays >= 7 && tm->tm_wday != 6)
-		working_days--;
-	if (ndays >= 8)
-		working_days--;
-	if (working_days < 0)
-		working_days = 0;
-	trace(("working_days = %ld;\n", working_days));
-
-	/*
-	 * done
-	 */
-	working_days_frac += working_days;
-	if (working_days_frac < 0)
-		working_days_frac = 0;
-	trace(("return %.10g;\n", working_days_frac));
-	trace((/*{*/"}\n"));
-	return working_days_frac;
-}
-
 
 void
 list_change_history(project_name, change_number)
@@ -1150,8 +900,8 @@ list_change_history(project_name, change_number)
 
 	what_col = col_create(0, 15);
 	when_col = col_create(16, 31);
-	who_col = col_create(32, 39);
-	why_col = col_create(40, 0);
+	who_col = col_create(32, 40);
+	why_col = col_create(41, 0);
 	col_heading(what_col, "What\n------");
 	col_heading(when_col, "When\n------");
 	col_heading(who_col, "Who\n-----");
@@ -1181,7 +931,8 @@ list_change_history(project_name, change_number)
 			time_t	finish;
 
 			if (j + 1 < cstate_data->history->length)
-				finish = cstate_data->history->list[j + 1]->when;
+				finish =
+					cstate_data->history->list[j + 1]->when;
 			else
 				time(&finish);
 			if (finish - t >= ELAPSED_TIME_THRESHOLD)
@@ -1264,7 +1015,8 @@ list_changes_in_state_mask(project_name, state_mask)
 	/*
 	 * locate project data
 	 */
-	trace(("list_changes_in_state_mask(state_mask = 0x%X)\n{\n"/*}*/, state_mask));
+	trace(("list_changes_in_state_mask(state_mask = 0x%X)\n{\n"/*}*/,
+		state_mask));
 	if (!project_name)
 		project_name = user_default_project();
 	else
@@ -1639,11 +1391,12 @@ list_project_history(project_name, change_number)
 	long		change_number;
 {
 	pstate		pstate_data;
+	int		name_col = 0;
 	int		delta_col = 0;
 	int		date_col = 0;
 	int		change_col = 0;
 	int		description_col = 0;
-	int		j;
+	size_t		j, k;
 	project_ty	*pp;
 	string_ty	*line1;
 
@@ -1672,6 +1425,7 @@ list_project_history(project_name, change_number)
 	col_title(line1->str_text, "History");
 	str_free(line1);
 
+	name_col = col_create(0, 0);
 	delta_col = col_create(0, 7);
 	col_heading(delta_col, "Delta\n-------");
 	if (!option_terse_get())
@@ -1692,6 +1446,35 @@ list_project_history(project_name, change_number)
 		pstate_history	history_data;
 
 		history_data = pstate_data->history->list[j];
+		if
+		(
+			!option_terse_get()
+		&&
+			history_data->name
+		&&
+			history_data->name->length
+		)
+		{
+			col_need(4);
+			col_printf
+			(
+				name_col,
+				"Name%s: ",
+				(history_data->name->length==1?"":"s")
+			);
+			for (k = 0; k < history_data->name->length; ++k)
+			{
+				if (k)
+					col_printf(name_col, ", ");
+				col_printf
+				(
+					name_col,
+					"\"%s\"",
+					history_data->name->list[k]
+						->str_text
+				);
+			}
+		}
 		col_printf(delta_col, "%4ld", history_data->delta_number);
 		if (!option_terse_get())
 		{
@@ -1819,11 +1602,50 @@ list_version(project_name, change_number)
 				pstate_data->version_previous->str_text
 			);
 		}
+		if (pstate_data->copyright_years)
+		{
+			pstate_copyright_years_list p;
+			size_t		j;
+
+			p = pstate_data->copyright_years;
+			printf("copyright_years = [");
+			for (j = 0; j < p->length; ++j)
+			{
+				if (j)
+					printf(", ");
+				printf("%ld", p->list[j]);
+			}
+			printf("];\n");
+		}
 	}
 	change_free(cp);
 	project_free(pp);
 	user_free(up);
 	trace((/*{*/"}\n"));
+}
+
+
+static void showtime _((int, time_t, int));
+
+static void
+showtime(colnum, when, exempt)
+	int	colnum;
+	time_t	when;
+	int	exempt;
+{
+	if (when)
+	{
+		struct tm	*tm;
+		char		buffer[100];
+
+		tm = localtime(&when);
+		strftime(buffer, sizeof(buffer), "%H:%M:%S %d-%b-%y", tm);
+		col_puts(colnum, buffer);
+	}
+	else if (exempt)
+		col_puts(colnum, "exempt");
+	else
+		col_puts(colnum, "required");
 }
 
 
@@ -1871,7 +1693,13 @@ list_change_details(project_name, change_number)
 	 * identification
 	 */
 	col_open((char *)0);
-	line1 = str_format("Project \"%S\", Change %ld", project_name, change_number);
+	line1 =
+		str_format
+		(
+			"Project \"%S\", Change %ld",
+			project_name,
+			change_number
+		);
 	col_title(line1->str_text, "Change Details");
 	str_free(line1);
 
@@ -1935,6 +1763,141 @@ list_change_details(project_name, change_number)
 	col_eoln();
 
 	/*
+	 * architecture
+	 */
+	col_need(7);
+	col_printf
+	(
+		head_col,
+		"ARCHITECTURE%s",
+		(cstate_data->architecture->length == 1 ? "" : "S")
+	);
+	col_eoln();
+	col_puts(body_col, "This change must build and test in");
+	if (cstate_data->architecture->length > 1)
+		col_puts(body_col, " each of");
+	col_puts(body_col, " the");
+	for (j = 0; j < cstate_data->architecture->length; ++j)
+	{
+		string_ty	*s;
+
+		s = cstate_data->architecture->list[j];
+		if (j)
+		{
+			if (j == cstate_data->architecture->length - 1)
+				col_puts(body_col, " and");
+			else
+				col_puts(body_col, ",");
+		}
+		col_printf(body_col, " \"%s\"",  s->str_text);
+	}
+	col_printf
+	(
+		body_col,
+		" architecture%s.",
+		(cstate_data->architecture->length == 1 ? "" : "s")
+	);
+	col_eoln();
+
+	if
+	(
+		cstate_data->state == cstate_state_being_developed
+	||
+		cstate_data->state == cstate_state_being_integrated
+	)
+	{
+		int	arch_col;
+		int	host_col;
+		int	build_col;
+		int	test_col;
+		int	test_bl_col;
+		int	test_reg_col;
+
+		col_need(5);
+		arch_col = col_create(8, 16);
+		host_col = col_create(17, 25);
+		build_col = col_create(26, 35);
+		test_col = col_create(36, 45);
+		test_bl_col = col_create(46, 55);
+		test_reg_col = col_create(56, 65);
+		col_heading(arch_col, "arch.\n--------");
+		col_heading(host_col, "host\n--------");
+		col_heading(build_col, "aeb\n---------");
+		col_heading(test_col, "aet\n---------");
+		col_heading(test_bl_col, "aet -bl\n---------");
+		col_heading(test_reg_col, "aet -reg\n---------");
+
+		for (j = 0; j < cstate_data->architecture->length; ++j)
+		{
+			cstate_architecture_times tp;
+			string_ty	*s;
+
+			s = cstate_data->architecture->list[j];
+			tp = change_architecture_times_find(cp, s);
+			
+			col_puts(arch_col, tp->variant->str_text);
+			if (tp->node)
+				col_puts(host_col, tp->node->str_text);
+			showtime(build_col, tp->build_time, 0);
+			showtime
+			(
+				test_col,
+				tp->test_time,
+				cstate_data->test_exempt
+			);
+			showtime
+			(
+				test_bl_col,
+				tp->test_baseline_time,
+				cstate_data->test_baseline_exempt
+			);
+			showtime
+			(
+				test_reg_col,
+				tp->regression_test_time,
+				cstate_data->regression_test_exempt
+			);
+			col_eoln();
+		}
+
+		col_heading(arch_col, (char *)0);
+		col_heading(host_col, (char *)0);
+		col_heading(build_col, (char *)0);
+		col_heading(test_col, (char *)0);
+		col_heading(test_bl_col, (char *)0);
+		col_heading(test_reg_col, (char *)0);
+
+		if (cstate_data->architecture->length > 1)
+		{
+			col_puts(build_col, "---------\n");
+			col_puts(test_col, "---------\n");
+			col_puts(test_bl_col, "---------\n");
+			col_puts(test_reg_col, "---------\n");
+
+			showtime(build_col, cstate_data->build_time, 0);
+			showtime
+			(
+				test_col,
+				cstate_data->test_time,
+				cstate_data->test_exempt
+			);
+			showtime
+			(
+				test_bl_col,
+				cstate_data->test_baseline_time,
+				cstate_data->test_baseline_exempt
+			);
+			showtime
+			(
+				test_reg_col,
+				cstate_data->regression_test_time,
+				cstate_data->regression_test_exempt
+			);
+			col_eoln();
+		}
+	}
+
+	/*
 	 * cause
 	 */
 	col_need(5);
@@ -1964,7 +1927,7 @@ list_change_details(project_name, change_number)
 		col_printf
 		(
 			body_col,
-			"This change is in '%s' state.",
+			"This change is in the '%s' state.",
 			cstate_state_ename(cstate_data->state)
 		);
 		col_eoln();
@@ -2012,7 +1975,12 @@ list_change_details(project_name, change_number)
 					edit_col,
 					src_data->edit_number->str_text
 				);
-				if (cstate_data->state == cstate_state_being_developed)
+				if
+				(
+					cstate_data->state
+				==
+					cstate_state_being_developed
+				)
 					psrc_data =
 						project_src_find
 						(
@@ -2051,7 +2019,11 @@ list_change_details(project_name, change_number)
 					col_puts(file_name_col, "from ");
 				else
 					col_puts(file_name_col, "to ");
-				col_puts(file_name_col, src_data->move->str_text);
+				col_puts
+				(
+					file_name_col,
+					src_data->move->str_text
+				);
 			}
 			col_eoln();
 		}
@@ -2081,8 +2053,8 @@ list_change_details(project_name, change_number)
 
 		what_col = col_create(8, 23);
 		when_col = col_create(24, 39);
-		who_col = col_create(40, 47);
-		why_col = col_create(48, 0);
+		who_col = col_create(40, 48);
+		why_col = col_create(49, 0);
 		col_heading(what_col, "What\n------");
 		col_heading(when_col, "When\n------");
 		col_heading(who_col, "Who\n-----");
@@ -2103,12 +2075,20 @@ list_change_details(project_name, change_number)
 			col_puts(who_col, history_data->who->str_text);
 			if (history_data->why)
 				col_puts(why_col, history_data->why->str_text);
-			if (history_data->what != cstate_history_what_integrate_pass)
+			if
+			(
+				history_data->what
+			!=
+				cstate_history_what_integrate_pass
+			)
 			{
 				time_t	finish;
 
 				if (j + 1 < cstate_data->history->length)
-					finish = cstate_data->history->list[j + 1]->when;
+					finish =
+						cstate_data->history->
+							list[j + 1]->
+								when;
 				else
 					time(&finish);
 				if (finish - t >= ELAPSED_TIME_THRESHOLD)
@@ -2709,7 +2689,6 @@ list_outstanding_changes_all(project_name, change_number)
 		for (k = 0; k < pstate_data->change->length; ++k)
 		{
 			cstate		cstate_data;
-			long		change_number;
 			change_ty	*cp;
 
 			/*

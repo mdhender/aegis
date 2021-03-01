@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -80,31 +80,81 @@ project_file_command_sync = integer;
 
 /*
  * This field records the time the last successful
- * 'aegis -Test' command was run.
+ * 'aegis -Build' command was run for all architectures.
  * It is only present in the 'being_developed' and 'being_integrated' states.
  */
-test_time = integer;
+build_time = time;
 
 /*
  * This field records the time the last successful
- * 'aegis -Test -BaseLine' command was run.
+ * 'aegis -Test' command was run for all architectures.
  * It is only present in the 'being_developed' and 'being_integrated' states.
  */
-test_baseline_time = integer;
+test_time = time;
 
 /*
  * This field records the time the last successful
- * 'aegis -Test -Regression' command was run.
+ * 'aegis -Test -BaseLine' command was run for all architectures.
  * It is only present in the 'being_developed' and 'being_integrated' states.
  */
-regression_test_time = integer;
+test_baseline_time = time;
 
 /*
  * This field records the time the last successful
- * 'aegis -Build' command was run.
+ * 'aegis -Test -Regression' command was run for all architectures.
  * It is only present in the 'being_developed' and 'being_integrated' states.
  */
-build_time = integer; /* time() */
+regression_test_time = time;
+
+/*
+ * This field records the time of various operations for each variant named
+ * in the "architecture" field.
+ * It is only present in the 'being_developed' and 'being_integrated' states.
+ */
+architecture_times =
+[
+    {
+	/*
+	 * This field is one of the patterns named in
+	 * the outer "architecture" field.
+	 */
+	variant = string;
+
+	/*
+	 * This field is the computer on which the command was run
+	 * which last changed this structure.
+	 */
+	node = string;
+
+	/*
+	 * This field records the last time the last
+	 * successful 'aegis -Build' command
+	 * was run for this specific architecture variant.
+	 */
+	build_time = time;
+
+	/*
+	 * This field records the last time the last
+	 * successful 'aegis -Test' command
+	 * was run for this specific architecture variant.
+	 */
+	test_time = time;
+
+	/*
+	 * This field records the last time the last
+	 * successful 'aegis -Test -BaseLine' command
+	 * was run for this specific architecture variant.
+	 */
+	test_baseline_time = time;
+
+	/*
+	 * This field records the last time the last
+	 * successful 'aegis -Test -REGression' command
+	 * was run for this specific architecture variant.
+	 */
+	regression_test_time = time;
+    }
+];
 
 /*
  * This field is the absolute path of the change's development directory.
@@ -129,7 +179,7 @@ history =
 		/*
 		 * This field records the time the state transition occured.
 		 */
-		when = integer;
+		when = time;
 
 		/*
 		 * This field records what happened.
@@ -208,8 +258,8 @@ src =
 		 * at the develop_end, review_pass and integrate_begin
 		 * state transitions.
 		 */
-		diff_time = integer; /* time() */
-		diff_file_time = integer; /* time() */
+		diff_time = time;
+		diff_file_time = time;
 
 		/*
 		 * To change the name of a file,

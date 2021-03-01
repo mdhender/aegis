@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1992, 1993 Peter Miller.
+ *	Copyright (C) 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -53,6 +53,7 @@ struct user_ty
 
 
 user_ty *user_numeric _((struct project_ty *pp, int uid));
+user_ty *user_numeric2 _((int uid, int gid));
 user_ty *user_symbolic _((struct project_ty *pp, string_ty *user_name));
 user_ty *user_executing _((struct project_ty *));
 void user_free _((user_ty *));
@@ -88,5 +89,10 @@ int user_uid_check _((string_ty *));
 int user_gid_check _((string_ty *));
 void user_become _((user_ty *));
 void user_become_undo _((void));
+
+int user_delete_file_query _((user_ty *up, string_ty *filename, int isdir));
+void user_delete_file_argument _((void));
+
+int user_diff_preference _((user_ty *));
 
 #endif /* USER_H */

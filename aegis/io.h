@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,13 +23,13 @@
 #ifndef IO_H
 #define IO_H
 
+#include <ac/time.h>
+
 #include <main.h>
 #include <type.h>
 
-extern type_ty integer_type;
-extern type_ty string_type;
-
 void string_write _((char *, string_ty *));
 void integer_write _((char *, long));
+void time_write _((char *, time_t));
 
 #endif /* IO_H */

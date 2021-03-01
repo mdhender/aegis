@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,8 @@
  * MANIFEST: functions to parse aegis' data files
  */
 
+#include <ac/time.h>
+
 #include <error.h>
 #include <gram.h>
 #include <lex.h>
@@ -32,15 +34,19 @@ static sem_ty *sem_root;
 
 void *
 parse(filename, type)
-	char	*filename;
-	type_ty	*type;
+	char		*filename;
+	type_ty		*type;
 {
-	void	*addr;
+	void		*addr;
 
 	trace(("parse(filename = \"%s\", type = %08lx)\n{\n"/*}*/,
-		filename, type));
+		filename, (long)type));
 	lex_open(filename);
-	sem_push(type, &addr);
+	assert(type);
+	assert(type->alloc);
+	assert(type->struct_parse);
+	addr = type->alloc();
+	sem_push(type, addr);
 
 	trace(("gram_parse()\n{\n"/*}*/));
 	gram_parse();
@@ -49,7 +55,36 @@ parse(filename, type)
 	while (sem_root)
 		sem_pop();
 	lex_close();
-	trace(("return %08lX;\n", addr));
+	trace(("return %08lX;\n", (long)addr));
+	trace((/*{*/"}\n"));
+	return addr;
+}
+
+
+void *
+parse_env(name, type)
+	char		*name;
+	type_ty		*type;
+{
+	void		*addr;
+
+	trace(("parse_env(name = \"%s\", type = %08lx)\n{\n"/*}*/,
+		name, (long)type));
+	lex_open_env(name);
+	assert(type);
+	assert(type->alloc);
+	assert(type->struct_parse);
+	addr = type->alloc();
+	sem_push(type, addr);
+
+	trace(("gram_parse()\n{\n"/*}*/));
+	gram_parse();
+	trace((/*{*/"}\n"));
+
+	while (sem_root)
+		sem_pop();
+	lex_close();
+	trace(("return %08lX;\n", (long)addr));
 	trace((/*{*/"}\n"));
 	return addr;
 }
@@ -63,22 +98,12 @@ sem_push(type, addr)
 	sem_ty		*sp;
 
 	trace(("sem_push(type = %08lX, addr = %08lX)\n{\n"/*}*/, type, addr));
-	trace(("type->class == %s;\n", type ? type_class_name(type) : "void"));
-	sp = (sem_ty *)mem_alloc_clear(sizeof(sem_ty));
+	trace(("type->name == \"%s\";\n", type ? type->name : "void"));
+	sp = mem_alloc(sizeof(sem_ty));
 	sp->type = type;
 	sp->addr = addr;
 	sp->next = sem_root;
 	sem_root = sp;
-	if (type && type->alloc)
-	{
-		*(void **)sp->addr = type->alloc();
-		trace
-		((
-			"sp->addr = %08lX->%08lX\n",
-			sp->addr,
-			*(void **)sp->addr
-		));
-	}
 	trace((/*{*/"}\n"));
 }
 
@@ -102,22 +127,26 @@ sem_integer(n)
 {
 	trace(("sem_integer(n = %ld)\n{\n"/*}*/, n));
 	if (!sem_root->type)
-		goto done;
-	if (sem_root->type->class != type_class_integer)
+		/* do nothing */;
+	else if (sem_root->type == &integer_type)
+		*(long *)sem_root->addr = n;
+	else if (sem_root->type == &time_type)
+	{
+		/*
+		 * Time is always arithmetic, never a structure.
+		 * This works on every system the author has seen,
+		 * without loss of precision.
+		 */
+		*(time_t *)sem_root->addr = n;
+	}
+	else
 	{
 		gram_error
 		(
 			"value of type %s required",
-			type_class_name(sem_root->type)
+			sem_root->type->name
 		);
 	}
-	else
-		*(long *)sem_root->addr = n;
-
-	/*
-	 * here for all exits
-	 */
-	done:
 	trace((/*{*/"}\n"));
 }
 
@@ -129,30 +158,19 @@ sem_string(s)
 	trace(("sem_string(s = %08lX)\n{\n"/*}*/, s));
 	trace_string(s->str_text);
 	if (!sem_root->type)
-		goto done;
-	if (sem_root->type->class != type_class_string)
-	{
-		gram_error
-		(
-			"value of type %s required",
-			type_class_name(sem_root->type)
-		);
-	}
+		/* do nothing */;
+	else if (sem_root->type != &string_type)
+		gram_error("value of type string required");
 	else
 	{
 		trace
 		((
-			"addr = %08lX->%08lX",
+			"addr = %08lX->%08lX\n",
 			sem_root->addr,
 			*(void **)sem_root->addr
 		));
 		*(string_ty **)sem_root->addr = s;
 	}
-	
-	/*
-	 * here for all exits
-	 */
-	done:
 	trace((/*{*/"}\n"));
 }
 
@@ -164,31 +182,55 @@ sem_enum(s)
 	trace(("sem_enum(s = %08lX)\n{\n"/*}*/, s));
 	trace_string(s->str_text);
 	if (!sem_root->type)
-		goto done;
-	if (sem_root->type->class != type_class_enum)
+		/* do nothing */;
+	else if (!sem_root->type->enum_parse)
 	{
 		gram_error
 		(
 			"value of type %s required",
-			type_class_name(sem_root->type)
+			sem_root->type->name
 		);
 	}
 	else
 	{
-		if (sem_root->type->enum_parse(s, sem_root->addr))
+		int	n;
+
+		n = sem_root->type->enum_parse(s);
+		if (n < 0)
 		{
+			string_ty	*suggest;
+
+			assert(sem_root->type->fuzzy);
+			suggest = sem_root->type->fuzzy(s);
+			if (suggest)
+			{
+				gram_error
+				(
+    "the name \"%s\" not a valid enumerator, guessing you meant \"%s\" instead",
+					s->str_text,
+					suggest->str_text
+				);
+				n = sem_root->type->enum_parse(suggest);
+				assert(n >= 0);
+				goto use_suggestion;
+			}
 			gram_error
 			(
 				"the name \"%s\" is not a valid enumerator",
 				s->str_text
 			);
 		}
+		else
+		{
+			/*
+			 * This is a portability problem: if the C
+			 * implementation does not always store enums in ints
+			 * this will break.
+			 */
+			use_suggestion:
+			*(int *)sem_root->addr = n;
+		}
 	}
-
-	/*
-	 * here for all exits
-	 */
-	done:
 	trace((/*{*/"}\n"));
 }
 
@@ -198,37 +240,37 @@ sem_list()
 {
 	trace(("sem_list()\n{\n"/*}*/));
 	if (!sem_root->type)
-	{
 		sem_push(0, 0);
-		goto done;
-	}
-	if (sem_root->type->class != type_class_list)
+	else if (!sem_root->type->list_parse)
 	{
 		gram_error
 		(
 			"value of type %s required",
-			type_class_name(sem_root->type)
+			sem_root->type->name
 		);
 		sem_push(0, 0);
 	}
 	else
 	{
-		type_ty	*type;
-		void	*addr;
+		type_ty		*type;
+		void		*addr;
 
-		sem_root->type->list_parse
-		(
-			*(void **)sem_root->addr,
-			&type,
-			&addr
-		);
+		addr = sem_root->type->list_parse(sem_root->addr, &type);
+
+		/*
+		 * allocate the storage if necessary
+		 */
+		if (type->alloc)
+		{
+			void		*contents;
+
+			contents = type->alloc();
+			*(generic_struct_ty **)addr = contents;
+			addr = contents;
+		}
+
 		sem_push(type, addr);
 	}
-
-	/*
-	 * here for all exits
-	 */
-	done:
 	trace((/*{*/"}\n"));
 }
 
@@ -241,17 +283,15 @@ sem_field(name)
 	trace_string(name->str_text);
 	trace(("sem_root == %08lX;\n", sem_root));
 	trace(("sem_root->type == %08lX;\n", sem_root->type));
+	trace(("sem_root->addr == %08lX;\n", sem_root->addr));
 	if (!sem_root->type)
-	{
 		sem_push(0, 0);
-		goto done;
-	}
-	if (sem_root->type->class != type_class_struct)
+	else if (!sem_root->type->struct_parse)
 	{
 		gram_error
 		(
 			"value of type %s required",
-			type_class_name(sem_root->type)
+			sem_root->type->name
 		);
 		sem_push(0, 0);
 	}
@@ -260,35 +300,52 @@ sem_field(name)
 		type_ty		*type;
 		void		*addr;
 		unsigned long	mask;
+		generic_struct_ty *gsp;
 
-		if (!sem_root->type->struct_parse)
-			error("no struct parse");
-		if
-		(
-			sem_root->type->struct_parse
-			(
-				*(void **)sem_root->addr,
-				name,
-				&type,
-				&addr,
-				&mask
-			)
-		)
+		gsp = sem_root->addr;
+		addr = sem_root->type->struct_parse(gsp, name, &type, &mask);
+		if (!addr)
 		{
-			gram_error("field name \"%s\" not valid", name->str_text);
+			string_ty	*suggest;
+
+			assert(sem_root->type->fuzzy);
+			suggest = sem_root->type->fuzzy(name);
+			if (suggest)
+			{
+				gram_error
+				(
+	       "field name \"%s\" not valid, guessing you meant \"%s\" instead",
+					name->str_text,
+					suggest->str_text
+				);
+				addr =
+					sem_root->type->struct_parse
+					(
+						gsp,
+						suggest,
+						&type,
+						&mask
+					);
+				assert(addr);
+				goto use_suggestion;
+				
+			}
+			gram_error
+			(
+				"field name \"%s\" not valid",
+				name->str_text
+			);
 			sem_push(0, 0);
 		}
 		else
 		{
-			unsigned long	*rmask;
-
 			/*
 			 * The first element of all the generated
 			 * structures is the mask field.
 			 */
+			use_suggestion:
 			trace(("mask = 0x%08lX;\n", mask));
-			rmask = *(unsigned long **)sem_root->addr;
-			if (*rmask & mask)
+			if (mask ? (gsp->mask & mask) : type->is_set(addr))
 			{
 				gram_error
 				(
@@ -296,15 +353,23 @@ sem_field(name)
 					name->str_text
 				);
 			}
-			*rmask |= mask;
-			trace(("*rmask == 0x%08lX;\n", *rmask));
+			gsp->mask |= mask;
+			trace(("gsp->mask == 0x%08lX;\n", gsp->mask));
+
+			/*
+			 * allocate the storage if necessary
+			 */
+			if (type->alloc)
+			{
+				void		*contents;
+
+				contents = type->alloc();
+				*(generic_struct_ty **)addr = contents;
+				addr = contents;
+			}
+
 			sem_push(type, addr);
 		}
 	}
-
-	/*
-	 * here for all exits
-	 */
-	done:
 	trace((/*{*/"}\n"));
 }

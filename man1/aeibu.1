@@ -50,8 +50,11 @@ reverse the actions of the
 command.
 .PP
 Successful execution of this command will move the change
-from the 'being_integrated' state
-to the 'awaiting_integration' state.
+from the
+.I "being integrated"
+state to the
+.I "awaiting integration"
+state.
 The integration directory will be deleted.
 The change will cease to be assigned to the current user.
 .SH OPTIONS
@@ -73,9 +76,20 @@ sh$	aeibu(){\*(n) -ibu $* -v}
 .fi
 .SH ERRORS
 It is an error if
-the change is not in the 'being_integrated' state.
+the change is not in the
+.I "being_integrated"
+state.
 .br
 It is an error if
 the change is not assigned to the current user.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aeib (1)
+begin integration of a change
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

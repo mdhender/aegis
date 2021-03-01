@@ -22,5 +22,6 @@
 .TP 8n
 .B -List
 .br
-This option may be used to obtain a list of suitable subjects for this command.
+This option may be used to obtain a list of suitable subjects for this
+command.
 The list may be more general than expected.

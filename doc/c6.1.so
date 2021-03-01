@@ -1,0 +1,308 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1993, 1994, 1995 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: User Guide, Tips and Traps, Heterogeneous Development
+.\"
+.bp
+.2C
+.nh 2 "Heterogeneous Development"
+.LP
+The aegis program has support for heterogeneous development.
+It will enforce that each change be built and tested
+on each of a list of architectures.
+It determines which architecture it is currently executing on by using the
+\fIuname\fR(2) system call.
+.LP
+The \fIuname\fR(2)
+system call can yield uneven results,
+depending on the operating systems vendor's interpretation of what it
+should return\**.
+.FS
+For example,
+SCO 3.2 returns the nodename in the sysname field,
+when it should place "SCO" there;
+Convex and Pyramid scramble it even worse.
+.FE
+To cope with this,
+each required architecture for a project
+is specified as a name and a pattern.
+.LP
+The name is used by aegis internally,
+and is also available
+in the
+.I ${ARCHitecture}
+substitution (see \fIaesub\fP(5) for more information).
+.LP
+The patterns are simple shell file name patterns
+(see \fIsh\fP(1) for more information)
+matched against the output of the \fIuname\fP(2) system call.
+.LP
+The result of \fIuname\fR(2)
+has four fields of interest:
+\fIsysname\fR, \fIrelease\fR, \fIversion\fR
+and \fImachine\fR.
+These are stitched together with hyphens to form an architecture \fIvariant\fR
+to be matched by the pattern.
+.LP
+For example,
+a system the author commonly uses is "SunOS-4.1.3-8-sun4m"
+which matches the "SunOS-4.1*-*-sun4*" pattern.
+A solaris system, a very different beast,
+matches the "SunOS-5.*-*-sun4*" pattern.
+Sun's 386 version of Solaris matches the "SunOS-5.*-*-i86pc" pattern.
+A convex system matches the "ConvexOS-*-10.*-convex" pattern.
+.nh 3 "Project \fIconfig\fP File"
+.LP
+To require a project to build and test on each of these architectures,
+the \fIarchitecture\fR field of the project \fIconfig\fR file is set.
+See \fIaepconf\fR(5) for more details on this file.
+The above examples of architectures could be represented as
+.E(
+architecture =
+[
+  {
+    name = "sun4";
+    pattern = "SunOS-4.1*-*-sun4*";
+  },
+  {
+    name = "sun5";
+    pattern = "SunOS-5.*-*-sun4*";
+  },
+.E)
+.E(
+  {
+    name = "sun5pc";
+    pattern = "SunOS-5.*-*-i86pc";
+  },
+  {
+    name = "convex";
+    pattern = "ConvexOS-*-10.*-*";
+  }
+];
+.E)
+This would require that all changes build and test on each of
+the "sun4", "sun5", "sun5pc" and "convex" architectures.
+.LP
+If the \fIarchitecture\fP field does not appear in the
+project \fIconfig\fR file,
+it defaults to
+.E(
+architecture =
+[
+  {
+    name = "unspecified";
+    pattern = "*";
+  }
+];
+.E)
+.LP
+Setting the architectures
+is usually done as part of the first change of a project,
+but it also may be done to existing projects.
+This information is kept in the project \fIconfig\fP file,
+rather than as a project attribute,
+because it requires that the DMT configuration file
+and the tests have corresponding details (see below).
+.PP
+The
+.I lib/config.example/architecture
+file in the Aegis distribution
+contains many architecture variations,
+so that you may readily insert them into your project
+.I config
+file.
+.nh 3 "Change Attribute"
+.LP
+The \fIarchitecture\fP attribute is inherited by each new change.
+A project administrator may subsequently edit the
+change attributes to grant exemptions
+for specific architectures.
+See \fIaeca\fR(1) for how to do this.
+.LP
+A build must be successfully performed on each of the target architectures.
+Similarly,
+the tests must be performed successfully on each.
+These requirements are because there is often conditional code
+present to cope with the vagaries of each architecture,
+and this needs to be compiled and tested in each case.
+.LP
+This multiple build and test requirement includes both development
+and integration states of each change.
+.nh 3 "Network Files"
+.LP
+This method of heterogeneous development
+assumes that the baseline and development directories
+are available as the same pathname in all target architectures.
+With software such as NFS,
+this does not present a great problem,
+however NFS locking must also work.
+.LP
+There is also an assumption that all
+the hosts remotely mounting NFS file systems
+will agree on the time,
+because aegis uses time stamps to record
+that various tasks have been performed.
+Software such as \fItimed\fR(8) is required\**.
+.FS
+Some sites manage by running \fIrdate\fR(8)
+from \fIcron\fR(8) every 15 minutes.
+.FE
+.nh 3 "DMT Implications"
+.LP
+This method of heterogeneous development
+assumes that the baseline will have a copy of all object files
+for all target architectures \fIsimultaneously\fR.
+.LP
+This means that the configuration file for the DMT
+will need to distinguish all the variations of the object files in some way.
+The easiest method is to have a separate object tree
+for each architecture\**.
+.FS
+A tree the same shape as the source tree makes navigation easier,
+and users need not think of file names unique across all directories.
+.FE
+To facilitate this,
+there is an \fI${ARCHitecture}\fR substitution available,
+which may then be passed to the DMT using
+the \fIbuild_command\fP field
+of the project \fIconfig\fR file.
+.LP
+The architecture name used by aegis needs to be used by the DMT,
+so that both aegis and the DMT can agree on which architecture
+is currently targeted.
+.nh 4 "Cook Example"
+.LP
+As and example of how to do this,
+the cook recipes from the DMT chapter are modified as appropriate.
+First, the \fIbuild_command\fR field of the
+project \fIconfig\fR file is changed
+to include the \fI${ARCHitecture}\fR substitution:
+.E(
+build_command =
+  "cook -b ${s Howto.cook} \e
+  project=$p change=$c \e
+  version=$v arch='$arch' -nl";
+.E)
+.LP
+Second,
+the C recipe must be changed
+to include the architecture in the path of the result:
+.E(
+[arch]/%.o: %.c: [collect c_incl
+  -eia [prepost "-I" ""
+  [search_list]] [resolve %.c]]
+{
+  if [not [exists [arch]]] then
+    mkdir [arch]
+      set clearstat;
+  if [exists [target]] then
+    rm [target]
+      set clearstat;
+  [cc] [cc_flags] [prepost "-I"
+    "" [search_list]] -c
+    [resolve %.c];
+  mv %.o [target];
+}
+.E)
+.LP
+Third,
+the link recipe must be changed
+to include the architecture in the name of the result:
+.E(
+[arch]/example: [object_files]
+{
+  if [not [exists [arch]]] then
+    mkdir [arch]
+      set clearstat;
+  if [exists [target]] then
+    rm [target]
+      set clearstat;
+  [cc] -o [target] [resolve
+    [object_files]] -ly -ll;
+}
+.E)
+.LP
+The method used to determine the \f(CWobject_files\fP variable
+is the same as before,
+but the object file names now include the architecture:
+.E(
+object_files =
+  [fromto %.y [arch]/%.o
+    [match_mask %.y [source_files]]]
+  [fromto %.l [arch]/%.o
+    [match_mask %.l [source_files]]]
+  [fromto %.c [arch]/%.o
+    [match_mask %.c [source_files]]]
+  ;
+.E)
+.LP
+Note that the form of these recipes precludes
+performing a build in each target architecture simultaneously,
+because intermediate files in the recipes may clash.
+However,
+aegis prevents simultaneous build,
+for this and other reasons.
+.nh 3 "Test Implications"
+.LP
+Tests will need to know in which directory the relevant binary files reside.
+The \fItest_command\fP field of the project \fIconfig\fP file may be
+changed from the default
+.E(
+test_command =
+  "$shell $file_name";
+.E)
+to pass the architecture name to the test
+.E(
+test_command =
+  "$shell $file_name $arch";
+.E)
+This will make the architecture name available
+as \f(CW$1\fP within the shell script.
+Tests should fail elegantly when the architecture name is not given,
+or should assume a sensible default.
+.nh 3 "Cross Compiling"
+.LP
+If you are cross compiling to a number of different target architectures,
+you would not use aegis' heterogeneous development support,
+since it depends on the \fIuname\fP(2)
+system call,
+which would tell it nothing
+useful when cross compiling.
+In this case,
+simply write the DMT configuration file
+to cross compile to all architectures in every build.
+.nh 3 "File Version by Architecture"
+.LP
+There is no intention of ever providing the facility
+where a project source file may have different versions depending on
+the architecture,
+but all of these versions overload the same file name\**.
+.FS
+Some other SCM tools provide a repository with this facility.
+.FE
+.LP
+The same effect may be achieved by naming files by architecture,
+and using the DMT to compile and link
+those files in the appropriate architecture.
+.LP
+This has the advantage of making it clear that
+several variations of a file exist,
+one for each architecture,
+rather than hiding several related but independent source files
+behind the one file name.

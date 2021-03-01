@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,9 +21,10 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
+#include <ac/stdlib.h>
+#include <ac/string.h>
+#include <ac/time.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -69,130 +70,7 @@ develop_end_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -Develop_End - complete development of a change",
-"",
-"SYNOPSIS",
-"	%s -Develop_End [ <option>... ]",
-"	%s -Develop_End -List [ <option>... ]",
-"	%s -Develop_End -Help",
-"",
-"DESCRIPTION",
-"	The %s -Develop_End command is used to notify",
-"	%s of the completion of the development of a change.",
-"",
-"	Successful execution of the command advances the change",
-"	from the 'being_developed' state to the 'being_reviewed'",
-"	state.",
-"",
-"	The ownership of files in the development directory is",
-"	changed to the project owner and group, and the files",
-"	changed to be read-only.  This prevents accidental",
-"	alterations of the change's files between development and",
-"	integration.",
-"",
-"	The change is no longer considered assigned to the",
-"	current user.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-Change <number>",
-"		This option may be used to specify a particular",
-"		change within a project.  When no -Change option is",
-"		specified, the AEGIS_CHANGE environment variable is",
-"		consulted.  If that does not exist, the user's",
-"		$HOME/.aegisrc file is examined for a default change",
-"		field (see aeuconf(5) for more information).  If",
-"		that does not exist, when the user is only working",
-"		on one change within a project, that is the default",
-"		change number.  Otherwise, it is an error.",
-"",
-"	-Help",
-"		This option may be used to obtain more",
-"		information about how to use the %s program.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified, the",
-"		AEGIS_PROJECT environment variable is consulted.  If",
-"		that does not exist, the user's $HOME/.aegisrc file",
-"		is examined for a default project field (see",
-"		aeuconf(5) for more information).  If that does not",
-"		exist, when the user is only working on changes",
-"		within a single project, the project name defaults",
-"		to that project.  Otherwise, it is an error.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List",
-"		option this option causes column headings to be",
-"		added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aede '%s -de \\!* -v'",
-"	sh$	aede(){%s -de $* -v}",
-"",
-"ERRORS",
-"	It is an error if the change is not assigned to the",
-"	current user.",
-"	It is an error if The change is not in the",
-"	'being_developed' state.",
-"	It is an error if there has been no successful '%s",
-"	-Build' command since a change file was last edited.",
-"	It is an error if there has been no successful '%s",
-"	-DIFFerence' command since a change file was last edited.",
-"	It is an error if there has been no successful '%s",
-"	-Test' command since a change file was last edited.",
-"	It is an error if there has been no successful '%s",
-"	-Test -BaseLine' command since a change file was last",
-"	edited.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.	The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aede.h>
 	};
 
 	help(text, SIZEOF(text), develop_end_usage);
@@ -328,12 +206,12 @@ develop_end_main()
 	long		change_number;
 	change_ty	*cp;
 	user_ty		*up;
-	int		build_whine;
-	int		test_whine;
-	int		test_bl_whine;
-	int		reg_test_whine;
 	int		diff_whine;
 	int		errs;
+	time_t		youngest;
+	string_ty	*youngest_name;
+	int		config_seen;
+	string_ty	*config_name;
 
 	trace(("develop_end_main()\n{\n"/*}*/));
 	project_name = 0;
@@ -400,6 +278,7 @@ develop_end_main()
 	 * table.  Take an advisory write lock on the appropriate row of the
 	 * user table.  Block until can get both simultaneously.
 	 */
+	trace(("mark\n"));
 	project_pstate_lock_prepare(pp);
 	change_cstate_lock_prepare(cp);
 	user_ustate_lock_prepare(up);
@@ -416,34 +295,49 @@ develop_end_main()
 	 * It is an error if the change has no current baseline test pass.
 	 * It is an error if the change has no new test associtaed with it.
 	 */
+	trace(("mark\n"));
 	if (cstate_data->state != cstate_state_being_developed)
-		change_fatal(cp, "not in 'being_developed' state");
+	{
+		change_fatal
+		(
+			cp,
+ "this change is in the '%s' state, you cannot end development from this state",
+			cstate_state_ename(cstate_data->state)
+		);
+	}
 	if (!str_equal(change_developer_name(cp), user_name(up)))
 	{
 		change_fatal
 		(
 			cp,
-			"user \"%S\" is not the developer",
-			user_name(up)
+"user \"%S\" is not the developer, only user \"%s\" may end development of this change",
+			user_name(up),
+			change_developer_name(cp)
 		);
 	}
 	if (!cstate_data->src->length)
-		change_fatal(cp, "no files");
+	{
+		change_fatal
+		(
+			cp,
+"this change has no files, \
+you must add some files to this change before you may end development"
+		);
+	}
 	errs = 0;
-	build_whine = 0;
-	test_whine = 0;
-	test_bl_whine = 0;
-	reg_test_whine = 0;
 	diff_whine = 0;
+	config_seen = 0;
 
 	/*
 	 * It is an error if any files in the change file table have been
 	 * modified since the last build.
-	 * It is an error if any files in the change file table have been
-	 * modified since the last diff.
 	 */
+	trace(("mark\n"));
 	dd = change_development_directory_get(cp, 1);
 	user_become(up);
+	youngest = 0;
+	youngest_name = 0;
+	config_name = str_from_c(THE_CONFIG_FILE);
 	for (j = 0; j < cstate_data->src->length; ++j)
 	{
 		cstate_src	c_src_data;
@@ -455,6 +349,7 @@ develop_end_main()
 		int		file_required;
 		int		diff_file_required;
 
+		trace(("mark\n"));
 		file_required = 1;
 		diff_file_required = 1;
 		c_src_data = cstate_data->src->list[j];
@@ -465,6 +360,13 @@ develop_end_main()
 			file_required = 0;
 			diff_file_required = 0;
 		}
+
+		/*
+		 * the config file in a change
+		 * implies additional tests
+		 */
+		if (str_equal(c_src_data->file_name, config_name))
+			config_seen++;
 
 		/*
 		 * make sure the file exists
@@ -488,6 +390,29 @@ develop_end_main()
 		}
 
 		/*
+		 * make sure the filename conforms to length limits
+		 *
+		 * Scenario: user copies "config", alters filename
+		 * constraints, creates file, uncopies "config".
+		 * Reviewer will not necessarily notice, especially when
+		 * expecting aegis to notice for him.
+		 */
+		if (file_required)
+		{
+			string_ty	*e;
+
+			user_become_undo();
+			e = change_filename_check(cp, c_src_data->file_name, 0);
+			user_become(up);
+			if (e)
+			{
+				change_error(cp, "%S", e);
+				++errs;
+				str_free(e);
+			}
+		}
+
+		/*
 		 * get the difference time
 		 */
 		path_d = str_format("%S,D", path);
@@ -498,26 +423,10 @@ develop_end_main()
 			when_d = 0;
 		str_free(path_d);
 
-		if
-		(
-			file_required
-		&&
-			(
-				when >= cstate_data->build_time
-			||
-				!cstate_data->build_time
-			)
-		)
+		if (file_required && when > youngest)
 		{
-			if (!build_whine)
-			change_error
-			(
-				cp,
-				"no current '%s -Build' registration",
-				option_progname_get()
-			);
-			build_whine++;
-			errs++;
+			youngest = when;
+			youngest_name = c_src_data->file_name;
 		}
 		if
 		(
@@ -543,93 +452,68 @@ develop_end_main()
 		)
 		{
 			if (!diff_whine)
-			change_error
-			(
-				cp,
-				"no current '%s -Diff' registration",
-				option_progname_get()
-			);
-			diff_whine++;
-			errs++;
-		}
-		if
-		(
-			!cstate_data->test_exempt
-		&&
-			file_required
-		&&
-			(
-				when >= cstate_data->test_time
-			||
-				!cstate_data->test_time
-			)
-		)
-		{
-			if (!test_whine)
-			change_error
-			(
-				cp,
-				"no current '%s -Test' registration",
-				option_progname_get()
-			);
-			test_whine++;
-			errs++;
-		}
-		if
-		(
-			!cstate_data->test_baseline_exempt
-		&&
-			file_required
-		&&
-			(
-				when >= cstate_data->test_baseline_time
-			||
-				!cstate_data->test_baseline_time
-			)
-		)
-		{
-			if (!test_bl_whine)
-			change_error
-			(
-				cp,
-				"no current '%s -Test -BaseLine' registration",
-				option_progname_get()
-			);
-			test_bl_whine++;
-			errs++;
-		}
-		if
-		(
-			!cstate_data->regression_test_exempt
-		&&
-			file_required
-		&&
-			(
-				when >= cstate_data->regression_test_time
-			||
-				!cstate_data->regression_test_time
-			)
-		)
-		{
-			if (!reg_test_whine)
-			change_error
-			(
-				cp,
-			       "no current '%s -Test -REGression' registration",
-				option_progname_get()
-			);
-			reg_test_whine++;
-			errs++;
+			{
+				if
+				(
+					file_required
+				&&
+					when != c_src_data->diff_time
+				&&
+					c_src_data->diff_time
+				)
+				{
+					change_error
+					(
+						cp,
+"the \"%S\" file was modified after the last difference, \
+this change must successfully complete another '%s -Diff' \
+before it can end development",
+						c_src_data->file_name,
+						option_progname_get()
+					);
+				}
+				else if
+				(
+					diff_file_required
+				&&
+					when_d != c_src_data->diff_file_time
+				&&
+					c_src_data->diff_file_time
+				)
+				{
+					change_error
+					(
+						cp,
+"the \"%S,D\" file was modified after the last difference, \
+this change must successfully complete another '%s -Diff' \
+before it can end development",
+						c_src_data->file_name,
+						option_progname_get()
+					);
+				}
+				else
+				{
+					change_error
+					(
+						cp,
+"this change must successfully complete an '%s -Diff' \
+before it can end development",
+						option_progname_get()
+					);
+				}
+				diff_whine++;
+				errs++;
+			}
 		}
 
 		/*
-		 * It is an error if any files in the change file table haved
+		 * It is an error if any files in the change file table have
 		 * different edit numbers to the baseline file table edit
 		 * numbers.
 		 */
+		p_src_data = project_src_find(pp, c_src_data->file_name);
 		if (c_src_data->action != file_action_create)
 		{
-			p_src_data = project_src_find(pp, c_src_data->file_name);
 			if (!p_src_data)
 			{
 				change_error
@@ -676,29 +560,199 @@ develop_end_main()
 		}
 		else
 		{
-			/*
-			 * add a new entry to the pstate src list,
-			 * and mark it as "about to be created".
-			 */
-			p_src_data = project_src_new(pp, c_src_data->file_name);
+			if (p_src_data)
+			{
+				if (!p_src_data->deleted_by)
+				{
+					change_error
+					(
+						cp,
+						"file \"%S\" already exists",
+						c_src_data->file_name
+					);
+					++errs;
+				}
+			}
+			else
+			{
+				/*
+				 * add a new entry to the pstate src list,
+				 * and mark it as "about to be created".
+				 */
+				p_src_data =
+					project_src_new
+					(
+						pp,
+						c_src_data->file_name
+					);
+			}
 			p_src_data->usage = c_src_data->usage;
 			p_src_data->about_to_be_created_by = change_number;
 		}
 		p_src_data->locked_by = change_number;
 	}
+	str_free(config_name);
+	user_become_undo();
+
+	/*
+	 * if the config file changes,
+	 * make sure the project file names still conform
+	 */
+	if (config_seen)
+	{
+		for (j = 0; j < pstate_data->src->length; ++j)
+		{
+			pstate_src	p_src_data;
+			string_ty	*e;
+	
+			trace(("mark\n"));
+			p_src_data = pstate_data->src->list[j];
+			if (p_src_data->deleted_by)
+				continue;
+			if (p_src_data->about_to_be_created_by)
+				continue;
+			if (change_src_find(cp, p_src_data->file_name))
+				continue;
+	
+			e = change_filename_check(cp, p_src_data->file_name, 0);
+			if (e)
+			{
+				change_error(cp, "project %S", e);
+				++errs;
+				str_free(e);
+			}
+		}
+	}
+
+	/*
+	 * verify that the youngest file is older than the
+	 * build, test, test -bl and test -reg times
+	 */
+	trace(("mark\n"));
+	if (!cstate_data->build_time || youngest >= cstate_data->build_time)
+	{
+		if (youngest_name && cstate_data->build_time)
+		{
+			change_error
+			(
+				cp,
+"the \"%S\" file was modified after the last build, \
+this change must successfully complete another '%s -Build'%s \
+before it can end development",
+				youngest_name,
+				option_progname_get(),
+				change_outstanding_builds(cp, youngest)
+			);
+		}
+		else
+		{
+			change_error
+			(
+				cp,
+"this change must successfully complete an '%s -Build'%s \
+before it can end development",
+				option_progname_get(),
+				change_outstanding_builds(cp, youngest)
+			);
+		}
+		++errs;
+	}
+	trace(("mark\n"));
+	if
+	(
+		!cstate_data->test_exempt
+	&&
+		(
+			!cstate_data->test_time
+		||
+			youngest >= cstate_data->test_time
+		)
+	)
+	{
+		change_error
+		(
+			cp,
+"this change must successfully complete an '%s -Test'%s \
+before it can end development",
+			option_progname_get(),
+			change_outstanding_tests(cp, youngest)
+		);
+		++errs;
+	}
+	trace(("mark\n"));
+	if
+	(
+		!cstate_data->test_baseline_exempt
+	&&
+		(
+			!cstate_data->test_baseline_time
+		||
+			youngest >= cstate_data->test_baseline_time
+		)
+	)
+	{
+		change_error
+		(
+			cp,
+"this change must successfully complete an '%s -Test -BaseLine'%s \
+before it can end development",
+			option_progname_get(),
+			change_outstanding_tests_baseline(cp, youngest)
+		);
+		++errs;
+	}
+	trace(("mark\n"));
+	if
+	(
+		!cstate_data->regression_test_exempt
+	&&
+		(
+			!cstate_data->regression_test_time
+		||
+			youngest >= cstate_data->regression_test_time
+		)
+	)
+	{
+		change_error
+		(
+			cp,
+"this change must successfully complete an '%s -Test -REGression'%s \
+before it can end development",
+			option_progname_get(),
+			change_outstanding_tests_regression(cp, youngest)
+		);
+		++errs;
+	}
+
+	/*
+	 * if there was any problem,
+	 * stay in 'being developed' state.
+	 */
+	trace(("mark\n"));
 	if (errs)
-		quit(1);
+	{
+		change_fatal
+		(
+			cp,
+	      "found %d error%s, change remains in the 'being developed' state",
+			errs,
+			(errs == 1 ? "" : "s")
+		);
+	}
 
 	/*
 	 * Change all of the files in the development directory
 	 * to be read-only, and record the new ctime.
 	 */
+	trace(("mark\n"));
+	user_become(up);
 	dir_walk(dd, de_func, cp);
 	user_become_undo();
 
 	/*
 	 * add to history for state change
 	 */
+	trace(("mark\n"));
 	history_data = change_history_new(cp, up);
 	history_data->what = cstate_history_what_develop_end;
 
@@ -708,16 +762,15 @@ develop_end_main()
 	 * Clear the test-time field.
 	 * Clear the test-baseline-time field.
 	 */
+	trace(("mark\n"));
 	cstate_data->state = cstate_state_being_reviewed;
-	cstate_data->build_time = 0;
-	cstate_data->test_time = 0;
-	cstate_data->test_baseline_time = 0;
-	cstate_data->regression_test_time = 0;
+	change_build_times_clear(cp);
 
 	/*
 	 * Remove the change from the list of assigned changes in the user
 	 * change table (in the user row).
 	 */
+	trace(("mark\n"));
 	user_own_remove(up, project_name_get(pp), change_number);
 
 	/*
@@ -725,6 +778,7 @@ develop_end_main()
 	 * Write the user table row.
 	 * Release advisory locks.
 	 */
+	trace(("mark\n"));
 	change_cstate_write(cp);
 	project_pstate_write(pp);
 	user_ustate_write(up);

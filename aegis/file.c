@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -143,7 +143,7 @@ read_whole_file(fn)
 		if (length >= length_max)
 		{
 			length_max *= 2;
-			mem_change_size(&text, length_max);
+			text = mem_change_size(text, length_max);
 		}
 		text[length++] = c;
 	}
@@ -155,4 +155,35 @@ read_whole_file(fn)
 	s = str_n_from_c(text, length);
 	mem_free(text);
 	return s;
+}
+
+
+/*
+ * NAME
+ *	files_are_different
+ *
+ * SYNOPSIS
+ *	int files_are_different(string_ty *, string_ty *);
+ *
+ * DESCRIPTION
+ *	The files_are_different function is used to compare the
+ *	contents of two files.  The files to compare are given by the
+ *	two arguments.  It is assumed that os_become is active.
+ *
+ * RETURNS
+ *	int;	zero if the files are the same
+ *		non-zero if the file are different
+ */
+
+int
+files_are_different(s1, s2)
+	string_ty	*s1;
+	string_ty	*s2;
+{
+	int		result;
+	os_become_must_be_active();
+	result = glue_file_compare(s1->str_text, s2->str_text);
+	if (result < 0)
+		nfatal("cmp %S %S", s1, s2);
+	return result;
 }

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -31,8 +31,6 @@ and gives examples of how to use the various alternatives.
 At this writing,
 the author has seen few sufficiently capable dependency maintenance tools.
 .so c4.1.so
-.1C
 .so c4.2.so
-.\" add other useful DMTs here
-.\" before the next section, which talks about ones that DON'T work
 .so c4.3.so
+.so c4.4.so

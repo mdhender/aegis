@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,8 +21,9 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <ac/stdlib.h>
+#include <ac/string.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -54,8 +55,18 @@ integrate_pass_usage()
 	char		*progname;
 
 	progname = option_progname_get();
-	fprintf(stderr, "usage: %s -Integrate_PASS [ <option>... ]\n", progname);
-	fprintf(stderr, "       %s -Integrate_PASS -List [ <option>... ]\n", progname);
+	fprintf
+	(
+		stderr,
+		"usage: %s -Integrate_PASS [ <option>... ]\n",
+		progname
+	);
+	fprintf
+	(
+		stderr,
+		"       %s -Integrate_PASS -List [ <option>... ]\n",
+		progname
+	);
 	fprintf(stderr, "       %s -Integrate_PASS -Help\n", progname);
 	quit(1);
 }
@@ -68,128 +79,7 @@ integrate_pass_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -Integrate_PASS - pass a change integration",
-"",
-"SYNOPSIS",
-"	%s -Integrate_PASS [ <option>... ]",
-"	%s -Integrate_PASS -List [ <option>... ]",
-"	%s -Integrate_PASS -Help",
-"",
-"DESCRIPTION",
-"	The %s -Integrate_PASS command is used to notify %s",
-"	that a change has passed integration.",
-"",
-"	The change is advanced from the 'being_integrated' state",
-"	to the 'completed' state.  The integration directory is",
-"	renamed as the baseline directory, and the baseline",
-"	directory is deleted.  The change is no longer assigned",
-"	to the current user.",
-"",
-"	While there is a build in progress for any change in a",
-"	project, an integrate pass for the project will wait until",
-"	all the builds are completed before starting.  This is to",
-"	ensure that the baseline is consistent for the entire build.",
-"	Similarly, while an integrate pass is in progress for a",
-"	project, any builds will wait until it is completed before",
-"	starting.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-Change <number>",
-"		This option may be used to specify a particular",
-"		change within a project.  When no -Change option is",
-"		specified, the AEGIS_CHANGE environment variable is",
-"		consulted.  If that does not exist, the user's",
-"		$HOME/.aegisrc file is examined for a default change",
-"		field (see aeuconf(5) for more information).  If",
-"		that does not exist, when the user is only working",
-"		on one change within a project, that is the default",
-"		change number.  Otherwise, it is an error.",
-"",
-"	-Help",
-"		This option may be used to obtain more",
-"		information about how to use the %s program.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified, the",
-"		AEGIS_PROJECT environment variable is consulted.  If",
-"		that does not exist, the user's $HOME/.aegisrc file",
-"		is examined for a default project field (see",
-"		aeuconf(5) for more information).  If that does not",
-"		exist, when the user is only working on changes",
-"		within a single project, the project name defaults",
-"		to that project.  Otherwise, it is an error.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List",
-"		option this option causes column headings to be",
-"		added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aeip '%s -ip \\!* -v'",
-"	sh$	aeip(){%s -ip $* -v}",
-"",
-"ERRORS",
-"	It is an error if the change is not assigned to the",
-"	current user.",
-"	It is an error if The change is not in the",
-"	'being_integrated' state.",
-"	It is an error if there has been no successful '%s",
-"	-Build' command for the integration.",
-"	It is an error if there has been no successful '%s",
-"	-Test' command for the integration.",
-"	It is an error if there has been no successful '%s",
-"	-Test -BaseLine' command for the integration.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.	The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aeip.h>
 	};
 
 	help(text, SIZEOF(text), integrate_pass_usage);
@@ -241,6 +131,7 @@ static void integrate_pass_main _((void));
 static void
 integrate_pass_main()
 {
+	time_t		youngest;
 	string_ty	*hp;
 	string_ty	*id;
 	string_ty	*cwd;
@@ -256,7 +147,6 @@ integrate_pass_main()
 	pstate_history	phistory_data;
 	int		j;
 	int		ncmds;
-	pconf		pconf_data;
 	string_ty	*project_name;
 	project_ty	*pp;
 	long		change_number;
@@ -305,7 +195,13 @@ integrate_pass_main()
 
 		case arglex_token_nolog:
 			if (nolog)
-				fatal("duplicate %s option", arglex_value.alv_string);
+			{
+				fatal
+				(
+					"duplicate %s option",
+					arglex_value.alv_string
+				);
+			}
 			nolog = 1;
 			break;
 		}
@@ -346,7 +242,6 @@ integrate_pass_main()
 	lock_take();
 	cstate_data = change_cstate_get(cp);
 	pstate_data = project_pstate_get(pp);
-	pconf_data = change_pconf_get(cp);
 
 	/*
 	 * It is an error if the change is not in the being_integrated state.
@@ -356,15 +251,25 @@ integrate_pass_main()
 	 * It is an error if the change has no current baseline test pass.
 	 */
 	if (cstate_data->state != cstate_state_being_integrated)
-		change_fatal(cp, "not in 'being_integrated' state");
+	{
+		change_fatal
+		(
+			cp,
+"this change is in the '%s' state, \
+it must be in the 'being integrated' state to pass integration",
+			cstate_state_ename(cstate_data->state)
+		);
+	}
 	nerr = 0;
+	youngest = 0;
 	if (!str_equal(change_integrator_name(cp), user_name(up)))
 	{
 		change_fatal
 		(
 			cp,
-			"user \"%S\" is not the integrator",
-			user_name(up)
+     "user \"%S\" is not the integrator, only user \"%S\" may pass integration",
+			user_name(up),
+			change_integrator_name(cp)
 		);
 	}
 	if (!cstate_data->build_time)
@@ -372,8 +277,10 @@ integrate_pass_main()
 		change_error
 		(
 			cp,
-			"no current '%s -Build' registration",
-			option_progname_get()
+"this change must successfully complete an '%s -Build'%s \
+before it can pass integration",
+			option_progname_get(),
+			change_outstanding_builds(cp, youngest)
 		);
 		++nerr;
 	}
@@ -382,8 +289,10 @@ integrate_pass_main()
 		change_error
 		(
 			cp,
-			"no current '%s -Test' registration",
-			option_progname_get()
+"this change must successfully complete an '%s -Test'%s \
+before it can pass integration",
+			option_progname_get(),
+			change_outstanding_tests(cp, youngest)
 		);
 		++nerr;
 	}
@@ -397,8 +306,10 @@ integrate_pass_main()
 		change_error
 		(
 			cp,
-			"no current '%s -Test -BaseLine' registration",
-			option_progname_get()
+"this change must successfully complete an '%s -Test -BaseLine'%s \
+before it can pass integration",
+			option_progname_get(),
+			change_outstanding_tests_baseline(cp, youngest)
 		);
 		++nerr;
 	}
@@ -412,13 +323,23 @@ integrate_pass_main()
 		change_error
 		(
 			cp,
-			"no current '%s -Test -REGression' registration",
-			option_progname_get()
+"this change must successfully complete an '%s -Test -REGression'%s \
+before it can pass integration",
+			option_progname_get(),
+			change_outstanding_tests_regression(cp, youngest)
 		);
 		++nerr;
 	}
 	if (nerr)
-		quit(1);
+	{
+		change_fatal
+		(
+			cp,
+	     "found %d error%s, change remains in the 'being integrated' state",
+			nerr,
+			(nerr == 1 ? "" : "s")
+		);
+	}
 
 	/*
 	 * Make sure they aren't in a nuisance place.
@@ -493,7 +414,7 @@ integrate_pass_main()
 		user_ty	*pup;
 
 		pup = project_user(pp);
-		log_open(change_logfile_get(cp), pup);
+		log_open(change_logfile_get(cp), pup, log_style_create);
 		user_free(pup);
 	}
 	ncmds = 0;
@@ -525,6 +446,9 @@ integrate_pass_main()
 			{
 				assert(p_src_data->deleted_by);
 				p_src_data->deleted_by = 0;
+				p_src_data->about_to_be_created_by = 0;
+				c_src_data->edit_number =
+					str_copy(p_src_data->edit_number);
 				goto reusing_an_old_file;
 			}
 
@@ -604,10 +528,7 @@ integrate_pass_main()
 	 * Clear the test-baseline-time field.
 	 */
 	cstate_data->state = cstate_state_completed;
-	cstate_data->build_time = 0;
-	cstate_data->test_time = 0;
-	cstate_data->test_baseline_time = 0;
-	cstate_data->regression_test_time = 0;
+	change_build_times_clear(cp);
 	dev_dir = str_copy(change_development_directory_get(cp, 1));
 	change_development_directory_clear(cp);
 	new_baseline = str_copy(change_integration_directory_get(cp, 1));

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,13 +25,6 @@
 
 #include <main.h>
 #include <str.h>
-
-typedef struct parse_list_ty parse_list_ty;
-struct parse_list_ty
-{
-	string_ty	*name;
-	parse_list_ty	*next;
-};
 
 void lex_open _((char *));
 void lex_close _((void));

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,17 +21,18 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <ac/stdarg.h>
+#include <ac/stdlib.h>
+#include <ac/string.h>
 #include <errno.h>
 
 #include <error.h>
-#include <id.h>
 #include <lex.h>
 #include <mem.h>
-#include <s-v-arg.h>
 #include <str.h>
+#include <symtab.h>
 #include <type.h>
+#include <word.h>
 #include <parse.gen.h> /* must be last */
 
 
@@ -51,6 +52,7 @@ static	int		error_count;
 extern	parse_STYPE	parse_lval;
 static	wlist		ifiles;
 static	wlist		include_path;
+static symtab_ty	*keyword;
 
 
 /*
@@ -80,25 +82,25 @@ lex_initialize()
 		int	k_token;
 	};
 
-	static keyword_ty keyword[] =
+	static keyword_ty table[] =
 	{
 		{ "type", TYPE, },
+		{ "time", TIME, },
 		{ "string", STRING, },
 		{ "integer", INTEGER, },
 		{ "include", INCLUDE, },
 	};
-	keyword_ty *kp;
-	static int done;
+	keyword_ty	*kp;
 
-	if (done)
+	if (keyword)
 		return;
-	done = 1;
-	for (kp = keyword; kp < ENDOF(keyword); ++kp)
+	keyword = symtab_alloc(SIZEOF(table));
+	for (kp = table; kp < ENDOF(table); ++kp)
 	{
 		string_ty *s;
 
 		s = str_from_c(kp->k_name);
-		id_assign(s, ID_CLASS_KEYWORD, kp->k_token);
+		symtab_assign(keyword, s, &kp->k_token);
 		str_free(s);
 	}
 }
@@ -128,7 +130,13 @@ lex_open(s)
 		{
 			char	buffer[2000];
 
-			sprintf(buffer, "%s/%s", include_path.wl_word[j]->str_text, s);
+			sprintf
+			(
+				buffer,
+				"%s/%s",
+				include_path.wl_word[j]->str_text,
+				s
+			);
 			f->fp = fopen(buffer, "r");
 			if (f->fp)
 			{
@@ -249,7 +257,8 @@ parse_lex()
 			parse_lval.lv_integer = 0;
 			for (;;)
 			{
-				parse_lval.lv_integer = 10 * parse_lval.lv_integer + c - '0';
+				parse_lval.lv_integer =
+					10 * parse_lval.lv_integer + c - '0';
 				c = lex_getc();
 				if (c < '0' || c > '9')
 				{
@@ -271,10 +280,8 @@ parse_lex()
 		case 's': case 't': case 'u': case 'v': case 'w':
 		case 'x': case 'y': case 'z': 
 			{
-				char		*cp;
-				char		buffer[1000];
 				string_ty	*s;
-				long		tok;
+				int		*data;
 	
 				cp = buffer;
 				for (;;)
@@ -307,10 +314,11 @@ parse_lex()
 					break;
 				}
 				s = str_from_c(buffer);
-	    			if (id_search(s, ID_CLASS_KEYWORD, &tok))
+				data = symtab_query(keyword, s);
+				if (data)
 				{
 					str_free(s);
-					return tok;
+					return *data;
 				}
 				parse_lval.lv_string = s;
 				return NAME;
@@ -330,8 +338,11 @@ parse_lex()
 					c = lex_getc();
 					if (c == EOF)
 					{
-	bad_comment:
-						parse_error("end-of-file inside comment");
+						bad_comment:
+						parse_error
+						(
+						    "end-of-file inside comment"
+						);
 						exit(1);
 					}
 					if (c == '*')

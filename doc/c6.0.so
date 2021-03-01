@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -30,49 +30,6 @@ and documents a number of pitfalls you may encounter.
 This chapter is at present very "ad hoc" with no particular ordering.
 Fortunately, it is, as yet, rather small.
 The final size of this chapter is expected to be quite large.
-.nh 2 "C Include Semantics"
-.LP
-The semantics of C include directives make the
-.E(
-#include "\fIfilename\fP"
-.E)
-directive dangerous in a project developed with the aegis program.
-.LP
-Depending on the age of your compiler,
-whether it is AT&T traditional C or newer ANSI C,
-this form of directive will search first in the current directory and then
-along the search path,
-or in the directory of the including file and then along the search path.
-.LP
-The first case is fairly benign,
-except that compilers are rapidly becoming ANSI C compliant,
-and an operating system upgrade could result in a nasty surprise.
-.LP
-The second case is bad news.
-If the source file is in the baseline and the include file is in the change,
-you don't want the source file to use the include file in the baseline.
-.LP
-Always use the
-.E(
-#include <\fIfilename\fP>
-.E)
-form of the include directive,
-and set the include search path explicitly on the command line
-used by the dependency maintenance tool.
-.LP
-The dependency maintenance tool needs to be able to dynamically adapt
-to include file dependencies,
-because they are not static.
-The presence of an include file in a change
-means that any file which includes this include file,
-whether that source file is in the baseline or in the change,
-must have a dependency on the change's include file.
-Potentially,
-files in the baseline will need to be recompiled,
-and the object file stored in the change,
-not the baseline.
-Subsequent linking needs to pick up the object file
-in the change, not from the baseline.
 .nh 2 "Renaming Include Files"
 .LP
 Renaming include files can be a disaster,
@@ -80,12 +37,14 @@ either finding all of the clients,
 or making sure the new copy is used rather than the old copy
 still in the baseline.
 .LP
-If an include file is to be completely renamed,
-not moved to another directory
-but retain the same basename,
-then create a file in the development directory (\fIwithout\fP telling aegis)
-with the old name,
-and put a syntax error in it.
+Aegis provies some assistance.
+When the
+.I aemv (1)
+command is used,
+a file in the development directory is created in the
+.I old
+location,
+filled with garbage.
 Compiles will fail very diagnostically,
 and you can change the reference in the source file,
 probably after \fIaecp\fP(1)ing it first.
@@ -98,154 +57,11 @@ A hard link uses fewer disk blocks.
 Symbolic links survive the subject file being deleted and recreated.
 .FE
 between the new and old names,
-but only in the development directory.
-Create the link after \fIaenf\fP(1)ing the new name.
+but only in the development directory
+(i.e. replacing the "garbage" file aegis created for you).
+Create the link after \fIaemv\fP(1) has succeeded.
 This insulates you from a number of nasty Catch-22 situations
 in writing the dependency maintenance tool's rules file.
-.nh 2 "Writing Tests"
-.LP
-This section describes a number of things you can do to write better tests,
-and some pitfalls to be avoided.
-.LP
-The are a number of suggestions for portability of tests;
-this will definitely be important if you are writing software
-to publish on USENET or for FTP.
-Portability is often require
-.I within
-an organization, also.
-Examples include a change in company policy from one 386 
-.UX
-to another
-(e.g. company doesn't like Linux, now you must use AT&T's SVR4 offering),
-or the development team use
-.I gcc
-until the company finds out and forces you to use the prototype-less
-compiler supplied with the operating system.
-Things like this really have happened to the author!
-.nh 3 "Bourne Shell"
-.LP
-The aegis program mandates that all tests be Bourne shell scripts.
-This is because this shell is available on all flavours of the
-.UX
-operating system.
-The script files need not have execute permissions set,
-because the aegis program always invokes them as
-.E(
-sh \fIfilename\fP
-.E)
-so tests should not expect command line arguments.
-The test is not passed the name of the project nor the number of the change.
-.LP
-This means that if you can write in in a shell script,
-you can test it.
-This includes such things as client-server model interfaces,
-and multi-user synchronization testing.
-.LP
-Some indication that the test script is a Bourne shell script is
-a good idea.
-While many systems accept that a first line starting with a colon is a
-Bourne shell "magic number",
-a more widely understood "magic number" is
-.E(
-#! /bin/sh
-.E)
-as the first line of the script file.
-.nh 3 "Current Directory"
-.LP
-Tests are always run with the current directory set to either the
-development directory
-change under test when testing a change,
-or the integration directory when integrating a change,
-or the baseline when performing independent tests.
-.LP
-A test must not make assumptions about where it is being executed from,
-except to the extent that it is somewhere a build has been performed.
-A test must not assume that the current directory is writable,
-and must not try to write to it,
-as this could damage the source code of a change
-under development,
-potentially destroying weeks of work.
-.nh 3 "Check Exit Status"
-.LP
-A test script should check the exit status of every single command,
-even those which cannot fail.
-Do not rely on, or use, the
-.I "set -e"
-shell option (it provides no ability to clean up on error).
-.LP
-Checking the exit status involves testing the contents of the
-.B $?
-shell variable.
-Do not use an
-.I if
-statement wrapped around an execution of the program under test
-as this will miss core dumps and other terminations caused by signals.
-.LP
-Checking the exit status of every command in the script
-ensures that strange permission settings,
-or disk space problems,
-will cause the test to fail,
-rather than plow on and produce spurious results.
-.nh 3 "Trap Interrupts"
-.LP
-Use the
-.I trap
-statement to catch interrupts 1 2 3 and 15 an cause the test to fail.
-This should perform any cleanup the test requires
-(such as removing the temporary directory; see next item).
-.nh 3 "Temporary Directory"
-.LP
-Tests should create a temporary directory in
-.I /tmp
-and then
-.I cd
-into this directory.
-.LP
-This tends to isolate any vandalism that the program under test may indulge in,
-and serves as a place to write temporary files.
-At the end of the test, it is sufficient to
-.I cd
-out of the temporary directory and then
-.I "rm -rf"
-it,
-rather than track and remove all test files which may or may not be created.
-.nh 3 "PAGER"
-.LP
-If the program under test invokes pagers on its output,
-a la \fImore\fP(1) et al,
-it should be coded to use the PAGER
-environment variable.
-Tests of such programs should always set PAGER to
-.I cat
-so that tests always behave the same,
-irrespective of invocation method (either by aegis or from the command line).
-.nh 3 "[ test ]"
-.LP
-You should always use the
-.I test
-command,
-rather than the square bracket form,
-as many systems do not have the square bracket form,
-if you publish to USENET or for FTP.
-.nh 3 "Auxiliary Files"
-.LP
-If a test requires extra files as input or output to a command,
-it must construct them itself,
-using \fIhere\fP documents (see \fIsh\fP(1) for more information).
-.LP
-It is almost impossible to determine the location of an auxiliary file,
-if that auxiliary file is part of the project source.
-It could be in either the change under test or the baseline.
-.nh 3 "New Test Templates"
-.LP
-It is possible to specify most of the repetitious
-items above in a
-.I "file template"
-used every time a user creates a new test.
-See the \fIaent\fP(1) command for more information.
-.LP
-Having the machine do it for you
-means that you are more likely to do it.
 .nh 2 "Symbolic Links"
 .LP
 If you are on a flavour of 
@@ -273,7 +89,7 @@ by placing the line
 develop_begin_command =
 	"ln -s $baseline bl";
 .E)
-into the
+into the project
 .I config
 file.
 .nh 2 "User Setup"
@@ -282,24 +98,22 @@ There are a number of things which users
 of aegis can do to make it more useful,
 or more user friendly.
 This section describes just a few of them.
-.nh 3 "\&.cshrc"
+.nh 3 "The \&.cshrc file"
 .LP
 The aliases for the various user commands used throughout this manual
 are obtained by appending a line of the form
 .E(
-.ps -2
 source /usr/local/lib/aegis/cshrc
-.ps +2
 .E)
 to the
 .I \&.cshrc
 file in the user's home directory.
-.nh 3 "The AEGIS environment variable"
+.nh 3 "The AEGIS_PATH environment variable"
 .LP
 If users wish to use aegis for their own projects,
 in addition to the "system" projects,
 the
-AEGIS
+.I AEGIS_PATH
 environment variable forms a colon separated search path
 of aegis "library" directories.
 The
@@ -310,14 +124,17 @@ The user should not create this library directory,
 but let aegis do this for itself (otherwise you will get an error message).
 .LP
 The
-.I AEGIS
+.I AEGIS_PATH
 environment variable should be set in the
 .I \&.cshrc
 file in the user's home directory.
 Typical setting is
 .E(
-setenv AEGIS ~/lib/aegis
+setenv AEGIS_PATH ~/lib/aegis
 .E)
+and this is the default used in the
+.I /usr/local/lib/\%aegis/cshrc
+file.
 .nh 3 "The \&.aegisrc file"
 .LP
 The
@@ -459,4 +276,5 @@ Look in the
 .I aux/patches.sh
 file included in the aegis distribution
 for an example of one way to do this.
-.1C
+.so c6.1.so
+.so c6.2.so

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993 Peter Miller.
+.\"	Copyright (C) 1993, 1994 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 .nh 2 "Required Features"
 .LP
 When selecting a Dependency Maintenance Tool
-it is important to keep in mind that it must be able to
+it is important to keep in mind that, ideally, it must be able to
 cope with a hierarchy of parallel source directory trees.
 .LP
 The heart of any DMT is an \fIinference engine\fP.
@@ -35,7 +35,7 @@ This perspective on what the aegis program needs from a DMT
 reveals that the old-faithful \fImake\fP(1) distributed
 with so many flavours of 
 .UX
-simply isn't good enough,
+really isn't good enough,
 and that something like PROLOG is probably ideal.
 .nh 3 "Search Lists"
 .LP
@@ -56,6 +56,25 @@ Most DMTs with this capability implement it by using
 some sort of search path,
 allowing a hierarchy of directories to be scanned with little or
 no modification to the rules.
+.LP
+If your DMT of choice does not provide this functionality,
+the
+.I create_symlinks_before_build
+field of the project
+.I config
+file may be set to
+.IR true ,
+which tells aegis to maintain symbolic links in the development directory
+for all files in the baseline which are not present in
+the development directory.
+(See
+.IR aepconf (5)
+and
+.IR aeb (1)
+for more information.)
+This incurs a certain amount of overhead when aegis maintains these links,
+but a similar amount of work is done within DMTs which have search path
+functionality.
 .nh 3 "Dynamic Include File Dependencies"
 .LP
 Include file dependencies are very important,
@@ -75,7 +94,7 @@ clients of the altered function have yet to be included in the change.
 There are two ways of handling include file dependencies:
 .LP
 \(bu They can be kept in a file,
-and the file can be maintained but suitable programs
+and the file can be maintained by suitable programs
 (maintaining it manually never works, that's just human nature).
 .LP
 \(bu They can be determined by the DMT when it is scanning the rules
@@ -84,7 +103,7 @@ to determine what needs updating.
 .LP
 Keeping include dependencies in a file has a number of advantages:
 .LP
-\(bu Most existing DMTs have the ability to include another rules file,
+\(bu Most existing DMTs have the ability to include other rules files,
 so that when performing a development build
 from a baseline rules file,
 it could include a
@@ -107,7 +126,16 @@ produces "dot d" files,
 which may be merged to 
 construct such an includable dependency file.
 This happens after the DMT has read and applied the rules,
-but possibly before the DMT has finished executing.
+but possibly before the DMT has finished executing.\**
+.FS
+See the
+.I "Using Make"
+section for how GNU Make may be used.
+It effectively combines both methods:
+keeping \fI.d\fP files and dynamically updating them.
+Because it combines both methods,
+it has some of the advantages and disadvantages of both.
+.FE
 .LP
 \(bu Many tools which can generate this information,
 such as the

@@ -1,0 +1,185 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1993, 1994 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: document describing features new to version 2.2
+.\"
+.PP
+This release of Aegis provides 3 of the most commonly requested features:
+support for heterogeneous development,
+support for a greater range of DMTs,
+support for user-defined reports.
+.PP
+.if t \(bu
+.if n *
+Aegis now supports heterogeneous development.
+Now you can be sure that your project not only always
+builds and tests sucessfully,
+but that
+it does so across a configurable set of system or hardware architectures.
+See the
+.I "Heterogeneous Development"
+secion of the
+.I "Tips and Traps"
+chapter of the User Guide for more information.
+.PP
+.if t \(bu
+.if n *
+Aegis can now cope with a wider range of Dependency Maintenance Tools (DMTs).
+It now has the ability to fill development directories with
+symbolic links to all files in the baseline which are not
+present in the development directory.
+This allows DMTs to assume all files are present below the current directory,
+allowing DMTs such as
+.I cake
+and
+.I "GNU Make"
+to be used.
+See the
+.I "Dependency Maintenance Tool"
+section of the User Guide and
+.IR aeb (1)
+for more information.
+.PP
+.if t \(bu
+.if n *
+Aegis now has a report generator,
+so you can create your own reports.
+Many "canned" reports are included in this distribution;
+of particular interest to many will be the
+.I "File_\%Activity"
+report,
+which details currently active files.
+See
+.IR aer (1)
+for more information.
+.PP
+.if t \(bu
+.if n *
+Aegis is now configured using a shell script called
+.IR configure ,
+distributed with the package.
+This shell script is generated using GNU Autoconf.
+See the
+.I BUILDING
+file for more information.
+.PP
+.if t \(bu
+.if n *
+The
+.I AEGIS
+environment variable has been renamed
+.IR AEGIS_PATH ,
+to bring it in line with the AEGIS_PROJECT and AEGIS_CHANGE
+environment variable names.
+The old name will keep working for some time,
+but aegis will warn you.
+.PP
+.if t \(bu
+.if n *
+Filename lengths are now configurable.
+The 14 character portability limit is still the default,
+but a higher limit is configurable for each project,
+up to the filesystem filename limit.
+See
+.IR aepconf (5)
+for more information.
+.PP
+.if t \(bu
+.if n *
+It is now possible to specify that filenames must be
+within the minimum character set mandated by POSIX.
+The default is as before, to allow any printing character.
+See
+.IR aepconf (5)
+for more information.
+.PP
+.if t \(bu
+.if n *
+Limits on the length of project names have been relaxed.
+Project names are now only limited by the filesystem filename limit.
+.PP
+.if t \(bu
+.if n *
+It is now possible to specify the command to run tests,
+allowing a project to use a specialized test facility,
+rather than be forced to use shell scripts.
+See
+.IR aet (1)
+and
+.IE aepconf (5)
+for more information.
+.PP
+.if t \(bu
+.if n *
+The commands which accept the
+.I -Edit
+now preserve the edited text in the event of a failure.
+.PP
+.if t \(bu
+.if n *
+The commands which delete files now accept a
+.I -Interactive
+option,
+which causes them to prompt the user for confirmation of file deletion.
+This can be made the default by an appropriate setting of the
+aliases or individual users preferences files.
+See
+.IR aenfu (1),
+.IR aentu (1),
+.IR aecpu (1),
+and
+.IR aeuconf (5)
+for more information.
+.PP
+.if t \(bu
+.if n *
+The
+.IR aecp (1)
+command now accepts directory names,
+allowing whole directory trees to be copied into a change.
+The
+.IR aecpu (1)
+command now has a
+.B -UNChanged
+option which allows the unchanged files to be uncopied.
+.PP
+.if t \(bu
+.if n *
+The \fIaeb\fP command now accepts file names,
+allowing partial builds to be performed.
+See
+.IR aeb (1)
+for more information.
+.PP
+.if t \(bu
+.if n *
+There is a new
+.IR aechown (1)
+command to facilitate reassigning the developer of a change
+which is in the
+.I "being developed"
+state.
+.PP
+.if t \(bu
+.if n *
+It is now possible for project administrators to assign
+changes to specific developers.
+See
+.IR aedb (1)
+for more information.

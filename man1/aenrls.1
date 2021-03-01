@@ -61,7 +61,8 @@ A major version dot suffix will be appended, and then
 a minor version dot suffix will be appended.
 As an example, "foo.1.0" would become "foo.1.1" assuming
 the default minor version increment,
-and "foo" would become "foo.1.1" assuming the same minor version increment.
+and "foo" would become "foo.1.1" assuming the same minor version
+increment.
 .PP
 The entire project baseline will be copied.
 The project state will be as if change 1 had already been integrated,
@@ -76,7 +77,8 @@ Test numbers will commence where the old project left off
 .PP
 The default is for the minor version number to be incremented.
 If the major version number is incremented or set,
-the minor version number will be set to zero if it is not explicitly given.
+the minor version number will be set to zero if it is not explicitly
+given.
 .PP
 The pointer to the new project will be added to the first element
 of the search path,
@@ -142,4 +144,16 @@ state.
 It is an error if
 the current user is not an administrator of the old project.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aenpr (1)
+create a new project
+.TP 8n
+.IR aermpr (1)
+remove project
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

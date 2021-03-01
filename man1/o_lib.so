@@ -23,7 +23,8 @@
 \fB-LIBrary\fP \fIabspath\fP
 .br
 This option may be used to
-specify a directory to be searched for global state files and user state files.
+specify a directory to be searched for global state files and
+user state files.
 (See
 .IR aegstate (5)
 and
@@ -33,13 +34,13 @@ Several library options may be present on the command line,
 and are search in the order given.
 Appended to this explicit search path are the directories specified
 by the
-.I AEGIS
+.I AEGIS_PATH
 environment variable (colon separated),
 and finally,
 .I /usr/local/lib/aegis
 is always searched.
 All paths specified,
 either on the command line or in the
-.I AEGIS
+.I AEGIS_PATH
 environment variable,
 must be absolute.

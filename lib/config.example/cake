@@ -1,0 +1,40 @@
+/*
+ *	aegis - project change supervisor
+ *	This file is in the Public Domain, 1995, Peter Miller.
+ *
+ * MANIFEST: example use of cake in project config file
+ *
+ * The cake package was published in the comp.sources.unix USENET newsgroup,
+ * volume 12, around February 1988, and is thus easily accessible from the many
+ * archives around the internet.
+ *
+ * It does not have a search path of any form, not even something like VPATH.
+ * It does, however, have facilities for dynamic include file dependencies.
+ */
+
+/*
+ * The build_command field of the config file is used to invoke the relevant
+ * build command.  This command tells cake where to find the rules.  The
+ * ${s Cakefile} expands to a path into the baseline during development if the
+ * file is not in the change.  Look in aesub(5) for more information about
+ * command substitutions.
+ */
+build_command =
+	"cake -f ${s Cakefile} -DPROJECT=$p -DCHANGE=$c -DVERSION=$v";
+
+/*
+ * The rules used in the User Guide all remove their targets before
+ * constructing them, which qualifies them for the follwoing entry in the
+ * config file.  The targets must be removed first, otherwise the baseline
+ * would cease to be self-consistent.
+ */
+link_integration_directory = true;
+
+/*
+ * Another field to be set in the config file is one which tells aegis to
+ * maintain symbolic links between the development directory and the basline.
+ * This also requires that rules remove their targest before constructing them,
+ * to ensure that development builds do not attempt to write their results onto
+ * the read-only versions in the baseline.
+ */
+create_symlinks_before_build = true;

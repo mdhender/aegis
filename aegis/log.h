@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,10 +25,18 @@
 
 #include <main.h>
 
+enum log_style_ty
+{
+	log_style_create,
+	log_style_snuggle,
+	log_style_append
+};
+typedef enum log_style_ty log_style_ty;
+
 struct string_ty;
 struct user_ty;
 
-void log_open _((struct string_ty *, struct user_ty *));
+void log_open _((struct string_ty *, struct user_ty *, log_style_ty));
 void log_close _((void));
 void log_quitter _((int));
 

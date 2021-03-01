@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993 Peter Miller.
+.\"	Copyright (C) 1993, 1994 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -31,18 +31,19 @@ which often can only cope with 200 lines of differences.
 The best alternative is to use GNU diff,
 with context differences available,
 and a far more robust diff3.
-.nh 3 "diff_command"
 .LP
 See the earlier
 .I Interfacing
 section for substitution details.
+.nh 3 "diff_command"
 .LP
 The entry in the
 .I config
 file looks like this:
 .E(
 diff_command =
-        "set +e; diff -c $original $input > $output; test $? -le 1";
+  "set +e; diff -c $original \e
+   $input > $output; test $? -le 1";
 .E)
 .LP
 This needs a little explanation:
@@ -63,18 +64,15 @@ Any other status means something horrible happened.
 The "test" command is used to change this to the exit status aegis expects.
 .nh 3 "diff3_command"
 .LP
-See the earlier
-.I Interfacing
-section for substitution details.
-.LP
 The entry in the
 .I config
 file looks like this:
 .E(
 diff3_command =
-        "(diff3 -e $MostRecent $original $input | \e
-        sed -e '/^w$$/d' -e '/^q$$/d'; echo '1,$$p' ) | \e
-        ed - $MostRecent > $output";
+  "(diff3 -e $MostRecent $original  \e
+   $input | sed -e '/^w$$/d' -e     \e
+   '/^q$$/d'; echo '1,$$p' ) | ed - \e
+   $MostRecent > $output";
 .E)
 .LP
 This needs a lot of explanation.

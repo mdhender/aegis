@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993 Peter Miller.
+.\"	Copyright (C) 1993, 1994 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -17,12 +17,12 @@
 .\"	along with this program; if not, write to the Free Software
 .\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 .\"
-.\" MANIFEST: manual entry for aegis -MoVe_file
+.\" MANIFEST: manual entry for 'aegis -MoVe_file' command
 .\"
 .so z_name.so
 .TH "\*(n) -MoVe_file" 1 \*(N)
 .SH NAME
-\*(n) -MoVe_file \- copy a file into a change
+\*(n) -MoVe_file \- rename a file as part of a change
 .SH SYNOPSIS
 .B \*(n)
 .B -MoVe_file
@@ -86,4 +86,28 @@ the change is not assigned to the current user.
 It is an error if
 either file is already in the change.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aecp (1)
+copy files into a change
+.TP 8n
+.IR aedb (1)
+begin development of a change
+.TP 8n
+.IR aenf (1)
+add files to be created by a change
+.TP 8n
+.IR aenfu (1)
+remove files to be created by a change
+.TP 8n
+.IR aerm (1)
+add files to be deleted by a change
+.TP 8n
+.IR aermu (1)
+remove files to be deleted by a change
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -17,12 +17,12 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * MANIFEST: copy files into a change, and undo
+ * MANIFEST: functions to implement copy file
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include <ac/stdlib.h>
+#include <ac/unistd.h>
 
 #include <aecp.h>
 #include <ael.h>
@@ -75,154 +75,7 @@ copy_file_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -CoPy_file - copy a file into a change",
-"",
-"SYNOPSIS",
-"	%s -CoPy_file [ <option>... ] <filename>...",
-"	%s -CoPy_file -List [ <option>... ]",
-"	%s -CoPy_file -Help",
-"",
-"DESCRIPTION",
-"	The %s -CoPy_file command is used to copy a file into",
-"	a change.",
-"",
-"	The %s program will attempt to intuit the file names",
-"	intended.  All file names are stored within %s as",
-"	relative to the root of the baseline directory tree.  The",
-"	development directory and the integration directory are",
-"	shadows of the baseline directory, and so these relative",
-"	names aply there, too.	Files named on the command line",
-"	are first converted to absolute paths if necessary.  They",
-"	are then compared with the baseline path, and the",
-"	development directory path, and the integration directory",
-"	path, to determine a root-relative name.  It is an error",
-"	if the file named is outside one of these directory",
-"	trees.",
-"",
-"	The named files will be copied from the baseline into the",
-"	development directory, and added to the list of files in",
-"	the change.",
-"",
-"	This command will cancel any build or test registrations,",
-"	because adding another file logically invalidates them.  If",
-"	the config file was added, any diff registration will also",
-"	be cancelled.",
-"",
-"	This command may be used to copy tests into a change, not",
-"	just source files.  Tests are treated just like	any other",
-"	source file, and are subject to	the same process.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-Change <number>",
-"		This option may be used to specify a particular",
-"		change within a project.  When no -Change option is",
-"		specified, the AEGIS_CHANGE environment variable is",
-"		consulted.  If that does not exist, the user's",
-"		$HOME/.aegisrc file is examined for a default change",
-"		field (see aeuconf(5) for more information).  If",
-"		that does not exist, when the user is only working",
-"		on one change within a project, that is the default",
-"		change number.  Otherwise, it is an error.",
-"",
-"	-Delta <number>",
-"		This optioon may be used to specify a particular",
-"		delta in the project's history to copy the file",
-"		from, rather than the most current version.  It is",
-"		an error if the delta specified does not exist.",
-"",
-"	-Help",
-"		This option may be used to obtain more",
-"		information about how to use the %s program.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-Output <filename>",
-"		This option may be used to specify an output file of",
-"		a file being copied from the baseline.  Only one",
-"		baseline file may be named when this option is used.",
-"		The file name \"-\" is understood to mean the standard",
-"		output.",
-"",
-"	-OverWriting",
-"		This option may be used to force overwriting of",
-"		files.	The deafult action is to give and error",
-"		if an existing file would be overwritten.",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified, the",
-"		AEGIS_PROJECT environment variable is consulted.  If",
-"		that does not exist, the user's $HOME/.aegisrc file",
-"		is examined for a default project field (see",
-"		aeuconf(5) for more information).  If that does not",
-"		exist, when the user is only working on changes",
-"		within a single project, the project name defaults",
-"		to that project.  Otherwise, it is an error.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List",
-"		option this option causes column headings to be",
-"		added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aecp '%s -cp \\!* -v'",
-"	sh$	aecp(){%s -cp $* -v}",
-"",
-"ERRORS",
-"	It is an error if the change is not in the",
-"	'being_developed' state.",
-"	It is an error if the change is not assigned to the",
-"	current user.",
-"	It is an error if the file is already in the change and",
-"	the -OverWrite option is not specified.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.	The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aecp.h>
 	};
 
 	help(text, SIZEOF(text), copy_file_usage);
@@ -288,13 +141,14 @@ copy_file_main()
 	string_ty	*dd;
 	string_ty	*bl;
 	wlist		wl;
+	wlist		wl2;
+	wlist		wl3;
 	string_ty	*s1;
 	string_ty	*s2;
 	int		stomp;
 	cstate		cstate_data;
 	pstate		pstate_data;
-	int		j;
-	pconf		pconf_data;
+	int		j, k;
 	string_ty	*project_name;
 	project_ty	*pp;
 	long		change_number;
@@ -303,9 +157,11 @@ copy_file_main()
 	user_ty		*up;
 	char		*output;
 	long		delta_number;
+	char		*delta_name;
 	string_ty	*delta_number_implies_edit_number = 0;
 	int		config_seen;
 	string_ty	*config_name;
+	int		number_of_errors;
 
 	trace(("copy_file_main()\n{\n"/*}*/));
 	wl_zero(&wl);
@@ -315,6 +171,7 @@ copy_file_main()
 	nolog = 0;
 	output = 0;
 	delta_number = 0;
+	delta_name = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -336,6 +193,12 @@ copy_file_main()
 			stomp = 1;
 			break;
 
+		case arglex_token_file:
+		case arglex_token_directory:
+			if (arglex() != arglex_token_string)
+				copy_file_usage();
+			/* fall through... */
+
 		case arglex_token_string:
 			s1 = str_from_c(arglex_value.alv_string);
 			os_become_orig();
@@ -346,7 +209,7 @@ copy_file_main()
 			{
 				fatal
 				(
-					"file \"%s\" named more then once",
+					"file \"%s\" named more than once",
 					s2->str_text
 				);
 			}
@@ -382,18 +245,30 @@ copy_file_main()
 			break;
 
 		case arglex_token_delta:
-			if (delta_number)
+			if (delta_number || delta_name)
 				goto duplicate;
-			if (arglex() != arglex_token_number)
-				copy_file_usage();
-			delta_number = arglex_value.alv_number;
-			if (delta_number < 1)
+			switch (arglex())
 			{
-				fatal
-				(
-					"delta %ld is out of range",
-					delta_number
-				);
+			default:
+				error("the -DELta option must be followed by a name or a number");
+				copy_file_usage();
+				/*NOTREACHED*/
+
+			case arglex_token_number:
+				delta_number = arglex_value.alv_number;
+				if (delta_number < 1)
+				{
+					fatal
+					(
+						"delta %ld is out of range",
+						delta_number
+					);
+				}
+				break;
+
+			case arglex_token_string:
+				delta_name = arglex_value.alv_string;
+				break;
 			}
 			break;
 
@@ -418,7 +293,7 @@ copy_file_main()
 		arglex();
 	}
 	if (!wl.wl_nwords)
-		fatal("no files named");
+		fatal("no filenames specified");
 
 	/*
 	 * make sure output is unambiguous
@@ -467,11 +342,10 @@ copy_file_main()
 	}
 	cstate_data = change_cstate_get(cp);
 	pstate_data = project_pstate_get(pp);
-	pconf_data = change_pconf_get(cp);
 
 	/*
 	 * When there is no explicit output file:
-	 * It is an error if the change is not in the in_development state.
+	 * It is an error if the change is not in the being_developed state.
 	 * It is an error if the change is not assigned to the current user.
 	 */
 	if (output)
@@ -485,20 +359,28 @@ copy_file_main()
 			break;
 
 		default:
-			change_fatal(cp, "not in a suitable state");
+			wrong_state:
+			change_fatal
+			(
+				cp,
+"this change is in the '%s' state, \
+it must be in the 'being developed' state to modify files with it",
+				cstate_state_ename(cstate_data->state)
+			);
 		}
 	}
 	else
 	{
 		if (cstate_data->state != cstate_state_being_developed)
-			change_fatal(cp, "not in 'being_developed' state");
+			goto wrong_state;
 		if (!str_equal(change_developer_name(cp), user_name(up)))
 		{
 			change_fatal
 			(
 				cp,
-				"user \"%S\" is not the developer",
-				user_name(up)
+      "user \"%S\" is not the developer, only user \"%S\" may add copied files",
+				user_name(up),
+				change_developer_name(cp)
 			);
 		}
 	}
@@ -506,6 +388,8 @@ copy_file_main()
 	/*
 	 * it is an error if the delta does not exist
 	 */
+	if (delta_name)
+		delta_number = project_delta_name_to_number(pp, delta_name);
 	if (delta_number)
 	{
 		switch (project_delta_exists(pp, delta_number))
@@ -548,6 +432,8 @@ copy_file_main()
 	else
 		id = 0;
 	bl = project_baseline_path_get(pp, 1);
+	wl_zero(&wl2);
+	number_of_errors = 0;
 	for (j = 0; j < wl.wl_nwords; ++j)
 	{
 		s1 = wl.wl_word[j];
@@ -559,11 +445,44 @@ copy_file_main()
 			s2 = os_below_dir(id, s1);
 		if (!s2)
 			change_fatal(cp, "path \"%S\" unrelated", s1);
-		str_free(s1);
-		wl.wl_word[j] = s2;
-		if (str_equal(s2, config_name))
-			config_seen++;
+		if (project_src_dir(pp, s2, &wl3))
+		{
+			/*
+			 * if the user named a directory,
+			 * add all of the source files in that directory,
+			 * provided they are not already in the change.
+			 */
+			if (output)
+			{
+				fatal
+				(
+			   "may not name directories and use the -Output option"
+				);
+			}
+			for (k = 0; k < wl3.wl_nwords; ++k)
+			{
+				string_ty	*s3;
+
+				s3 = wl3.wl_word[k];
+				if (stomp || !change_src_find(cp, s3))
+				{
+					wl_append_unique(&wl2, s3);
+					if (str_equal(s3, config_name))
+						config_seen++;
+				}
+			}
+			wl_free(&wl3);
+		}
+		else
+		{
+			wl_append_unique(&wl2, s2);
+			if (str_equal(s2, config_name))
+				config_seen++;
+		}
+		str_free(s2);
 	}
+	wl_free(&wl);
+	wl = wl2;
 	str_free(config_name);
 
 	/*
@@ -577,13 +496,25 @@ copy_file_main()
 
 		s1 = wl.wl_word[j];
 		if (change_src_find(cp, s1) && !stomp && !output)
-			change_fatal(cp, "file \"%S\": will not overwrite", s1);
+		{
+			change_error
+			(
+				cp,
+"file \"%S\" is already in the change, \
+it will not be overwritten; \
+use the -OverWriting option if you want to overwrite it",
+				s1
+			);
+			++number_of_errors;
+			continue;
+		}
 		if (output)
 		{
 			cstate_src	c_src_data;
 
 			/*
 			 * OK to use a file that "almost" exists
+			 * in combination with the -Output option
 			 */
 			c_src_data = change_src_find(cp, s1);
 			if
@@ -603,16 +534,43 @@ copy_file_main()
 		||
 			src_data->deleted_by
 		)
-			project_fatal(pp, "file \"%S\" unknown", s1);
+		{
+			src_data = project_src_find_fuzzy(pp, s1);
+			if (src_data)
+			{
+				project_error
+				(
+					pp,
+			     "file \"%S\" unknown, closest was the \"%S\" file",
+					s1,
+					src_data->file_name
+				);
+			}
+			else
+				project_error(pp, "file \"%S\" unknown", s1);
+			++number_of_errors;
+			continue;
+		}
 		if (src_data && src_data->usage == file_usage_build && !output)
 		{
-			change_fatal
+			change_error
 			(
 				cp,
 				"file \"%S\" is built, may not copy",
 				s1
 			);
+			++number_of_errors;
 		}
+	}
+	if (number_of_errors)
+	{
+		change_fatal
+		(
+			cp,
+			"found %d fatal error%s, no files copied",
+			number_of_errors,
+			(number_of_errors == 1 ? "" : "s")
+		);
 	}
 
 	/*
@@ -641,7 +599,7 @@ copy_file_main()
 				/*
 				 * make a temporary file
 				 */
-				from = os_edit_filename();
+				from = os_edit_filename(0);
 				user_become(up);
 				undo_unlink_errok(from);
 				user_become_undo();
@@ -674,7 +632,11 @@ copy_file_main()
 			 */
 			user_become(up);
 			if (!output)
+			{
 				os_mkdir_between(dd, s1, 02755);
+				if (os_exists(to))
+					os_unlink(to);
+			}
 			copy_whole_file(from, to, 0);
 
 			/*
@@ -702,7 +664,11 @@ copy_file_main()
 			 */
 			user_become(up);
 			if (!output)
+			{
 				os_mkdir_between(dd, s1, 02755);
+				if (os_exists(to))
+					os_unlink(to);
+			}
 			copy_whole_file(from, to, 0);
 			user_become_undo();
 
@@ -745,7 +711,11 @@ copy_file_main()
 				(
 					c_src_data->usage == file_usage_test 
 				||
-					c_src_data->usage == file_usage_manual_test
+					(
+						c_src_data->usage
+					==
+						file_usage_manual_test
+					)
 				)
 					cstate_data->test_exempt = 0;
 			}
@@ -766,10 +736,7 @@ copy_file_main()
 		 * the number of files changed,
 		 * so stomp on the validation fields.
 		 */
-		cstate_data->build_time = 0;
-		cstate_data->test_time = 0;
-		cstate_data->test_baseline_time = 0;
-		cstate_data->regression_test_time = 0;
+		change_build_times_clear(cp);
 	}
 
 	/*
@@ -794,7 +761,7 @@ copy_file_main()
 	if (!output)
 	{
 		if (!nolog)
-			log_open(change_logfile_get(cp), up);
+			log_open(change_logfile_get(cp), up, log_style_append);
 		change_run_change_file_command(cp, &wl, up);
 	}
 	wl_free(&wl);

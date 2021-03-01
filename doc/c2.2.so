@@ -28,7 +28,7 @@ because changes can never reach the
 .I "being reviewed"
 state without several preconditions:
 .LP
-\(bu The change is know to build.
+\(bu The change is known to build.
 You know that it compiled successfully,
 so there is no need to search for syntax errors.
 .LP
@@ -43,7 +43,7 @@ and local standards issues.
 To help the reviewer,
 a set of "command D" files is available
 in the change development directory.
-Every files which is to be added to the baseline, 
+Every file which is to be added to the baseline, 
 removed from the baseline,
 or changed in some way,
 has a corresponding "comma D" file.

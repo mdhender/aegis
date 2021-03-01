@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,9 +21,10 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
+#include <ac/stdlib.h>
+#include <ac/string.h>
+#include <ac/time.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -69,97 +70,7 @@ develop_end_undo_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -Develop_End_Undo - recall a change for further",
-"	development",
-"",
-"SYNOPSIS",
-"	%s -Develop_End_Undo <change-number> [ <option>... ]",
-"	%s -Develop_End_Undo -List [ <option>... ]",
-"	%s -Develop_End_Undo -Help",
-"",
-"DESCRIPTION",
-"	The %s -Develop_End_Undo command is used to recall a",
-"	change for further development.",
-"",
-"	Successful execution of this command returns the change",
-"	to the 'being_developed' state.",
-"",
-"	The files are changed back to being owned by the current",
-"	user, and cease to be read-only.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-Change <number>",
-"		This option may be used to specify a particular",
-"		change within a project.  When no -Change option is",
-"		specified, the AEGIS_CHANGE environment variable is",
-"		consulted.  If that does not exist, the user's",
-"		$HOME/.aegisrc file is examined for a default change",
-"		field (see aeuconf(5) for more information).  If",
-"		that does not exist, when the user is only working",
-"		on one change within a project, that is the default",
-"		change number.  Otherwise, it is an error.",
-"",
-"	-Help",
-"		This option may be used to obtain more",
-"		information about how to use the %s program.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified, the",
-"		AEGIS_PROJECT environment variable is consulted.  If",
-"		that does not exist, the user's $HOME/.aegisrc file",
-"		is examined for a default project field (see",
-"		aeuconf(5) for more information).  If that does not",
-"		exist, when the user is only working on changes",
-"		within a single project, the project name defaults",
-"		to that project.  Otherwise, it is an error.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List",
-"		option this option causes column headings to be",
-"		added.",
-"",
-"	All options are case insensitive.  Options may be",
-"	abbreviated; the abbreviation is the upper case letters.",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aedeu '%s -deu \\!* -v'",
-"	sh$	aedeu(){%s -deu $* -v}",
-"",
-"ERRORS",
-"	It is an error if the change is not in one of the",
-"	'being_reviewed' or 'awaiting_integration' states.",
-"	It is an error if the change was not developed by the",
-"	current user.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.	The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aedeu.h>
 	};
 
 	help(text, SIZEOF(text), develop_end_undo_usage);
@@ -379,14 +290,23 @@ develop_end_undo_main()
 	&&
 		cstate_data->state != cstate_state_awaiting_integration
 	)
-		change_fatal(cp, "not in 'being_reviewed' state");
+	{
+		change_fatal
+		(
+			cp,
+"this change is in the '%s' state, it must be in the 'being reviewed' \
+or 'awaiting development' state to undo develop end",
+			cstate_state_ename(cstate_data->state)
+		);
+	}
 	if (!str_equal(change_developer_name(cp), user_name(up)))
 	{
 		change_fatal
 		(
 			cp,
-			"user \"%S\" was not the developer",
-			user_name(up)
+     "user \"%S\" was not the developer, only user \"%S\" may undo develop end",
+			user_name(up),
+			change_developer_name(cp)
 		);
 	}
 
@@ -397,7 +317,7 @@ develop_end_undo_main()
 	cstate_data->state = cstate_state_being_developed;
 	history_data = change_history_new(cp, up);
 	history_data->what = cstate_history_what_develop_end_undo;
-	cstate_data->build_time = 0;
+	change_build_times_clear(cp);
 
 	/*
 	 * add it back into the user's change list
@@ -427,7 +347,10 @@ develop_end_undo_main()
 		if (p_src_data->about_to_be_created_by)
 		{
 			assert(p_src_data->about_to_be_created_by == change_number);
-			project_src_remove(pp, c_src_data->file_name);
+			if (p_src_data->deleted_by)
+				p_src_data->about_to_be_created_by = 0;
+			else
+				project_src_remove(pp, c_src_data->file_name);
 		}
 	}
 

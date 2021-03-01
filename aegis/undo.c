@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * MANIFEST: functions to store and enact file operations on transation abort
+ * MANIFEST: functions to store and enact file operations on transaction abort
  */
 
 #include <error.h>
@@ -34,7 +34,8 @@ enum what_ty
 	what_chmod,
 	what_chmod_errok,
 	what_unlink_errok,
-	what_rmdir_errok
+	what_rmdir_errok,
+	what_message
 };
 typedef enum what_ty what_ty;
 
@@ -143,6 +144,21 @@ undo_unlink_errok(path)
 	trace((/*{*/"}\n"));
 }
 
+
+void
+undo_message(path)
+	string_ty	*path;
+{
+	action_ty	*new;
+
+	trace(("undo_message(path = %08lX)\n{\n"/*}*/, path));
+	trace_string(path->str_text);
+	new = newlink(what_message);
+	new->path1 = str_copy(path);
+	trace((/*{*/"}\n"));
+}
+
+
 void
 undo_rmdir_errok(path)
 	string_ty	*path;
@@ -205,6 +221,10 @@ undo()
 			case what_rmdir_errok:
 				os_rmdir_errok(ap->path1);
 				break;
+	
+			case what_message:
+				error("%S", ap->path1);
+				break;
 			}
 			os_become_undo();
 	
@@ -238,9 +258,9 @@ Inform the nearest %s guru immediately.",
 			case what_rename:
 				error
 				(
-					"unfinished recovery: mv %s %s",
-					ap->path1->str_text,
-					ap->path2->str_text
+					"unfinished recovery: mv %S %S",
+					ap->path1,
+					ap->path2
 				);
 				break;
 
@@ -248,26 +268,30 @@ Inform the nearest %s guru immediately.",
 			case what_chmod_errok:
 				error
 				(
-					"unfinished recovery: chmod %04o %s",
+					"unfinished recovery: chmod %04o %S",
 					ap->arg1,
-					ap->path1->str_text
+					ap->path1
 				);
 				break;
 
 			case what_unlink_errok:
 				error
 				(
-					"unfinished recovery: rm %s",
-					ap->path1->str_text
+					"unfinished recovery: rm %S",
+					ap->path1
 				);
 				break;
 
 			case what_rmdir_errok:
 				error
 				(
-					"unfinished recovery: rmdir %s",
-					ap->path1->str_text
+					"unfinished recovery: rmdir %S",
+					ap->path1
 				);
+				break;
+
+			case what_message:
+				error("%S", ap->path1);
 				break;
 			}
 	

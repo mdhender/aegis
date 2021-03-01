@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <ac/stdlib.h>
 
 #include <aecd.h>
 #include <ael.h>
@@ -58,104 +58,7 @@ change_directory_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -Change_Directory - change directory",
-"",
-"SYNOPSIS",
-"	%s -Change_Directory [ <option>... ][ <relative-path> ]",
-"	%s -Change_Directory -List [ <option>... ]",
-"	%s -Change_Directory -Help",
-"",
-"DESCRIPTION",
-"	The %s -Change_Directory command is used to obtain a",
-"	path to change directory to.  If the relative-path is",
-"	supplied, this will be added to the output.",
-"",
-"	This command is usually used to calculate an argument for",
-"	cd(1), howver it can also be used to abtain an absolute",
-"	path for change and project files.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-BaseLine",
-"		This option may be used to specify that the",
-"		project baseline is the subject of the command.",
-"",
-"	-Change <number>",
-"		This option may be used to specify a particular",
-"		change within a project.  When no -Change option is",
-"		specified, the AEGIS_CHANGE environment variable is",
-"		consulted.  If that does not exist, the user's",
-"		$HOME/.aegisrc file is examined for a default change",
-"		field (see aeuconf(5) for more information).  If",
-"		that does not exist, when the user is only working",
-"		on one change within a project, that is the default",
-"		change number.  Otherwise, it is an error.",
-"",
-"	-Development_Directory",
-"		This option is ised to specify that the",
-"		development directory is the subject of the",
-"		command.  This is only useful for a change which",
-"		is in the 'being_integrated' state, when the",
-"		default is the integration directory.",
-"",
-"	-Help",
-"		This option may be used to obtain more",
-"		information about how to use the %s program.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-Project <name>",
-"		This option may be used to select the project of",
-"		interest.  When no -Project option is specified, the",
-"		AEGIS_PROJECT environment variable is consulted.  If",
-"		that does not exist, the user's $HOME/.aegisrc file",
-"		is examined for a default project field (see",
-"		aeuconf(5) for more information).  If that does not",
-"		exist, when the user is only working on changes",
-"		within a single project, the project name defaults",
-"		to that project.  Otherwise, it is an error.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List",
-"		option this option causes column headings to be",
-"		added.",
-"",
-"	All options are case insensitive.  Options may be",
-"	abbreviated; the abbreviation is the upper case letters.",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aecd 'cd `%s -cd \\!* -v`'",
-"	sh$	aecd(){cd `%s -cd $* -v`}",
-"",
-"ERRORS",
-"	It is an error if the specified change is not in a state",
-"	where it has a directory to change to.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.	The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aecd.h>
 	};
 
 	help(text, SIZEOF(text), change_directory_usage);
@@ -333,7 +236,12 @@ change_directory_main()
 		switch (cstate_data->state)
 		{
 		default:
-			change_fatal(cp, "no directory");
+			change_fatal
+			(
+				cp,
+	     "this change is in the '%s' state, there is no directory to go to",
+				cstate_state_ename(cstate_data->state)
+			);
 
 		case cstate_state_being_integrated:
 			if (!devdir)

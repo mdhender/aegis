@@ -1,0 +1,94 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1994 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: manual page describing the aedn command.
+.\"
+.so z_name.so
+.TH \*(n) 1
+.if n .ad l
+.if n .hy 0
+.SH NAME
+\*(n) -Delta_Name \- assign a symbolic name to a project delta
+.SH SYNOPSIS
+.B \*(n)
+.B -Delta_Name
+.I delta_number
+[
+.IR option \&...
+]
+.I name
+.br
+.B \*(n)
+.B -Help
+.br
+.B \*(n)
+.B -VERSion
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -Delta_Name
+command is used to
+add a symbolic name to a project delta.
+This is so that this name may be used, rather than the number,
+when extracting previous versions of the file
+using the
+.IR aecp (1)
+command.
+.PP
+The number on the command line is a delta number of the project.
+That is, it is the delta number assigned to an integration.
+Delta names may only be applied to project baselines.
+If no delta number is given on the command line,
+the current baseline is the default.
+.PP
+A name must be given on the command line.
+This is the name which will be assigned to the delta.
+If the name has already been used,
+you will be given a fatal error message.
+If you also specify the
+.B -OverWriting
+option the name will be removed from its previous delta and assigned
+to the requested delta.
+.SH OPTIONS
+The following options are understood:
+.so o_help.so
+.so o_list.so
+.so o_overw.so
+.so o_project.so
+.so o__rules.so
+.so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aecp (1)
+copy a file into a change,
+particularly the
+.B -DELta
+option
+.TP 8n
+.IR aeib (1)
+start the integration of a change
+.TP 8n
+.IR ael (1)
+list intesresting this,
+particularly the
+.I project_history
+listing
+.so z_cr.so

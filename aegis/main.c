@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,13 +21,13 @@
  */
 
 #include <stdio.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include <ac/stdlib.h>
+#include <ac/unistd.h>
 
 #include <aeb.h>
 #include <aeca.h>
 #include <aecd.h>
+#include <aechown.h>
 #include <aecp.h>
 #include <aecpu.h>
 #include <aed.h>
@@ -35,6 +35,7 @@
 #include <aedbu.h>
 #include <aede.h>
 #include <aedeu.h>
+#include <aedn.h>
 #include <aeib.h>
 #include <aeibu.h>
 #include <aeif.h>
@@ -54,6 +55,7 @@
 #include <aent.h>
 #include <aentu.h>
 #include <aepa.h>
+#include <aer.h>
 #include <aera.h>
 #include <aerd.h>
 #include <aerf.h>
@@ -65,16 +67,18 @@
 #include <aerpu.h>
 #include <aerrv.h>
 #include <aet.h>
+#include <aev.h>
 #include <arglex2.h>
+#include <env.h>
 #include <error.h>
 #include <help.h>
 #include <log.h>
 #include <option.h>
 #include <os.h>
+#include <r250.h>
 #include <str.h>
 #include <trace.h>
 #include <undo.h>
-#include <version.h>
 
 static arglex_table_ty argtab[] =
 {
@@ -83,8 +87,16 @@ static arglex_table_ty argtab[] =
 		(arglex_token_ty)arglex_token_anticipate,
 	},
 	{
+		"-ASk",
+		(arglex_token_ty)arglex_token_interactive,
+	},
+	{
 		"-AUTOmatic",
 		(arglex_token_ty)arglex_token_automatic,
+	},
+	{
+		"-Automatic_Merge",
+		(arglex_token_ty)arglex_token_merge_automatic,
 	},
 	{
 		"-BaseLine",
@@ -107,6 +119,10 @@ static arglex_table_ty argtab[] =
 		(arglex_token_ty)arglex_token_change_directory,
 	},
 	{
+		"-Change_Owner",
+		(arglex_token_ty)arglex_token_change_owner,
+	},
+	{
 		"-CoPy_file",
 		(arglex_token_ty)arglex_token_copy_file,
 	},
@@ -124,6 +140,14 @@ static arglex_table_ty argtab[] =
 	},
 	{
 		"-DELta",
+		(arglex_token_ty)arglex_token_delta,
+	},
+	{
+		"-Delta_Name",
+		(arglex_token_ty)arglex_token_delta,
+	},
+	{
+		"-Delta_Number",
 		(arglex_token_ty)arglex_token_delta,
 	},
 	{
@@ -151,7 +175,11 @@ static arglex_table_ty argtab[] =
 		(arglex_token_ty)arglex_token_edit,
 	},
 	{
-		"-Force",
+		"-File",
+		(arglex_token_ty)arglex_token_file,
+	},
+	{
+		"-FOrce",
 		(arglex_token_ty)arglex_token_force,
 	},
 	{
@@ -173,6 +201,10 @@ static arglex_table_ty argtab[] =
 	{
 		"-Integrate_PASS",
 		(arglex_token_ty)arglex_token_integrate_pass,
+	},
+	{
+		"-Interactive",
+		(arglex_token_ty)arglex_token_interactive,
 	},
 	{
 		"-Keep",
@@ -197,6 +229,18 @@ static arglex_table_ty argtab[] =
 	{
 		"-MANual",
 		(arglex_token_ty)arglex_token_manual,
+	},
+	{
+		"-Merge_Automatic",
+		(arglex_token_ty)arglex_token_merge_automatic,
+	},
+	{
+		"-Merge_Not",
+		(arglex_token_ty)arglex_token_merge_not,
+	},
+	{
+		"-Merge_Only",
+		(arglex_token_ty)arglex_token_merge_only,
 	},
 	{
 		"-MINImum",
@@ -259,8 +303,20 @@ static arglex_table_ty argtab[] =
 		(arglex_token_ty)arglex_token_new_test_undo,
 	},
 	{
+		"-Not_Keep",
+		(arglex_token_ty)arglex_token_no_keep,
+	},
+	{
 		"-Not_Logging",
 		(arglex_token_ty)arglex_token_nolog,
+	},
+	{
+		"-Not_Merge",
+		(arglex_token_ty)arglex_token_merge_not,
+	},
+	{
+		"-Only_Merge",
+		(arglex_token_ty)arglex_token_merge_only,
 	},
 	{
 		"-Output",
@@ -285,6 +341,10 @@ static arglex_table_ty argtab[] =
 	{
 		"-Project_Attributes",
 		(arglex_token_ty)arglex_token_project_attributes,
+	},
+	{
+		"-Query",
+		(arglex_token_ty)arglex_token_report,
 	},
 	{
 		"-REGression",
@@ -319,6 +379,10 @@ static arglex_table_ty argtab[] =
 		(arglex_token_ty)arglex_token_remove_reviewer,
 	},
 	{
+		"-RePorT",
+		(arglex_token_ty)arglex_token_report,
+	},
+	{
 		"-Review_FAIL",
 		(arglex_token_ty)arglex_token_review_fail,
 	},
@@ -331,6 +395,10 @@ static arglex_table_ty argtab[] =
 		(arglex_token_ty)arglex_token_review_pass_undo,
 	},
 	{
+		"-Tab_Width",
+		(arglex_token_ty)arglex_token_tab_width,
+	},
+	{
 		"-TERse",
 		(arglex_token_ty)arglex_token_terse,
 	},
@@ -339,8 +407,16 @@ static arglex_table_ty argtab[] =
 		(arglex_token_ty)arglex_token_test,
 	},
 	{
+		"-UNChanged",
+		(arglex_token_ty)arglex_token_unchanged,
+	},
+	{
 		"-UNFormatted",
 		(arglex_token_ty)arglex_token_unformatted,
+	},
+	{
+		"-User",
+		(arglex_token_ty)arglex_token_user,
 	},
 	{
 		"-Verbose",
@@ -373,330 +449,7 @@ main_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s - project change supervisor",
-"",
-"SYNOPSIS",
-"	%s <function> [ <option>...  ]",
-"	%s -Help",
-"",
-"DESCRIPTION",
-"	The %s program is used to supervise the development",
-"	and integration of changes into projects.",
-"",
-"FUNCTIONS",
-"	The following functions are available:",
-"",
-"	-Build",
-"		The %s -Build command is used to build a",
-"		project.  See aeb(1) for more information.",
-"",
-"	-Change_Attributes",
-"		The %s -Change_Attributes command is used to",
-"		modify the attributes of a change.  See aeca(1)",
-"		for more information.",
-"",
-"	-Change_Directory",
-"		The %s -Change_Directory command is used to",
-"		change directory.  See aecd(1) for more",
-"		information.",
-"",
-"	-CoPy_file",
-"		The %s -CoPy_file command is used to copy a",
-"		file into a change.  See aecp(1) for more",
-"		information.",
-"",
-"	-CoPy_file_Undo",
-"		The %s -Copy_File_Undo command is used to",
-"		remove a copy of a file from a change.	See",
-"		aecpu(1) for more information.",
-"",
-"	-Develop_Begin",
-"		The %s -Develop_Begin command is used to begin",
-"		development of a change.  See aedb(1) for more",
-"		information.",
-"",
-"	-Develop_Begin_Undo",
-"		The %s -Develop_Begin_Undo command is used to",
-"		cease development of a change.	aedbu(1) for more",
-"		information.",
-"",
-"	-Develop_End",
-"		The %s -Develop_End command is used to",
-"		complete development of a change.  See aede(1)",
-"		for more information.",
-"",
-"	-Develop_End_Undo",
-"		The %s -Develop_End_Undo command is used to",
-"		recall a change for further deveopment.	 See",
-"		aedeu(1) for more information.",
-"",
-"	-DIFFerence",
-"		The %s -DIFFerence command is used to find",
-"		differences between development directory and",
-"		baseline.  See aed(1) for more information.",
-"",
-"	-Help",
-"		This option may be used to obtain more",
-"		information about how to use the %s program.",
-"",
-"	-Integrate_Begin",
-"		The %s -Integrate_Begin command is used to",
-"		being integrating a change.  See aeib(1) for more",
-"		information.",
-"",
-"	-Integrate_Begin_Undo",
-"		The %s -Integrate_Begin_Undo command is used",
-"		to cease integrating a change.	See aeibu(1) for",
-"		more information.",
-"",
-"	-Integrate_Fail",
-"		The %s -Integrate_Fail command is used to fail",
-"		a change integration.  See aeif(1) for more",
-"		information.",
-"",
-"	-Integrate_Pass",
-"		The %s -Integrate_Pass command is used to pass",
-"		a change integration.  See aeip(1) for more",
-"		information.",
-"",
-"	-List",
-"		The %s -List command is used to list",
-"		interesting things.  See ael(1) for more",
-"		information.",
-"",
-"	-MoVe_file",
-"		The aegis -MoVe_file command is	used to	change",
-"		the name of a file as part of a	change.	 See",
-"		aemv(1)	for more information.",
-"",
-"	-New_Administrator",
-"		The %s -New_Administrator command is used to",
-"		add new administrators to a project.  See aena(1)",
-"		for more information.",
-"",
-"	-New_Change",
-"		The %s -New_Change command is used to add a",
-"		new change to a project.  See aenc(1) for more",
-"		information.",
-"",
-"	-New_Change_Undo",
-"		The %s -New_Change_Undo command is used to",
-"		remove a new change from a project.  See aencu(1)",
-"		for more information.",
-"",
-"	-New_Developer",
-"		The %s -New_Developer command is used to add",
-"		new developers to a project.  See aend(1) for",
-"		more information.",
-"",
-"	-New_File",
-"		The %s -New_File command is used to add new",
-"		files to a change.  See aenf(1) for more",
-"		information.",
-"",
-"	-New_File_Undo",
-"		The %s -New_File_Undo command is used to",
-"		remove new files from a change.	 See aenfu(1) for",
-"		more information.",
-"",
-"	-New_Integrator",
-"		The %s -New_Integrator command is used to add",
-"		new integrators to a project.  See aeni(1) for",
-"		more information.",
-"",
-"	-New_Project",
-"		The %s -New_Project command is used to create",
-"		a new project to be watched over by %s.  See",
-"		aenp(1) for more information.",
-"",
-"	-New_ReLeaSe",
-"		The %s -New_ReLeaSe command is used to create",
-"		a new project from an existing project.	 See",
-"		aenrls(1) for more information.",
-"",
-"	-New_ReViewer",
-"		The %s -New_ReViewer command is used to add",
-"		new reviewers to a project.  See aenrv(1) for",
-"		more information.",
-"",
-"	-New_Test",
-"		The %s -New_Test command is used to add a new",
-"		test to a change See aent(1) for more",
-"		information.",
-"",
-"	-New_Test_Undo",
-"		The %s -New_Test_Undo command is used to",
-"		remove new tests from a change.	 See aentu(1) for",
-"		more information.",
-"",
-"	-Project_Attributes",
-"		The %s -Project_Attributes command is used to",
-"		modify the attributes of a project.",
-"",
-"	-Remove_Administrator",
-"		The %s -Remove_Administrator command is used",
-"		to remove administrators from a project.  See",
-"		aera(1) for more information.",
-"",
-"	-Remove_Developer",
-"		The %s -Remove_Developer command is used to",
-"		remove developers from a project.  See aerd(1)",
-"		for more information.",
-"",
-"	-ReMove_file",
-"		The %s -ReMove_file command is used to add",
-"		files to be deleted to a change.  See aerm(1) for",
-"		more information.",
-"",
-"	-ReMove_file_Undo",
-"		The %s -Remove_File_Undo command is used to",
-"		remove files to be deleted from a change.  See",
-"		aermu(1) for more information.",
-"",
-"	-Remove_Integrator",
-"		The %s -Remove_Integrator command is used to",
-"		remove integrators from a project.  See aeri(1)",
-"		for more information.",
-"",
-"	-ReMove_PRoject",
-"		The %s -ReMove_PRoject command is used to",
-"		remove a project.  See aermpr(1) for more information.",
-"",
-"	-Remove_ReViewer",
-"		The %s -Remove_ReViewer command is used to",
-"		remove reviewers from a project.  See aerrv(1)",
-"		for more information.",
-"",
-"	-Review_Fail",
-"		The %s -Review_Fail command is used to fail a",
-"		change review.	See aerf(1) for more information.",
-"",
-"	-Review_Pass",
-"		The %s -Review_Pass command is used to pass a",
-"		change review.	See aerp(1) for more information.",
-"",
-"	-Review_Pass_Undo",
-"		The %s -Review_Pass_Undo command is used to rescind",
-"		a change review pass.  See aerpu(1) for more information.",
-"",
-"	-Test",
-"		The %s -Test command is used to run tests.",
-"		See aet(1) for more information.",
-"",
-"	-User_Attributes",
-"		The %s -User_Attributes command is used to",
-"		modify the attributes of a user.  See aeua(1) for",
-"		more information.",
-"",
-"	-VERSion",
-"		The %s -VERsion command is used to get",
-"		copyright and version details.	See aev(1) for",
-"		more information.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"OPTIONS",
-"	The following options are available to all functions.  These",
-"	options may appear anywhere on the command line following",
-"	the function selector.",
-"",
-"	-LIBrary <abspath>",
-"		This option may be used to specify a directory to be",
-"		searched for global state files and user state",
-"		files.  (See aegstate(5) and aeustate(5) for more",
-"		information.) Several library options may be present",
-"		on the command line, and are search in the order",
-"		given.  Appended to this explicit search path are",
-"		the directories specified by the AEGIS enviroment",
-"		variable (colon separated), and finally,",
-"		/usr/local/lib/aegis is always searched.  All paths",
-"		specified, either on the command line or in the",
-"		AEGIS environment variable, must be absolute.",
-"",
-"	-Page_Length <number>",
-"		This option may be used to set the page length of",
-"		listings.  The default, in order of preference, is",
-"		obtained from the system, from the LINES environment",
-"		variable, or set to 24 lines.",
-"",
-"	-Page_Width <number>",
-"		This option may be used to set the page width of",
-"		listings and error messages.  The default, in order",
-"		of preference, is obtained from the system, from the",
-"		COLS environment variable, or set to 79 characters.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-UNFormatted",
-"		This option may be used with most listings to",
-"		specify that the column formatting is not to be",
-"		performed.  This is useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause aegis to produce",
-"		more output.  By default aegis only produces",
-"		output on errors.  When used with the -List",
-"		option this option causes column headings to be",
-"		added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.	The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aegis.h>
 	};
 
 	trace(("main_help()\n{\n"/*}*/));
@@ -712,9 +465,11 @@ main(argc, argv)
 	int		argc;
 	char		**argv;
 {
+	r250_init();
 	os_become_init();
-	str_initialize();
 	arglex_init(argc, argv, argtab);
+	str_initialize();
+	env_initialize();
 	quit_register(log_quitter);
 	quit_register(undo_quitter);
 	arglex();
@@ -736,6 +491,10 @@ main(argc, argv)
 
 		case arglex_token_change_directory:
 			change_directory();
+			break;
+
+		case arglex_token_change_owner:
+			change_owner();
 			break;
 
 		case arglex_token_copy_file:
@@ -764,6 +523,10 @@ main(argc, argv)
 
 		case arglex_token_difference:
 			difference();
+			break;
+
+		case arglex_token_delta:
+			delta_name_assignment();
 			break;
 
 		case arglex_token_help:
@@ -872,6 +635,10 @@ main(argc, argv)
 
 		case arglex_token_remove_reviewer:
 			remove_reviewer();
+			break;
+
+		case arglex_token_report:
+			report();
 			break;
 
 		case arglex_token_review_fail:

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,7 @@
 .\" MANIFEST: User Guide, The Change Development Cycle
 .\"
 .bp
+.2C
 .nh 1 "The Change Development Cycle"
 .LP
 As a change to a project is developed using aegis,
@@ -57,8 +58,12 @@ It implements a very simple calculator.
 Many features important to a quality product are missing,
 checking for divide-by-zero for example.
 These have been omitted for brevity.
+.bp
+.1C
 .so c2.1.so
 .so c2.2.so
 .so c2.3.so
 .so c2.4.so
+.bp
+.2C
 .so c2.5.so

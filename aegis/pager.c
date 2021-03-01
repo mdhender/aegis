@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1992, 1993 Peter Miller.
+ *	Copyright (C) 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,9 +21,10 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include <ac/stdlib.h>
+#include <ac/unistd.h>
 
+#include <env.h>
 #include <error.h>
 #include <option.h>
 #include <os.h>
@@ -37,11 +38,25 @@ static	char	*pager;
 static	int	pid;
 
 
+static void env_set_page _((void));
+
+static void
+env_set_page()
+{
+	char		buffer[20];
+
+	sprintf(buffer, "%d", option_page_length_get());
+	env_set("LINES", buffer);
+	sprintf(buffer, "%d", option_page_width_get());
+	env_set("COLS", buffer);
+}
+
+
 static FILE *pipe_open _((char *));
 
 static FILE *
 pipe_open(prog)
-	char	*prog;
+	char		*prog;
 {
 	int	uid;
 	int	gid;
@@ -57,6 +72,7 @@ pipe_open(prog)
 	switch (pid = fork())
 	{
 	case 0:
+		env_set_page();
 		undo_cancel();
 		while (os_become_active())
 			os_become_undo();
@@ -95,9 +111,9 @@ static void pipe_close _((FILE *));
 
 static void
 pipe_close(fp)
-	FILE	*fp;
+	FILE		*fp;
 {
-	int	status;
+	int		status;
 
 	fclose(fp);
 	os_waitpid(pid, &status);
@@ -109,7 +125,7 @@ static void cleanup _((int));
 
 static void
 cleanup(n)
-	int	n;
+	int		n;
 {
 	trace(("cleanup(n = %d)\n{\n"/*}*/, n));
 	if (!out)
@@ -194,7 +210,7 @@ pager_open()
 
 void
 pager_close(fp)
-	FILE	*fp;
+	FILE		*fp;
 {
 	trace(("pager_close(fp = %08lX)\n{\n"/*}*/, fp));
 	assert(out);
@@ -222,7 +238,7 @@ pager_close(fp)
 
 void
 pager_error(fp)
-	FILE	*fp;
+	FILE		*fp;
 {
 	assert(out);
 	assert(fp == out);

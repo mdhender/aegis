@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,15 +28,16 @@
  * a pointer test, and thus very fast.
  */
 
-#include <stddef.h>
+#include <ac/stddef.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <ac/stdlib.h>
+#include <ac/string.h>
+#include <ac/stdarg.h>
 #include <ctype.h>
 
 #include <error.h>
 #include <mem.h>
-#include <s-v-arg.h>
+#include <mprintf.h>
 #include <str.h>
 
 
@@ -171,7 +172,8 @@ split()
 	 * increase the modulus by one
 	 */
 	hash_modulus++;
-	mem_change_size((char **)&hash_table, hash_modulus * sizeof(string_ty*));
+	hash_table =
+		mem_change_size(hash_table, hash_modulus * sizeof(string_ty*));
 	hash_table[hash_modulus - 1] = 0;
 	hash_split = hash_modulus - hash_cutover;
 	if (hash_split >= hash_cutover)
@@ -421,7 +423,7 @@ str_catenate(s1, s2)
 		if (tmplen < length)
 		{
 			tmplen = length;
-			mem_change_size(&tmp, tmplen);
+			tmp = mem_change_size(tmp, tmplen);
 		}
 	}
 	memcpy(tmp, s1->str_text, s1->str_length);
@@ -474,7 +476,7 @@ str_cat_three(s1, s2, s3)
 		if (tmplen < length)
 		{
 			tmplen = length;
-			mem_change_size(&tmp, tmplen);
+			tmp = mem_change_size(tmp, tmplen);
 		}
 	}
 	memcpy(tmp, s1->str_text, s1->str_length);
@@ -562,7 +564,7 @@ str_upcase(s)
 		if (tmplen < s->str_length)
 		{
 			tmplen = s->str_length;
-			mem_change_size(&tmp, tmplen);
+			tmp = mem_change_size(tmp, tmplen);
 		}
 	}
 	for (cp1 = s->str_text, cp2 = tmp; *cp1; ++cp1, ++cp2)
@@ -620,7 +622,7 @@ str_downcase(s)
 		if (tmplen < s->str_length)
 		{
 			tmplen = s->str_length;
-			mem_change_size(&tmp, tmplen);
+			tmp = mem_change_size(tmp, tmplen);
 		}
 	}
 	for (cp1 = s->str_text, cp2 = tmp; *cp1; ++cp1, ++cp2)
@@ -737,42 +739,9 @@ str_format(fmt sva_last)
 	string_ty	*result;
 
 	sva_init(ap, fmt);
-	result = str_vformat(fmt, ap);
+	result = vmprintf_str(fmt, ap);
 	va_end(ap);
 	return result;
-}
-
-
-static void build_fake _((char *fake, int flag, int width, int precision,
-	int qualifier, int specifier));
-
-static void
-build_fake(fake, flag, width, precision, qualifier, specifier)
-	char		*fake;
-	int		flag;
-	int		width;
-	int		precision;
-	int		qualifier;
-	int		specifier;
-{
-	char		*fp;
-
-	fp = fake;
-	*fp++ = '%';
-	if (flag)
-		*fp++ = flag;
-	if (width > 0)
-	{
-		sprintf(fp, "%d", width);
-		fp += strlen(fp);
-	}
-	*fp++ = '.';
-	sprintf(fp, "%d", precision);
-	fp += strlen(fp);
-	if (qualifier)
-		*fp++ = qualifier;
-	*fp++ = specifier;
-	*fp = 0;
 }
 
 
@@ -781,465 +750,5 @@ str_vformat(fmt, ap)
 	char		*fmt;
 	va_list		ap;
 {
-	size_t		length;
-	static size_t	tmplen;
-	static char	*tmp;
-	int		width;
-	int		width_set;
-	int		prec;
-	int		prec_set;
-	int		c;
-	char		*s;
-	int		qualifier;
-	int		flag;
-	char		fake[100];
-
-	/*
-	 * Build the result string in a temporary buffer.
-	 * Grow the temporary buffer as necessary.
-	 *
-	 * It is important to only make one pass across the variable argument
-	 * list.  Behaviour is undefined for more than one pass.
-	 */
-	if (!tmplen)
-	{
-		tmplen = 500;
-		tmp = mem_alloc(tmplen);
-	}
-	length = 0;
-	s = fmt;
-	while (*s)
-	{
-		c = *s++;
-		if (c != '%')
-		{
-			normal:
-			if (length >= tmplen)
-			{
-				tmplen += 100;
-				mem_change_size(&tmp, tmplen);
-			}
-			tmp[length++] = c;
-			continue;
-		}
-		c = *s++;
-
-		/*
-		 * get optional flag
-		 */
-		switch (c)
-		{
-		case '+':
-		case '-':
-		case '#':
-		case '0':
-		case ' ':
-			flag = c;
-			c = *s++;
-			break;
-
-		default:
-			flag = 0;
-			break;
-		}
-
-		/*
-		 * get optional width
-		 */
-		width = 0;
-		width_set = 0;
-		switch (c)
-		{
-		case '*':
-			width = va_arg(ap, int);
-			if (width < 0)
-			{
-				flag = '-';
-				width = -width;
-			}
-			c = *s++;
-			width_set = 1;
-			break;
-		
-		case '0': case '1': case '2': case '3': case '4':
-		case '5': case '6': case '7': case '8': case '9':
-			for (;;)
-			{
-				width = width * 10 + c - '0';
-				c = *s++;
-				switch (c)
-				{
-				default:
-					break;
-
-				case '0': case '1': case '2': case '3':
-				case '4': case '5': case '6': case '7':
-				case '8': case '9':
-					continue;
-				}
-				break;
-			}
-			width_set = 1;
-			break;
-
-		default:
-			break;
-		}
-
-		/*
-		 * get optional precision
-		 */
-		prec = 0;
-		prec_set = 0;
-		if (c == '.')
-		{
-			c = *s++;
-			switch (c)
-			{
-			default:
-				prec_set = 1;
-				break;
-
-			case '*':
-				c = *s++;
-				prec = va_arg(ap, int);
-				if (prec < 0)
-				{
-					prec = 0;
-					break;
-				}
-				prec_set = 1;
-				break;
-
-			case '0': case '1': case '2': case '3': case '4':
-			case '5': case '6': case '7': case '8': case '9':
-				for (;;)
-				{
-					prec = prec * 10 + c - '0';
-					c = *s++;
-					switch (c)
-					{
-					default:
-						break;
-
-					case '0': case '1': case '2': case '3':
-					case '4': case '5': case '6': case '7':
-					case '8': case '9':
-						continue;
-					}
-					break;
-				}
-				prec_set = 1;
-				break;
-			}
-		}
-
-		/*
-		 * get the optional qualifier
-		 */
-		switch (c)
-		{
-		default:
-			qualifier = 0;
-			break;
-
-		case 'l':
-		case 'h':
-		case 'L':
-			qualifier = c;
-			c = *s++;
-			break;
-		}
-
-		/*
-		 * get conversion specifier
-		 */
-		switch (c)
-		{
-		default:
-			fatal
-			(
-			      "in format string \"%s\", illegal specifier '%c'",
-				fmt,
-				c
-			);
-
-		case '%':
-			goto normal;
-
-		case 'c':
-			{
-				int	a;
-				char	num[MAX_WIDTH + 1];
-				size_t	len;
-
-				a = (unsigned char)va_arg(ap, int);
-				if (!prec_set)
-					prec = 1;
-				if (width > MAX_WIDTH)
-					width = MAX_WIDTH;
-				if (prec > MAX_WIDTH)
-					prec = MAX_WIDTH;
-				build_fake(fake, flag, width, prec, 0, c);
-				sprintf(num, fake, a);
-				len = strlen(num);
-				if (length + len > tmplen)
-				{
-					tmplen += len;
-					mem_change_size(&tmp, tmplen);
-				}
-				memcpy(tmp + length, num, len);
-				length += len;
-			}
-			break;
-
-		case 'd':
-		case 'i':
-			{
-				long	a;
-				char	num[MAX_WIDTH + 1];
-				size_t	len;
-
-				switch (qualifier)
-				{
-				case 'l':
-					a = va_arg(ap, long);
-					break;
-
-				case 'h':
-					a = (short)va_arg(ap, int);
-					break;
-
-				default:
-					a = va_arg(ap, int);
-					break;
-				}
-				if (!prec_set)
-					prec = 1;
-				if (width > MAX_WIDTH)
-					width = MAX_WIDTH;
-				if (prec > MAX_WIDTH)
-					prec = MAX_WIDTH;
-				build_fake(fake, flag, width, prec, 'l', c);
-				sprintf(num, fake, a);
-				len = strlen(num);
-				if (length + len > tmplen)
-				{
-					tmplen += len;
-					mem_change_size(&tmp, tmplen);
-				}
-				memcpy(tmp + length, num, len);
-				length += len;
-			}
-			break;
-
-		case 'e':
-		case 'f':
-		case 'g':
-		case 'E':
-		case 'F':
-		case 'G':
-			{
-				double	a;
-				char	num[MAX_WIDTH + 1];
-				size_t	len;
-
-				/*
-				 * Ignore "long double" for now,
-				 * traditional implementations no grok.
-				 */
-				a = va_arg(ap, double);
-				if (!prec_set)
-					prec = 6;
-				if (width > MAX_WIDTH)
-					width = MAX_WIDTH;
-				if (prec > MAX_WIDTH)
-					prec = MAX_WIDTH;
-				build_fake(fake, flag, width, prec, 0, c);
-				sprintf(num, fake, a);
-				len = strlen(num);
-				if (length + len > tmplen)
-				{
-					tmplen += len;
-					mem_change_size(&tmp, tmplen);
-				}
-				memcpy(tmp + length, num, len);
-				length += len;
-			}
-			break;
-
-		case 'n':
-			switch (qualifier)
-			{
-			case 'l':
-				{
-					long	*a;
-
-					a = va_arg(ap, long *);
-					*a = length;
-				}
-				break;
-
-			case 'h':
-				{
-					short	*a;
-
-					a = va_arg(ap, short *);
-					*a = length;
-				}
-				break;
-
-			default:
-				{
-					int	*a;
-
-					a = va_arg(ap, int *);
-					*a = length;
-				}
-				break;
-			}
-			break;
-
-		case 'u':
-		case 'o':
-		case 'x':
-		case 'X':
-			{
-				unsigned long	a;
-				char		num[MAX_WIDTH + 1];
-				size_t		len;
-
-				switch (qualifier)
-				{
-				case 'l':
-					a = va_arg(ap, unsigned long);
-					break;
-
-				case 'h':
-					a = (unsigned short)va_arg(ap, unsigned int);
-					break;
-
-				default:
-					a = va_arg(ap, unsigned int);
-					break;
-				}
-				if (!prec_set)
-					prec = 1;
-				if (prec > MAX_WIDTH)
-					prec = MAX_WIDTH;
-				if (width > MAX_WIDTH)
-					width = MAX_WIDTH;
-				build_fake(fake, flag, width, prec, 'l', c);
-				sprintf(num, fake, a);
-				len = strlen(num);
-				if (length + len > tmplen)
-				{
-					tmplen += len;
-					mem_change_size(&tmp, tmplen);
-				}
-				memcpy(tmp + length, num, len);
-				length += len;
-			}
-			break;
-
-		case 's':
-			{
-				char	*a;
-				size_t	len;
-
-				a = va_arg(ap, char *);
-				if (prec_set)
-				{
-					char	*ep;
-
-					ep = memchr(a, 0, prec);
-					if (ep)
-						len = ep - a;
-					else
-						len = prec;
-				}
-				else
-					len = strlen(a);
-				if (!prec_set || len < prec)
-					prec = len;
-				if (!width_set || width < prec)
-					width = prec;
-				len = width;
-				if (length + len > tmplen)
-				{
-					tmplen += len;
-					mem_change_size(&tmp, tmplen);
-				}
-				if (flag != '-')
-				{
-					while (width > prec)
-					{
-						tmp[length++] = ' ';
-						width--;
-					}
-				}
-				memcpy(tmp + length, a, prec);
-				length += prec;
-				width -= prec;
-				if (flag == '-')
-				{
-					while (width > 0)
-					{
-						tmp[length++] = ' ';
-						width--;
-					}
-				}
-			}
-			break;
-
-		case 'S':
-			{
-				string_ty	*a;
-				size_t		len;
-
-				a = va_arg(ap, string_ty *);
-				len = a->str_length;
-				if (!prec_set)
-					prec = len;
-				if (len < prec)
-					prec = len;
-				if (!width_set)
-					width = prec;
-				if (width < prec)
-					width = prec;
-				len = width;
-				if (length + len > tmplen)
-				{
-					tmplen += len;
-					mem_change_size(&tmp, tmplen);
-				}
-				if (flag != '-')
-				{
-					while (width > prec)
-					{
-						tmp[length++] = ' ';
-						width--;
-					}
-				}
-				memcpy(tmp + length, a->str_text, prec);
-				length += prec;
-				width -= prec;
-				if (flag == '-')
-				{
-					while (width > 0)
-					{
-						tmp[length++] = ' ';
-						width--;
-					}
-				}
-			}
-			break;
-		}
-	}
-
-	/*
-	 * make the string
-	 */
-	assert(length <= tmplen);
-	return str_n_from_c(tmp, length);
+	return vmprintf_str(fmt, ap);
 }

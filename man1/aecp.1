@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 .\"	along with this program; if not, write to the Free Software
 .\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 .\"
-.\" MANIFEST: manual entry for aegis -CoPy_file
+.\" MANIFEST: manual entry for 'aegis -CoPy_file' command
 .\"
 .so z_name.so
 .TH "\*(n) -CoPy_file" 1 \*(N)
@@ -53,6 +53,12 @@ The named files will be copied from the baseline into
 the development directory,
 and added to the list of files in the change.
 .PP
+You may also name directories.
+All of the source files in the directories named,
+and all directories below them,
+will be copied from the baseline into the development directory,
+and added to the list of files in the change.
+.PP
 This command will cancel any build or test registrations,
 because adding another file logically invalidates them.
 If the
@@ -68,11 +74,16 @@ and are subject to the same process.
 The following options are understood:
 .so o_change.so
 .TP 8n
-\fB-Delta\fP \fInumber\fP
+\fB-DELta\fP \fInumber\fP
 .br
 This option may be used to specify a particular
 delta in the project's history to copy the file from,
 rather than the most current version.
+If the delta has been given a name
+(see
+.IR aedn (1)
+for how)
+you may use a delta name instead of a delta number.
 It is an error if the delta specified does not exist.
 .so o_help.so
 .so o_list.so
@@ -110,4 +121,28 @@ the file is already in the change and the
 .B -OverWrite
 option is not specified.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aecpu (1)
+reverse action of aecp
+.TP 8n
+.IR aedb (1)
+begin development of a change
+.TP 8n
+.IR aedn (1)
+assign a name to a delta
+.TP 8n
+.IR aemv (1)
+rename a file as part of a change
+.TP 8n
+.IR aenf (1)
+add a new file to a change
+.TP 8n
+.IR aerm (1)
+add files to be deleted to a change
+.TP 8n
+.IR aeuconf (1)
+user configuration file format
 .so z_cr.so

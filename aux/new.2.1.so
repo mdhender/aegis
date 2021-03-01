@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993 Peter Miller.
+.\"	Copyright (C) 1993, 1994 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 .\"	along with this program; if not, write to the Free Software
 .\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 .\"
-.\" MANIFEST: document describing new.2.1.so
+.\" MANIFEST: document describing features new to version 2.1
 .\"
 .PP
 .if n *

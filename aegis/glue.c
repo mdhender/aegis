@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1993 Peter Miller.
+ *	Copyright (C) 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions to perform systems calls in subprocesses
  *
  * Most of the functions in this file are only used when
- * the CONF_NO_seteuid  symbol is defined in common/conf.h.
+ * the CONF_NO_seteuid symbol is defined in "[arch]/common/config.h".
  *
  * The various system calls wgich must be perfomed as a specific user
  * are given to a "proxy" process to perform, where this proxy process
@@ -37,23 +37,30 @@
  */
 
 #include <sys/types.h>
-#include <dirent.h>
+#include <ac/dirent.h>
+#include <ac/string.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include <ac/stdlib.h>
+#include <ac/unistd.h>
 #include <utime.h>
+#include <sys/stat.h>
+
+/*
+ * Turn off the function defines in aegis/glue.h so that we can
+ * define the glue functions without the macros getting in the way.
+ */
+#define aegis_glue_disable
 
 #include <error.h>
 #include <glue.h>
 #include <mem.h>
 #include <os.h>
+#include <r250.h>
 #include <trace.h>
 #include <undo.h>
-
-#ifdef CONF_NO_seteuid
 
 #define GUARD1 0x416E6479
 #define GUARD2 0x4C777279
@@ -68,20 +75,24 @@ enum
 	command_copyfile,
 	command_creat,
 	command_fcntl,
+	command_file_compare,
 	command_getcwd,
+	command_junkfile,
 	command_link,
 	command_lstat,
 	command_mkdir,
 	command_open,
+	command_pathconf,
 	command_read,
 	command_readlink,
 	command_read_whole_dir,
 	command_rename,
 	command_rmdir,
 	command_stat,
+	command_symlink,
 	command_unlink,
 	command_utime,
-	command_write,
+	command_write
 };
 
 
@@ -130,16 +141,20 @@ command_name(n)
 	case command_copyfile:	return "copyfile";
 	case command_creat:	return "creat";
 	case command_fcntl:	return "fcntl";
+	case command_file_compare: return "file_compare";
 	case command_getcwd:	return "getcwd";
+	case command_junkfile:	return "junkfile";
 	case command_link:	return "link";
 	case command_lstat:	return "lstat";
 	case command_mkdir:	return "mkdir";
 	case command_open:	return "open";
+	case command_pathconf:	return "pathconf";
 	case command_read:	return "read";
 	case command_readlink:	return "readlink";
 	case command_read_whole_dir: return "read_whole_dir";
 	case command_rename:	return "rename";
 	case command_rmdir:	return "rmdir";
+	case command_symlink:	return "symlink";
 	case command_stat:	return "stat";
 	case command_unlink:	return "unlink";
 	case command_utime:	return "utime";
@@ -149,7 +164,7 @@ command_name(n)
 	return buf;
 }
 
-#endif
+#endif /* DEBUG */
 
 
 static void put_int _((FILE *, int));
@@ -165,7 +180,7 @@ put_int(fp, n)
 	trace(("put_int(%d)\n{\n"/*}*/, n));
 	ptr = (unsigned char *)&n; 
 	for (j = 0; j < sizeof(int); ++j)
-		putc(ptr[j], fp);
+		fputc(ptr[j], fp);
 	if (ferror(fp))
 		nfatal("writing pipe");
 	trace((/*{*/"}\n"));
@@ -188,7 +203,7 @@ get_int(fp)
 	{
 		int	c;
 
-		c = getc(fp);
+		c = fgetc(fp);
 		if (c == EOF)
 		{
 			if (ferror(fp))
@@ -216,7 +231,7 @@ put_long(fp, n)
 	trace(("put_long(%ld)\n{\n"/*}*/, n));
 	ptr = (unsigned char *)&n; 
 	for (j = 0; j < sizeof(long); ++j)
-		putc(ptr[j], fp);
+		fputc(ptr[j], fp);
 	if (ferror(fp))
 		nfatal("writing pipe");
 	trace((/*{*/"}\n"));
@@ -239,7 +254,7 @@ get_long(fp)
 	{
 		int	c;
 
-		c = getc(fp);
+		c = fgetc(fp);
 		if (c == EOF)
 		{
 			if (ferror(fp))
@@ -302,7 +317,7 @@ put_string(fp, s)
 	trace(("put_string(\"%s\")\n{\n"/*}*/, s));
 	for (;;)
 	{
-		putc(*s, fp);
+		fputc(*s, fp);
 		if (ferror(fp))
 			nfatal("writing pipe");
 		if (!*s)
@@ -335,7 +350,7 @@ get_string(fp)
 	{
 		int	c;
 
-		c = getc(fp);
+		c = fgetc(fp);
 		if (c == EOF)
 		{
 			if (ferror(fp))
@@ -345,7 +360,7 @@ get_string(fp)
 		if (pos >= result_max)
 		{
 			result_max += (1L << 10);
-			mem_change_size(&result, result_max);
+			result = mem_change_size(result, result_max);
 		}
 		result[pos] = c;
 		if (!c)
@@ -369,6 +384,7 @@ proxy(rd_fd, wr_fd)
 	FILE		*reply;
 	char		*path;
 	char		*path1;
+	char		*path2;
 	int		mode;
 	struct stat	st;
 	struct utimbuf	utb;
@@ -406,7 +422,7 @@ proxy(rd_fd, wr_fd)
 	{
 		int	c;
 
-		c = getc(command);
+		c = fgetc(command);
 		trace(("command: %s\n", command_name(c)));
 		trace(("uid = %d;\n", getuid()));
 		trace(("gid = %d;\n", getgid()));
@@ -513,6 +529,36 @@ proxy(rd_fd, wr_fd)
 			put_binary(reply, &flock, sizeof(flock));
 			break;
 
+		case command_file_compare:
+			path = get_string(command);
+			path1 = mem_copy_string(path);
+			path = get_string(command);
+			result = file_compare(path1, path);
+			if (result < 0)
+				result = -errno;
+			mem_free(path1);
+			put_int(reply, result);
+			break;
+
+		case command_junkfile:
+			path = get_string(command);
+			result = junkfile(path);
+			if (result)
+				result = errno;
+			put_int(reply, result);
+			break;
+
+		case command_link:
+			path = get_string(command);
+			path1 = mem_copy_string(path);
+			path2 = get_string(command);
+			result = link(path1, path2);
+			if (result)
+				result = errno;
+			mem_free(path1);
+			put_int(reply, result);
+			break;
+
 		case command_lstat:
 			path = get_string(command);
 #ifdef S_IFLNK
@@ -527,18 +573,6 @@ proxy(rd_fd, wr_fd)
 				put_int(reply, 0);
 				put_binary(reply, &st, sizeof(st));
 			}
-			break;
-
-
-		case command_link:
-			path = get_string(command);
-			path1 = mem_copy_string(path);
-			path = get_string(command);
-			result = link(path1, path);
-			if (result)
-				result = errno;
-			mem_free(path1);
-			put_int(reply, result);
 			break;
 
 		case command_mkdir:
@@ -559,6 +593,20 @@ proxy(rd_fd, wr_fd)
 			put_int(reply, result);
 			if (result < 0)
 				put_int(reply, errno);
+			break;
+
+		case command_pathconf:
+			path = get_string(command);
+			mode = get_int(command);
+#ifndef _PC_NAME_MAX
+			put_long(reply, -1L);
+			put_int(reply, EINVAL);
+#else
+			nbytes = pathconf(path, mode);
+			put_long(reply, nbytes);
+			if (nbytes < 0)
+				put_int(reply, errno);
+#endif
 			break;
 
 		case command_rename:
@@ -589,12 +637,17 @@ proxy(rd_fd, wr_fd)
 			path = get_string(command);
 			max = get_int(command);
 			path1 = mem_alloc(max + 1);
+#ifdef S_IFLNK
 			result = readlink(path, path1, max);
 			put_int(reply, result);
 			if (result < 0)
 				put_int(reply, errno);
 			else
 				put_binary(reply, path1, result);
+#else
+			put_int(reply, -1);
+			put_int(reply, EINVAL);
+#endif
 			mem_free(path1);
 			break;
 
@@ -630,6 +683,21 @@ proxy(rd_fd, wr_fd)
 				put_int(reply, 0);
 				put_binary(reply, &st, sizeof(st));
 			}
+			break;
+
+		case command_symlink:
+			path = get_string(command);
+			path1 = mem_copy_string(path);
+			path2 = get_string(command);
+#ifdef S_IFLNK
+			result = symlink(path1, path2);
+			if (result)
+				result = errno;
+#else
+			result = EINVAL;
+#endif
+			mem_free(path1);
+			put_int(reply, result);
 			break;
 
 		case command_unlink:
@@ -911,7 +979,7 @@ glue_stat(path, st)
 
 	trace(("glue_stat()\n{\n"/*}*/));
 	pp = proxy_find();
-	putc(command_stat, pp->command);
+	fputc(command_stat, pp->command);
 	put_string(pp->command, path);
 	end_of_command(pp);
 	result = get_int(pp->reply);
@@ -938,7 +1006,7 @@ glue_lstat(path, st)
 
 	trace(("glue_lstat()\n{\n"/*}*/));
 	pp = proxy_find();
-	putc(command_lstat, pp->command);
+	fputc(command_lstat, pp->command);
 	put_string(pp->command, path);
 	end_of_command(pp);
 	result = get_int(pp->reply);
@@ -965,7 +1033,7 @@ glue_mkdir(path, mode)
 
 	trace(("glue_mkdir()\n{\n"/*}*/));
 	pp = proxy_find();
-	putc(command_mkdir, pp->command);
+	fputc(command_mkdir, pp->command);
 	put_string(pp->command, path);
 	put_int(pp->command, mode);
 	end_of_command(pp);
@@ -992,7 +1060,7 @@ glue_chown(path, uid, gid)
 
 	trace(("glue_chown()\n{\n"/*}*/));
 	pp = proxy_find();
-	putc(command_chown, pp->command);
+	fputc(command_chown, pp->command);
 	put_string(pp->command, path);
 	put_int(pp->command, uid);
 	put_int(pp->command, gid);
@@ -1018,7 +1086,7 @@ glue_catfile(path)
 
 	trace(("glue_catfile()\n{\n"/*}*/));
 	pp = proxy_find();
-	putc(command_catfile, pp->command);
+	fputc(command_catfile, pp->command);
 	put_string(pp->command, path);
 	end_of_command(pp);
 	result = get_int(pp->reply);
@@ -1043,7 +1111,7 @@ glue_chmod(path, mode)
 
 	trace(("glue_chmod()\n{\n"/*}*/));
 	pp = proxy_find();
-	putc(command_chmod, pp->command);
+	fputc(command_chmod, pp->command);
 	put_string(pp->command, path);
 	put_int(pp->command, mode);
 	end_of_command(pp);
@@ -1068,7 +1136,7 @@ glue_rmdir(path)
 
 	trace(("glue_rmdir()\n{\n"/*}*/));
 	pp = proxy_find();
-	putc(command_rmdir, pp->command);
+	fputc(command_rmdir, pp->command);
 	put_string(pp->command, path);
 	end_of_command(pp);
 	result = get_int(pp->reply);
@@ -1093,9 +1161,35 @@ glue_rename(p1, p2)
 
 	trace(("glue_rename()\n{\n"/*}*/));
 	pp = proxy_find();
-	putc(command_rename, pp->command);
+	fputc(command_rename, pp->command);
 	put_string(pp->command, p1);
 	put_string(pp->command, p2);
+	end_of_command(pp);
+	result = get_int(pp->reply);
+	if (result)
+	{
+		errno = result;
+		result = -1;
+	}
+	trace(("return %d; /* errno = %d */\n", result, errno));
+	trace((/*{*/"}\n"));
+	return result;
+}
+
+
+int
+glue_symlink(name1, name2)
+	char		*name1;
+	char		*name2;
+{
+	proxy_ty	*pp;
+	int		result;
+
+	trace(("glue_symlink()\n{\n"/*}*/));
+	pp = proxy_find();
+	fputc(command_symlink, pp->command);
+	put_string(pp->command, name1);
+	put_string(pp->command, name2);
 	end_of_command(pp);
 	result = get_int(pp->reply);
 	if (result)
@@ -1118,7 +1212,31 @@ glue_unlink(path)
 
 	trace(("glue_unlink()\n{\n"/*}*/));
 	pp = proxy_find();
-	putc(command_unlink, pp->command);
+	fputc(command_unlink, pp->command);
+	put_string(pp->command, path);
+	end_of_command(pp);
+	result = get_int(pp->reply);
+	if (result)
+	{
+		errno = result;
+		result = -1;
+	}
+	trace(("return %d; /* errno = %d */\n", result, errno));
+	trace((/*{*/"}\n"));
+	return result;
+}
+
+
+int
+glue_junkfile(path)
+	char		*path;
+{
+	proxy_ty	*pp;
+	int		result;
+
+	trace(("glue_junkfile()\n{\n"/*}*/));
+	pp = proxy_find();
+	fputc(command_junkfile, pp->command);
 	put_string(pp->command, path);
 	end_of_command(pp);
 	result = get_int(pp->reply);
@@ -1143,7 +1261,7 @@ glue_link(p1, p2)
 
 	trace(("glue_link()\n{\n"/*}*/));
 	pp = proxy_find();
-	putc(command_link, pp->command);
+	fputc(command_link, pp->command);
 	put_string(pp->command, p1);
 	put_string(pp->command, p2);
 	end_of_command(pp);
@@ -1169,7 +1287,7 @@ glue_access(path, mode)
 
 	trace(("glue_access()\n{\n"/*}*/));
 	pp = proxy_find();
-	putc(command_access, pp->command);
+	fputc(command_access, pp->command);
 	put_string(pp->command, path);
 	put_int(pp->command, mode);
 	end_of_command(pp);
@@ -1201,7 +1319,7 @@ glue_getcwd(buf, max)
 	trace(("glue_getcwd()\n{\n"/*}*/));
 	assert(buf);
 	pp = proxy_find();
-	putc(command_getcwd, pp->command);
+	fputc(command_getcwd, pp->command);
 	put_int(pp->command, max);
 	end_of_command(pp);
 	result = get_int(pp->reply);
@@ -1234,7 +1352,7 @@ glue_readlink(path, buf, max)
 
 	trace(("glue_readlink()\n{\n"/*}*/));
 	pp = proxy_find();
-	putc(command_readlink, pp->command);
+	fputc(command_readlink, pp->command);
 	put_string(pp->command, path);
 	put_int(pp->command, max);
 	end_of_command(pp);
@@ -1265,7 +1383,7 @@ glue_utime(path, values)
 
 	trace(("glue_utime()\n{\n"/*}*/));
 	pp = proxy_find();
-	putc(command_utime, pp->command);
+	fputc(command_utime, pp->command);
 	put_string(pp->command, path);
 	put_binary(pp->command, values, sizeof(*values));
 	end_of_command(pp);
@@ -1291,7 +1409,7 @@ glue_copyfile(p1, p2)
 
 	trace(("glue_copyfile()\n{\n"/*}*/));
 	pp = proxy_find();
-	putc(command_copyfile, pp->command);
+	fputc(command_copyfile, pp->command);
 	put_string(pp->command, p1);
 	put_string(pp->command, p2);
 	end_of_command(pp);
@@ -1347,7 +1465,7 @@ glue_fopen(path, mode)
 	}
 
 	pp = proxy_find();
-	putc(command_open, pp->command);
+	fputc(command_open, pp->command);
 	put_string(pp->command, path);
 	put_int(pp->command, fmode);
 	put_int(pp->command, 0666);
@@ -1415,12 +1533,12 @@ glue_fclose(fp)
 	 * flush the buffers
 	 */
 	trace(("glue_fclose()\n{\n"/*}*/));
-	result = glue_fflush(fp) ? errno : 0;
+	gfp = (glue_file_ty *)fp;
+	result = (gfp->fmode != O_RDONLY && glue_fflush(fp)) ? errno : 0;
 
 	/*
 	 * locate the appropriate proxy
 	 */
-	gfp = (glue_file_ty *)fp;
 	assert(gfp->guard1 == GUARD1);
 	assert(gfp->guard2 == GUARD2);
 	pp = gfp->pp;
@@ -1428,7 +1546,7 @@ glue_fclose(fp)
 	/*
 	 * tell the proxy to close
 	 */
-	putc(command_close, pp->command);
+	fputc(command_close, pp->command);
 	put_int(pp->command, gfp->fd);
 	end_of_command(pp);
 	result2 = get_int(pp->reply);
@@ -1471,7 +1589,7 @@ glue_fgetc(fp)
 	 * There is a chance these will be seen here.
 	 */
 	if (fp == stdout || fp == stdin || fp == stderr)
-		return getc(fp);
+		return fgetc(fp);
 
 	/*
 	 * locate the appropriate proxy
@@ -1527,7 +1645,7 @@ glue_fgetc(fp)
 	 * tell the proxy to read another buffer-full
 	 */
 	pp = gfp->pp;
-	putc(command_read, pp->command);
+	fputc(command_read, pp->command);
 	put_int(pp->command, gfp->fd);
 	put_long(pp->command, (long)sizeof(gfp->buffer));
 	end_of_command(pp);
@@ -1628,7 +1746,7 @@ glue_fputc(c, fp)
 	 * There is a chance these will be seen here.
 	 */
 	if (fp == stdout || fp == stdin || fp == stderr)
-		return putc(c, fp);
+		return fputc(c, fp);
 
 	/*
 	 * locate the appropriate proxy
@@ -1669,7 +1787,7 @@ glue_fputc(c, fp)
 		long	nbytes;
 		long	nbytes2;
 
-		putc(command_write, pp->command);
+		fputc(command_write, pp->command);
 		put_int(pp->command, gfp->fd);
 		nbytes = gfp->buffer_pos - gfp->buffer;
 		put_long(pp->command, nbytes);
@@ -1794,7 +1912,7 @@ glue_fflush(fp)
 		long	nbytes;
 		long	nbytes2;
 
-		putc(command_write, pp->command);
+		fputc(command_write, pp->command);
 		put_int(pp->command, gfp->fd);
 		nbytes = gfp->buffer_pos - gfp->buffer;
 		put_long(pp->command, nbytes);
@@ -1839,7 +1957,7 @@ glue_open(path, mode, perm)
 
 	trace(("glue_open()\n{\n"/*}*/));
 	pp = proxy_find();
-	putc(command_open, pp->command);
+	fputc(command_open, pp->command);
 	put_string(pp->command, path);
 	put_int(pp->command, mode);
 	put_int(pp->command, perm);
@@ -1863,7 +1981,7 @@ glue_creat(path, mode)
 
 	trace(("glue_creat()\n{\n"/*}*/));
 	pp = proxy_find();
-	putc(command_creat, pp->command);
+	fputc(command_creat, pp->command);
 	put_string(pp->command, path);
 	put_int(pp->command, mode);
 	end_of_command(pp);
@@ -1885,7 +2003,7 @@ glue_close(fd)
 
 	trace(("glue_close()\n{\n"/*}*/));
 	pp = proxy_find();
-	putc(command_close, pp->command);
+	fputc(command_close, pp->command);
 	put_int(pp->command, fd);
 	end_of_command(pp);
 	result = get_int(pp->reply);
@@ -1911,7 +2029,7 @@ glue_write(fd, buf, len)
 
 	trace(("glue_write()\n{\n"/*}*/));
 	pp = proxy_find();
-	putc(command_write, pp->command);
+	fputc(command_write, pp->command);
 	put_int(pp->command, fd);
 	put_long(pp->command, len);
 	put_binary(pp->command, buf, len);
@@ -1941,7 +2059,7 @@ glue_fcntl(fd, cmd, data)
 	assert(cmd == F_SETLKW || cmd == F_SETLK || cmd == F_UNLCK ||
 		cmd == F_GETLK);
 	pp = proxy_find();
-	putc(command_fcntl, pp->command);
+	fputc(command_fcntl, pp->command);
 	put_int(pp->command, fd);
 	put_int(pp->command, cmd);
 	put_binary(pp->command, data, sizeof(*data));
@@ -1951,6 +2069,32 @@ glue_fcntl(fd, cmd, data)
 	if (result)
 	{
 		errno = result;
+		result = -1;
+	}
+	trace(("return %d; /* errno = %d */\n", result, errno));
+	trace((/*{*/"}\n"));
+	return result;
+}
+
+
+int
+glue_file_compare(p1, p2)
+	char		*p1;
+	char		*p2;
+{
+	proxy_ty	*pp;
+	int		result;
+
+	trace(("glue_file_compare()\n{\n"/*}*/));
+	pp = proxy_find();
+	fputc(command_rename, pp->command);
+	put_string(pp->command, p1);
+	put_string(pp->command, p2);
+	end_of_command(pp);
+	result = get_int(pp->reply);
+	if (result)
+	{
+		errno = -result;
 		result = -1;
 	}
 	trace(("return %d; /* errno = %d */\n", result, errno));
@@ -1973,7 +2117,7 @@ glue_read_whole_dir(path, data_p, data_len_p)
 
 	trace(("glue_read_whole_dir(path = \"%s\")\n{\n"/*}*/, path));
 	pp = proxy_find();
-	putc(command_read_whole_dir, pp->command);
+	fputc(command_read_whole_dir, pp->command);
 	put_string(pp->command, path);
 	end_of_command(pp);
 	result = get_int(pp->reply);
@@ -1991,7 +2135,7 @@ glue_read_whole_dir(path, data_p, data_len_p)
 			if (!data)
 				data = mem_alloc(data_max);
 			else
-				mem_change_size(&data, data_max);
+				data = mem_change_size(data, data_max);
 		}
 		get_binary(pp->reply, data, data_len);
 		*data_len_p = data_len;
@@ -2003,7 +2147,27 @@ glue_read_whole_dir(path, data_p, data_len_p)
 }
 
 
-#endif /* CONF_NO_seteuid */
+long
+glue_pathconf(path, cmd)
+	char		*path;
+	int		cmd;
+{
+	proxy_ty	*pp;
+	long		result;
+
+	trace(("glue_pathconf()\n{\n"/*}*/));
+	pp = proxy_find();
+	fputc(command_pathconf, pp->command);
+	put_string(pp->command, path);
+	put_int(pp->command, cmd);
+	end_of_command(pp);
+	result = get_long(pp->reply);
+	if (result < 0)
+		errno = get_int(pp->reply);
+	trace(("return %ld; /* errno = %d */\n", result, errno));
+	trace((/*{*/"}\n"));
+	return result;
+}
 
 
 /*
@@ -2113,6 +2277,85 @@ copyfile(src, dst)
 	 * here for all exits
 	 */
 	done:
+	trace(("return %d; /* errno = %d */\n", result, errno));
+	trace((/*{*/"}\n"));
+	return result;
+}
+
+
+/*
+ * NAME
+ *	junkfile - junk a file
+ *
+ * SYNOPSIS
+ *	int junkfile(char *src, char *dst);
+ *
+ * DESCRIPTION
+ *	The junkfile function creates a file and fills it
+ *	with 1K of garbage.  This is (mostly) to ensure that if
+ *	removed files are used during development build,
+ *	they will generate errors.
+ *
+ * ARGUMENTS
+ *	path	- pathname of junk file
+ *
+ * RETURNS
+ *	0	on success
+ *	-1	on error, setting errno appropriately
+ */
+
+int
+junkfile(path)
+	char		*path;
+{
+	static char	junk[] = "!#$%&()*+,-./:;<=>?@[]^_`{|}~";
+	char		buffer[1024];
+	char		*bp;
+	int		fd;
+	int		err;
+	int		result;
+	int		jlen;
+	long		nbytes;
+
+	/*
+	 * create a buffer full of gibberish
+	 */
+	trace(("junkfile(\"%s\")\n{\n"/*}*/, path));
+	jlen = strlen(junk);
+	for (bp = buffer; bp < ENDOF(buffer); ++bp)
+	{
+		if (((bp - buffer) % 73) == 72)
+			*bp = '\n';
+		else
+			*bp = junk[r250() % jlen];
+	}
+	buffer[SIZEOF(buffer) - 1] = '\n';
+
+	fd = creat(path, 0666);
+	if (fd >= 0)
+	{
+		err = 0;
+		nbytes = write(fd, buffer, sizeof(buffer));
+		if (nbytes < 0)
+			err = errno;
+		if (nbytes == 0)
+			err = EIO; /* weird device, probably */
+		if (close(fd) && !err)
+			err = errno;
+		if (err)
+		{
+			errno = err;
+			result = -1;
+		}
+		else
+			result = 0;
+	}
+	else
+		result = -1;
+
+	/*
+	 * here for all exits
+	 */
 	trace(("return %d; /* errno = %d */\n", result, errno));
 	trace((/*{*/"}\n"));
 	return result;
@@ -2242,16 +2485,13 @@ read_whole_dir(path, data_p, data_len_p)
 		if (!de)
 			break;
 		np = de->d_name;
-#ifdef CONF_pyramid_broken_readdir
-		np -= 2;
-#endif
 		if (np[0] == '.' && (!np[1] || (np[1] == '.' && !np[2])))
 			continue;
 		len = strlen(np) + 1;
 		if (data_len + len > data_max)
 		{
 			data_max += 1000;
-			mem_change_size(&data, data_max);
+			data = mem_change_size(data, data_max);
 		}
 		memcpy(data + data_len, np, len);
 		data_len += len;
@@ -2260,4 +2500,140 @@ read_whole_dir(path, data_p, data_len_p)
 	*data_p = data;
 	*data_len_p = data_len;
 	return 0;
+}
+
+
+/*
+ * NAME
+ *	file_compare
+ *
+ * SYNOPSIS
+ *	int file_compare(char *, char *);
+ *
+ * DESCRIPTION
+ *	The file_compare program reads two files and chanks to see if
+ *	they are different.
+ *
+ * RETURNS
+ *	int;	0 if the files are the same
+ *		1 if the files are different
+ *		-1 on any error
+ */
+
+int
+file_compare(fn1, fn2)
+	char		*fn1;
+	char		*fn2;
+{
+	int		fd1;
+	int		fd2;
+	char		*buf1;
+	char		*buf2;
+	size_t		len;
+	int		err;
+	int		result;
+	long		n1;
+	long		n2;
+	struct stat	st1;
+	struct stat	st2;
+
+	/*
+	 * make sure they are the same size
+	 *
+	 * This will take care of most differences
+	 */
+	if (stat(fn1, &st1))
+		return -1;
+	if (stat(fn2, &st2))
+		return -1;
+	if (st1.st_size != st2.st_size)
+		return 1;
+
+	/*
+	 * open the files
+	 */
+	len = (size_t)1 << 17;
+	fd1 = open(fn1, O_RDONLY, 0);
+	if (fd1 < 0)
+		return -1;
+	fd2 = open(fn2, O_RDONLY, 0);
+	if (fd2 < 0)
+	{
+		err = errno;
+		close(fd1);
+		errno = err;
+		return -1;
+	};
+
+	/*
+	 * allocate the buffers
+	 */
+	errno = 0;
+	buf1 = malloc(len);
+	if (!buf1)
+	{
+		err = errno ? errno : ENOMEM;
+		close(fd1);
+		close(fd2);
+		errno = err;
+		return -1;
+	}
+
+	errno = 0;
+	buf2 = malloc(len);
+	if (!buf2)
+	{
+		err = errno ? errno : ENOMEM;
+		close(fd1);
+		close(fd2);
+		free(buf1);
+		errno = err;
+		return -1;
+	}
+
+	/*
+	 * read the data and compare
+	 */
+	for (;;)
+	{
+		n1 = read(fd1, buf1, len);
+		if (n1 < 0)
+		{
+			bomb:
+			err = errno;
+			close(fd1);
+			close(fd2);
+			free(buf1);
+			free(buf2);
+			errno = err;
+			return -1;
+		}
+		n2 = read(fd2, buf2, len);
+		if (n2 < 0)
+			goto bomb;
+		if (!n1 && !n2)
+		{
+			result = 0;
+			break;
+		}
+		if (n1 != n2)
+		{
+			/*
+			 * we checked the length above,
+			 * but it could change while we work
+			 */
+			result = 1;
+			break;
+		}
+		if (memcmp(buf1, buf2, n1))
+		{
+			result = 1;
+			break;
+		}
+	}
+	close(fd1);
+	close(fd2);
+	free(buf1);
+	free(buf2);
+	return result;
 }

@@ -1,7 +1,7 @@
-#! /bin/sh
+#!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993 Peter Miller.
+#	Copyright (C) 1992, 1993, 1995 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,9 @@
 #	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 # MANIFEST: command used to notify by usenet that a change failed integration
+#
+# Suggested project attribute:
+# integrate_fail_notify_command = "$lib/if.inews.sh $p $c a.local.newsgroup";
 #
 aegis=aegis
 case $# in

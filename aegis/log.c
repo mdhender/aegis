@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,12 @@
  * MANIFEST: functions to open and close log files
  */
 
-#include <stddef.h>
+#include <ac/stddef.h>
 #include <stdio.h>
-#include <string.h>
+#include <ac/string.h>
 #include <signal.h>
-#include <unistd.h>
+#include <ac/unistd.h>
+#include <fcntl.h>
 
 #include <error.h>
 #include <log.h>
@@ -35,6 +36,112 @@
 
 
 static	int	pid;
+
+
+static void tee_stdout _((user_ty *, char *, int, int));
+
+static void
+tee_stdout(up, filename, also_to_tty, append_to_file)
+	user_ty		*up;
+	char		*filename;
+	int		also_to_tty;
+	int		append_to_file;
+{
+	int		fd[2];
+	int		uid;
+	int		gid;
+	int		um;
+	char		*argv[4];
+	int		argc;
+
+	/*
+	 * list both to a file and to the terminal
+	 */
+	trace(("tee_stdout(up = %08lX, filename = \"%s\", also_to_tty = %d, \
+append_to_file = %d)\n{\n"/*}*/, (long)up, filename, also_to_tty,
+append_to_file));
+	uid = user_id(up);
+	gid = user_gid(up);
+	um = user_umask(up);
+	if (pipe(fd))
+		nfatal("pipe()");
+	switch (pid = fork())
+	{
+	case 0:
+		/*
+		 * child
+		 */
+		undo_cancel();
+		while (os_become_active())
+			os_become_undo();
+		close(fd[1]);
+		close(0);
+		if (dup(fd[0]) != 0)
+			fatal("dup was wrong");
+		close(fd[0]);
+		signal(SIGINT, SIG_IGN);
+		signal(SIGHUP, SIG_IGN);
+		signal(SIGTERM, SIG_IGN);
+		os_setgid(gid);
+		os_setuid(uid);
+		umask(um);
+
+		if (!also_to_tty)
+		{
+			/*
+			 * Some systems can't write to a user's file
+			 * when euid=0 over NFS.  The permissions are
+			 * supposed to only apply when the file is
+			 * opened, and subsequent writes are not
+			 * affected.  Sigh.  Ever seen "Permission
+			 * denied" from a write() call?  Eek!
+			 *
+			 * For systems with no functioning seteuid
+			 * call, this is essential, even if NFS writes
+			 * behave as they should.
+			 *
+			 * So: we always open a pipe, and simply run it
+			 * through "tee" with the output redirected to
+			 * the bit bucket.
+			 */
+			close(1);
+			if (1 != open("/dev/null", O_WRONLY, 0666))
+				nfatal("open /dev/null");
+		}
+
+		/*
+		 * build the tee command
+		 */
+		argc = 0;
+		argv[argc++] = "tee";
+		if (append_to_file)
+			argv[argc++] = "-a";
+		argv[argc++] = filename;
+		argv[argc] = 0;
+
+		/*
+		 * try to exec it
+		 */
+		execvp(argv[0], argv);
+		nfatal("exec \"%s\"", argv[0]);
+
+	case -1:
+		nfatal("fork()");
+
+	default:
+		/*
+		 * parent:
+		 * redirect stdout to go through the pipe
+		 */
+		close(fd[0]);
+		close(1);
+		if (dup(fd[1]) != 1)
+			fatal("dup was wrong");
+		close(fd[1]);
+		break;
+	}
+	trace((/*{*/"}\n"));
+}
 
 
 /*
@@ -51,14 +158,15 @@ static	int	pid;
  */
 
 void
-log_open(log, up)
+log_open(log, up, style)
 	string_ty	*log;
 	user_ty		*up;
+	log_style_ty	style;
 {
 	static int	already_done;
-	int		fd[2];
 	int		bg;
 	int		append_to_file;
+	int		exists;
 
 	if (already_done)
 		return;
@@ -70,18 +178,21 @@ log_open(log, up)
 	 * if the logfile exists, unlink it first
 	 * (so that baseline linked to int dir works correctly)
 	 */
-	append_to_file = 0;
+	append_to_file = (style == log_style_append);
 	user_become(up);
-	if (os_exists(log))
+	exists = os_exists(log);
+	if (style == log_style_snuggle && exists)
 	{
-		long	now;
+		time_t	now;
 
 		time(&now);
 		if (now - os_mtime(log) < 30)
 			append_to_file = 1;
-		else
-			os_unlink(log);
 	}
+	if (!append_to_file && exists)
+		os_unlink(log);
+	if (append_to_file && !exists)
+		append_to_file = 0;
 	user_become_undo();
 
 	/*
@@ -89,75 +200,21 @@ log_open(log, up)
 	 * don't send the output to the terminal.
 	 */
 	bg = os_background();
-	if (bg)
-	{
-		char *mode = (append_to_file ? "a" : "w");
-		user_become(up);
-		if (!freopen(log->str_text, mode, stdout))
-			nfatal("%s", log->str_text);
-		user_become_undo();
-	}
-	else
-	{
-		int	uid;
-		int	gid;
-		int	um;
-		int	n;
-		char	*cmd[4];
-
-		/*
-		 * list both to a file and to the terminal
-		 */
-		uid = user_id(up);
-		gid = user_gid(up);
-		um = user_umask(up);
-		if (pipe(fd))
-			nfatal("pipe()");
-		switch (pid = fork())
-		{
-		case 0:
-			undo_cancel();
-			while (os_become_active())
-				os_become_undo();
-			n = 0;
-			cmd[n++] = "tee";
-			if (append_to_file)
-				cmd[n++] = "-a";
-			cmd[n++] = log->str_text;
-			cmd[n] = 0;
-			close(fd[1]);
-			close(0);
-			if (dup(fd[0]) != 0)
-				fatal("dup was wrong");
-			close(fd[0]);
-			signal(SIGINT, SIG_IGN);
-			signal(SIGHUP, SIG_IGN);
-			signal(SIGTERM, SIG_IGN);
-			os_setgid(gid);
-			os_setuid(uid);
-			umask(um);
-			execvp(cmd[0], cmd);
-			nfatal("%s", cmd[0]);
-	
-		case -1:
-			nfatal("fork()");
-	
-		default:
-			close(fd[0]);
-			close(1);
-			if (dup(fd[1]) != 1)
-				fatal("dup was wrong");
-			close(fd[1]);
-			break;
-		}
-	}
+	tee_stdout(up, log->str_text, !bg, append_to_file);
 
 	/*
 	 * tell the user we are logging
 	 *	(without putting it into the logfile)
 	 */
 	if (!bg)
-		verbose("logging to \"%s\"", log->str_text);
+	{
+		verbose
+		(
+			"%s to \"%s\"",
+			(append_to_file ? "appending log" : "logging"),
+			log->str_text
+		);
+	}
 
 	/*
 	 *  make stderr go to the same place as stdout

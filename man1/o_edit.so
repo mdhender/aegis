@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993 Peter Miller.
+.\"	Copyright (C) 1993, 1995 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -26,10 +26,11 @@ Edit the attributes with a text editor,
 this is usually more convenient than supplying a text file.
 The
 .I EDITOR
-environment variable will be consulted for the name of the editor to use;
+environment variable will be consulted for the name of the editor
+to use;
 defaults to
 .IR vi (1)
 if not set.
 Warning:
-not well behaved when faced with errors,
-the temporary file is always deleted.
+tries to be well behaved when faced with errors,
+the temporary file is left in your home directory.

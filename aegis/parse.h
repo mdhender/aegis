@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -44,5 +44,6 @@ void sem_list _((void));
 void sem_field _((string_ty *));
 
 void *parse _((char *, type_ty *));
+void *parse_env _((char *, type_ty *));
 
 #endif /* PARSE_H */

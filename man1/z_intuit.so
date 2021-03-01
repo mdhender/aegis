@@ -32,4 +32,5 @@ They are then compared with the baseline path,
 the development directory path,
 and the integration directory path,
 to determine a baseline-relative name.
-It is an error if the file named is outside one of these directory trees.
+It is an error if the file named is outside
+one of these directory trees.

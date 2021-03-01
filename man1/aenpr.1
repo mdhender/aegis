@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -65,9 +65,14 @@ in either case with the same name as the project.
 The project is created with the current user
 and group as the owning user and group.
 The current user is an administrator for the project.
-The project has no developers, reviewers, integrators or other administrators.
+The project has no developers, reviewers, integrators or
+other administrators.
+The project's umask is derived from the current user's umask,
+but guaranteeing that group members will have access
+and that only the project owner will have write access.
 .PP
-The project pointer will be added to the first element of the search path,
+The project pointer will be added to the first element of
+the search path,
 or
 .I /usr/local/lib/aegis
 if no path is set.
@@ -113,4 +118,28 @@ the directory specified with the
 .B -DIRectory
 option.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aena (1)
+add a new administrator to a project
+.TP 8n
+.IR aenc (1)
+add a new change to a project
+.TP 8n
+.IR aend (1)
+add a new developer to a project
+.TP 8n
+.IR aenrls (1)
+create a new project from an existing project
+.TP 8n
+.IR aenrv (1)
+add a new reviewer to a project
+.TP 8n
+.IR aermpr (1)
+remove project
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

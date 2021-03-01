@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -17,9 +17,10 @@
 .\"	along with this program; if not, write to the Free Software
 .\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 .\"
-.\" MANIFEST: User Guide, The History Tool"
+.\" MANIFEST: User Guide, The History Tool
 .\"
 .bp
+.2C
 .nh 1 "The History Tool"
 .LP
 The aegis program is decoupled from the history mechanism.
@@ -52,54 +53,48 @@ The history fields of the file are described as follows
 This field is used to create a new history.
 The command is always executed as the project owner.
 Substitutions available for the command string are:
-.DS
-.TS
-tab(;);
-l l.
-${Input};source file
-${History};history file
-.TE
-.DE
+.IP ${Input}
+absolute path of source file
+.IP ${History}
+absolute path of history file
+.LP
+In addition, all substitutions described in \fIaesub\fP(5) are available.
 .nh 3 "history_get_command"
 .LP
 This field is used to get a file from history.
 The command may be executed by developers.
 Substitutions available for the command string are:
-.DS
-.TS
-tab(;);
-l l.
-${History};history file
-${Edit};edit number
-${Output};destination file
-.TE
-.DE
+.IP ${History}
+absolute path of history file
+.IP ${Edit}
+edit number, as given by the history_\%get_\%command.
+.IP ${Output}
+absolute path of destination file
+.LP
+In addition, all substitutions described in \fIaesub\fP(5) are available.
 .nh 3 "history_put_command"
 .LP
 This field is used to add a new change to the history.
 The command is always executed as the project owner.
 Substitutions available for the command string are:
-.DS
-.TS
-tab(;);
-l l.
-${Input};source file
-${History};history file
-.TE
-.DE
+.IP ${Input}
+absolute path of source file
+.IP ${History}
+absolute path of history file
+.LP
+In addition, all substitutions described in \fIaesub\fP(5) are available.
 .nh 3 "history_query_command"
 .LP
 This field is used to query the topmost edit of a history file.
 Result to be printed on the standard output.
 This command may be executed by developers.
 Substitutions available for the command string are:
-.DS
-.TS
-tab(;);
-l l.
-${History};history file
+.IP ${History}
+absolute path of history file
 .TE
 .DE
+.LP
+In addition, all substitutions described in \fIaesub\fP(5) are available.
 .so c3.1.so
 .so c3.2.so
 .so c3.3.so

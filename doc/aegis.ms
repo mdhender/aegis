@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -45,9 +45,13 @@
 .ft C
 .nf
 .ta 8n 16n 24n 32n 40n 48n 56n 64n 72n 8n
+.ps -2
+.vs -2
 ..
 .\" Example End
 .de E)
+.vs +2
+.ps +2
 .ft R
 .fi
 .DE
@@ -62,5 +66,7 @@
 .so c6.0.so
 .so cA.0.so
 .so cB.0.so
-.so cC.0.so
+.so cD.0.so
+.br
+.1C
 .TC

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,8 +21,8 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <ac/stdlib.h>
+#include <ac/string.h>
 
 #include <ael.h>
 #include <aenpr.h>
@@ -62,144 +62,7 @@ new_project_help()
 {
 	static char *text[] =
 	{
-"NAME",
-"	%s -New_PRoject - create a new project",
-"",
-"SYNOPSIS",
-"	%s -New_PRoject <project-name> [ <option>... ]",
-"	%s -New_PRoject -List [ <option>... ]",
-"	%s -New_PRoject -Help",
-"",
-"DESCRIPTION",
-"	The %s -New_PRoject command is used to create a new",
-"	project.",
-"",
-"	The project directory, under which the project baseline",
-"	and history and state and change data are kept, will be",
-"	created at this time.  If the -DIRectory option is not",
-"	given, the project directory will be created in the",
-"	directory specified by the default_project_directory field",
-"	of aeuconf(5), or if not set in current user's home",
-"	directory; in either case with the same name as the",
-"	project.",
-"",
-"	The project is created with the current user and group as",
-"	the owning user and group.  The current user is an",
-"	administrator for the project.  The project has no",
-"	developers, reviewers, integrators or other",
-"	administrators.",
-"",
-"	The project pointer will be added to the first element of",
-"	the search path, or /usr/local/lib/%s if no path is",
-"	set.  If this is inappropriate, use the -LIBrary option",
-"	to explicitly set the desired location.  See the -LIBrary",
-"	option for more information.",
-"",
-"	The project major version defaults to 1, and the minor",
-"	version	defaults to 0, unless modified by the version",
-"	options, below.",
-"",
-"OPTIONS",
-"	The following options are understood:",
-"",
-"	-DIRectory <path>",
-"		This option may be used to specify which directory",
-"		is to be used.  It is an error if the current user",
-"		does not have appropriate permissions to create",
-"		the directory path given.  This must be an",
-"		absolute path.",
-"",
-"		Caution: If you are using an automounter do not",
-"		use `pwd` to make an absolute path, it usually",
-"		gives the wrong answer.",
-"",
-"	-Help",
-"		This option may be used to obtain more information",
-"		about how to use the %s program.",
-"",
-"	-LIBrary <abspath>",
-"		This option may be used to specify a directory to",
-"		be searched for global state files and user state",
-"		files.  (See aegstate(5) and aeustate(5) for more",
-"		information.)  Several library options may be",
-"		present on the command line, and are search in the",
-"		order given.  Appended to this explicit search",
-"		path are the directories specified by the AEGIS",
-"		enviroment variable (colon separated), and",
-"		finally, /usr/local/lib/%s is always searched.",
-"		All paths specified, either on the command line or",
-"		in the AEGIS environment variable, must be",
-"		absolute.",
-"",
-"	-List",
-"		This option may be used to obtain a list of",
-"		suitable subjects for this command.  The list may",
-"		be more general than expected.",
-"",
-"	-MAJor <number>",
-"		Specify	that the major version number is to be",
-"		the given number.  Defaults to 1 if not set.",
-"",
-"	-MINOr <number>",
-"		Specify	that the minor version number is to be",
-"		the given number.  Defaults to 0 if not set.",
-"",
-"	-TERse",
-"		This option may be used to cause listings to",
-"		produce the bare minimum of information.  It is",
-"		usually useful for shell scripts.",
-"",
-"	-Verbose",
-"		This option may be used to cause %s to produce",
-"		more output.  By default %s only produces",
-"		output on errors.  When used with the -List option",
-"		this option causes column headings to be added.",
-"",
-"	All options may be abbreviated; the abbreviation is",
-"	documented as the upper case letters, all lower case",
-"	letters and underscores (_) are optional.  You must use",
-"	consecutive sequences of optional letters.",
-"",
-"	All options are case insensitive, you may type them in",
-"	upper case or lower case or a combination of both, case",
-"	is not important.",
-"",
-"	For example: the arguments \"-project, \"-PROJ\" and \"-p\"",
-"	are all interpreted to mean the -Project option.  The",
-"	argument \"-prj\" will not be understood, because",
-"	consecutive optional characters were not supplied.",
-"",
-"	Options and other command line arguments may be mixed",
-"	arbitrarily on the command line, after the function",
-"	selectors.",
-"",
-"	The GNU long option names are understood.  Since all",
-"	option names for aegis are long, this means ignoring the",
-"	extra leading '-'.  The \"--option=value\" convention is",
-"	also understood.",
-"",
-"RECOMMENDED ALIAS",
-"	The recommended alias for this command is",
-"	csh%%	alias aenpr '%s -npr \\!* -v'",
-"	sh$	aenpr(){%s -npr $* -v}",
-"",
-"ERRORS",
-"	It is an error if the project name already exists.",
-"	It is an error if the project directory already exists.",
-"	It is an error if the currrent user does not have suffient",
-"	permissions to create the directory specified with the",
-"	-DIRectory option.",
-"",
-"EXIT STATUS",
-"	The %s command will exit with a status of 1 on any",
-"	error.  The %s command will only exit with a status of",
-"	0 if there are no errors.",
-"",
-"COPYRIGHT",
-"	%C",
-"",
-"AUTHOR",
-"	%A",
+#include <../man1/aenpr.h>
 	};
 
 	help(text, SIZEOF(text), new_project_usage);
@@ -234,6 +97,7 @@ new_project_main()
 	string_ty	*ip;
 	long		major;
 	long		minor;
+	int		um;
 
 	trace(("new_project_main()\n{\n"/*}*/));
 	project_name = 0;
@@ -384,17 +248,40 @@ new_project_main()
 	project_administrator_add(pp, user_name(up));
 
 	/*
+	 * default the umask from the creating user
+	 */
+	os_become_orig_query((int *)0, (int *)0, &um);
+	um = (um & 5) | 022;
+	if (um == 023)
+		um = 022;
+	pstate_data->umask = um;
+
+	/*
 	 * if no project directory was specified
 	 * create the directory in their home directory.
 	 */
 	if (!home)
 	{
+		int	max;
+
 		s1 = user_default_project_directory(up);
 		assert(s1);
+		os_become_orig();
+		max = os_pathconf_name_max(s1);
+		os_become_undo();
+		if (project_name_get(pp)->str_length > max)
+		{
+			fatal
+			(
+				"project name \"%s\" too long (by %ld)",
+				project_name_get(pp)->str_text,
+				project_name_get(pp)->str_length - max
+			);
+		}
 		home = str_format("%S/%S", s1, project_name_get(pp));
 		str_free(s1);
+		project_verbose(pp, "project directory \"%S\"", home);
 	}
-	project_verbose(pp, "project directory \"%S\"", home);
 	project_home_path_set(pp, home);
 	str_free(home);
 

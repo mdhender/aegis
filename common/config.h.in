@@ -1,0 +1,218 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1994 Peter Miller.
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * MANIFEST: template common/config.h file
+ */
+
+#ifndef COMMON_CONFIG_H
+#define COMMON_CONFIG_H
+/* common/config.h.in.  Generated automatically from aux/configure.in by autoheader.  */
+
+/* Define if on AIX 3.
+   System headers sometimes define this.
+   We just want to avoid a redefinition error message.  */
+#ifndef _ALL_SOURCE
+#undef _ALL_SOURCE
+#endif
+
+/* Define to empty if the keyword does not work.  */
+#undef const
+
+/* Define if you have dirent.h.  */
+#undef DIRENT
+
+/* Define if you support file names longer than 14 characters.  */
+#undef HAVE_LONG_FILE_NAMES
+
+/* Define if on MINIX.  */
+#undef _MINIX
+
+/* Define if you don't have dirent.h, but have ndir.h.  */
+#undef NDIR
+
+/* Define if the system does not provide POSIX.1 features except
+   with this defined.  */
+#undef _POSIX_1_SOURCE
+
+/* Define if you need to in order for stat and other things to work.  */
+#undef _POSIX_SOURCE
+
+/* Define as the return type of signal handlers (int or void).  */
+#undef RETSIGTYPE
+
+/* Define to `unsigned' if <sys/types.h> doesn't define.  */
+#undef size_t
+
+/* Define if you don't have dirent.h, but have sys/dir.h.  */
+#undef SYSDIR
+
+/* Define if you don't have dirent.h, but have sys/ndir.h.  */
+#undef SYSNDIR
+
+/* Define if you can safely include both <sys/time.h> and <time.h>.  */
+#undef TIME_WITH_SYS_TIME
+
+/* Define if the closedir function returns void instead of int.  */
+#undef VOID_CLOSEDIR
+
+/*
+ * define this symbol if your system as <sys/ioctl.h> AND it
+ * defines TIOCGWINSZ and struct winsize.
+ */
+#undef HAVE_winsize_SYS_IOCTL_H
+
+/*
+ * define this symbol if your system as <termios.h> AND it
+ * defines TIOCGWINSZ and struct winsize.
+ */
+#undef HAVE_winsize_TERMIOS_H
+
+/*
+ * Define this symbol of your system has <stdarg.h> AND it works.
+ */
+#undef HAVE_STDARG_H
+
+/*
+ * Set this to a suitable argument for the getpgrp function to discover
+ * the process group of the current process.
+ */
+#define CONF_getpgrp_arg broken
+
+/*
+ * Set this to be the absolute path of a Bourne shell
+ * which understands functions.
+ */
+#define CONF_SHELL "/bin/sh"
+
+/*
+ * Define this symbol if your system has
+ * the pw_comment field in the passwd struct defined in <pwd.h>
+ */
+#undef HAVE_pw_comment
+
+/*
+ * Define this symbol if your system has
+ * the tm_zone field in the tm struct defined in <time.h>
+ */
+#undef HAVE_tm_zone
+
+/*
+ * Define this symbol if your compiler
+ * makes all enums the same size as ints
+ */
+#undef CONF_enum_is_int
+
+/* Define if you have getpgrp.  */
+#undef HAVE_GETPGRP
+
+/* Define if you have seteuid.  */
+#undef HAVE_SETEUID
+
+/* Define if you have setresuid.  */
+#undef HAVE_SETRESUID
+
+/* Define if you have setreuid.  */
+#undef HAVE_SETREUID
+
+/* Define if you have strcasecmp.  */
+#undef HAVE_STRCASECMP
+
+/* Define if you have strerror.  */
+#undef HAVE_STRERROR
+
+/* Define if you have strftime.  */
+#undef HAVE_STRFTIME
+
+/* Define if you have tcgetpgrp.  */
+#undef HAVE_TCGETPGRP
+
+/* Define if you have the <limits.h> header file.  */
+#undef HAVE_LIMITS_H
+
+/* Define if you have the <memory.h> header file.  */
+#undef HAVE_MEMORY_H
+
+/* Define if you have the <stddef.h> header file.  */
+#undef HAVE_STDDEF_H
+
+/* Define if you have the <stdlib.h> header file.  */
+#undef HAVE_STDLIB_H
+
+/* Define if you have the <string.h> header file.  */
+#undef HAVE_STRING_H
+
+/* Define if you have the <unistd.h> header file.  */
+#undef HAVE_UNISTD_H
+
+/* Define if you have the intl library (-lintl).  */
+#undef HAVE_LIBINTL
+
+/* Define if you have the m library (-lm).  */
+#undef HAVE_LIBM
+
+/* Define if you have the socket library (-lsocket).  */
+#undef HAVE_LIBSOCKET
+
+/*
+ * Define this symbol if your system does NOT
+ * have the seteuid system call, and it cannot be simulated.
+ */
+#ifndef HAVE_SETEUID
+#ifndef HAVE_SETREUID
+#ifndef HAVE_SETRESUID
+#define CONF_NO_seteuid
+#endif
+#endif
+#endif
+
+/*
+ * This defines the file creation mask.  See umask(2) for more information.
+ * Some bits are not available, because aegis is _meant_ to be paranoid.
+ * Owner: always has read, write and search/exec.
+ * Group: always has read and search/exec, so that developers can get at the
+ *	baseline.  There is never group write, because then developers
+ *	could trash the baseline, which is counter-productive.
+ * Others: There is never others write, for the same reason as group.
+ *	Others read and search/execute is configurable.
+ *
+ * The permissions mask in binary looks like
+ *	000 010 X1X
+ * where the Xs may be configured.
+ *
+ * Alternatives for default umask are thus
+ *	027	others get nothing
+ *	026	others can execute the results if they know where they are going
+ *	022	others can see and copy and execute anything
+ *	023	don't do this (why is left as an exersize for the reader)
+ *
+ * Projects have a configurable umask, this is just the default.
+ *	See aepattr(1) for more information.
+ */
+#define DEFAULT_UMASK 026
+
+/*
+ * These symbols define where non-system user IDs start,
+ * and where non-system group IDs start.
+ * This is mostly to ensure that accounts "root" and "bin"
+ * and "uucp" are not project owners.
+ */
+#define AEGIS_MIN_UID 100
+#define AEGIS_MIN_GID 10
+
+#endif /* COMMON_CONFIG_H */

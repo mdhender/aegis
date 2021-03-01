@@ -28,7 +28,7 @@ about how to use the aegis program,
 this appendix gives a quick look at how
 to place a project under aegis.
 .LP
-The style here is a bullet list.
+The style here is an itemized list.
 It does not try to be exhaustive.
 For exact details on how to use the various aegis commands,
 you should see the manual pages,
@@ -38,7 +38,7 @@ Probably the quickest start of all is to copy
 an already existing project.
 The project used in chapter 2 is complete,
 assuming you use the author's "cook" dependency maintenance tool.
-The entirety of this example may be fond,
+The entirety of this example may be found,
 if slightly obfuscated,
 in the aegis source file
 .I "test/00/t0011a.sh"

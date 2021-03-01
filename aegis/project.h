@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1992, 1993 Peter Miller.
+ *	Copyright (C) 1992, 1993, 1994 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * MANIFEST: interface definition for aegis/project.h
+ * MANIFEST: interface definition for aegis/project.c
  */
 
 #ifndef PROJECT_H
@@ -25,6 +25,8 @@
 
 #include <pstate.h>
 #include <pattr.h>
+
+struct wlist;
 
 typedef struct project_ty project_ty;
 struct project_ty
@@ -69,6 +71,8 @@ void project_build_write_lock_prepare _((project_ty *));
 pattr project_pattr_get _((project_ty *));
 void project_pattr_set _((project_ty *, pattr));
 pstate_src project_src_find _((project_ty *, string_ty *));
+pstate_src project_src_find_fuzzy _((project_ty *, string_ty *));
+int project_src_dir _((project_ty *, string_ty *, struct wlist *));
 pstate_src project_src_new _((project_ty *, string_ty *));
 void project_src_remove _((project_ty *, string_ty *));
 int project_administrator_query _((project_ty *, string_ty *));
@@ -99,6 +103,7 @@ void project_become _((project_ty *));
 void project_become_undo _((void));
 int project_umask _((project_ty *));
 int project_delta_exists _((project_ty *pp, long dn));
+long project_delta_name_to_number _((project_ty *pp, char *dn));
 string_ty *project_delta_to_edit _((project_ty *pp, long delta, string_ty *fn));
 
 #endif /* PROJECT_H */

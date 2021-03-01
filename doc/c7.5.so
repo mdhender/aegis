@@ -58,14 +58,15 @@ How big can a project get before aegis chokes?
 There are a huge number of variables in this question.
 .LP
 The most obvious bottleneck is the integrator.
-An artificial "average" example:
+An artificial "big project" example:
 Assume that the average integration takes an hour to build and test.
 A full-time integrator could be expected to get 7 or 8 of these done per day
 (this was the observed average on one project the author was involved in).
 Assume that the average time for a developer to develop a change is two weeks;
 a figure recommended by many text books
-as "the most you can afford to throw away".
-These two assumptions mean that for this "average" project
+as
+.IR "the most you can afford to throw away" .
+These two assumptions mean that for this "big project"
 aegis can cope with 70 to 80 developers,
 before integrations become a bottleneck.
 .LP

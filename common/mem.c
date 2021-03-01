@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,86 @@
  * MANIFEST: functions to manipulate dynamic memory
  */
 
-#include <stddef.h>
-#include <string.h>
-#include <stdlib.h>
+#include <ac/stddef.h>
+#include <ac/string.h>
+#include <ac/stdlib.h>
 #include <errno.h>
 
-#include <main.h>
 #include <mem.h>
 #include <error.h>
+
+
+#ifdef _AIX
+
+/*
+ * Yet another AIX stupidity:
+ * malloc does not guarantee that the space is available in swap.
+ */
+
+#include <signal.h>
+#include <setjmp.h>
+
+static jmp_buf	aix_bungy;
+
+
+/*
+ * Catch SIGDANGER and longjmp to aix_touch.
+ */
+
+static void aix_danger _((int));
+
+static void
+aix_danger(n)
+	int		n;
+{
+	longjmp(aix_bungy, 1);
+}
+
+/*
+ * Touch the pages that cover [p, p+nbytes-1].
+ */
+
+static int aix_touch _((void *, size_t));
+
+static int
+aix_touch(vp, nbytes)
+	void		*vp;
+	size_t		nbytes;
+{
+	char		*p;
+	char		*endp;
+	int		pgsize;
+	volatile char	c;
+	void		(*oldsig)_((int));
+
+	oldsig = signal(SIGDANGER, aix_danger);
+	if (setjmp(aix_bungy))
+	{
+		signal(SIGDANGER, oldsig);
+		return -1;
+	}
+
+	/*
+	 * A load is enough to cause the
+	 * allocation of the paging space
+	 */
+	p = vp;
+	pgsize = getpagesize();
+	endp = p + nbytes;
+	while (p < endp)
+	{
+		c = *(volatile char *)p;
+		p += pgsize;
+	}
+
+	/*
+	 * restore the signal handler
+	 */
+	signal(SIGDANGER, oldsig);
+	return 0;
+}
+
+#endif
 
 
 /*
@@ -46,11 +118,11 @@
  *	freed when finished with, by a call to free().
  */
 
-char *
+void *
 mem_alloc(n)
 	size_t		n;
 {
-	char		*cp;
+	void		*cp;
 
 	if (n < 1)
 		n = 1;
@@ -62,6 +134,16 @@ mem_alloc(n)
 			errno = ENOMEM;
 		nfatal("malloc");
 	}
+#ifdef _AIX
+	/*
+	 * watch out for AIX stupidity
+	 */
+	if (aix_touch(cp, n))
+	{
+		errno = ENOMEM;
+		nfatal("malloc");
+	}
+#endif
 	return cp;
 }
 
@@ -83,11 +165,11 @@ mem_alloc(n)
  *	freed when finished with, by a call to free().
  */
 
-char *
+void *
 mem_alloc_clear(n)
 	size_t		n;
 {
-	char		*cp;
+	void		*cp;
 
 	cp = mem_alloc(n);
 	memset(cp, 0, n);
@@ -95,74 +177,31 @@ mem_alloc_clear(n)
 }
 
 
-/*
- *  NAME
- *	enlarge - enlarges dynamic arrays
- *
- *  SYNOPSIS
- *	char *enlarge(size_t *length, char **base, size_t size);
- *
- *  DESCRIPTION
- *	Enlarge is used to append more space onto the end of dynamically
- *	allocated arrays.
- *	If any error is returned from the memory allocator,
- *	a fatal diagnostic is issued.
- *
- *  RETURNS
- *	A pointer to the element added.
- *
- *  CAVEAT
- *	Because it uses realloc, pointers into the array may be invalid after
- *	a call to enlarge(); only use indexing.
- *
- *	The new space is not zeroed.
- *
- *	It is the responsibility of the caller to ensure that the array is
- *	freed when finished with, by a call to free().
- */
-
-char *
-enlarge(length, base, size)
-	size_t		*length;
-	char		**base;
-	size_t		size;
-{
-	char		*result;
-
-	if (*length)
-		mem_change_size(base, (*length + 1) * size);
-	else
-		*base = mem_alloc(size);
-	result = *base + (*length)++ * size;
-	return result;
-}
-
-
-void
-mem_change_size(cpp, n)
-	char		**cpp;
+void *
+mem_change_size(cp, n)
+	void		*cp;
 	size_t		n;
 {
-	char		*cp;
-
-	cp = *cpp;
 	if (n < 1)
 		n = 1;
 	errno = 0;
-	cp = realloc(cp, n);
+	if (!cp)
+		cp = malloc(n);
+	else
+		cp = realloc(cp, n);
 	if (!cp)
 	{
 		if (!errno)
 			errno = ENOMEM;
 		nfatal("realloc");
 	}
-	*cpp = cp;
+	return cp;
 }
 
 
 void
 mem_free(cp)
-	char		*cp;
+	void		*cp;
 {
 	free(cp);
 }

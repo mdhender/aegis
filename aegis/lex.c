@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,22 +20,24 @@
  * MANIFEST: functions to perform lexical analysis on aegis' data files
  */
 
+#include <ctype.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <ac/stdlib.h>
+#include <ac/stdarg.h>
 #include <errno.h>
 
 #include <error.h>
-#include <glue.h>
 #include <lex.h>
-#include <s-v-arg.h>
+#include <lex/file.h>
+#include <lex/env.h>
 #include <str.h>
 #include <gram.gen.h>	/* must be after <str.h> */
+#include <trace.h>
 
 
-static	FILE		*fp;
+static	lex_input_ty	*input;
 static	int		line_number;
 static	int		line_number_start;
-static	char		*file_name;
 static	int		error_count;
 extern	gram_STYPE	gram_lval;
 static	char		buffer[1 << 14];
@@ -45,10 +47,17 @@ void
 lex_open(s)
 	char		*s;
 {
-	fp = glue_fopen(s, "r");
-	if (!fp)
-		nfatal("open \"%s\"", s);
-	file_name = s;
+	input = lex_input_file_open(s);
+	line_number = 1;
+	error_count = 0;
+}
+
+
+void
+lex_open_env(s)
+	char		*s;
+{
+	input = lex_input_env_open(s);
 	line_number = 1;
 	error_count = 0;
 }
@@ -57,11 +66,17 @@ lex_open(s)
 void
 lex_close()
 {
-	glue_fclose(fp);
-	fp = 0;
 	if (error_count)
-		fatal("%s: incorrect format", file_name);
-	file_name = 0;
+	{
+		fatal
+		(
+			"%s: found %d fatal errors",
+			input->method.name(input),
+			error_count
+		);
+	}
+	input->method.destruct(input);
+	input = 0;
 }
 
 
@@ -72,15 +87,10 @@ lex_getc()
 {
 	int		c;
 
-	c = glue_fgetc(fp);
+	c = input->method.get(input);
 	switch (c)
 	{
 	case EOF:
-		if (glue_ferror(fp))
-		{
-			nerror("%s", file_name);
-			++error_count;
-		}
 		break;
 
 	case '\n':
@@ -88,7 +98,7 @@ lex_getc()
 		break;
 
 	default:
-		if (c < ' ' || c > '~')
+		if (!isprint(c))
 			gram_error("illegal '\\%o' character", c);
 		break;
 
@@ -106,19 +116,9 @@ static void
 lex_getc_undo(c)
 	int		c;
 {
-	switch (c)
-	{
-	case EOF:
-		break;
-
-	case '\n':
+	input->method.unget(input, c);
+	if (c == '\n')
 		--line_number;
-		/* fall through... */
-
-	default:
-		glue_ungetc(c, fp);
-		break;
-	}
 }
 
 
@@ -182,9 +182,15 @@ gram_lex()
 				{
 					gram_error("malformed hex constant");
 					gram_lval.lv_integer = 0;
+					trace(("%s: %d: INTEGER 0\n",
+						input->method.name(input),
+						line_number));
 					return INTEGER;
 				}
 				gram_lval.lv_integer = n;
+				trace(("%s: %d: INTEGER %ld\n",
+					input->method.name(input),
+					line_number, n));
 				return INTEGER;
 			}
 			for (;;)
@@ -204,6 +210,9 @@ gram_lex()
 				}
 				break;
 			}
+			trace(("%s: %d: INTEGER %ld\n",
+				input->method.name(input),
+				line_number, gram_lval.lv_integer));
 			return INTEGER;
 
 		case '1': case '2': case '3': case '4':
@@ -227,6 +236,9 @@ gram_lex()
 				}
 				break;
 			}
+			trace(("%s: %d: INTEGER %ld\n",
+				input->method.name(input), line_number,
+				gram_lval.lv_integer));
 			return INTEGER;
 
 		case '"':
@@ -329,6 +341,9 @@ gram_lex()
 			}
 			*cp = 0;
 			gram_lval.lv_string = str_from_c(buffer);
+			trace(("%s: %d: STRING \"%s\"\n",
+				input->method.name(input), line_number,
+				buffer));
 			return STRING;
 
 		case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
@@ -375,6 +390,9 @@ gram_lex()
 				break;
 			}
 			gram_lval.lv_string = str_from_c(buffer);
+			trace(("%s: %d: NAME \"%s\"\n",
+				input->method.name(input), line_number,
+				buffer));
 			return NAME;
 
 		case '/':
@@ -383,6 +401,9 @@ gram_lex()
 			if (c != '*')
 			{
 				lex_getc_undo(c);
+				trace(("%s: %d: '/'\n",
+					input->method.name(input),
+					line_number));
 				return '/';
 			}
 			for (;;)
@@ -413,7 +434,14 @@ gram_lex()
 			}
 			break;
 
+		case EOF:
+			trace(("%s: %d: end of file\n",
+				input->method.name(input), line_number));
+			return 0;
+
 		default:
+			trace(("%s: %d: '%c'\n", input->method.name(input),
+				line_number, c));
 			return c;
 		}
 	}
@@ -430,7 +458,7 @@ gram_error(s sva_last)
 	sva_init(ap, s);
 	vsprintf(buffer, s, ap);
 	va_end(ap);
-	error("%s: %d: %s", file_name, line_number, buffer);
+	error("%s: %d: %s", input->method.name(input), line_number, buffer);
 	if (++error_count >= 20)
-		fatal("%s: too many errors, bye!", file_name);
+		fatal("%s: too many errors, bye!", input->method.name(input));
 }

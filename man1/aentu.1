@@ -54,6 +54,7 @@ The file is deleted from the development directory.
 The following options are understood:
 .so o_change.so
 .so o_help.so
+.so o_interact.so
 .so o_keep.so
 .so o_list.so
 .so o_project.so
@@ -69,7 +70,9 @@ sh$	aentu(){\*(n) -ntu $* -v}
 .fi
 .SH ERRORS
 It is an error if
-the change is not in the 'being_developed' state.
+the change is not in the
+.I "being developed"
+state.
 .br
 It is an error if
 the change is not assigned to the current user.
@@ -80,4 +83,13 @@ the file is not in the change.
 It is an error if
 the file was not added to the change with the '\*(n) -New_Test' command.
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aent (5)
+add a new test to a change
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
 .so z_cr.so

@@ -1,7 +1,7 @@
-#! /bin/sh
+#!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993 Peter Miller.
+#	Copyright (C) 1992, 1993, 1995 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,9 @@
 #	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 # MANIFEST: command used to notify by email that a change failed review
+#
+# Suggested project attribute:
+# review_fail_notify_command = "$lib/rf.sh $p $c $developer $reviewer";
 #
 aegis=aegis
 case $# in
@@ -60,9 +63,9 @@ $aegis -list change_details -project $project -change $change -verbose >> $tmp
 if [ $? -ne 0 ]; then quit; fi
 
 #
-# mail it to the developer
+# mail it to the developer and the reviewer
 #
-mail $developer < $tmp
+mail $developer $reviewer < $tmp
 if [ $? -ne 0 ]; then quit; fi
 
 #
