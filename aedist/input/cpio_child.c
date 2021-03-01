@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -56,16 +56,16 @@ padding(this)
 	{
 		int c = input_getc(this->deeper);
 		if (c < 0)
-			input_format_error((input_ty *)this);
+			input_fatal_error((input_ty *)this, "cpio: short file");
 		++n;
 	}
 }
 
 
-static void destructor _((input_ty *));
+static void input_cpio_child_destructor _((input_ty *));
 
 static void
-destructor(fp)
+input_cpio_child_destructor(fp)
 	input_ty	*fp;
 {
 	input_cpio_child_ty *this;
@@ -78,7 +78,7 @@ destructor(fp)
 	while (this->pos < this->length)
 	{
 		if (input_getc(this->deeper) < 0)
-			input_format_error(fp);
+			input_fatal_error(fp, "cpio: short file");
 	}
 
 	/*
@@ -98,13 +98,13 @@ destructor(fp)
 }
 
 
-static long iread _((input_ty *, void *, long));
+static long input_cpio_child_read _((input_ty *, void *, size_t));
 
 static long
-iread(fp, data, len)
+input_cpio_child_read(fp, data, len)
 	input_ty	*fp;
 	void		*data;
-	long		len;
+	size_t		len;
 {
 	input_cpio_child_ty *this;
 	long		result;
@@ -119,36 +119,16 @@ iread(fp, data, len)
 	assert(len > 0);
 	result = input_read(this->deeper, data, len);
 	if (result <= 0)
-		input_format_error(fp);
+		input_fatal_error(fp, "cpio: short file");
 	this->pos += result;
 	return result;
 }
 
 
-static int iget _((input_ty *));
-
-static int
-iget(fp)
-	input_ty	*fp;
-{
-	input_cpio_child_ty *this;
-	int		c;
-
-	this = (input_cpio_child_ty *)fp;
-	if (this->pos >= this->length)
-		return -1;
-	c = input_getc(this->deeper);
-	if (c < 0)
-		input_format_error(fp);
-	this->pos++;
-	return c;
-}
-
-
-static long itell _((input_ty *));
+static long input_cpio_child_ftell _((input_ty *));
 
 static long
-itell(fp)
+input_cpio_child_ftell(fp)
 	input_ty	*fp;
 {
 	input_cpio_child_ty *this;
@@ -158,25 +138,25 @@ itell(fp)
 }
 
 
-static const char *iname _((input_ty *));
+static string_ty *input_cpio_child_name _((input_ty *));
 
-static const char *
-iname(fp)
+static string_ty *
+input_cpio_child_name(fp)
 	input_ty	*fp;
 {
 	input_cpio_child_ty *this;
 
 	this = (input_cpio_child_ty *)fp;
 	if (this->filename)
-		return this->filename->str_text;
+		return this->filename;
 	return input_name(this->deeper);
 }
 
 
-static long ilength _((input_ty *));
+static long input_cpio_child_length _((input_ty *));
 
 static long
-ilength(fp)
+input_cpio_child_length(fp)
 	input_ty	*fp;
 {
 	input_cpio_child_ty *this;
@@ -189,12 +169,11 @@ ilength(fp)
 static input_vtbl_ty vtbl =
 {
 	sizeof(input_cpio_child_ty),
-	destructor,
-	iread,
-	iget,
-	itell,
-	iname,
-	ilength,
+	input_cpio_child_destructor,
+	input_cpio_child_read,
+	input_cpio_child_ftell,
+	input_cpio_child_name,
+	input_cpio_child_length,
 };
 
 
@@ -211,13 +190,13 @@ hex_digit(this, first_p)
 	switch (c)
 	{
 	default:
-		input_format_error((input_ty *)this);
+		input_fatal_error((input_ty *)this, "cpio: invalid hex digit");
 		/* NOTREACHED */
 
 	case ' ':
 		if (*first_p)
 			return 0;
-		input_format_error((input_ty *)this);
+		input_fatal_error((input_ty *)this, "cpio: invalid hex number");
 		/* NOTREACHED */
 
 	case '0': case '1': case '2': case '3': case '4':
@@ -254,7 +233,7 @@ hex8(this)
 		result = (result << 4) + c;
 	}
 	if (first)
-		input_format_error((input_ty *)this);
+		input_fatal_error((input_ty *)this, "cpio: invalid hex number");
 	return result;
 }
 
@@ -273,7 +252,7 @@ get_name(this, namlen)
 	 * make sure out buffer is big enough.
 	 */
 	if (namlen < 2)
-		input_format_error((input_ty *)this);
+		input_fatal_error((input_ty *)this, "cpio: invalid name length");
 	--namlen;
 
 	/*
@@ -284,11 +263,11 @@ get_name(this, namlen)
 	{
 		int c = input_getc(this->deeper);
 		if (c <= 0)
-			input_format_error((input_ty *)this);
-		if (isspace(c))
-			input_format_error((input_ty *)this);
-		if (!isprint(c))
-			input_format_error((input_ty *)this);
+			input_fatal_error((input_ty *)this, "cpio: short file");
+		if (isspace((unsigned char)c))
+			input_fatal_error((input_ty *)this, "cpio: invalid name (white space)");
+		if (!isprint((unsigned char)c))
+			input_fatal_error((input_ty *)this, "cpio: invalid name (unprintable)");
 		stracc_char(&buffer, c);
 	}
 
@@ -296,7 +275,7 @@ get_name(this, namlen)
 	 * Must has a NUL on the end.
 	 */
 	if (input_getc(this->deeper) != 0)
-		input_format_error((input_ty *)this);
+		input_fatal_error((input_ty *)this, "cpio: invalid character");
 
 	/*
 	 * Build the result and return.
@@ -329,8 +308,9 @@ input_cpio_child_open(deeper, archive_name_p)
 	 */
 	for (magic = "070701"; *magic; ++magic)
 	{
-		if (input_getc(deeper) != *magic)
-			input_format_error((input_ty *)this);
+		int c = input_getc(deeper);
+		if (c != *magic)
+			input_fatal_error((input_ty *)this, "cpio: wrong magic number");
 	}
 	hex8(this);	/* inode */
 	hex8(this);	/* mode */
@@ -347,7 +327,7 @@ input_cpio_child_open(deeper, archive_name_p)
 	hex8(this);	/* no checksum */
 	this->archive_name = get_name(this, namlen);
 	this->filename =
-		 str_format("%s(%S)", input_name(deeper), this->archive_name);
+		 str_format("%S(%S)", input_name(deeper), this->archive_name);
 	padding(this);
 
 	/*

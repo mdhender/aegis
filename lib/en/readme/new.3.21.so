@@ -1,0 +1,112 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2000 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 3.21 features
+.\"
+.PP
+.if n *
+.if t \(bu
+\fBPlease Note:\fP Some code has been added to Aegis to assist in
+diagnosing problems when restoring projects from backups.  If you see
+a message ``aegis: \fIproject-path\fP: has been tampered with (fatal)''
+this means there are problems with the project file ownerships.
+The project owner needs to be >= AEGIS_UID (defaults to 100),
+and the project group needs to be >= AEGIS_GID (defaults to 10).
+Use chown -R and/or chgrp -R to fix these problems.
+.PP
+.if n *
+.if t \(bu
+.\" change 32
+The \fIaesub\fP(1) command now accepts the ${arch} substitution in
+combination with the -baseline option.
+.PP
+.if n *
+.if t \(bu
+.\" change 31
+A bugs has been fixed in the \fIaedist -receive\fP command, when one of
+the files was also locked for review.
+.PP
+.if n *
+.if t \(bu
+.\" change 30
+A bug in \fIaeclone\fP(1) has been fixed, where it dropped file move
+information.
+.PP
+.if n *
+.if t \(bu
+.\" change 27
+The \fIaeib\fP(1) command now correctly validates that youare actually
+allowed to do this integration.  This may win the prize for the
+\fIoldest\fP Aegis bug.
+.PP
+.if n *
+.if t \(bu
+.\" change 26
+There is a new ${search_path_executable} substitution.
+See \fIaesub\fP(5) and \fIaet\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 23
+Line wrapping in reports works properly again for lines with no white space.
+The previous release broke it when the wide output generalization was added.
+.PP
+.if n *
+.if t \(bu
+.\" change 22
+The \fIaet -nopersever\fP option works again.  The previous release broke
+it when the batch test support has implemented.
+.PP
+.if n *
+.if t \(bu
+.\" change 20
+A problem with the \fIaeb\fP(1) command which made it difficult
+to use with th symbolic link farm (in some cases) has been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" change 18
+A new report is available from the web interface, showing a
+change-of-state histogram over time for all state transitions (not just
+the integrate pass transitions).
+.PP
+.if n *
+.if t \(bu
+.\" change 17
+A problem with the \fIaenf\fP(1) command which made it difficult
+to use with th symbolic link farm (in some cases) has been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" change 16
+The \fIaeipass\fP(1) command now
+preserve file mod times across history updates,
+if the history tool gratuitously changes them.
+.PP
+.if n *
+.if t \(bu
+.\" change 11
+The Solaris and IRIX build problems (wputc, \fIet al\fP) has been fixed.
+.PP
+.if n *
+.if t \(bu
+Numerous documentation patches were received and have been applied.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 3.21

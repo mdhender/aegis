@@ -22,6 +22,7 @@
 
 #include <ac/stdio.h>
 #include <ac/stddef.h>
+#include <ac/stdlib.h>
 #include <ac/limits.h>
 
 #include <arglex.h>

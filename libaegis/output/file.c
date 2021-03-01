@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,11 +21,12 @@
  */
 
 #include <ac/errno.h>
-#include <ac/stdio.h>
+#include <ac/fcntl.h>
+#include <ac/unistd.h>
 
-#include <fopen_nfs.h>
 #include <glue.h>
 #include <mem.h>
+#include <option.h>
 #include <os.h>
 #include <output/file.h>
 #include <output/private.h>
@@ -37,48 +38,43 @@ typedef struct output_file_ty output_file_ty;
 struct output_file_ty
 {
 	output_ty	inherited;
-	char		*filename;
-	FILE		*deeper;
+	string_ty	*filename;
+	int		fd;
+	int		bol;
+	size_t		pos;
 };
 
 
-static void destructor _((output_ty *));
+static void output_file_destructor _((output_ty *));
 
 static void
-destructor(fp)
+output_file_destructor(fp)
 	output_ty	*fp;
 {
 	output_file_ty	*this;
 
 	this = (output_file_ty *)fp;
-	if (glue_fflush(this->deeper))
+	if (glue_close(this->fd))
 	{
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%s", this->filename);
-		fatal_intl(scp, i18n("write $filename: $errno"));
-		/* NOTREACHED */
-	}
-	if (glue_fclose(this->deeper))
-	{
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%s", this->filename);
+		sub_var_set_string(scp, "File_Name", this->filename);
 		fatal_intl(scp, i18n("close $filename: $errno"));
 		/* NOTREACHED */
 	}
-	mem_free(this->filename);
+	this->fd = -1;
+	str_free(this->filename);
+	this->filename = 0;
+	this->pos = 0;
 }
 
 
-static const char *filename _((output_ty *));
+static string_ty *output_file_filename _((output_ty *));
 
-static const char *
-filename(fp)
+static string_ty *
+output_file_filename(fp)
 	output_ty	*fp;
 {
 	output_file_ty	*this;
@@ -88,46 +84,23 @@ filename(fp)
 }
 
 
-static long otell _((output_ty *));
+static long output_file_ftell _((output_ty *));
 
 static long
-otell(fp)
+output_file_ftell(fp)
 	output_ty	*fp;
 {
 	output_file_ty	*this;
 
 	this = (output_file_ty *)fp;
-	return ftell(this->deeper);
+	return this->pos;
 }
 
 
-static void oputc _((output_ty *, int));
+static void output_file_write _((output_ty *, const void *, size_t));
 
 static void
-oputc(fp, c)
-	output_ty	*fp;
-	int		c;
-{
-	output_file_ty	*this;
-
-	this = (output_file_ty *)fp;
-	if (glue_fputc(c, this->deeper) == EOF)
-	{
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%s", this->filename);
-		fatal_intl(scp, i18n("write $filename: $errno"));
-		/* NOTREACHED */
-	}
-}
-
-
-static void owrite _((output_ty *, const void *s, size_t));
-
-static void
-owrite(fp, data, len)
+output_file_write(fp, data, len)
 	output_ty	*fp;
 	const void	*data;
 	size_t		len;
@@ -135,74 +108,162 @@ owrite(fp, data, len)
 	output_file_ty	*this;
 
 	this = (output_file_ty *)fp;
-	if (glue_fwrite(data, 1, len, this->deeper) == EOF)
+	if (glue_write(this->fd, data, len) < 0)
 	{
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%s", this->filename);
+		sub_var_set_string(scp, "File_Name", this->filename);
 		fatal_intl(scp, i18n("write $filename: $errno"));
 		/* NOTREACHED */
 	}
+	if (len > 0)
+		this->bol = (((char *)data)[len - 1] == '\n');
+	this->pos += len;
 }
+
+
+static int output_file_page_width _((output_ty *));
+
+static int
+output_file_page_width(fp)
+	output_ty	*fp;
+{
+	return option_page_width_get(DEFAULT_PRINTER_WIDTH);
+}
+
+
+static int output_file_page_length _((output_ty *));
+
+static int
+output_file_page_length(fp)
+	output_ty	*fp;
+{
+	return option_page_length_get(DEFAULT_PRINTER_LENGTH);
+}
+
+
+static void output_file_eoln _((output_ty *));
+
+static void
+output_file_eoln(fp)
+	output_ty	*fp;
+{
+	output_file_ty	*this;
+
+	this = (output_file_ty *)fp;
+	if (!this->bol)
+		output_fputc(fp, '\n');
+}
+
 
 
 static output_vtbl_ty vtbl =
 {
 	sizeof(output_file_ty),
+	output_file_destructor,
+	output_file_filename,
+	output_file_ftell,
+	output_file_write,
+	output_generic_flush,
+	output_file_page_width,
+	output_file_page_length,
+	output_file_eoln,
 	"file",
-	destructor,
-	filename,
-	otell,
-	oputc,
-	output_generic_fputs,
-	owrite,
 };
 
 
-static output_ty *output_file_open _((const char *, const char *));
+static int open_with_stale_nfs_retry _((const char *, int));
+
+static int
+open_with_stale_nfs_retry(path, mode)
+	const char	*path;
+	int		mode;
+{
+	int		fd;
+#ifdef ESTALE
+	int		ntries;
+	const int	nsecs = 5;
+#endif
+
+	/*
+	 * Try to open the file.
+	 */
+	errno = 0;
+	fd = glue_open(path, mode, 0666);
+
+	/*
+	 * Keep trying for one minute if we get a Stale NFS file handle
+	 * error.  Some systems suffer from this in a Very Bad Way.
+	 */
+#ifdef ESTALE
+	for (ntries = 0; ntries < 60; ntries += nsecs)
+	{
+		if (fd >= 0)
+			break;
+		if (errno != ESTALE)
+			break;
+		sleep(nsecs);
+		errno = 0;
+		fd = glue_open(path, mode);
+	}
+#endif
+
+	/*
+	 * Return the result, both success and failure.
+	 * Errors are handled elsewhere.
+	 */
+	return fd;
+}
+
+
+static output_ty *output_file_open _((string_ty *, int));
 
 static output_ty *
-output_file_open(fn, mode)
-	const char	*fn;
-	const char	*mode;
+output_file_open(fn, binary)
+	string_ty	*fn;
+	int		binary;
 {
 	output_ty	*result;
 	output_file_ty	*this;
+	int		mode;
 
-	if (!fn || !*fn)
+	if (!fn || !fn->str_length)
 		return output_stdout();
 	os_become_must_be_active();
 	result = output_new(&vtbl);
 	this = (output_file_ty *)result;
-	this->deeper = fopen_with_stale_nfs_retry(fn, mode);
-	if (!this->deeper)
+	mode = O_WRONLY | O_CREAT | O_TRUNC | (binary ? O_BINARY : O_TEXT);
+	this->fd = open_with_stale_nfs_retry(fn->str_text, mode);
+	if (this->fd < 0)
 	{
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%s", fn);
+		sub_var_set_string(scp, "File_Name", fn);
 		fatal_intl(scp, i18n("open $filename: $errno"));
 		/* NOTREACHED */
 	}
-	this->filename = mem_copy_string(fn);
+	this->filename = str_copy(fn);
+	this->bol = 1;
+	this->pos = 0;
 	return result;
 }
 
 
 output_ty *
 output_file_text_open(fn)
-	const char	*fn;
+	string_ty	*fn;
 {
-	return output_file_open(fn, "w");
+	return output_file_open(fn, 0);
 }
 
 
 output_ty *
 output_file_binary_open(fn)
-	const char	*fn;
+	string_ty	*fn;
 {
-	return output_file_open(fn, "wb");
+	return output_file_open(fn, 1);
 }

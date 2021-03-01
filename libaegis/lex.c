@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1996, 1998, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,10 +21,11 @@
  */
 
 #include <ac/ctype.h>
+#include <ac/errno.h>
+#include <ac/stdarg.h>
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
-#include <ac/stdarg.h>
-#include <ac/errno.h>
+#include <ac/string.h>
 
 #include <error.h>
 #include <input/crlf.h>
@@ -42,8 +43,6 @@
 
 
 static	input_ty	*input;
-static	int		line_number;
-static	int		line_number_start;
 static	int		error_count;
 extern	gram_STYPE	gram_lval;
 static	stracc_t	buffer;
@@ -51,7 +50,7 @@ static	stracc_t	buffer;
 
 void
 lex_open(s)
-	const char	*s;
+	string_ty	*s;
 {
 	input_ty	*fp;
 
@@ -95,7 +94,6 @@ lex_open_input(ifp)
 	input_ty	*ifp;
 {
 	input = ifp;
-	line_number = 1;
 }
 
 
@@ -107,8 +105,8 @@ lex_close()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%s", input_name(input));
-		sub_var_set(scp, "Number", "%d", error_count);
+		sub_var_set_string(scp, "File_Name", input_name(input));
+		sub_var_set_long(scp, "Number", error_count);
 		sub_var_optional(scp, "Number");
 		fatal_intl(scp, i18n("$filename: has errors"));
 		/* NOTREACHED */
@@ -118,53 +116,7 @@ lex_close()
 }
 
 
-static int lex_getc _((void));
-
-static int
-lex_getc()
-{
-	int		c;
-
-	c = input_getc(input);
-	switch (c)
-	{
-	case EOF:
-		break;
-
-	case '\n':
-		++line_number;
-		break;
-
-	default:
-		if (!isprint(c))
-		{
-			sub_context_ty	*scp;
-
-			scp = sub_context_new();
-			sub_var_set(scp, "Name", "\\%o", c);
-			lex_error(scp, i18n("illegal '$name' character"));
-			sub_context_delete(scp);
-		}
-		break;
-
-	case '\t':
-	case '\f':
-		break;
-	}
-	return c;
-}
-
-
-static void lex_getc_undo _((int));
-
-static void
-lex_getc_undo(c)
-	int		c;
-{
-	input_ungetc(input, c);
-	if (c == '\n')
-		--line_number;
-}
+#define lex_getc_undo(c) ((c) >= 0 ? input_ungetc(input, (c)) : (void)0)
 
 
 int
@@ -176,7 +128,7 @@ gram_lex()
 
 	for (;;)
 	{
-		c = lex_getc();
+		c = input_getc(input);
 		switch (c)
 		{
 		case ' ':
@@ -188,14 +140,14 @@ gram_lex()
 		case '0':
 			stracc_open(&buffer);
 			stracc_char(&buffer, '0');
-			c = lex_getc();
+			c = input_getc(input);
 			if (c == 'x' || c == 'X')
 			{
 				stracc_char(&buffer, c);
 				ndigits = 0;
 				for (;;)
 				{
-					c = lex_getc();
+					c = input_getc(input);
 					switch (c)
 					{
 					case '0': case '1': case '2': case '3':
@@ -240,7 +192,7 @@ gram_lex()
 				case '0': case '1': case '2': case '3':
 				case '4': case '5': case '6': case '7':
 					stracc_char(&buffer, c);
-					c = lex_getc();
+					c = input_getc(input);
 					continue;
 
 				default:
@@ -260,8 +212,10 @@ gram_lex()
 			for (;;)
 			{
 				stracc_char(&buffer, c);
-				c = lex_getc();
-				if (!isdigit(c))
+				c = input_getc(input);
+				if (c < 0)
+					break;
+				if (!isdigit((unsigned char)c))
 					break;
 			}
 			if (c == '.')
@@ -277,14 +231,14 @@ gram_lex()
 				strtoul(buffer.buffer, (char **)0, 10);
 			assert(gram_lval.lv_integer >= 0);
 			integer_return:
-			trace(("%s: %d: INTEGER %ld\n",
-				input_name(input), line_number,
+			trace(("%s: INTEGER %ld\n",
+				input_name(input),
 				gram_lval.lv_integer));
 			return INTEGER;
 
 		case '.':
-			c = lex_getc();
-			if (!isdigit(c))
+			c = input_getc(input);
+			if (c < 0 || !isdigit((unsigned char)c))
 			{
 				lex_getc_undo(c);
 				return '.';
@@ -296,8 +250,8 @@ gram_lex()
 			fraction:
 			for (;;)
 			{
-				c = lex_getc();
-				if (!isdigit(c))
+				c = input_getc(input);
+				if (c < 0 || !isdigit((unsigned char)c))
 					break;
 				stracc_char(&buffer, c);
 			}
@@ -305,17 +259,17 @@ gram_lex()
 			{
 				exponent:
 				stracc_char(&buffer, c);
-				c = lex_getc();
+				c = input_getc(input);
 				if (c == '+' || c == '-')
 				{
 					stracc_char(&buffer, c);
-					c = lex_getc();
+					c = input_getc(input);
 				}
 				ndigits = 0;
 				for (;;)
 				{
-					c = lex_getc();
-					if (!isdigit(c))
+					c = input_getc(input);
+					if (c < 0 || !isdigit((unsigned char)c))
 						break;
 					++ndigits;
 					stracc_char(&buffer, c);
@@ -324,36 +278,32 @@ gram_lex()
 				{
 					gram_error(i18n("malformed exponent"));
 					gram_lval.lv_real = 0;
-					trace(("%s: %d: REAL 0\n",
-						input_name(input),
-						line_number));
+					trace(("%s: REAL 0\n",
+						input_name(input)));
 					return REAL;
 				}
 			}
 			lex_getc_undo(c);
 			stracc_char(&buffer, 0);
 			gram_lval.lv_real = atof(buffer.buffer);
-			trace(("%s: %d: REAL %g\n",
-				input_name(input), line_number,
+			trace(("%s: REAL %g\n",
+				input_name(input),
 				gram_lval.lv_real));
 			return REAL;
 
 		case '"':
-			line_number_start = line_number;
 			stracc_open(&buffer);
 			for (;;)
 			{
-				c = lex_getc();
+				c = input_getc(input);
 				if (c == EOF)
 				{
 					str_eof:
-					line_number = line_number_start;
 					gram_error("end-of-file within string");
 					break;
 				}
 				if (c == '\n')
 				{
-					line_number = line_number_start;
 					gram_error("end-of-line within string");
 					break;
 				}
@@ -361,12 +311,12 @@ gram_lex()
 					break;
 				if (c == '\\')
 				{
-					c = lex_getc();
+					c = input_getc(input);
 					switch (c)
 					{
 					default:
 						scp = sub_context_new();
-						sub_var_set(scp, "Name", "\\%c", c);
+						sub_var_set_format(scp, "Name", "\\%c", c);
 						lex_error(scp, i18n("unknown '$name' escape"));
 						sub_context_delete(scp);
 						break;
@@ -412,7 +362,7 @@ gram_lex()
 							for (n = 0; n < 3; ++n)
 							{
 								v = v * 8 + c - '0';
-								c = lex_getc();
+								c = input_getc(input);
 								switch (c)
 								{
 								case '0':
@@ -440,8 +390,8 @@ gram_lex()
 					stracc_char(&buffer, c);
 			}
 			gram_lval.lv_string = stracc_close(&buffer);
-			trace(("%s: %d: STRING \"%s\"\n",
-				input_name(input), line_number,
+			trace(("%s: STRING \"%s\"\n",
+				input_name(input),
 				gram_lval.lv_string->str_text));
 			return STRING;
 
@@ -459,7 +409,7 @@ gram_lex()
 			for (;;)
 			{
 				stracc_char(&buffer, c);
-				c = lex_getc();
+				c = input_getc(input);
 				switch (c)
 				{
 				case '0': case '1': case '2': case '3':
@@ -493,31 +443,28 @@ gram_lex()
 				goto integer_return;
 			}
 			gram_lval.lv_string = stracc_close(&buffer);
-			trace(("%s: %d: NAME \"%s\"\n",
-				input_name(input), line_number,
+			trace(("%s: NAME \"%s\"\n",
+				input_name(input),
 				gram_lval.lv_string->str_text));
 			return NAME;
 
 		case '/':
-			line_number_start = line_number;
-			c = lex_getc();
+			c = input_getc(input);
 			if (c != '*')
 			{
 				lex_getc_undo(c);
-				trace(("%s: %d: '/'\n",
-					input_name(input),
-					line_number));
+				trace(("%s: '/'\n",
+					input_name(input)));
 				return '/';
 			}
 			for (;;)
 			{
 				for (;;)
 				{
-					c = lex_getc();
+					c = input_getc(input);
 					if (c == EOF)
 					{
 						bad_comment:
-						line_number = line_number_start;
 						gram_error("end-of-file within comment");
 						quit(1);
 					}
@@ -526,7 +473,7 @@ gram_lex()
 				}
 				for (;;)
 				{
-					c = lex_getc();
+					c = input_getc(input);
 					if (c == EOF)
 						goto bad_comment;
 					if (c != '*')
@@ -538,13 +485,11 @@ gram_lex()
 			break;
 
 		case EOF:
-			trace(("%s: %d: end of file\n",
-				input_name(input), line_number));
+			trace(("%s: end of file\n", input_name(input)));
 			return 0;
 
 		default:
-			trace(("%s: %d: '%c'\n", input_name(input),
-				line_number, c));
+			trace(("%s: '%c'\n", input_name(input), c));
 			return c;
 		}
 	}
@@ -573,15 +518,14 @@ lex_error(scp, s)
 	msg = subst_intl(scp, s);
 
 	/* re-use substitution context */
-	sub_var_set(scp, "Message", "%S", msg);
-	sub_var_set(scp, "File_Name", "%s", input_name(input));
-	sub_var_set(scp, "Number", "%d", line_number);
-	error_intl(scp, i18n("$filename: $number: $message"));
+	sub_var_set_string(scp, "Message", msg);
+	sub_var_set_string(scp, "File_Name", input_name(input));
+	error_intl(scp, i18n("$filename: $message"));
 	str_free(msg);
 	if (++error_count >= 20)
 	{
 		/* re-use substitution context */
-		sub_var_set(scp, "File_Name", "%s", input_name(input));
+		sub_var_set_string(scp, "File_Name", input_name(input));
 		fatal_intl(scp, i18n("$filename: too many errors"));
 	}
 }

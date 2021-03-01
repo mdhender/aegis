@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 1995, 1998 Peter Miller;
+.\"	Copyright (C) 1993-1995, 1998, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -98,6 +98,19 @@ architecture =
 .E)
 This would require that all changes build and test on each of
 the "sun4", "sun5", "sun5pc" and "convex" architectures.
+.LP
+It is also possible to have \fIoptional\fP architectures.
+This may be used to recognise an environment, but not mandate that it
+be built every time.
+.E(
+  {
+    name = "solaris-8-sparc";
+    pattern = "SunOS-5.8*-*-sun4*";
+    mode = optional;
+  },
+.E)
+However, once an architecture name appears in a change's architecture
+list, it is mandatory for that change.
 .LP
 If the \fIarchitecture\fP field does not appear in the
 project \fIconfig\fR file,

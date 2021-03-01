@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -501,7 +501,7 @@ type_name_by_pattern(abbrev)
 		if (arglex_compare(tp->pattern, abbrev->str_text))
 			return str_from_c(tp->name);
 	scp = sub_context_new();
-	sub_var_set(scp, "Name", "%S", abbrev);
+	sub_var_set_string(scp, "Name", abbrev);
 	fatal_intl(scp, i18n("file type $name unknown"));
 	/* NOTREACHED */
 	sub_context_delete(scp);

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -52,22 +52,35 @@ change_check_architectures(cp)
 		variant = cstate_data->architecture->list[j];
 		for (k = 0; k < pconf_data->architecture->length; ++k)
 		{
-			if
-			(
-				str_equal
-				(
-					variant,
-					pconf_data->architecture->list[k]->name
-				)
-			)
+			pconf_architecture ap;
+			ap = pconf_data->architecture->list[k];
+			if (str_equal(variant, ap->name))
+			{
+				if (ap->mode == pconf_architecture_mode_forbidden)
+				{
+					sub_context_ty	*scp;
+
+					scp = sub_context_new();
+					sub_var_set_string(scp, "Name", variant);
+					change_fatal
+					(
+						cp,
+						scp,
+					i18n("architecture \"$name\" forbidden")
+					);
+					/*NOTREACHED*/
+					sub_context_delete(scp);
+					++error_count;
+				}
 				break;
+			}
 		}
 		if (k >= pconf_data->architecture->length)
 		{
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%S", variant);
+			sub_var_set_string(scp, "Name", variant);
 			change_error(cp, scp, i18n("architecture \"$name\" unlisted"));
 			sub_context_delete(scp);
 			++error_count;
@@ -78,7 +91,7 @@ change_check_architectures(cp)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%d", error_count);
+		sub_var_set_long(scp, "Number", error_count);
 		sub_var_optional(scp, "Number");
 		change_fatal(cp, scp, i18n("found unlisted architectures"));
 		/* NOTREACHED */

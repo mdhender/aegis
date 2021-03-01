@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1994, 1998, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -119,6 +119,7 @@ gen_include(type)
 	);
 	indent_printf("struct %s\n", this->name->str_text);
 	indent_printf("{\n"/*}*/);
+	indent_printf("%s\1reference_count;\n", "long");
 	indent_printf("%s\1mask;\n", "unsigned long");
 	for (j = 0; j < this->nelements; ++j)
 	{
@@ -152,6 +153,13 @@ gen_include(type)
 			this->name->str_text
 		);
 	}
+	indent_printf
+	(
+		"%s %s_copy _((%s));\n",
+		this->name->str_text,
+		this->name->str_text,
+		this->name->str_text
+	);
 }
 
 
@@ -220,13 +228,24 @@ gen_code(type)
 			this->name->str_text
 		);
 	}
+	indent_printf
+	(
+		"assert(((%s)this)->reference_count > 0);\n",
+		this->name->str_text
+	);
+	indent_printf
+	(
+		"trace((\"rc = %%d;\\n\", ((%s)this)->reference_count));\n",
+		this->name->str_text
+	);
 	if (!this->toplevel)
 	{
 		indent_printf("if (name)\n");
-		indent_more();
-		indent_printf("output_fprintf(fp, \"%%s =\\n\", name);\n");
-		indent_less();
-		indent_printf("output_fprintf(fp, \"{\\n\"/*}*/);\n");
+		indent_printf("{\n"/*}*/);
+		indent_printf("output_fputs(fp, name);\n");
+		indent_printf("output_fputs(fp, \" =\\n\");\n");
+		indent_printf(/*{*/"}\n");
+		indent_printf("output_fputs(fp, \"{\\n\"/*}*/);\n");
 	}
 	for (j = 0; j < this->nelements; ++j)
 	{
@@ -237,10 +256,10 @@ gen_code(type)
 	}
 	if (!this->toplevel)
 	{
-		indent_printf("output_fprintf(fp, /*{*/\"}\");\n");
+		indent_printf("output_fputs(fp, /*{*/\"}\");\n");
 		indent_printf("if (name)\n");
 		indent_more();
-		indent_printf("output_fprintf(fp, \";\\n\");\n");
+		indent_printf("output_fputs(fp, \";\\n\");\n");
 		indent_less();
 	}
 	indent_printf("trace((/*{*/\"}\\n\"));\n");
@@ -269,6 +288,7 @@ gen_code(type)
 		"this = mem_alloc(sizeof(struct %s));\n",
 		this->name->str_text
 	);
+	indent_printf("this->reference_count = 1;\n");
 	indent_printf("this->mask = 0;\n");
 	for (j = 0; j < this->nelements; ++j)
 	{
@@ -277,6 +297,27 @@ gen_code(type)
 		ep = &this->element[j];
 		indent_printf("this->%s = 0;\n", ep->name->str_text);
 	}
+	indent_printf("trace((\"return %%08lX;\\n\", (long)this));\n");
+	indent_printf("trace((/*{*/\"}\\n\"));\n");
+	indent_printf("return this;\n");
+	indent_printf(/*{*/"}\n");
+
+	indent_putchar('\n');
+	indent_printf("%s\n", this->name->str_text);
+	indent_printf("%s_copy(this)\n", this->name->str_text);
+	indent_more();
+	indent_printf("%s\1this;\n", this->name->str_text);
+	indent_less();
+	indent_printf("{\n"/*}*/);
+	indent_printf
+	(
+		"trace((\"%s_copy()\\n{\\n\"/*}*/));\n",
+		this->name->str_text
+	);
+	indent_printf
+	(
+		"this->reference_count++;\n"
+	);
 	indent_printf("trace((\"return %%08lX;\\n\", (long)this));\n");
 	indent_printf("trace((/*{*/\"}\\n\"));\n");
 	indent_printf("return this;\n");
@@ -303,6 +344,12 @@ gen_code(type)
 	);
 	indent_putchar('\n');
 	indent_printf("if (!this)\n");
+	indent_more();
+	indent_printf("return;\n");
+	indent_less();
+	indent_printf("this->reference_count--;\n");
+	indent_printf("assert(this->reference_count >= 0);\n");
+	indent_printf("if (this->reference_count > 0)\n");
 	indent_more();
 	indent_printf("return;\n");
 	indent_less();
@@ -387,6 +434,11 @@ unsigned long *));\n",
 	);
 	indent_printf
 	(
+		"assert(((%s)this)->reference_count > 0);\n",
+		this->name->str_text
+	);
+	indent_printf
+	(
 		"assert(sizeof(%s) == sizeof(generic_struct_ty *));\n",
 		this->name->str_text
 	);
@@ -458,6 +510,11 @@ unsigned long *));\n",
 	indent_printf
 	(
 	    "trace((\"%s_convert(name = %%08lX)\\n{\\n\"/*}*/, (long)this));\n",
+		this->name->str_text
+	);
+	indent_printf
+	(
+		"assert(((%s)this)->reference_count > 0);\n",
 		this->name->str_text
 	);
 	indent_printf("result =\n");

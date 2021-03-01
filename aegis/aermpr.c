@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -99,6 +99,7 @@ remove_project_main()
 	int		still_exists;
 
 	trace(("remove_project_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
@@ -155,14 +156,7 @@ remove_project_main()
 	 * make sure it's not an alias
 	 */
 	if (gonzo_alias_to_actual(project_name))
-	{
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%S", project_name);
-		project_fatal(pp, scp, i18n("project alias $name exists"));
-		/* NOTREACHED */
-	}
+		fatal_project_alias_exists(project_name);
 	str_free(project_name);
 
 	/*
@@ -251,20 +245,13 @@ remove_project_main()
 void
 remove_project()
 {
-	trace(("remove_project()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		remove_project_main();
-		break;
+		{ arglex_token_help,		remove_project_help,	},
+		{ arglex_token_list,		remove_project_list,	},
+	};
 
-	case arglex_token_help:
-		remove_project_help();
-		break;
-
-	case arglex_token_list:
-		remove_project_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("remove_project()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), remove_project_main);
+	trace(("}\n"));
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,12 +32,14 @@
 #include <sys/stat.h>
 #include <ac/unistd.h>
 #include <ac/mntent.h>
+#include <ac/sys/clu.h>
 
 #include <error.h>
 #include <glue.h>
 #include <mem.h>
 #include <os.h>
 #include <str.h>
+#include <stracc.h>
 #include <str_list.h>
 #include <sub.h>
 #include <trace.h>
@@ -73,6 +75,29 @@ os_curdir_sub()
 	if (!s)
 	{
 		char	buffer[2000];
+		char	*pwd;
+
+		pwd = getenv("PWD");
+		if (pwd && *pwd == '/')
+		{
+			struct stat st1;
+			struct stat st2;
+
+			if
+			(
+				glue_stat(".", &st1) == 0
+			&&
+				glue_stat(pwd, &st2) == 0
+			&&
+				st1.st_dev == st2.st_dev
+			&&
+				st1.st_ino == st2.st_ino
+			)
+			{
+				s = str_from_c(pwd);
+				return s;
+			}
+		}
 
 		if (!glue_getcwd(buffer, sizeof(buffer)))
 		{
@@ -411,7 +436,12 @@ get_auto_mount_dirs(prefix)
 		str_free(p2);
 		if (err)
 			goto the_next_one;
-		if (st1.st_ino != st2.st_ino || st1.st_dev != st2.st_dev)
+		if
+		(
+			st1.st_ino != st2.st_ino
+		||
+			st1.st_dev != st2.st_dev
+		)						/*lint !e81*/
 			goto the_next_one;
 
 		/*
@@ -502,6 +532,106 @@ remove_automounter_prefix(path)
 	 */
 	return str_copy(path);
 }
+
+
+/*
+ * NAME
+ *	memb
+ *
+ * SYNOPSIS
+ *	string_ty *memb(void);
+ *
+ * DESCRIPTION
+ *	The memb function is used to determine the member name of an
+ *	OSF/1 cluster member name.
+ *
+ * CAVEAT
+ *	This is only meaningful on OSF/1
+ */
+
+#ifdef HAVE_CLU_INFO
+
+static string_ty *memb _((void));
+
+static string_ty *
+memb()
+{
+	static string_ty *result;
+	if (!result)
+	{
+		char name[MAXHOSTNAMELEN];
+		memberid_t my_id;
+
+		if
+		(
+			clu_info(CLU_INFO_MY_ID, &my_id) < 0
+		||
+			clu_info(CLU_INFO_NODENAME_BY_ID, my_id, name, sizeof(name)) < 0
+		)
+			result = str_from_c("member0");
+		else
+			result = str_from_c(name);
+	}
+	return result;
+}
+
+
+/*
+ * NAME
+ *	magic_memb_replace
+ *
+ * SYNOPSIS
+ *	string_ty *magic_memb_replace(string_ty *);
+ *
+ * DESCRIPTION
+ *	The magic_memb_replace function is used to replace instances
+ *	of "{memb}" in a symbolic link's value with the name of the
+ *	cluster member.
+ *
+ * CAVEAT
+ *	This is only meaningful on OSF/1
+ */
+
+static string_ty *magic_memb_replace _((string_ty *));
+
+static string_ty *
+magic_memb_replace(s)
+	string_ty	*s;
+{
+	static stracc_t	sa;
+	char		*cp;
+	char		*end;
+	char		*ep;
+
+	stracc_open(&sa);
+	cp = s->str_text;
+	end = s->str_text + s->str_length;
+	while (cp < end)
+	{
+		ep = memchr(cp, '{', end - cp);
+		if (!ep)
+		{
+			stracc_chars(&sa, cp, end - cp);
+			break;
+		}
+		if (ep > cp)
+		{
+			stracc_chars(&sa, cp, ep - cp);
+			cp = ep;
+		}
+		if (cp + 6 <= end && 0 == memcmp(cp, "{memb}", 6))
+		{
+			string_ty *name = memb();
+			stracc_chars(&sa, name->str_text, name->str_length);
+			cp += 6;
+		}
+		else
+			stracc_char(&sa, *cp++);
+	}
+	return stracc_close(&sa);
+}
+
+#endif
 
 
 /*
@@ -669,7 +799,7 @@ os_pathname(path, resolve)
 
 					scp = sub_context_new();
 					sub_errno_set(scp);
-					sub_var_set(scp, "File_Name", "%S", s);
+					sub_var_set_string(scp, "File_Name", s);
 					fatal_intl(scp, i18n("readlink $filename: $errno"));
 					/* NOTREACHED */
 				}
@@ -678,6 +808,7 @@ os_pathname(path, resolve)
 			else
 			{
 				string_ty	*newpath;
+				string_ty	*link1;
 	
 				if (nbytes == 0)
 				{
@@ -690,29 +821,58 @@ os_pathname(path, resolve)
 
 					scp = sub_context_new();
 					sub_errno_setx(scp, ELOOP);
-					sub_var_set(scp, "File_Name", "%S", s);
+					sub_var_set_string(scp, "File_Name", s);
 					fatal_intl(scp, i18n("readlink $filename: $errno"));
 					/* NOTREACHED */
 				}
-				pointer[nbytes] = 0;
-	
+				link1 = str_n_from_c(pointer, nbytes);
+#ifdef HAVE_CLU_INFO
+				{
+					string_ty	*link2;
+
+					/*
+					 * OSF/1 has magic symlinks,
+					 * where the string "{memb}"
+					 * is replaced by the cluster
+					 * member name.
+					 *
+					 * This is like the DG/UX "elink"
+					 * concept, where environment
+					 * variables can be substituted
+					 * into symlinks.
+					 */
+					link2 = magic_memb_replace(link1);
+					str_free(link1);
+					link1 = link2;
+				}
+#endif
 				str_free(s);
-				if (pointer[0] == '/')
-					tmp[1] = 0;
+				if (link1->str_text[0] == '/')
+				{
+					newpath =
+						str_format
+						(
+							"%s/%s",
+							link1->str_text,
+							path->str_text + ipos
+						);
+				}
 				else
 				{
 					while (tmp[opos - 1] != '/')
 						opos--;
 					tmp[opos] = 0;
+
+					newpath =
+						str_format
+						(
+							"%s/%s/%s",
+							tmp,
+							link1->str_text,
+							path->str_text + ipos
+						);
 				}
-				newpath =
-					str_format
-					(
-						"%s/%s/%s",
-						tmp,
-						pointer,
-						path->str_text + ipos
-					);
+				str_free(link1);
 				str_free(path);
 				path = newpath;
 				ipos = 0;

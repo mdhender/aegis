@@ -1,0 +1,420 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999-2002 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing lib/en/howto/developers
+.\"
+.nh 1 "Becoming an Aegis Developer"
+.LP
+This section describes how to become an Aegis developer,
+and gives some procedures, some ideas of areas which need work,
+and some general guidelines.
+.nh 2 "Required Software"
+.LP
+There are a number of pieces of software you will need to work on Aegis.
+.IP \(bu 2n
+It will probably come as no surprise that Aegis is developed using Aegis
+(never trust a skinny chef) so the first thing you need is to install
+Aegis and become familiar with using it.
+.IP \(bu 2n
+You will need to install Cook,
+in order to build things.
+Version 2.8 or later, preferably you should track the latest release.
+.IP \(bu 2n
+GNU autoconf 2.13.  Be careful on this one, I'm told 2.50 doesn't work.
+.IP \(bu 2n
+You will need to install FHist, for the history tool.
+.IP \(bu 2n
+You will need to install \fItardy\fP, for manipulating tarballs.
+.IP \(bu 2n
+You will need to install \fIptx\fP(1), for the permuted indexes in the
+documentation.
+.IP \(bu 2n
+You will need to install \fIpsutils\fP, for manipulating the pages output
+by groff.  This used to move the table of contents, which groff puts at
+the end, to the beginning where people want it.
+.IP \(bu 2n
+You will need the developer libraries for the \fIrx\fP library (if you
+installed from the tarball, you have these, but if you installed from RPM,
+you probably
+.IP \(bu 2n
+You will need the developer libraries for the \fIzlib\fP library (if you
+installed from the tarball, you have these, but if you installed from RPM,
+you probably don't).
+.IP \(bu 2n
+You need to install Bison, the GNU Yacc replacement.
+.IP \(bu 2n
+You need to GNU Gettext tools installed.  Even though Glibc 2.0 and
+later include gettext, you need to developer tools as well.  (You need
+GNU Gettext even on Solaris, because the Solaris Gettext implementation
+is... well... stuffed.)
+.IP \(bu 2n
+You need psutils (e.g. http://www.dcs.ed.ac.uk/home/ajcd/psutils/) for
+the psselect utility, to manipulate the doucmentation files, mostly to
+put the tables of contents at the start, rather than at the end as GNU
+Groff generates them.
+.IP \(bu 2n
+You need GNU Ghostscript, for tht ps2pdf utility, so that you can create
+PDF documents.
+.IP \(bu 2n
+You need \fIuuencode\fP with a \f[CW]-o\fP option (to redirect the output).
+It is part of GNU Sharutils.
+.IP \(bu 2n
+\fIProbably more things I've forgotten.\fP
+.nh 2 "Create The Aegis Project"
+.LP
+The next thing to do is create an Aegis project to hold the Aegis source.
+This is done in the usual way.  I suggest you create branches which
+match the current public release, \fIe.g.\fP it is \*(v) at present.
+.LP
+The best-practice technique of having a separate user account to mind
+the sources is recommended.  The following commands should be run as
+that user, not your usual login.  This prevents a variety of accidents
+which can happen when you are browsing the baseline (master source).
+.LP
+You could use the following command:
+.E(
+% \f(CBaenpr aegis.\*(v)\fP
+aegis: project "aegis": created
+aegis: project "aegis.\*(v)": created
+%
+.E)
+but experienced Aegis users will know that this means a laborious setting
+of project attributes.  It is easier to create the top-level project,
+set the attributes, and the create the branches, so that they inherit
+the attributes on creation.
+.E(
+% \f(CBaenpr aegis -version -\fP
+aegis: project "aegis": created
+% \f(CBaepa -e -p aegis\fP
+\fIedits the project attributes for single user\fP
+% \f(CBaena -p aegis\fP \f(CIyou\fP
+aegis: user "\f(CIyou\fP" is now a administrator
+% \f(CBaend -p aegis\fP \f(CIyou\fP
+aegis: user "\f(CIyou\fP" is now a developer
+% \f(CBaenrv -p aegis\fP \f(CIyou\fP
+aegis: user "\f(CIyou\fP" is now a reviewer
+% \f(CBaeni -p aegis\fP \f(CIyou\fP
+aegis: user "\f(CIyou\fP" is now an integrator
+.\" actually, two commands, one for each branch
+.\" how to do I get groff to split it by itself?
+% \f(CBaenbr -p aegis \*(v)\fP
+aegis: project "aegis.\*(v)": created
+%
+.E)
+.LP
+At this point, the rest of the commands in this chapter may (should!) be
+executed as ``\fIyou\fP,'' your usual login account.  When you added your
+normal account as an administrator just now, you authorized yourself to
+perform the necessary actions.
+.LP
+You will need about 120MB of free space to build and integrate Aegis
+changes, or more, depending on the changes you make and the size of your
+development directories.
+.LP
+The \fI\&.forward\fP file of the ``aegis'' user needs to be set to
+someone appropriate to read mail directed at the project.
+.LP
+You can now set the ``aegis'' user's password field to ``*''.  This
+effectively prevents the ``aegis'' user from logging in.  Aegis is
+designed to make this unnecessary from now on.
+.nh 2 "The Download"
+.LP
+The Aegis project is distributed in the form of an
+\fIaedist\fP(1) change set.  The file to download is called
+\f[CW]http://www.canb.auug.org.au\%/~millerp\%/aegis\%/aegis-\*(v).ae\fP
+and can be grabbed using your favorite web browser.
+.LP
+The downloaded change set is applied using the following command
+.E(
+% \f[CB]aedist --receive \e
+	-f aegis-\*(v).ae \e
+	-p aegis.\*(v)\fP
+\fI\&...lots of output...\fP
+%
+.E)
+.LP
+It is a good idea to give the project name on the command line, or
+\fIaedist\fP will try to use the project name it finds in the change set,
+and it probably wont find it if you are using different numbering to
+the chief maintainer's copy.
+.LP
+The \fIaedist\fP command will, in turn, issue a number of other
+commands.  These are all normal Aegis commands you could issue
+yourself, if you were familiar with Aegis.  It will, however,
+stop with a moderately alarming message:
+.LP
+.in +0.5i
+Warning: This change contains files which could host
+a Trojan horse attack.	You should review it before
+building it or testing it or completing development.
+This change remains in the being_developed state.
+.in -0.5i
+.LP
+This message comes because in order to build the project, you are
+going to have to execute a number of commands contained in the
+project \fIconfig\fP file, and in the \fIetc/Howto.cook\fP file.
+For your own protection, \fIaedist\fP stops at this point.  You may
+want to inspect these two files before continuing.
+.LP
+\fII really must get around to signing it with PGP.  This would make
+the \fI-notrojan\fP option safe, because you could tell the file is direct
+from the chief maintainer, and thus as trustable as you think the chief
+maintainer happens to be.\fP
+.LP
+In order to complete development of the change set, you must first
+build it...
+.E(
+% \f[CB]ae_p aegis.\*(v)\fP
+% \f[CB]aecd\fP
+% \f[CB]aeb\fP
+\fI\&...you will see commands which build the project...\fP
+%
+.E)
+.LP
+Things that can go wrong...
+.IP \(bu 2n
+If you don't have Cook installed, the build command (aeb) will fail.
+.IP \(bu 2n
+If you don't have GNU Bison installed, the build will fail.
+.IP \(bu 2n
+If you don't have Gettext installed, including the developer tools,
+the build will fail.
+.LP
+Once the change builds, you need to difference it (this is a
+little redundant for this first command, but you'll see how
+useful it is later).
+.E(
+% \f[CB]aed\fP
+\fI\&...you will see commands which "diff" the project...\fP
+%
+.E)
+.LP
+Things that can go wrong...
+.IP \(bu 2n
+If you don't have the FHist package installed, the difference (aed)
+will fail.  The \fIfcomp\fP command it is looking for is a whole-file
+context difference command (the GNU \f[CB]diff -c\fP is a bit too terse
+for humans).
+.LP
+Now you will need to test the change.
+This is the basic test suite for Aegis, it ensures nothing is broken.
+It takes a while, go grab a cup of coffee.
+.E(
+% \f[CB]aet\fP
+\fI\&...lots of output...\fP
+%
+.E)
+.LP
+The change is now ready to end development.
+.E(
+% \f[CB]aede\fP
+aegis: project "aegis.\*(v)": change 10:
+	development complete
+%
+.E)
+.LP
+The change set is now ready to be reviewed.  In a single-person
+project like this one, you can review your own work.  Obviously
+this is a conflict of interest, and larger projects are usually
+configured to have Aegis prevent this.
+.E(
+% \f[CB]aerpass -p aegis.\*(v) -c 10\fP
+aegis: project "aegis.\*(v)": change 10:
+	review pass
+%
+.E)
+.LP
+The change is now ready to be integrated.  Only when integration
+is complete are the files actually committed to the repository.
+.E(
+% \f[CB]aeib -p aegis.\*(v) -c 10\fP
+% \f[CB]aeb\fP
+\fI\&...you will see commands which build the project...\fP
+Integrator: please use the following command:
+  su1 -c "chown root \fIarch\fP/bin/aegis &&
+  chmod u+s \fIarch\fP/bin/aegis"
+%
+.E)
+.LP
+This message at the end of the build is where Aegis is made set-uid-root
+in the repository.  You want to do this, because you are going to symlink
+out of \fI/usr/local/bin\fP (or wherever you installed Aegis) right into
+the baseline.  In this way, you will be executing your bleeding-edge
+version of Aegis, exercising it before you send it to anyone else.
+Hang on a bit, that comes later.
+.LP
+If you don't have my \fIsu1\fP(1) command, just use \fIsu\fP(1) instead,
+or \fIsudo\fP or something.  Then continue with the integration...
+.E(
+% \f[CB]aed\fP
+\fI\&...you will see commands which "diff" the project...\fP
+% \f[CB]aet && aet -bl\fP
+\fI\&...lots of output...\fP
+% \f[CB]cd\fP
+% \f[CB]aeipass\fP
+\fI\&...you will see commands committing the files to fhist...\fP
+aegis: project "aegis.1.0": change 10:
+	integrate pass
+%
+.E)
+.LP
+The ``\fIcd\fP'' command you see is actually important: you need to
+be out of the development directory and integration directory
+so that they can be cleaned up (deleted) when the change completes.
+.nh 2 "The Bleeding Edge"
+.LP
+As I mentioned above, the next thing to do is create symbolic links out
+of \fI/usr/local/bin\fP into your Aegis baseline.  The reason for doing
+this is so that you exercise your Aegis changes by using Aegis before
+you send them to anyone else.  (Never trust a skinny chef.)
+.LP
+I use the following shell script...
+.E(
+#!/bin/sh
+project=aegis.\*(v)
+arch=linux-i486 # \fIset this to match your system\fP
+prefix=/usr/local
+bin=$prefix/bin # \fIset this to match your system\fP
+dir=`$ibin/aegis -cd -bl -p $project`
+test $? -eq 0 || exit 1
+bin=$dir/$arch/bin
+.E)
+.E(
+echo bin...
+cd $prefix/bin
+for f in aegis aereport aefind aerect \e
+	aesub tkaegis tkaeca tkaenc \e
+	aedist
+do
+	rm $f
+	ln -s $dir/$arch/bin/$f $f
+done
+.E)
+.E(
+echo lib...
+cd $prefix/lib/aegis
+for f in en
+do
+	rm -rf $f
+	ln -s $dir/$arch/lib/$f $f
+done
+for f in profile cshrc
+do
+	rm $f
+	ln -s $dir/$arch/lib/$f $f
+done
+.E)
+.E(
+echo share...
+cd $prefix/share/aegis
+for f in en/html report config.example wish
+do
+	rm -rf $f
+	mkdir $f
+.fi
+	ln -s `$bin/aefind -p $project -bl -baserel lib/$f -type f ! -name "*,*" ! -name "*.d" -print -resolve` $f/.
+.nf
+done
+for f in report.index aegis.icon aegis.mask
+do
+	rm $f
+.fi
+	ln -s `$bin/aefind -p $project -bl -baserel lib/$f -type f ! -name "*,*" ! -name "*.d" -print -resolve` $f
+.nf
+done
+.E)
+.E(
+echo web...
+cd /home/httpd/cgi-bin
+for f in aegis.cgi
+do
+	rm $f
+	ln -s $dir/$arch/lib/$f $f
+done
+.E)
+.nh 2 "Undiscovered Country"
+.LP
+If you got this far, your local Aegis project is ready for use.
+.LP
+It is strongly suggested that you complete the first change
+``as is'' and perform your own customizations in later changes,
+rather than trying to get the project started and customize it
+at the same time.
+.LP
+The rest of this file describes how to perform various common
+changes to the example project.
+.nh 2 "Sending Changes"
+.LP
+First, read the Distributed Development chapter of the User Guide.
+.LP
+Use a simple command such as
+.E(
+aedist -p aegis.\*(v) -bl | \e
+pgp | \e
+mail millerp@canb.auug.org.au
+.E)
+or similar.  (Or maybe \fIaepatch\fP(1) instead.)
+A suitable subject line would be very helpful.
+.nh 2 "Guidelines"
+.LP
+.nh 3 "What You Can Do"
+.LP
+Write more documentation.  There is a crying need for documentation of
+all sorts: better manual pages, more and better information in the User
+Guide, more and better HOWTOs.  If you work out how to do something,
+and it isn't in the documentation, write some documentation and put it
+in a change set because other folks have probably missed it too.
+.LP
+Add more ease-of-use functionality.  Stuff which makes the development
+process more efficient, or makes the information in the repository
+more accessible.
+.LP
+Extend the GUI.  All of the commands which manipulate the change whil
+ein the \fIbeing developed\fP state are candidates.  Some kind of wrapper
+that ties it all together would be good, too.  User preferences, project
+attributes and creating projects are candidates, too.
+.LP
+Most new project configuration things belong in the project \fIconfig\fP file.
+Only add new project attributes (aepa -e) for things which
+(a) are catch 22 to change in a change set, or
+(b) allow a security abuse if in a change set
+(e.g. the notify commands, particuly aede), or
+(c) allow the repository to be damaged.
+(My thanks to Ralf Fassel <ralf@akutech.de> 2 Feb 1999 for pointing this out.)
+.nh 3 "What You Can't Do"
+.LP
+You can't change Aegis' semantics.  Developers around the world, and
+their managers, rely on  Aegis working just the way it does right now.
+You can't change things that will compromise their ability to get
+things done.
+.LP
+Particularly, Aegis has a strong security story.  Availability, integrity
+and configentiality, and all that.  If you want it more flexible,
+that's good, but you can't change the defaults and you can't make it
+irretrievably weaker.
+.LP
+Aegis (the executable, not the whole package) is quite big enough.
+Don't add code to \fIarch\fP\f[CW]/bin/aegis\fP than can be done with
+the report generator, or as a separate program like \f[CW]aesub\fP or
+\f[CW]aefind\fP.  More GUI can be added using Tk/Tcl - unless you have
+grander plans and even then it \fIstill\fP shouldn't be added to the
+set-uid-root executable.
+.LP
+Probably need a GNU Indent profile for code formatting, too.
+.so devel_to_do.so

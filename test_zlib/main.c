@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -63,12 +63,12 @@ usage()
 }
 
 
-static void test_input _((const char *, const char *));
+static void test_input _((string_ty *, string_ty *));
 
 static void
 test_input(ifn, ofn)
-	const char	*ifn;
-	const char	*ofn;
+	string_ty	*ifn;
+	string_ty	*ofn;
 {
 	input_ty	*ifp;
 	output_ty	*ofp;
@@ -83,12 +83,12 @@ test_input(ifn, ofn)
 }
 
 
-static void test_output _((const char *, const char *));
+static void test_output _((string_ty *, string_ty *));
 
 static void
 test_output(ifn, ofn)
-	const char	*ifn;
-	const char	*ofn;
+	string_ty	*ifn;
+	string_ty	*ofn;
 {
 	input_ty	*ifp;
 	output_ty	*ofp;
@@ -111,9 +111,9 @@ main(argc, argv)
 	int		argc;
 	char		**argv;
 {
-	const char	*ifn;
-	const char	*ofn;
-	void		(*func)_((const char *, const char *));
+	string_ty	*ifn;
+	string_ty	*ofn;
+	void		(*func)_((string_ty *, string_ty *));
 
 	arglex_init(argc, argv, argtab);
 	str_initialize();
@@ -132,18 +132,18 @@ main(argc, argv)
 
 		case arglex_token_stdio:
 			if (!ifn)
-				ifn = "";
+				ifn = str_from_c("");
 			else if (!ofn)
-				ofn = "";
+				ofn = str_from_c("");
 			else
 				usage();
 			break;
 
 		case arglex_token_string:
 			if (!ifn)
-				ifn = arglex_value.alv_string;
+				ifn = str_from_c(arglex_value.alv_string);
 			else if (!ofn)
-				ofn = arglex_value.alv_string;
+				ofn = str_from_c(arglex_value.alv_string);
 			else
 				usage();
 			break;

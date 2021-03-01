@@ -110,7 +110,7 @@ to be dropped \- for for a star topology the maximum is 2.
 it off again.)
 (This doesn't always work, because the maintainer may edit it in some
 ways before comitting it, and forget to rip off (enough of) the header.)
-(This doesn't always work, because hierachical topologies will group
+(This doesn't always work, because hierarchical topologies will group
 change sets together.)
 (This doesn't always work, because a baseline pull will group change
 sets together.)

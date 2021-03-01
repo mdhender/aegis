@@ -29,5 +29,8 @@ output_ty *output_new _((output_vtbl_ty *));
 long output_generic_ftell _((output_ty *));
 void output_generic_fputs _((output_ty *, const char *));
 void output_generic_write _((output_ty *, const void *, size_t));
+void output_generic_flush _((output_ty *));
+int output_generic_page_width _((output_ty *));
+int output_generic_page_length _((output_ty *));
 
 #endif /* LIBAEGIS_OUTPUT_PRIVATE_H */

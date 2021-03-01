@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991-1993, 2001 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,16 +25,21 @@
 
 #include <main.h>
 
-void col_open _((char *));
-void col_close _((void));
-int col_create _((int, int));
-void col_puts _((int, char *));
-void col_printf _((int, char *, ...));
-void col_eoln _((void));
-void col_bol _((int));
-void col_heading _((int, char *));
-void col_title _((char *, char *));
-void col_eject _((void));
-void col_need _((int));
+struct string_ty; /* forward */
+
+typedef struct col_ty col_ty;
+struct col_ty
+{
+	struct col_vtbl_ty *vptr;
+};
+
+col_ty *col_open _((struct string_ty *filename));
+void col_close _((col_ty *p));
+struct output_ty *col_create _((col_ty *p, int left, int right,
+	const char *title));
+void col_title _((col_ty *, const char *, const char *));
+void col_eoln _((col_ty *));
+void col_need _((col_ty *, int));
+void col_eject _((col_ty *));
 
 #endif /* COL_H */

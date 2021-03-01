@@ -1,0 +1,61 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the lib/en/man1/tkaepa command.
+.\"
+.so z_name.so
+.ds n) tkaepa
+.TH "\*(n)" 1 \*(N) "Reference Manual" ""
+.SH NAME
+\*(n) \- GUI interface for aeca, using TCL/TK
+.XX "tkaeca(1)" "GUI interface for aeca, using TCL/TK"
+.SH SYNOPSIS
+.B \*(n)
+.SH DESCRIPTION
+The
+.I "\*(n)"
+command is used to provide a GUI interface to \fIaepa\fP(1).  Its use
+should be self-evident to anyone familiar with project administration
+under Aegis.
+.PP 
+The top line of the screen contains button for selecting the project
+The project will be defaulted whenever possible, using the usual Aegis.
+defaulting rules.  Click on the buttons to obtain a pick list if you
+want to change; then double-click an item to select it.
+.PP 
+There is a text entry areas for editing the \fIdescription\fP attribute.
+The lower section contains a number of checks boxes for the various
+attributes.
+.PP
+The ``OK'' and ``Cancel'' buttons do what you expect.  The cancel
+button simply quits.  The OK button runs the \fIaepa\fP(1) command \-
+if anything goes wrong the error message will be displayed in the message
+area at the bottom of the window.
+.SH OPTIONS
+There are no command line options.
+It is best to run this command in the background.
+.so z_exit.so
+.SH SEE ALSO
+.TP 8n
+.IR aepa (1)
+View and edit project attributes, from the command line.
+.TP 8n
+.IR tkaegis (1)
+GUI interface for Aegis, using TCL/TK
+.so z_cr.so

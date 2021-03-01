@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/unistd.h>
+#include <signal.h>
 
 #include <aeb.h>
 #include <aeca.h>
@@ -44,6 +45,7 @@
 #include <aeip.h>
 #include <ael.h>
 #include <aemv.h>
+#include <aemvu.h>
 #include <aena.h>
 #include <aenbr.h>
 #include <aenbru.h>
@@ -62,6 +64,8 @@
 #include <aepa.h>
 #include <aer.h>
 #include <aera.h>
+#include <aerb.h>
+#include <aerbu.h>
 #include <aerd.h>
 #include <aerf.h>
 #include <aeri.h>
@@ -120,6 +124,85 @@ main(argc, argv)
 	int		argc;
 	char		**argv;
 {
+	static arglex_dispatch_ty dispatch[] =
+	{
+		{ arglex_token_build,			build,		},
+		{ arglex_token_change_attributes,	change_attributes, },
+		{ arglex_token_change_directory,	change_directory, },
+		{ arglex_token_change_owner,		change_owner,	},
+		{ arglex_token_clean,			clean,		},
+		{ arglex_token_clone,			clone,		},
+		{ arglex_token_copy_file,		copy_file,	},
+		{ arglex_token_copy_file_undo,		copy_file_undo,	},
+		{ arglex_token_develop_begin,		develop_begin,	},
+		{ arglex_token_develop_begin_undo,	develop_begin_undo, },
+		{ arglex_token_develop_end,		develop_end,	},
+		{ arglex_token_develop_end_undo,	develop_end_undo, },
+		{ arglex_token_difference,		difference,	},
+		{ arglex_token_delta_name,		delta_name_assignment },
+		{ arglex_token_integrate_begin,		integrate_begin, },
+		{ arglex_token_integrate_begin_undo,	integrate_begin_undo, },
+		{ arglex_token_integrate_fail,		integrate_fail,	},
+		{ arglex_token_integrate_pass,		integrate_pass,	},
+		{ arglex_token_move_file,		move_file,	},
+		{ arglex_token_move_file_undo,		move_file_undo,	},
+		{ arglex_token_new_administrator,	new_administrator, },
+		{ arglex_token_new_branch,		new_branch,	},
+		{ arglex_token_new_branch_undo,		new_branch_undo, },
+		{ arglex_token_new_change,		new_change,	},
+		{ arglex_token_new_change_undo,		new_change_undo, },
+		{ arglex_token_new_developer,		new_developer,	},
+		{ arglex_token_new_file,		new_file,	},
+		{ arglex_token_new_file_undo,		new_file_undo,	},
+		{ arglex_token_new_integrator,		new_integrator,	},
+		{ arglex_token_new_project,		new_project,	},
+		{ arglex_token_new_release,		new_release,	},
+		{ arglex_token_new_reviewer,		new_reviewer,	},
+		{ arglex_token_new_test,		new_test,	},
+		{ arglex_token_new_test_undo,		new_test_undo,	},
+		{ arglex_token_project_attributes,	project_attributes, },
+		{ arglex_token_project_alias_create,	project_alias_create, },
+		{ arglex_token_project_alias_remove,	project_alias_remove, },
+		{ arglex_token_remove_administrator,	remove_administrator, },
+		{ arglex_token_remove_developer,	remove_developer, },
+		{ arglex_token_remove_file,		remove_file,	},
+		{ arglex_token_remove_file_undo,	remove_file_undo, },
+		{ arglex_token_remove_project,		remove_project,	},
+		{ arglex_token_remove_integrator,	remove_integrator, },
+		{ arglex_token_remove_reviewer,		remove_reviewer, },
+		{ arglex_token_report,			report,		},
+		{ arglex_token_review_begin,		review_begin,	},
+		{ arglex_token_review_begin_undo,	review_begin_undo, },
+		{ arglex_token_review_fail,		review_fail,	},
+		{ arglex_token_review_pass,		review_pass,	},
+		{ arglex_token_review_pass_undo,	review_pass_undo, },
+		{ arglex_token_test,			test,		},
+
+		/*
+		 * Then there are the more ambiguous arguments.
+		 * These are only considered if none of the above are
+		 * present on the command line (help least of all,
+		 * because everything has help).
+		 */
+		{ arglex_token_version,			version,	1, },
+		{ arglex_token_list,			list,		1, },
+		{ arglex_token_help,			main_help,	2, },
+	};
+
+	/*
+	 * Some versions of cron(8) set SIGCHLD to SIG_IGN.  This is
+	 * kinda dumb, because it breaks assumptions made in libc (like
+	 * pclose, for instance).  It also blows away most of Cook's
+	 * process handling.  We explicitly set the SIGCHLD signal
+	 * handling to SIG_DFL to make sure this signal does what we
+	 * expect no matter how we are invoked.
+	 */
+#ifdef SIGCHLD
+	signal(SIGCHLD, SIG_DFL);
+#else
+	signal(SIGCLD, SIG_DFL);
+#endif
+
 	r250_init();
 	os_become_init();
 	arglex2_init(argc, argv);
@@ -129,221 +212,9 @@ main(argc, argv)
 	quit_register(log_quitter);
 	quit_register(undo_quitter);
 	os_interrupt_register();
-	arglex();
-	for (;;)
-	{
-		switch (arglex_token)
-		{
-		default:
-			generic_argument(usage);
-			continue;
 
-		case arglex_token_build:
-			build();
-			break;
+	arglex_dispatch(dispatch, SIZEOF(dispatch), usage);
 
-		case arglex_token_change_attributes:
-			change_attributes();
-			break;
-
-		case arglex_token_change_directory:
-			change_directory();
-			break;
-
-		case arglex_token_change_owner:
-			change_owner();
-			break;
-
-		case arglex_token_clean:
-			clean();
-			break;
-
-		case arglex_token_clone:
-			clone();
-			break;
-
-		case arglex_token_copy_file:
-			copy_file();
-			break;
-
-		case arglex_token_copy_file_undo:
-			copy_file_undo();
-			break;
-
-		case arglex_token_develop_begin:
-			develop_begin();
-			break;
-
-		case arglex_token_develop_begin_undo:
-			develop_begin_undo();
-			break;
-
-		case arglex_token_develop_end:
-			develop_end();
-			break;
-
-		case arglex_token_develop_end_undo:
-			develop_end_undo();
-			break;
-
-		case arglex_token_difference:
-			difference();
-			break;
-
-		case arglex_token_delta:
-			delta_name_assignment();
-			break;
-
-		case arglex_token_help:
-			main_help();
-			break;
-
-		case arglex_token_integrate_begin:
-			integrate_begin();
-			break;
-
-		case arglex_token_integrate_begin_undo:
-			integrate_begin_undo();
-			break;
-
-		case arglex_token_integrate_fail:
-			integrate_fail();
-			break;
-
-		case arglex_token_integrate_pass:
-			integrate_pass();
-			break;
-
-		case arglex_token_list:
-			list();
-			break;
-
-		case arglex_token_move_file:
-			move_file();
-			break;
-
-		case arglex_token_new_administrator:
-			new_administrator();
-			break;
-
-		case arglex_token_new_branch:
-			new_branch();
-			break;
-
-		case arglex_token_new_branch_undo:
-			new_branch_undo();
-			break;
-
-		case arglex_token_new_change:
-			new_change();
-			break;
-
-		case arglex_token_new_change_undo:
-			new_change_undo();
-			break;
-
-		case arglex_token_new_developer:
-			new_developer();
-			break;
-
-		case arglex_token_new_file:
-			new_file();
-			break;
-
-		case arglex_token_new_file_undo:
-			new_file_undo();
-			break;
-
-		case arglex_token_new_integrator:
-			new_integrator();
-			break;
-
-		case arglex_token_new_project:
-			new_project();
-			break;
-
-		case arglex_token_new_release:
-			new_release();
-			break;
-
-		case arglex_token_new_reviewer:
-			new_reviewer();
-			break;
-
-		case arglex_token_new_test:
-			new_test();
-			break;
-
-		case arglex_token_new_test_undo:
-			new_test_undo();
-			break;
-
-		case arglex_token_project_attributes:
-			project_attributes();
-			break;
-
-		case arglex_token_project_alias_create:
-			project_alias_create();
-			break;
-
-		case arglex_token_project_alias_remove:
-			project_alias_remove();
-			break;
-
-		case arglex_token_remove_administrator:
-			remove_administrator();
-			break;
-
-		case arglex_token_remove_developer:
-			remove_developer();
-			break;
-
-		case arglex_token_remove_file:
-			remove_file();
-			break;
-
-		case arglex_token_remove_file_undo:
-			remove_file_undo();
-			break;
-
-		case arglex_token_remove_project:
-			remove_project();
-			break;
-
-		case arglex_token_remove_integrator:
-			remove_integrator();
-			break;
-
-		case arglex_token_remove_reviewer:
-			remove_reviewer();
-			break;
-
-		case arglex_token_report:
-			report();
-			break;
-
-		case arglex_token_review_fail:
-			review_fail();
-			break;
-
-		case arglex_token_review_pass:
-			review_pass();
-			break;
-
-		case arglex_token_review_pass_undo:
-			review_pass_undo();
-			break;
-
-		case arglex_token_test:
-			test();
-			break;
-
-		case arglex_token_version:
-			version();
-			break;
-		}
-		break;
-	}
 	quit(0);
 	return 0;
 }

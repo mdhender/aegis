@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1995-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -58,6 +58,8 @@ struct change_ty
 	struct symtab_ty *fstate_stp;
 	string_ty	*fstate_filename;
 	int		fstate_is_a_new_file;
+	string_ty	*top_path_unresolved;
+	string_ty	*top_path_resolved;
 	string_ty	*development_directory_unresolved;
 	string_ty	*development_directory_resolved;
 	string_ty	*integration_directory_unresolved;
@@ -86,8 +88,10 @@ cstate_history change_history_new _((change_ty *, struct user_ty *));
 string_ty *change_developer_name _((change_ty *));
 string_ty *change_reviewer_name _((change_ty *));
 string_ty *change_integrator_name _((change_ty *));
+void change_top_path_set _((change_ty *, string_ty *));
 void change_development_directory_set _((change_ty *, string_ty *));
 void change_integration_directory_set _((change_ty *, string_ty *));
+string_ty *change_top_path_get _((change_ty *, int));
 string_ty *change_development_directory_get _((change_ty *, int));
 string_ty *change_integration_directory_get _((change_ty *, int));
 string_ty *change_logfile_basename _((void));
@@ -98,25 +102,43 @@ void change_fatal _((change_ty *, struct sub_context_ty *, char *));
 void change_verbose _((change_ty *, struct sub_context_ty *, char *));
 string_ty *change_pconf_path_get _((change_ty *));
 pconf change_pconf_get _((change_ty *, int));
-void change_run_change_file_command _((change_ty *, struct string_list_ty *,
+void change_run_new_file_command _((change_ty *, struct string_list_ty *,
 	struct user_ty *));
+void change_run_new_file_undo_command _((change_ty *,
+	struct string_list_ty *, struct user_ty *));
+void change_run_new_test_command _((change_ty *, struct string_list_ty *,
+	struct user_ty *));
+void change_run_new_test_undo_command _((change_ty *,
+	struct string_list_ty *, struct user_ty *));
+void change_run_copy_file_command _((change_ty *, struct string_list_ty *,
+	struct user_ty *));
+void change_run_copy_file_undo_command _((change_ty *,
+	struct string_list_ty *, struct user_ty *));
+void change_run_remove_file_command _((change_ty *, struct string_list_ty *,
+	struct user_ty *));
+void change_run_remove_file_undo_command _((change_ty *,
+	struct string_list_ty *, struct user_ty *));
 int change_run_project_file_command_needed _((change_ty *));
 void change_run_project_file_command _((change_ty *, struct user_ty *));
 void change_run_forced_develop_begin_notify_command _((change_ty *,
 	struct user_ty *));
 void change_run_develop_end_notify_command _((change_ty *));
 void change_run_develop_end_undo_notify_command _((change_ty *));
+void change_run_review_begin_notify_command _((change_ty *));
+void change_run_review_begin_undo_notify_command _((change_ty *));
 void change_run_review_pass_notify_command _((change_ty *));
 void change_run_review_pass_undo_notify_command _((change_ty *));
 void change_run_review_fail_notify_command _((change_ty *));
 void change_run_integrate_pass_notify_command _((change_ty *));
 void change_run_integrate_fail_notify_command _((change_ty *));
-void change_run_history_get_command _((change_ty *cp, string_ty *file_name,
-	string_ty *edit_number, string_ty *output_file, struct user_ty *up));
-void change_run_history_create_command _((change_ty *cp, string_ty *file_name));
-void change_run_history_put_command _((change_ty *cp, string_ty *file_name));
+void change_run_history_get_command _((change_ty *cp, fstate_src src,
+	string_ty *output_file, struct user_ty *up));
+void change_run_history_create_command _((change_ty *cp, fstate_src));
+void change_run_history_put_command _((change_ty *cp, fstate_src));
 string_ty *change_run_history_query_command _((change_ty *cp,
 	string_ty *file_name));
+void change_run_history_label_command _((change_ty *cp, fstate_src,
+	string_ty *label));
 void change_history_trashed_fingerprints _((change_ty *, struct string_list_ty *));
 void change_run_diff_command _((change_ty *cp, struct user_ty *up,
 	string_ty *original, string_ty *input, string_ty *output));
@@ -126,18 +148,22 @@ void change_run_diff3_command _((change_ty *cp, struct user_ty *up,
 void change_run_merge_command _((change_ty *cp, struct user_ty *up,
 	string_ty *original, string_ty *most_recent, string_ty *input,
 	string_ty *output));
+void change_run_patch_diff_command _((change_ty *cp, struct user_ty *up,
+	string_ty *original, string_ty *input, string_ty *output,
+	string_ty *index_name));
 int change_has_merge_command _((change_ty *));
 void change_run_integrate_begin_command _((change_ty *));
+void change_run_integrate_begin_undo_command _((change_ty *));
 void change_run_develop_begin_command _((change_ty *, struct user_ty *));
+void change_run_develop_begin_undo_command _((change_ty *, struct user_ty *));
 int change_run_test_command _((change_ty *, struct user_ty *, string_ty *,
-	string_ty *, int));
+	string_ty *, int, int));
 int change_run_development_test_command _((change_ty *, struct user_ty *,
-	string_ty *, string_ty *, int));
+	string_ty *, string_ty *, int, int));
 void change_run_build_command _((change_ty *));
 void change_run_build_time_adjust_notify_command _((change_ty *));
 void change_run_development_build_command _((change_ty *, struct user_ty *,
 	struct string_list_ty *));
-void change_file_template _((change_ty *, string_ty *, struct user_ty *));
 string_ty *change_file_whiteout _((change_ty *, string_ty *));
 void change_file_whiteout_write _((change_ty *, string_ty *, struct user_ty *));
 void change_become _((change_ty *));
@@ -154,7 +180,7 @@ cstate_architecture_times change_architecture_times_find _((change_ty *,
 void change_build_time_set _((change_ty *));
 void change_test_time_set _((change_ty *, time_t));
 void change_test_baseline_time_set _((change_ty *, time_t));
-void change_regression_test_time_set _((change_ty *));
+void change_regression_test_time_set _((change_ty *, time_t));
 void change_test_times_clear _((change_ty *));
 void change_build_times_clear _((change_ty *));
 void change_architecture_from_pconf _((change_ty *));

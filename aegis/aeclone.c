@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998, 1999 Peter Miller;
+ *	Copyright (C) 1998-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 #include <aenc.h>
 #include <arglex2.h>
 #include <change.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <change/file.h>
 #include <commit.h>
 #include <error.h>
@@ -39,6 +39,7 @@
 #include <project.h>
 #include <project/file.h>
 #include <project_hist.h>
+#include <str_list.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -123,7 +124,7 @@ get_change_number()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%ld", cn);
+		sub_var_set_long(scp, "Number", cn);
 		fatal_intl(scp, i18n("change $number out of range"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -137,6 +138,7 @@ static void clone_main _((void));
 static void
 clone_main()
 {
+	string_ty	*s;
 	sub_context_ty	*scp;
 	string_ty	*project_name;
 	long		change_number;
@@ -158,8 +160,13 @@ clone_main()
 	int		grandparent;
 	int		mode;
 	char		*output;
+	string_list_ty	wl_nf;
+	string_list_ty	wl_nt;
+	string_list_ty	wl_cp;
+	string_list_ty	wl_rm;
 
 	trace(("clone_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	change_number = 0;
 	change_number2 = 0;
@@ -389,7 +396,7 @@ clone_main()
 		if (project_change_number_in_use(pp, change_number))
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "Number", "%ld", magic_zero_decode(change_number));
+			sub_var_set_long(scp, "Number", magic_zero_decode(change_number));
 			project_fatal(pp, scp, i18n("change $number used"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -406,8 +413,10 @@ clone_main()
 	if (cstate_data2->description)
 		cstate_data->description = str_copy(cstate_data2->description);
 	assert(cstate_data2->brief_description);
+	s = str_trim(cstate_data2->brief_description);
 	cstate_data->brief_description =
-		str_copy(cstate_data2->brief_description);
+		str_format("%S (clone of %S)", s, change_version_get(cp2));
+	str_free(s);
 	cstate_data->cause = cstate_data2->cause;
 	cstate_data->test_exempt = cstate_data2->test_exempt;
 	cstate_data->test_baseline_exempt =
@@ -429,6 +438,12 @@ clone_main()
 	cstate_data->state = cstate_state_awaiting_development;
 	history_data = change_history_new(cp, up);
 	history_data->what = cstate_history_what_new_change;
+	history_data->why =
+		str_format
+		(
+			"Cloned from change %d.",
+			magic_zero_decode(change_number2)
+		);
 
 	/*
 	 * Construct the name of the development directory.
@@ -441,7 +456,7 @@ clone_main()
 	{
 		scp = sub_context_new();
 		devdir = change_development_directory_template(cp, up);
-		sub_var_set(scp, "File_Name", "%S", devdir);
+		sub_var_set_string(scp, "File_Name", devdir);
 		change_verbose(cp, scp, i18n("development directory \"$filename\""));
 		sub_context_delete(scp);
 	}
@@ -540,6 +555,8 @@ clone_main()
 		src_data = change_file_new(cp, src_data2->file_name);
 		src_data->action = src_data2->action;
 		src_data->usage = src_data2->usage;
+		if (src_data2->move)
+			src_data->move = str_copy(src_data2->move);
 
 		/*
 		 * removed files aren't copied,
@@ -562,16 +579,17 @@ clone_main()
 			 * We could be creating the file, from the point
 			 * of view of this branch.
 			 */
-			assert(src_data2->edit_number);
-			if (p_src_data && src_data2->edit_number)
+			assert(src_data2->edit);
+			assert(src_data2->edit->revision);
+			if (p_src_data && src_data2->edit)
 			{
-				src_data->edit_number_origin =
-					str_copy(src_data2->edit_number);
+				src_data->edit_origin =
+					history_version_copy(src_data2->edit);
 			}
-			else if (p_src_data && p_src_data->edit_number)
+			else if (p_src_data && p_src_data->edit)
 			{
-				src_data->edit_number_origin =
-					str_copy(p_src_data->edit_number);
+				src_data->edit_origin =
+					history_version_copy(p_src_data->edit);
 			}
 			else
 				src_data->action = file_action_create;
@@ -591,14 +609,13 @@ clone_main()
 			os_unlink_errok(to);
 			user_become_undo();
 
-			/* 
+			/*
 			 * get the file from history
 			 */
 			change_run_history_get_command
 			(
 				cp2,
-				src_data2->file_name,
-				src_data2->edit_number,
+				src_data2,
 				to,
 				up
 			);
@@ -625,18 +642,23 @@ clone_main()
 			 * Otherwise, see if the file exists in the
 			 * project and copy the head revision number
 			 */
-			if (p_src_data && src_data2->edit_number_origin)
+			if (p_src_data && src_data2->edit_origin)
 			{
-				src_data->edit_number_origin =
-					str_copy(src_data2->edit_number_origin);
+				src_data->edit_origin =
+				   history_version_copy(src_data2->edit_origin);
 			}
-			else if (p_src_data && p_src_data->edit_number)
+			else if (p_src_data && p_src_data->edit)
 			{
-				src_data->edit_number_origin =
-					str_copy(p_src_data->edit_number);
+				src_data->edit_origin =
+					history_version_copy(p_src_data->edit);
 			}
 			else
 				src_data->action = file_action_create;
+			if (p_src_data && src_data2->edit_origin_new)
+			{
+			    src_data->edit_origin_new =
+			       history_version_copy(src_data2->edit_origin_new);
+			}
 
 			/*
 			 * construct the paths to the files
@@ -659,7 +681,7 @@ clone_main()
 			os_chmod(to, mode);
 			user_become_undo();
 
-			/* 
+			/*
 			 * clean up afterwards
 			 */
 			str_free(from);
@@ -694,7 +716,7 @@ clone_main()
 		if (*output)
 		{
 			string_ty	*fn;
-			
+
 			user_become(up);
 			fn = str_from_c(output);
 			file_from_string(fn, content, 0644);
@@ -722,6 +744,62 @@ clone_main()
 	change_run_develop_begin_command(cp, up);
 
 	/*
+	 * run the change file command
+	 * and the project file command if necessary
+	 */
+	string_list_constructor(&wl_nf);
+	string_list_constructor(&wl_nt);
+	string_list_constructor(&wl_cp);
+	string_list_constructor(&wl_rm);
+	for (j = 0; ; ++j)
+	{
+		fstate_src	c_src;
+
+		c_src = change_file_nth(cp, j);
+		if (!c_src)
+			break;
+		switch (c_src->action)
+		{
+		case file_action_create:
+			switch (c_src->usage)
+			{
+			case file_usage_test:
+			case file_usage_manual_test:
+				string_list_append(&wl_nt, c_src->file_name);
+				break;
+
+			case file_usage_source:
+			case file_usage_build:
+				string_list_append(&wl_nf, c_src->file_name);
+				break;
+			}
+			break;
+
+		case file_action_modify:
+		case file_action_insulate:
+			string_list_append(&wl_cp, c_src->file_name);
+			break;
+
+		case file_action_remove:
+			string_list_append(&wl_rm, c_src->file_name);
+			break;
+		}
+	}
+	if (wl_nf.nstrings)
+		change_run_new_file_command(cp, &wl_nf, up);
+	if (wl_nt.nstrings)
+		change_run_new_test_command(cp, &wl_nf, up);
+	if (wl_cp.nstrings)
+		change_run_copy_file_command(cp, &wl_nf, up);
+	if (wl_rm.nstrings)
+		change_run_remove_file_command(cp, &wl_nf, up);
+	string_list_destructor(&wl_nf);
+	string_list_destructor(&wl_nt);
+	string_list_destructor(&wl_cp);
+	string_list_destructor(&wl_rm);
+	change_run_project_file_command(cp, up);
+
+	/*
 	 * if symlinks are being used to pander to dumb DMT,
 	 * and they are not removed after each build,
 	 * create them now, rather than waiting for the first build.
@@ -740,7 +818,7 @@ clone_main()
 	 * verbose success message
 	 */
 	scp = sub_context_new();
-	sub_var_set(scp, "ORiginal", "%S", change_version_get(cp2));
+	sub_var_set_string(scp, "ORiginal", change_version_get(cp2));
 	sub_var_optional(scp, "ORiginal");
 	change_verbose(cp, scp, i18n("clone complete"));
 	sub_context_delete(scp);
@@ -758,20 +836,13 @@ clone_main()
 void
 clone()
 {
-	trace(("clone()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		clone_main();
-		break;
+		{ arglex_token_help,		clone_help,	},
+		{ arglex_token_list,		clone_list,	},
+	};
 
-	case arglex_token_help:
-		clone_help();
-		break;
-
-	case arglex_token_list:
-		clone_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("clone()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), clone_main);
+	trace(("}\n"));
 }

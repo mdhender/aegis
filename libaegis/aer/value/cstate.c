@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
 #include <aer/value/integer.h>
 #include <aer/value/list.h>
 #include <aer/value/null.h>
+#include <aer/value/pconf.h>
 #include <aer/value/string.h>
 #include <aer/value/struct.h>
 #include <change.h>
@@ -94,7 +95,7 @@ lookup(vp, rhs, lval)
 		string_ty	*s;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", rhs2->method->name);
+		sub_var_set_charstar(scp, "Name", rhs2->method->name);
 		rpt_value_free(rhs2);
 		s = subst_intl(scp, i18n("integer index required (was given $name)"));
 		sub_context_delete(scp);
@@ -153,6 +154,16 @@ lookup(vp, rhs, lval)
 	rpt_value_free(vp1);
 	name = str_from_c("change_number");
 	vp1 = rpt_value_integer(change_number);
+	rpt_value_struct__set(result, name, vp1);
+	str_free(name);
+	rpt_value_free(vp1);
+
+	/*
+	 * Add a special "config" field, which is a deferred reference
+	 * to the project config data.
+	 */
+	name = str_from_c("config");
+	vp1 = rpt_value_pconf(cp);
 	rpt_value_struct__set(result, name, vp1);
 	str_free(name);
 	rpt_value_free(vp1);

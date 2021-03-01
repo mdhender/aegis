@@ -1,0 +1,113 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2000, 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 3.23 features
+.\"
+.PP
+.if n *
+.if t \(bu
+.\" changes 33, 50 and 51
+There is a new \fIaeimport\fP(1) command, which may be used to import
+CVS archives into Aegis.
+.PP
+.if n *
+.if t \(bu
+.\" change 52
+The cross branch merge has been improved so that it uses an earlier
+version number than it was using, resulting in a more sensable merge.
+.PP
+.if n *
+.if t \(bu
+.\" change 39
+A bug has been fixed in the \fI${quote}\fP substitution which incorrectly
+quoted the exclamation mark (!).  Unfortunately, quoting isn't at all
+simple, because you can't exclusively use single quotes \fIor\fP double
+quotes \fIor\fP backslash.
+.PP
+.if n *
+.if t \(bu
+.\" change 37
+There is now a \fI${change description}\fP substitution, allowing you
+access to the brief description of a change in a substitution.
+(The suggested RCS history command have been changed to use it.)
+.PP
+.if n *
+.if t \(bu
+.\" change 33
+A Dutch localization of the error messages has been contributed.
+.PP
+.if n *
+.if t \(bu
+.\" change 29
+Project administrators can also use the \fIaeibu\fP(1) command.
+Handy for abandoned integrations which inconvenience everyone else.
+.PP
+.if n *
+.if t \(bu
+.\" change 25
+There is a new project \fIconfig\fP file field, called
+\f[CW]build_\%covers_\%all_\%architectures\fP, which allows you to tell
+Aegis that your build process can cover all architectures simultaneously.
+.PP
+.if n *
+.if t \(bu
+.\" changes 22 and 39
+The \fI${quote}\fP substitution has been fixed to correctly quote more
+characters.  It now prefers the single quote (but is is npt possible to
+use this exclusively).
+.PP
+.if n *
+.if t \(bu
+.\" change 19
+The web site now uses PDF files for documentation, rather than gzipped
+PostScript.  This was for lots of reasons, including the fact theat many
+folks couldn't work out how to print them,
+and also IE decompressed them ``for free'' but left the .gz suffix.
+.PP
+.if n *
+.if t \(bu
+.\" change 18
+The report generator, \fIaereport\fP(1), can now access fields of the
+\fI.aegisrc\fP file.  This is important for accessing the preferred
+email address in various reports.
+.if n *
+.if t \(bu
+.\" change 17
+The ``\fIaecp -delta\fP'' command now adds removed files to the change
+as removed files instead of adding them as copied-but-empty files.
+This should make reproducing projects more accurate, but you need to
+use \fIaermu\fP(1) to get rid of them ,rather than \fIaecpu\fP(1).
+.PP
+.if n *
+.if t \(bu
+.\" change 16
+The \fIaedist\fP program now adds a ``Content-Disposition'' header to
+the files it generates.  This means MIME programs will unpack it into
+a correctly named file more often.
+.PP
+Numerous build problems have been fixed,
+both for Unix and for Cygwin (Windows).
+There have benn some test script improvements, too.
+.PP
+Contributions have started to roll in using the ``aedist'' format.  This is
+very encouraging.  The instructions for how to do this are contained in
+the ``Howto'', in the \fIDeveloper\fP section.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 3.23

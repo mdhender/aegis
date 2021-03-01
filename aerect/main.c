@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 1999, 2000 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,6 +39,7 @@ enum
 {
 	arglex_token_bevel = ARGLEX2_MAX,
 	arglex_token_color,
+	arglex_token_label,
 	arglex_token_mime,
 	arglex_token_mime_not,
 	ARGLEX3_MAX
@@ -49,6 +50,7 @@ static arglex_table_ty argtab[] =
 	{ "_Bevel",	arglex_token_bevel,	},
 	{ "_Color",	arglex_token_color,	},
 	{ "_Colour",	arglex_token_color,	},
+	{ "_Label",	arglex_token_label,	},
 	{ "-Mime",	arglex_token_mime,	},
 	{ "-No_Mime",	arglex_token_mime_not,	},
 	ARGLEX_END_MARKER
@@ -101,7 +103,7 @@ get_bevel_size()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%d", n);
+		sub_var_set_long(scp, "Number", n);
 		error_intl(scp, i18n("bevel size $number out of range"));
 		rect_usage();
 	}
@@ -133,7 +135,7 @@ get_color_component()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%d", n);
+		sub_var_set_long(scp, "Number", n);
 		error_intl(scp, i18n("color component $number out of range"));
 		rect_usage();
 	}
@@ -153,6 +155,7 @@ main(argc, argv)
 	int		height;
 	char		*outfile;
 	int		r, g, b;
+	char		*label;
 
 	r250_init();
 	os_become_init_mortal();
@@ -167,6 +170,7 @@ main(argc, argv)
 	width = 0;
 	height = 0;
 	outfile = 0;
+	label = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -223,6 +227,25 @@ main(argc, argv)
 			rect_color(r, g, b);
 			break;
 
+		case arglex_token_label:
+			switch (arglex())
+			{
+			default:
+				option_needs_string
+				(
+					arglex_token_output,
+					rect_usage
+				);
+				rect_usage();
+				/*NOTREACHED*/
+
+			case arglex_token_string:
+			case arglex_token_number:
+				label = arglex_value.alv_string;
+				break;
+			}
+			break;
+
 		case arglex_token_mime:
 			rect_mime(1);
 			break;
@@ -239,7 +262,7 @@ main(argc, argv)
 		height = width;
 	if (!width || !height)
 		fatal_intl(0, i18n("no size specified"));
-	rect(outfile, width, height);
+	rect(outfile, width, height, label);
 	exit(0);
 	return 0;
 }

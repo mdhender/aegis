@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@
 #include <ael/change/default.h>
 #include <ael/change/details.h>
 #include <ael/change/files.h>
+#include <ael/change/file_history.h>
 #include <ael/change/history.h>
 #include <ael/change/inappropriat.h>
 #include <ael/change/outstanding.h>
@@ -39,6 +40,7 @@
 #include <ael/column_width.h>
 #include <ael/formeditnum.h>
 #include <ael/locks.h>
+#include <output.h>
 #include <ael/project/administrato.h>
 #include <ael/project/aliases.h>
 #include <ael/project/default.h>
@@ -89,6 +91,11 @@ static	table_ty	table[] =
 		"Change_Files",
 		"List all files in a change",
 		list_change_files,
+	},
+	{
+		"Change_File_History",
+		"List the history of all files in a change.",
+		list_change_file_history,
 	},
 	{
 		"Change_History",
@@ -244,6 +251,7 @@ list_main()
 	long		change_number;
 
 	trace(("list_main()\n{\n"));
+	arglex();
 	listname = 0;
 	project_name = 0;
 	change_number = 0;
@@ -277,7 +285,7 @@ list_main()
 			else if (change_number < 1)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -307,7 +315,7 @@ list_main()
 	{
 	case 0:
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", listname);
+		sub_var_set_charstar(scp, "Name", listname);
 		fatal_intl(scp, i18n("no $name list"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -325,8 +333,8 @@ list_main()
 			s1 = s2;
 		}
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", listname);
-		sub_var_set(scp, "Name_List", "%S", s1);
+		sub_var_set_charstar(scp, "Name", listname);
+		sub_var_set_string(scp, "Name_List", s1);
 		str_free(s1);
 		sub_var_optional(scp, "Name_List");
 		fatal_intl(scp, i18n("list $name ambiguous"));
@@ -343,21 +351,14 @@ list_main()
 void
 list()
 {
-	trace(("list()\n{\n"));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		list_main();
-		break;
+		{ arglex_token_help,		list_help,	},
+		{ arglex_token_list,		list_list,	},
+	};
 
-	case arglex_token_help:
-		list_help();
-		break;
-
-	case arglex_token_list:
-		list_list();
-		break;
-	}
+	trace(("list()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), list_main);
 	trace(("}\n"));
 }
 
@@ -369,9 +370,10 @@ list_list_list(project_name, change_number)
 	string_ty	*project_name;
 	long		change_number;
 {
-	int		name_col = 0;
-	int		desc_col = 0;
+	output_ty	*name_col = 0;
+	output_ty	*desc_col = 0;
 	table_ty	*tp;
+	col_ty		*colp;
 
 	trace(("list_list_list()\n{\n"));
 	if (project_name)
@@ -382,14 +384,19 @@ list_list_list(project_name, change_number)
 	/*
 	 * create the columns
 	 */
-	col_open((char *)0);
-	col_title("List of Lists", (char *)0);
-	name_col = col_create(0, 15);
-	col_heading(name_col, "Name\n------");
+	colp = col_open((string_ty *)0);
+	col_title(colp, "List of Lists", (const char *)0);
+	name_col = col_create(colp, 0, 15, "Name\n------");
 	if (!option_terse_get())
 	{
-		desc_col = col_create(16, 0);
-		col_heading(desc_col, "Description\n-------------");
+		desc_col =
+			col_create
+			(
+				colp,
+				16,
+				0,
+				"Description\n-------------"
+			);
 	}
 
 	/*
@@ -397,15 +404,15 @@ list_list_list(project_name, change_number)
 	 */
 	for (tp = table; tp < ENDOF(table); ++tp)
 	{
-		col_puts(name_col, tp->name);
-		if (!option_terse_get())
-			col_puts(desc_col, tp->description);
-		col_eoln();
+		output_fputs(name_col, tp->name);
+		if (desc_col)
+			output_fputs(desc_col, tp->description);
+		col_eoln(colp);
 	}
 
 	/*
 	 * clean up and go home
 	 */
-	col_close();
+	col_close(colp);
 	trace(("}\n"));
 }

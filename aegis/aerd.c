@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1998, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -64,11 +64,10 @@ remove_developer_help()
 }
 
 
-static void remove_developer_list _((void (*)(void)));
+static void remove_developer_list _((void));
 
 static void
-remove_developer_list(usage)
-	void		(*usage)_((void));
+remove_developer_list()
 {
 	string_ty	*project_name;
 
@@ -80,14 +79,14 @@ remove_developer_list(usage)
 		switch (arglex_token)
 		{
 		default:
-			generic_argument(usage);
+			generic_argument(remove_developer_usage);
 			continue;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				option_needs_name(arglex_token_project, usage);
+				option_needs_name(arglex_token_project, remove_developer_usage);
 			if (project_name)
-				duplicate_option_by_name(arglex_token_project, usage);
+				duplicate_option_by_name(arglex_token_project, remove_developer_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -111,6 +110,7 @@ remove_developer_main()
 	user_ty		*up;
 
 	trace(("remove_developer_main()\n{\n"/*}*/));
+	arglex();
 	string_list_constructor(&wl);
 	project_name = 0;
 	while (arglex_token != arglex_token_eoln)
@@ -133,7 +133,7 @@ remove_developer_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Name", "%S", s1);
+				sub_var_set_string(scp, "Name", s1);
 				fatal_intl(scp, i18n("too many user $name"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -194,15 +194,15 @@ remove_developer_main()
 	 */
 	for (j = 0; j < wl.nstrings; ++j)
 	{
-		user_ty	*candidate;
+		string_ty	*name;
 
-		candidate = user_symbolic(pp, wl.string[j]);
-		if (!project_developer_query(pp, user_name(candidate)))
+		name = wl.string[j];
+		if (!project_developer_query(pp, name))
 		{
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%S", user_name(candidate));
+			sub_var_set_string(scp, "Name", name);
 			project_fatal
 			(
 				pp,
@@ -212,8 +212,7 @@ remove_developer_main()
 			/* NOTREACHED */
 			sub_context_delete(scp);
 		}
-		project_developer_remove(pp, user_name(candidate));
-		user_free(candidate);
+		project_developer_remove(pp, name);
 	}
 
 	/*
@@ -231,7 +230,7 @@ remove_developer_main()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%S", wl.string[j]);
+		sub_var_set_string(scp, "Name", wl.string[j]);
 		project_verbose(pp, scp, i18n("remove developer $name complete"));
 		sub_context_delete(scp);
 	}
@@ -244,20 +243,13 @@ remove_developer_main()
 void
 remove_developer()
 {
-	trace(("remove_developer()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		remove_developer_main();
-		break;
+		{ arglex_token_help,		remove_developer_help,	},
+		{ arglex_token_list,		remove_developer_list,	},
+	};
 
-	case arglex_token_help:
-		remove_developer_help();
-		break;
-
-	case arglex_token_list:
-		remove_developer_list(remove_developer_usage);
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("remove_developer()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), remove_developer_main);
+	trace(("}\n"));
 }

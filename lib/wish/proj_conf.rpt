@@ -1,0 +1,190 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2001 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the lib/wish/proj_conf.rpt
+ */
+columns({ width = 1000; });
+auto cs;
+cs = project[project_name()].state.branch.change[change_number()];
+
+print("set build_command \"" ##
+	quote_tcl(cs.config.build_command) ## "\"");
+print("set development_build_command \"" ##
+	quote_tcl(cs.config.development_build_command) ## "\"");
+print("set build_time_adjust_notify_command \"" ##
+	quote_tcl(cs.config.build_time_adjust_notify_command) ## "\"");
+print("set build_covers_all_architectures " ## (0 +
+	cs.config.build_covers_all_architectures));
+print("set change_file_command \"" ##
+	quote_tcl(cs.config.change_file_command) ## "\"");
+print("set change_file_undo_command \"" ##
+	quote_tcl(cs.config.change_file_undo_command) ## "\"");
+print("set project_file_command \"" ##
+	quote_tcl(cs.config.project_file_command) ## "\"");
+print("set develop_begin_command \"" ##
+	quote_tcl(cs.config.develop_begin_command) ## "\"");
+print("set integrate_begin_command \"" ##
+	quote_tcl(cs.config.integrate_begin_command) ## "\"");
+print("set link_integration_directory " ## (0 +
+	cs.config.link_integration_directory));
+
+/*
+integrate_begin_exceptions = [ string ];
+*/
+
+print("set create_symlinks_before_build " ## (0 +
+	cs.config.create_symlinks_before_build));
+print("set create_symlinks_before_integration_build " ## (0 +
+	cs.config.create_symlinks_before_integration_build));
+print("set remove_symlinks_after_build " ## (0 +
+	cs.config.remove_symlinks_after_build));
+print("set remove_symlinks_after_integration_build " ## (0 +
+	cs.config.remove_symlinks_after_integration_build));
+
+/*
+symlink_exceptions = [ string ];
+*/
+
+print("set history_create_command \"" ##
+	quote_tcl(cs.config.history_create_command) ## "\"");
+print("set history_get_command \"" ##
+	quote_tcl(cs.config.history_get_command) ## "\"");
+print("set history_put_command \"" ##
+	quote_tcl(cs.config.history_put_command) ## "\"");
+print("set history_query_command \"" ##
+	quote_tcl(cs.config.history_query_command) ## "\"");
+print("set history_put_trashes_file \"" ##
+	cs.config.history_put_trashes_file ## "\"");
+print("set history_content_limitation \"" ##
+	cs.config.history_content_limitation ## "\"");
+print("set diff_command \"" ##
+	quote_tcl(cs.config.diff_command) ## "\"");
+print("set merge_command \"" ##
+	quote_tcl(cs.config.merge_command) ## "\"");
+print("set patch_diff_command \"" ##
+	quote_tcl(cs.config.patch_diff_command) ## "\"");
+print("set test_command \"" ##
+	quote_tcl(cs.config.test_command) ## "\"");
+print("set development_test_command \"" ##
+	quote_tcl(cs.config.development_test_command) ## "\"");
+print("set batch_test_command \"" ##
+	quote_tcl(cs.config.batch_test_command) ## "\"");
+
+/*
+architecture =
+[
+	{
+		name = string;
+		pattern = string;
+		mode = (required, optional, forbidden);
+	}
+];
+
+file_template =
+[
+	{
+		pattern = [ string ];
+		body = string;
+		body_command = string;
+	}
+];
+
+whiteout_template =
+[
+	{
+		pattern = [ string ];
+		body = string;
+	}
+];
+*/
+
+print("set maximum_filename_length " ##
+	cs.config.maximum_filename_length);
+print("set posix_filename_charset " ## (0 +
+	cs.config.posix_filename_charset));
+print("set dos_filename_required " ## (0 +
+	cs.config.dos_filename_required));
+print("set windows_filename_required " ## (0 +
+	cs.config.windows_filename_required));
+print("set shell_safe_filenames " ## (0 +
+	cs.config.shell_safe_filenames));
+
+/*
+filename_pattern_accept = [ string ];
+
+filename_pattern_reject = [ string ];
+*/
+
+print("set new_test_filename \"" ##
+	quote_tcl(cs.config.new_test_filename) ## "\"");
+print("set development_directory_template \"" ##
+	quote_tcl(cs.config.development_directory_template) ## "\"");
+print("set metrics_filename_pattern \"" ##
+	quote_tcl(cs.config.metrics_filename_pattern) ## "\"");
+
+/*
+trojan_horse_suspect = [ string ];
+
+project_specific =
+[
+	{
+		name = string;
+		value = string;
+	}
+];
+*/
+
+auto f, cfg;
+cfg = 0;
+for (f in cs.src)
+{
+	if (f.file_name == "config")
+	{
+		cfg =1;
+		break;
+	}
+}
+print("set change_contains_config_file " ## cfg);
+print("set change_state \"" ## cs.state ## "\"");
+
+auto paras, para_len, para_n;
+paras = split(cs.brief_description, "\n");
+para_len = count(paras);
+if (para_len < 1)
+	para_len = 1;
+while (para_len >= 2 && paras[para_len - 1] == "")
+	para_len = para_len - 1;
+for (para_n = 0; para_n < para_len; para_n = para_n + 1)
+{
+	auto para_begin, para_end;
+	para_begin = (para_n == 0 ? "set brief_description \"" : "");
+	para_end = (para_n == (para_len - 1) ? "\"" : "");
+	auto lines, line_len, line_n;
+	lines = wrap(quote_tcl(paras[para_n]), 75);
+	line_len = count(lines);
+	if (line_len < 1)
+		line_len = 1;
+	for (line_n = 0; line_n < line_len; line_n = line_n + 1)
+	{
+		auto line_begin, line_end;
+		line_begin = (line_n == 0 ? para_begin : "");
+		line_end = (line_n == (line_len - 1) ? para_end : "\\");
+		print(line_begin ## lines[line_n] ## line_end);
+	}
+}

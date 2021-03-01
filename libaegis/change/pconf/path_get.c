@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -54,6 +54,7 @@ change_pconf_path_get(cp)
 			switch (cstate_data->state)
 			{
 			case cstate_state_being_developed:
+			case cstate_state_awaiting_review:
 			case cstate_state_being_reviewed:
 			case cstate_state_awaiting_integration:
 				dir = change_development_directory_get(cp, 0);

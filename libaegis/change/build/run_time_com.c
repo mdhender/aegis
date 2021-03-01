@@ -39,7 +39,8 @@ change_run_build_time_adjust_notify_command(cp)
 
 	assert(cp->reference_count >= 1);
 	assert(cp->cstate_data);
-	assert(cp->cstate_data->state == cstate_state_being_integrated);
+	/* happens during aeipass, but after state is set to completed */
+	assert(cp->cstate_data->state == cstate_state_completed);
 	pconf_data = change_pconf_get(cp, 1);
 	assert(pconf_data);
 	the_command = pconf_data->build_time_adjust_notify_command;

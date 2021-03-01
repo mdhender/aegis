@@ -1,7 +1,8 @@
 #!/bin/sh
+#-*-tcl-*-
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1999 Peter Miller;
+#	Copyright (C) 1999, 2000, 2001 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -26,7 +27,7 @@
 exec wish $0 ${1+"$@"}
 
 set bindir @bindir@
-set libdir @bindir@
+set libdir @libdir@
 set datadir @datadir@
 
 wm title . Aeca
@@ -237,8 +238,8 @@ pack .desc.label -side top -anchor w
 text .desc.text -height 8 -yscrollcommand ".desc.scroll set" -wrap word -spacing3 5
 scrollbar .desc.scroll -command ".desc.text yview"
 pack .desc.scroll -side right -fill y
-pack .desc.text -side bottom
-pack .desc -fill x
+pack .desc.text -side bottom -fill both -expand 1
+pack .desc -fill both -expand 1
 
 frame .bottom
 
@@ -292,8 +293,8 @@ frame .info
 text .info.blurb -height 3 -yscrollcommand ".info.scroll set" -wrap word -borderwidth 1
 scrollbar .info.scroll -command ".info.blurb yview" -borderwidth 1
 pack .info.scroll -side right -fill y
-pack .info.blurb -side left
-pack .info -side bottom -fill x
+pack .info.blurb -side left -fill both -expand 1
+pack .info -side bottom -fill both -expand 1
 
 #
 # Ask Aegis for the list of projects names.  We use a specialized report
@@ -353,7 +354,7 @@ proc apply { } {
 	set errorCode 0
 	catch { eval exec $command } errcode
 	set errorCode2 $errorCode
-	catch { exec [format "rm %s" $filename] } errcode2
+	catch { exec rm -f $filename } errcode2
 	if { $errorCode != 0 } {
 		inform $errcode
 	} {

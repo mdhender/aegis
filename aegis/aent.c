@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@
 #include <ael/project/files.h>
 #include <aent.h>
 #include <arglex2.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <change/file.h>
 #include <col.h>
 #include <commit.h>
@@ -110,7 +110,7 @@ new_test_list()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -158,8 +158,10 @@ new_test_main()
 	string_ty	*config_name;
 	log_style_ty	log_style;
 	char		*output;
+	int		use_template;
 
 	trace(("new_test_main()\n{\n"/*}*/));
+	arglex();
 	manual_flag = 0;
 	automatic_flag = 0;
 	project_name = 0;
@@ -167,6 +169,7 @@ new_test_main()
 	log_style = log_style_append_default;
 	string_list_constructor(&wl);
 	output = 0;
+	use_template = -1;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -203,7 +206,7 @@ new_test_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -262,6 +265,13 @@ new_test_main()
 				output = "";
 				break;
 			}
+			break;
+
+		case arglex_token_template:
+		case arglex_token_template_not:
+			if (use_template >= 0)
+				duplicate_option(new_test_usage);
+			use_template = (arglex_token == arglex_token_template);
 			break;
 		}
 		arglex();
@@ -398,7 +408,7 @@ new_test_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", wl.string[j]);
+				sub_var_set_string(scp, "File_Name", wl.string[j]);
 				change_fatal(cp, scp, i18n("$filename unrelated"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -408,7 +418,7 @@ new_test_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s2);
+				sub_var_set_string(scp, "File_Name", s2);
 				change_error(cp, scp, i18n("too many $filename"));
 				sub_context_delete(scp);
 				++nerrs;
@@ -434,7 +444,7 @@ new_test_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s1);
+				sub_var_set_string(scp, "File_Name", s1);
 				change_error(cp, scp, i18n("file $filename dup"));
 				sub_context_delete(scp);
 				++nerrs;
@@ -454,7 +464,7 @@ new_test_main()
 					sub_context_ty	*scp;
 
 					scp = sub_context_new();
-					sub_var_set(scp, "File_Name", "%S", s1);
+					sub_var_set_string(scp, "File_Name", s1);
 					project_error
 					(
 						pp,
@@ -511,7 +521,7 @@ new_test_main()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", file_name);
+			sub_var_set_string(scp, "File_Name", file_name);
 			change_error(cp, scp, i18n("may not test $filename"));
 			sub_context_delete(scp);
 			++nerrs;
@@ -522,8 +532,8 @@ new_test_main()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", file_name);
-			sub_var_set(scp, "File_Name2", "%S", other);
+			sub_var_set_string(scp, "File_Name", file_name);
+			sub_var_set_string(scp, "File_Name2", other);
 			sub_var_optional(scp, "File_Name2");
 			change_error(cp, scp, i18n("file $filename directory name conflict"));
 			sub_context_delete(scp);
@@ -536,8 +546,8 @@ new_test_main()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", file_name);
-			sub_var_set(scp, "File_Name2", "%S", other);
+			sub_var_set_string(scp, "File_Name", file_name);
+			sub_var_set_string(scp, "File_Name2", other);
 			sub_var_optional(scp, "File_Name2");
 			project_error(pp, scp, i18n("file $filename directory name conflict"));
 			sub_context_delete(scp);
@@ -554,7 +564,7 @@ new_test_main()
 			 * change_filename_check function.
 			 */
 			scp = sub_context_new();
-			sub_var_set(scp, "Message", "%S", e);
+			sub_var_set_string(scp, "Message", e);
 			change_error(cp, scp, i18n("$message"));
 			sub_context_delete(scp);
 			++nerrs;
@@ -567,7 +577,7 @@ new_test_main()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%d", nerrs);
+		sub_var_set_long(scp, "Number", nerrs);
 		sub_var_optional(scp, "Number");
 		change_fatal(cp, scp, i18n("new test failed"));
 		/* NOTREACHED */
@@ -585,7 +595,7 @@ new_test_main()
 	 */
 	for (j = 0; j < wl.nstrings; ++j)
 	{
-		change_file_template(cp, wl.string[j], up);
+		change_file_template(cp, wl.string[j], up, use_template);
 	}
 
 	/*
@@ -626,7 +636,7 @@ new_test_main()
 	 * run the change file command
 	 * and the project file command if necessary
 	 */
-	change_run_change_file_command(cp, &wl, up);
+	change_run_new_test_command(cp, &wl, up);
 	change_run_project_file_command(cp, up);
 
 	/*
@@ -671,7 +681,7 @@ new_test_main()
 
 		scp = sub_context_new();
 		s1 = wl.string[j];
-		sub_var_set(scp, "File_Name", "%S", s1);
+		sub_var_set_string(scp, "File_Name", s1);
 		change_verbose(cp, scp, i18n("new test $filename complete"));
 		sub_context_delete(scp);
 	}
@@ -686,20 +696,13 @@ new_test_main()
 void
 new_test()
 {
-	trace(("new_test()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		new_test_main();
-		break;
+		{ arglex_token_help,		new_test_help,	},
+		{ arglex_token_list,		new_test_list,	},
+	};
 
-	case arglex_token_help:
-		new_test_help();
-		break;
-
-	case arglex_token_list:
-		new_test_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("new_test()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), new_test_main);
+	trace(("}\n"));
 }

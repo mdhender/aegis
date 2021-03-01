@@ -30,6 +30,7 @@ it is simply failed back to the developer.
 This documented example has no such failures,
 in order to keep it manageably small.
 .nh 3 "Before You Start"
+.LP
 Have you configured your account to use Aegis?  See the \fIUser Setup\fP
 section of the \fITips and Traps\fP chapter for how to do this.
 .nh 3 "The First Change"
@@ -133,7 +134,7 @@ aegis: rlog -r /projects/example/history/Howto.cook,v | awk
         '/^head:/ {print $2}' > /tmp/aegis.15309
 \fI\&...lots of similar RCS output...\fP
 aegis: project "example.1.0": change 10: remove development directory
-aegis: sh /usr/local/lib/aegis/ip.sh example.1.0 10 pat robyn isa
+aegis: sh \*(L)/ip.sh example.1.0 10 pat robyn isa
 aegis: project "example.1.0": change 10: integrate pass
 isa%
 .E)

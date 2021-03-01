@@ -1,0 +1,107 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2000 Peter Miller;
+ *	All rights reserved.
+ *
+ *	Contributed by Scott Finneran <sfinneran@lucent.com>,
+ *	copyright assigned to Peter Miller 7-Jul-2000.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the following:
+ *           - development directory of a change
+ *           - files newly added to a change
+ *           - files modified in a change
+ *           - files removed by a change
+ *
+ *           Output is a TCL scripts used by tkaer.
+ */
+
+
+auto ps;
+ps = project[project_name()].state;
+auto cs;
+cs = ps.branch.change[change_number()];
+auto src;
+auto counter;
+
+columns({ width = 1000; });
+
+/* First get the development_directory */
+print("set development_directory " ## "\"" ## cs.development_directory ## "\"");
+
+/* Then find out what state the change is in */
+print("set change_state " ## "\"" ## cs.state ## "\"");
+
+/* Then the newly added files */
+counter = 0;
+print("set new_files_list { \\");
+for (src in cs.src)
+{
+    if (!src.deleted_by && !src.about_to_be_created_by
+        && src.action == "create" && src.move == "")
+    {
+	print(src.file_name ## " \\");
+	counter++;
+    }
+}
+print("}");
+print("set num_new_files " ## counter);
+
+
+/* Then the modified files */
+counter = 0;
+print("set modified_files_list { \\");
+for (src in cs.src)
+{
+    if (!src.deleted_by && !src.about_to_be_created_by
+        && src.action == "modify")
+    {
+	print(src.file_name ## " \\");
+	counter++;
+    }
+}
+print("}");
+print("set num_modified_files " ## counter);
+
+/* Then finally any moved files */
+counter = 0;
+print("set moved_files_list { \\");
+for (src in cs.src)
+{
+    if (!src.deleted_by && !src.about_to_be_created_by
+        && src.action == "create" && src.move != "")
+    {
+	print(src.file_name ## "<-" ## src.move ## " \\");
+	counter++;
+    }
+}
+print("}");
+print("set num_moved_files " ## counter);
+
+/* And of course the removed ones */
+counter = 0;
+print("set removed_files_list { \\");
+for (src in cs.src)
+{
+    if (!src.deleted_by && !src.about_to_be_created_by
+        && src.action == "remove" && src.move == "")
+    {
+	print(src.file_name ## " \\");
+	counter++;
+    }
+}
+print("}");
+print("set num_removed_files " ## counter);

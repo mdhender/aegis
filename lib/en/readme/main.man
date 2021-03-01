@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1990, 1991, 1992, 1993, 1994, 1995, 1997, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1990-1995, 1997-1999, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -195,9 +195,6 @@ File:;aegis.\*(v).lsm;# Description, in LSM format
 File:;aegis.\*(v).ae;# the complete source, aedist format
 File:;aegis.\*(v).spec;# RedHat package specification
 File:;aegis.\*(v).tar.gz;# the complete source
-File:;aegis.\*(v).faq;# Frequently Asked Questions
-File:;aegis.\*(v).rm.ps.gz;# the Reference Manual, in PostScript
-File:;aegis.\*(v).ug.ps.gz;# the User Guide, in PostScript
 .TE
 .RE
 .PP
@@ -212,22 +209,19 @@ for a list of mirror sites.
 .br
 .ne 2i
 .PP
-Aegis is also carried by \f(CWsunsite.unc.edu\fP in its Linux archives.
+Aegis is also carried by \f(CWmetalab.unc.edu\fP in its Linux archives.
 You will be able to find Aegis on any of its mirrors.
 .RS
 .TS
 tab(;);
 l l s
 l l l.
-URL:;ftp://sunsite.unc.edu/pub/Linux/devel/vc/
+URL:;ftp://metalab.unc.edu/pub/Linux/devel/vc/
 File:;aegis.\*(v).README;# Description, from tar file
 File:;aegis.\*(v).lsm;# Description, in LSM format
 File:;aegis.\*(v).spec;# RedHat package specification
 File:;aegis.\*(v).ae;# the complete source, aedist format
 File:;aegis.\*(v).tar.gz;# the complete source
-File:;aegis.\*(v).faq;# Frequently Asked Questions
-File:;aegis.\*(v).rm.ps.gz;# the Reference Manual, in PostScript
-File:;aegis.\*(v).ug.ps.gz;# the User Guide, in PostScript
 .TE
 .RE
 This site is extensively mirrored around the world,
@@ -246,7 +240,7 @@ so look for a copy near you (you will get much better response).
 .\" ftpmail@ieunet.ie	Ireland
 .\" ftpmail@decwrl.dec.com	USA
 .\" ftpmail@ftp.uu.net	USA
-.\" ftpmail@sunsite.unc.edu	USA
+.\" ftpmail@metalab.unc.edu	USA
 .\" .TE
 .\" .RE
 .\" .PP
@@ -386,7 +380,7 @@ In 1997 the full branching support was released (it took nearly 18 months
 to retro-fit.  The underlying data structures for projects and change
 sets need to be merged.  While I noticed back in 1990 that they were
 very similar, it wasn't until branch support design was well underways
-that they should have been the same  data structure from the begining.
+that they should have been the same  data structure from the beginning.
 .SS Geographically Distributed Development
 In 1999 a conversation on the \f(CWaegis-users\fP mailing list resulted
 in the creation of \fIaedist\fP, a program which packages and unpackages
@@ -438,6 +432,11 @@ and also acknowledgments of those who generously sent me feedback,
 please see the
 .I etc/CHANGES.*
 files included in this distribution.
+.PP
+In general, all the machines on your network need to be running the same
+release of Aegis.  While the database format is backwards compatible,
+it is rarely forwards compatible in the face of new capabilities.
+.PP
 A number of features have been added to
 .I Aegis
 with this release.

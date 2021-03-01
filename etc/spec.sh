@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997, 1999 Peter Miller;
+#	Copyright (C) 1997, 1999-2001 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,11 @@
 # MANIFEST: shell script to generate RedHat spec file
 #
 version=${version-0.0.0}
+echo '#'
+echo '# This file is GENERATED.  Please DO NOT send the maintainer'
+echo '# patches to this file.  If there is a problemn with this file,'
+echo '# fix etc/spec.sh, and set the etc/spec.sh patch to the maintainer.'
+echo '#'
 echo 'Summary: project change supervisor'
 echo 'Name: aegis'
 echo "Version: ${version}"
@@ -91,14 +96,41 @@ files_rx=
 txtdocs=
 psdocs=
 dvidocs=
+dirs=$prefix/com/aegis
+name=`echo dir_${prefix} | sed 's/[^a-zA-Z0-9]/_/g'`
+eval "${name}=yes"
+eval "${name}_share=yes"
+eval "${name}_lib=yes"
+eval "${name}_com=yes"
+eval "${name}_man=yes"
+eval "${name}_man_man1=yes"
+eval "${name}_man_man5=yes"
 
 remember_prog()
 {
-	if eval "test \"\${prog_${1}-no}\" != yes"
+	name=`echo ${1} | sed 's/[^a-zA-Z0-9]/_/g'`
+	if eval "test \"\${${name}-no}\" != yes"
 	then
-		eval "prog_${1}=yes"
+		eval "${name}=yes"
 		files_rx="$files_rx $prefix/bin/${1}"
 	fi
+}
+remember_dir()
+{
+	case "${1}" in
+	/)
+		;;
+	*)
+		remember_dir `dirname ${1}`
+
+		name=`echo dir_${1} | sed 's/[^a-zA-Z0-9]/_/g'`
+		if eval "test \"\${${name}-no}\" != yes"
+		then
+			eval "${name}=yes"
+			dirs="$dirs ${1}"
+		fi
+		;;
+	esac
 }
 
 for file in $*
@@ -120,14 +152,21 @@ do
 		remember_prog $dir
 		;;
 
-	lib/*/building/* | lib/*/lsm/* | lib/*/readme/* | \
-	lib/*/release/* | lib/*/LC_MESSAGES/libaegis.po)
+	script/aegis.synpic)
+		;;
+	script/*)
+		prog=`echo $file | sed 's|.*/||'`
+		remember_prog $prog
+		;;
+
+	lib/*/LC_MESSAGES/libaegis.po)
 		;;
 
 	lib/*.po)
 		stem=`echo $file | sed 's|^lib/\(.*\)\.po$|\1|'`
 		dst="$prefix/lib/aegis/$stem.mo"
 		files_ro="$files_ro $dst"
+		remember_dir `dirname $dst`
 		;;
 
 	lib/*/*/*.so | lib/*/*/*.bib | lib/*/*/*.pic)
@@ -137,13 +176,19 @@ do
 		;;
 
 	lib/*/man?/*)
+		# Some versions of RPM gzip man pages for free.  This is
+		# a pain in the behind.  Use a pattern to find them.  Sigh.
 		stem=`echo $file | sed 's|^lib/||'`
-		files_ro="$files_ro $prefix/share/aegis/$stem"
+		dst="$prefix/share/aegis/${stem}*"
+		files_ro="$files_ro $dst"
+		remember_dir `dirname $dst`
 
 		case $file in
 		lib/en/*)
 			stem2=`echo $file | sed 's|^lib/en/||'`
-			files_ro="$files_ro $prefix/man/$stem2"
+			dst="$prefix/man/${stem2}*"
+			files_ro="$files_ro $dst"
+			remember_dir `dirname $dst`
 			;;
 		esac
 		;;
@@ -164,12 +209,21 @@ do
 		rest=`echo $file | sed 's|^lib/||'`
 		dst="$prefix/share/aegis/$rest"
 		files_rx="$files_rx $dst"
+		remember_dir `dirname $dst`
+		;;
+
+	lib/cshrc.in | lib/profile.in | lib/cshrc | lib/profile )
+		rest=`echo $file | sed -e 's|^lib/||' -e 's|\.in$||'`
+		dst="$prefix/share/aegis/$rest"
+		files_rx="$files_rx $dst"
+		remember_dir `dirname $dst`
 		;;
 
 	lib/*)
 		rest=`echo $file | sed 's|^lib/||'`
 		dst="$prefix/share/aegis/$rest"
 		files_ro="$files_ro $dst"
+		remember_dir `dirname $dst`
 		;;
 
 	*)
@@ -177,19 +231,29 @@ do
 	esac
 done
 
+grumble()
+{
+	echo '#'
+	echo "# See the comment at the top of this file.  If you don't like"
+	echo '# the file attributes, or there is a file missing, DO NOT send'
+	echo '# the maintainer a patch to this file.  This file is GENERATED.'
+	echo '# If you want different attributes, fix the etc/spec.sh file,'
+	echo '# and send THAT patch to the maintainer.'
+	echo '#'
+}
+
 echo ''
+grumble
 echo '%files'
-echo "%attr(0755,root,bin) %dir $prefix/com/aegis"
-echo "%attr(0755,root,bin) %dir $prefix/lib/aegis"
-echo "%attr(0755,root,bin) %dir $prefix/share/aegis"
+for file in $dirs
+do
+	echo "%attr(0755,root,bin) %dir $file"
+done
 for file in $files_rx
 do
 	case $file in
-	*/bin/aegis)
+	*/bin/aegis | */bin/aeimport)
 		echo "%attr(4755,root,bin) $file"
-		;;
-	*/bin/*)
-		echo "%attr(0755,root,bin) $file"
 		;;
 	*)
 		echo "%attr(0755,root,bin) $file"
@@ -200,29 +264,44 @@ for file in $files_ro
 do
 	echo "%attr(0644,root,bin) $file"
 done
+echo "%attr(0755,root,bin) /etc/profile.d/aegis.sh"
+echo "%attr(0755,root,bin) /etc/profile.d/aegis.csh"
 
 echo ''
+grumble
 echo '%files txtdocs'
+echo "%attr(0755,root,bin) %dir $prefix/share/aegis"
 for file in $txtdocs
 do
 	echo "%attr(0644,root,bin) $file"
 done
 
 echo ''
+grumble
 echo '%files psdocs'
+echo "%attr(0755,root,bin) %dir $prefix/share/aegis"
 for file in $psdocs
 do
 	echo "%attr(0644,root,bin) $file"
 done
 
 echo ''
+grumble
 echo '%files dvidocs'
+echo "%attr(0755,root,bin) %dir $prefix/share/aegis"
 for file in $dvidocs
 do
 	echo "%attr(0644,root,bin) $file"
 done
 
 echo ''
+echo '#'
+echo '# This next bit is done because when using Aegis with NFS, these'
+echo '# files must have EXACTLY the same uid and gid on all systems.'
+echo "# Unfortunately, RPM won't let you give exact numeric uids and gids,"
+echo '# and the names for low-numbered uids and gids are essentially'
+echo '# random across the various Unix implementations.  Sigh.'
+echo '#'
 echo '%post'
 echo "chown -R 3 $prefix/com/aegis $prefix/lib/aegis $prefix/share/aegis"
 echo "chgrp -R 3 $prefix/com/aegis $prefix/lib/aegis $prefix/share/aegis"

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -61,14 +61,88 @@
 .fi
 .DE
 ..
+.\" ------------------------------------------------------------------------
+\&.
+.sp 2i
+.ps 24
+.vs 26
+.ce 2
+Aegis
+A Project Change Supervisor
+.sp 0.5i
+.ps 28
+.vs 30
+.ce 2
+CVS Transition Guide
+.sp 1i
+.ps 18
+.vs 20
+.ce 1
+Peter Miller
+.ft I
+.ce 1
+millerp@canb.auug.org.au
+.ft P
+.OH 'Aegis''CVS Transition Guide'
+.EH 'CVS Transition Guide''Aegis'
+.bp
+.OF 'Peter Miller'\\\\s-3(\\\\n(.F)\\\\s+3'Page \\\\n[PN]'
+.EF 'Page \\\\n[PN]'\\\\s-3(\\\\n(.F)\\\\s+3'Peter Miller'
+.ps 12
+.vs 14
+\&.
+.sp 4i
+.so version.so
+.so libdir.so
+This document describes Aegis version \*(v)
+.br
+and was prepared \*(DY.
+.br
+.sp 1i
+.if n .ds C) (C)
+.if t .ds C) \(co
+This document describing the Aegis program,
+and the Aegis program itself,
+are
+.br
+Copyright \*(C) \*(Y) Peter Miller;
+All rights reserved.
+.sp
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+.sp
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+.sp
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.ps 10
+.vs 12
+.bp
+.\" ------------------------------------------------------------------------
 .so c1.so
 .so c2.so
+.so c3.so
 .br
 .if t .1C
+.bp
+\&.
 .if o .bp
 .\" At this point we are at the top of the page.  The .TC macro will not
 .\" throw a new page, and so it will have the wrong page number for the
 .\" first page.  We need some garbage on this page to force .TC to throw
 .\" a new page.
 \&.
-.TC
+.\"
+.\" I can't use .TC because I need to mess with the page numbers so
+.\" that I can use psselect to move the ToC to the front, afterwards.
+.\" .TC
+.P1
+.pg@begin 1001 i
+.PX
+.if o .bp

@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1999 Peter Miller;
+#	Copyright (C) 1991-1996, 1999, 2001 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 # On Linux, or any system using bash (I think), a symlink to this file
 # from /etc/profile.d/aegis.sh can be very useful.
 #
-if test -d $HOME/lib/aegis/.
+if test -z "$AEGIS_PATH" -a -d $HOME/lib/aegis/.
 then
 	AEGIS_PATH=$HOME/lib/aegis
 	export AEGIS_PATH
@@ -85,226 +85,312 @@ export AEGIS_AUTOMOUNT_POINTS
 # because the size of the common code portion usually greatly exceeds
 # the size of the unique portions.)
 #
-aeb()
+function aeb()
 {
-	aegis -b $* -v
+	aegis -b "$@" -v
 }
-aeca()
+function aeca()
 {
-	aegis -ca $* -v
+	aegis -ca "$@" -v
 }
-aecd()
+function aecd()
 {
-	cd `aegis -cd $* -v`
+	cd `aegis -cd "$@" -v`
 }
-aechown()
+function aechown()
 {
-	aegis -chown $* -v
+	aegis -chown "$@" -v
 }
-aeclean()
+function aeclean()
 {
-	aegis -clean $* -v
+	aegis -clean "$@" -v
 }
-aeclone()
+function aeclone()
 {
-	aegis -clone $* -v
+	aegis -clone "$@" -v
 }
-aecp()
+function aecp()
 {
-	aegis -cp $* -v
+	aegis -cp "$@" -v
 }
-aecpu()
+function aecpu()
 {
-	aegis -cpu $* -v
+	aegis -cpu "$@" -v
 }
-aed()
+function aed()
 {
-	aegis -diff $* -v
+	aegis -diff "$@" -v
 }
-aedb()
+function aedb()
 {
-	aegis -db $* -v
+	aegis -db "$@" -v
 }
-aedbu()
+function aedbu()
 {
-	aegis -dbu $* -v
+	aegis -dbu "$@" -v
 }
-aede()
+function aede()
 {
-	aegis -de $* -v
+	aegis -de "$@" -v
 }
-aedeu()
+function aedeu()
 {
-	aegis -deu $* -v
+	aegis -deu "$@" -v
 }
-aedless()
+function aedless()
 {
 	less `find . -type f \( -name "*,D" -o -name ".*,D" \) -print | sort`
 }
-aedmore()
+function aedmore()
 {
 	more `find . -type f \( -name "*,D" -o -name ".*,D" \) -print | sort`
 }
-aedn()
+function aedn()
 {
-	aegis -dn $* -v
+	aegis -dn "$@" -v
 }
-aeib()
+function aeib()
 {
-	aegis -ib $* -v
+	aegis -ib "$@" -v
 }
-aeibu()
+function aeibu()
 {
-	aegis -ibu $* -v
+	aegis -ibu "$@" -v
 }
-aeifail()
+function aeifail()
 {
-	aegis -ifail $* -v
+	aegis -ifail "$@" -v
 }
-aeipass()
+function aeipass()
 {
-	aegis -ipass $* -v
+	aegis -ipass "$@" -v
 }
-ael()
+function ael()
 {
-	aegis -l $* -v
+	aegis -l "$@" -v
 }
-aem()
+function aem()
 {
-	aegis -diff -only_merge $* -v
+	aegis -diff -only_merge "$@" -v
 }
-aemv()
+function aemv()
 {
-	aegis -mv $* -v
+	aegis -mv "$@" -v
 }
-aena()
+function aemvu()
 {
-	aegis -na $* -v
+	aegis -mvu "$@" -v
 }
-aenbr()
+function aena()
 {
-	aegis -nbr $* -v
+	aegis -na "$@" -v
 }
-aenbru()
+function aenbr()
 {
-	aegis -nbru $* -v
+	aegis -nbr "$@" -v
 }
-aenc()
+function aenbru()
 {
-	aegis -nc $* -v
+	aegis -nbru "$@" -v
 }
-aencu()
+function aenc()
 {
-	aegis -ncu $* -v
+	aegis -nc "$@" -v
 }
-aend()
+function aencu()
 {
-	aegis -nd $* -v
+	aegis -ncu "$@" -v
 }
-aenf()
+function aend()
 {
-	aegis -nf $* -v
+	aegis -nd "$@" -v
 }
-aenfu()
+function aenf()
 {
-	aegis -nfu $* -v
+	aegis -nf "$@" -v
 }
-aeni()
+function aenfu()
 {
-	aegis -ni $* -v
+	aegis -nfu "$@" -v
 }
-aenpa()
+function aeni()
 {
-	aegis -new-project-alias $* -v
+	aegis -ni "$@" -v
 }
-aenpr()
+function aenpa()
 {
-	aegis -npr $* -v
+	aegis -new-project-alias "$@" -v
 }
-aenrls()
+function aenpr()
 {
-	aegis -nrls $* -v
+	aegis -npr "$@" -v
 }
-aenrv()
+function aenrls()
 {
-	aegis -nrv $* -v
+	aegis -nrls "$@" -v
 }
-aent()
+function aenrv()
 {
-	aegis -nt $* -v
+	aegis -nrv "$@" -v
 }
-aentu()
+function aent()
 {
-	aegis -ntu $* -v
+	aegis -nt "$@" -v
 }
-aepa()
+function aentu()
 {
-	aegis -pa $* -v
+	aegis -ntu "$@" -v
 }
-aeq()
+function aepa()
 {
-	aegis -q $* -v
+	aegis -pa "$@" -v
 }
-aer()
+function aepwd()
 {
-	aereport $* -v
+	aegis -Change_Directory "$@" -terse
 }
-aera()
+function aeq()
 {
-	aegis -ra $* -v
+	aegis -q "$@" -v
 }
-aerd()
+function aer()
 {
-	aegis -rd $* -v
+	aereport "$@" -v
 }
-aerfail()
+function aera()
 {
-	aegis -rfail $* -v
+	aegis -ra "$@" -v
 }
-aeri()
+function aerb()
 {
-	aegis -ri $* -v
+	aegis -rb "$@" -v
 }
-aerm()
+function aerbu()
 {
-	aegis -rm $* -v
+	aegis -rbu "$@" -v
 }
-aermu()
+function aerd()
 {
-	aegis -rmu $* -v
+	aegis -rd "$@" -v
 }
-aerpass()
+function aerfail()
 {
-	aegis -rpass $* -v
+	aegis -rfail "$@" -v
 }
-aerpa()
+function aeri()
 {
-	aegis -remove-project-alias $* -v
+	aegis -ri "$@" -v
 }
-aerpu()
+function aerm()
 {
-	aegis -rpu $* -v
+	aegis -rm "$@" -v
 }
-aermpr()
+function aermu()
 {
-	aegis -rmpr $* -v
+	aegis -rmu "$@" -v
 }
-aerrv()
+function aerpass()
 {
-	aegis -rrv $* -v
+	aegis -rpass "$@" -v
 }
-aet()
+function aerpa()
 {
-	aegis -t $* -v
+	aegis -remove-project-alias "$@" -v
+}
+function aerpu()
+{
+	aegis -rpu "$@" -v
+}
+function aermpr()
+{
+	aegis -rmpr "$@" -v
+}
+function aerrv()
+{
+	aegis -rrv "$@" -v
+}
+function aet()
+{
+	aegis -t "$@" -v
+}
+function aev()
+{
+	aegis -VERSion "$@" -v
 }
 
-ae_c()
+function ae_c()
 {
 	AEGIS_CHANGE="$1"
 	export AEGIS_CHANGE
 }
-ae_p()
+function ae_p()
 {
 	AEGIS_PROJECT="$1"
 	export AEGIS_PROJECT
+}
+
+function aefinish()
+{
+	unset -f aeb
+	unset -f ae_c
+	unset -f aeca
+	unset -f aecd
+	unset -f aechown
+	unset -f aeclean
+	unset -f aeclone
+	unset -f aecp
+	unset -f aecpu
+	unset -f aed
+	unset -f aedb
+	unset -f aedbu
+	unset -f aede
+	unset -f aedeu
+	unset -f aedless
+	unset -f aedmore
+	unset -f aedn
+	unset -f aefinish
+	unset -f aeib
+	unset -f aeibu
+	unset -f aeifail
+	unset -f aeipass
+	unset -f ael
+	unset -f aem
+	unset -f aemv
+	unset -f aemvu
+	unset -f aena
+	unset -f aenbr
+	unset -f aenbru
+	unset -f aenc
+	unset -f aencu
+	unset -f aend
+	unset -f aenf
+	unset -f aenfu
+	unset -f aeni
+	unset -f aenpa
+	unset -f aenpr
+	unset -f aenrls
+	unset -f aenrv
+	unset -f aent
+	unset -f aentu
+	unset -f ae_p
+	unset -f aepa
+	unset -f aeq
+	unset -f aer
+	unset -f aera
+	unset -f aerd
+	unset -f aerfail
+	unset -f aeri
+	unset -f aerm
+	unset -f aermpr
+	unset -f aermu
+	unset -f aerpa
+	unset -f aerpass
+	unset -f aerpu
+	unset -f aerrv
+	unset -f aet
+	unset AEGIS
+	unset AEGIS_PROJECT
+	unset AEGIS_CHANGE
+	unset AEGIS_PATH
+	unset AEGIS_AUTOMOUNT_POINTS
 }

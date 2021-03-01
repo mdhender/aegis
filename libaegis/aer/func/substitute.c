@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -81,9 +81,9 @@ run(ep, argc, argv)
 
 		scp = sub_context_new();
 		rpt_value_free(arg);
-		sub_var_set(scp, "Function", "subst");
-		sub_var_set(scp, "Number", "1");
-		sub_var_set(scp, "Name", "%s", argv[0]->method->name);
+		sub_var_set_charstar(scp, "Function", "subst");
+		sub_var_set_charstar(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
 		s =
 			subst_intl
 			(
@@ -110,9 +110,9 @@ run(ep, argc, argv)
 
 		scp = sub_context_new();
 		rpt_value_free(arg);
-		sub_var_set(scp, "Function", "subst");
-		sub_var_set(scp, "Number", "2");
-		sub_var_set(scp, "Name", "%s", argv[1]->method->name);
+		sub_var_set_charstar(scp, "Function", "subst");
+		sub_var_set_charstar(scp, "Number", "2");
+		sub_var_set_charstar(scp, "Name", argv[1]->method->name);
 		s =
 			subst_intl
 			(
@@ -139,9 +139,9 @@ run(ep, argc, argv)
 
 		scp = sub_context_new();
 		rpt_value_free(arg);
-		sub_var_set(scp, "Function", "subst");
-		sub_var_set(scp, "Number", "3");
-		sub_var_set(scp, "Name", "%s", argv[2]->method->name);
+		sub_var_set_charstar(scp, "Function", "subst");
+		sub_var_set_charstar(scp, "Number", "3");
+		sub_var_set_charstar(scp, "Name", argv[2]->method->name);
 		s =
 			subst_intl
 			(
@@ -172,9 +172,9 @@ run(ep, argc, argv)
 	
 			scp = sub_context_new();
 			rpt_value_free(arg);
-			sub_var_set(scp, "Function", "subst");
-			sub_var_set(scp, "Number", "2");
-			sub_var_set(scp, "Name", "%s", argv[3]->method->name);
+			sub_var_set_charstar(scp, "Function", "subst");
+			sub_var_set_charstar(scp, "Number", "2");
+			sub_var_set_charstar(scp, "Name", argv[3]->method->name);
 			s =
 				subst_intl
 				(
@@ -193,6 +193,7 @@ run(ep, argc, argv)
 	/*
 	 * perform the substitution
 	 */
+	error_value = 0;
 	s = str_re_substitute(lhs, rhs, input, error_callback, count);
 	if (!s)
 	{
@@ -200,9 +201,14 @@ run(ep, argc, argv)
 
 		scp = sub_context_new();
 		rpt_value_free(arg);
-		sub_var_set(scp, "Function", "subst");
-		sub_var_set(scp, "Number", "1");
-		sub_var_set(scp, "Message", "%s", error_value);
+		sub_var_set_charstar(scp, "Function", "subst");
+		sub_var_set_charstar(scp, "Number", "1");
+		sub_var_set_charstar
+		(
+			scp,
+			"Message",
+			(error_value ? error_value : "unknown")
+		);
 		s =
 			subst_intl
 			(
@@ -214,7 +220,6 @@ run(ep, argc, argv)
 		str_free(s);
 		return result;
 	}
-	str_free(lhs);
 
 	/*
 	 * build the result

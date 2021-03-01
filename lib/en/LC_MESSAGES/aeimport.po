@@ -1,0 +1,96 @@
+#
+#	aegis - project change supervisor
+#	Copyright (C) 2001 Peter Miller;
+#	All rights reserved.
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#
+# MANIFEST: aeimport.po
+#
+msgid	""
+msgstr	"MIME-Version: 1.0\n"
+	"Content-Type: text/plain; charset=ascii\n"
+	"Content-Transfer-Encoding: 8bit\n"
+
+#
+# --------------------------------------------------------------------------
+#
+# This message is inserted into the top of the project config file
+# automatically created by aeimport.
+#
+msgid	"config file hint"
+msgstr	"This file will need to be customized for this project.  See "
+	"aepconf(5) for a description of the fields in this file.  See\n"
+	"$datadir/config.example/rcs\n"
+	"for more information about the history commands.  See\n"
+	"$datadir/config.example/make\n"
+	"for examples of how to configure your build tool.\tYou may want "
+	"to browse some other files in the same directory for more hints."
+
+#
+# This progress message is issued by aeimport when it starts to copy the
+# history fierls from the old repository into the project history tree.
+#
+msgid	"copy history files"
+msgstr	"Copying history files from external repository into project "
+	"history tree..."
+
+#
+# This progress message is issued when aeimport starts going through
+# the history information looking for change sets.
+#
+msgid	"find change sets"
+msgstr	"Looking for clusters of changes to files in order to interpolate "
+	"the change sets..."
+
+#
+# This fatal error message is issued when aeimport doesn't recognize a
+# history file format name as specified on the command line.
+#
+#	$name		The offending format name.
+#
+msgid	"history format \"$name\" unknown"
+msgstr	"history format \"$name\" unknown"
+
+#
+# This progress message is issued when aeimport completed successfully.
+#
+msgid	"import complete"
+msgstr	"import completed successfully"
+
+#
+# This fatal error message is issued when aeimport finds no history
+# files in the directory tree specified on the command line.
+#
+msgid	"no history files found"
+msgstr	"no history files found below the directory specified"
+
+#
+# This progress message is issued by aeimport when it starts to scan
+# the directory tree specified on the command line.  It is looking for
+# history files, and reading each one to extract the history information
+# it will use to reconstruct the changes.
+#
+msgid	"read history files"
+msgstr	"reading history files to learn when each file was changed and by "
+	"whom..."
+
+#
+# This progress message is issued when aeimport starts to checkout the
+# head revision of each history file to form the baseline of the project.
+#
+msgid	"reconstruct baseline"
+msgstr	"checking out head revisions of imported files to reconstruct the "
+	"project baseline..."

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995 Peter Miller;
+ *	Copyright (C) 1995, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,10 +28,7 @@
 #include <error.h>
 #include <language.h>
 #include <libdir.h>
-
-#ifndef PACKAGE
-#define PACKAGE "aegis"
-#endif
+#include <progname.h>
 
 
 #ifdef DEBUG
@@ -89,12 +86,12 @@ language_init()
 	 */
 	lib = getenv("AEGIS_MESSAGE_LIBRARY");
 	if (!lib || !*lib)
-		lib = configured_libdir();
+		lib = configured_nlsdir();
 #ifdef HAVE_SETLOCALE
 #ifdef HAVE_GETTEXT
 	setlocale(LC_ALL, "");
-	bindtextdomain(PACKAGE, lib);
-	textdomain(PACKAGE);
+	bindtextdomain(progname_get(), lib);
+	textdomain(progname_get());
 #endif /* HAVE_GETTEXT */
 
 	/*

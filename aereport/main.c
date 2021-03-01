@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,7 @@
  */
 
 #include <ac/stdio.h>
+#include <ac/stdlib.h>
 
 #include <aer/func/change.h>
 #include <aer/func/project.h>
@@ -140,7 +141,7 @@ report_main()
 				sub_context_ty *scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl
 				(
 					scp,
@@ -161,10 +162,25 @@ report_main()
 		case arglex_token_file:
 			if (infile)
 				duplicate_option(report_usage);
-			if (arglex() != arglex_token_string)
-				option_needs_file(arglex_token_file, report_usage);
-			trace(("accepting -File option\n"));
-			infile = str_from_c(arglex_value.alv_string);
+			switch (arglex())
+			{
+			default:
+				option_needs_file
+				(
+					arglex_token_file,
+					report_usage
+				);
+				/*NOTREACHED*/
+
+			case arglex_token_string:
+				trace(("accepting -File option\n"));
+				infile = str_from_c(arglex_value.alv_string);
+				break;
+
+			case arglex_token_stdio:
+				infile = str_from_c("");
+				break;
+			}
 			break;
 
 		case arglex_token_output:

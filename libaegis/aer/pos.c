@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996 Peter Miller;
+ *	Copyright (C) 1996, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -77,7 +77,7 @@ rpt_pos_union(p1, p2)
 
 	assert(p1);
 	assert(p2);
-	assert(str_equal(p1->file_name, p2->file_name));
+	/* assert(str_equal(p1->file_name, p2->file_name)); */
 	min = p1->line_number1;
 	max = p1->line_number2;
 	if (min > p2->line_number1)
@@ -118,19 +118,15 @@ rpt_pos_error(scp, pp, fmt)
 	s = subst_intl(scp, fmt);
 
 	/* re-use substitution context */
-	sub_var_set(scp, "Message", "%S", s);
+	sub_var_set_string(scp, "Message", s);
 	str_free(s);
 
 	if (!pp)
 		error_intl(scp, i18n("$message"));
 	else
 	{
-		sub_var_set(scp, "File_Name", "%S", pp->file_name);
-		if (pp->line_number1 == pp->line_number2)
-			sub_var_set(scp, "Number", "%ld", pp->line_number1);
-		else
-			sub_var_set(scp, "Number", "%ld-%ld", pp->line_number1, pp->line_number2);
-		error_intl(scp, i18n("$filename: $number: $message"));
+		sub_var_set_string(scp, "File_Name", pp->file_name);
+		error_intl(scp, i18n("$filename: $message"));
 	}
 
 	if (need_to_delete)

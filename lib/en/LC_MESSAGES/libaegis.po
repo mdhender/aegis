@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1995, 1996, 1997, 1998, 1999 Peter Miller;
+#	Copyright (C) 1995-2001 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -45,6 +45,12 @@
 #	Otherwise the substitutions will stop working, Catch-22.
 #
 # -------------------------------------------------------------------------
+msgid	""
+msgstr	"MIME-Version: 1.0\n"
+	"Content-Type: text/plain; charset=ascii\n"
+	"Content-Transfer-Encoding: 8bit\n"
+
+# -------------------------------------------------------------------------
 #
 # This error message is issued when an environment variable is meant to
 # be a positive integer, and it is not.
@@ -55,6 +61,35 @@ msgid	"$$$name must be positive"
 msgstr	"the $name environment variable must be a positive decimal number"
 
 #
+# This progress message is issued when a test run against the baseline
+# fails.  This is what it is meant to do because either (a) it is new
+# functionality, and will fail because it is not in the baseline, or (b)
+# it is a bug fix, and failing against the baseline demonstrates that
+# the test reproduces the bug.
+#
+#	$File_Name	The name of the test file.
+#
+msgid	"$filename baseline fail, good"
+msgstr	"test \"$filename\" on baseline failed (as it should)"
+
+#
+# This error message is issued when a test run against the baseline
+# passes.  See above for why this is not good.
+#
+#	$File_Name	The name of the test file.
+#
+msgid	"$filename baseline pass, not good"
+msgstr	"test \"$filename\" on baseline passed (it must fail)"
+
+#
+# This error message is issued when a test against the change fails.
+#
+#	$File_Name	The name of the test file.
+#
+msgid	"$filename fail"
+msgstr	"test \"$filename\" failed"
+
+#
 # This error message is issued when a change file is modified by the
 # history tool (history_put_command or history_create_command)
 # during aeipass.
@@ -63,6 +98,24 @@ msgstr	"the $name environment variable must be a positive decimal number"
 #
 msgid	"$filename modified by history tool"
 msgstr	"the history tool modified the \"$filename\" source file"
+
+#
+# This error message is issued when aet runs a test which returns a ``no
+# result'' exit status.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"$filename no result"
+msgstr	"test \"$filename\" returned no result; some other problem "
+	"prevented the functionality under test from being exercised"
+
+#
+# This progress message is issued when a test against the change passes.
+#
+#	$File_Name	The name of the test file.
+#
+msgid	"$filename pass"
+msgstr	"test \"$filename\" passed"
 
 #
 # This error message is issued when a file named on the command
@@ -182,11 +235,10 @@ msgstr	"$filename: $linenumber: unterminated %%() substitution"
 # This error message is issued when a generic error in a text file is required.
 #
 #	$File_Name	The name of the file being read or parsed.
-#	$Number		The line number on which the error occurred.
 #	$Message	The error message, formed previously.
 #
-msgid	"$filename: $number: $message"
-msgstr	"$filename: $number: $message"
+msgid	"$filename: $message"
+msgstr	"$filename: $message"
 
 #
 # This error message is issued when the project config file specifies
@@ -219,6 +271,17 @@ msgstr	"$filename: contains no \"$field_name\" field"
 #
 msgid	"$filename: corrupted \"$field_name\" field"
 msgstr	"$filename: corrupted \"$field_name\" field"
+
+#
+# This fatal error message is issued when Aegis is checking a project's
+# ownership and finds something incorrect.
+#
+msgid	"$filename: gid $number1 invalid, must be >= $number2"
+msgstr	"$filename: this file's group ID ($number1) is too small, it must "
+	"be greater than or equal to AEGIS_MIN_GID ($number2).  This is "
+	"probably the result of a backup restore problem.  Please use the "
+	"``chgrp -R <group> $filename'' command to fix it, for some "
+	"suitable <group> name.  [You will need to be root.]"
 
 #
 # This error message is issued when Aegis is checking a file's group,
@@ -283,6 +346,17 @@ msgstr	"$filename: owner is $number1, should be $number2"
 #
 msgid	"$filename: too many errors"
 msgstr	"$filename: too many fatal errors, aborted"
+
+#
+# This fatal error message is issued when Aegis is checking a project's
+# ownership and finds something incorrect.
+#
+msgid	"$filename: uid $number1 invalid, must be >= $number2"
+msgstr	"$filename: this file's user ID ($number1) is too small, it must "
+	"be greater than or equal to AEGIS_MIN_UID ($number2).  This is "
+	"probably the result of a backup restore problem.  Please use the "
+	"``chown -R <user> $filename'' command to fix it, for some "
+	"suitable <user> name.  [You will need to be root.]"
 
 #
 # This error message is issued when a generic error in a function is required.
@@ -596,6 +670,17 @@ msgid	"appending log to $filename"
 msgstr	"appending log to \"$filename\""
 
 #
+# This fatal error message is issued when Aegis determines that the
+# architecture it is currently running on is forbidden by the (5)
+# architecture field of the project ``config'' file.
+#
+#	$Name		The offending architecture name.
+#
+msgid	"architecture \"$name\" forbidden"
+msgstr	"architecture \"$name\" forbidden, you may not perform this "
+	"command on this machine"
+
+#
 # This error message is issued when Aegis is unable to determine which
 # architecture it is currently running on.  This means that the
 # architecture does not match any of the architecture patterns specified
@@ -635,6 +720,17 @@ msgid	"arithmetic type required for increment (was given $name)"
 msgstr	"arithmetic type required for increment (was given $name)"
 
 #
+# This error message is issued when an aenc command or aeca command
+# fails, to inform the user where s/he may find the text of failed
+# attributes file.
+#
+#	$File_Name	The absolute path of the file containing the
+#			offending attributes text file.
+#
+msgid	"attributes in $filename"
+msgstr	"attributes text left in the \"$filename\" file"
+
+#
 # This error message is issued when aepa is given a default development
 # directory which is not an absolute path.
 #
@@ -649,6 +745,15 @@ msgstr	"default development directory must be specified as an absolute "
 #
 msgid	"bad pattern $filename"
 msgstr	"filename pattern \"$filename\" is illegal"
+
+#
+# This error message is issued when a project name is given to aenpr
+# which contains unprintable characters or spaces.
+#
+#	$Name		The offending project name.
+#
+msgid	"bad project $name"
+msgstr	"project name \"$name\" is invalid"
 
 #
 # This error message is issued when a version string is given to aenpr
@@ -726,10 +831,21 @@ msgstr	"cd $filename"
 # This is the format of change messages (error, fatal and verbose).
 # Some changes are actually branches.
 #
-#	$Message"	The message to be issued.
+#	$Message	The message to be issued.
 #
 msgid	"change $change: $message"
 msgstr	"change $change: $message"
+
+#
+# This fatal error is issued when the --delta-from-change option is used
+# with a change which has not yet been completed.
+#
+# 	$Number		The offending change's number.
+#
+msgid	"change $number not completed"
+msgstr	"change $number is in the \"$state\" state; it must be in the "
+	"\"completed\" state to be used with the --delta-from-change "
+	"option"
 
 #
 # This error message is issued when an absurd change number is given.
@@ -739,6 +855,14 @@ msgstr	"change $change: $message"
 #
 msgid	"change $number out of range"
 msgstr	"change $number out of range, it must be a small positive number"
+
+#
+# This message is issued when aedist --receive cancells a change because
+# the change is alreday present in the repository.  No action required.
+#
+msgid	"change already present"
+msgstr	"This change has been cancelled because the change set is already "
+	"present in the repository."
 
 #
 # This error message is issued when a chdir fails.
@@ -766,31 +890,6 @@ msgstr	"chgrp(\"$filename\", $arg): $errno"
 msgid	"chmod(\"$filename\", $arg): $errno"
 msgstr	"chmod(\"$filename\", $arg): $errno"
 
-#
-#	aegis - project change supervisor
-#	Copyright (C) 1995, 1996, 1997, 1998, 1999 Peter Miller;
-#	All rights reserved.
-#
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
-#	(at your option) any later version.
-#
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
-#
-#	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: English localization
-#
-# This file contains error messages for the files with libaegis source
-# directory, and also those messages common to one or more commands.
-#
-# -----------------------------------------------------------------------------
 #
 # This error message is issued when a file close fails
 #
@@ -857,6 +956,15 @@ msgid	"command line too short"
 msgstr	"command line too short"
 
 #
+# This fatal error message is issued when aedist or aepatch don't
+# recognize a content transfer encoding name.
+#
+#	$Name		The offending encoding name.
+#
+msgid	"content transfer encoding $name unknown"
+msgstr	"content transfer encoding \"$name\" unknown"
+
+#
 # This error message is issued when a file copy fails.  Exactly which
 # file is at fault is not immediately available, because Aegis could
 # have one this in a child process.
@@ -881,6 +989,15 @@ msgstr	"create \"$filename\": $errno"
 #
 msgid	"creating symbolic links to baseline"
 msgstr	"creating symbolic links to baseline"
+
+#
+# This fatal error message is issued when a user-supplied string can't
+# be interpreted as a date (time_t).
+#
+#	$Name		The offending string.
+#
+msgid	"date $name unknown"
+msgstr	"the string \"$name\" does not look like a date"
 
 #
 # This error message is issued when a division by zero is attempted.
@@ -1274,6 +1391,16 @@ msgstr	"global state lock not available"
 #
 msgid	"group \"$name\" unknown"
 msgstr	"group \"$name\" unknown"
+
+#
+# This error message is issued when aena is asked to add an
+# administrator to a project, but the group's gid is too low (too
+# privileged).
+#
+#	$Name		The offending group name.
+#
+msgid	"group $name too privileged"
+msgstr	"group \"$name\" is too privileged"
 
 #
 # This fatal error message is issued when something goes wrong decompressing
@@ -1774,6 +1901,18 @@ msgid	"modulo by zero"
 msgstr	"modulo by zero"
 
 #
+# This progress message is issued when aenbr completes successfully.
+#
+msgid	"new branch complete"
+msgstr	"created"
+
+#
+# This progress message is issued when aenc completes successfully.
+#
+msgid	"new change complete"
+msgstr	"created"
+
+#
 # This fatal error message is issued when the aenf command runs a
 # body_command to create a new file, and the command fails to create
 # the file.
@@ -1782,6 +1921,12 @@ msgstr	"modulo by zero"
 #
 msgid	"new file $filename not created"
 msgstr	"the file \"$filename\" was not created"
+
+#
+# This progress message is issued when aenpr completes successfully.
+#
+msgid	"new project complete"
+msgstr	"created"
 
 #
 # This error message is issued when an unknown name is referenced,
@@ -2004,6 +2149,15 @@ msgid	"pathconf(\"$filename\", {PATH_MAX}): $errno"
 msgstr	"pathconf(\"$filename\", {PATH_MAX}): $errno"
 
 #
+# This information message is issued when aenpr automatically allocates
+# the project home directory.
+#
+#	$File_Name	The absolute path of the project home directory.
+#
+msgid	"proj dir $filename"
+msgstr	"project directory \"$filename\""
+
+#
 # This is the format of project messages (error, fatal and verbose).
 # Change messages also pass through this format indirectly.
 #
@@ -2018,6 +2172,27 @@ msgstr	"project \"$project\": $message"
 #
 msgid	"project $name exists"
 msgstr	"project name \"$name\" already in use"
+
+#
+# This error message is issued when aenpr is given a project name which
+# is too long.  The only restriction on project name length is the
+# file system on which it must reside.
+#
+#	$Name		The offending project name.
+#	$Number		How many characters too long (how many to remove)
+#			(Optional)
+#
+msgid	"project $name too long"
+msgstr	"project name \"$name\" too long (by $number)"
+
+#
+# This error message is issued when a user attempts to create a new
+# project alias, using a project name which already exists.
+#
+#	$Name		The offending project alias.
+#
+msgid	"project alias $name exists"
+msgstr	"project alias \"$name\" already in use"
 
 #
 # This error message is issued when a file read fails.
@@ -2314,6 +2489,13 @@ msgid	"throw statement requires string argument (not $name)"
 msgstr	"the throw statement requires string argument (was given $name)"
 
 #
+# This error message is issued when too many file names are specified on
+# the command line.
+#
+msgid	"too many files"
+msgstr	"too many file names specified"
+
+#
 # This format string is used when assembling a change message
 # (information, progress or fatal) for the trunk change of a project.
 #
@@ -2420,6 +2602,16 @@ msgstr	"unknown substitution variant"
 #
 msgid	"unlink $filename: $errno"
 msgstr	"unlink \"$filename\": $errno"
+
+#
+# This error message is issued when aena is asked to add an
+# administrator to a project, but the user's uid is too low (too
+# privileged).
+#
+#	$Name		The offending user name.
+#
+msgid	"user $name too privileged"
+msgstr	"user \"$name\" is too privileged"
 
 #
 # This error message is issued when a user from the /etc/passwd file, or
@@ -2597,6 +2789,25 @@ msgstr	"warning: The history tool modified $number source ${plural "
 	"object ${plural $number files file} in the repository.  The "
 	"history tool has compromised the referential integrity of the "
 	"repository, unless the changes occur exclusively in comments."
+
+#     
+# This warning is issued when a received file could have a Trojan horse
+# attack in it, but the use said to keep going.
+#
+msgid	"warning: potential trojan, proceeding anyway"
+msgstr	"Warning: This change contains files which could host a Trojan "
+	"horse attack.  Because you specified the --no-trojan option, the "
+	"development will proceed despite this."
+
+#
+# This warning is issued when a received file could have a Trojan horse
+# attack in it.
+#
+msgid	"warning: potential trojan, review before completing development"
+msgstr	"Warning: This change contains files which could host a Trojan "
+	"horse attack.  You should review it before building it or "
+	"testing it or completing development.  This change remains in "
+	"the being_developed state."
 
 #
 # This warning message is issued when a rmdir fails, but Aegis will continue.

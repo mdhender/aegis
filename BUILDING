@@ -3,7 +3,8 @@ Build(Aegis)					     Build(Aegis)
 NAME
 	aegis -	project	change supervisor
 	Copyright (C) 1991, 1992, 1993,	1994, 1995, 1996, 1997,
-	1998, 1999 Peter Miller; All rights reserved.
+	1998, 1999, 2000, 2001,	2002 Peter Miller; All rights
+	reserved.
 
 	The aegis program is distributed under the terms of the
 	GNU General Public License.  See the LICENSE section,
@@ -49,14 +50,10 @@ SITE CONFIGURATION
 	and functions.	If your	system does not	have them, it is
 	worth fetching and installing GNU zlib compression
 	library	before you run the configure script.  (See
-	http://www.cdrom.com/pub/infozip/zlib/ for download.)
-	This is	essential, becaise Aegis will not build.  without
-	it.  (Note: this is not	the same thing as zlibc	which
-	does something completely different.)
-
-Reference Manual	      Aegis				1
-
-Build(Aegis)					     Build(Aegis)
+	http://www.gzip.org/zlib/ for download.)  This is
+	essential, becaise Aegis will not build.  without it.
+	(Note: this is not the same thing as zlibc which does
+	something completely different.)
 
 	The configure script checks for	the regular expression
 	library	and functions.	If your	system does not	have
@@ -110,10 +107,6 @@ Build(Aegis)					     Build(Aegis)
 		for architecture-specific files	and architecture-
 		independent files.  Defaults to	${prefix} unless
 		otherwise specified.
-
-Reference Manual	      Aegis				2
-
-Build(Aegis)					     Build(Aegis)
 
 	--bindir=PATH
 		This directory contains	executable programs.  On
@@ -169,11 +162,6 @@ Build(Aegis)					     Build(Aegis)
 	like this:
 		$ CC='gcc -traditional'	LIBS=-lposix ./configure
 		...lots	of output...
-
-Reference Manual	      Aegis				3
-
-Build(Aegis)					     Build(Aegis)
-
 		$
 	Here are the make variables that you might want	to
 	override with environment variables when running
@@ -228,11 +216,6 @@ Build(Aegis)					     Build(Aegis)
 		This specifies the minimum unprivileged	GID on
 		your system.  GIDs less	than this may not own
 		projects, or play any other role in an aegis
-
-Reference Manual	      Aegis				4
-
-Build(Aegis)					     Build(Aegis)
-
 		project.  The default value is 10.
 
 	AEGIS_USER_UID
@@ -283,9 +266,10 @@ Build(Aegis)					     Build(Aegis)
 	explains why aegis must	run set-uid-root; please read it
 	if you have concerns.
 
-Reference Manual	      Aegis				5
-
-Build(Aegis)					     Build(Aegis)
+   Remember Your Settings
+	It is important	to remember your configuration settings.
+	This way, it will be a simple matter when it comes time
+	to upgrade Aegis.
 
 BUILDING AEGIS
 	All you	should need to do is use the
@@ -335,17 +319,20 @@ BUILDING AEGIS
 	this if	you want to regenerate configure using a newer
 	version	of autoconf.
 
+   Upgrading
+	When upgrading from one	release	to a newer one,	it is
+	important that all of the machines on your network are
+	running	the same release of Aegis.  This minimises the
+	possibility of database	incompatibilities.  In general,
+	Aegis is backwards compatible with earlier releases, but
+	not forwards compatible	in the face of new capabilities.
+
 OTHER USEFUL SOFTWARE
 	Before describing how to test aegis, you may need to grab
 	some other free	software, because the tests require it in
 	some cases, and	because	it is generally	useful in others.
 
 	cook	This is	a dependency maintenance tool (DMT).  An
-
-Reference Manual	      Aegis				6
-
-Build(Aegis)					     Build(Aegis)
-
 		example	of a well-known	DMT is make(1),	however
 		this old faithful is mostly not	sufficiently
 		capable	to meet	the demands placed on it by the
@@ -361,10 +348,11 @@ Build(Aegis)					     Build(Aegis)
 	GNU diff
 		If the diff(1) utility supplied	by your	flavor of
 		unix does not have the -c option, you will need
-		GNU diff to make patch files, if you want to
-		publish	software for FTP or on USENET.	Context
-		differences are	also helpful for reviewing
-		changes.
+		GNU diff for aepatch(1)	to work	(and the
+		aepatch(1) tests to pass).  Context differences
+		are also helpful for reviewing changes.	 GNU diff
+		is essential for Solaris, because the Solaris
+		diff has bugs that Aegis' tests	uncover.
 
 	RCS	This is	a source control package, and is
 		available from any of the GNU archives.	 The
@@ -400,11 +388,6 @@ Build(Aegis)					     Build(Aegis)
 		into /usr/local	(for example) you must ensure
 		that the Aegis ./configure script is told to also
 		look in	/usr/local/include for include files
-
-Reference Manual	      Aegis				7
-
-Build(Aegis)					     Build(Aegis)
-
 		(CFLAGS), and /usr/local/lib for library files
 		(LDFLAGS).  Otherwise the not been installed.
 
@@ -413,16 +396,8 @@ Build(Aegis)					     Build(Aegis)
 		tools which (sometimes)	come with UNIX.	 They
 		produce	superior error messages, and support a
 		wider range of functionality and fonts.	 The
-		aegis User Guide was prepared with groff.
-
-	GNU Groff patch
-		There is a patch for GNU Groff available, which
-		gives groff(1) and gsoelim(1) a	-Ipath option.
-		This adds an include file search path, similar to
-		cpp(1).	 The Makefile assumes this is available.
-		The patch is at
-		http://www.canb.auug.org.au/~millerp/groff-1.10.patch.gz
-		or its mirrors.
+		Aegis User Guide was prepared with GNU Groff.
+		You need GNU Groff 1.14	or later.
 
 	bison	This GNU software is a replacement for yacc(1).
 		Some systems have very sick yaccs, and bison may
@@ -436,7 +411,7 @@ Build(Aegis)					     Build(Aegis)
 		originally written by David I. Bell, and is based
 		on the minimal difference algorithm by Eugene W.
 		Myers.	This copy is enhanced and maintained by
-		the same author	as aegis, and may be found at the
+		the same author	as Aegis, and may be found at the
 		same archive site, in the same directory.
 
 	rx	This library provides POSIX regular expressions,
@@ -448,9 +423,15 @@ Build(Aegis)					     Build(Aegis)
 		(de)compression	algorithm(s).  It is essential to
 		have this installed before you build Aegis.  The
 		home page may be found at
-		http://www.cdrom.com/pub/infozip/zlib/ if you
-		need to	download it.  Note: this is not	the same
-		as zlibc which is Linux	specific.
+		http://www.gzip.org/zlib/ if you need to download
+		it.  Note: this	is not the same	as zlibc which is
+		Linux specific.
+
+	tkdiff	This program shows the difference between two
+		text files, nicely highlighted in color.  This is
+		used by	the tkaer and aecomp scripts (and
+		probably others	as they	are contributed).  By
+		John M.	Klassa,	http://www.ede.com/free/tkdiff
 
 	The tests also depend on the presence of a number of
 	common UNIX programs, including	but not	limited	to: cc,
@@ -459,11 +440,6 @@ Build(Aegis)					     Build(Aegis)
 	programs may be	in optional packages.  (This is
 	especially true	of Linux.)  You	need to	ensure that these
 	programs are correctly installed before	you run	the
-
-Reference Manual	      Aegis				8
-
-Build(Aegis)					     Build(Aegis)
-
 	tests.
 
 TESTING	AEGIS
@@ -492,6 +468,10 @@ TESTING	AEGIS
 	-O2.  You need to edit the Makefile to only optimize at
 	-O, delete the objects and rebuild.
 
+	If you are using Solaris' diff,	test 133 will report ``no
+	result''.  You need to install GNU diff, because the
+	Solaris	diff has bugs.
+
 	If you are using Sun's tmpfs file system as your /tmp
 	directory, the tests will fail.	 This is because the
 	tmpfs file system does not support file	locking.  Set the
@@ -517,10 +497,6 @@ TESTING	AEGIS
 	available, test	81 will	fail.  The GNU rx library
 	provides these.	 Installing it and re-configuring and re-
 	building Aegis will solve the problem.
-
-Reference Manual	      Aegis				9
-
-Build(Aegis)					     Build(Aegis)
 
 TESTING	SET-UID-ROOT
 	If the Aegis program is	not set-uid-root then it runs in
@@ -576,11 +552,6 @@ INSTALLING AEGIS
 
 	All that is required to	install	the Aegis package is to
 	use the
-
-Reference Manual	      Aegis			       10
-
-Build(Aegis)					     Build(Aegis)
-
 		% make install
 		...lots	of output...
 		%
@@ -601,7 +572,7 @@ Build(Aegis)					     Build(Aegis)
 	them manually.
 
 USER CONFIGURATION
-	The aegis command is assumed to	be in a	generally
+	The Aegis command is assumed to	be in a	generally
 	accessible place, otherwise users will need to add the
 	relevant directory to their PATH.  Users should	add
 		source /usr/local/lib/aegis/cshrc
@@ -612,12 +583,12 @@ USER CONFIGURATION
 	There is also a	profile	for users of the Bourne	shell (it
 	assumes	you have a version of the Bourne shell which has
 	functions).  Users should add
-		. /usr/local/lib/aegis/profile
+		. /usr/local/share/aegis/profile
 	to the end of their .profile file for the recommended
 	aliases.  (This	profile	assumes	that users are using a
 	Bourne shell which understands functions.)
 
-	The /usr/local/lib/aegis/state file contains pointers to
+	The /usr/local/com/aegis/state file contains pointers to
 	"system" projects.  Users may add their	own project
 	pointers (to their own projects) by putting a search path
 	into the AEGIS_PATH environment	variable.  The system
@@ -628,18 +599,13 @@ USER CONFIGURATION
 
 	Where projects reside is completely flexible, be they
 	system projects	or user	projects.  They	are not	kept
-	under the /usr/local/lib/aegis directory, this directory
+	under the /usr/local/com/aegis directory, this directory
 	only contains pointers.
 
 	If you have a Web server, and the aegis.cgi was
 	installed, you can set its AEGIS_PATH environment
 	variable, if you want it to be able to see more	projects
 	than just the global projects.	You do this by creating	a
-
-Reference Manual	      Aegis			       11
-
-Build(Aegis)					     Build(Aegis)
-
 	/usr/local/lib/aegis.cgi.conf file (there isn't	one, by
 	default) and setting the AEGIS_PATH environment	variable
 	in it.	This is	a fragment of Bourne shell script, not
@@ -662,7 +628,7 @@ PRINTED	MANUALS
 	is about 100 pages long.
 
 TIME SYNCHRONIZATION
-	The aegis program uses time stamps to remember whether
+	The Aegis program uses time stamps to remember whether
 	various	events have happened and when.	If you are using
 	Aegis in a networked environment, typically a server and
 	data-less workstations,	you need to make absolutely sure
@@ -680,7 +646,7 @@ GETTING	HELP
 	When reporting problems, please	include	the version
 	number given by	the
 		% aegis	-version
-		aegis version 3.20
+		aegis version 4.2
 		...
 		%
 	command.  Please run this command to get the exact
@@ -694,11 +660,6 @@ GETTING	HELP
 	-TRAce command line option.
 
 	When the -TRAce	command	line option is followed	by one or
-
-Reference Manual	      Aegis			       12
-
-Build(Aegis)					     Build(Aegis)
-
 	more file names, it turns on execution traces in those
 	source files.  It is usually best to place this	on the
 	end of the command line	so that	names of the files to be
@@ -753,11 +714,6 @@ Build(Aegis)					     Build(Aegis)
 		was set-uid-root?  You could have had problems
 		running	them, or some of them could have failed.
 		If some	tests fail but not others, please let me
-
-Reference Manual	      Aegis			       13
-
-Build(Aegis)					     Build(Aegis)
-
 		know which ones	failed,	and include the	fact that
 		Aegis was set-uid-root at the time.
 
@@ -803,20 +759,15 @@ Build(Aegis)					     Build(Aegis)
 	interest required to produce it.
 
 LICENSE
-	The aegis program is free software; you	can redistribute
+	The Aegis program is free software; you	can redistribute
 	it and/or modify it under the terms of the GNU General
 	Public License as published by the Free	Software
 	Foundation; either version 2 of	the License, or	(at your
 	option)	any later version.
 
-	The aegis program is distributed in the	hope that it will
+	The Aegis program is distributed in the	hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the
 	implied	warranty of MERCHANTABILITY or FITNESS FOR A
-
-Reference Manual	      Aegis			       14
-
-Build(Aegis)					     Build(Aegis)
-
 	PARTICULAR PURPOSE.  See the GNU General Public	License
 	for more details.
 
@@ -826,10 +777,6 @@ Build(Aegis)					     Build(Aegis)
 AUTHOR
 	Peter Miller   E-Mail:	 millerp@canb.auug.org.au
 	/\/\*		  WWW:	 http://www.canb.auug.org.au/~millerp/
-
-Reference Manual	      Aegis			       15
-
-Build(Aegis)					     Build(Aegis)
 
 WINDOWS-NT
 	It is possible to build	Aegis for Windows-NT.  I have
@@ -847,8 +794,8 @@ WINDOWS-NT
 	uses the POSIX seteuid(2) system call, which has no
 	direct equivalent on Windows NT.  This makes porting
 	difficult.  Single user	ports are possible (e.g. using
-	Cygwin (http://sourceware.cygnus.com/cygwin/), but are
-	not usually what folks want.
+	Cygwin (http://www.cygwin.com/), but are not usually what
+	folks want.
 
 	Compounding this is the	fact that many sites want to
 	develop	their software for both	Unix and Windows NT
@@ -867,10 +814,11 @@ WINDOWS-NT
 	are accessed via Samba or NFS.
 
    The Source
-	You need to FTP	the Cygwin system from Cygnus.	It can be
+	You need to FTP	the Cygwin system from RedHat.	It can be
 	found at
-		http://sourceware.cygnus.com/cygwin/
-	and then follow	the links.  The	version	I used was B20.1.
+		http://www.cygwin.com/
+	and then follow	the links.  The	original version used was
+	B20.1, but more	recently 1.1.7 has been	used.
 
 	It is absolutely essential to run the mkpasswd and
 	mkgroup	commands, otherwise Aegis will give fatal errors
@@ -885,10 +833,6 @@ WINDOWS-NT
 	work.  I have no idea why.  Use
 		mount C:/temp /tmp
 	instead.  (Or some other local drive.)
-
-Reference Manual	      Aegis			       16
-
-Build(Aegis)					     Build(Aegis)
 
 	Just a tip for all of you who, like me,	know Unix much
 	better than you	know Windows-NT: the left-hand mount
@@ -911,26 +855,49 @@ Build(Aegis)					     Build(Aegis)
 	all this every time!
 
    Too Much Administrator
-	If you have administrator privelege on your Windows NT
+	If you have administrator privilege on your Windows NT
 	box, you need to get rid of it.	 (Have a second	admin
 	account	instead.)  This	is because Windows NT will make
 	the files belong to the	wrong user for files on	some
 	partitions, like /tmp.	(This took me days to work out!)
 	This confuses both Aegis and RCS.
 
-	If you get weird ``Permission denied'' error from
+	If you get weird ``Permission denied'' errors from
 	amazingly unlikely causes, this	is probably why.
 
    Before You Start
 	There are several pieces of software you need before you
 	can build Aegis	on Cygwin.
 
+	I'm going to keep mentioning ``your local GNU mirror''.
+	You can	find
+		GNU at http://www.gnu.org, however you are better
+		off using a local mirror, and these are	scattered
+		around the globe.  Follow the ``mirrors'' link on
+		their front page to find your closest mirror.
+		Also, it's often a good	idea to	configure these
+		packages with the ``--with-gnu-gettext'' option
+		to their ./configure commands.
+
+	Do not use WinZip to unpack the	tarball.  It has a nasty
+	habit of
+		turning	all of the newlines into CRLFs.	 This
+		will confuse lots of utilities,	especially GNU
+		Groff.	Use the	``tar xzf aegis-4.2.tar.gz''
+		command	from within Cygwin.
+
+	Make sure the Cygwin you are using has GNU Groff 1.15 or
+	later
+		(use a ``groff -v'' command).  Grab and	install
+		the latest from	your local GNU mirror, if it
+		isn't.
+
 	util-linux
 		You need to get	GNU rx,	but to make it work you
 		have to	find a tsort command, so that GNU rx's
 		./configure script works.  Try the latest copy of
 		system/misc/util-linux-?.?.tar.gz from the
-		sunsite.unc.edu	Linux archive (or a mirror).
+		metalab.unc.edu	Linux archive (or a mirror).
 		Simply build and install misc-utils/tsort.c by
 		hand.
 
@@ -944,11 +911,6 @@ Build(Aegis)					     Build(Aegis)
 
 	GNU diffutils
 		You need GNU diffults, because when you	come to
-
-Reference Manual	      Aegis			       17
-
-Build(Aegis)					     Build(Aegis)
-
 		configure GNU RCS (next) it would otherwise
 		complain about a stupid	diff and a missing diff3
 		command.  The install-sh script	is broken, so
@@ -967,8 +929,14 @@ Build(Aegis)					     Build(Aegis)
 	expect it to be	dog slow compared to Linux or FreeBSD on
 	the same box.)
 
+	Sharutils
+		You need the uudecode command for several of the
+		tests, and this	may be found in	the GNU	Sharutils
+		package.  You can get a	copy from your local GNU
+		mirror.
+
 	The configure step is almost the same as for Unix.  I
-	know you are itching to	get typing, but	read throught to
+	know you are itching to	get typing, but	read through to
 	the install section before you configure anything.
 		bash$ ./configure
 		...lots	of output...
@@ -992,8 +960,6 @@ Build(Aegis)					     Build(Aegis)
 	Unfortunately, it isn't	that simple.  There are	a number
 	of things you will see go wrong...
 
-	+o Several tests	fail because uudecode isn't there.
-
 	+o Several tests	fail because ed	isn't there.
 
 	+o Several tests	fail because ci	(RCS 5.7) dumps	core much
@@ -1003,13 +969,8 @@ Build(Aegis)					     Build(Aegis)
 	  ``.exe'' extension on	executable files.
 
 	+o A couple of tests (notably, the aedist tests)	fail
-
-Reference Manual	      Aegis			       18
-
-Build(Aegis)					     Build(Aegis)
-
 	  because of the CRLF vs NL dichotomy.	This means that
-	  the expectd results don't match, not that it isn't
+	  the expected results don't match, not	that it	isn't
 	  working.
 
 	Despite	all the	bad news, the vast majority of tests
@@ -1028,4 +989,4 @@ Build(Aegis)					     Build(Aegis)
 		...lots	of output...
 		bash$
 
-Reference Manual	      Aegis			       19
+Reference Manual	      Aegis				1

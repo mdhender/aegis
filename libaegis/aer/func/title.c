@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,7 @@
  */
 
 #include <aer/expr.h>
+#include <aer/func/print.h>
 #include <aer/func/title.h>
 #include <aer/value/error.h>
 #include <aer/value/string.h>
@@ -61,9 +62,9 @@ run(ep, argc, argv)
 
 			scp = sub_context_new();
 			rpt_value_free(vp);
-			sub_var_set(scp, "Function", "title");
-			sub_var_set(scp, "Number", "1");
-			sub_var_set(scp, "Name", "%s", argv[0]->method->name);
+			sub_var_set_charstar(scp, "Function", "title");
+			sub_var_set_charstar(scp, "Number", "1");
+			sub_var_set_charstar(scp, "Name", argv[0]->method->name);
 			s =
 				subst_intl
 				(
@@ -92,9 +93,9 @@ run(ep, argc, argv)
 			scp = sub_context_new();
 			str_free(t1);
 			rpt_value_free(vp);
-			sub_var_set(scp, "Function", "title");
-			sub_var_set(scp, "Number", "2");
-			sub_var_set(scp, "Name", "%s", argv[1]->method->name);
+			sub_var_set_charstar(scp, "Function", "title");
+			sub_var_set_charstar(scp, "Number", "2");
+			sub_var_set_charstar(scp, "Name", argv[1]->method->name);
 			s =
 				subst_intl
 				(
@@ -112,7 +113,7 @@ run(ep, argc, argv)
 	else
 		t2 = str_from_c("");
 
-	col_title(t1->str_text, t2->str_text);
+	col_title(rpt_func_print__colp, t1->str_text, t2->str_text);
 	str_free(t1);
 	str_free(t2);
 	return rpt_value_void();

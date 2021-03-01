@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1998 Peter Miller;
+.\"	Copyright (C) 1991-1994, 1998, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 .if t .2C
 .nh 1 "The History Tool"
 .LP
-The aegis program is decoupled from the history mechanism.
+Aegis is decoupled from the history mechanism.
 This allows you to use the history mechanism of your choice,
 SCCS or RCS, for example.
 You may even wish to write your own.
@@ -34,7 +34,7 @@ or the one that comes free with your flavour of
 .UX
 operating system.
 .LP
-The aegis program uses the history mechanism for file
+Aegis uses the history mechanism for file
 .I history
 and so does not require many of the features of SCCS or RCS.
 This simplistic approach can sometimes make the interface to these
@@ -93,6 +93,45 @@ Substitutions available for the command string are:
 absolute path of history file
 .LP
 In addition, all substitutions described in \fIaesub\fP(5) are available.
+.nh 3 "history_content_limitation"
+This field describes the content style which the history tool is
+capable of working with.
+.IP ascii_text
+The history tool can only cope with files which contain printable
+ASCII characters, plus space, tab and newline.	The file must
+end with a newline.  This is the default.
+.IP international_text
+The history tool can only cope with files which do not contain
+the NUL character.  The file must end with a newline.
+.IP binary_capable
+The history tool can cope with files without any limitation on
+the form of the contents.
+.PP
+When a file is added to the history (by either the
+\fIhistory_\%create_\%command\fP or the \fIhistory_\%put_\%command\fP
+field) it is examined for conformance to this limitation.  If there is
+a problem, the file is encoded in either the MIME quoted printable or
+the MIME Base 64 encoding (see RFC 1521), whichever is smaller, before
+being given to the history tool.  The file in the baseline is unchanged.
+.PP
+On extract (the \fIhistory_get_command\fP field) the encoding is reversed,
+using information attached to the change file information.  This is
+because each put could use a different encoding (although in practice,
+file contents rarely change that dramatically, and the same encoding is
+likely to be deduced every time).
+.nh 3 "history_tool_trashes_file"
+Many history tools (e.g. RCS) can modify the contents of the file
+when it is committed.  While there are usually options to turn this
+off, they are seldom used.  The problem is: if the commit changes the
+file, the source in the repository now no longer matches the object
+file in the repository - \fIi.e.\fP the history tool has compromised the
+referential integrity of the repository.
+.LP
+By default, when this happens Aegis issues a fatal error (at \fIintergate
+pass\fP time).  You can turn this into a warning if you are convinced
+this is irrelevant.  This would only make sense if the substition only
+ever occurs in comments.  See \fIaepconf\fP(5) for more information
+on the values for this field.
 .nh 3 "Quoting Filenames"
 .LP
 The default setting is for Aegis to reject filenames which contain shell
@@ -102,8 +141,8 @@ set the \fIshell_safe_filenames\fP field of the project \fIconfig\fP
 file to \f(CWfalse\fP, you will need to surround filenames with the
 \f[CW]${quote\fP \fIfilename\fP\f[CW]}\fP substitution.  This will only
 quote filenames which actually need to be quoted, so users usually will
-not notice.  This command applies to all of the various filenames in
-the sections which follow.
+not notice.  This applies to all of the various filenames in
+the commands in the sections which follow.
 .so c3.1.so
 .so c3.2.so
 .so c3.3.so

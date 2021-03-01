@@ -82,7 +82,7 @@ strtoul(nptr, endptr, base)
 	int		neg;
 	unsigned long	n;
 	int		ndigits;
-	int		c;
+	unsigned char	c;
 
 	/*
 	 * This is not an ANSI C conforming implementation.

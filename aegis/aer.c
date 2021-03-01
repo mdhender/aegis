@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1997, 1999 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1997, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -85,6 +85,15 @@ report_help()
 }
 
 
+static void report_list2 _((void));
+
+static void
+report_list2()
+{
+	report_list(report_usage);
+}
+
+
 /*
  * NAME
  *	report_main
@@ -111,6 +120,7 @@ report_main()
 	string_ty	*s;
 
 	trace(("report_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	change_number = 0;
 	infile = 0;
@@ -137,7 +147,7 @@ report_main()
 				sub_context_ty *scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl
 				(
 					scp,
@@ -158,10 +168,25 @@ report_main()
 		case arglex_token_file:
 			if (infile)
 				duplicate_option(report_usage);
-			if (arglex() != arglex_token_string)
-				option_needs_file(arglex_token_file, report_usage);
-			trace(("accepting -File option\n"));
-			infile = str_from_c(arglex_value.alv_string);
+			switch (arglex())
+			{
+			default:
+				option_needs_file
+				(
+					arglex_token_file,
+					report_usage
+				);
+				/*NOTREACHED*/
+
+			case arglex_token_string:
+				trace(("accepting -File option\n"));
+				infile = str_from_c(arglex_value.alv_string);
+				break;
+
+			case arglex_token_stdio:
+				infile = str_from_c("");
+				break;
+			}
 			break;
 
 		case arglex_token_output:
@@ -250,20 +275,13 @@ report_main()
 void
 report()
 {
-	trace(("report()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		report_main();
-		break;
+		{ arglex_token_help,		report_help,	},
+		{ arglex_token_list,		report_list2, },
+	};
 
-	case arglex_token_help:
-		report_help();
-		break;
-
-	case arglex_token_list:
-		report_list(report_usage);
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("report()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), report_main);
+	trace(("}\n"));
 }

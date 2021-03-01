@@ -40,4 +40,13 @@ void option_needs_file _((int name, void(*usage)(void)));
 void option_needs_dir _((int name, void(*usage)(void)));
 void option_needs_files _((int name, void(*usage)(void)));
 
+struct string_ty; /* forward */
+void fatal_too_many_files _((void));
+void fatal_user_too_privileged _((struct string_ty *));
+void fatal_group_too_privileged _((struct string_ty *));
+void fatal_bad_project_name _((struct string_ty *));
+void fatal_project_name_too_long _((struct string_ty *, int));
+void fatal_date_unknown _((const char *));
+void fatal_project_alias_exists _((struct string_ty *));
+
 #endif /* HELP_H */

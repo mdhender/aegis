@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1999 Peter Miller;
+#	Copyright (C) 1991-1996, 1999, 2001 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 # of Aegis.  If you make local modifications, you will need to remember
 # to make them again after the next upgrade.
 #
-if ( -d $HOME/lib/aegis/. ) then
+if ( ! $?AEGIS_PATH && -d $HOME/lib/aegis/. ) then
 	setenv AEGIS_PATH $HOME/lib/aegis
 endif
 
@@ -110,6 +110,7 @@ alias	aeipass	'aegis -ipass \!* -v'
 alias	ael	'aegis -l \!* -v'
 alias	aem	'aegis -diff -only_merge \!* -v'
 alias	aemv	'aegis -mv \!* -v'
+alias	aemvu	'aegis -mvu \!* -v'
 alias	aena	'aegis -na \!* -v'
 alias	aenbr	'aegis -nbr \!* -v'
 alias	aenbru	'aegis -nbru \!* -v'
@@ -126,9 +127,12 @@ alias	aenrv	'aegis -nrv \!* -v'
 alias	aent	'aegis -nt \!* -v'
 alias	aentu	'aegis -ntu \!* -v'
 alias	aepa	'aegis -pa \!* -v'
+alias	aepwd	'aegis -Change_Directory \!* -ter'
 alias	aeq	'aegis -q \!* -v'
 alias	aer	'aereport \!* -v'
 alias	aera	'aegis -ra \!* -v'
+alias	aerb	'aegis -rb \!* -v'
+alias	aerbu	'aegis -rbu \!* -v'
 alias	aerd	'aegis -rd \!* -v'
 alias	aerfail	'aegis -rfail \!* -v'
 alias	aeri	'aegis -ri \!* -v'
@@ -140,6 +144,7 @@ alias	aerpu	'aegis -rpu \!* -v'
 alias	aermpr	'aegis -rmpr \!* -v'
 alias	aerrv	'aegis -rrv \!* -v'
 alias	aet	'aegis -t \!* -v'
+alias	aev	'aegis -version \!* -v'
 
 alias	ae_c	'setenv AEGIS_CHANGE "\!*"'
 alias	ae_p	'setenv AEGIS_PROJECT "\!*"'

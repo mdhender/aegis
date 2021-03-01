@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2000, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -46,14 +46,14 @@ In each case,
 not doing this "extra work" is a false economy.
 .LP
 The existence of these tests, though,
-is what determines which projects are most suited to aegis and which are not.
+is what determines which projects are most suited to Aegis and which are not.
 It should be noted that suitability is a continuous scale,
 not black-and-white.
 With effort and resources,
 almost anything fits.
 .nh 3 "Projects for which Aegis' Testing is Most Suitable"
 .LP
-Projects most suited to supervision by aegis are straight programs.
+Projects most suited to supervision by Aegis are straight programs.
 What the non-systems-programmers out there call "tools" and
 sometimes "applications".
 These are programs which take a pile of input,
@@ -78,12 +78,12 @@ you can immediately see if the output matches expectations.
 .LP
 This is a simple example.
 More complex examples exist,
-such as aegis itself.
-The aegis program is used to supervise its own development.
+such as Aegis itself.
+The Aegis program is used to supervise its own development.
 Tests consist of sequences of commands and expected results
 are tested for.
 .LP
-Other types of software have been developed using aegis:
+Other types of software have been developed using Aegis:
 compilers and interpreters,
 client-server model software,
 magnetic tape utilities,
@@ -95,7 +95,7 @@ For many years there have been full-screen applications on
 text terminals.
 In more recent times there is increasing use of graphical interfaces.
 .LP
-In developing these types of programs it is still possible to use aegis,
+In developing these types of programs it is still possible to use Aegis,
 but several options need to be explored.
 .nh 4 "Testing Via Emulators"
 .LP
@@ -105,12 +105,12 @@ it is possible to test the user interface,
 and test via the user interface.
 As yet,
 the author knows on no freely available emulators suitable for
-testing via aegis.
+testing via Aegis.
 If you find one,
 please let me know.
 .nh 4 "Limited Testing"
 .LP
-You may choose to use aegis simply for its ability to provide
+You may choose to use Aegis simply for its ability to provide
 controlled access to a large source.
 You still get the history and change mechanisms,
 the baseline model,
@@ -121,7 +121,7 @@ and testing it against expectations, is too hard.
 .LP
 If the program has a command line interface,
 in addition to the full-screen or GUI interface,
-the functionality accessible from the command line may be tested using aegis.
+the functionality accessible from the command line may be tested using Aegis.
 .LP
 It is possible that "limited testing" actually means "no testing",
 if you have no functionality accessible from the command line.
@@ -144,10 +144,10 @@ cost of
 testing.
 .nh 4 "Manual Tests"
 .LP
-The aegis program provides a manual test facility.
+The Aegis program provides a manual test facility.
 It was originally intended for programs which required
 some physical action from a user,
-such as "unplug ethernet cable now" or "mount tape XG356B now".
+such as "unplug Ethernet cable now" or "mount tape XG356B now".
 It can also be used to have a user confirm that some
 on-screen activity has happened.
 .LP
@@ -157,6 +157,11 @@ a cup of coffee,
 than to wait while the computer thinks of mindless things to ask you to do.
 This is human nature:
 if it can be automated, it is more likely to happen.
+.nh 4 "Unit Tests"
+Many folks think of testing as taking the final product and testing it.
+It is also possible to build specialized unit tests, which exercise
+specific portions of the code.  These tests can then be administrated
+by Aegis, even if the full-blown GUI cannot be.
 .nh 3 "Projects for which Aegis' Testing is Least Useful"
 .LP
 Another class of software is things like operating system kernels
@@ -169,7 +174,7 @@ it is hard to put into a shell script,
 and thus hard to write an Aegis test for.
 .LP
 The above chapter was written in 1991.  At this writing (1999) there are
-projects like \(muLinux and operating systems like vxWorks.  These are
+projects like \(muLinux and operating systems like VxWorks.  These are
 all embedded, and all have excellent network and download support.
 It is entirely possible (with design support!) to write automatically
 testable embedded systems.
@@ -185,7 +190,9 @@ the testing system controls and drives the test system,
 and watches what happens.
 .LP
 For example,
-many operating system vendors test their products by
+in the olden days before everyone had PC and graphics terminals,
+there were only serial interfaces available.
+Many operating system vendors tested their products by
 using computers connected to each serial line to simulate "user input".
 The system can be rebooted this way,
 and using dual-ported disks
@@ -196,11 +203,21 @@ For software houses which write kernels,
 or device drivers for kernels,
 or some other kernel work,
 this is bad news:
-the aegis program is probably not for you.
+the Aegis program is probably not for you.
 It is possible,
 but there may be more cost-effective development strategies.
-Of course, you could always use the rest of aegis,
+Of course, you could always use the rest of Aegis,
 and ignore the testing part.
+.LP
+However, Aegis has been used quite successfully to develop Linux kernel
+modules.  With suitable \fIsudo\fP(1) configuration to permit access to
+\fIinsmod\fP(1) &co, developers can write test scripts which load device
+drivers, try them out, and unload them again, all without universal
+\fIroot\fP access.
+.LP
+Also, the advent of modern tools, such as VMware, which allow one
+operating system to "host" another, may also permit straightforward
+testing of kernels and operating systems.
 .nh 4 "Firmware"
 .LP
 Firmware is a similar deal:
@@ -213,3 +230,19 @@ this is generally not available to run-of-the-mill software houses,
 but then they rarely write firmware, either.
 Those that do write firmware usually have the download capabilities,
 and some kind of remote operation facility.
+.LP
+However, this omits the possibility of not only cross compiling your
+code for the target system, but also compiling your code to run on
+natively on the build system.  The firmware (in the host incarnation)
+then falls into one of the categories above, and may be readily tested.
+This does not relieve you of also testing the firmware, but it increases
+the probability that the firmware isn't completely useless before you
+download it.
+.LP
+By using an object oriented language, such as C++, the polymorphism
+necessary to cope with multiple environments can be elegantly hidden
+behind a pure abstract base class.  Alternatively, by using a consistent
+API, you can accomplish the necessary sleight-of-hand at link time.
+.LP
+The unit test method mentioned earlier is also very useful for firmware,
+even if the device "as a whole" cannot be tested.

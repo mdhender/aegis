@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996 Peter Miller;
+ *	Copyright (C) 1996, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -66,7 +66,7 @@ run(that, rp)
 		string_ty	*s;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", vp2->method->name);
+		sub_var_set_charstar(scp, "Name", vp2->method->name);
 		rpt_value_free(vp2);
 		s =
 			subst_intl

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998 Peter Miller;
+.\"	Copyright (C) 1991-1995, 1998, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -64,12 +64,12 @@ The entry in the
 file looks like this:
 .E(
 history_create_command =
-  "ci -f -u -d -M -m$c -t/dev/null \e
+  "ci -u -d -M -m$c -t/dev/null \e
   $i $h,v; rcs -U $h,v";
 .E)
 .LP
-The "\f(CWci -f\fP" option is used to specify that
-a copy is to be checked-in even if there are no changes.
+.\" The "\f(CWci -f\fP" option is used to specify that
+.\" a copy is to be checked-in even if there are no changes.
 The "\f(CWci -u\fP" option is used to specify that
 an unlocked copy will remain in the baseline.
 The "\f(CWci -d\fP" option is used to specify that 
@@ -87,6 +87,11 @@ after
 on the same file name).
 The "\f(CWrcs -U\fP" option is used to specify that
 the new RCS file is to have unstrict locking.
+.LP
+It is essential that the \fIhistory_\%create_\%command\fP and the
+\fIhistory_\%put_\%command\fP are identical.  It is a historical accident
+that there are two separate commands: before Aegis supported branches,
+this was not a requirement.
 .nh 3 "history_get_command"
 .LP
 This command is used to get a specific edit back from history.
@@ -132,20 +137,17 @@ The entry in the
 file looks like this:
 .E(
 history_put_command =
-  "ci -f -u -d -M -m$c $i $h,v"
+  "ci -u -d -M -m$c -t/dev/null \e
+  $i $h,v; rcs -U $h,v";
 .E)
 .LP
 Uses ci to deposit a new revision, using -d and -M as described
 for history_create_command.  The -m flag stores the change number
-in the file log, which allows rlog to be used to find the Aegis
+in the file log, which allows \fIrlog\fP(1) to be used to find the Aegis
 change numbers to which each revision of the file corresponds.
-.E(
-history_put_command =
-  "ci -u -d -M -m$c $i $h,v";
-.E)
 .LP
-The "\f(CWci -f\fP" option is used to specify that
-a copy is to be checked-in even if there are no changes.
+.\" The "\f(CWci -f\fP" option is used to specify that
+.\" a copy is to be checked-in even if there are no changes.
 The "\f(CWci -u\fP" option is used to specify that
 an unlocked copy will remain in the baseline.
 The "\f(CWci -d\fP" option is used to specify that 
@@ -159,12 +161,10 @@ which allows
 to be used to find the change numbers to which
 each revision of the file corresponds.
 .LP
-It is possible for a
-a very cautious approach has been taken,
-in which case the
-.I history_put_command
-may be set to the same string specified above for the
-\fIhistory_create_command\fP.
+It is essential that the \fIhistory_\%create_\%command\fP and the
+\fIhistory_\%put_\%command\fP are identical.  It is a historical accident
+that there are two separate commands: before Aegis supported branches,
+this was not a requirement.
 .nh 3 "history_query_command"
 .LP
 This command is used to query what the history mechanism calls the top-most
@@ -235,10 +235,32 @@ when conflict lines are inserted into the result.
 The "\f(CWmerge -p\fP" options is used to specify that
 the results are to be printed on the standard output.
 .PP
-It is important that theis command does not move its inpout and output
-files around, otherwise the contradicts the warnings Aegis may issue to
+It is important that this command does not move its input and output
+files around, otherwise this contradicts the warnings Aegis may issue to
 the user.  (In previous versions of Aegis, this was necessary, however
 this is no longer the case.)
+.LP
+\fBWarning:\fP The version of \fIdiff3\fP(1) available to RCS
+\fImerge\fP(1) has a huge impact on its performance and utility.  You need
+to grab and install GNU diff to get the best results.  \fIUnfortunately\fP
+the diff tool used by RCS \fImerge\fP(1) is determined at compile time.
+This means that you need to build and install GNU diff package
+\fIbefore\fP you build and install GNU RCS package.
+.nh 3 "Referential Integrity"
+Many history tools (including RCS) can modify the contents of the file
+when it is committed.  While there are usually options to turn this
+off, they are seldom used.  The problem is: if the commit changes the
+file, the source in the repository now no longer matches the object
+file in the repository - \fIi.e.\fP the history tool has compromised the
+referential integrity of the repository.
+.E(
+history_put_trashes_file = warn;
+.E)
+If you use RCS keyword substitution, you will need this line.
+(The default is to report a fatal error.)
+.LP
+Another reason for this option is that it tells Aegis it needs to
+recalculate the file's fingerprint after a checkin.
 .nh 3 "Templates"
 .LP
 The
@@ -248,3 +270,52 @@ contains all of the above commands,
 so that you may readily insert them into your project
 .I config
 file.
+.LP
+Also, there are some subtleties to writing the commands, which are not
+present in the above examples.  In particular, being able to support file
+names which contain characters which are special to the shell requires
+the use of the ${quote} substitution around all of the files names in
+the commands.
+.LP
+In addition, it is possible to have a much more useful description for
+the \fB\-m\fP option.  For example: ``\f[CW]-m${quote ($version) ${change
+description}}\fP'' inserts the version number and the brief description
+into the file's log.  This means that using the \fIrlog\fP(1) command
+will provide quite useful summaries.
+.nh 3 "Binary Files"
+RCS (version 5.6 and later) is able to cope with binary files.
+It does so by saving a whole copy of the file at each check-in.
+.PP
+If you want Aegis
+to transparently encode all such files, simply leave the
+\fIhistory_\%content_\%limitation\fP field unset.
+.PP
+If you want to check-in binary files, add the \f[CW]\-kb\fP option to
+each of the \f[CW]rcs -U\fP commands in the fields above, and also set
+.E(
+history_content_limitation = binary_capable;
+.E)
+so that Aegis knows that no encoding is desired.
+.nh 3 "history_put_trashes_files"
+If you use RCS keywords, such as $\f[CW]id\fP$ or $\f[CW]log\fP$,
+this will result in the file in the baseline being changed by RCS at
+integrate pass.  This is \fIafter\fP the build.  The result is that the
+source files no longer match the object files.  Oops.
+.LP
+While such mechanism are essential when using only a simple history
+tool, far more information may be obtained using the file history report
+(\f[CW]aer file_history\fP \fIfilename\fP), rendering such crude methods
+unnecessary.
+.LP
+In addition to expected expansions in file header comments, this can
+also be very destructive if, for example, such a string appeared in a
+uuencoded or MIME base 64 encoded file.
+.LP
+If you wish to prevent RCS from performing keyword expansion, used the
+\f[CW]rcs -kb\fP option.
+.LP
+If, however, you wish to keep using keyword expansion, set
+.E(
+history_tool_trashes_file = warning;
+.E)
+to cause Aegis to warn you, rather than fail.

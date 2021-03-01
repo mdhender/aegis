@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -58,7 +58,7 @@ bitwise_and_evaluate(tp, path, st)
 
 		scp = sub_context_new();
 		rpt_value_free(v1i);
-		sub_var_set(scp, "Name", "%s", v1->method->name);
+		sub_var_set_charstar(scp, "Name", v1->method->name);
 		rpt_value_free(v1);
 		s =
 			subst_intl
@@ -88,7 +88,7 @@ bitwise_and_evaluate(tp, path, st)
 		rpt_value_free(v1i);
 		rpt_value_free(v2i);
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", v2->method->name);
+		sub_var_set_charstar(scp, "Name", v2->method->name);
 		s =
 			subst_intl
 			(
@@ -166,7 +166,7 @@ bitwise_xor_evaluate(tp, path, st)
 
 		scp = sub_context_new();
 		rpt_value_free(v1i);
-		sub_var_set(scp, "Name", "%s", v1->method->name);
+		sub_var_set_charstar(scp, "Name", v1->method->name);
 		rpt_value_free(v1);
 		s =
 			subst_intl
@@ -196,7 +196,7 @@ bitwise_xor_evaluate(tp, path, st)
 		scp = sub_context_new();
 		rpt_value_free(v1i);
 		rpt_value_free(v2i);
-		sub_var_set(scp, "Name", "%s", v2->method->name);
+		sub_var_set_charstar(scp, "Name", v2->method->name);
 		rpt_value_free(v2);
 		s =
 			subst_intl
@@ -274,7 +274,7 @@ bitwise_or_evaluate(tp, path, st)
 
 		scp = sub_context_new();
 		rpt_value_free(v1i);
-		sub_var_set(scp, "Name", "%s", v1->method->name);
+		sub_var_set_charstar(scp, "Name", v1->method->name);
 		rpt_value_free(v1);
 		s =
 			subst_intl
@@ -304,7 +304,7 @@ bitwise_or_evaluate(tp, path, st)
 		scp = sub_context_new();
 		rpt_value_free(v1i);
 		rpt_value_free(v2i);
-		sub_var_set(scp, "Name", "%s", v2->method->name);
+		sub_var_set_charstar(scp, "Name", v2->method->name);
 		rpt_value_free(v2);
 		s =
 			subst_intl
@@ -399,7 +399,7 @@ bitwise_not_evaluate(tp, path, st)
 		string_ty	*s;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", v2->method->name);
+		sub_var_set_charstar(scp, "Name", v2->method->name);
 		s = subst_intl(scp, i18n("illegal bit not ($name)"));
 		sub_context_delete(scp);
 		vp = rpt_value_error(0, s);
@@ -475,8 +475,8 @@ shift_left_evaluate(tp, path, st)
 		string_ty	*s;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", v1i->method->name);
-		sub_var_set(scp, "Name2", "%s", v2i->method->name);
+		sub_var_set_charstar(scp, "Name1", v1i->method->name);
+		sub_var_set_charstar(scp, "Name2", v2i->method->name);
 		s = subst_intl(scp, i18n("illegal shift ($name1 << $name2)"));
 		sub_context_delete(scp);
 		result = rpt_value_error(0, s);
@@ -556,8 +556,8 @@ shift_right_evaluate(tp, path, st)
 		string_ty	*s;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", v1i->method->name);
-		sub_var_set(scp, "Name2", "%s", v2i->method->name);
+		sub_var_set_charstar(scp, "Name1", v1i->method->name);
+		sub_var_set_charstar(scp, "Name2", v2i->method->name);
 		s = subst_intl(scp, i18n("illegal shift ($name1 >> $name2)"));
 		sub_context_delete(scp);
 		result = rpt_value_error(0, s);

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@
 #include <ael/change/by_state.h>
 #include <arglex2.h>
 #include <commit.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <change/file.h>
 #include <dir.h>
 #include <error.h>
@@ -106,11 +106,10 @@ integrate_pass_help()
 }
 
 
-static void integrate_pass_list _((void (*)(void)));
+static void integrate_pass_list _((void));
 
 static void
-integrate_pass_list(usage)
-	void		(*usage)_((void));
+integrate_pass_list()
 {
 	string_ty	*project_name;
 
@@ -122,14 +121,14 @@ integrate_pass_list(usage)
 		switch (arglex_token)
 		{
 		default:
-			generic_argument(usage);
+			generic_argument(integrate_pass_usage);
 			continue;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				option_needs_name(arglex_token_project, usage);
+				option_needs_name(arglex_token_project, integrate_pass_usage);
 			if (project_name)
-				duplicate_option_by_name(arglex_token_project, usage);
+				duplicate_option_by_name(arglex_token_project, integrate_pass_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -282,26 +281,6 @@ time_map_set(p, message, path, st)
 }
 
 
-static metric metric_copy _((metric));
-
-static metric
-metric_copy(mp)
-	metric		mp;
-{
-	metric		result;
-
-	result = metric_type.alloc();
-	if (mp->name)
-		result->name = str_copy(mp->name);
-	if (mp->mask & metric_value_mask)
-	{
-		result->value = mp->value;
-		result->mask = metric_value_mask;
-	}
-	return result;
-}
-
-
 static metric_list metric_list_copy _((metric_list));
 
 static metric_list
@@ -363,8 +342,10 @@ integrate_pass_main()
 	time_map_list_ty tml;
 	time_t		time_final;
 	string_list_ty	trashed;
+        pconf           pconf_data;
 
 	trace(("integrate_pass_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	change_number = 0;
 	log_style = log_style_append_default;
@@ -393,7 +374,7 @@ integrate_pass_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -518,6 +499,7 @@ integrate_pass_main()
 	 *	1. the change has been diffed (except for the lowest b.l.)
 	 *	2. parent files are copied into the change
 	 *	3. test times are transferred
+	 *	4. The fingerprint is still correct.
 	 */
 	pcp = project_change_get(pp);
 	diff_whine = 0;
@@ -770,6 +752,39 @@ integrate_pass_main()
 		}
 
 		/*
+		 * Make sure the file fingerprint is still correct.
+		 * If it has changed, then the one or more of the build,
+		 * diff or test commands have changed the source file.
+		 *
+		 * Usually the problem is the build command, when you
+		 * changed things to generate a file which was previously
+		 * a source file, but you forgot to aerm the file.
+		 */
+		if (c_src_data->file_fp)
+		{
+			string_ty	*absfn;
+			int		ok;
+
+			absfn = change_file_path(cp, c_src_data->file_name);
+			if (!absfn)
+				absfn = str_format("%S/%S", id, c_src_data->file_name);
+			project_become(pp);
+			ok = change_fingerprint_same(c_src_data->file_fp, absfn, 1);
+			project_become_undo();
+			if (!ok)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set_string(scp, "File_Name", c_src_data->file_name);
+				change_error(cp, scp, i18n("build trashed $filename"));
+				sub_context_delete(scp);
+				++nerr;
+			}
+			str_free(absfn);
+		}
+
+		/*
 		 * built files and removed file stop here
 		 */
 		if (!transfer_architecture_times)
@@ -779,44 +794,39 @@ integrate_pass_main()
 		 * The edit number origin *must* be up-to-date, or the
 		 * change could not have got this far.
 		 *
-		 * As a branch advances, the edit_number tracks the
-		 * history, but the edit_number_origin is the number when
+		 * As a branch advances, the edit field tracks the
+		 * history, but the edit_origin field is the number when
 		 * the file was first created or copied into the branch.
 		 * By definition, a file in a change is out of date when
-		 * it's edit_number_origin does not equal the edit_number
+		 * it's edit_origin field does not equal the edit field
 		 * of its project.
 		 *
 		 * In order to merge branches, this must be done as a
 		 * cross branch merge in a change to that branch; the
-		 * edit_number_origin_new field of the change is copied
-		 * into the edit_number_origin origin field of the branch.
+		 * edit_origin_new field of the change is copied
+		 * into the edit_origin field of the branch.
 		 *
-		 * p_src_data->edit_number
+		 * p_src_data->edit
 		 *	The head revision of the branch.
-		 * p_src_data->edit_number_origin
+		 * p_src_data->edit_origin
 		 *	The version originally copied.
 		 *
-		 * c_src_data->edit_number
+		 * c_src_data->edit
 		 *	Not meaningful until after integrate pass.
-		 * c_src_data->edit_number_origin
+		 * c_src_data->edit_origin
 		 *	The version originally copied.
-		 * c_src_data->edit_number_origin_new
-		 *	Updates branch edit_number_origin on
+		 * c_src_data->edit_origin_new
+		 *	Updates branch edit_origin on
 		 *	integrate pass.
 		 */
-		if (c_src_data->edit_number && !c_src_data->edit_number_origin)
+		if (c_src_data->edit_origin_new)
 		{
-			/* Historical 2.3 -> 3.0 transition.  */
-			c_src_data->edit_number_origin =
-				str_copy(c_src_data->edit_number);
-		}
-		if (c_src_data->edit_number_origin_new)
-		{
-			if (p_src_data->edit_number_origin)
-				str_free(p_src_data->edit_number_origin);
-			p_src_data->edit_number_origin =
-				c_src_data->edit_number_origin_new;
-			c_src_data->edit_number_origin_new = 0;
+			assert(c_src_data->edit_origin_new->revision);
+			if (p_src_data->edit_origin)
+				history_version_type.free(p_src_data->edit_origin);
+			p_src_data->edit_origin =
+				c_src_data->edit_origin_new;
+			c_src_data->edit_origin_new = 0;
 		}
 
 		/*
@@ -914,7 +924,7 @@ integrate_pass_main()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Outstanding", "%s", change_outstanding_builds(cp, youngest));
+		sub_var_set_charstar(scp, "Outstanding", change_outstanding_builds(cp, youngest));
 		sub_var_optional(scp, "Outstanding");
 		change_error(cp, scp, i18n("bad ip, build required"));
 		sub_context_delete(scp);
@@ -925,7 +935,7 @@ integrate_pass_main()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Outstanding", "%s", change_outstanding_tests(cp, youngest));
+		sub_var_set_charstar(scp, "Outstanding", change_outstanding_tests(cp, youngest));
 		sub_var_optional(scp, "Outstanding");
 		change_error(cp, scp, i18n("bad ip, test required"));
 		sub_context_delete(scp);
@@ -941,7 +951,7 @@ integrate_pass_main()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Outstanding", "%s", change_outstanding_tests_baseline(cp, youngest));
+		sub_var_set_charstar(scp, "Outstanding", change_outstanding_tests_baseline(cp, youngest));
 		sub_var_optional(scp, "Outstanding");
 		change_error(cp, scp, i18n("bad ip, test -bl required"));
 		++nerr;
@@ -956,11 +966,10 @@ integrate_pass_main()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set
+		sub_var_set_charstar
 		(
 			scp,
 			"Outstanding",
-			"%s",
 			change_outstanding_tests_regression(cp, youngest)
 		);
 		sub_var_optional(scp, "Outstanding");
@@ -977,7 +986,7 @@ integrate_pass_main()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%d", nerr);
+		sub_var_set_long(scp, "Number", nerr);
 		sub_var_optional(scp, "Number");
 		change_fatal(cp, scp, i18n("integrate pass fail"));
 		sub_context_delete(scp);
@@ -1084,9 +1093,10 @@ integrate_pass_main()
 		if (c_src_data)
 			continue;
 		c_src_data = change_file_new(cp, p_src_data->file_name);
-		assert(p_src_data->edit_number);
-		c_src_data->edit_number_origin =
-			str_copy(p_src_data->edit_number);
+		assert(p_src_data->edit);
+		assert(p_src_data->edit->revision);
+		c_src_data->edit_origin =
+			history_version_copy(p_src_data->edit);
 		c_src_data->action = file_action_modify;
 		c_src_data->usage = p_src_data->usage;
 	}
@@ -1140,8 +1150,8 @@ integrate_pass_main()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "fstate file");
-			sub_var_set(scp, "FieLD_Name", "src");
+			sub_var_set_charstar(scp, "File_Name", "fstate file");
+			sub_var_set_charstar(scp, "FieLD_Name", "src");
 			project_fatal
 			(
 				pp,
@@ -1165,15 +1175,8 @@ integrate_pass_main()
 			if (p_src_data->deleted_by)
 			{
 				p_src_data->deleted_by = 0;
-				p_src_data->about_to_be_created_by = 0;
 				goto reusing_an_old_file;
 			}
-
-			/*
-			 * it exists, now
-			 */
-			trace(("create\n"));
-			p_src_data->about_to_be_created_by = 0;
 
 			/*
 			 * Remember the last-modified-time, so we can
@@ -1192,25 +1195,21 @@ integrate_pass_main()
 			change_run_history_create_command
 			(
 				cp,
-				c_src_data->file_name
+				c_src_data
 			);
 
 			/*
 			 * Update the head revision number.
-			 * (Create also sets edit_number_origin,
+			 * (Create also sets edit_origin field,
 			 * if not already set)
 			 */
-			if (p_src_data->edit_number)
-				str_free(p_src_data->edit_number);
-			p_src_data->edit_number =
-				change_run_history_query_command
-				(
-					cp,
-					c_src_data->file_name
-				);
-			if (!p_src_data->edit_number_origin)
-				p_src_data->edit_number_origin =
-					str_copy(p_src_data->edit_number);
+			if (p_src_data->edit)
+				history_version_type.free(p_src_data->edit);
+			p_src_data->edit =
+				history_version_copy(c_src_data->edit);
+			if (!p_src_data->edit_origin)
+				p_src_data->edit_origin =
+					history_version_copy(p_src_data->edit);
 			
 			/*
 			 * Set the last-modified-time, just in case the
@@ -1258,37 +1257,21 @@ integrate_pass_main()
 			}
 			str_free(absfn);
 			project_become_undo();
-
-			/*
-			 * In the completed state, edit_number
-			 * of a change is the version of the file.
-			 * Leave edit_number_origin alone, as a record
-			 * of where it came from.
-			 * (Create also sets edit_number_origin,
-			 * if not already set)
-			 */
-			if (c_src_data->edit_number)
-				str_free(c_src_data->edit_number);
-			c_src_data->edit_number =
-				str_copy(p_src_data->edit_number);
-			if (!p_src_data->edit_number_origin)
-				p_src_data->edit_number_origin =
-					str_copy(p_src_data->edit_number);
 			break;
 
 		case file_action_modify:
 			reusing_an_old_file:
 			trace(("modify\n"));
 
-			if (p_src_data->edit_number)
+			if (p_src_data->edit)
 			{
-				str_free(p_src_data->edit_number);
-				p_src_data->edit_number = 0;
+				history_version_type.free(p_src_data->edit);
+				p_src_data->edit = 0;
 			}
-			if (c_src_data->edit_number)
+			if (c_src_data->edit)
 			{
-				str_free(c_src_data->edit_number);
-				c_src_data->edit_number = 0;
+				history_version_type.free(c_src_data->edit);
+				c_src_data->edit = 0;
 			}
 
 			/*
@@ -1308,19 +1291,21 @@ integrate_pass_main()
 			change_run_history_put_command
 			(
 				cp,
-				c_src_data->file_name
+				c_src_data
 			);
 			
 			/*
 			 * Update the head revision number.
-			 * (Leave edit_number_origin alone.)
+			 * (Leave edit_origin field alone.)
 			 */
-			p_src_data->edit_number =
-				change_run_history_query_command
-				(
-					cp,
-					c_src_data->file_name
-				);
+			if (!p_src_data->edit_origin && p_src_data->edit)
+				p_src_data->edit_origin =
+					history_version_copy(p_src_data->edit);
+			p_src_data->edit =
+				history_version_copy(c_src_data->edit);
+			if (!p_src_data->edit_origin)
+				p_src_data->edit_origin =
+					history_version_copy(p_src_data->edit);
 
 			/*
 			 * Set the last-modified-time, just in case the
@@ -1366,15 +1351,6 @@ integrate_pass_main()
 			}
 			str_free(absfn);
 			project_become_undo();
-
-			/*
-			 * In the completed state, edit_number
-			 * of a change is the version of the file.
-			 * Leave edit_number_origin alone, as a record
-			 * of where it came from.
-			 */
-			c_src_data->edit_number =
-				str_copy(p_src_data->edit_number);
 			break;
 
 		case file_action_remove:
@@ -1384,12 +1360,6 @@ integrate_pass_main()
 			 */
 			trace(("remove\n"));
 			p_src_data->deleted_by = change_number;
-
-			/*
-			 * This can need clearing when a branch creates
-			 * and then deletes a new file.
-			 */
-			p_src_data->about_to_be_created_by = 0;
 			break;
 
 		case file_action_insulate:
@@ -1400,6 +1370,17 @@ integrate_pass_main()
 			assert(0);
 			break;
 		}
+
+		/*
+		 * The file exists, now, so clear the "about to be
+		 * created" flag.
+		 *
+		 * This flag can require clearing even if the file action
+		 * isn't "create", for various branch manipulations of
+		 * files created on the branch.  Clearing it redundantly
+		 * is harmless.
+		 */
+		p_src_data->about_to_be_created_by = 0;
 
 		/*
 		 * make sure the branch action is appropriate
@@ -1436,23 +1417,56 @@ integrate_pass_main()
 		 */
 		if (!pp->parent)
 		{
-			/* Historical 2.3 -> 3.0 transition. */
-			if (!p_src_data->edit_number_origin)
-				p_src_data->edit_number_origin =
-					str_copy(p_src_data->edit_number);
-			assert(p_src_data->edit_number);
+			assert(p_src_data->edit);
+			assert(p_src_data->edit->revision);
+			assert(p_src_data->edit_origin);
+			assert(p_src_data->edit_origin->revision);
 			if
 			(
 				!str_equal
 				(
-					p_src_data->edit_number,
-					p_src_data->edit_number_origin
+					p_src_data->edit->revision,
+					p_src_data->edit_origin->revision
 				)
 			)
 			{
-				str_free(p_src_data->edit_number_origin);
-				p_src_data->edit_number_origin =
-					str_copy(p_src_data->edit_number);
+				history_version_type.free(p_src_data->edit_origin);
+				p_src_data->edit_origin =
+					history_version_copy(p_src_data->edit);
+			}
+		}
+	}
+
+        pconf_data = change_pconf_get(cp, 0);
+        if (pconf_data->history_label_command)
+	{
+		/*
+		 * For all the project's files, label the history.
+		 *
+		 * Note that at this point in the aeipass commant, our
+		 * internal project file list includes all of the changes
+		 * madeby the change.
+		 */
+		for (j = 0; ; ++j)
+		{
+			fstate_src      src_data;
+		
+			src_data = project_file_nth(cp->pp, j);
+			if (!src_data)
+				break;
+			if
+			(
+				!src_data->about_to_be_created_by
+			&&
+				!src_data->deleted_by
+			)
+			{
+				change_run_history_label_command
+				(
+					cp,
+					src_data,
+					project_version_get(cp->pp)
+				);
 			}
 		}
 	}
@@ -1482,7 +1496,7 @@ integrate_pass_main()
 	 */
 	cstate_data->state = cstate_state_completed;
 	change_build_times_clear(cp);
-	dev_dir = str_copy(change_development_directory_get(cp, 1));
+	dev_dir = str_copy(change_top_path_get(cp, 1));
 	change_development_directory_clear(cp);
 	new_baseline = str_copy(change_integration_directory_get(cp, 1));
 	change_integration_directory_clear(cp);
@@ -1620,7 +1634,7 @@ integrate_pass_main()
 
 		scp = sub_context_new();
 		nsec = tml.list[tml.len - 1].new - time_final;
-		sub_var_set(scp, "Number", "%ld", nsec);
+		sub_var_set_long(scp, "Number", nsec);
 		sub_var_optional(scp, "Number");
 		error_intl(scp, i18n("warning: file times in future"));
 		sub_context_delete(scp);
@@ -1652,20 +1666,13 @@ integrate_pass_main()
 void
 integrate_pass()
 {
-	trace(("integrate_pass()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		integrate_pass_main();
-		break;
+		{ arglex_token_help,		integrate_pass_help,	},
+		{ arglex_token_list,		integrate_pass_list,	},
+	};
 
-	case arglex_token_help:
-		integrate_pass_help();
-		break;
-
-	case arglex_token_list:
-		integrate_pass_list(integrate_pass_usage);
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("integrate_pass()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), integrate_pass_main);
+	trace(("}\n"));
 }

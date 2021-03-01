@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997, 1998 Peter Miller;
+#	Copyright (C) 1997-1998, 2000-2001 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -297,7 +297,7 @@ check_it()
 {
 	sed	-e "s|$work|...|g" \
 		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/$USER/USER/g" \
+		-e "s/\"$USER\"/\"USER\"/g" \
 		-e 's/19[0-9][0-9]/YYYY/' \
 		-e 's/20[0-9][0-9]/YYYY/' \
 		-e 's/node = ".*"/node = "NODE"/' \
@@ -314,8 +314,16 @@ src =
 	{
 		file_name = "config";
 		action = create;
-		edit_number = "1.1";
-		edit_number_origin = "1.1";
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
 		usage = source;
 		file_fp =
 		{
@@ -327,8 +335,16 @@ src =
 	{
 		file_name = "fred";
 		action = remove;
-		edit_number = "1.1";
-		edit_number_origin = "1.1";
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
 		usage = source;
 		deleted_by = 11;
 	},
@@ -346,8 +362,16 @@ src =
 	{
 		file_name = "fred";
 		action = remove;
-		edit_number = "1.1";
-		edit_number_origin = "1.1";
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
 		usage = source;
 		locked_by = 10;
 		about_to_be_created_by = 10;
@@ -392,8 +416,16 @@ src =
 	{
 		file_name = "fred";
 		action = create;
-		edit_number = "1.2";
-		edit_number_origin = "1.1";
+		edit =
+		{
+			revision = "1.2";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
 		usage = source;
 		file_fp =
 		{

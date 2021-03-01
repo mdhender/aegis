@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1998, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -112,6 +112,7 @@ new_administrator_main()
 	user_ty		*up;
 
 	trace(("new_administrator_main()\n{\n"/*}*/));
+	arglex();
 	string_list_constructor(&wl);
 	project_name = 0;
 	while (arglex_token != arglex_token_eoln)
@@ -134,7 +135,7 @@ new_administrator_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Name", "%S", s1);
+				sub_var_set_string(scp, "Name", s1);
 				error_intl(scp, i18n("too many user $name"));
 				sub_context_delete(scp);
 				new_administrator_usage();
@@ -206,7 +207,7 @@ new_administrator_main()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%S", user_name(candidate));
+			sub_var_set_string(scp, "Name", user_name(candidate));
 			project_fatal(pp, scp, i18n("$name already administrator"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -218,15 +219,7 @@ new_administrator_main()
 		 * this is to avoid security holes
 		 */
 		if (!user_uid_check(user_name(candidate)))
-		{
-			sub_context_ty	*scp;
-
-			scp = sub_context_new();
-			sub_var_set(scp,"Name", "%S", user_name(candidate));
-			fatal_intl(scp, i18n("user \"$name\" is too privileged"));
-			/* NOTREACHED */
-			sub_context_delete(scp);
-		}
+			fatal_user_too_privileged(user_name(candidate));
 
 		/*
 		 * add it to the list
@@ -250,7 +243,7 @@ new_administrator_main()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%S", wl.string[j]);
+		sub_var_set_string(scp, "Name", wl.string[j]);
 		project_verbose(pp, scp, i18n("new administrator $name complete"));
 		sub_context_delete(scp);
 	}
@@ -263,20 +256,13 @@ new_administrator_main()
 void
 new_administrator()
 {
-	trace(("new_administrator()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		new_administrator_main();
-		break;
+		{ arglex_token_help,		new_administrator_help,	},
+		{ arglex_token_list,		new_administrator_list,	},
+	};
 
-	case arglex_token_help:
-		new_administrator_help();
-		break;
-
-	case arglex_token_list:
-		new_administrator_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("new_administrator()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), new_administrator_main);
+	trace(("}\n"));
 }

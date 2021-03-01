@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -71,26 +71,39 @@ original = \"%s\", input = \"%s\", output = \"%s\")\n{\n"/*}*/,
 	));
 	assert(cp->reference_count >= 1);
 	pconf_data = change_pconf_get(cp, 1);
-	if (change_cstate_get(cp)->state == cstate_state_being_developed)
+	switch (change_cstate_get(cp)->state)
+	{
+	case cstate_state_being_developed:
+	case cstate_state_awaiting_review:
+	case cstate_state_being_reviewed:
+	case cstate_state_awaiting_integration:
 		dd = change_development_directory_get(cp, 0);
-	else
+		break;
+
+	case cstate_state_being_integrated:
 		dd = change_integration_directory_get(cp, 0);
+		break;
+	
+	default:
+		dd = os_tmpdir();
+		break;
+	}
 	assert(dd);
 	scp = sub_context_new();
-	sub_var_set(scp, "ORiginal", "%S", original);
-	sub_var_set(scp, "Input", "%S", input);
-	sub_var_set(scp, "Output", "%S", output);
-	sub_var_set(scp, "1", "${original}");
-	sub_var_set(scp, "2", "${input}");
-	sub_var_set(scp, "3", "${output}");
+	sub_var_set_string(scp, "ORiginal", original);
+	sub_var_set_string(scp, "Input", input);
+	sub_var_set_string(scp, "Output", output);
+	sub_var_set_charstar(scp, "1", "${original}");
+	sub_var_set_charstar(scp, "2", "${input}");
+	sub_var_set_charstar(scp, "3", "${output}");
 	the_command = pconf_data->diff_command;
 	if (!the_command)
 	{
 		sub_context_ty	*scp2;
 
 		scp2 = sub_context_new();
-		sub_var_set(scp2, "File_Name", "%s", THE_CONFIG_FILE);
-		sub_var_set(scp2, "FieLD_Name", "diff_command");
+		sub_var_set_charstar(scp2, "File_Name", THE_CONFIG_FILE);
+		sub_var_set_charstar(scp2, "FieLD_Name", "diff_command");
 		change_fatal
 		(
 			cp,

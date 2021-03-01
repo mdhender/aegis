@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,6 +38,13 @@
 #include <trace.h>
 #include <user.h>
 
+/*
+ * Define this symbol if you want the lock poriority scheme, so
+ * that integrate pass has a guarantee of succeeeding eventually.
+ * (Without it, aeipass can be blocked indefinitely by rolling builds
+ * by multiple developers.)
+ */
+#define LOCK_PRIORITY_SCHEME
 
 /*
  * how many bits of the hash to use in the mux
@@ -56,6 +63,7 @@ typedef enum lock_ty lock_ty;
 
 enum lock_mux_ty
 {
+	lock_mux_baseline_priority,
 	lock_mux_ustate,
 	lock_mux_pstate,
 	lock_mux_cstate,
@@ -70,6 +78,7 @@ typedef struct lock_place_ty lock_place_ty;
 struct lock_place_ty
 {
 	struct flock	location;
+	int		release_immediately;
 	lock_callback_ty callback;
 	void		*callback_arg;
 };
@@ -81,6 +90,14 @@ static	lock_place_ty	*place;
 static	int		fd = -1;
 static	long		magic;
 static	int	 	quitregd;
+
+/*
+ * Values for the lock_prepare::exclusive argument
+ */
+#define LOCK_PREP_SHARED    0
+#define LOCK_PREP_EXCLUSIVE 1
+#define LOCK_PREP_PRIORITY  2
+#define LOCK_PREP_EXCL_PRIO (LOCK_PREP_EXCLUSIVE | LOCK_PREP_PRIORITY)
 
 
 static void flock_construct _((struct flock *, int type, long start,
@@ -150,7 +167,14 @@ lock_prepare(start, length, exclusive, callback, arg)
 		start, length, exclusive));
 	assert(start > lock_master);
 	assert(length > 0);
-	flock_construct(&p.location, (exclusive ? F_WRLCK : F_RDLCK), start, length);
+	flock_construct
+	(
+		&p.location,
+		((exclusive & LOCK_PREP_EXCLUSIVE) ? F_WRLCK : F_RDLCK),
+		start,
+		length
+	);
+	p.release_immediately = (exclusive & LOCK_PREP_PRIORITY);
 	p.callback = callback;
 	p.callback_arg = arg;
 
@@ -255,7 +279,14 @@ lock_prepare_pstate(s, callback, arg)
 	void		*arg;
 {
 	trace(("lock_prepare_pstate(s = \"%s\")\n{\n"/*}*/, s->str_text));
-	lock_prepare_mux(lock_mux_pstate, (long)s->str_hash, 1, callback, arg);
+	lock_prepare_mux
+	(
+		lock_mux_pstate,
+		(long)s->str_hash,
+		LOCK_PREP_EXCLUSIVE,
+		callback,
+		arg
+	);
 	trace((/*{*/"}\n"));
 }
 
@@ -267,11 +298,21 @@ lock_prepare_baseline_read(s, callback, arg)
 	void		*arg;
 {
 	trace(("lock_prepare_pstate(s = \"%s\")\n{\n"/*}*/, s->str_text));
+#ifdef LOCK_PRIORITY_SCHEME
+	lock_prepare_mux
+	(
+		lock_mux_baseline_priority,
+		(long)s->str_hash,
+		LOCK_PREP_EXCL_PRIO,
+		callback,
+		arg
+	);
+#endif
 	lock_prepare_mux
 	(
 		lock_mux_baseline,
 		(long)s->str_hash,
-		0,
+		LOCK_PREP_SHARED,
 		callback,
 		arg
 	);
@@ -286,11 +327,21 @@ lock_prepare_baseline_write(s, callback, arg)
 	void		*arg;
 {
 	trace(("lock_prepare_pstate(s = \"%s\")\n{\n"/*}*/, s->str_text));
+#ifdef LOCK_PRIORITY_SCHEME
+	lock_prepare_mux
+	(
+		lock_mux_baseline_priority,
+		(long)s->str_hash,
+		LOCK_PREP_EXCLUSIVE,
+		callback,
+		arg
+	);
+#endif
 	lock_prepare_mux
 	(
 		lock_mux_baseline,
 		(long)s->str_hash,
-		1,
+		LOCK_PREP_EXCLUSIVE,
 		callback,
 		arg
 	);
@@ -309,7 +360,7 @@ lock_prepare_history(s, callback, arg)
 	(
 		lock_mux_history,
 		(long)s->str_hash,
-		1,
+		LOCK_PREP_EXCLUSIVE,
 		callback,
 		arg
 	);
@@ -328,7 +379,7 @@ lock_prepare_ustate(uid, callback, arg)
 	(
 		lock_mux_ustate,
 		(long)uid,
-		1,
+		LOCK_PREP_EXCLUSIVE,
 		callback,
 		arg
 	);
@@ -342,7 +393,13 @@ lock_prepare_ustate_all(callback, arg)
 	void		*arg;
 {
 	trace(("lock_prepare_ustate_all()\n{\n"/*}*/));
-	lock_prepare_mux_all(lock_mux_ustate, 1, callback, arg);
+	lock_prepare_mux_all
+	(
+		lock_mux_ustate,
+		LOCK_PREP_EXCLUSIVE,
+		callback,
+		arg
+	);
 	trace((/*{*/"}\n"));
 }
 
@@ -360,7 +417,7 @@ lock_prepare_cstate(project_name, change_number, callback, arg)
 	(
 		lock_mux_cstate,
 		change_number + project_name->str_hash,
-		1,
+		LOCK_PREP_EXCLUSIVE,
 		callback,
 		arg
 	);
@@ -448,6 +505,9 @@ lock_description(p)
 	}
 	switch ((p->l_start >> BITS) - 1)
 	{
+	case lock_mux_baseline_priority:
+		return "baseline priority";
+
 	case lock_mux_ustate:
 		return "user";
 
@@ -514,7 +574,33 @@ lock_take()
 	wait_for_locks = user_lock_wait(0);
 
 	gonzo_become();
-#ifdef __CYGWIN__
+#if defined(__CYGWIN__) || defined(__hpux__)
+	/*
+	 * There isn't a major security problem here, because the user
+	 * can't park weird files here, and we truncate them anyway.
+	 * Also, the directory is supposed to be read-only for just
+	 * about everyone.
+	 *
+	 * CYGWIN is only really useful in single user, so that isn't
+	 * an issue.
+	 *
+	 * The problem comes when you are using HP/UX over NFS.
+	 * It gets errors like "no locks available" if the file isn't
+	 * world writable.  I could understand if we were the wrong user
+	 * id (many NFS implementations have kittens when you open file
+	 * file as one user, and the read or write it as another user)
+	 * but we are using the same user id as when we opened the file.
+	 *
+	 * But making the file world-writable means we have a potential
+	 * denial of service problem.  A process could take a lock in
+	 * the file, preventing all Aegis processes from obtaining locks
+	 * they need.
+	 *
+	 * Unfortunately, the #ifdef __hpux__ probably isn't enough,
+	 * because you need a world writable file if there are *any*
+	 * HP/UX clients, and the file will probably be created by some
+	 * other (inevitably, better) UNIX.
+	 */
 	fd = glue_open(path->str_text, O_RDWR | O_CREAT | O_TRUNC, 0666);
 #else
 	fd = glue_open(path->str_text, O_RDWR | O_CREAT | O_TRUNC, 0600);
@@ -525,7 +611,7 @@ lock_take()
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("open $filename: $errno"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -543,7 +629,7 @@ lock_take()
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("fcntl(\"$filename\", F_GETFD): $errno"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -555,8 +641,8 @@ lock_take()
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
-		sub_var_set(scp, "Argument", "%d", flags);
+		sub_var_set_string(scp, "File_Name", path);
+		sub_var_set_long(scp, "Argument", flags);
 		fatal_intl(scp, i18n("fcntl(\"$filename\", F_SETFD, $arg): $errno"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -600,8 +686,8 @@ lock_take()
 				os_interrupt_cope();
 			scp = sub_context_new();
 			sub_errno_set(scp);
-			sub_var_set(scp, "File_Name", "%S", path);
-			sub_var_set(scp, "Argument", "%s", flock_string(&p));
+			sub_var_set_string(scp, "File_Name", path);
+			sub_var_set_charstar(scp, "Argument", flock_string(&p));
 			fatal_intl
 			(
 				scp,
@@ -626,8 +712,8 @@ lock_take()
 
 					scp = sub_context_new();
 					sub_errno_set(scp);
-					sub_var_set(scp, "File_Name", "%S", path);
-					sub_var_set(scp, "Argument", "%s", flock_string(&p));
+					sub_var_set_string(scp, "File_Name", path);
+					sub_var_set_charstar(scp, "Argument", flock_string(&p));
 					fatal_intl
 					(
 						scp,
@@ -653,8 +739,8 @@ lock_take()
 
 				scp = sub_context_new();
 				sub_errno_set(scp);
-				sub_var_set(scp, "File_Name", "%S", path);
-				sub_var_set(scp, "Argument", "%s", flock_string(&p));
+				sub_var_set_string(scp, "File_Name", path);
+				sub_var_set_charstar(scp, "Argument", flock_string(&p));
 				fatal_intl
 				(
 					scp,
@@ -662,6 +748,45 @@ lock_take()
 				);
 				/* NOTREACHED */
 				sub_context_delete(scp);
+			}
+
+			/*
+			 * Unlock any of the "release immediately" locks.
+			 * (These are used to gain a modicum of fairness.)
+			 */
+			for (j = 0; j < nplaces; ++j)
+			{
+				if (!place[j].release_immediately)
+					continue;
+				trace(("mark\n"));
+				p = place[j].location; /* yes, copy it */
+				p.l_type = F_UNLCK;
+				if (glue_fcntl(fd, F_SETLKW, &p))
+				{
+					sub_context_ty	*scp;
+	
+					scp = sub_context_new();
+					sub_errno_set(scp);
+					sub_var_set_string
+					(
+						scp,
+						"File_Name",
+						path
+					);
+					sub_var_set_charstar
+					(
+						scp,
+						"Argument",
+						flock_string(&p)
+					);
+					fatal_intl
+					(
+						scp,
+			    i18n("fcntl(\"$filename\", F_SETLKW, $arg): $errno")
+					);
+					/* NOTREACHED */
+					sub_context_delete(scp);
+				}
 			}
 			break;
 		}
@@ -677,8 +802,8 @@ lock_take()
 
 			scp = sub_context_new();
 			sub_errno_set(scp);
-			sub_var_set(scp, "File_Name", "%S", path);
-			sub_var_set(scp, "Argument", "%s", flock_string(&p));
+			sub_var_set_string(scp, "File_Name", path);
+			sub_var_set_charstar(scp, "Argument", flock_string(&p));
 			fatal_intl
 			(
 				scp,
@@ -705,7 +830,7 @@ lock_take()
 				scp = sub_context_new();
 
 				/* should never be reached */
-				sub_var_set(scp, "Name", "%s", lock_description(&p));
+				sub_var_set_charstar(scp, "Name", lock_description(&p));
 				fatal_intl(scp, i18n("$name lock not available"));
 				sub_context_delete(scp);
 			}
@@ -716,7 +841,7 @@ lock_take()
 
 			scp = sub_context_new();
 			p = place[j].location; /* yes, copy it */
-			sub_var_set(scp, "Name", "%s", lock_description(&p));
+			sub_var_set_charstar(scp, "Name", lock_description(&p));
 			if (wait_for_locks)
 				verbose_intl(scp, i18n("waiting for $name lock"));
 			else
@@ -740,6 +865,46 @@ lock_take()
 		/*
 		 * block on the lock that stopped us before
 		 */
+		if (j > 0 && place[j-1].release_immediately)
+		{
+			/*
+			 * If the lock is preceeded by a priority lock,
+			 * take that too, to stop them getting through.
+			 * We can probably get it without waiting,
+			 * because we already got it once before.
+			 */
+			trace(("mark\n"));
+			p = place[j-1].location; /* yes, copy it */
+			if (glue_fcntl(fd, F_SETLKW, &p))
+			{
+				sub_context_ty	*scp;
+	
+				if (errno == EINTR)
+					os_interrupt_cope();
+				scp = sub_context_new();
+				sub_errno_set(scp);
+				sub_var_set_string
+				(
+					scp,
+					"File_Name",
+					path
+				);
+				sub_var_set_charstar
+				(
+					scp,
+					"Argument",
+					flock_string(&p)
+				);
+				fatal_intl
+				(
+					scp,
+			    i18n("fcntl(\"$filename\", F_SETLKW, $arg): $errno")
+				);
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
+		}
+		trace(("mark\n"));
 		p = place[j].location; /* yes, copy it */
 		if (glue_fcntl(fd, F_SETLKW, &p))
 		{
@@ -749,8 +914,8 @@ lock_take()
 				os_interrupt_cope();
 			scp = sub_context_new();
 			sub_errno_set(scp);
-			sub_var_set(scp, "File_Name", "%S", path);
-			sub_var_set(scp, "Argument", "%s", flock_string(&p));
+			sub_var_set_string(scp, "File_Name", path);
+			sub_var_set_charstar(scp, "Argument", flock_string(&p));
 			fatal_intl
 			(
 				scp,
@@ -764,16 +929,15 @@ lock_take()
 		 * and then release it,
 		 * before trying all over again.
 		 */
-		p = place[j].location; /* yes, copy it */
-		p.l_type = F_UNLCK;
+		flock_construct(&p, F_UNLCK, 0L, 0x7FFFFFFF);
 		if (glue_fcntl(fd, F_SETLKW, &p))
 		{
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
 			sub_errno_set(scp);
-			sub_var_set(scp, "File_Name", "%S", path);
-			sub_var_set(scp, "Argument", "%s", flock_string(&p));
+			sub_var_set_string(scp, "File_Name", path);
+			sub_var_set_charstar(scp, "Argument", flock_string(&p));
 			fatal_intl
 			(
 				scp,
@@ -786,7 +950,7 @@ lock_take()
 	}
 	gonzo_become_undo();
 	magic++;
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }
 
 
@@ -838,8 +1002,8 @@ lock_release()
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
-		sub_var_set(scp, "Argument", "%s", flock_string(&p));
+		sub_var_set_string(scp, "File_Name", path);
+		sub_var_set_charstar(scp, "Argument", flock_string(&p));
 		fatal_intl
 		(
 			scp,
@@ -856,6 +1020,7 @@ lock_release()
 	glue_close(fildes);
 	gonzo_become_undo();
 	nplaces = 0;
+	nplaces_max = 0;
 	mem_free((char *)place);
 	place = 0;
 	trace((/*{*/"}\n"));
@@ -896,8 +1061,8 @@ lock_walk_hunt(min, max, callback)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
-		sub_var_set(scp, "Argument", "%s", flock_string(&flock));
+		sub_var_set_string(scp, "File_Name", path);
+		sub_var_set_charstar(scp, "Argument", flock_string(&flock));
 		fatal_intl(scp, i18n("fcntl(\"$filename\", F_GETLK, $arg): $errno"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -957,6 +1122,11 @@ lock_walk_hunt(min, max, callback)
 
 			case lock_mux_cstate:
 				found.name = lock_walk_name_cstate;
+				found.subset = found.address & BITS_MASK;
+				break;
+
+			case lock_mux_baseline_priority:
+				found.name = lock_walk_name_baseline_priority;
 				found.subset = found.address & BITS_MASK;
 				break;
 
@@ -1059,7 +1229,7 @@ lock_walk(callback)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("open $filename: $errno"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -1076,7 +1246,7 @@ lock_walk(callback)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("fcntl(\"$filename\", F_GETFD): $errno"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -1088,8 +1258,8 @@ lock_walk(callback)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
-		sub_var_set(scp, "Argument", "%s", flags);
+		sub_var_set_string(scp, "File_Name", path);
+		sub_var_set_long(scp, "Argument", flags);
 		fatal_intl(scp, i18n("fcntl(\"$filename\", F_SETFD, $arg): $errno"));
 		/* NOTREACHED */
 		sub_context_delete(scp);

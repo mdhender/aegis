@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1999 Peter Miller;
+.\"	Copyright (C) 1997, 1999, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -129,22 +129,6 @@ it may first appear.
 .in -0.5i
 .if t .2C
 .\" ---------------------------------------------------------------------------
-.\" Use grefer from the GNU Groff package for references.
-.ig
-.\" thse 4 lines are so that c_incl will see the dependency
-.so make.bib
-..
-.R1
-database lib/en/auug97/make.bib
-accumulate
-bracket-label " [" "] " ", "
-.R2
-.\" I don't want exactly what the -mgs ][ does, so hack it to get rid of
-.\" the un-numbered heading.
-.de ]<
-.als ref*print ref*end-print
-..
-.\" ---------------------------------------------------------------------------
 .so 01-intro.so
 .so 02-problem.so
 .so 03-analysis.so
@@ -167,26 +151,3 @@ many Internet sites provided the insights which led to this paper.
 .LP
 Please visit \f(CWhttp://www\%.canb\%.auug\%.org\%.au\%/~millerp/\fP if
 you would like to look at some of the author's free software.
-.\" ---------------------------------------------------------------------------
-.bp
-.LP
-.ft I
-The following sections are not part of the proposed paper.
-They are to be removed from the published piece.
-.\" ---------------------------------------------------------------------------
-.nh 1 "Further Research"
-.ft I
-[TO-DO:
-Get access to the following books/ articles/ software manuals,
-and see if they say anything about problems with recursive make.]
-.sp 0.5
-[TO-DO: Check the bibliographies (of papers which have them)
-to see if there are any leads.]
-.ft P
-.R1
-label A.n+3D.y-2%a
-sort
-bibliography lib/en/auug97/make.bib
-.R2
-.bp
-.so foil.so

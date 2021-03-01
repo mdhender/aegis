@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,5 +31,15 @@ struct wstring_list_ty; /* existence */
 
 struct wstring_ty *sub_user _((struct sub_context_ty *,
 	struct wstring_list_ty *arg));
+
+/*
+ * Looks for a user function, by name.  Used by ${developer},
+ * ${developers}, ${reviewer}, ${reviewers}, ${integrator},
+ * ${integrators}, ${administrator}, ${administrators} and ${user}.
+ */
+struct user_ty; /* forward */
+struct string_ty; /* forward */
+typedef struct string_ty *(*sub_user_func_ptr)_((struct user_ty *));
+sub_user_func_ptr sub_user_func _((struct string_ty *));
 
 #endif /* LIBAEGIS_SUB_USER_H */

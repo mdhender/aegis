@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1998, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -64,11 +64,10 @@ new_developer_help()
 }
 
 
-static void new_developer_list _((void (*)(void)));
+static void new_developer_list _((void));
 
 static void
-new_developer_list(usage)
-	void		(*usage)_((void));
+new_developer_list()
 {
 	string_ty	*project_name;
 
@@ -80,14 +79,14 @@ new_developer_list(usage)
 		switch (arglex_token)
 		{
 		default:
-			generic_argument(usage);
+			generic_argument(new_developer_usage);
 			continue;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				option_needs_name(arglex_token_project, usage);
+				option_needs_name(arglex_token_project, new_developer_usage);
 			if (project_name)
-				duplicate_option_by_name(arglex_token_project, usage);
+				duplicate_option_by_name(arglex_token_project, new_developer_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -111,6 +110,7 @@ new_developer_main()
 	user_ty		*up;
 
 	trace(("new_developer_main()\n{\n"/*}*/));
+	arglex();
 	string_list_constructor(&wl);
 	project_name = 0;
 	while (arglex_token != arglex_token_eoln)
@@ -133,7 +133,7 @@ new_developer_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Name", "%S", s1);
+				sub_var_set_string(scp, "Name", s1);
 				error_intl(scp, i18n("too many user $name"));
 				sub_context_delete(scp);
 				new_developer_usage();
@@ -205,7 +205,7 @@ new_developer_main()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%S", user_name(candidate));
+			sub_var_set_string(scp, "Name", user_name(candidate));
 			project_fatal(pp, scp, i18n("$name already developer"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -217,15 +217,7 @@ new_developer_main()
 		 * this is to avoid security holes
 		 */
 		if (!user_uid_check(user_name(candidate)))
-		{
-			sub_context_ty	*scp;
-
-			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%S", user_name(candidate));
-			fatal_intl(scp, i18n("user \"$name\" is too privileged"));
-			/* NOTREACHED */
-			sub_context_delete(scp);
-		}
+			fatal_user_too_privileged(user_name(candidate));
 
 		/*
 		 * add it to the list
@@ -249,7 +241,7 @@ new_developer_main()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%S", wl.string[j]);
+		sub_var_set_string(scp, "Name", wl.string[j]);
 		project_verbose(pp, scp, i18n("new developer $name complete"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -263,20 +255,13 @@ new_developer_main()
 void
 new_developer()
 {
-	trace(("new_developer()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		new_developer_main();
-		break;
+		{ arglex_token_help,		new_developer_help,	},
+		{ arglex_token_list,		new_developer_list,	},
+	};
 
-	case arglex_token_help:
-		new_developer_help();
-		break;
-
-	case arglex_token_list:
-		new_developer_list(new_developer_usage);
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("new_developer()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), new_developer_main);
+	trace(("}\n"));
 }

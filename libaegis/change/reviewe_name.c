@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -47,6 +47,16 @@ change_reviewer_name(cp)
 			history_data = 0;
 			continue;
 
+		case cstate_history_what_develop_end_2ai:
+			/*
+			 * This is a special case.  It is as if the
+			 * developer has reviewed her own change.
+			 * So we fake it.
+			 */
+			break;
+
+		case cstate_history_what_review_begin:
+		case cstate_history_what_review_begin_undo:
 		case cstate_history_what_review_fail:
 		case cstate_history_what_review_pass:
 		case cstate_history_what_review_pass_undo:

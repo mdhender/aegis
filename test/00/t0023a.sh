@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994, 1995, 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1994, 1995, 1996, 1997, 1998, 2001 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -442,6 +442,23 @@ if test $? -ne 0 ; then no_result; fi
 sed -e 's| /.*||' < test.out2 > test.out3
 if test $? -ne 0 ; then no_result; fi
 diff test.ok test.out3
+if test $? -ne 0 ; then fail; fi
+
+#
+# test getuid() function
+#
+cat > test.in << 'fubar'
+title("getuid function", "delete this line");
+columns({ width = 1000; });
+auto who_am_i;
+print(passwd[getuid()].pw_name);
+fubar
+if test $? -ne 0 ; then no_result; fi
+echo $USER > test.ok
+if test $? -ne 0 ; then no_result; fi
+$bin/aegis -rpt -f test.in -o test.out -unf
+if test $? -ne 0 ; then fail; fi
+diff test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
 #

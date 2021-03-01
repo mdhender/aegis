@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@
 #include <arglex2.h>
 #include <commit.h>
 #include <change.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <change/file.h>
 #include <dir.h>
 #include <error.h>
@@ -158,6 +158,45 @@ isa_suppressed_filename(cp, fn)
 }
 
 
+static void chmod_common _((string_ty *, struct stat *, int, change_ty *));
+
+static void
+chmod_common(filename, st, rdwr, cp)
+	string_ty	*filename;
+	struct stat	*st;
+	int		rdwr;
+	change_ty	*cp;
+{
+	int		mode;
+
+	if (rdwr)
+	{
+		/*
+		 * If it is not a source file, it could be owned
+		 * by some other user, and we have no control
+		 * over its owner or mode.  Report a warning if
+		 * we can't change the mode.
+		 *
+		 * Also, we leave it writable if it is already.
+		 * This is normal for generated files.
+		 */
+		mode = (st->st_mode | 0644) & ~0022;
+	}
+	else
+	{
+		/*
+		 * Source files, on the other hand, should always
+		 * be owned by us, and thus always chmod(2)able
+		 * by us.  Have a hissy-fit if they aren't.
+		 * 
+		 * Also, source files should be read-only.
+		 */
+		mode = (st->st_mode | 0444) & ~0222;
+	}
+	os_chmod(filename, mode);
+}
+
+
 static void link_tree_callback_minimum _((void *, dir_walk_message_ty,
 	string_ty *, struct stat *));
 
@@ -173,6 +212,8 @@ link_tree_callback_minimum(arg, message, path, st)
 	string_ty	*s2;
 	change_ty	*cp;
 	fstate_src	src;
+	int		exists;
+	int		remove_the_file;
 
 	trace(("link_tree_callback_minimum(message = %d, path = %08lX, \
 st = %08lX)\n{\n"/*}*/, message, path, st));
@@ -205,7 +246,10 @@ st = %08lX)\n{\n"/*}*/, message, path, st));
 			 * Don't link files with horrible modes.
 			 * They shouldn't be source, anyway.
 			 */
-			if (!project_file_find(cp->pp, s1))
+			project_become_undo();
+			exists = 0 != project_file_find(cp->pp, s1);
+			project_become(cp->pp);
+			if (!exists)
 				break;
 		}
 
@@ -222,7 +266,9 @@ st = %08lX)\n{\n"/*}*/, message, path, st));
 		 * Don't link it if it's not a source file, or a
 		 * relevant ,D file.
 		 */
+		project_become_undo();
 		src = project_file_find(cp->pp, s1short);
+		project_become(cp->pp);
 		if
 		(
 			!src
@@ -260,12 +306,15 @@ st = %08lX)\n{\n"/*}*/, message, path, st));
 		 * Don't link a suppressed file.
 		 * BUT keep primary source files and their diff files.
 		 */
-		if
-		(
-			!project_file_find(cp->pp, s1short)
-		&&
-			isa_suppressed_filename(cp, s1short)
-		)
+		project_become_undo();
+		remove_the_file =
+			(
+				!project_file_find(cp->pp, s1short)
+			&&
+				isa_suppressed_filename(cp, s1short)
+			);
+		project_become(cp->pp);
+		if (remove_the_file)
 		{
 			str_free(s1short);
 			break;
@@ -277,30 +326,10 @@ st = %08lX)\n{\n"/*}*/, message, path, st));
 		 */
 		trace(("ln %s %s\n", path->str_text, s2->str_text));
 		os_link(path, s2);
-		if (!project_file_find(cp->pp, s1))
-		{
-			/*
-			 * If it is not a source file, it could be owned
-			 * by some other user, and we have no control
-			 * over its owner or mode.  Report a warning if
-			 * we can't change the mode.
-			 *
-			 * Also, we leave it writable if it is already.
-			 * This is normal for generated files.
-			 */
-			os_chmod_errok(s2, (st->st_mode | 0644) & ~0022 & ~change_umask(cp));
-		}
-		else
-		{
-			/*
-			 * Source files, on the other hand, should always
-			 * be owned by us, and thus always chmod(2)able
-			 * by us.  Have a hissy-fit if they aren't.
-			 * 
-			 * Also, source files should be read-only.
-			 */
-			os_chmod(s2, (st->st_mode | 0444) & ~0222 & ~change_umask(cp));
-		}
+		project_become_undo();
+		exists = 0 != project_file_find(cp->pp, s1);
+		project_become(cp->pp);
+		chmod_common(s2, st, !exists, cp);
 
 		/*
 		 * Update the modify time of the linked file.  On a
@@ -347,6 +376,7 @@ link_tree_callback(arg, message, path, st)
 	change_ty	*cp;
 	fstate_src	src;
 	string_ty	*contents;
+	int		remove_the_file;
 
 	trace(("link_tree_callback(message = %d, path = %08lX, \
 st = %08lX)\n{\n"/*}*/, message, path, st));
@@ -370,7 +400,9 @@ st = %08lX)\n{\n"/*}*/, message, path, st));
 		break;
 
 	case dir_walk_file:
+		project_become_undo();
 		src = project_file_find(cp->pp, s1);
+		project_become(cp->pp);
 		if (st->st_mode & 07000)
 		{
 			/*
@@ -396,12 +428,15 @@ st = %08lX)\n{\n"/*}*/, message, path, st));
 		 * Don't link a suppressed file.
 		 * BUT keep primary source files and their diff files.
 		 */
-		if
-		(
-			!project_file_find(cp->pp, s1short)
-		&&
-			isa_suppressed_filename(cp, s1short)
-		)
+		project_become_undo();
+		remove_the_file =
+			(
+				!project_file_find(cp->pp, s1short)
+			&&
+				isa_suppressed_filename(cp, s1short)
+			);
+		project_become(cp->pp);
+		if (remove_the_file)
 		{
 			str_free(s1short);
 			break;
@@ -412,30 +447,7 @@ st = %08lX)\n{\n"/*}*/, message, path, st));
 		 * link the file and make sure it is a suitable mode
 		 */
 		os_link(path, s2);
-		if (!src)
-		{
-			/*
-			 * If it is not a source file, it could be owned
-			 * by some other user, and we have no control
-			 * over its owner or mode.  Report a warning if
-			 * we can't change the mode.
-			 *
-			 * Also, we leave it writable if it is already.
-			 * This is normal for generated files.
-			 */
-			os_chmod_errok(s2, (st->st_mode | 0644) & ~0022 & ~change_umask(cp));
-		}
-		else
-		{
-			/*
-			 * Source files, on the other hand, should always
-			 * be owned by us, and thus always chmod(2)able
-			 * by us.  Have a hissy-fit if they aren't.
-			 * 
-			 * Also, source files should be read-only.
-			 */
-			os_chmod(s2, (st->st_mode | 0444) & ~0222 & ~change_umask(cp));
-		}
+		chmod_common(s2, st, !src, cp);
 
 		/*
 		 * Update the modify time of the linked file.  On a
@@ -487,6 +499,8 @@ copy_tree_callback_minimum(arg, message, path, st)
 	change_ty	*cp;
 	fstate_src	src;
 	int		uid;
+	int		exists;
+	int		remove_the_file;
 
 	trace(("copy_tree_callback_minimum(message = %d, path = %08lX, \
 st = %08lX)\n{\n"/*}*/, message, path, st));
@@ -529,7 +543,10 @@ st = %08lX)\n{\n"/*}*/, message, path, st));
 		os_become_query(&uid, (int *)0, (int *)0);
 		if ((st->st_uid != uid) || (st->st_mode & 07000))
 		{
-			if (!project_file_find(cp->pp, s1))
+			project_become_undo();
+			exists = 0 != project_file_find(cp->pp, s1);
+			project_become(cp->pp);
+			if (!exists)
 				break;
 		}
 
@@ -547,15 +564,18 @@ st = %08lX)\n{\n"/*}*/, message, path, st));
 		 * Don't copy it if it's not a source file, or a
 		 * relevant ,D file.
 		 */
+		project_become_undo();
 		src = project_file_find(cp->pp, s1short);
-		if
-		(
-			!src
-		||
-			(src->deleted_by && str_equal(s1, s1short))
-		||
-			src->about_to_be_created_by
-		)
+		remove_the_file =
+			(
+				!src
+			||
+				(src->deleted_by && str_equal(s1, s1short))
+			||
+				src->about_to_be_created_by
+			);
+		project_become(cp->pp);
+		if (remove_the_file)
 		{
 			str_free(s1short);
 			break;
@@ -585,12 +605,15 @@ st = %08lX)\n{\n"/*}*/, message, path, st));
 		 * Don't copy a suppressed file.
 		 * BUT keep primary source files and their diff files.
 		 */
-		if
-		(
-			!project_file_find(cp->pp, s1short)
-		&&
-			isa_suppressed_filename(cp, s1short)
-		)
+		project_become_undo();
+		remove_the_file =
+			(
+				!project_file_find(cp->pp, s1short)
+			&&
+				isa_suppressed_filename(cp, s1short)
+			);
+		project_become(cp->pp);
+		if (remove_the_file)
 		{
 			str_free(s1short);
 			break;
@@ -602,10 +625,10 @@ st = %08lX)\n{\n"/*}*/, message, path, st));
 		 */
 		trace(("cp %s %s\n", path->str_text, s2->str_text));
 		copy_whole_file(path, s2, 1);
-		if (!project_file_find(cp->pp, s1))
-			os_chmod(s2, (st->st_mode | 0644) & ~0022 & ~change_umask(cp));
-		else
-			os_chmod(s2, (st->st_mode | 0444) & ~0222 & ~change_umask(cp));
+		project_become_undo();
+		exists = 0 != project_file_find(cp->pp, s1);
+		project_become(cp->pp);
+		chmod_common(s2, st, !exists, cp);
 		break;
 
 	case dir_walk_dir_after:
@@ -644,6 +667,8 @@ copy_tree_callback(arg, message, path, st)
 	change_ty	*cp;
 	int		uid;
 	string_ty	*contents;
+	int		exists;
+	int		remove_the_file;
 
 	trace(("copy_tree_callback(message = %d, path = %08lX, st = %08lX)\n{\n"/*}*/, message, path, st));
 	os_interrupt_cope();
@@ -682,7 +707,10 @@ copy_tree_callback(arg, message, path, st)
 		os_become_query(&uid, (int *)0, (int *)0);
 		if ((st->st_uid != uid) || (st->st_mode & 07000))
 		{
-			if (!project_file_find(cp->pp, s1))
+			project_become_undo();
+			exists = 0 != project_file_find(cp->pp, s1);
+			project_become(cp->pp);
+			if (!exists)
 				break;
 		}
 
@@ -710,12 +738,15 @@ copy_tree_callback(arg, message, path, st)
 		 * Don't copy a suppressed file.
 		 * BUT keep primary source files and their diff files.
 		 */
-		if
-		(
-			!project_file_find(cp->pp, s1short)
-		&&
-			isa_suppressed_filename(cp, s1short)
-		)
+		project_become_undo();
+		remove_the_file =
+			(
+				!project_file_find(cp->pp, s1short)
+			&&
+				isa_suppressed_filename(cp, s1short)
+			);
+		project_become(cp->pp);
+		if (remove_the_file)
 		{
 			str_free(s1short);
 			break;
@@ -726,10 +757,10 @@ copy_tree_callback(arg, message, path, st)
 		 * copy the file
 		 */
 		copy_whole_file(path, s2, 1);
-		if (!project_file_find(cp->pp, s1))
-			os_chmod(s2, (st->st_mode | 0644) & ~0022 & ~change_umask(cp));
-		else
-			os_chmod(s2, (st->st_mode | 0444) & ~0222 & ~change_umask(cp));
+		project_become_undo();
+		exists = 0 != project_file_find(cp->pp, s1);
+		project_become(cp->pp);
+		chmod_common(s2, st, !exists, cp);
 		break;
 
 	case dir_walk_dir_after:
@@ -786,6 +817,7 @@ integrate_begin_main()
 	string_ty	*num;
 
 	trace(("integrate_begin_main()\n{\n"/*}*/));
+	arglex();
 	minimum = 0;
 	maximum = 0;
 	project_name = 0;
@@ -815,7 +847,7 @@ integrate_begin_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -899,6 +931,20 @@ integrate_begin_main()
 		project_fatal(pp, 0, i18n("not an integrator"));
 	if (cstate_data->state != cstate_state_awaiting_integration)
 		change_fatal(cp, 0, i18n("bad ib state"));
+	if
+	(
+		!project_developer_may_integrate_get(pp)
+	&&
+		str_equal(change_developer_name(cp), user_name(up))
+	)
+		change_fatal(cp, 0, i18n("developer may not integrate"));
+	if
+	(
+		!project_reviewer_may_integrate_get(pp)
+	&&
+		str_equal(change_reviewer_name(cp), user_name(up))
+	)
+		change_fatal(cp, 0, i18n("reviewer may not integrate"));
 
 	/*
 	 * make sure only one integration at a time
@@ -910,7 +956,7 @@ integrate_begin_main()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%ld", magic_zero_decode(other));
+		sub_var_set_long(scp, "Number", magic_zero_decode(other));
 		project_fatal(pp, scp, i18n("currently integrating $number"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -922,7 +968,7 @@ integrate_begin_main()
 	 * grab a delta number
 	 * and advance the project's delta counter
 	 */
-	cstate_data->delta_number = project_delta_number_get(pp);
+	cstate_data->delta_number = project_next_delta_number(pp);
 
 	/*
 	 * include the current year in the copyright_years field
@@ -1001,20 +1047,16 @@ integrate_begin_main()
 	 * (b) the changed file must exist and not have been modified
 	 * (c) the difference file must exist and not have been modified
 	 */
-	if (cstate_data->branch)
-		dd = str_format("%S/baseline", change_development_directory_get(cp, 0));
-	else
-		dd = change_development_directory_get(cp, 1);
+	dd = change_development_directory_get(cp, 1);
 	id = change_integration_directory_get(cp, 1);
 	bl = project_baseline_path_get(pp, 1);
-	project_file_nth(pp, 0); /* make sure proj fstate read in */
-	project_become(pp);
 	errs = 0;
 	for (j = 0; ; ++j)
 	{
 		fstate_src	src_data;
 		string_ty	*s1;
 		string_ty	*s2;
+		int		ok;
 
 		src_data = change_file_nth(cp, j);
 		if (!src_data)
@@ -1025,12 +1067,15 @@ integrate_begin_main()
 			continue;
 
 		s1 = change_file_path(cp, src_data->file_name);
-		if (!change_fingerprint_same(src_data->file_fp, s1, 0))
+		project_become(pp);
+		ok = change_fingerprint_same(src_data->file_fp, s1, 0);
+		project_become_undo();
+		if (!ok)
 		{
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", src_data->file_name);
+			sub_var_set_string(scp, "File_Name", src_data->file_name);
 			change_error(cp, scp, i18n("$filename altered"));
 			sub_context_delete(scp);
 			errs++;
@@ -1039,12 +1084,15 @@ integrate_begin_main()
 		assert(src_data->file_fp->oldest > 0);
 
 		s2 = str_format("%S,D", s1);
-		if (!change_fingerprint_same(src_data->diff_file_fp, s2, 0))
+		project_become(pp);
+		ok = change_fingerprint_same(src_data->diff_file_fp, s2, 0);
+		project_become_undo();
+		if (!ok)
 		{
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S,D", src_data->file_name);
+			sub_var_set_format(scp, "File_Name", "%S,D", src_data->file_name);
 			change_error(cp, scp, i18n("$filename altered"));
 			sub_context_delete(scp);
 			errs++;
@@ -1070,6 +1118,7 @@ integrate_begin_main()
 	 * (a user make have killed a previous aeib).  Register a rmdir
 	 * (to be done in the background) if an undo is needed.
 	 */
+	project_become(pp);
 	if (os_exists(id))
 		os_rmdir_tree(id);
 	undo_rmdir_bg(id);
@@ -1247,20 +1296,13 @@ integrate_begin_main()
 void
 integrate_begin()
 {
-	trace(("integrate_begin()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		integrate_begin_main();
-		break;
+		{ arglex_token_help,		integrate_begin_help,	},
+		{ arglex_token_list,		integrate_begin_list,	},
+	};
 
-	case arglex_token_help:
-		integrate_begin_help();
-		break;
-
-	case arglex_token_list:
-		integrate_begin_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("integrate_begin()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), integrate_begin_main);
+	trace(("}\n"));
 }

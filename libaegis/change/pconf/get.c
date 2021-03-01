@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,12 +37,13 @@ pconf_improve(cp, d, filename)
 	string_ty	*filename;
 {
 	sub_context_ty	*scp;
+	size_t		j;
 
 	if (!d->build_command)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", filename);
-		sub_var_set(scp, "FieLD_Name", "build_command");
+		sub_var_set_string(scp, "File_Name", filename);
+		sub_var_set_charstar(scp, "FieLD_Name", "build_command");
 		change_fatal
 		(
 			cp,
@@ -54,11 +55,30 @@ pconf_improve(cp, d, filename)
 	}
 	if (!d->development_build_command)
 		d->development_build_command = str_copy(d->build_command);
+	if (!(d->mask & pconf_create_symlinks_before_integration_build_mask))
+	{
+		d->create_symlinks_before_integration_build =
+			d->create_symlinks_before_build;
+		d->mask |= pconf_create_symlinks_before_integration_build_mask;
+	}
+	if (!(d->mask & pconf_remove_symlinks_after_integration_build_mask))
+	{
+		/*
+		 * Integration builds always remove the symlinks
+		 * again, even if they are kept around in the
+		 * development directories.  This stops them
+		 * becoming stale if there are deeper baseline
+		 * integrations.
+		 */
+		d->remove_symlinks_after_integration_build = 1;
+	}
+	if (!d->history_create_command && d->history_put_command)
+		d->history_create_command = str_copy(d->history_put_command);
 	if (!d->history_create_command)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", filename);
-		sub_var_set(scp, "FieLD_Name", "history_create_command");
+		sub_var_set_string(scp, "File_Name", filename);
+		sub_var_set_charstar(scp, "FieLD_Name", "history_create_command");
 		change_fatal
 		(
 			cp,
@@ -71,8 +91,8 @@ pconf_improve(cp, d, filename)
 	if (!d->history_get_command)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", filename);
-		sub_var_set(scp, "FieLD_Name", "history_get_command");
+		sub_var_set_string(scp, "File_Name", filename);
+		sub_var_set_charstar(scp, "FieLD_Name", "history_get_command");
 		change_fatal
 		(
 			cp,
@@ -82,11 +102,13 @@ pconf_improve(cp, d, filename)
 		/* NOTREACHED */
 		sub_context_delete(scp);
 	}
+	if (!d->history_put_command && d->history_create_command)
+		d->history_put_command = str_copy(d->history_create_command);
 	if (!d->history_put_command)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", filename);
-		sub_var_set(scp, "FieLD_Name", "history_put_command");
+		sub_var_set_string(scp, "File_Name", filename);
+		sub_var_set_charstar(scp, "FieLD_Name", "history_put_command");
 		change_fatal
 		(
 			cp,
@@ -99,8 +121,8 @@ pconf_improve(cp, d, filename)
 	if (!d->history_query_command)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", filename);
-		sub_var_set(scp, "FieLD_Name", "history_query_command");
+		sub_var_set_string(scp, "File_Name", filename);
+		sub_var_set_charstar(scp, "FieLD_Name", "history_query_command");
 		change_fatal
 		(
 			cp,
@@ -113,8 +135,8 @@ pconf_improve(cp, d, filename)
 	if (!d->diff_command)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", filename);
-		sub_var_set(scp, "FieLD_Name", "diff_command");
+		sub_var_set_string(scp, "File_Name", filename);
+		sub_var_set_charstar(scp, "FieLD_Name", "diff_command");
 		change_fatal
 		(
 			cp,
@@ -127,8 +149,8 @@ pconf_improve(cp, d, filename)
 	if (!d->diff3_command && !d->merge_command)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", filename);
-		sub_var_set(scp, "FieLD_Name", "merge_command");
+		sub_var_set_string(scp, "File_Name", filename);
+		sub_var_set_charstar(scp, "FieLD_Name", "merge_command");
 		change_fatal
 		(
 			cp,
@@ -145,8 +167,6 @@ pconf_improve(cp, d, filename)
 	}
 	if (d->file_template)
 	{
-		size_t		j;
-
 		for (j = 0; j < d->file_template->length; ++j)
 		{
 			pconf_file_template tp;
@@ -155,8 +175,8 @@ pconf_improve(cp, d, filename)
 			if (!tp->pattern || !tp->pattern->length)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", filename);
-				sub_var_set(scp, "FieLD_Name",
+				sub_var_set_string(scp, "File_Name", filename);
+				sub_var_set_charstar(scp, "FieLD_Name",
 					"file_template.pattern");
 				change_fatal
 				(
@@ -170,8 +190,8 @@ pconf_improve(cp, d, filename)
 			if (!tp->body && !tp->body_command)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", filename);
-				sub_var_set(scp, "FieLD_Name",
+				sub_var_set_string(scp, "File_Name", filename);
+				sub_var_set_charstar(scp, "FieLD_Name",
 					"file_template.body");
 				change_fatal
 				(
@@ -185,8 +205,8 @@ pconf_improve(cp, d, filename)
 			if (tp->body && tp->body_command)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", filename);
-				sub_var_set(scp, "FieLD_Name",
+				sub_var_set_string(scp, "File_Name", filename);
+				sub_var_set_charstar(scp, "FieLD_Name",
 					"file_template.body");
 				change_fatal
 				(
@@ -198,6 +218,79 @@ pconf_improve(cp, d, filename)
 				sub_context_delete(scp);
 			}
 		}
+	}
+	if (d->project_specific)
+	{
+		for (j = 0; j < d->project_specific->length; ++j)
+		{
+			pconf_project_specific psp;
+	
+			psp = d->project_specific->list[j];
+			if (!psp->name)
+			{
+				scp = sub_context_new();
+				sub_var_set_string(scp, "File_Name", filename);
+				sub_var_set_charstar(scp, "FieLD_Name",
+					"project_specific.name");
+				change_fatal
+				(
+					cp,
+					scp,
+			    i18n("$filename: contains no \"$field_name\" field")
+				);
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
+			if (!psp->value)
+			{
+				scp = sub_context_new();
+				sub_var_set_string(scp, "File_Name", filename);
+				sub_var_set_charstar(scp, "FieLD_Name",
+					"project_specific.value");
+				change_fatal
+				(
+					cp,
+					scp,
+			    i18n("$filename: contains no \"$field_name\" field")
+				);
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
+		}
+	}
+
+	if (d->change_file_command)
+	{
+		if (!d->change_file_undo_command)
+			d->change_file_undo_command =
+				str_copy(d->change_file_command);
+		if (!d->new_file_command)
+			d->new_file_command =
+				str_copy(d->change_file_command);
+		if (!d->new_test_command)
+			d->new_test_command =
+				str_copy(d->change_file_command);
+		if (!d->copy_file_command)
+			d->copy_file_command =
+				str_copy(d->change_file_command);
+		if (!d->remove_file_command)
+			d->remove_file_command =
+				str_copy(d->change_file_command);
+	}
+	if (d->change_file_undo_command)
+	{
+		if (!d->new_file_undo_command)
+			d->new_file_undo_command =
+				str_copy(d->change_file_undo_command);
+		if (!d->new_test_undo_command)
+			d->new_test_undo_command =
+				str_copy(d->change_file_undo_command);
+		if (!d->copy_file_undo_command)
+			d->copy_file_undo_command =
+				str_copy(d->change_file_undo_command);
+		if (!d->remove_file_undo_command)
+			d->remove_file_undo_command =
+				str_copy(d->change_file_undo_command);
 	}
 }
 
@@ -258,7 +351,7 @@ change_pconf_get(cp, required)
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%s", THE_CONFIG_FILE);
+				sub_var_set_charstar(scp, "File_Name", THE_CONFIG_FILE);
 				change_fatal
 				(
 					cp,
@@ -273,7 +366,7 @@ change_pconf_get(cp, required)
 		}
 		else
 		{
-			cp->pconf_data = pconf_read_file(filename->str_text);
+			cp->pconf_data = pconf_read_file(filename);
 			pconf_improve(cp, cp->pconf_data, filename);
 		}
 		change_become_undo();
@@ -301,30 +394,17 @@ change_pconf_get(cp, required)
 			*app = ap;
 			ap->name = str_from_c("unspecified");
 			ap->pattern = str_from_c("*");
-			ap->mask =
-				(
-					pconf_architecture_name_mask
-				|
-					pconf_architecture_pattern_mask
-				);
 		}
 		for (j = 0; j < cp->pconf_data->architecture->length; ++j)
 		{
-			if
-			(
-				cp->pconf_data->architecture->list[j]->mask
-			!=
-				(
-					pconf_architecture_name_mask
-				|
-					pconf_architecture_pattern_mask
-				)
-			)
+			pconf_architecture ap;
+			ap = cp->pconf_data->architecture->list[j];
+			if (!ap->name && !ap->pattern)
 			{
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", filename);
+				sub_var_set_string(scp, "File_Name", filename);
 				change_fatal
 				(
 					cp,
@@ -334,6 +414,11 @@ change_pconf_get(cp, required)
 				/* NOTREACHED */
 				sub_context_delete(scp);
 			}
+
+			/*
+			 * Make sure the report generator can see it.
+			 */
+			ap->mask |= pconf_architecture_mode_mask;
 		}
 
 		/*
@@ -441,6 +526,14 @@ change_pconf_get(cp, required)
 		  "test/${zpad $hundred 2}/t${zpad $number 4}${left $type 1}.sh"
 				);
 		}
+
+		/*
+		 * Make sure the report generator can see the enums.
+		 */
+		cp->pconf_data->mask |=
+			pconf_history_put_trashes_file_mask |
+			pconf_history_content_limitation_mask
+			;
 	}
 	trace(("return %8.8lX;\n", cp->pconf_data));
 	trace((/*{*/"}\n"));

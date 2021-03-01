@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,8 +39,8 @@ metric_check(mp, fn, cp)
 	if (!mp->name)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", fn);
-		sub_var_set(scp, "FieLD_Name", "name");
+		sub_var_set_string(scp, "File_Name", fn);
+		sub_var_set_charstar(scp, "FieLD_Name", "name");
 		change_fatal
 		(
 			cp,
@@ -51,8 +51,8 @@ metric_check(mp, fn, cp)
 	if (!(mp->mask & metric_value_mask))
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", fn);
-		sub_var_set(scp, "FieLD_Name", "value");
+		sub_var_set_string(scp, "File_Name", fn);
+		sub_var_set_charstar(scp, "FieLD_Name", "value");
 		change_fatal
 		(
 			cp,
@@ -93,7 +93,7 @@ change_file_metrics_filename(cp, filename)
 	metrics_filename_pattern = change_metrics_filename_pattern_get(cp);
 	scp = sub_context_new();
 	absolute_filename = change_file_path(cp, filename);
-	sub_var_set(scp, "File_Name", "%S", absolute_filename);
+	sub_var_set_string(scp, "File_Name", absolute_filename);
 	str_free(absolute_filename);
 	metrics_filename = subst_intl(scp, metrics_filename_pattern->str_text);
 	sub_context_delete(scp);
@@ -121,7 +121,7 @@ change_file_metrics_get(cp, filename)
 	change_become(cp);
 	if (os_exists(metrics_filename))
 	{
-		mp = metrics_read_file(metrics_filename->str_text);
+		mp = metrics_read_file(metrics_filename);
 	}
 	else
 		mp = 0;

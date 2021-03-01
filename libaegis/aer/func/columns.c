@@ -29,8 +29,10 @@
 #include <aer/value/struct.h>
 #include <aer/value/void.h>
 #include <col.h>
+#include <error.h> /* for assert */
 #include <mem.h>
 #include <str.h>
+#include <output.h>
 
 
 static int verify _((rpt_expr_ty *));
@@ -108,7 +110,6 @@ run(ep, argc, argv)
 	size_t		argc;
 	rpt_value_ty	**argv;
 {
-	int		colnum;
 	int		left;
 	int		padding;
 	int		padding_prev;
@@ -119,21 +120,44 @@ run(ep, argc, argv)
 	size_t		j;
 	string_ty	*name;
 
-	for (j = 0; j < rpt_func_print__ncolumns; ++j)
-		col_heading(rpt_func_print__column[j], (char *)0);
-
-	if (rpt_func_print__ncolumns < argc)
+	/*
+	 * Nuke the old columns.
+	 */
+	while (rpt_func_print__ncolumns > 0)
 	{
-		size_t		nbytes;
-
-		nbytes = argc * sizeof(int);
-		rpt_func_print__column =
-			mem_change_size(rpt_func_print__column, nbytes);
-		for (j = rpt_func_print__ncolumns; j < argc; ++j)
-			rpt_func_print__column[j] = -1;
-		rpt_func_print__ncolumns = argc;
+		--rpt_func_print__ncolumns;
+		j = rpt_func_print__ncolumns;
+		output_delete(rpt_func_print__column[j]);
+		rpt_func_print__column[j] = 0;
 	}
 
+	/*
+	 * Allocate more space if we need it.
+	 */
+	while (rpt_func_print__ncolumns_max < argc)
+	{
+		size_t		nbytes;
+		size_t		old;
+
+		old = rpt_func_print__ncolumns_max;
+		rpt_func_print__ncolumns_max =
+			rpt_func_print__ncolumns_max * 2 + 8;
+		nbytes =
+			(
+				rpt_func_print__ncolumns_max
+			*
+				sizeof(rpt_func_print__column[0])
+			);
+		rpt_func_print__column =
+			mem_change_size(rpt_func_print__column, nbytes);
+		for (j = old; j < rpt_func_print__ncolumns_max; ++j)
+			rpt_func_print__column[j] = 0;
+	}
+
+	/*
+	 * Create each of the columns.
+	 */
+	assert(rpt_func_print__colp);
 	right = 0;
 	padding_prev = 0;
 	for (j = 0; j < argc; ++j)
@@ -230,9 +254,14 @@ run(ep, argc, argv)
 		/*
 		 * create the column and set its heading
 		 */
-		colnum = col_create(left, right);
-		col_heading(colnum, name->str_text);
-		rpt_func_print__column[j] = colnum;
+		rpt_func_print__column[j] =
+			col_create
+			(
+				rpt_func_print__colp,
+				left,
+				right,
+				name->str_text
+			);
 		str_free(name);
 
 		/*
@@ -240,6 +269,7 @@ run(ep, argc, argv)
 		 */
 		padding_prev = padding;
 	}
+	rpt_func_print__ncolumns = argc;
 
 	/*
 	 * done

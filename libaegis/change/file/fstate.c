@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,15 +21,18 @@
  */
 
 #include <change/file.h>
+#include <sub.h>
 #include <symtab.h>
 #include <trace.h>
 
 
-static void fimprove _((fstate));
+static void fimprove _((fstate, string_ty *, change_ty *));
 
 static void
-fimprove(fstate_data)
+fimprove(fstate_data, filename, cp)
 	fstate		fstate_data;
+	string_ty	*filename;
+	change_ty	*cp;
 {
 	size_t		j;
 
@@ -37,17 +40,106 @@ fimprove(fstate_data)
 		fstate_data->src = fstate_src_list_type.alloc();
 
 	/*
-	 * This covers a transitional glitch in the edit number
-	 * semantics.  Very few installed sites will ever need this.
+	 * Migrate file state information.
 	 */
 	for (j = 0; j < fstate_data->src->length; ++j)
 	{
 		fstate_src	src;
 
 		src = fstate_data->src->list[j];
-		/* Historical 2.3 -> 3.0 transition. */
+		/*
+		 * Historical 2.3 -> 3.0 transition.
+		 *
+		 * This covers a transitional glitch in the edit number
+		 * semantics.  Very few installed sites will ever
+		 * need this.
+		 */
 		if (src->edit_number && !src->edit_number_origin)
 			src->edit_number_origin = str_copy(src->edit_number);
+
+		/*
+		 * Historical 3.24 to 3.25 transition.
+		 *
+		 * This was when history file contents encoding was added,
+		 * so that we could cope with binary files transparently,
+		 * even for ascii-only history tools.
+		 */
+		if (src->edit_number)
+		{
+			src->edit = history_version_type.alloc();
+			src->edit->revision = src->edit_number;
+			src->edit->encoding = history_version_encoding_none;
+			src->edit_number = 0;
+		}
+		if (src->edit_number_origin)
+		{
+			src->edit_origin = history_version_type.alloc();
+			src->edit_origin->revision = src->edit_number_origin;
+			src->edit_origin->encoding =
+				history_version_encoding_none;
+			src->edit_number_origin = 0;
+		}
+		if (src->edit_number_origin_new)
+		{
+			src->edit_origin_new = history_version_type.alloc();
+			src->edit_origin_new->revision =
+				src->edit_number_origin_new;
+			src->edit_origin_new->encoding =
+				history_version_encoding_none;
+			src->edit_number_origin_new = 0;
+		}
+
+		/*
+		 * Make sure things are where they are meant to be.
+		 */
+		if (src->edit && !src->edit->revision)
+		{
+			sub_context_ty  *scp;
+
+			scp = sub_context_new();
+			sub_var_set_string(scp, "File_Name", filename);
+			sub_var_set_charstar(scp, "FieLD_Name", "edit.revision");
+			change_fatal
+			(
+				cp,
+				scp,
+			    i18n("$filename: contains no \"$field_name\" field")
+			);
+			/* NOTREACHED */
+			sub_context_delete(scp);
+		}
+		if (src->edit_origin && !src->edit_origin->revision)
+		{
+			sub_context_ty  *scp;
+
+			scp = sub_context_new();
+			sub_var_set_string(scp, "File_Name", filename);
+			sub_var_set_charstar(scp, "FieLD_Name", "edit_origin.revision");
+			change_fatal
+			(
+				cp,
+				scp,
+			    i18n("$filename: contains no \"$field_name\" field")
+			);
+			/* NOTREACHED */
+			sub_context_delete(scp);
+		}
+		if (src->edit_origin_new && !src->edit_origin_new->revision)
+		{
+			sub_context_ty  *scp;
+
+			scp = sub_context_new();
+			sub_var_set_string(scp, "File_Name", filename);
+			sub_var_set_charstar(scp, "FieLD_Name", "edit_origin_new.revision");
+			change_fatal
+			(
+				cp,
+				scp,
+			    i18n("$filename: contains no \"$field_name\" field")
+			);
+			/* NOTREACHED */
+			sub_context_delete(scp);
+		}
 	}
 }
 
@@ -72,9 +164,9 @@ change_fstate_get(cp)
 	{
 		fn = change_fstate_filename_get(cp);
 		change_become(cp);
-		cp->fstate_data = fstate_read_file(fn->str_text);
+		cp->fstate_data = fstate_read_file(fn);
 		change_become_undo();
-		fimprove(cp->fstate_data);
+		fimprove(cp->fstate_data, fn, cp);
 	}
 	if (!cp->fstate_data->src)
 		cp->fstate_data->src = fstate_src_list_type.alloc();

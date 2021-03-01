@@ -29,6 +29,13 @@
  * if the libintl.h include file is available, include it
  */
 #ifdef HAVE_LIBINTL_H
+
+/*
+ * On some platforms (particularly those which don't have a native GNU
+ * libc) you need to define the ENABLE_NLS, or nothing will happen.
+ */
+#define ENABLE_NLS 1
+
 #include <libintl.h>
 #else
 #ifdef HAVE_LIBGETTEXT_H

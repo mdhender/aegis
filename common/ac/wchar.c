@@ -195,3 +195,28 @@ wcswidth(wcs, n)
 }
 
 #endif
+#ifndef HAVE_MBRTOWC
+
+size_t
+mbrtowc(pwc, s, n, ps)
+	wchar_t		*pwc;
+	const char	*s;
+	size_t		n;
+	mbstate_t	*ps;
+{
+	return mbtowc(pwc, s, n);
+}
+
+#endif
+#ifndef HAVE_WCRTOMB
+
+size_t
+wcrtomb(s, wc, ps)
+	char		*s;
+	wchar_t		wc;
+	mbstate_t	*ps;
+{
+	return wctomb(s, wc);
+}
+
+#endif

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995 Peter Miller;
+ *	Copyright (C) 1994, 1995, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: report the developers currently assigned to a project
  */
 
-auto p, ps, name;
+auto p, ps, name, cmnt;
 p = project[project_name()];
 title("The Project Developer Report", sprintf("Project \"%s\"", p.name));
 ps = p.state.branch;
@@ -38,5 +38,9 @@ else
 		{ name = "Full Name\n-----------"; right = 0; padding = 2; }
 	);
 	for (name in sort(ps.developer))
-		print(name, passwd[name].pw_comment);
+	{
+		try { cmnt = passwd[name].pw_comment; }
+			catch (cmnt) { cmnt = ""; }
+		print(name, cmnt);
+	}
 }

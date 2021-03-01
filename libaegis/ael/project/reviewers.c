@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@
 #include <ael/project/reviewers.h>
 #include <col.h>
 #include <option.h>
+#include <output.h>
 #include <project.h>
 #include <project_hist.h>
 #include <trace.h>
@@ -37,11 +38,12 @@ list_reviewers(project_name, change_number)
 	long		change_number;
 {
 	project_ty	*pp;
-	int		login_col = 0;
-	int		name_col = 0;
+	output_ty	*login_col = 0;
+	output_ty	*name_col = 0;
 	int		j;
 	string_ty	*line1;
 	int		left;
+	col_ty		*colp;
 
 	trace(("list_reviewers()\n{\n"));
 	if (change_number)
@@ -61,20 +63,18 @@ list_reviewers(project_name, change_number)
 	/*
 	 * create the columns
 	 */
-	col_open((char *)0);
+	colp = col_open((string_ty *)0);
 	line1 = str_format("Project \"%S\"", project_name_get(pp));
-	col_title(line1->str_text, "List of Reviewers");
+	col_title(colp, line1->str_text, "List of Reviewers");
 	str_free(line1);
 
 	left = 0;
-	login_col = col_create(left, left + LOGIN_WIDTH);
+	login_col = col_create(colp, left, left + LOGIN_WIDTH, "User\n------");
 	left += LOGIN_WIDTH + 2;
-	col_heading(login_col, "User\n------");
 
 	if (!option_terse_get())
 	{
-		name_col = col_create(left, 0);
-		col_heading(name_col, "Full Name\n-----------");
+		name_col = col_create(colp, left, 0, "Full Name\n-----------");
 	}
 
 	/*
@@ -87,16 +87,16 @@ list_reviewers(project_name, change_number)
 		logname = project_reviewer_nth(pp, j);
 		if (!logname)
 			break;
-		col_puts(login_col, logname->str_text);
+		output_put_str(login_col, logname);
 		if (!option_terse_get())
-			col_puts(name_col, user_full_name(logname));
-		col_eoln();
+			output_fputs(name_col, user_full_name(logname));
+		col_eoln(colp);
 	}
 
 	/*
 	 * clean up and go home
 	 */
-	col_close();
+	col_close(colp);
 	project_free(pp);
 	trace(("}\n"));
 }

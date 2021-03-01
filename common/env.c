@@ -51,7 +51,7 @@ static	int	initialized;
 void
 env_initialize()
 {
-	int		j;
+	size_t		j;
 	char		**old;
 
 	if (initialized)
@@ -101,7 +101,7 @@ env_set(name, value)
 	char		*value;
 {
 	size_t		name_len;
-	int		j;
+	size_t		j;
 	char		*cp;
 	size_t		nbytes;
 
@@ -172,7 +172,7 @@ env_unset(name)
 	char		*name;
 {
 	size_t		name_len;
-	int		j;
+	size_t		j;
 	char		*cp;
 
 	trace(("env_unset(name = \"%s\")\n{\n"/*}*/, name));

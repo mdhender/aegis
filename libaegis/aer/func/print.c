@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,11 +28,15 @@
 #include <col.h>
 #include <error.h>
 #include <mem.h>
+#include <os.h>
+#include <output.h>
 #include <sub.h>
 
 
 int		rpt_func_print__ncolumns;
-int		*rpt_func_print__column;
+int		rpt_func_print__ncolumns_max;
+output_ty	**rpt_func_print__column;
+col_ty		*rpt_func_print__colp;
 
 
 static int verify _((rpt_expr_ty *));
@@ -71,9 +75,9 @@ run(ep, argc, argv)
 		sub_context_ty *scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "print");
-		sub_var_set(scp, "Number1", "%ld", (long)argc);
-		sub_var_set(scp, "Number2", "%ld", (long)rpt_func_print__ncolumns);
+		sub_var_set_charstar(scp, "Function", "print");
+		sub_var_set_long(scp, "Number1", (long)argc);
+		sub_var_set_long(scp, "Number2", (long)rpt_func_print__ncolumns);
 		s =
 			subst_intl
 			(
@@ -122,9 +126,9 @@ run(ep, argc, argv)
 		 * ...and complain bitterly
 		 */
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "print");
-		sub_var_set(scp, "Number", "%ld", (long)j + 1);
-		sub_var_set(scp, "Name", "%s", argv[j]->method->name);
+		sub_var_set_charstar(scp, "Function", "print");
+		sub_var_set_long(scp, "Number", (long)j + 1);
+		sub_var_set_charstar(scp, "Name", argv[j]->method->name);
 		s =
 			subst_intl
 			(
@@ -144,13 +148,26 @@ run(ep, argc, argv)
 	{
 		vp = rpt_value_stringize(argv2[j]);
 		assert(vp->method->type == rpt_value_type_string);
-		col_puts
-		(
-			rpt_func_print__column[j],
-			rpt_value_string_query(vp)->str_text
-		);
+		if (rpt_func_print__column[j])
+		{
+			output_put_str
+			(
+				rpt_func_print__column[j],
+				rpt_value_string_query(vp)
+			);
+		}
 	}
-	col_eoln();
+
+	/*
+	 * Emit the line.
+	 *
+	 * The os_become bracketing is because we would write to the
+	 * file at this point, and some operatings systems will barf if
+	 * we have the wrong uid.
+	 */
+	os_become_orig();
+	col_eoln(rpt_func_print__colp);
+	os_become_undo();
 
 	/*
 	 * free all the stringized values

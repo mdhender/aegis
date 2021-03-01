@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1997 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1997, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -65,7 +65,7 @@ for (cn in keys(ps.change))
 
 for (name in sort(keys(staff)))
 {
-	auto s;
+	auto s, cmnt;
 	s = staff[name];
 	if (s.developer && !s.developer_count)
 		s.developer_count = 0;
@@ -75,10 +75,11 @@ for (name in sort(keys(staff)))
 		s.integrator_count = 0;
 	if (s.administrator && !s.administrator_count)
 		s.administrator_count = 0;
+	try { cmnt = passwd[name].pw_comment; } catch (cmnt) { cmnt = ""; }
 	print
 	(
 		name,
-		passwd[name].pw_comment,
+		cmnt,
 		sprintf
 		(
 			"%7s",

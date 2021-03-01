@@ -168,7 +168,7 @@ To write a change set onto a floppy, you would use commands such as
 \f(CB%\fP
 .E)
 The above command assumes the floppy is pre-formatted, and that there
-is a user-permiting line in the \fI/etc/fstab\fP file, as is common for
+is a user-permitting line in the \fI/etc/fstab\fP file, as is common for
 many Linux distributions.  The \fIchange.set\fP can be any filename you
 like, but is usually project-name and change-number related.
 .LP

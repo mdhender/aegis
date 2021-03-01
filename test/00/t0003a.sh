@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -104,7 +104,7 @@ unset LANGUAGE
 $bin/aegis -vers -help > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; fail; fi
 
-$bin/aegis -vers > test.out 2>&1
+$bin/aegis -vers -pw=79 > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; fail; fi
 
 $bin/aegis -vers lic > test.out 2>&1

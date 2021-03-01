@@ -28,34 +28,13 @@ input_ty *
 input_new(vptr)
 	input_vtbl_ty	*vptr;
 {
-	input_ty	*result;
+	input_ty	*ip;
 
-	result = mem_alloc(vptr->size);
-	result->vptr = vptr;
-	result->pushback_buf = 0;
-	result->pushback_len = 0;
-	result->pushback_max = 0;
-	return result;
-}
-
-
-long
-input_generic_read(fp, data_v, len)
-	input_ty	*fp;
-	void		*data_v;
-	long		len;
-{
-	char		*data;
-	long		result;
-	int		c;
-
-	data = data_v;
-	for (result = 0; result < len; ++result)
-	{
-		c = fp->vptr->get(fp);
-		if (c < 0)
-			break;
-		*data++ = c;
-	}
-	return result;
+	ip = mem_alloc(vptr->size);
+	ip->vptr = vptr;
+	ip->buffer_size = (size_t)1 << 14;
+	ip->buffer = mem_alloc(ip->buffer_size);
+	ip->buffer_position = ip->buffer;
+	ip->buffer_end = ip->buffer;
+	return ip;
 }

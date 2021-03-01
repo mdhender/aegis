@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@
 #include <col.h>
 #include <commit.h>
 #include <change.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <change/file.h>
 #include <error.h>
 #include <help.h>
@@ -185,6 +185,7 @@ build_main()
 	string_ty	*base;
 
 	trace(("build_main()\n{\n"/*}*/));
+	arglex();
 	log_style = log_style_snuggle_default;
 	project_name = 0;
 	change_number = 0;
@@ -214,7 +215,7 @@ build_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -403,7 +404,7 @@ build_main()
 			else
 				s2 = str_format("%S/%S", base, s1);
 			user_become(up);
-			s1 = os_pathname(s2, 1);
+			s1 = os_pathname(s2, 0);
 			user_become_undo();
 			str_free(s2);
 			s2 = 0;
@@ -419,7 +420,7 @@ build_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", partial.string[j]);
+				sub_var_set_string(scp, "File_Name", partial.string[j]);
 				change_fatal(cp, scp, i18n("$filename unrelated"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -433,7 +434,7 @@ build_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s2);
+				sub_var_set_string(scp, "File_Name", s2);
 				change_fatal(cp, scp, i18n("too many $filename"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -475,7 +476,7 @@ build_main()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", arglex_token_name(arglex_token_minimum));
+		sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_minimum));
 		change_fatal(cp, scp, i18n("$name option not meaningful"));
 		sub_context_delete(scp);
 	}
@@ -499,22 +500,27 @@ build_main()
 		pup = project_user(pp);
 		log_open(change_logfile_get(cp), pup, log_style);
 
-		if (pp->parent && pconf_data->create_symlinks_before_build)
+		if
+		(
+			pp->parent
+		&&
+			pconf_data->create_symlinks_before_integration_build
+		)
 			change_create_symlinks_to_baseline(cp, pp->parent, pup, minimum);
 
 		change_verbose(cp, 0, i18n("integration build started"));
 		change_run_build_command(cp);
 		change_verbose(cp, 0, i18n("integration build complete"));
 
-		if (pp->parent && pconf_data->create_symlinks_before_build)
+		if
+		(
+			pp->parent
+		&&
+			pconf_data->create_symlinks_before_integration_build
+		&&
+			pconf_data->remove_symlinks_after_integration_build
+		)
 		{
-			/*
-			 * Integration builds always remove the symlinks
-			 * again, even if they are kept around in the
-			 * development directories.  This stops them
-			 * becoming stale if there are deeper baseline
-			 * integrations.
-			 */
 			change_remove_symlinks_to_baseline(cp, pp->parent, pup);
 		}
 		user_free(pup);
@@ -589,20 +595,13 @@ build_main()
 void
 build()
 {
-	trace(("build()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		build_main();
-		break;
+		{ arglex_token_help,            build_help,         },
+		{ arglex_token_list,            build_list,         },
+	};
 
-	case arglex_token_help:
-		build_help();
-		break;
-
-	case arglex_token_list:
-		build_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("build()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), build_main);
+	trace(("}\n"));
 }

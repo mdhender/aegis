@@ -65,9 +65,9 @@ round_run(ep, argc, argv)
 
 		rpt_value_free(tmp);
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "round");
-		sub_var_set(scp, "Name", "%s", argv[0]->method->name);
-		sub_var_set(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Function", "round");
+		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
+		sub_var_set_charstar(scp, "Number", "1");
 		s =
 			subst_intl
 			(
@@ -131,9 +131,9 @@ floor_run(ep, argc, argv)
 
 		rpt_value_free(tmp);
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "floor");
-		sub_var_set(scp, "Name", "%s", argv[0]->method->name);
-		sub_var_set(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Function", "floor");
+		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
+		sub_var_set_charstar(scp, "Number", "1");
 		s =
 			subst_intl
 			(
@@ -197,9 +197,9 @@ ceil_run(ep, argc, argv)
 
 		rpt_value_free(tmp);
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "ceil");
-		sub_var_set(scp, "Name", "%s", argv[0]->method->name);
-		sub_var_set(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Function", "ceil");
+		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
+		sub_var_set_charstar(scp, "Number", "1");
 		s =
 			subst_intl
 			(
@@ -263,9 +263,9 @@ trunc_run(ep, argc, argv)
 
 		rpt_value_free(tmp);
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "trunc");
-		sub_var_set(scp, "Name", "%s", argv[0]->method->name);
-		sub_var_set(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Function", "trunc");
+		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
+		sub_var_set_charstar(scp, "Number", "1");
 		s =
 			subst_intl
 			(

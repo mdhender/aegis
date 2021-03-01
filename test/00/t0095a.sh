@@ -332,7 +332,7 @@ if test $? -ne 0 ; then fail; fi
 #
 # form a listing, rather than compare the binary
 #
-$bin/aedist -list -f test.ae -o test.out -pw=80 -pl=66
+$bin/aedist -list -f test.ae -o test.out -pw=79 -pl=66
 if test $? -ne 0 ; then fail; fi
 
 sed -e '/[0-9][0-9][0-9][0-9]$/d' < test.out > test.out2

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@
 #include <ael/change/files.h>
 #include <arglex2.h>
 #include <commit.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <change/file.h>
 #include <error.h>
 #include <file.h>
@@ -117,7 +117,7 @@ copy_file_undo_list()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -169,6 +169,7 @@ copy_file_undo_main()
 	string_ty	*base;
 
 	trace(("copy_file_undo_main()\n{\n"/*}*/));
+	arglex();
 	string_list_constructor(&wl);
 	project_name = 0;
 	change_number = 0;
@@ -220,7 +221,7 @@ copy_file_undo_main()
 			else if (change_number < 1)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -375,7 +376,7 @@ copy_file_undo_main()
 		if (!s2)
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", wl.string[j]);
+			sub_var_set_string(scp, "File_Name", wl.string[j]);
 			change_error(cp, scp, i18n("$filename unrelated"));
 			sub_context_delete(scp);
 			++number_of_errors;
@@ -410,7 +411,7 @@ copy_file_undo_main()
 						if (string_list_member(&wl2, s3))
 						{
 							scp = sub_context_new();
-							sub_var_set(scp, "File_Name", "%S", s3);
+							sub_var_set_string(scp, "File_Name", s3);
 							change_error(cp, scp, i18n("too many $filename"));
 							sub_context_delete(scp);
 							++number_of_errors;
@@ -432,10 +433,10 @@ copy_file_undo_main()
 			{
 				scp = sub_context_new();
 				if (s2->str_length)
-					sub_var_set(scp, "File_Name", "%S", s2);
+					sub_var_set_string(scp, "File_Name", s2);
 				else
-					sub_var_set(scp, "File_Name", ".");
-				sub_var_set(scp, "Number", "%ld", (long)wl_in.nstrings);
+					sub_var_set_charstar(scp, "File_Name", ".");
+				sub_var_set_long(scp, "Number", (long)wl_in.nstrings);
 				sub_var_optional(scp, "Number");
 				change_error
 				(
@@ -452,7 +453,7 @@ copy_file_undo_main()
 			if (string_list_member(&wl2, s2))
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s2);
+				sub_var_set_string(scp, "File_Name", s2);
 				change_error(cp, scp, i18n("too many $filename"));
 				sub_context_delete(scp);
 				++number_of_errors;
@@ -485,10 +486,10 @@ copy_file_undo_main()
 		{
 			scp = sub_context_new();
 			src_data = change_file_find_fuzzy(cp, s1);
-			sub_var_set(scp, "File_Name", "%S", s1);
+			sub_var_set_string(scp, "File_Name", s1);
 			if (src_data)
 			{
-				sub_var_set(scp, "Guess", "%S", src_data->file_name);
+				sub_var_set_string(scp, "Guess", src_data->file_name);
 				change_error
 				(
 					cp,
@@ -511,7 +512,7 @@ copy_file_undo_main()
 		case file_action_create:
 		case file_action_remove:
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", s1);
+			sub_var_set_string(scp, "File_Name", s1);
 			change_error(cp, scp, i18n("bad cp undo $filename"));
 			sub_context_delete(scp);
 			++number_of_errors;
@@ -523,10 +524,15 @@ copy_file_undo_main()
 			src_data->file_fp = 0;
 		}
 	}
+	if (!wl.nstrings)
+	{
+		error_intl(0, i18n("no file names"));
+		++number_of_errors;
+	}
 	if (number_of_errors)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%d", number_of_errors);
+		sub_var_set_long(scp, "Number", number_of_errors);
 		sub_var_optional(scp, "Number");
 		change_fatal(cp, scp, i18n("no files uncopied"));
 		sub_context_delete(scp);
@@ -568,6 +574,7 @@ copy_file_undo_main()
 			string_ty	*blf;
 			int		different;
 			fstate_src	src_data;
+			fstate_src	psrc_data;
 
 			/*
 			 * Leave cross branch merges alone, even if they
@@ -575,9 +582,36 @@ copy_file_undo_main()
 			 * about the merge, not the file contents.
 			 */
 			src_data = change_file_find(cp, s1);
-			if (src_data && src_data->edit_number_origin_new)
+			if (!src_data)
+				goto not_this_one;
+			if (src_data->edit_origin_new)
+			{
+				assert(src_data->edit_origin_new->revision);
+				goto not_this_one;
+			}
+			if (src_data->action == file_action_create)
+				goto not_this_one;
+			if (src_data->action == file_action_remove)
 				goto not_this_one;
 
+			/*
+			 * The file could have vanished from under us,
+			 * so make sure this is sensable.
+			 */
+			psrc_data = project_file_find(pp, s1);
+			if
+			(
+				!psrc_data
+			||
+				psrc_data->deleted_by
+			||
+				psrc_data->about_to_be_created_by
+			)
+				goto not_this_one;
+
+			/*
+			 * Compare the files.
+			 */
 			blf = project_file_path(pp, s1);
 			assert(blf);
 			user_become(up);
@@ -688,7 +722,7 @@ copy_file_undo_main()
 	 * run the change file command
 	 * and the project file command if necessary
 	 */
-	change_run_change_file_command(cp, &wl, up);
+	change_run_copy_file_undo_command(cp, &wl, up);
 	change_run_project_file_command(cp, up);
 
 	/*
@@ -704,7 +738,7 @@ copy_file_undo_main()
 	for (j = 0; j < wl.nstrings; ++j)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", wl.string[j]);
+		sub_var_set_string(scp, "File_Name", wl.string[j]);
 		change_verbose(cp, scp, i18n("$filename gone"));
 		sub_context_delete(scp);
 	}
@@ -720,20 +754,13 @@ copy_file_undo_main()
 void
 copy_file_undo()
 {
-	trace(("copy_file_undo()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		copy_file_undo_main();
-		break;
+		{ arglex_token_help,		copy_file_undo_help,	},
+		{ arglex_token_list,		copy_file_undo_list,	},
+	};
 
-	case arglex_token_help:
-		copy_file_undo_help();
-		break;
-
-	case arglex_token_list:
-		copy_file_undo_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("copy_file_undo()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), copy_file_undo_main);
+	trace(("}\n"));
 }

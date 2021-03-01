@@ -25,12 +25,6 @@
 
 #include <main.h>
 
-struct project_ty;
-struct string_ty;
-struct user_ty;
-
-struct project_ty *new_branch_internals _((struct user_ty *up,
-	struct project_ty *pp, long cn, struct string_ty *dd));
 void new_branch _((void));
 
 #endif /* AEGIS_AENBR_H */

@@ -54,11 +54,12 @@ or those "pre-release snapshots" we are always forced to provide.
 .LP
 The above advantages are all very well - for management types.
 Why should Joe Average Programmer use the aegis program?
-Recall that SCCS provides file locking,
+Recall that RCS provides file locking,
 but only for one file at a time.
 The aegis program provides the file locking, atomically, for the set of files
 in the change.
-Recall also that SCCS locks the file the instant you start editing it.
+Recall also that correct RCS usage locks the file the instant you start
+editing it.
 This makes popular files a project bottleneck.
 The aegis program allows concurrent editing,
 and a resolution mechanism just before the change must be integrated,

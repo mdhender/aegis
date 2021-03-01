@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,17 +28,34 @@
 #include <wstr.h>
 #include <wstr_list.h>
 
-typedef string_ty *(*func_ptr)_((user_ty *));
+
+static string_ty *qemail _((user_ty *));
+
+static string_ty *
+qemail(up)
+	user_ty		*up;
+{
+	static string_ty *result;
+	string_ty	*s;
+
+	s = user_email_address(up);
+	if (result)
+		str_free(result);
+	result = str_quote_shell(s);
+	return result;
+}
+
 
 typedef struct table_ty table_ty;
 struct table_ty
 {
-	char		*name;
-	func_ptr	func;
+	const char	*name;
+	sub_user_func_ptr func;
 };
 
 static table_ty table[] =
 {
+	{ "quoted_email", qemail, },
 	{ "email", user_email_address, },
 	{ "group", user_group, },
 	{ "home", user_home, },
@@ -49,15 +66,13 @@ static table_ty table[] =
 static symtab_ty *stp;
 
 
-static func_ptr find_func _((string_ty *));
-
-static func_ptr
-find_func(name)
+sub_user_func_ptr
+sub_user_func(name)
 	string_ty	*name;
 {
 	table_ty	*tp;
 	string_ty	*s;
-	func_ptr	result;
+	sub_user_func_ptr result;
 	sub_context_ty	*scp;
 
 	if (!stp)
@@ -77,8 +92,8 @@ find_func(name)
 		if (s)
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%S", name);
-			sub_var_set(scp, "Guess", "%S", s);
+			sub_var_set_string(scp, "Name", name);
+			sub_var_set_string(scp, "Guess", s);
 			error_intl(scp, i18n("no \"$name\", guessing \"$guess\""));
 			sub_context_delete(scp);
 		}
@@ -116,7 +131,7 @@ sub_user(scp, arg)
 	string_ty	*s;
 	wstring_ty	*result;
 	user_ty		*up;
-	func_ptr	func;
+	sub_user_func_ptr func;
 
 	trace(("sub_user()\n{\n"/*}*/));
 	if (arg->nitems == 1)
@@ -128,7 +143,7 @@ sub_user(scp, arg)
 	else if (arg->nitems == 2)
 	{
 		s = wstr_to_str(arg->item[1]);
-		func = find_func(s);
+		func = sub_user_func(s);
 		str_free(s);
 		if (!func)
 		{

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1995-1998, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,7 +36,8 @@ void project_history_delta_name_delete _((project_ty *, string_ty *));
 void project_history_delta_name_add _((project_ty *, long, string_ty *));
 long project_current_integration_get _((project_ty *));
 void project_current_integration_set _((project_ty *, long));
-long project_delta_number_get _((project_ty *));
+long project_next_delta_number _((project_ty *));
+long project_change_number_to_delta_number _((project_ty *, long));
 void project_copyright_years_merge _((project_ty *, struct change_ty *));
 void project_copyright_years_get _((project_ty *pp, int *ary, int ary_len_max,
 	int *ary_len));
@@ -83,12 +84,18 @@ void project_reviewer_may_integrate_set _((project_ty *, int));
 int project_reviewer_may_integrate_get _((project_ty *));
 void project_developers_may_create_changes_set _((project_ty *, int));
 int project_developers_may_create_changes_get _((project_ty *));
-void project_forced_develop_begin_notify_command_set _((project_ty *, string_ty *));
+void project_forced_develop_begin_notify_command_set _((project_ty *,
+	string_ty *));
 string_ty *project_forced_develop_begin_notify_command_get _((project_ty *));
 void project_develop_end_notify_command_set _((project_ty *, string_ty *));
 string_ty *project_develop_end_notify_command_get _((project_ty *));
 void project_develop_end_undo_notify_command_set _((project_ty *, string_ty *));
 string_ty *project_develop_end_undo_notify_command_get _((project_ty *));
+void project_review_begin_notify_command_set _((project_ty *, string_ty *));
+string_ty *project_review_begin_notify_command_get _((project_ty *));
+void project_review_begin_undo_notify_command_set _((project_ty *,
+	string_ty *));
+string_ty *project_review_begin_undo_notify_command_get _((project_ty *));
 void project_review_pass_notify_command_set _((project_ty *, string_ty *));
 string_ty *project_review_pass_notify_command_get _((project_ty *));
 void project_review_pass_undo_notify_command_set _((project_ty *, string_ty *));

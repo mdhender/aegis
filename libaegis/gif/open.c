@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -62,7 +62,7 @@ format_error(fn)
 	sub_context_ty	*scp;
 
 	scp = sub_context_new();
-	sub_var_set(scp, "File_Name", "%s", fn);
+	sub_var_set_charstar(scp, "File_Name", fn);
 	fatal_intl(scp, i18n("read $filename: format error"));
 	/* NOTREACHED */
 }
@@ -86,7 +86,7 @@ gif_getc(fp, fn)
 
 			scp = sub_context_new();
 			sub_errno_set(scp);
-			sub_var_set(scp, "File_Name", "%s", fn);
+			sub_var_set_charstar(scp, "File_Name", fn);
 			fatal_intl(scp, i18n("read $filename: $errno"));
 			/* NOTREACHED */
 		}
@@ -224,6 +224,7 @@ read_image(fp, fn, row_bytes, data, width, height, interlaced)
 			 */
 			trace(("clear code missing\n"));
 			format_error(fn);
+			break;
 
 		case state_after_clear:
 			/*
@@ -460,9 +461,8 @@ gif_open(fn, mode)
 	gif_ty		*result;
 	int		j;
 	FILE		*fp;
-	char		*cp;
+	unsigned char	*cp;
 	int		c;
-	int		color_resolution;
 	int		bits_per_pixel;
 	int		read_colormap;
 
@@ -496,7 +496,7 @@ gif_open(fn, mode)
 
 			scp = sub_context_new();
 			sub_errno_set(scp);
-			sub_var_set(scp, "File_Name", "%s", fn);
+			sub_var_set_charstar(scp, "File_Name", fn);
 			fatal_intl(scp, i18n("open $filename: $errno"));
 			/* NOTREACHED */
 		}
@@ -542,7 +542,6 @@ gif_open(fn, mode)
 	 * get encoding info
 	 */
 	c = gif_getc(fp, fn);
-	color_resolution = 1 + ((c >> 4) & 7);
 	bits_per_pixel = 1 + (c & 7);
 	if (c & 0x80)
 		read_colormap = 1 << bits_per_pixel;
@@ -587,6 +586,7 @@ gif_open(fn, mode)
 		{
 		default:
 			format_error(fn);
+			break;
 
 		case ';':
 			if (fp != stdin)
@@ -598,14 +598,10 @@ gif_open(fn, mode)
 			 * extension block - ignore
 			 */
 			c = gif_getc(fp, fn);
-			for (;;)
+			while (c > 0)
 			{
-				c = gif_getc(fp, fn);
-				while (c > 0)
-				{
-					gif_getc(fp, fn);
-					--c;
-				}
+				gif_getc(fp, fn);
+				--c;
 			}
 			break;
 

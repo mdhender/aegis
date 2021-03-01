@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,10 +36,19 @@ change_architecture_from_pconf(cp)
 	change_architecture_clear(cp);
 	for (j = 0; j < pconf_data->architecture->length; ++j)
 	{
-		change_architecture_add
-		(
-			cp,
-			pconf_data->architecture->list[j]->name
-		);
+		pconf_architecture ap;
+
+		ap = pconf_data->architecture->list[j];
+		if (ap->mode == pconf_architecture_mode_required)
+		{
+			/*
+			 * We only transfer the architecture names marked
+			 * "required", but this is a project thing.
+			 * Once the architecture names are listed
+			 * against the change, they become mandatory
+			 * for the change.
+			 */
+			change_architecture_add(cp, ap->name);
+		}
 	}
 }

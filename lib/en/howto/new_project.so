@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 .\"	along with this program; if not, write to the Free Software
 .\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 .\"
-.\" MANIFEST: document describing lib/en/howto/new_projects
+.\" MANIFEST: Howto, New project
 .\"
 .nh 1 "How to Create a New Project"
 .LP
@@ -33,7 +33,7 @@ You need to select the name with some care, as changing the project name
 later is tedious.  Adding aliases, however, is simple.
 .nh 2 "Single User Project"
 .LP
-A single suer project is one where all of the dirrerent staff roles are
+A single suer project is one where all of the different staff roles are
 filled by the same person, and a number of interlocks are disabled,
 as you will see in a moment.
 .LP
@@ -85,7 +85,7 @@ the ``\fIaenrv \fP\f[CW]your-login\fP'' command makes you a reviewer and
 the ``\fIaeni \fP\f[CW]your-login\fP'' command makes you an integrator.
 .IP \(bu 2n
 You need to edit the project attributes next.
-The ``\fIaepa -edit\fP'' comamnd does this.
+The ``\fIaepa -edit\fP'' command does this.
 You will be placed into a text editor,
 and will see something similar to this:
 .E(
@@ -120,7 +120,7 @@ branch called \fIname\fP.1.0 for use wherever Aegis wants a project name.
 Everything is done as above, except you want to project attributes to
 look like this:
 .E(
-developer_may_review = true;
+developer_may_review = false;
 developer_may_integrate = true;
 reviewer_may_integrate = true;
 developers_may_create_changes = true;
@@ -157,3 +157,81 @@ Converting a single user project to a multi-person project is simply editing
 the project attributes to look like this later.  \fIRemember:\fP each
 branch inherited its attributes when it was created \- you need to edit
 the ancestor branches' project attributes too.
+.nh 2 "Warning"
+.LP
+The
+.I /usr/local/com/aegis/state
+file contains pointers to "system" projects.
+\fIPointers.\fP
+Users may add their own project pointers (to their own projects)
+by putting a search path into the
+.I AEGIS_PATH
+environment variable.
+The system part is always automatically appended by \fIAegis\fP.
+The default,
+already set by the
+.I /usr/local/lib/\%aegis/cshrc
+file,
+is
+\fI$HOME/lib/aegis\fP.
+Do not create this directory,
+.I Aegis
+is finicky and wants to do this itself.
+.PP
+Where projects reside is completely flexible,
+be they system projects or user projects.
+They are not kept under the
+.I /usr/local/com/aegis
+directory,
+this directory only contains pointers.
+.nh 3 "Creating Projects"
+.LP
+When you create a new project, the \fIfirst\fP element of the AEGIS_PATH
+is used as the place to remember the project \fIpointer\fP.  This means
+the project will not show up in the global project list
+if you have set AEGIS_PATH to include private projects.
+.LP
+There are two ways to make sure that you are creating a global
+project.  Either ``\fIunset AEGIS_PATH\fP'' immediately before
+using the ``\fIaenpr\fP'' command, or use the ``\f[CW]--library\fP
+\fI/usr/local/com/aegis\fP'' option of the \fIaenpr\fP command.
+.nh 3 "Web Visibility"
+.LP
+If you have a Web server, and the \f(CWaegis.cgi\fP was installed, you
+can set its \fIAEGIS_PATH\fP environment variable, if you want it to be
+able to see more projects than just the global projects.  You do this by
+creating a \fI/usr/local/lib/\%aegis.cgi.conf\fP file (there isn't one,
+by default) and setting the \fIAEGIS_PATH\fP environment variable in it.
+This is a fragment of Bourne shell script, not just the name.
+.nh 2 "Changing The Project Owner"
+.LP
+Typically, when folks try Aegis for the first time, they don't worry about
+having a separate user for their projects.  However, once things are
+ticking along, it is less and less attractive to toss it all and start
+again cleanly.  So, now you need to change the project owner from the
+user who started the Aegis evaluation to the unique project user account.
+.IP 1. 3n
+You need to be \fIroot\fP to perform this procedure.
+.IP 2. 3n
+Create the user account.  It doesn't need to work to login, so the
+password can be disabled.  You probably want to arrange to have this
+user's email forwarded somewhere sensible (maybe see the Distributed
+Development chapter of the User Guide).
+.IP 3. 3n
+The owner of the project is taken from the owner of the project directory
+tree, so this is what needs to be changed.  Go to the root of the project
+tree - the directory which appears in the ``\fIael projects\fP'' listing.
+This isn't the trunk baseline, but the directory above it (you will see
+\fIinfo\fP, \fIhistory\fP and \fIbaseline\fP sub-directories).
+.IP 4. 3n
+Use the command
+.E(
+chown -R \fIusername\fP .
+.E)
+to change the ownership of this directory, and all files and
+sub-directories below it.  Insert the username of the account you created
+in step 2.  (You need the \fBdot\fP on the end of the command, its not
+mere punctuation.)
+.PP
+There is no need to change the owner of any active changes,
+or any other change attributes.

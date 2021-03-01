@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994, 1995, 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -116,7 +116,7 @@ print();
 print("hello", "world");
 fubar
 if test $? -ne 0 ; then no_result; fi
-$bin/aegis -report -file test.in -o test.out.raw
+$bin/aegis -report -file test.in -o test.out.raw -pw=64
 if test $? -ne 0 ; then fail; fi
 
 sed '/delete this line/d' < test.out.raw > test.out
@@ -151,7 +151,7 @@ print("6.1" + 7.2, 3.4 + 5, "1" + 0.2, 1 + 2 + 3);
 print("6.1" * 7.2, 3.4 * 5, "12" * 0.2, 2 * 3);
 fubar
 if test $? -ne 0 ; then no_result; fi
-$bin/aegis -report -file test.in -o test.out.raw
+$bin/aegis -report -file test.in -o test.out.raw -pw=64
 if test $? -ne 0 ; then fail; fi
 
 sed '/delete this line/d' < test.out.raw > test.out
@@ -186,7 +186,7 @@ for (j = -16; j < 10; j = j + 1)
 	print(j, j * j, j < 3, j <= 3, j > 3, j >= 3, j == 3, j != 3, j ~~ "A1");
 fubar
 if test $? -ne 0 ; then no_result; fi
-$bin/aegis -report -file test.in -o test.out.raw
+$bin/aegis -report -file test.in -o test.out.raw -pw=64
 if test $? -ne 0 ; then fail; fi
 
 sed '/delete this line/d' < test.out.raw > test.out
@@ -196,7 +196,7 @@ cat > test.ok << 'fubar'
 
 
 
-Variables							   Page 1
+Variables						  Page 1
 
 N	N^2	<	<=	>	>=	==	!=	~~
 ------- -------
@@ -252,7 +252,7 @@ for (j = 1; j < 32; j = j + 1)
 	);
 fubar
 if test $? -ne 0 ; then no_result; fi
-$bin/aegis -report -file test.in -o test.out.raw
+$bin/aegis -report -file test.in -o test.out.raw -pw=64
 if test $? -ne 0 ; then fail; fi
 
 sed '/delete this line/d' < test.out.raw > test.out

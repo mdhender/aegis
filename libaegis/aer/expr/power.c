@@ -104,8 +104,8 @@ evaluate(this)
 	default:
 		illegal_power:
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", v1a->method->name);
-		sub_var_set(scp, "Name2", "%s", v2a->method->name);
+		sub_var_set_charstar(scp, "Name1", v1a->method->name);
+		sub_var_set_charstar(scp, "Name2", v2a->method->name);
 		rpt_value_free(v1a);
 		rpt_value_free(v2a);
 		s = subst_intl(scp, i18n("illegal power ($name1 ** $name2)"));
@@ -139,8 +139,8 @@ evaluate(this)
 	{
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "Value1", "%g", v1d);
-		sub_var_set(scp, "Value2", "%g", v2d);
+		sub_var_set_format(scp, "Value1", "%g", v1d);
+		sub_var_set_format(scp, "Value2", "%g", v2d);
 		s = subst_intl(scp, i18n("$value1 ** $value2: $errno"));
 		sub_context_delete(scp);
 		result = rpt_value_error(this->pos, s);

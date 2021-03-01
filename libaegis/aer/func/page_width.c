@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -46,7 +46,7 @@ page_width_run(ep, argc, argv)
 	rpt_value_ty	**argv;
 {
 	assert(argc == 0);
-	return rpt_value_integer(option_page_width_get());
+	return rpt_value_integer(option_page_width_get(-1));
 }
 
 
@@ -78,7 +78,7 @@ page_length_run(ep, argc, argv)
 	rpt_value_ty	**argv;
 {
 	assert(argc == 0);
-	return rpt_value_integer(option_page_length_get());
+	return rpt_value_integer(option_page_length_get(-1));
 }
 
 

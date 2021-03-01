@@ -94,13 +94,26 @@ change_file_whiteout_write(cp, filename, up)
 				string_ty	*s3;
 				time_t		mtime_old;
 				time_t		mtime_young;
+				time_t		now;
 
+				/*
+				 * Make sure the whiteout file is
+				 * younger than the baseline file.
+				 * This ensures that a build (which
+				 * will fail) is triggered if the file
+				 * is still being referred to.
+				 */
+				time(&now);
 				s3 = project_file_path(cp->pp, filename);
 				assert(s3);
 				user_become(up);
 				os_mtime_range(s3, &mtime_old, &mtime_young);
 				str_free(s3);
-				os_mtime_set_errok(s2, mtime_old);
+				if (now <= mtime_old)
+					now = mtime_old + 60;
+				if (now <= mtime_young)
+					now = mtime_young + 60;
+				os_mtime_set_errok(s2, now);
 				user_become_undo();
 			}
 		}

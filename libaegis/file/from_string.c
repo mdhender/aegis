@@ -44,7 +44,7 @@ file_from_string(filename, content, mode)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", filename);
+		sub_var_set_string(scp, "File_Name", filename);
 		fatal_intl(scp, i18n("create $filename: $errno"));
 		/* NOTREACHED */
 		sub_context_delete(scp);

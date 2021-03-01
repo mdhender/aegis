@@ -1,0 +1,273 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the lib/en/man1/aeimport command.
+.\"
+.so z_name.so
+.ds n) aeimport
+.TH "\*(n)" 1 \*(N) "Reference Manual" ""
+.SH NAME
+\*(n) \- import foreign repository into \*(N)
+.XX "aeimport(1)" "import foreign repository into Aegis"
+.SH SYNOPSIS
+.B \*(n)
+[
+.IR option \&...
+]
+.IR dirname
+.br
+.B \*(n)
+.B -Help
+.br
+.B \*(n)
+.B -VERSion
+.SH DESCRIPTION
+The
+.I "\*(n)"
+command is used to
+create a new project,
+and populate it by
+importing a foreign repository (such as RCS or CVS)
+without loss of project history.
+.PP
+Please note: unless you specify a version (see the \fB\-version\fP option,
+below) this command will default to creating branches to support version
+1.0.  If you discovered this too late, all is not lost: you can use the
+\fIaenbru\fP(1) command to get rid of the branches you didn't want.
+.SS Directory
+The project directory, under which the project baseline and history and
+state and change data are kept, will be created at this time.  If the
+\fB\-DIRectory\fP option is not given, the project directory will be
+created in the directory specified by the default_\%project_\%directory
+field of \fIaeuconf\fP(5), or if not set in current user's home directory;
+in either case with the same name as the project.
+.SS Staff
+The project is created with the current user
+and group as the owning user and group.
+The current user is an administrator for the project.
+The project has no other administrators (use \fIaena\fP(1) to add more).
+.PP
+The project will have all user names found in the history files (see blow)
+installed as developers, reviewers and integrators.  This is probably
+too broad, but firly accurately preproduces the wide-open permissions
+found in most repositories, and you will want to use \fIaerd\fP(1),
+\fIaerrv\fP(1) and \fIaeri\fP(1) as appropriate to winnow this list.
+.PP
+If only one name is found, the project will be set to
+``\f[CW]developers_may_review = true;\fP'' otherwise it will be false
+(see \fIaepattr\fP(5) for more information).  Use \fIaepa\fP(1) to change
+this if you want a different setting.
+.PP
+The project's umask is derived from the current user's umask, but
+modified to guarantee that group members will have access and that only
+the project owner will have write access.  In general, it's best of the
+project is \fInot\fP owned by an account with any othe role, as this
+prevents a whole class of ``oops, I thought I was somewhere else'' errors.
+.PP
+The project's history commands (see \fIaepconf\fP(5) for more information)
+are set to those suitable for RCS.  The build command is set to ``exit
+0''; you need to set it to something suitable.  The symbolic link farm
+is turned on.
+.SS Pointer
+The project pointer will be added to the first element of the search
+path, or \fI\*(S)\fP if no path is set.  If this is inappropriate,
+use the \fB\-LIBrary\fP option to explicitly set the desired location.
+See the \fB\-LIBrary\fP option for more information.
+.PP
+Alternatively, unset the AEGIS_PATH environment variable to add the
+project to the global project list.
+.SS Version
+You may specify the project version in two ways:
+.TP 3n
+1.
+The version number may be implicit in the project name, in which
+case the version numbers will be stripped off.  For example, ``\*(n)
+-p example.1.2'' will create a project called ``example'' with branch
+number 1 created, and sub-branch 2 of branch 1 created.
+.TP 3n
+2.
+The version number may be stated explicitly, in which case it will be
+subdivided for branch numbers.  For example, ``\*(n) -p example -version
+1.2'' will create a project called ``example'' with branch number 1
+created, and sub-branch 2 of branch 1 created.
+.PP
+In each case, these branches may be named wherever a project name may
+be given, such as ``-p example.1'' and ``-p example-1.2''.  The actual
+punctuation character is unimportant.
+.PP
+You may have any depth of version numbers you like.  Both methods
+of specifying version numbers may be used, and they will be combined.
+If you want no version numbers at all, use \fB\-version\fP with a single
+dash as the argument, as in ``\f(CW\-version \-\fP''
+.PP
+If no version number is given, either explicitly or implicitly, version
+1.0 is used.
+.SS Project Directory Location
+.so z_filelocn.so
+.SH THE PROCESS
+Most file version systems do not operate using change sets.  In order
+to import such repositories into \*(N) it is necessary to ``discover''
+these change sets.  The following steps are taken:
+.TP 2n
+1.
+The directory (\fIdirpath\fP) given on the command line, and all
+directories below it, are scanned for appropriate files (for example,
+RCS abd CVS use files with a ``\f[CW],v\fP'' suffix).
+These files are read to obtain the file's history.
+.sp 0.3
+If you have been using a non-standard file suffix, \*(n) won't be able
+to find the files.
+.sp 0.3
+If you have more than one module in your CVS repository, \*(n) does't
+(yet) understand the CVSROOT/modules file.  Pointing \*(n) at your whole
+CVSROOT may produce an unexpectedly large result.
+.TP 2n
+2.
+The history files discovered in the previous step are copied into the
+location used by \*(N).  Unlike some other tools, \*(N) has a repository
+per project, rather than all projects sharing the same repository.
+.sp 0.3
+This also means that \*(N) will not modify the original history files.
+In particular, if the import produces unexpected results, simply remove
+the project (see \fIaermpr\fP(1) for more information) and start again.
+.sp 0.3
+It is not possible to leave all your history files under, say,
+$CVSROOT and have Aegis point to them.
+.TP 2n
+3.
+For each user mentioned in the various file histories, the timestamps
+are examined to find groups of files which were commited at around the
+same time.  Files changed within 1 minute of each other are considered a group.
+.sp 0.3
+Files change within one minute, but by different users, are \fInot\fP
+considered a group.  This does not usually present a problem as developers
+mostly work alone.  In rare cases where developers work together, only
+one of them does the commit.
+.sp 0.3
+In some cases the time window may be too large, and several very small
+changes may be seen as one larger change set.  In practice, this isn't
+very common.
+.TP 2n
+4.
+Groups of files are stored into the \*(N) database as completed changes
+(i.e. as if \fIaeipass\fP(1) has already run).  The description of the
+change is the concatenation of all the unique comments found attached
+to the relevant file versions.  The time stamp used for the change is
+the latest time stamp of any file in the group.
+.sp 0.3
+There are times when small typographical errors between file comments
+result in longer-than-expected change descriptions.  This can be
+corrected with \fIaeca\fP(1) or \fItkaeca\fP(1) if desired.  There are
+also times when the reverse is true: some files have no comments at all,
+and the resulting description is less than useful.
+.TP 2n
+5.
+Tags are turned into delta names by transferring delta names from the
+files they are attached to, to the change sets they are attached to.
+When a tag would appear to be attached to more than one chnage, it is
+attached only to the latest change.
+.sp 0.3
+In common usage, the tags serve a similar purpose as Aegis'
+delta numbers.  They are all (typically) applied in a single
+CVS command, in order that a particular release may be recreated
+later.  However, because each file will be at a different
+version, and each will have had its latest version included
+in various random change sets.
+.sp 0.3
+Tags are used for other things too.  The method given here is simply a
+guess, but it's one which works reasonably well.
+.PP
+Once \*(n) has completed importing a project, you will be able to
+examine the results using the \fIael project_history\fP and \fIael
+change_details\fP commands.
+(See \fIael\fP(1) for more information.)
+.SS Limitations
+The \*(n) program is far from perfect.  There are a number of known
+limitations.
+.TP 2n
+\(bu
+At this time, there is no support for branching.
+(As soon as I figure out how to discern the root of a branch across
+loosely coupled files, I'll implement it.  Ideas and/or code contributions
+welcome.)
+.TP 2n
+\(bu
+Only RCS format is understood at present.  It should be straigh forward
+to add SCCS support in the future.  Only step 1 of the above process
+requires attention, the rest is file format neutral.
+.TP 2n
+\(bu
+There is no support for CVS modules, and there needs to be.
+.TP 2n
+\(bu
+You can't specify the time window size used to determine change sets.
+Time will tell whether this is
+necessary, buts it begs the question: how will you know what window size
+you need in order to use the option at all.
+.TP 2n
+\(bu
+You can't import a CVS repository into an existing project.
+You may only create a new project from a CVS repository.
+.TP 2n
+\(bu
+You can't import a remote CVS repository.
+.SH OPTIONS
+The following options are understood:
+.so o_dir.so
+.TP 8n
+\fB\-FORmat\fP \fIname\fP
+.RS
+This option may be use to specify which history format is being imported.
+The following formats are understood:
+.TP 8n
+RCS
+Release Control System format has been around for quite a while.
+It is the format underlying CVS (Concurrent Version System).
+This is the deafult if no format name is specified.
+.br
+\fBNote:\fP you \fImust\fP have RCS installed before you run \fI\*(n)\fP
+if you use this format, because RCS commands will be run during the import
+process.  The import will fail if RCS is not installed.  You can find
+a freeware implementation at \f[CW]ftp.gnu.org\fP, or a local mirror.
+.TP 8n
+SCCS
+Source Code Control System is one of the earliest Unix version systems.
+(I'm told this is the format underlying BitKeeper.)
+.br
+\fBNote:\fP you \fImust\fP have SCCS installed before you run \fI\*(n)\fP
+if you use this format, because SCCS commands will be run during the
+import process.  The import will fail if SCCS is not installed.
+The GNU Compatibly Stupid Source Control (CSSC) is a
+freeware implementation of SCCS, and it may be found at
+\f[CW]ftp://alpha.gnu.org/gnu/CSSC/\fP
+.RE
+.so o_lib.so
+.so o_list.so
+.so o_project.so
+.so o_help.so
+.TP 8n
+\fB-VERSion\fP \fInumber\fP
+This option may be used to specify the version number
+for the project.
+Version numbers are implemented as branches.
+Use a single dash (``\f(CW\-\fP'') as the argument
+if you want no version branches created.
+.so o__rules.so
+.so z_exit.so
+.so z_cr.so

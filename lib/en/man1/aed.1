@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1996, 1998, 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -72,6 +72,10 @@ You may name a directory on the command line,
 and all files in the change in that directory tree will be differenced.
 .so z_intuit.so
 .so z_bl_lock.so
+.SS Notification
+The actions of the comman are controlled by the \fIdiff_\%command\fP
+and \fImerge_\%command\fP fields of the project \fIconfig\fP
+file.  See \fIaepconf\fP(5) for more information.
 .SH CONFLICT RESOLUTION
 If the version of a file in the change is not the same
 as the version of the file in the baseline,
@@ -166,7 +170,7 @@ file.
 This option is used to
 perform
 .I -Only_Merge
-is any source files have out-of-date versions,
+if any source files have out-of-date versions,
 otherwise
 .I -No_Merge is performed.
 Only merges or differences will be performed,
@@ -186,7 +190,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aed '\*(n) -diff \e!* -v'
-sh$	aed(){\*(n) -diff $* -v}
+sh$	aed(){\*(n) -diff "$@" -v}
 .fi
 For user's convenience,
 particularly when they have selected the ``no merge'' preference,

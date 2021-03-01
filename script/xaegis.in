@@ -1,0 +1,231 @@
+#!/bin/sh
+#
+#	aegis - project change supervisor
+#	Copyright (C) 1993, 1999 Peter Miller;
+#	All rights reserved.
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#
+# MANIFEST: wish script to give aegis a GUI interface
+#
+# You will need to have tcl/tk/wish installed for this to work correctly.
+# This script is based on tcl 7.0 and tk 3.3.
+#
+# comments wrap in Tcl, but not in sh \
+exec wish $0 -- ${1+"$@"}
+
+set datadir @datadir@
+
+#
+# set window manager properties for the top-level window
+#
+wm title . Aegis
+wm maxsize . 32767 32767
+wm minsize . 200 100
+wm iconname . Aegis
+wm iconbitmap . @$datadir/aegis.icon
+wm iconmask . @$datadir/aegis.mask
+
+#
+# create the menu bar
+#
+frame .menubar -relief raised -borderwidth 1
+pack .menubar -side top -fill x
+menubutton .menubar.file -text "File" -menu .menubar.file.m
+menubutton .menubar.command -text "Command" -menu .menubar.command.m
+pack append .menubar .menubar.file left .menubar.command left
+
+menu .menubar.file.m
+.menubar.file.m add command \
+	-label "Quit" \
+	-command exit
+ 
+menu .menubar.command.m
+.menubar.command.m add cascade		\
+	-label "Developer"		\
+	-menu .menubar.command.m.developer
+.menubar.command.m add cascade		\
+	-label "Reviewer"		\
+	-menu .menubar.command.m.reviewer
+.menubar.command.m add cascade		\
+	-label "Integrator"		\
+	-menu .menubar.command.m.integrator
+.menubar.command.m add cascade		\
+	-label "Administrator"		\
+	-menu .menubar.command.m.administrator
+
+menu .menubar.command.m.developer
+.menubar.command.m.developer add command \
+	-label "Develop Begin" \
+	-command not_implemented
+.menubar.command.m.developer add command \
+	-label "Develop Begin Undo" \
+	-command not_implemented
+.menubar.command.m.developer add command \
+	-label "Copy File" \
+	-command not_implemented
+.menubar.command.m.developer add command \
+	-label "Copy File Undo" \
+	-command not_implemented
+.menubar.command.m.developer add command \
+	-label "New File" \
+	-command not_implemented
+.menubar.command.m.developer add command \
+	-label "New File Undo" \
+	-command not_implemented
+.menubar.command.m.developer add command \
+	-label "New Test" \
+	-command not_implemented
+.menubar.command.m.developer add command \
+	-label "New Test Undo" \
+	-command not_implemented
+.menubar.command.m.developer add command \
+	-label "Remove File" \
+	-command not_implemented
+.menubar.command.m.developer add command \
+	-label "Remove File Undo" \
+	-command not_implemented
+.menubar.command.m.developer add command \
+	-label "Build" \
+	-command not_implemented
+.menubar.command.m.developer add command \
+	-label "Test" \
+	-command not_implemented
+.menubar.command.m.developer add command \
+	-label "Difference" \
+	-command not_implemented
+.menubar.command.m.developer add command \
+	-label "Develop End" \
+	-command not_implemented
+.menubar.command.m.developer add command \
+	-label "Develop End Undo" \
+	-command not_implemented
+
+menu .menubar.command.m.reviewer
+.menubar.command.m.reviewer add command \
+	-label "Review Fail" \
+	-command not_implemented
+.menubar.command.m.reviewer add command \
+	-label "Review Pass" \
+	-command not_implemented
+.menubar.command.m.reviewer add command \
+	-label "Review Pass Undo" \
+	-command not_implemented
+
+menu .menubar.command.m.integrator
+.menubar.command.m.integrator add command \
+	-label "Integrate Begin" \
+	-command not_implemented
+.menubar.command.m.integrator add command \
+	-label "Integrate Begin Undo" \
+	-command not_implemented
+.menubar.command.m.integrator add command \
+	-label "Build" \
+	-command not_implemented
+.menubar.command.m.integrator add command \
+	-label "Test" \
+	-command not_implemented
+.menubar.command.m.integrator add command \
+	-label "Integrate Fail" \
+	-command not_implemented
+.menubar.command.m.integrator add command \
+	-label "Integrate Pass" \
+	-command not_implemented
+
+menu .menubar.command.m.administrator
+.menubar.command.m.administrator add command \
+	-label "New Change" \
+	-command not_implemented
+.menubar.command.m.administrator add command \
+	-label "New Change Undo" \
+	-command not_implemented
+.menubar.command.m.administrator add command \
+	-label "Edit Change Attributes" \
+	-command not_implemented
+.menubar.command.m.administrator add command \
+	-label "Edit Project Attributes" \
+	-command not_implemented
+.menubar.command.m.administrator add command \
+	-label "New Developer" \
+	-command not_implemented
+.menubar.command.m.administrator add command \
+	-label "Remove Developer" \
+	-command not_implemented
+.menubar.command.m.administrator add command \
+	-label "New Reviewer" \
+	-command not_implemented
+.menubar.command.m.administrator add command \
+	-label "Remove Reviewer" \
+	-command not_implemented
+.menubar.command.m.administrator add command \
+	-label "New Integrator" \
+	-command not_implemented
+.menubar.command.m.administrator add command \
+	-label "Remove Integrator" \
+	-command not_implemented
+.menubar.command.m.administrator add command \
+	-label "New Administrator" \
+	-command not_implemented
+.menubar.command.m.administrator add command \
+	-label "Remove Administrator" \
+	-command not_implemented
+.menubar.command.m.administrator add command \
+	-label "New Project" \
+	-command not_implemented
+.menubar.command.m.administrator add command \
+	-label "Remove Project" \
+	-command not_implemented
+.menubar.command.m.administrator add command \
+	-label "New Project Release" \
+	-command not_implemented
+
+#
+# message when function is not implemented
+#
+proc not_implemented {} \
+{
+	catch { destroy .notimp }
+	toplevel .notimp
+	wm title .notimp "Aegis"
+	wm iconname .notimp "Aegis"
+
+	message .notimp.msg \
+		-text "Work in progress\nFunction not yet implemented" \
+		-just center -aspect 300
+	pack .notimp.msg -side top -padx 10 -pady 10
+
+	button .notimp.button -text "Sigh" -command "destroy .notimp"
+	pack .notimp.button -side bottom -padx 10 -pady 10
+	bind .notimp <Return> "destroy .notimp"
+	focus .notimp
+}
+
+#
+# draw the aegis icon in a simple frame
+#
+proc icon_screen { } \
+{
+	global lib
+	catch { destroy .screen }
+	frame .screen -width 200 -height 100
+	pack .screen -side bottom
+	label .screen.icon -bitmap @$datadir/aegis.icon
+	pack .screen.icon -anchor center
+}
+
+#
+# on start-up, display the icon
+#
+icon_screen

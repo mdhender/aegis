@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,14 @@
  * MANIFEST: functions to manipulate memorys
  */
 
+#include <ac/string.h>
+
+#include <error.h>
 #include <mem.h>
 #include <output/memory.h>
 #include <output/private.h>
+#include <str.h>
+#include <trace.h>
 
 
 typedef struct output_memory_ty output_memory_ty;
@@ -35,34 +40,40 @@ struct output_memory_ty
 };
 
 
-static void destructor _((output_ty *));
+static void output_memory_destructor _((output_ty *));
 
 static void
-destructor(fp)
+output_memory_destructor(fp)
 	output_ty	*fp;
 {
 	output_memory_ty *this;
 
+	trace(("output_memory_destructor(fp = %08lX)\n{\n", (long)fp));
 	this = (output_memory_ty *)fp;
 	if (this->buffer)
 		mem_free(this->buffer);
+	trace(("}\n"));
 }
 
 
-static const char *filename _((output_ty *));
+static string_ty *output_memory_filename _((output_ty *));
 
-static const char *
-filename(fp)
+static string_ty *
+output_memory_filename(fp)
 	output_ty	*fp;
 {
-	return "memory";
+	static string_ty *s;
+
+	if (!s)
+		s = str_from_c("memory");
+	return s;
 }
 
 
-static long otell _((output_ty *));
+static long output_memory_ftell _((output_ty *));
 
 static long
-otell(fp)
+output_memory_ftell(fp)
 	output_ty	*fp;
 {
 	output_memory_ty *this;
@@ -72,35 +83,18 @@ otell(fp)
 }
 
 
-static void oputc _((output_ty *, int));
+static void output_memory_write _((output_ty *, const void *, size_t));
 
 static void
-oputc(fp, c)
-	output_ty	*fp;
-	int		c;
-{
-	output_memory_ty *this;
-
-	this = (output_memory_ty *)fp;
-	while (this->size >= this->maximum)
-	{
-		this->maximum = 2 * this->maximum + 32;
-		this->buffer = mem_change_size(this->buffer, this->maximum);
-	}
-	this->buffer[this->size++] = c;
-}
-
-
-static void owrite _((output_ty *, const void *, size_t));
-
-static void
-owrite(fp, data, len)
+output_memory_write(fp, data, len)
 	output_ty	*fp;
 	const void	*data;
 	size_t		len;
 {
 	output_memory_ty *this;
 
+	trace(("output_memory_write(fp = %08lX, data = %08lX, len = %ld)\n{\n",
+		(long)fp, (long)data, (long)len));
 	this = (output_memory_ty *)fp;
 	while (this->size + len > this->maximum)
 	{
@@ -109,19 +103,38 @@ owrite(fp, data, len)
 	}
 	memcpy(this->buffer + this->size, data, len);
 	this->size += len;
+	trace(("}\n"));
+}
+
+
+static void output_memory_eoln _((output_ty *));
+
+static void
+output_memory_eoln(fp)
+	output_ty	*fp;
+{
+	output_memory_ty *this;
+
+	trace(("output_memory_eol(fp = %08lX)\n{\n", (long)fp));
+	this = (output_memory_ty *)fp;
+	if (this->size && this->buffer[this->size - 1] != '\n')
+		output_fputc(fp, '\n');
+	trace(("}\n"));
 }
 
 
 static output_vtbl_ty vtbl =
 {
 	sizeof(output_memory_ty),
+	output_memory_destructor,
+	output_memory_filename,
+	output_memory_ftell,
+	output_memory_write,
+	output_generic_flush,
+	output_generic_page_width,
+	output_generic_page_length,
+	output_memory_eoln,
 	"memory",
-	destructor,
-	filename,
-	otell,
-	oputc,
-	output_generic_fputs,
-	owrite,
 };
 
 
@@ -131,11 +144,14 @@ output_memory_open()
 	output_ty	*result;
 	output_memory_ty *this;
 
+	trace(("output_memory_open()\n{\n"));
 	result = output_new(&vtbl);
 	this = (output_memory_ty *)result;
 	this->buffer = 0;
 	this->size = 0;
 	this->maximum = 0;
+	trace(("return %08lX\n", (long)this));
+	trace(("}\n"));
 	return result;
 }
 
@@ -147,8 +163,17 @@ output_memory_forward(fp, deeper)
 {
 	output_memory_ty *this;
 
-	if (fp->vptr != &vtbl)
-		return;
-	this = (output_memory_ty *)fp;
-	output_write(deeper, this->buffer, this->size);
+	trace(("output_memory_forward(fp = %08lX, deeper = %08lX)\n{\n",
+		(long)fp, (long)deeper));
+	output_flush(fp);
+	assert(fp->vptr == &vtbl);
+	if (fp->vptr == &vtbl)
+	{
+		this = (output_memory_ty *)fp;
+		if (this->size)
+			output_write(deeper, this->buffer, this->size);
+		else
+			error_raw("%s: %d: nothing to forward", __FILE__, __LINE__);
+	}
+	trace(("}\n"));
 }

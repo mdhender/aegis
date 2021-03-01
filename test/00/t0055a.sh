@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1996-1998, 2000-2001 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -89,7 +89,7 @@ check_it()
 {
 	sed	-e "s|$work|...|g" \
 		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/$USER/USER/g" \
+		-e "s/\"$USER\"/\"USER\"/g" \
 		-e 's/19[0-9][0-9]/YYYY/' \
 		-e 's/20[0-9][0-9]/YYYY/' \
 		-e 's/node = ".*"/node = "NODE"/' \
@@ -259,7 +259,11 @@ src =
 	{
 		file_name = "fred";
 		action = remove;
-		edit_number_origin = "1.1";
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
 		usage = source;
 	},
 ];
@@ -307,7 +311,11 @@ src =
 	{
 		file_name = "fred";
 		action = remove;
-		edit_number_origin = "1.1";
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
 		usage = source;
 		diff_file_fp =
 		{
@@ -342,8 +350,16 @@ src =
 	{
 		file_name = "config";
 		action = create;
-		edit_number = "1.1";
-		edit_number_origin = "1.1";
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
 		usage = source;
 		file_fp =
 		{
@@ -361,8 +377,16 @@ src =
 	{
 		file_name = "fred";
 		action = remove;
-		edit_number = "1.1";
-		edit_number_origin = "1.1";
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
 		usage = source;
 		diff_file_fp =
 		{
@@ -411,8 +435,16 @@ src =
 	{
 		file_name = "config";
 		action = create;
-		edit_number = "1.2";
-		edit_number_origin = "1.2";
+		edit =
+		{
+			revision = "1.2";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1.2";
+			encoding = none;
+		};
 		usage = source;
 		file_fp =
 		{
@@ -430,8 +462,16 @@ src =
 	{
 		file_name = "fred";
 		action = remove;
-		edit_number = "1.1";
-		edit_number_origin = "1.1";
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
 		usage = source;
 		diff_file_fp =
 		{

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -73,11 +73,10 @@ integrate_begin_undo_help()
 }
 
 
-static void integrate_begin_undo_list _((void (*)(void)));
+static void integrate_begin_undo_list _((void));
 
 static void
-integrate_begin_undo_list(usage)
-	void		(*usage)_((void));
+integrate_begin_undo_list()
 {
 	string_ty	*project_name;
 
@@ -89,14 +88,14 @@ integrate_begin_undo_list(usage)
 		switch (arglex_token)
 		{
 		default:
-			generic_argument(usage);
+			generic_argument(integrate_begin_undo_usage);
 			continue;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				option_needs_name(arglex_token_project, usage);
+				option_needs_name(arglex_token_project, integrate_begin_undo_usage);
 			if (project_name)
-				duplicate_option_by_name(arglex_token_project, usage);
+				duplicate_option_by_name(arglex_token_project, integrate_begin_undo_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -129,6 +128,7 @@ integrate_begin_undo_main()
 	size_t		j;
 
 	trace(("integrate_begin_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	change_number = 0;
 	while (arglex_token != arglex_token_eoln)
@@ -155,7 +155,7 @@ integrate_begin_undo_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -220,10 +220,16 @@ integrate_begin_undo_main()
 
 	/*
 	 * it is an error if the change is not in the 'being_integrated' state.
+	 * it is an error if user is not the integrator (or proj admin)
 	 */
 	if (cstate_data->state != cstate_state_being_integrated)
 		change_fatal(cp, 0, i18n("bad ibu state"));
-	if (!str_equal(change_integrator_name(cp), user_name(up)))
+	if
+	(
+		!str_equal(change_integrator_name(cp), user_name(up))
+	&&
+		!project_administrator_query(pp, user_name(up))
+	)
 		change_fatal(cp, 0, i18n("not integrator"));
 
 	/*
@@ -304,6 +310,11 @@ integrate_begin_undo_main()
 	lock_release();
 
 	/*
+	 * run the notification command
+	 */
+	change_run_integrate_begin_undo_command(cp);
+
+	/*
 	 * verbose success message
 	 */
 	change_verbose(cp, 0, i18n("integrate begin undo complete"));
@@ -317,20 +328,13 @@ integrate_begin_undo_main()
 void
 integrate_begin_undo()
 {
-	trace(("integrate_begin_undo()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		integrate_begin_undo_main();
-		break;
+		{ arglex_token_help,		integrate_begin_undo_help, },
+		{ arglex_token_list,		integrate_begin_undo_list, },
+	};
 
-	case arglex_token_help:
-		integrate_begin_undo_help();
-		break;
-
-	case arglex_token_list:
-		integrate_begin_undo_list(integrate_begin_undo_usage);
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("integrate_begin_undo()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), integrate_begin_undo_main);
+	trace(("}\n"));
 }

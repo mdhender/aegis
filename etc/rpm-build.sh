@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1998, 1999 Peter Miller;
+#	Copyright (C) 1998, 1999, 2001 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -37,23 +37,32 @@ tmp=$1
 tarball=$2
 
 mkdir -p $tmp/BUILD $tmp/BUILD_ROOT $tmp/RPMS/i386 \
+	/tmp/aegis-build-root/etc/httpd/conf \
+	/tmp/aegis-build-root/home/httpd/cgi-bin \
 	$tmp/SOURCES $tmp/SPECS $tmp/SRPMS
 
-# copy the icon into the SOURCES directory
-# if an icon was specified
-test "z$icon" != "z" && cp $icon $tmp/SOURCES/.
+
+# copy the Apache config file into the build root
+# so that ./configure can find it.
+cp /etc/httpf/conf/httpd.conf /tmp/aegis-build-root/etc/httpf/conf/httpd.conf
 
 here=`pwd`/$tmp
-cat > $tmp/rpmrc << fubar
-builddir: $here/BUILD
-buildroot: $here/BUILD_ROOT
-rpmdir: $here/RPMS
-sourcedir: $here/SOURCES
-specdir: $here/SPECS
-srcrpmdir: $here/SRPMS
+
+cat > $tmp/macros << fubar
+%_builddir	$here/BUILD
+%_buildroot	$here/BUILD_ROOT
+%_rpmdir	$here/RPMS
+%_sourcedir	$here/SOURCES
+%_specdir	$here/SPECS
+%_srcrpmdir	$here/SRPMS
 fubar
 
-rpm -ta --rcfile $tmp/rpmrc --verbose --verbose $2
+mac=`rpm --showrc | awk '/^macrofile/{print $3}'`
+cat > $tmp/rpmrc << fubar
+macrofiles: ${mac}:$here/macros
+fubar
+
+rpm -ta --rcfile /usr/lib/rpm/rpmrc:${tmp}/rpmrc --verbose --verbose $2
 test $? -eq 0 || exit 1
 
 exit 0

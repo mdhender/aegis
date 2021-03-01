@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -132,9 +132,7 @@ string_write(fp, name, this)
 			count = 0;
 		for (s = this->str_text; *s; ++s)
 		{
-			int	c;
-	
-			c = (unsigned char)*s;
+			unsigned char c = *s;
 			/* always in the C locale */
 			if (!isprint(c))
 			{
@@ -151,11 +149,25 @@ string_write(fp, name, this)
 				else
 				{
 					escape:
-					if (isdigit(s[1]))
-						/* not entirely portable */
-						output_fprintf(fp, "\\%03o", c);
+					if (isdigit((unsigned char)s[1]))
+					{
+					    /*
+					     * I'd prefer to use "\\%03o"
+					     * but that isn't entirely
+					     * portable (the glibc people
+					     * interpreted the standard
+					     * completely differently to
+					     * everyone else on the planet).
+					     * And "\\3.3o" isn't any better
+					     * (for the exact opposite reason).
+					     */
+					    output_fputc(fp, '\\');
+					    output_fputc(fp, '0' + ((c>>6)&3));
+					    output_fputc(fp, '0' + ((c>>3)&7));
+					    output_fputc(fp, '0' + ( c    &7));
+					}
 					else
-						output_fprintf(fp, "\\%o", c);
+					    output_fprintf(fp, "\\%o", c);
 				}
 			}
 			else
@@ -202,11 +214,18 @@ io_comment_append(scp, fmt)
 	const char	*fmt;
 {
 	string_ty	*s;
-	string_list_ty		wl;
+	string_list_ty	wl;
 	size_t		j, k;
 
 	/* always in the C locale */
-	s = subst_intl(scp, fmt);
+	if (!scp)
+	{
+		scp = sub_context_new();
+		s = subst_intl(scp, fmt);
+		sub_context_delete(scp);
+	}
+	else
+		s = subst_intl(scp, fmt);
 
 	str2wl(&wl, s, "\n", 1);
 	str_free(s);

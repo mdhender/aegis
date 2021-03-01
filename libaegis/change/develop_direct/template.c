@@ -23,6 +23,7 @@
 #include <change.h>
 #include <error.h> /* for assert */
 #include <os.h>
+#include <project_hist.h>
 #include <sub.h>
 #include <user.h>
 
@@ -46,13 +47,23 @@ change_development_directory_template(cp, up)
 	assert(pconf_data->new_test_filename);
 
 	/*
+	 * Ask the project where to put the development directory.
+	 * (By putting them all in the one place, it's easier to backup
+	 * a whole project.)
+	 */
+	ddd = project_default_development_directory_get(cp->pp);
+
+	/*
 	 * If the user did not give the directory to use,
 	 * we must construct one.
 	 * The length is limited by the available filename
 	 * length limit, trim the project name if necessary.
 	 */
-	ddd = user_default_development_directory(up);
-	assert(ddd);
+	if (!ddd)
+	{
+		ddd = user_default_development_directory(up);
+		assert(ddd);
+	}
 
 	devdir = 0;
 	for (k = 0;; ++k)
@@ -81,7 +92,7 @@ change_development_directory_template(cp, up)
 				break;
 		}
 		*tp = 0;
-		sub_var_set(scp, "Magic", "%s", suffix);
+		sub_var_set_charstar(scp, "Magic", suffix);
 
 		/*
 		 * The default development directory is
@@ -91,7 +102,7 @@ change_development_directory_template(cp, up)
 		 * by the maximum filename length (see the
 		 * ${namemax} substitution).
 		 */
-		sub_var_set(scp, "Default_Development_Directory", "%S", ddd);
+		sub_var_set_string(scp, "Default_Development_Directory", ddd);
 
 		/*
 		 * Perform the substitution to construct the

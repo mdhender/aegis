@@ -1,7 +1,8 @@
 #!/bin/sh
+#-*-tcl-*-
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1999 Peter Miller;
+#	Copyright (C) 1999, 2000, 2001 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -26,7 +27,7 @@
 exec wish $0 ${1+"$@"}
 
 set bindir @bindir@
-set libdir @bindir@
+set libdir @libdir@
 set datadir @datadir@
 
 wm title . Aenc
@@ -127,15 +128,250 @@ proc project_drop_list { } {
 	}
 }
 
+proc developer_drop_list { } {
+	global developer_name developer_full_name
+	global developer_list developer_fullname_list
+	set x [winfo rootx .bottom.right.developer.button]
+	set y [winfo rooty .bottom.right.developer.button]
+	catch { destroy .popup } errcode
+	toplevel .popup
+	wm overrideredirect .popup 1
+	wm geometry .popup +$x+$y
+	listbox .popup.list -height 12 -selectmode single \
+		-yscrollcommand ".popup.scroll set"
+	set pos -1
+        set count 0
+	foreach dev $developer_list {
+		if { $dev == $developer_name } { set pos [.popup.list size] }
+		# now get the index and insert the full name
+		# (from the other list)
+		.popup.list insert end [lindex $developer_fullname_list $count]
+		incr count
+	}
+	if { $pos >= 0 } {
+		.popup.list selection set $pos
+		.popup.list see $pos
+	}
+	scrollbar .popup.scroll -command ".popup.list yview"
+	pack .popup.scroll -side right -fill y
+	pack .popup.list -side left
+	bind .popup.list <Double-Button-1> {
+		set item [.popup.list curselection]
+		if { $item != "" } {
+		    set new_dev [lindex $developer_list $item]
+		}
+		if { $new_dev != "" } {
+		    set developer_name $new_dev
+		    set developer_full_name [lindex $developer_fullname_list $item]
+		}
+		destroy .popup
+	}
+}
+
+proc cause_changed { } {
+	global cause
+	global test_nor
+	global test_bas
+	global test_reg
+	global proj_default_test_required
+
+	#
+	# Track the code in aegis/aenc.c::cattr_defaults()
+	#
+	if { $cause == "internal_improvement" || $cause == "external_improvement" } {
+		set test_nor 0
+		set test_bas 0
+		set test_reg 1
+	} {
+		set test_nor $proj_default_test_required
+		set test_bas $proj_default_test_required
+		set test_reg 0
+	}
+}
+
+proc update_developer_list { } {
+    global who_am_i
+    global developer_fullname_list
+    global developer_list
+    global developer_name
+    global developer_full_name
+    global datadir
+    global project_name
+
+    #
+    # Ask Aegis for the list of developers.  We use a specialized report
+    # script which emits TCL code to set the developer_fullname_list
+    # & developer_list variables.
+    #
+    inform "Reading list of developers..."
+    eval [read_pipe [format "|aereport -f %s/wish/devs_list.rpt -project %s -unf\
+	    -pw=1000" $datadir $project_name] 0]
+    inform "   ...done"
+
+    #
+    # Set the developer_name variable. The default is us, if we are a developer,
+    # otherwise the first on the list.
+    #
+    inform "Reading default developer..."
+    # Already done...
+    inform "   ...done"
+    set developer_name $who_am_i
+    set developer_list_empty [expr { [llength $developer_list] == 0 }]
+
+    set dev_list_index [lsearch -exact $developer_list $who_am_i]
+    if { $dev_list_index == -1 } {
+	if { $developer_list_empty } {
+	    set developer_full_name "No Devlopers"
+	    set developer_name ""
+	    set developer_list_empty 1
+	} else {
+	    set developer_name [lindex $developer_list 0]
+	}
+    }
+    if { !$developer_list_empty } {
+	set developer_full_name [lindex $developer_fullname_list $dev_list_index]
+    }
+}
+
 proc project_name_changed { } {
 	global project_name
 	global datadir
+	global proj_brief_description
+	global proj_description
+	global proj_developer_may_review
+	global proj_developer_may_integrate
+	global proj_reviewer_may_integrate
+	global proj_developers_may_create_changes
+	global proj_umask
+	global proj_minimum_change_number
+	global proj_reuse_change_numbers
+	global proj_minimum_branch_number
+	global proj_skip_unlucky
+	global proj_compress_database
+	global proj_default_test_required
+        global i_am_admin
+
+	#
+	# Ask Aegis for the project attributes
+	#
+	inform [format "Reading project %s attributes..." $project_name]
+	eval [read_pipe [format "|aereport -f %s/wish/proj_attr.rpt -unf\
+		-pw=1000 -project=%s" $datadir $project_name ] 0]
+	inform "   ...done"
+
+	#
+	# Have the testing buttons track the project testing defaults.
+	#
+	cause_changed
+
+        #
+        # Update the list of developers details for this project
+        #
+        update_developer_list
+
+        set previous_admin_status $i_am_admin
+        determine_admin_status
+
+        if { $i_am_admin && !$previous_admin_status } {
+	    # I have now become an admin, so need to create the extra admin
+	    # interface bits
+	    create_admin_if_extras
+	}
+
+        if { !$i_am_admin && $previous_admin_status } {
+	    # I was an admin, so need to destroy the extra admin
+	    # interface bits
+	    destroy_admin_if_extras
+	}
+
+	# if not an admin, no way to change test exemptions
+	if {$i_am_admin} {
+	    set state normal
+	} else {
+	    set state disabled
+	}
+	foreach btn {normal baseline regression} {
+	    .bottom.tests.$btn configure -state $state
+	}
 }
 
+proc create_admin_if_extras { } {
+    global start
+
+    frame .bottom.right.developer -relief ridge -borderwidth 2
+    label .bottom.right.developer.label -text "Developer:"
+    pack  .bottom.right.developer.label -side top -anchor w
+    button .bottom.right.developer.button -textvariable developer_full_name -command developer_drop_list
+    pack .bottom.right.developer.button -side top -anchor nw -pady 5 -padx 5
+    pack .bottom.right.developer -side top -anchor nw -pady 5 -padx 5
+
+    if { $start == "later" } {
+	disable_developer_button
+    } else {
+	enable_developer_button
+    }
+
+    wm title . "Aenc - Administrator"
+    wm iconname . "Aenc - Administrator"
+}
+
+proc destroy_admin_if_extras { } {
+
+    destroy .bottom.right.developer.label
+    destroy .bottom.right.developer.button
+    destroy .bottom.right.developer
+    pack .bottom.right
+
+    wm title . "Aenc"
+    wm iconname . "Aenc"
+}
+
+proc determine_admin_status { } {
+    global i_am_admin
+    global who_am_i
+    global project_name
+
+    #
+    # Am I an administrator? Basically used to determine if the developer selection
+    # button is available.
+    #
+    if { $project_name != "" } {
+	set proj_arg "-project $project_name"
+    } else {
+	set proj_arg ""
+    }
+    set admin_list [read_pipe \
+	    [format "|aegis -list Administrators -unf %s" $proj_arg] 1]
+
+    set i_am_admin  [expr { [lsearch -exact $admin_list $who_am_i] != -1 }]
+}
+
+proc disable_developer_button { } {
+    global i_am_admin
+
+    # if the button exists then disable it.
+    if { [winfo exists .bottom.right.developer.button] } {
+	.bottom.right.developer.button configure -state disabled
+    }
+}
+
+proc enable_developer_button { } {
+    global i_am_admin
+
+    # if the button exists then enable it.
+    if { [winfo exists .bottom.right.developer.button] } {
+	.bottom.right.developer.button configure -state active
+    }
+}
+
+# and begin...
+set project_name ""
+set i_am_admin   0
+set who_am_i     ""
+
 #
-# Create the widget heirarchy first
-#	so the user has somethign to look at while we fetch
-#	the necessary information.
+# Create the widget heirarchy first so the user has something to look at
+# while we fetch the remaining necessary information.
 #
 frame .id
 frame .id.project
@@ -159,8 +395,8 @@ pack .desc.label -side top -anchor w
 text .desc.text -height 8 -yscrollcommand ".desc.scroll set" -wrap word -spacing3 5
 scrollbar .desc.scroll -command ".desc.text yview"
 pack .desc.scroll -side right -fill y
-pack .desc.text -side bottom
-pack .desc -fill x
+pack .desc.text -side bottom -fill both -expand 1
+pack .desc -fill both -expand 1
 
 frame .bottom
 
@@ -207,23 +443,29 @@ pack .bottom.cause.chain -side top -anchor w
 pack .bottom.cause -side left -anchor nw -pady 5
 
 set start later
-frame .bottom.start -relief ridge -borderwidth 2
-label .bottom.start.label -text "Begin Development:"
-pack .bottom.start.label -side top -anchor w
-radiobutton .bottom.start.immed -text "Immediately" -value "aedb" -variable start -anchor w
-pack .bottom.start.immed -side top -anchor w
-radiobutton .bottom.start.later -text "Later" -value "later" -variable start -anchor w
-pack .bottom.start.later -side top -anchor w
-pack .bottom.start -side left -anchor nw -pady 5 -padx 5
-
+frame .bottom.right
+frame .bottom.right.start -relief ridge -borderwidth 2
+label .bottom.right.start.label -text "Begin Development:"
+pack .bottom.right.start.label -side top -anchor w
+radiobutton .bottom.right.start.immed -text "Immediately" -value "aedb" -variable start -anchor w \
+	-command {enable_developer_button}
+pack .bottom.right.start.immed -side top -anchor w
+radiobutton .bottom.right.start.later -text "Later" -value "later" -variable start -anchor w\
+	-command {disable_developer_button}
+pack .bottom.right.start.later -side top -anchor w
+pack .bottom.right.start -side top -anchor nw -pady 5 -padx 5
+if { $i_am_admin } {
+    create_admin_if_extras
+}
+pack .bottom.right -side top -anchor w
 pack .bottom -fill x
 
 frame .info
 text .info.blurb -height 3 -yscrollcommand ".info.scroll set" -wrap word -borderwidth 1
 scrollbar .info.scroll -command ".info.blurb yview" -borderwidth 1
 pack .info.scroll -side right -fill y
-pack .info.blurb -side left
-pack .info -side bottom -fill x
+pack .info.blurb -side left -fill both -expand 1
+pack .info -side bottom -fill both -expand 1
 
 #
 # This would be a good place to set a project template for change
@@ -232,6 +474,7 @@ pack .info -side bottom -fill x
 set brief_description "none"
 set description "This change ..."
 set cause "internal_bug"
+set proj_default_test_required 1
 
 #
 # Ask Aegis for the list of projects names.  We use a specialized report
@@ -247,7 +490,7 @@ inform "   ...done"
 # we get what *aegis* thinks is the default project name.
 #
 inform "Reading default project..."
-set project_name [read_pipe "|aegis -list default_project" 1]
+set project_name [read_pipe "|aegis -list default_project -unf" 1]
 inform "   ...done"
 if { $project_name == "" } { set project_name [lindex $project_list 0] }
 
@@ -260,6 +503,7 @@ proc do_it { } {
 	global brief_description description cause
 	global test_nor test_bas test_reg
 	global project_name change_number start
+        global developer_name
 
 	set filename [format "/tmp/tkaenc-%d" [pid]]
 	set errcode ""
@@ -289,25 +533,26 @@ proc do_it { } {
 	set command [list aegis -nc -f $filename -p $project_name -o $filename.o]
 	inform [format "Command = \"%s\"" $command]
 	set errcode ""
-	set errorCode 0
-	catch { eval exec $command } errcode
-	if { $errorCode != 0 } {
-		catch { exec [format "rm %s %s.o" $filename $filename] } errcode2
+	if {[catch { eval exec $command } errcode]} {
+		catch { exec rm -f $filename ${filename}.o } errcode2
 		inform $errcode
 		return
 	}
 	set change_number [read_file $filename.o]
-	catch { exec [format "rm %s %s.o" $filename $filename] } errcode2
+	catch { exec rm -f $filename ${filename}.o } errcode2
 	puts [format "tkaenc: project \"%s\": change %d: created" $project_name $change_number]
 
 	if { $start != "later" } {
 		set command [list aegis -db -p $project_name -c $change_number]
+	        #if we are specifying the developer..
+	        if { $developer_name != "" } {
+		    lappend command -User $developer_name
+		}
+
 		inform [format "Command = \"%s\"" $command]
 		set errcode ""
-		set errorCode 0
-		catch { eval exec $command } errcode
-		if { $errorCode != 0 } {
-			catch { exec [format "rm %s" $filename] } errcode2
+		if {[catch { eval exec $command } errcode]} {
+			catch { exec rm -f $filename } errcode2
 			puts [format "tkaenc: project \"%s\": change %d: development not begun" $project_name $change_number]
 			puts $errcode
 			exit 1
@@ -317,26 +562,4 @@ proc do_it { } {
 	}
 
 	exit 0
-}
-
-proc cause_changed { } {
-	global cause
-	global test_nor
-	global test_bas
-	global test_reg
-
-	if { $cause == "internal_improvement" || $cause == "external_improvement" } {
-		set test_nor 0
-		set test_bas 0
-		set test_reg 1
-	} {
-	if { $cause == "internal_enhancement" || $cause == "external_enhancement" } {
-		set test_nor 0
-		set test_bas 1
-		set test_reg 1
-	} {
-		set test_nor 1
-		set test_bas 1
-		set test_reg 0
-	} }
 }

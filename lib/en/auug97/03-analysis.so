@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1999 Peter Miller;
+.\"	Copyright (C) 1997, 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ It is then possible to look at the effects recursive
 has on how
 .I make
 behaves.
-.nh 2 "Whole Make"
+.nh 2 "Whole Project Make"
 .I Make
 is an expert system.
 You give it a set of rules for how to construct things,
@@ -252,6 +252,11 @@ that which
 .I make
 could have used.
 Until the next dependency is added...
+.LP
+Note that ``\f[CW]make -j\fP'' (parallel build) invalidates many of
+the ordering assumptions implicit in the reshuffle solution, making it
+useless.  And then there are all  of the sub-makes all doing their
+builds in parallel, too.
 .nh 3 "Repetition"
 The second traditional solution is to make more than one pass in the
 top-level \f(CWMakefile\fP, something like this:
@@ -299,3 +304,9 @@ This means that whenever \f(CWmain.o\fP is made,
 All of \f(CWbee\fP will always be rebuilt including \f(CWparse.h\fP,
 and so \f(CWmain.o\fP will always be rebuilt,
 .I "even if everything was self consistent."
+.LP
+Note that ``\f[CW]make -j\fP'' (parallel build) invalidates many of
+the ordering assumptions implicit in the overkill solution, making
+it useless, because all of the sub-makes are all doing their builds
+("clean" then "all") in parallel, constantly interfering with each other
+in non-deterministic ways.

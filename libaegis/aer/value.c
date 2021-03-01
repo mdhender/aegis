@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -126,8 +126,8 @@ rpt_value_lookup(lhs, rhs, lvalue)
 		return lhs->method->lookup(lhs, rhs, lvalue);
 
 	scp = sub_context_new();
-	sub_var_set(scp, "Name1", "%s", lhs->method->name);
-	sub_var_set(scp, "Name2", "%s", rhs->method->name);
+	sub_var_set_charstar(scp, "Name1", lhs->method->name);
+	sub_var_set_charstar(scp, "Name2", rhs->method->name);
 	s = subst_intl(scp, i18n("illegal lookup ($name1[$name2])"));
 	sub_context_delete(scp);
 	result = rpt_value_error((struct rpt_pos_ty *)0, s);
@@ -148,7 +148,7 @@ rpt_value_keys(vp)
 		return vp->method->keys(vp);
 
 	scp = sub_context_new();
-	sub_var_set(scp, "Name", "%s", vp->method->name);
+	sub_var_set_charstar(scp, "Name", vp->method->name);
 	s = subst_intl(scp, i18n("illegal keys request ($name)"));
 	sub_context_delete(scp);
 	result = rpt_value_error((struct rpt_pos_ty *)0, s);
@@ -169,7 +169,7 @@ rpt_value_count(vp)
 		return vp->method->count(vp);
 
 	scp = sub_context_new();
-	sub_var_set(scp, "Name", "%s", vp->method->name);
+	sub_var_set_charstar(scp, "Name", vp->method->name);
 	s = subst_intl(scp, i18n("illegal count request ($name)"));
 	sub_context_delete(scp);
 	result = rpt_value_error((struct rpt_pos_ty *)0, s);

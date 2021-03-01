@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,8 +42,6 @@ configured_bindir()
 /*
  * On a network, may ONLY be shared betwen machines of identical
  * cpu-vendor-os flavour.  Probably mounted read-only.
- *
- * This is where the error message (.mo) files are parked.
  */
 
 char *
@@ -52,6 +50,16 @@ configured_libdir()
 	return "@libdir@";
 }
 
+
+/*
+ * This is where the error message (.mo) files are parked.
+ */
+
+char *
+configured_nlsdir()
+{
+	return "@NLSDIR@";
+}
 
 /*
  * On a network, may be shared betwen all machines.

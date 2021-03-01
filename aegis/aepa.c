@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -114,7 +114,7 @@ project_attributes_list()
 
 	pattr_data = (pattr)pattr_type.alloc();
 	project_pattr_get(pp, pattr_data);
-	pattr_write_file((char *)0, pattr_data, 0);
+	pattr_write_file((string_ty *)0, pattr_data, 0);
 	pattr_type.free(pattr_data);
 	project_free(pp);
 	trace((/*{*/"}\n"));
@@ -141,6 +141,7 @@ static void project_attributes_main _((void));
 static void
 project_attributes_main()
 {
+	string_ty	*s;
 	sub_context_ty	*scp;
 	pattr		pattr_data = 0;
 	string_ty	*project_name;
@@ -149,6 +150,7 @@ project_attributes_main()
 	user_ty		*up;
 
 	trace(("project_attributes_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	edit = edit_not_set;
 	while (arglex_token != arglex_token_eoln)
@@ -161,22 +163,41 @@ project_attributes_main()
 
 		case arglex_token_string:
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_file));
+			sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_file));
 			error_intl(scp, i18n("warning: use $name option"));
 			sub_context_delete(scp);
 			if (pattr_data)
-				fatal_intl(0, i18n("too many files"));
+				fatal_too_many_files();
 			goto read_input_file;
 
 		case arglex_token_file:
 			if (pattr_data)
 				duplicate_option(project_attributes_usage);
-			if (arglex() != arglex_token_string)
-				option_needs_file(arglex_token_file, project_attributes_usage);
-			read_input_file:
-			os_become_orig();
-			pattr_data = pattr_read_file(arglex_value.alv_string);
-			os_become_undo();
+			switch (arglex())
+			{
+			default:
+				option_needs_file
+				(
+					arglex_token_file,
+					project_attributes_usage
+				);
+				/*NOTREACHED*/
+
+			case arglex_token_string:
+				read_input_file:
+				os_become_orig();
+				s = str_from_c(arglex_value.alv_string);
+				pattr_data = pattr_read_file(s);
+				str_free(s);
+				os_become_undo();
+				break;
+
+			case arglex_token_stdio:
+				os_become_orig();
+				pattr_data = pattr_read_file((string_ty *)0);
+				os_become_undo();
+				break;
+			}
 			assert(pattr_data);
 			break;
 
@@ -237,8 +258,8 @@ project_attributes_main()
 	if (edit == edit_not_set && !pattr_data)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", arglex_token_name(arglex_token_file));
-		sub_var_set(scp, "Name2", "%s", arglex_token_name(arglex_token_edit));
+		sub_var_set_charstar(scp, "Name1", arglex_token_name(arglex_token_file));
+		sub_var_set_charstar(scp, "Name2", arglex_token_name(arglex_token_edit));
 		error_intl(scp, i18n("warning: no $name1, assuming $name2"));
 		sub_context_delete(scp);
 		edit = edit_foreground;
@@ -280,7 +301,7 @@ project_attributes_main()
 		 * edit them
 		 */
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%S", project_name_get(pp));
+		sub_var_set_string(scp, "Name", project_name_get(pp));
 		io_comment_append(scp, "Project $name");
 		sub_context_delete(scp);
 		project_pattr_edit(&pattr_data, edit);
@@ -317,20 +338,13 @@ project_attributes_main()
 void
 project_attributes()
 {
-	trace(("project_attributes()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		project_attributes_main();
-		break;
+		{ arglex_token_help,		project_attributes_help, },
+		{ arglex_token_list,		project_attributes_list, },
+	};
 
-	case arglex_token_help:
-		project_attributes_help();
-		break;
-
-	case arglex_token_list:
-		project_attributes_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("project_attributes()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), project_attributes_main);
+	trace(("}\n"));
 }

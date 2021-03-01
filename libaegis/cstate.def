@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1999 Peter Miller;
+ *	Copyright (C) 1991-1997, 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -40,8 +40,15 @@ state =
 
 	/*
 	 * The change has been developed,
+	 * and is waiting to be reviewed.
+	 * (Optional, controlled by pattr::develop_end_action field)
+	 */
+	awaiting_review,
+
+	/*
+	 * The change has been developed,
 	 * and is being reviewed.
-	 * (There is no 'awaiting_review' state.)
+	 * (Optional, controlled by pattr::develop_end_action field)
 	 */
 	being_reviewed,
 
@@ -160,6 +167,10 @@ architecture_times =
  * This field is the absolute path of the change's development directory.
  * It is only present of the change is in a state
  * between 'being_developed' and 'being_integrated' inclusive.
+ *
+ * However, branches are treated slightly differently to changes.
+ * The directory is relative to the root of the project tree, in order to
+ * facilitate moving the project without rewriting any of the database.
  */
 development_directory = string;
 
@@ -173,7 +184,7 @@ integration_directory = string;
  * This field records the history of the change,
  * in the form of state transitions.
  */
-history = 
+history =
 [
 	{
 		/*
@@ -191,7 +202,11 @@ history =
 			develop_begin,
 			develop_begin_undo,
 			develop_end,
+			develop_end_2ar,
+			develop_end_2ai,
 			develop_end_undo,
+			review_begin,
+			review_begin_undo,
 			review_pass,
 			review_pass_undo,
 			review_fail,
@@ -267,6 +282,11 @@ branch =
 	 * development of a change by a specific user.  All of the
 	 * substitutions described in aesub(5) are available.  This
 	 * field is optional.
+	 *
+	 * Executed as: the new developer.
+	 * Current directory: the development directory of the change
+	 *	for the new developer.
+	 * Exit status: ignored.
 	 */
 	forced_develop_begin_notify_command = string;
 
@@ -277,6 +297,10 @@ branch =
 	 *
 	 * This command could also be used to notify other management
 	 * systems, such as progress and defect tracking.
+	 *
+	 * Executed as: the developer.
+	 * Current directory: the development directory of the change.
+	 * Exit status: ignored.
 	 */
 	develop_end_notify_command = string;
 
@@ -287,8 +311,40 @@ branch =
 	 *
 	 * This command could also be used to notify other management
 	 * systems, such as progress and defect tracking.
+	 *
+	 * Executed as: the developer.
+	 * Current directory: the development directory of the change.
+	 * Exit status: ignored.
 	 */
 	develop_end_undo_notify_command = string;
+
+	/*
+	 * notify that the review has begun
+	 * All of the substitutions described in aesub(5) are available.
+	 * this field is optional
+	 *
+	 * This command could also be used to notify other management systems,
+	 * such as progress and defect tracking.
+	 *
+	 * Executed as: the reviewer.
+	 * Current directory: the development directory of the change.
+	 * Exit status: ignored.
+	 */
+	review_begin_notify_command = string;
+
+	/*
+	 * notify that the review has no longer begun
+	 * All of the substitutions described in aesub(5) are available.
+	 * this field is optional
+	 *
+	 * This command could also be used to notify other management systems,
+	 * such as progress and defect tracking.
+	 *
+	 * Executed as: the reviewer.
+	 * Current directory: the development directory of the change.
+	 * Exit status: ignored.
+	 */
+	review_begin_undo_notify_command = string;
 
 	/*
 	 * Notify that the review has passed.  All of the substitutions
@@ -296,6 +352,10 @@ branch =
 	 *
 	 * This command could also be used to notify other management
 	 * systems, such as progress and defect tracking.
+	 *
+	 * Executed as: the reviewer.
+	 * Current directory: the development directory of the change.
+	 * Exit status: ignored.
 	 */
 	review_pass_notify_command = string;
 
@@ -306,6 +366,10 @@ branch =
 	 *
 	 * This command could also be used to notify other management
 	 * systems, such as progress and defect tracking.
+	 *
+	 * Executed as: the reviewer.
+	 * Current directory: the development directory of the change.
+	 * Exit status: ignored.
 	 */
 	review_pass_undo_notify_command = string;
 
@@ -315,6 +379,10 @@ branch =
 	 *
 	 * This command could also be used to notify other management
 	 * systems, such as progress and defect tracking.
+	 *
+	 * Executed as: the reviewer.
+	 * Current directory: the development directory of the change.
+	 * Exit status: ignored.
 	 */
 	review_fail_notify_command = string;
 
@@ -325,6 +393,10 @@ branch =
 	 *
 	 * This command could also be used to notify other management
 	 * systems, such as progress and defect tracking.
+	 *
+	 * Executed as: the project owner.
+	 * Current directory: the new baseline of the project.
+	 * Exit status: ignored.
 	 */
 	integrate_pass_notify_command = string;
 
@@ -335,6 +407,10 @@ branch =
 	 *
 	 * This command could also be used to notify other management
 	 * systems, such as progress and defect tracking.
+	 *
+	 * Executed as: the integrator.
+	 * Current directory: the development directory of the change.
+	 * Exit status: ignored.
 	 */
 	integrate_fail_notify_command = string;
 
@@ -350,7 +426,7 @@ branch =
 	 * traditions are avoided, both Eastern and Western.  Defaults to
 	 * false if not set.
 	 */
-	skip_unlucky = boolean; 
+	skip_unlucky = boolean;
 
 	/*
 	 * This field may be set to true if you want to compress the
@@ -358,6 +434,33 @@ branch =
 	 * if necessary.)
 	 */
 	compress_database = boolean;
+
+	/*
+	 * This field controls the state entered on a successfil develop end
+	 * state transition.  The default is "being reviewed".
+	 *
+	 * goto_being_reviewed
+	 *      This means that the state machine goes from the being_developed
+	 *      state to the being_reviewed state.  The aerb command only sends
+	 *      informative email.
+	 *
+	 * goto_awaiting_review
+	 *      This means that the state machine goes from the being_developed
+	 *      state to the awaiting_review state.  The aerb command is now
+	 *      essential.
+	 *
+	 * goto_awaiting_integration
+	 *      This means that the state machine goes from the being_developed
+	 *      state into the awaiting_inmtegartion state.  Code review is
+	 *      skipped entirely.
+	 *
+	 * Note that the "developer_may_review" setting may not contradict
+	 * the "develop_end_action".  If developers may not review their
+	 * own work, then you may not goto directly to being integrated
+	 * (as this means much te same thing).
+	 */
+	develop_end_action = (goto_being_reviewed, goto_awaiting_review,
+		goto_awaiting_integration);
 
 	/*
 	 * This field contains a history of integrations for the branch.
@@ -437,11 +540,11 @@ branch =
 	 */
 	minimum_change_number = integer;
 
-	/* 
+	/*
 	 * This controls whether the automatically selected aenc(1) change
 	 * numbers ``fill in'' any gaps.  Defaults to true if not set.
 	 */
-	reuse_change_numbers = boolean; 
+	reuse_change_numbers = boolean;
 
 	/*
 	 * The minimum branchhange number for aebr, if no branch number is

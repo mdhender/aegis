@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1997-2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,8 @@
 .\"
 .\" MANIFEST: input for archive/aegis.html
 .\"
+.de an-p-footer
+..
 .ad l
 .hy 0
 .so version.so
@@ -34,6 +36,18 @@ a team of developers may work on many changes to a
 program independently, and Aegis coordinates integrating
 these changes back into the master source of the program,
 with as little disruption as possible.
+
+<p align=center>[
+<a href="download.html">Download</a> |
+<a href="documents.html">Documentation</a> |
+<a href="tmpl-proj.html">Template Projects</a> |
+<a href="mail-list.html">Mailing List</a>
+]<br>[
+<a href="year2000.html">Year 2000</a> |
+<a href="windowsnt.html">Windows NT</a> |
+<a href="translate.html">Localization</a> |
+<a href="sites.html">Reference Sites</a>
+]</p>
 .br
 <table>
 
@@ -106,9 +120,11 @@ Aegis supports branching to any depth.
 <tr><td valign=top><ul><li>
 Aegis is mature software - it was first released in 1991.
 </ul></td><td valign=top rowspan=3><ul><li>
-The error messages of Aegis have been internationalized.  This means
+The error messages of Aegis have been
+<a href="translate.html">internationalized</a>.  This means
 that error messages can be in your native language, if a translation has
-been provided.  (So far, only English is provided.  Translations welcome.)
+been provided.
+More translations are welcome.
 </ul></td></tr>
 
 .br
@@ -127,7 +143,7 @@ Aegis is easy to use.
 It <i>is</i> big, it <i>does</i> have a lot of functionality,
 but the essential process can be learned in less than a day.
 </ul></td><td valign=top><ul><li>
-The Aegis deveopment model is very versatile.
+The Aegis development model is very versatile.
 It is suitable for a huge range of projects and teams.
 </ul></td></tr>
 
@@ -155,292 +171,27 @@ See the
 <a href="aegis-\*(v).README"><tt>README</tt></a>
 file for a description of the new features and bug-fixes in this release.
 This is also in the
-<a href="aegis-\*(v).rm.ps.gz">Aegis Reference Manual</a>,
+<a href="refman.pdf">Aegis Reference Manual</a>,
 along with the build and installation instructions, and all of the
 manual pages.
-<hr><h2><center>
-Year 2000 Status
-</center></h2>
-Aegis does not suffer from Year 2000 problems.
-<ul>
-<li>
-Aegis stores dates internally in Unix style (<i>i.e.</i> seconds
-offset), so internal storage of times and dates does not suffer from
-any Y2K problems.
-<li>
-Aegis always uses the ANSI C standard <tt>strftime</tt> function to display
-times and dates.  (This assumes that your vendor has supplied a compliant
-<tt>strftime</tt>.)  This means that displaying dates does not assume
-fixed field widths, nor will it display the year 2000 as ``100''.
-<li>
-When a user enters dates, they may specify years with an explicit century.
-If a user enters a year with an implicit century, the closest is assumed.
-</ul>
-.br
-<hr><h2><center>
-Files for Download
-</center></h2>
-<center><table width="80%">
-<tr><th>File Name</th><th>Description</th></tr>
-<tr>
-<td valign=top>
-<a href="aegis-\*(v).README"><tt>aegis-\*(v).README</tt></a>
-</td>
-<td valign=top>
-The <tt>README</tt> file from the tar distribution.
-</td>
-</tr>
-<tr>
-<td valign=top>
-<a href="aegis-\*(v).lsm"><tt>aegis-\*(v).lsm</tt></a>
-</td>
-<td valign=top>
-Brief description in
-.nf
-<a href="ftp://sunsite.unc.edu/pub/Linux/LSM-TEMPLATE">LSM</a>
-.fi
-format.
-</td>
-</tr>
-<tr>
-<td valign=top>
-<a href="aegis-\*(v).spec"><tt>aegis-\*(v).spec</tt></a>
-</td>
-<td valign=top>
-RedHat package manager
-(<a href="http://www.rpm.org/">RPM</a>)
-specification file, from the tar distribution.
-</td></tr>
-.br
-<tr>
-<td valign=top>
-<a href="aegis-\*(v).tar.gz"><tt>aegis-\*(v).tar.gz</tt></a>
-</td>
-<td valign=top>
-The complete source.
-</td>
-</tr>
-<tr>
-<td valign=top>
-<a href="aegis-\*(v).ae"><tt>aegis-\*(v).ae</tt></a>
-</td>
-<td valign=top>
-The complete source, in <i>aedist</i> format.
-This is used by Aegis developers and maintainers.
-</td>
-</tr>
-<tr>
-<td valign=top>
-<a href="aegis-\*(v).faq"><tt>aegis-\*(v).faq</tt></a>
-</td>
-<td valign=top>
-Frequently asked questions, with answers.
-</td>
-</tr>
-<tr>
-<td valign=top>
-<a href="aegis-\*(v).rm.ps.gz"><tt>aegis-\*(v).rm.ps.gz</tt></a>
-</td>
-<td valign=top>
-Aegis Reference Manual in PostScript format.
-</td>
-</tr>
-<tr>
-<td valign=top>
-<a href="aegis-\*(v).ug.ps.gz"><tt>aegis-\*(v).ug.ps.gz</tt></a>
-</td>
-<td valign=top>
-Aegis User Guide in PostScript format.
-</td>
-</tr>
-</table></center>
-.br
-<p align=center>
-<b>Second Sources</b>
-</p>
-<ul><li>
-Aegis is also available from
-<a href="ftp://sunsite.unc.edu/pub/Linux/">the Linux archives</a>
-in the
-<a href="ftp://sunsite.unc.edu/pub/Linux/devel/vc/">
-<tt>devel/vc</tt></a>
-directory.
-.br
-<li>
-Aegis is available as
-.br
-<a href="http://www.debian.org/Packages/stable/devel/aegis.html">
-Debian packages</a> from the
-.br
-<a href="http://www.debian.org">Debian</a> distribution.
-</ul>
-.br
-<p>
-There are some other packages you should get if and install you haven't
-already...
-<center><table width="80%">
-.br
-<tr><td valign=top>
-<a href="ftp://ftp.gnu.org/gnu/gettext/">gettext</a>
-</td><td valign=top>
-GNU Gettext internationalization library.
-(If you have GNU Libc 2.0 or later, you don't need this.)
-</td></tr>
-.br
-<tr><td valign=top>
-<a href="ftp://ftp.gnu.org/gnu/rx/">rx</a>
-</td><td valign=top>
-GNU Regular eXpression library, if your system does not already have 
-the <tt>regcomp</tt> and <tt>regexec</tt> library calls.
-</td></tr>
-.br
-<tr><td valign=top>
-<a href="http://www.cdrom.com/pub/infozip/zlib/">zlib</a>
-</td><td valign=top>
-The zlib compression library (implements the GNU Zip compression
-algorithm).  Used to compress change sets for distributiuon, and to
-optionally compress Aegis' database.
-</td></tr>
-.br
-</table></center>
-.br
-<hr><h2 align=center>
-Template Projects
-</h2>
-So that you can begin to use Aegis rapidly,
-there are some example projects available.
-<center><table width=80%>
-<tr><th>Filename</th><th>Description</th></tr>
-.br
-<tr><td valign=top>
-.\" make sure there is no newline inserted after any of the hyphens in
-.\" the following!
-.br
-<a href="example-make-rcs.html">
-<tt>example-make-rcs</tt></a>
-</td><td valign=top>
-This template project uses GNU Make for its build tool,
-and RCS as its history tool.
-</td></tr>
-.br
-<tr><td valign=top>
-.\" make sure there is no newline inserted after any of the hyphens in
-.\" the following!
-.br
-<a href="example-cook-fhist.html">
-<tt>example-cook-fhist</tt></a>
-</td><td valign=top>
-This template project uses <a href="../cook.html">Cook</a> for its
-build tool, and <a href="../fhist.html">FHist</a> as its history tool.
-It scales better than the Make-RCS example.
-</td></tr>
-.br
-</table></center>
-These template projects provided a simple but flexible skeleton around
-which you can build many different projects.  Each project links you to
-a page of instructions for how to download the change set and apply it.
-.br
-<hr><h2 align=center>
-Mailing List
-</h2>
-A mailing list has been created so that users of Aegis may exchange ideas
-about how to use Aegis.  Discussion may include, but is not limited to:
-bugs, enhancements, and applications.  The list is not moderated.
-<table>
-<tr><td valign=top>
-<p align=center><b>Posting</b></p><p>
-The address of the mailing list is
-<a href="mailto:aegis-users@canb.auug.org.au">
-aegis-users@canb.auug.org.au</a>
-<p>
-Please
-<b>do not</b>
-attempt to subscribe by sending email to this address.
-It is for content only.
-</td><td valign=top>
-<p align=center><b>Subscribe</b></p><p>
-To subscribe to this mailing list,
-send an email message to
-<a href="mailto:majordomo@canb.auug.org.au">
-majordomo@canb.auug.org.au</a>
-with a message body containing the single line
-<blockquote>
-subscribe aegis-users
-</blockquote>
-The subscribe is moderated, and there are more options, too.
-See the <a href="aegis-\*(v).README">README</a> file for details.
-</td></tr><tr><td valign=top>
-<p align=center><b>Archive</b></p><p>
-The mailing list is archived at
-<a href="http://www.egroups.com/">eGroups</a>.
-The URL is 
-.br
-<a href="http://www.egroups.com/list/aegis-users/info.html">
-http://www.egroups.com/ list/ aegis-users/ info.html</a>
-and then follow the links.
-<p>
-The archive starts from July 1999.
-Sorry, previous postings are not available.
-</td><td valign=top>
-<p align=center><b>Unsubscribe</b></p><p>
-To unsubscribe from this mailing list,
-send an email message to
-<a href="mailto:majordomo@canb.auug.org.au">
-majordomo@canb.auug.org.au</a>
-with a message body containing the single line
-<blockquote>
-unsubscribe aegis-users
-</blockquote>
-The unsubscribe is moderated, and there are more options, too.
-See the
-.br
-<a href="aegis-\*(v).README">README</a> file for details.
-</td></tr>
-</table>
-You can't fetch files throuht the mailing list, so please don't try.
-Use the links on this page, instead.
-.br
-<hr><h2 align=center>
-Aegis and Windows NT
-</h2>
-Aegis depends on the underlying security provided by the operating
-system (rather than re-invent yet another security mechanism).
-However, in order to do this, Aegis uses the POSIX <i>seteuid</i> system
-call, which has no direct equivalent on Windows NT.  This makes
-porting difficult.  Single-user ports are possible (<i>e.g.</i> using
-<a href="http://sourceware.cygnus.com/cygwin/">
-Cygwin</a>), but are not
-usually what folks want.
-<p>
-Compounding this is the fact that many sites want to develop their
-software for both Unix and Windows NT simultaneously.  This means that
-the security of the repository needs to be guaranteed to be handled
-in the same way by both operating systems, otherwise one can act as a
-``back door'' into the repository.  Many sites do not have the same
-users and permissions (sourced from the same network register of users)
-on both Unix and Windows NT, making the mapping almost impossible even
-if the security models did actually correspond.
-<p>
-Most sites using Aegis and Windows NT together do so by running 
-Aegis on the Unix systems, but building and testing on the NT
-systems.  The work areas and repository are accessed via Samba or
-NFS.
 .br
 <hr>
-<a href="../README.html">
-<img src="../pmiller.gif" align=right>
+<a href="http://www.canb.auug.org.au/~millerp/README.html">
+<img src="http://www.canb.auug.org.au/~millerp/pmiller.gif" align=right>
 </a>
 Aegis is written and owned by 
 <a href="mailto:millerp@canb.auug.org.au">
-Peter Miller <millerp@canb.auug.org.au>
+Peter Miller &lt;millerp@canb.auug.org.au&gt;
 </a>
 and is freely distributable under the terms and conditions of the
 <a href="ftp://prep.ai.mit.edu/pub/gnu/GPL">GNU GPL</a>.
 .br
 <p>
-There is more <a href="../README.html">Software by Peter Miller</a>
+There is more <a href="http://www.canb.auug.org.au/~millerp/README.html">
+Software by Peter Miller</a>
 at his home page.
 .br
+<br clear=all>
 <hr>
 This page has been accessed approximately
 .nf
@@ -459,5 +210,6 @@ times since
 .ds MO10 Oct
 .ds MO11 Nov
 .ds MO12 Dec
-\n[dy]-\*[MO\n[mo]]-\n[yr].
+.nr y4 \n[yr]+1900
+\n[dy]-\*[MO\n[mo]]-\n[y4].
 </body></html>

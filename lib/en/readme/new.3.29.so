@@ -1,0 +1,142 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 3.29 features
+.\"
+.PP
+.B Note:
+You will need to upgrade all of your Aegis machines simultaneously for
+this release.  It introduces database changes which older Aegis release
+will not be able to cope with.
+.PP
+.if n *
+.if t \(bu
+.\" 3.C30
+A bug has been fixed in \fIaed\fP(1), which tried to access a nonexistent
+files under some circumstances.
+.PP
+.if n *
+.if t \(bu
+.\" change 83
+A bug has been fixed in \fIaede\fP.  When two changes created the same
+file, the second change received a misleading message from \fIaede\fP.
+.PP
+.if n *
+.if t \(bu
+.\" change 82, 80, 79
+There is a new German message translation.
+.PP
+.if n *
+.if t \(bu
+.\" change 62, 63
+There is a new \fItkaepa\fP(1) command, giving GUI access to the
+\fIaepa\fP(1) command.
+.\" 59: message catalogue typos (en)
+.PP
+.if n *
+.if t \(bu
+.\" change 58
+The \fIaeclone\fP(1) command now runs the \fIchange_file_command\fP
+and \fIproject_file_command\fP from the project \fIconfig\fP file.
+This is in order to be more consistent withthe \fIaecp\fP(1) command.
+.\" 52: bison .h defines
+.PP
+.if n *
+.if t \(bu
+.\" change 50
+The "time safe" property described by Damon Poole mostly applies to Aegis'
+operation.  One last area related to future times and the --delta options.
+There is now a warning in the instance where non-time-safe behavior
+may occur.
+.\" 39: aepatch -rec -delta
+.PP
+.if n *
+.if t \(bu
+.\" change 38
+The \fIhistory_\%put_\%command\fP and \fIhistory_\%create_\%command\fP
+field of the project \fIconfig\fP file are strongly recommended to be
+identical.  It is now possible to only specify the first one, and the
+second will default to it.
+.\" 37: to-do list updated
+.PP
+.if n *
+.if t \(bu
+.\" change 32
+A bug has been fixed in the \fIaeib\fP(1) command, when the
+\fIlink_\%integration_\%directory\fP field in the project \fIconfig\fP
+file is false.
+.PP
+.if n *
+.if t \(bu
+.\" change 27, 28, 29, 30, 31, 33, 35, 36, 53, 55, 57, 65, 70
+There is a new \fIawaiting review\fP state, and new \fIaerb\fP(1) and
+\fIaerbu\fP(1) commands to go with it.  It is now possible to configure
+your project to have changes enter the \fIawaiting review\fP state after
+\fIaede\fP(1), rather than the \fIbeing reviewed\fP state.  It is also
+possible to skip the review  states altogether and immediatelt enter
+the \fIawaiting integration\fP state.
+.\" 26: aegis(1) doco
+.\" 25: aesub(1) doco
+.\" 23: aepatch(1) doco
+.\" 22: tkaer and tkaenc improvements
+.\" 21: $prefix/com in the spec file
+.PP
+.if n *
+.if t \(bu
+.\" change 20, 56, 60
+There is a new \fImode\P field for the specification of architectures
+in the project \fIconfig\fP file.  The means that you can designate some
+architectures as mandatory and some as optional.
+See \fIaepconf\fP(5) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 19
+The \fIaenbr\fP(1) command now populates the new branch's baseline with
+symlinks if the project \fIconfig\fP file is set so that they would
+remain after an integration build.  This is more consistent with the
+\fIaedb\fP(1) behaviour in the same situation.
+.PP
+.if n *
+.if t \(bu
+.\" change 16, 51, 61
+There have been a number of changes to the web pages, accompanying the
+move to SourceForge, along with some corrections.
+.PP
+.if n *
+.if t \(bu
+.\" change 15
+There is a new \fIaels\fP(1) command, which may be used to list
+directories, annotated with Aegis' file attribute information.
+.PP
+.if n *
+.if t \(bu
+.\" change 12
+The \fIaeclean\fP(1) command now accepts the \fB\-Keep\fP option,
+so that it reports what it would do, rather than actually do anything.
+.PP
+.if n *
+.if t \(bu
+.\" change 11
+A problem with the CGI interface, which reported a bug to the user,
+has been fixed.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 3.29
+

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1997 Peter Miller;
+ *	Copyright (C) 1994-1997, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -66,25 +66,25 @@ else
 	{
 		auto en;
 
-		if (j.edit_number_origin != "" && j.edit_number != "")
+		if (j.edit_origin.revision != "" && j.edit.revision != "")
 		{
-			if (j.edit_number_origin == j.edit_number)
-				en = sprintf("%4s", j.edit_number);
+			if (j.edit_origin.revision == j.edit.revision)
+				en = sprintf("%4s", j.edit.revision);
 			else
 			{
 				en =
 					sprintf
 					(
 						"%4s -> %s",
-						j.edit_number_origin,
-						j.edit_number
+						j.edit_origin.revision,
+						j.edit.revision
 					);
 			}
 		}
-		else if (j.edit_number_origin != "")
-			en = sprintf("%4s", j.edit_number_origin);
-		else if (j.edit_number != "")
-			en = sprintf("%4s", j.edit_number);
+		else if (j.edit_origin.revision != "")
+			en = sprintf("%4s", j.edit_origin.revision);
+		else if (j.edit.revision != "")
+			en = sprintf("%4s", j.edit.revision);
 
 		print
 		(

@@ -65,7 +65,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aev '\*(n) -vers \e!*'
-sh$	aev(){\*(n) -vers $*}
+sh$	aev(){\*(n) -vers "$@"}
 .fi
 .SH ERRORS
 It is an error if

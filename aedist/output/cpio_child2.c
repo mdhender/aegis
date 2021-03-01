@@ -37,10 +37,10 @@ struct output_cpio_child2_ty
 };
 
 
-static void destructor _((output_ty *));
+static void output_cpio_child2_destructor _((output_ty *));
 
 static void
-destructor(fp)
+output_cpio_child2_destructor(fp)
 	output_ty	*fp;
 {
 	output_cpio_child2_ty *this;
@@ -65,10 +65,10 @@ destructor(fp)
 }
 
 
-static const char *filename _((output_ty *));
+static string_ty *output_cpio_child2_filename _((output_ty *));
 
-static const char *
-filename(fp)
+static string_ty *
+output_cpio_child2_filename(fp)
 	output_ty	*fp;
 {
 	output_cpio_child2_ty *this;
@@ -78,10 +78,10 @@ filename(fp)
 }
 
 
-static long otell _((output_ty *));
+static long output_cpio_child2_ftell _((output_ty *));
 
 static long
-otell(fp)
+output_cpio_child2_ftell(fp)
 	output_ty	*fp;
 {
 	output_cpio_child2_ty *this;
@@ -91,24 +91,10 @@ otell(fp)
 }
 
 
-static void oputc _((output_ty *, int));
+static void output_cpio_child2_write _((output_ty *, const void *, size_t));
 
 static void
-oputc(fp, c)
-	output_ty	*fp;
-	int		c;
-{
-	output_cpio_child2_ty *this;
-
-	this = (output_cpio_child2_ty *)fp;
-	output_fputc(this->buffer, c);
-}
-
-
-static void owrite _((output_ty *, const void *, size_t));
-
-static void
-owrite(fp, data, len)
+output_cpio_child2_write(fp, data, len)
 	output_ty	*fp;
 	const void	*data;
 	size_t		len;
@@ -120,17 +106,45 @@ owrite(fp, data, len)
 }
 
 
+static void output_cpio_child2_flush _((output_ty *));
+
+static void
+output_cpio_child2_flush(fp)
+	output_ty	*fp;
+{
+	output_cpio_child2_ty *this;
+
+	this = (output_cpio_child2_ty *)fp;
+	output_flush(this->buffer);
+}
+
+
+static void output_cpio_child2_eoln _((output_ty *));
+
+static void
+output_cpio_child2_eoln(fp)
+	output_ty	*fp;
+{
+	output_cpio_child2_ty *this;
+
+	this = (output_cpio_child2_ty *)fp;
+	output_end_of_line(this->buffer);
+}
+
+
 
 static output_vtbl_ty vtbl =
 {
 	sizeof(output_cpio_child2_ty),
+	output_cpio_child2_destructor,
+	output_cpio_child2_filename,
+	output_cpio_child2_ftell,
+	output_cpio_child2_write,
+	output_cpio_child2_flush,
+	output_generic_page_width,
+	output_generic_page_length,
+	output_cpio_child2_eoln,
 	"cpio buffered child",
-	destructor,
-	filename,
-	otell,
-	oputc,
-	output_generic_fputs,
-	owrite,
 };
 
 

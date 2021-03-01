@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1997-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -106,20 +106,28 @@ static arglex_table_ty argtab[] =
 		(arglex_token_ty)arglex_token_delta,
 	},
 	{
-		"-DElta_Date",
+		"-DELta_Date",
 		(arglex_token_ty)arglex_token_delta_date,
 	},
 	{
-		"-Delta_Name",
-		(arglex_token_ty)arglex_token_delta,
+		"-Delta_From_Change",
+		(arglex_token_ty)arglex_token_delta_from_change,
 	},
 	{
-		"-Delta_Number",
+		"-Delta_Name",
+		(arglex_token_ty)arglex_token_delta_name,
+	},
+	{
+		"-DELta_NUmber",
 		(arglex_token_ty)arglex_token_delta,
 	},
 	{
 		"-Delta_Time",
 		(arglex_token_ty)arglex_token_delta_date,
+	},
+	{
+		"-Description_Only",
+		(arglex_token_ty)arglex_token_description_only,
 	},
 	{
 		"-Develop_Begin",
@@ -246,6 +254,10 @@ static arglex_table_ty argtab[] =
 		(arglex_token_ty)arglex_token_move_file,
 	},
 	{
+		"-MoVe_file_Undo",
+		(arglex_token_ty)arglex_token_move_file_undo,
+	},
+	{
 		"-New_Administrator",
 		(arglex_token_ty)arglex_token_new_administrator,
 	},
@@ -346,6 +358,14 @@ static arglex_table_ty argtab[] =
 		(arglex_token_ty)arglex_token_pager,
 	},
 	{
+		"-Page_Headers",
+		(arglex_token_ty)arglex_token_page_headers,
+	},
+	{
+		"-Not_Page_Headers",
+		(arglex_token_ty)arglex_token_page_headers_not,
+	},
+	{
 		"-Page_Length",
 		(arglex_token_ty)arglex_token_page_length,
 	},
@@ -364,10 +384,6 @@ static arglex_table_ty argtab[] =
 	{
 		"-Project_Attributes",
 		(arglex_token_ty)arglex_token_project_attributes,
-	},
-	{
-		"-Query",
-		(arglex_token_ty)arglex_token_report,
 	},
 	{
 		"-Read_Only",
@@ -418,6 +434,14 @@ static arglex_table_ty argtab[] =
 		(arglex_token_ty)arglex_token_report,
 	},
 	{
+		"-Review_Begin",
+		(arglex_token_ty)arglex_token_review_begin,
+	},
+	{
+		"-Review_Begin_Undo",
+		(arglex_token_ty)arglex_token_review_begin_undo,
+	},
+	{
 		"-Review_FAIL",
 		(arglex_token_ty)arglex_token_review_fail,
 	},
@@ -444,6 +468,14 @@ static arglex_table_ty argtab[] =
 	{
 		"-Tab_Width",
 		(arglex_token_ty)arglex_token_tab_width,
+	},
+	{
+		"-TEMplate",
+		(arglex_token_ty)arglex_token_template,
+	},
+	{
+		"-Not_TEMplate",
+		(arglex_token_ty)arglex_token_template_not,
 	},
 	{
 		"-TERse",

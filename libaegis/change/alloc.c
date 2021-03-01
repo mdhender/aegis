@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2000 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -51,6 +51,8 @@ change_alloc(pp, number)
 
 	cp->architecture_name = 0;
 	cp->bogus = 0;
+	cp->top_path_unresolved = 0;
+	cp->top_path_resolved = 0;
 	cp->development_directory_unresolved = 0;
 	cp->development_directory_resolved = 0;
 	cp->integration_directory_unresolved = 0;

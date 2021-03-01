@@ -35,6 +35,6 @@ a major headache for any project with more than one developer,
 is one of the aegis program's major functions. 
 .LP
 It should be noted that the aegis program is a developer's tool,
-in the same sense as make or SCCS are developer's tools.
+in the same sense as make or RCS are developer's tools.
 It is not a manager's tool - it does not provide progress tracking
 or help with work allocation.

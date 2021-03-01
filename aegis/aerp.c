@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,6 +39,7 @@
 #include <lock.h>
 #include <mem.h>
 #include <os.h>
+#include <pattr.h>
 #include <progname.h>
 #include <project.h>
 #include <project/file.h>
@@ -73,11 +74,10 @@ review_pass_help()
 }
 
 
-static void review_pass_list _((void (*usage)(void)));
+static void review_pass_list _((void));
 
 static void
-review_pass_list(usage)
-	void		(*usage)_((void));
+review_pass_list()
 {
 	string_ty	*project_name;
 
@@ -89,17 +89,17 @@ review_pass_list(usage)
 		switch (arglex_token)
 		{
 		default:
-			generic_argument(usage);
+			generic_argument(review_pass_usage);
 			continue;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				option_needs_name(arglex_token_project, usage);
+				option_needs_name(arglex_token_project, review_pass_usage);
 			/* fall through... */
 
 		case arglex_token_string:
 			if (project_name)
-				duplicate_option_by_name(arglex_token_project, usage);
+				duplicate_option_by_name(arglex_token_project, review_pass_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -131,6 +131,7 @@ review_pass_main()
 	long		j;
 
 	trace(("review_pass_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	change_number = 0;
 	while (arglex_token != arglex_token_eoln)
@@ -157,7 +158,7 @@ review_pass_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -217,15 +218,24 @@ review_pass_main()
 	 */
 	if (cstate_data->state != cstate_state_being_reviewed)
 		change_fatal(cp, 0, i18n("bad rp state"));
-	if (!project_reviewer_query(pp, user_name(up)))
-		project_fatal(pp, 0, i18n("not a reviewer"));
-	if
-	(
-		!project_developer_may_review_get(pp)
-	&&
-		str_equal(change_developer_name(cp), user_name(up))
-	)
-		change_fatal(cp, 0, i18n("developer may not review"));
+	if (project_develop_end_action_get(pp) ==
+		pattr_develop_end_action_goto_awaiting_review)
+	{
+		if (!str_equal(change_reviewer_name(cp), user_name(up)))
+			change_fatal(cp, 0, i18n("not reviewer"));
+	}
+	else
+	{
+		if (!project_reviewer_query(pp, user_name(up)))
+			project_fatal(pp, 0, i18n("not a reviewer"));
+		if
+		(
+			!project_developer_may_review_get(pp)
+		&&
+			str_equal(change_developer_name(cp), user_name(up))
+		)
+			change_fatal(cp, 0, i18n("developer may not review"));
+	}
 
 	/*
 	 * change the state
@@ -287,7 +297,7 @@ review_pass_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", src_data->file_name);
+				sub_var_set_string(scp, "File_Name", src_data->file_name);
 				change_fatal(cp, scp, i18n("$filename altered"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -305,7 +315,7 @@ review_pass_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S,D", src_data->file_name);
+				sub_var_set_format(scp, "File_Name", "%S,D", src_data->file_name);
 				change_fatal(cp, scp, i18n("$filename altered"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -341,20 +351,13 @@ review_pass_main()
 void
 review_pass()
 {
-	trace(("review_pass()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		review_pass_main();
-		break;
+		{ arglex_token_help,		review_pass_help,	},
+		{ arglex_token_list,		review_pass_list,	},
+	};
 
-	case arglex_token_help:
-		review_pass_help();
-		break;
-
-	case arglex_token_list:
-		review_pass_list(review_pass_usage);
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("review_pass()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), review_pass_main);
+	trace(("}\n"));
 }

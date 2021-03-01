@@ -62,6 +62,7 @@ int glue_lstat _((char *path, struct stat *st));
 int glue_mkdir _((char *path, int mode));
 int glue_open _((char *path, int mode, int perm));
 long glue_pathconf _((char *path, int mode));
+long glue_read _((int fd, void *data, size_t len));
 int glue_readlink _((char *path, char *buf, int max));
 int glue_read_whole_dir _((char *path, char **data, long *datalen));
 int glue_rename _((char *p1, char *p2));
@@ -73,7 +74,7 @@ int glue_symlink _((char *name1, char *name2));
 int glue_ungetc _((int, FILE *));
 int glue_unlink _((char *path));
 int glue_utime _((char *path, struct utimbuf *));
-int glue_write _((int fd, char *data, long len));
+int glue_write _((int fd, const void *data, long len));
 int glue_fwrite _((char *, long, long, FILE *));
 
 
@@ -107,6 +108,7 @@ int glue_fwrite _((char *, long, long, FILE *));
 #define	glue_mkdir	mkdir
 #define	glue_open	open
 #define	glue_pathconf	pathconf
+#define	glue_read	read
 #define	glue_readlink	readlink
 #define	glue_read_whole_dir	read_whole_dir
 #define	glue_rename	rename

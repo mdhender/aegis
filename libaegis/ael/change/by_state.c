@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@
 #include <change.h>
 #include <col.h>
 #include <option.h>
+#include <output.h>
 #include <project.h>
 #include <project_hist.h>
 #include <trace.h>
@@ -72,14 +73,15 @@ list_changes_in_state_mask(project_name, state_mask)
 	string_ty	*project_name;
 	int		state_mask;
 {
-	int		number_col = 0;
-	int		state_col = 0;
-	int		description_col = 0;
+	output_ty	*number_col = 0;
+	output_ty	*state_col = 0;
+	output_ty	*description_col = 0;
 	int		j;
 	project_ty	*pp;
 	string_ty	*line1;
 	string_ty	*line2;
 	int		left;
+	col_ty		*colp;
 
 	/*
 	 * locate project data
@@ -97,7 +99,7 @@ list_changes_in_state_mask(project_name, state_mask)
 	/*
 	 * create the columns
 	 */
-	col_open((char *)0);
+	colp = col_open((string_ty *)0);
 	line1 = str_format("Project \"%S\"", project_name_get(pp));
 	j = single_bit(state_mask);
 	if (j >= 0)
@@ -117,23 +119,41 @@ list_changes_in_state_mask(project_name, state_mask)
 		else
 			line2 = str_from_c("List of Changes");
 	}
-	col_title(line1->str_text, line2->str_text);
+	col_title(colp, line1->str_text, line2->str_text);
 	str_free(line1);
 	str_free(line2);
 
 	left = 0;
-	number_col = col_create(left, left + CHANGE_WIDTH);
+	number_col =
+		col_create
+		(
+			colp,
+			left,
+			left + CHANGE_WIDTH,
+			"Change\n-------"
+		);
 	left += CHANGE_WIDTH + 1;
-	col_heading(number_col, "Change\n-------");
 
 	if (!option_terse_get())
 	{
-		state_col = col_create(left, left + STATE_WIDTH);
+		state_col =
+			col_create
+			(
+				colp,
+				left,
+				left + STATE_WIDTH,
+				"State\n-------"
+			);
 		left += STATE_WIDTH + 1;
-		col_heading(state_col, "State\n-------");
 
-		description_col = col_create(left, 0);
-		col_heading(description_col, "Description\n-------------");
+		description_col =
+			col_create
+			(
+				colp,
+				left,
+				0,
+				"Description\n-------------"
+			);
 	}
 
 	/*
@@ -152,15 +172,15 @@ list_changes_in_state_mask(project_name, state_mask)
 		cstate_data = change_cstate_get(cp);
 		if (state_mask & (1 << cstate_data->state))
 		{
-			col_printf
+			output_fprintf
 			(
 				number_col,
 				"%4ld",
 				magic_zero_decode(change_number)
 			);
-			if (!option_terse_get())
+			if (state_col)
 			{
-				col_puts
+				output_fputs
 				(
 					state_col,
 					cstate_state_ename(cstate_data->state)
@@ -172,11 +192,11 @@ list_changes_in_state_mask(project_name, state_mask)
 			      cstate_data->state == cstate_state_being_developed
 				)
 				{
-					col_bol(state_col);
-					col_puts
+					output_end_of_line(state_col);
+					output_put_str
 					(
 						state_col,
-					     change_developer_name(cp)->str_text
+						change_developer_name(cp)
 					);
 				}
 				if
@@ -186,23 +206,23 @@ list_changes_in_state_mask(project_name, state_mask)
 			     cstate_data->state == cstate_state_being_integrated
 				)
 				{
-					col_bol(state_col);
-					col_puts
+					output_end_of_line(state_col);
+					output_put_str
 					(
 						state_col,
-					    change_integrator_name(cp)->str_text
-					);
-				}
-				if (cstate_data->brief_description)
-				{
-					col_puts
-					(
-						description_col,
-					cstate_data->brief_description->str_text
+						change_integrator_name(cp)
 					);
 				}
 			}
-			col_eoln();
+			if (description_col && cstate_data->brief_description)
+			{
+				output_put_str
+				(
+					description_col,
+					cstate_data->brief_description
+				);
+			}
+			col_eoln(colp);
 		}
 		change_free(cp);
 	}
@@ -210,7 +230,7 @@ list_changes_in_state_mask(project_name, state_mask)
 	/*
 	 * clean up and go home
 	 */
-	col_close();
+	col_close(colp);
 	project_free(pp);
 	trace(("}\n"));
 }

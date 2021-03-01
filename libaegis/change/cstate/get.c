@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -76,8 +76,8 @@ cstate_to_fstate(cp)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", cp->cstate_filename);
-			sub_var_set(scp, "FieLD_Name", "src");
+			sub_var_set_string(scp, "File_Name", cp->cstate_filename);
+			sub_var_set_charstar(scp, "FieLD_Name", "src");
 			change_fatal
 			(
 				cp,
@@ -103,9 +103,12 @@ cstate_to_fstate(cp)
 		src2->file_name = str_copy(src1->file_name);
 		if (src1->edit_number)
 		{
-			src2->edit_number = str_copy(src1->edit_number);
-			src2->edit_number_origin =
-				str_copy(src1->edit_number);
+			src2->edit = history_version_type.alloc();
+			src2->edit->revision = str_copy(src1->edit_number);
+			src2->edit->encoding = history_version_encoding_none;
+			src2->edit_origin = history_version_type.alloc();
+			src2->edit_origin->revision = str_copy(src1->edit_number);
+			src2->edit_origin->encoding = history_version_encoding_none;
 		}
 		if (src1->move)
 			src2->move = str_copy(src1->move);
@@ -138,15 +141,15 @@ change_cstate_get(cp)
 	{
 		fn = change_cstate_filename_get(cp);
 		change_become(cp);
-		cp->cstate_data = cstate_read_file(fn->str_text);
+		cp->cstate_data = cstate_read_file(fn);
 		change_become_undo();
 		if (!cp->cstate_data->brief_description)
 		{
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", cp->cstate_filename);
-			sub_var_set(scp, "FieLD_Name", "brief_description");
+			sub_var_set_string(scp, "File_Name", cp->cstate_filename);
+			sub_var_set_charstar(scp, "FieLD_Name", "brief_description");
 			change_fatal
 			(
 				cp,
@@ -161,8 +164,8 @@ change_cstate_get(cp)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", cp->cstate_filename);
-			sub_var_set(scp, "FieLD_Name", "description");
+			sub_var_set_string(scp, "File_Name", cp->cstate_filename);
+			sub_var_set_charstar(scp, "FieLD_Name", "description");
 			change_fatal
 			(
 				cp,
@@ -177,8 +180,8 @@ change_cstate_get(cp)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", cp->cstate_filename);
-			sub_var_set(scp, "FieLD_Name", "state");
+			sub_var_set_string(scp, "File_Name", cp->cstate_filename);
+			sub_var_set_charstar(scp, "FieLD_Name", "state");
 			change_fatal
 			(
 				cp,
@@ -200,8 +203,8 @@ change_cstate_get(cp)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", cp->cstate_filename);
-			sub_var_set(scp, "FieLD_Name", "development_directory");
+			sub_var_set_string(scp, "File_Name", cp->cstate_filename);
+			sub_var_set_charstar(scp, "FieLD_Name", "development_directory");
 			change_fatal
 			(
 				cp,
@@ -221,8 +224,8 @@ change_cstate_get(cp)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", cp->cstate_filename);
-			sub_var_set(scp, "FieLD_Name", "integration_directory");
+			sub_var_set_string(scp, "File_Name", cp->cstate_filename);
+			sub_var_set_charstar(scp, "FieLD_Name", "integration_directory");
 			change_fatal
 			(
 				cp,
@@ -242,8 +245,8 @@ change_cstate_get(cp)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", cp->cstate_filename);
-			sub_var_set(scp, "FieLD_Name", "delta_number");
+			sub_var_set_string(scp, "File_Name", cp->cstate_filename);
+			sub_var_set_charstar(scp, "FieLD_Name", "delta_number");
 			change_fatal
 			(
 				cp,

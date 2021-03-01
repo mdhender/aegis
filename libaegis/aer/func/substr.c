@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1996 Peter Miller;
+ *	Copyright (C) 1995, 1996, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -65,9 +65,9 @@ run(ep, argc, argv)
 
 		scp = sub_context_new();
 		rpt_value_free(arg);
-		sub_var_set(scp, "Function", "substr");
-		sub_var_set(scp, "Number", "1");
-		sub_var_set(scp, "Name", "%s", argv[0]->method->name);
+		sub_var_set_charstar(scp, "Function", "substr");
+		sub_var_set_charstar(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
 		s =
 			subst_intl
 			(
@@ -91,9 +91,9 @@ run(ep, argc, argv)
 
 		scp = sub_context_new();
 		rpt_value_free(arg);
-		sub_var_set(scp, "Function", "substr");
-		sub_var_set(scp, "Number", "2");
-		sub_var_set(scp, "Name", "%s", argv[1]->method->name);
+		sub_var_set_charstar(scp, "Function", "substr");
+		sub_var_set_charstar(scp, "Number", "2");
+		sub_var_set_charstar(scp, "Name", argv[1]->method->name);
 		s =
 			subst_intl
 			(
@@ -117,9 +117,9 @@ run(ep, argc, argv)
 
 		scp = sub_context_new();
 		rpt_value_free(arg);
-		sub_var_set(scp, "Function", "substr");
-		sub_var_set(scp, "Number", "3");
-		sub_var_set(scp, "Name", "%s", argv[2]->method->name);
+		sub_var_set_charstar(scp, "Function", "substr");
+		sub_var_set_charstar(scp, "Number", "3");
+		sub_var_set_charstar(scp, "Name", argv[2]->method->name);
 		s =
 			subst_intl
 			(

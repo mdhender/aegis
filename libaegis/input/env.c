@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1999 Peter Miller;
+ *	Copyright (C) 1994, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,73 +22,77 @@
 
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
+#include <ac/string.h>
 
 #include <input/crlf.h>
 #include <input/env.h>
 #include <input/private.h>
-#include <mem.h>
+#include <str.h>
 
 typedef struct input_env_ty input_env_ty;
 struct input_env_ty
 {
 	input_ty	inherited;
-	char		*base;
-	char		*pos;
-	char		*name;
+	string_ty	*base;
+	size_t		pos;
+	string_ty	*name;
 };
 
 
-static void destruct _((input_ty *));
+static void input_env_destructor _((input_ty *));
 
 static void
-destruct(p)
+input_env_destructor(p)
 	input_ty	*p;
 {
 	input_env_ty	*this;
 
 	this = (input_env_ty *)p;
-	mem_free(this->base);
-	mem_free(this->name);
+	str_free(this->base);
+	str_free(this->name);
 }
 
 
-static int get _((input_ty *));
-
-static int
-get(p)
-	input_ty	*p;
-{
-	input_env_ty	*this;
-	int		c;
-
-	this = (input_env_ty *)p;
-	c = (unsigned char)*this->pos++;
-	if (!c)
-	{
-		c = EOF;
-		this->pos--;
-	}
-	return c;
-}
-
-
-static long itell _((input_ty *));
+static long input_env_read _((input_ty *, void *, size_t));
 
 static long
-itell(p)
+input_env_read(p, data, len)
+	input_ty	*p;
+	void		*data;
+	size_t		len;
+{
+	input_env_ty	*this;
+	size_t		nbytes;
+
+	this = (input_env_ty *)p;
+	if (this->pos >= this->base->str_length)
+		return 0;
+	nbytes = this->base->str_length - this->pos;
+	if (nbytes > len)
+		nbytes = len;
+	memcpy(data, this->base->str_text + this->pos, nbytes);
+	this->pos += nbytes;
+	return nbytes;
+}
+
+
+static long input_env_ftell _((input_ty *));
+
+static long
+input_env_ftell(p)
 	input_ty	*p;
 {
 	input_env_ty	*this;
 
 	this = (input_env_ty *)p;
-	return (this->pos - this->base);
+	return this->pos;
 }
 
 
-static const char *name _((input_ty *));
+static string_ty *input_env_name _((input_ty *));
 
-static const char *
-name(p)
+static string_ty *
+input_env_name(p)
 	input_ty	*p;
 {
 	input_env_ty	*this;
@@ -98,28 +102,27 @@ name(p)
 }
 
 
-static long length _((input_ty *));
+static long input_env_length _((input_ty *));
 
 static long
-length(p)
+input_env_length(p)
 	input_ty	*p;
 {
 	input_env_ty	*this;
 
 	this = (input_env_ty *)p;
-	return strlen(this->base);
+	return this->base->str_length;
 }
 
 
 static input_vtbl_ty vtbl =
 {
 	sizeof(input_env_ty),
-	destruct,
-	input_generic_read,
-	get,
-	itell,
-	name,
-	length,
+	input_env_destructor,
+	input_env_read,
+	input_env_ftell,
+	input_env_name,
+	input_env_length,
 };
 
 
@@ -137,8 +140,13 @@ input_env_open(s)
 
 	result = input_new(&vtbl);
 	this = (input_env_ty *)result;
-	this->base = mem_copy_string(cp);
-	this->pos = this->base;
-	this->name = mem_copy_string(s);
+	this->base = str_from_c(cp);
+	this->pos = 0;
+	this->name = str_from_c(s);
+
+	/*
+	 * You need the CRLF filter, otherwise bizzare things happen on
+	 * DOS (or DOS-like) operating systems.
+	 */
 	return input_crlf(result, 1);
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@
 #include <ael/project/files.h>
 #include <arglex2.h>
 #include <commit.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <change/file.h>
 #include <error.h>
 #include <file.h>
@@ -41,6 +41,7 @@
 #include <progname.h>
 #include <project.h>
 #include <project/file.h>
+#include <project/file/roll_forward.h>
 #include <project_hist.h>
 #include <sub.h>
 #include <trace.h>
@@ -97,7 +98,7 @@ copy_file_list()
 	string_ty	*project_name;
 	long		change_number;
 
-	trace(("copy_file_list()\n{\n"/*}*/));
+	trace(("copy_file_list()\n{\n"));
 	arglex();
 	project_name = 0;
 	change_number = 0;
@@ -125,7 +126,7 @@ copy_file_list()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -145,7 +146,7 @@ copy_file_list()
 	list_project_files(project_name, change_number);
 	if (project_name)
 		str_free(project_name);
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }
 
 
@@ -167,9 +168,9 @@ copy_file_independent()
 	project_ty	*pp2;
 	user_ty		*up;
 	long		delta_number;
+	long		delta_from_change;
 	time_t		delta_date;
 	char		*delta_name;
-	string_ty	*delta_date_implies_edit_number = 0;
 	int		number_of_errors;
 	string_list_ty	search_path;
 	char		*branch;
@@ -177,16 +178,19 @@ copy_file_independent()
 	change_ty	*cp_bogus;
 	int		based;
 	string_ty	*base;
+	char		*output;
 
-	trace(("copy_file_independent()\n{\n"/*}*/));
+	trace(("copy_file_independent()\n{\n"));
 	arglex();
 	string_list_constructor(&wl);
 	project_name = 0;
 	delta_date = (time_t)-1;
 	delta_number = -1;
+	delta_from_change = 0;
 	delta_name = 0;
 	branch = 0;
 	trunk = 0;
+	output = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -236,7 +240,7 @@ copy_file_independent()
 					sub_context_ty	*scp;
 
 					scp = sub_context_new();
-					sub_var_set(scp, "Number", "%ld", delta_number);
+					sub_var_set_long(scp, "Number", delta_number);
 					fatal_intl(scp, i18n("delta $number out of range"));
 					/* NOTREACHED */
 					sub_context_delete(scp);
@@ -259,12 +263,36 @@ copy_file_independent()
 			}
 			delta_date = date_scan(arglex_value.alv_string);
 			if (delta_date == (time_t)-1)
+				fatal_date_unknown(arglex_value.alv_string);
+			break;
+
+		case arglex_token_delta_from_change:
+			if (arglex() != arglex_token_number)
+			{
+				option_needs_number
+				(
+					arglex_token_delta_from_change,
+					copy_file_usage
+				);
+			}
+			if (delta_from_change)
+			{
+				duplicate_option_by_name
+				(
+					arglex_token_delta_from_change,
+					copy_file_usage
+				);
+			}
+			delta_from_change = arglex_value.alv_number;
+			if (delta_from_change == 0)
+				delta_from_change = MAGIC_ZERO;
+			else if (delta_from_change < 1)
 			{
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Name", "%s", arglex_value.alv_string);
-				fatal_intl(scp, i18n("date $name unknown"));
+				sub_var_set_long(scp, "Number", delta_from_change);
+				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
 			}
@@ -299,6 +327,24 @@ copy_file_independent()
 		case arglex_token_current_relative:
 			user_relative_filename_preference_argument(copy_file_usage);
 			break;
+
+		case arglex_token_output:
+			if (output)
+				duplicate_option(copy_file_usage);
+			switch (arglex())
+			{
+			default:
+				option_needs_file(arglex_token_output, copy_file_usage);
+
+			case arglex_token_stdio:
+				output = "";
+				break;
+
+			case arglex_token_string:
+				output = arglex_value.alv_string;
+				break;
+			}
+			break;
 		}
 		arglex();
 	}
@@ -320,14 +366,44 @@ copy_file_independent()
 		}
 		branch = "";
 	}
-	if ((delta_name || delta_number >= 0) && delta_date != (time_t)-1)
+	if
+	(
+		(
+			(delta_name || delta_number >= 0)
+		+
+			!!delta_from_change
+		+
+			(delta_date != (time_t)-1)
+		)
+	>
+		1
+	)
 	{
-		mutually_exclusive_options
+		mutually_exclusive_options3
 		(
 			arglex_token_delta,
 			arglex_token_delta_date,
+			arglex_token_delta_from_change,
 			copy_file_usage
 		);
+	}
+
+	/*
+	 * make sure output is unambiguous
+	 */
+	if (output)
+	{
+		if (wl.nstrings != 1)
+		{
+			sub_context_ty	*scp;
+
+			scp = sub_context_new();
+			sub_var_set_long(scp, "Number", (long)wl.nstrings);
+			sub_var_optional(scp, "Number");
+			fatal_intl(scp, i18n("single file with -Output"));
+			/* NOTREACHED */
+			sub_context_delete(scp);
+		}
 	}
 
 	/*
@@ -356,18 +432,44 @@ copy_file_independent()
 	 * Take a read lock on the baseline, to ensure that it does
 	 * not change (aeip) for the duration of the copy.
 	 */
-	project_baseline_read_lock_prepare(pp2);
-	lock_take();
+	if (!output)
+	{
+		project_baseline_read_lock_prepare(pp2);
+		lock_take();
+	}
 
 	/*
 	 * it is an error if the delta does not exist
 	 */
-	trace(("mark\n"));
 	if (delta_name)
 	{
 		s1 = str_from_c(delta_name);
 		delta_number = project_history_delta_by_name(pp2, s1, 0);
 		str_free(s1);
+	}
+	if (delta_date != (time_t)-1)
+	{
+		time_t	now;
+
+		/*
+		 * If the time is in the future, you could get a different
+		 * answer for the same input at some point in the future.
+		 *
+		 * This is the "time safe" quality first described by
+		 * Damon Poole <damon@ede.com>
+		 */
+		time(&now);
+		if (delta_date > now)
+			project_error(pp2, 0, i18n("date in the future"));
+	}
+	if (delta_from_change)
+	{
+		delta_number =
+			project_change_number_to_delta_number
+			(
+				pp2,
+				delta_from_change
+			);
 	}
 	if (delta_number >= 0)
 	{
@@ -377,7 +479,7 @@ copy_file_independent()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%ld", delta_number);
+			sub_var_set_long(scp, "Name", delta_number);
 			project_fatal(pp2, scp, i18n("no delta $name"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -394,11 +496,9 @@ copy_file_independent()
 	 * and any comparison of paths is done on this "system idea"
 	 * of the pathname.
 	 */
-	trace(("mark\n"));
 	os_become_orig();
 	dd = os_curdir();
 	os_become_undo();
-	trace(("mark\n"));
 	string_list_constructor(&search_path);
 	project_search_path_get(pp2, &search_path, 1);
 
@@ -423,7 +523,6 @@ copy_file_independent()
 		base = str_copy(search_path.string[0]);
 	else
 		base = dd;
-	trace(("mark\n"));
 	string_list_prepend(&search_path, dd);
 
 	/*
@@ -432,7 +531,6 @@ copy_file_independent()
 	 * 2. if the file is inside the search list
 	 * 3. if neither, error
 	 */
-	trace(("mark\n"));
 	string_list_constructor(&wl2);
 	number_of_errors = 0;
 	for (j = 0; j < wl.nstrings; ++j)
@@ -459,7 +557,7 @@ copy_file_independent()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", wl.string[j]);
+			sub_var_set_string(scp, "File_Name", wl.string[j]);
 			project_error(pp, scp, i18n("$filename unrelated"));
 			sub_context_delete(scp);
 			++number_of_errors;
@@ -469,7 +567,25 @@ copy_file_independent()
 		if (delta_date != (time_t)-1)
 			string_list_append_list(&wl_in, &wl_out);
 		if (wl_in.nstrings)
+		{
+			if (output)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set_charstar
+				(
+					scp,
+					"Name",
+					arglex_token_name(arglex_token_output)
+				);
+				error_intl(scp, i18n("no dir with $name"));
+				sub_context_delete(scp);
+				++number_of_errors;
+			}
+
 			string_list_append_list_unique(&wl2, &wl_in);
+		}
 		else
 			string_list_append_unique(&wl2, s2);
 		string_list_destructor(&wl_in);
@@ -484,7 +600,6 @@ copy_file_independent()
 	 * ensure that each file
 	 * is in the baseline
 	 */
-	trace(("mark\n"));
 	for (j = 0; j < wl.nstrings; ++j)
 	{
 		fstate_src	src_data;
@@ -504,10 +619,10 @@ copy_file_independent()
 
 			scp = sub_context_new();
 			src_data = project_file_find_fuzzy(pp2, s1);
-			sub_var_set(scp, "File_Name", "%S", s1);
+			sub_var_set_string(scp, "File_Name", s1);
 			if (src_data)
 			{
-				sub_var_set(scp, "Guess", "%S", src_data->file_name);
+				sub_var_set_string(scp, "Guess", src_data->file_name);
 				project_error
 				(
 					pp2,
@@ -526,7 +641,7 @@ copy_file_independent()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", s1);
+			sub_var_set_string(scp, "File_Name", s1);
 			project_error(pp, scp, i18n("$filename is built"));
 			sub_context_delete(scp);
 			++number_of_errors;
@@ -537,7 +652,7 @@ copy_file_independent()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%d", number_of_errors);
+		sub_var_set_long(scp, "Number", number_of_errors);
 		sub_var_optional(scp, "Number");
 		project_fatal(pp, scp, i18n("no files copied"));
 		sub_context_delete(scp);
@@ -548,112 +663,86 @@ copy_file_independent()
 	 * so can set environment variables
 	 * for the test
 	 */
-	trace(("mark\n"));
 	cp_bogus = change_alloc(pp, project_next_change_number(pp, 1));
 	change_bind_new(cp_bogus);
 	change_architecture_from_pconf(cp_bogus);
 	cp_bogus->bogus = 1;
 
 	/*
-	 * Copy each file into the development directory.
+	 * Copy each file into the destination directory.
 	 * Create any necessary directories along the way.
 	 */
-	trace(("mark\n"));
+	if (delta_date != (time_t)-1)
+		project_file_roll_forward(pp2, delta_date, 0);
 	for (j = 0; j < wl.nstrings; ++j)
 	{
 		string_ty	*from;
 		string_ty	*to;
+		int		from_unlink = 0;
 
 		s1 = wl.string[j];
 		if (delta_date != (time_t)-1)
 		{
-			/*
-			 * find the edit number,
-			 * given fie file name and delta number
-			 *
-			 * NULL returned means that the file
-			 * does not exist at the given delta.
-			 */
-			delta_date_implies_edit_number =
-				project_delta_date_to_edit(pp2, delta_date, s1);
-			if (delta_date_implies_edit_number)
+			file_event_list_ty *felp;
+			file_event_ty   *fep;
+			fstate_src	old_src;
+
+			felp = project_file_roll_forward_get(s1);
+			if (!felp)
 			{
-				fstate_src	psrc_data;
-
 				/*
-				 * Look in the immediate project...
-				 * the other branch may have been completed.
+				 * The file doesn't exist yet at this
+				 * delta.  Omit it.
 				 */
-				psrc_data = project_file_find(pp, s1);
-				assert(psrc_data);
-				assert(psrc_data->edit_number);
-				if
-				(
-					psrc_data
-				&&
-					psrc_data->edit_number
-				&&
-					str_equal(psrc_data->edit_number, delta_date_implies_edit_number)
-				&&
-					psrc_data->action != file_action_remove
-				)
-				{
-					/*
-					 * do a simple file copy
-					 * from the immediate project
-					 */
-					from = project_file_path(pp, s1);
-					str_free(delta_date_implies_edit_number);
-					delta_date_implies_edit_number = 0;
-				}
-				else
-				{
-					/*
-					 * make a temporary file
-					 */
-					from = os_edit_filename(0);
-					os_become_orig();
-					undo_unlink_errok(from);
-					os_become_undo();
-
-					/*
-					 * get the file from history
-					 */
-					change_run_history_get_command
-					(
-						cp_bogus,
-						s1,
-						delta_date_implies_edit_number,
-						from,
-						up
-					);
-				}
+				continue;
 			}
-			else
-				from = str_from_c("/dev/null");
+			assert(felp->length);
+			fep = &felp->item[felp->length - 1];
+
+			old_src = change_file_find(fep->cp, s1);
+			assert(old_src);
+			if (old_src->action == file_action_remove)
+			{
+				/*
+				 * The file had been removed at this
+				 * delta.  Omit it.
+				 */
+				continue;
+			}
+			from =
+				project_file_version_path
+				(
+					pp2,
+					old_src,
+					&from_unlink
+				);
 
 			/*
 			 * figure where to send it
 			 */
-			to = str_format("%S/%S", dd, s1);
+			if (output)
+				to = str_from_c(output);
+			else
+				to = str_format("%S/%S", dd, s1);
 
 			/*
 			 * copy the file
 			 */
-			trace(("mark\n"));
 			os_become_orig();
-			os_mkdir_between(dd, s1, 02755);
-			if (os_exists(to))
-				os_unlink(to);
+			if (!output)
+			{
+				os_mkdir_between(dd, s1, 02755);
+				if (os_exists(to))
+					os_unlink(to);
+			}
 			copy_whole_file(from, to, 0);
 
 			/*
 			 * clean up afterwards
 			 */
-			if (delta_date_implies_edit_number)
+			if (from_unlink)
 			{
 				os_unlink_errok(from);
-				str_free(delta_date_implies_edit_number);
 			}
 			os_become_undo();
 			str_free(from);
@@ -661,17 +750,30 @@ copy_file_independent()
 		}
 		else
 		{
+			fstate_src	old_src;
+
+			old_src = project_file_find(pp2, s1);
+			if (!old_src)
+				continue;
+			if (old_src->action == file_action_remove)
+				continue;
+
 			from = project_file_path(pp2, s1);
-			to = str_format("%S/%S", dd, s1);
+			if (output)
+				to = str_from_c(output);
+			else
+				to = str_format("%S/%S", dd, s1);
 
 			/*
 			 * copy the file
 			 */
-	trace(("mark\n"));
 			os_become_orig();
-			os_mkdir_between(dd, s1, 02755);
-			if (os_exists(to))
-				os_unlink(to);
+			if (!output)
+			{
+				os_mkdir_between(dd, s1, 02755);
+				if (os_exists(to))
+					os_unlink(to);
+			}
 			copy_whole_file(from, to, 0);
 			os_become_undo();
 
@@ -687,8 +789,8 @@ copy_file_independent()
 	/*
 	 * release the baseline lock
 	 */
-	trace(("mark\n"));
-	lock_release();
+	if (!output)
+		lock_release();
 
 	/*
 	 * verbose success message
@@ -698,7 +800,7 @@ copy_file_independent()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", wl.string[j]);
+		sub_var_set_string(scp, "File_Name", wl.string[j]);
 		project_verbose(pp, scp, i18n("copied $filename"));
 		sub_context_delete(scp);
 	}
@@ -706,7 +808,7 @@ copy_file_independent()
 	string_list_destructor(&wl);
 	project_free(pp);
 	user_free(up);
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }
 
 
@@ -736,7 +838,7 @@ copy_file_main()
 	time_t		delta_date;
 	long		delta_number;
 	char		*delta_name;
-	string_ty	*delta_date_implies_edit_number = 0;
+	long		delta_from_change;
 	int		config_seen;
 	string_ty	*config_name;
 	int		number_of_errors;
@@ -749,7 +851,8 @@ copy_file_main()
 	string_ty	*base;
 	sub_context_ty	*scp;
 
-	trace(("copy_file_main()\n{\n"/*}*/));
+	trace(("copy_file_main()\n{\n"));
+	arglex();
 	string_list_constructor(&wl);
 	stomp = 0;
 	project_name = 0;
@@ -759,6 +862,7 @@ copy_file_main()
 	delta_date = (time_t)-1;
 	delta_number = -1;
 	delta_name = 0;
+	delta_from_change = 0;
 	branch = 0;
 	trunk = 0;
 	read_only = 0;
@@ -807,7 +911,7 @@ copy_file_main()
 			else if (change_number < 1)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -842,7 +946,7 @@ copy_file_main()
 				if (delta_number < 0)
 				{
 					scp = sub_context_new();
-					sub_var_set(scp, "Number", "%ld", delta_number);
+					sub_var_set_long(scp, "Number", delta_number);
 					fatal_intl(scp, i18n("delta $number out of range"));
 					/* NOTREACHED */
 					sub_context_delete(scp);
@@ -867,8 +971,38 @@ copy_file_main()
 			if (delta_date == (time_t)-1)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Name", "%s", arglex_value.alv_string);
+				sub_var_set_charstar(scp, "Name", arglex_value.alv_string);
 				fatal_intl(scp, i18n("date $name unknown"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
+			break;
+
+		case arglex_token_delta_from_change:
+			if (arglex() != arglex_token_number)
+			{
+				option_needs_number
+				(
+					arglex_token_delta_from_change,
+					copy_file_usage
+				);
+			}
+			if (delta_from_change)
+			{
+				duplicate_option_by_name
+				(
+					arglex_token_delta_from_change,
+					copy_file_usage
+				);
+			}
+			delta_from_change = arglex_value.alv_number;
+			if (delta_from_change == 0)
+				delta_from_change = MAGIC_ZERO;
+			else if (delta_from_change < 1)
+			{
+				scp = sub_context_new();
+				sub_var_set_long(scp, "Number", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
 			}
@@ -953,12 +1087,24 @@ copy_file_main()
 		}
 		branch = "";
 	}
-	if ((delta_name || delta_number >= 0) && delta_date != (time_t)-1)
+	if
+	(
+		(
+			(delta_name || delta_number >= 0)
+		+
+			!!delta_from_change
+		+
+			(delta_date != (time_t)-1)
+		)
+	>
+		1
+	)
 	{
-		mutually_exclusive_options
+		mutually_exclusive_options3
 		(
 			arglex_token_delta,
 			arglex_token_delta_date,
+			arglex_token_delta_from_change,
 			copy_file_usage
 		);
 	}
@@ -971,7 +1117,7 @@ copy_file_main()
 		if (wl.nstrings != 1)
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "Number", "%ld", (long)wl.nstrings);
+			sub_var_set_long(scp, "Number", (long)wl.nstrings);
 			sub_var_optional(scp, "Number");
 			fatal_intl(scp, i18n("single file with -Output"));
 			/* NOTREACHED */
@@ -1036,6 +1182,7 @@ copy_file_main()
 		switch (cstate_data->state)
 		{
 		case cstate_state_being_developed:
+		case cstate_state_awaiting_review:
 		case cstate_state_being_reviewed:
 		case cstate_state_awaiting_integration:
 		case cstate_state_being_integrated:
@@ -1065,17 +1212,42 @@ copy_file_main()
 		delta_number = project_history_delta_by_name(pp2, s1, 0);
 		str_free(s1);
 	}
+	if (delta_date != (time_t)-1)
+	{
+		time_t	now;
+
+		/*
+		 * If the time is in the future, you could get a different
+		 * answer for the same inpout at some point in the future.
+		 *
+		 * This is the "time safe" quality first described by
+		 * Damon Poole <damon@ede.com>
+		 */
+		time(&now);
+		if (delta_date > now)
+			project_error(pp2, 0, i18n("date in the future"));
+	}
+	if (delta_from_change)
+	{
+		delta_number =
+			project_change_number_to_delta_number
+			(
+				pp2,
+				delta_from_change
+			);
+	}
 	if (delta_number >= 0)
 	{
 		delta_date = project_history_delta_to_timestamp(pp2, delta_number);
 		if (delta_date == (time_t)-1)
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%ld", delta_number);
+			sub_var_set_long(scp, "Name", delta_number);
 			change_fatal(cp, scp, i18n("no delta $name"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
 		}
+		trace(("delta %d -> delta date %ld\n", delta_number, delta_date));
 	}
 
 	/*
@@ -1148,7 +1320,7 @@ copy_file_main()
 		if (!s2)
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", wl.string[j]);
+			sub_var_set_string(scp, "File_Name", wl.string[j]);
 			change_error(cp, scp, i18n("$filename unrelated"));
 			sub_context_delete(scp);
 			++number_of_errors;
@@ -1169,7 +1341,7 @@ copy_file_main()
 			if (output)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_output));
+				sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_output));
 				error_intl(scp, i18n("no dir with $name"));
 				sub_context_delete(scp);
 				++number_of_errors;
@@ -1185,7 +1357,7 @@ copy_file_main()
 					if (string_list_member(&wl2, s3))
 					{
 						scp = sub_context_new();
-						sub_var_set(scp, "File_Name", "%S", s3);
+						sub_var_set_string(scp, "File_Name", s3);
 						change_error(cp, scp, i18n("too many $filename"));
 						sub_context_delete(scp);
 						++number_of_errors;
@@ -1201,10 +1373,10 @@ copy_file_main()
 			{
 				scp = sub_context_new();
 				if (s2->str_length)
-					sub_var_set(scp, "File_Name", "%S", s2);
+					sub_var_set_string(scp, "File_Name", s2);
 				else
-					sub_var_set(scp, "File_Name", ".");
-				sub_var_set(scp, "Number", "%ld", (long)wl_in.nstrings);
+					sub_var_set_charstar(scp, "File_Name", ".");
+				sub_var_set_long(scp, "Number", (long)wl_in.nstrings);
 				sub_var_optional(scp, "Number");
 				change_error(cp, scp, i18n("directory $filename contains no relevant files"));
 				sub_context_delete(scp);
@@ -1216,7 +1388,7 @@ copy_file_main()
 			if (string_list_member(&wl2, s2))
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s2);
+				sub_var_set_string(scp, "File_Name", s2);
 				change_error(cp, scp, i18n("too many $filename"));
 				sub_context_delete(scp);
 				++number_of_errors;
@@ -1248,7 +1420,7 @@ copy_file_main()
 		if (change_file_find(cp, s1) && !stomp && !output)
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", s1);
+			sub_var_set_string(scp, "File_Name", s1);
 			change_error(cp, scp, i18n("bad cp, file $filename dup"));
 			sub_context_delete(scp);
 			++number_of_errors;
@@ -1283,10 +1455,10 @@ copy_file_main()
 		{
 			scp = sub_context_new();
 			src_data = project_file_find_fuzzy(pp2, s1);
-			sub_var_set(scp, "File_Name", "%S", s1);
+			sub_var_set_string(scp, "File_Name", s1);
 			if (src_data)
 			{
-				sub_var_set(scp, "Guess", "%S", src_data->file_name);
+				sub_var_set_string(scp, "Guess", src_data->file_name);
 				project_error
 				(
 					pp2,
@@ -1303,7 +1475,7 @@ copy_file_main()
 		if (src_data && src_data->usage == file_usage_build && !output)
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", s1);
+			sub_var_set_string(scp, "File_Name", s1);
 			change_error(cp, scp, i18n("$filename is built"));
 			sub_context_delete(scp);
 			++number_of_errors;
@@ -1312,7 +1484,7 @@ copy_file_main()
 	if (number_of_errors)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%d", number_of_errors);
+		sub_var_set_long(scp, "Number", number_of_errors);
 		sub_var_optional(scp, "Number");
 		change_fatal(cp, scp, i18n("no files copied"));
 		sub_context_delete(scp);
@@ -1331,77 +1503,75 @@ copy_file_main()
 	 * or update the edit number.
 	 */
 	dd = change_development_directory_get(cp, 0);
+	if (delta_date != (time_t)-1)
+		project_file_roll_forward(pp2, delta_date, 0);
 	for (j = 0; j < wl.nstrings; ++j)
 	{
 		string_ty	*from;
 		string_ty	*to;
+		fstate_src	old_src = 0;
 
 		s1 = wl.string[j];
-		delta_date_implies_edit_number = 0;
 		if (delta_date != (time_t)-1)
 		{
-			/*
-			 * find the edit number,
-			 * given the file name and delta number
-			 *
-			 * NULL returned means that the file
-			 * does not exist at the given delta.
-			 */
-			delta_date_implies_edit_number =
-				project_delta_date_to_edit(pp2, delta_date, s1);
-			if (delta_date_implies_edit_number)
+			file_event_list_ty *felp;
+			file_event_ty	*fep;
+			int from_unlink = 0;
+
+			felp = project_file_roll_forward_get(s1);
+			if (!felp)
 			{
-				fstate_src	psrc_data;
+				fstate_src	p_src_data;
 
 				/*
-				 * Use the immediate project...
-				 * the other branch may have been completed.
+				 * This file had not yet been created at
+				 * the time of the delta.  Arrange for
+				 * it to look like it's being removed.
+				 *
+				 * This is a memory leak.
 				 */
-				psrc_data = project_file_find(pp, s1);
-				if
-				(
-					psrc_data
-				&&
-					psrc_data->edit_number
-				&&
-					str_equal(psrc_data->edit_number, delta_date_implies_edit_number)
-				&&
-					psrc_data->action != file_action_remove
-				)
+				p_src_data = project_file_find(pp2, s1);
+				assert(p_src_data);
+				old_src = fstate_src_type.alloc();
+				old_src->action = file_action_remove;
+				if (p_src_data && p_src_data->edit)
 				{
-					/*
-					 * do a simple file copy
-					 * from the immediate project
-					 */
-					from = project_file_path(pp, s1);
-					str_free(delta_date_implies_edit_number);
-					delta_date_implies_edit_number = 0;
+					old_src->usage = p_src_data->usage;
+					assert(p_src_data->edit);
+					old_src->edit =
+						history_version_copy(p_src_data->edit);
 				}
 				else
 				{
-					/*
-					 * make a temporary file
-					 */
-					from = os_edit_filename(0);
-					user_become(up);
-					undo_unlink_errok(from);
-					user_become_undo();
-
-					/*
-					 * get the file from history
-					 */
-					change_run_history_get_command
-					(
-						cp,
-						s1,
-						delta_date_implies_edit_number,
-						from,
-						up
-					);
+					/* Should never happen.  Yeah, right. */
+					old_src->usage = file_usage_source;
+					old_src->edit =
+						history_version_type.alloc();
+					old_src->edit->revision =
+						str_from_c("1.1");
 				}
 			}
 			else
+			{
+				assert(felp->length);
+				fep = &felp->item[felp->length - 1];
+				old_src = change_file_find(fep->cp, s1);
+			}
+			assert(old_src);
+			if (old_src->action == file_action_remove)
+			{
 				from = str_from_c("/dev/null");
+			}
+			else
+			{
+				from =
+					project_file_version_path
+					(
+						pp2,
+						old_src,
+						&from_unlink
+					);
+			}
 
 			/*
 			 * figure where to send it
@@ -1431,7 +1601,7 @@ copy_file_main()
 			/*
 			 * clean up afterwards
 			 */
-			if (delta_date_implies_edit_number)
+			if (from_unlink)
 				os_unlink_errok(from);
 			user_become_undo();
 			str_free(from);
@@ -1440,7 +1610,9 @@ copy_file_main()
 		else
 		{
 			if (cstate_data->state == cstate_state_being_integrated)
+			{
 				from = str_format("%S/%S", change_integration_directory_get(cp, 0), s1);
+			}
 			else
 				from = project_file_path(pp2, s1);
 			if (output)
@@ -1478,28 +1650,32 @@ copy_file_main()
 			fstate_src	c_src_data;
 			fstate_src	p_src_data;
 
-			p_src_data = project_file_find(pp2, s1);
+			p_src_data = old_src ? old_src : project_file_find(pp2, s1);
 			assert(p_src_data);
-			assert(p_src_data->edit_number);
-			assert(p_src_data->edit_number_origin);
+			assert(p_src_data->edit);
+			assert(p_src_data->edit->revision);
 			c_src_data = change_file_find(cp, s1);
 			if (!c_src_data)
 			{
 				c_src_data = change_file_new(cp, s1);
 				c_src_data->action =
 					(
-						read_only
+						p_src_data->action == file_action_remove
 					?
-						file_action_insulate
+						file_action_remove
 					:
-						file_action_modify
+						(
+							read_only
+						?
+							file_action_insulate
+						:
+							file_action_modify
+						)
 					);
 				c_src_data->usage = p_src_data->usage;
 
 				/*
-				 * The change now has at least one test,
-				 * so cancel any testing exemption.
-				 * (But test_baseline_exempt is still viable.)
+				 * Watch out for test times.
 				 */
 				if (!read_only)
 				{
@@ -1507,6 +1683,13 @@ copy_file_main()
 					{
 					case file_usage_test:
 					case file_usage_manual_test:
+						/*
+						 * The change now has at
+						 * least one test, so cancel
+						 * any testing exemption.
+						 * (But test_baseline_exempt
+						 * is still viable.)
+						 */
 						change_rescind_test_exemption(cp);
 						break;
 
@@ -1518,46 +1701,41 @@ copy_file_main()
 			}
 
 			/*
-			 * p_src_data->edit_number
+			 * p_src_data->edit
 			 *	The head revision of the branch.
-			 * p_src_data->edit_number_origin
+			 * p_src_data->edit_origin
 			 *	The version originally copied.
 			 *
-			 * c_src_data->edit_number
+			 * c_src_data->edit
 			 *	Not meaningful until after integrate pass.
-			 * c_src_data->edit_number_origin
+			 * c_src_data->edit_origin
 			 *	The version originally copied.
-			 * c_src_data->edit_number_origin_new
-			 *	Updates branch edit_number_origin on
+			 * c_src_data->edit_origin_new
+			 *	Updates branch edit_origin on
 			 *	integrate pass.
 			 */
-			if (c_src_data->edit_number)
+			if (c_src_data->edit)
 			{
-				str_free(c_src_data->edit_number);
-				c_src_data->edit_number = 0;
+				assert(c_src_data->edit->revision);
+				history_version_type.free(c_src_data->edit);
+				c_src_data->edit = 0;
 			}
-			if (c_src_data->edit_number_origin)
+			if (c_src_data->edit_origin)
 			{
-				str_free(c_src_data->edit_number_origin);
-				c_src_data->edit_number_origin = 0;
+				assert(c_src_data->edit_origin->revision);
+				history_version_type.free(c_src_data->edit_origin);
+				c_src_data->edit_origin = 0;
 			}
-			if (c_src_data->edit_number_origin_new)
+			if (c_src_data->edit_origin_new)
 			{
-				str_free(c_src_data->edit_number_origin_new);
-				c_src_data->edit_number_origin_new = 0;
+				assert(c_src_data->edit_origin_new->revision);
+				history_version_type.free(c_src_data->edit_origin_new);
+				c_src_data->edit_origin_new = 0;
 			}
-			assert(p_src_data->edit_number);
-			assert(p_src_data->edit_number_origin);
-			if (delta_date_implies_edit_number)
-			{
-				c_src_data->edit_number_origin =
-				     str_copy(delta_date_implies_edit_number);
-			}
-			else
-			{
-				c_src_data->edit_number_origin =
-					str_copy(p_src_data->edit_number);
-			}
+			assert(p_src_data->edit);
+			assert(p_src_data->edit->revision);
+			c_src_data->edit_origin =
+				history_version_copy(p_src_data->edit);
 
 			/*
 			 * Copying the config file into a change
@@ -1572,14 +1750,12 @@ copy_file_main()
 				c_src_data->file_fp = 0;
 			}
 		}
-		if (delta_date_implies_edit_number)
-			str_free(delta_date_implies_edit_number);
 
 		/*
 		 * verbose progress message
 		 */
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", s1);
+		sub_var_set_string(scp, "File_Name", s1);
 		change_verbose(cp, scp, i18n("copied $filename"));
 		sub_context_delete(scp);
 	}
@@ -1607,7 +1783,7 @@ copy_file_main()
 		 * run the change file command
 		 * and the project file command if necessary
 		 */
-		change_run_change_file_command(cp, &wl, up);
+		change_run_copy_file_command(cp, &wl, up);
 		change_run_project_file_command(cp, up);
 
 		change_cstate_write(cp);
@@ -1619,7 +1795,7 @@ copy_file_main()
 	 * verbose success message
 	 */
 	scp = sub_context_new();
-	sub_var_set(scp, "Number", "%ld", (long)wl.nstrings);
+	sub_var_set_long(scp, "Number", (long)wl.nstrings);
 	sub_var_optional(scp, "Number");
 	change_verbose(cp, scp, i18n("copy file complete"));
 	sub_context_delete(scp);
@@ -1631,31 +1807,21 @@ copy_file_main()
 	project_free(pp);
 	change_free(cp);
 	user_free(up);
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }
 
 
 void
 copy_file()
 {
-	trace(("copy_file()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		copy_file_main();
-		break;
+		{ arglex_token_help,		copy_file_help,		}, 
+		{ arglex_token_list,		copy_file_list,		}, 
+		{ arglex_token_independent,	copy_file_independent,	},
+	};
 
-	case arglex_token_help:
-		copy_file_help();
-		break;
-
-	case arglex_token_list:
-		copy_file_list();
-		break;
-
-	case arglex_token_independent:
-		copy_file_independent();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("copy_file()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), copy_file_main);
+	trace(("}\n"));
 }

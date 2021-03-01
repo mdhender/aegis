@@ -1,6 +1,6 @@
-'\" t
+'\" tp
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1998, 1999, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -53,9 +53,34 @@ Successful execution of this command returns the change
 to the
 .I "being developed"
 state.
+.\" ------------------------------------------------------------------------
+.PS
+boxwid = 1
+down
+S2: box "being" "developed"
+arrow " develop" ljust " end" ljust
+S3: box "awaiting" "review"
+arrow " review" ljust " begin" ljust
+S4: box "being" "reviewed"
+arrow " review" ljust " pass" ljust
+S5: box "awaiting" "integration"
+T3: spline -> from S3.w then left 0.50 then up 1 \
+	then to S2.w
+T4: spline -> from S4.w then left 0.75 then up 2 \
+	then to S2.w
+T5: spline -> from S5.w then left 1.00 then up 3 \
+	then to S2.w
+"develop end " rjust "undo " rjust at S2.w
+.PE
+.\" ------------------------------------------------------------------------
 .PP
 The files are changed back to being owned by the current user,
 and cease to be read-only.
+.SS Notification
+On succesful completion of the command, the the
+\fIdevelop_\%end_\%undo_\%notify_\%command\fP field of the project
+attributes file is run, if set.  See \fIaepa\fP(1) and \fIaepattr\fP(5)
+for more information.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so
@@ -71,7 +96,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aedeu '\*(n) -deu \e!* -v'
-sh$	aedeu(){\*(n) -deu $* -v}
+sh$	aedeu(){\*(n) -deu "$@" -v}
 .fi
 .SH ERRORS
 It is an error if

@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -90,14 +90,6 @@ corrupted by the mail transfer agents along the way.
 .SS Options
 The following options are understood by the send variant:
 .TP 8n
-\fB\-Ascii_Armor
-This option may be used to specify that MIME base 64 encoding is to be
-used on the output.  This is the default.
-.TP 8n
-\fB\-No_Ascii_Armor
-This option may be used to specify that no encoding is to be
-uses on the output.  The output will be a binary file.
-.TP 8n
 \fB\-BaseLine\fP
 This option may be used to specify the source of a project,
 rather than a change.
@@ -126,10 +118,9 @@ as well as the change source files.
 \fB\-Not_Entire_Source\fP
 This option may be used to send only source files of a change.
 This is the default, except for the \fI\-BaseLine\fP option.
-.TP 8n
-\fB\-Output\fP \fIfilename\fP
-This option may be used to direct the output into the specified file.
-Output is sent to the standard output by default.
+.so o_cte.so
+.so o_delta.so
+.so o_output.so
 .so o_project.so
 .SH RECEIVE
 The receive variant takes a change package created by the send variant
@@ -143,6 +134,9 @@ The change is then built (see \fIaeb\fP(1)), differenced (see
 successful, development of the change is ended (see \fIaed\fP(1)).
 The automatic process stops at this point, so that a local reviewer can
 confirm that the change is desired.
+.SS Notification
+The \fI\*(n)\fP command invokes various other Aegis commands.
+The usual notifications that these commands would issue are issued.
 .SS Options
 The following options are understood by the receive variant:
 .TP 8n
@@ -161,6 +155,7 @@ You may also use a delta name instead of a delta number.
 \fB\-File\fP \fIfilename\fP
 Read the change set from the specified file.
 The default is to read it from the standard input.
+The filename `-' is understood to mean the standard input.
 .TP 8n
 \fB\-Project\fP \fIname\fP
 This option may be used to set the project name.
@@ -248,10 +243,8 @@ The following options are understood by the list variant:
 \fB\-File\fP \fIfilename\fP
 Read the change set from the specified file.
 The default is to read it from the standard input.
-.TP 8n
-\fB\-Output\fP \fIfilename\fP
-Write the listing to the specified file.
-Defaults to the standard output if not specified.
+.so o_output.so
+Only useful with the \-List option.
 .SH OPTIONS
 The following options to this command haven't been mentioned yet:
 .so o_help.so

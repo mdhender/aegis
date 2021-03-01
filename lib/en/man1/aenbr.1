@@ -85,7 +85,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%    alias aenbr '\*(n) -nbr \e!* -v'
-sh$     aenbr(){\*(n) -nbr $* -v}
+sh$     aenbr(){\*(n) -nbr "$@" -v}
 .fi
 .SH SEE ALSO
 .TP 8n

@@ -1,0 +1,159 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2001, 2002 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing 4.1 features
+.\"
+.PP
+.if n *
+.if t \(bu
+.\" change 57
+There is a new ``\--No-Page-Headers'' option which
+may be used to suppress page and column headers in listings and reports.
+.PP
+.if n *
+.if t \(bu
+.\" change 56
+There is a new ``aecp \-delta-from-change'' option, allowing the
+specification of a delta number by specifying the number of a
+completed change.
+.PP
+.if n *
+.if t \(bu
+.\" change 55
+The ``aecp -ind -delta'' command now omits files which did not exist at
+the given delta.
+.PP
+.if n *
+.if t \(bu
+.\" change 54
+There is a new \fIhistory_\%label_\%command\fP which may be used to
+label your history files at each integration.  See \fIaepconf\fP(5)
+for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 53
+The code which guesses which change you are working on, based on your
+current directory, has been enhanced to cover far more cases.
+It can recognize the integration directory, too.
+.PP
+.if n *
+.if t \(bu
+.\" change 50
+There is a new \fIChange_Log\fP report, which generates reports in the style
+of common Internet change logs.
+.PP
+.if n *
+.if t \(bu
+.\" change 48
+The web interface is now able to show you file differences between deltas.
+.PP
+.if n *
+.if t \(bu
+.\" change 47
+A bug has been fixed in the ``\fIaecp -delta\fP'' command (for all
+delta variants).  The problem occurred when you wanted to copy a
+version of the file before the file has been modified by the branch
+(but it wasonly a problem for files modified later in the branch, files
+never modified by the branch were OK).  As a side-effect of the bug fix,
+``\fIaecp -delta\fP'' now goes significantly faster (\fIN\fP times faster,
+where \fIN\fP is the number of files you are copying).
+.PP
+.if n *
+.if t \(bu
+.\" change 45
+Build problems caused by new Bison releases have been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" change 44
+A number of oversights in handling the new \fIawaiting review\fP state
+have been corrected.
+.PP
+.if n *
+.if t \(bu
+.\" change 41
+The \fI${expr}\fP substitution has been enhanced to include modulo,
+logical not and the six relative operators.  All using the usual C syntax
+and precedences.  See \fIaesub\fP(5) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 40
+There is a new \fI${switch}\fP substitution, see \fIaesub\fP(5) for
+more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 39
+A Russian localization of the error messages has been contributed.
+.PP
+.if n *
+.if t \(bu
+.\" change 36
+A bug has been fixed in the ``aecp -output'' code, which sometimes
+incorrectly created directories.
+.PP
+.if n *
+.if t \(bu
+.\" change 35
+A bug has been fixed in the symbolic link maintenance code.  It now
+repairs links which point to a file which is too deep in the ancestor
+tree, and has been subsequently replaced.  It now uses a single pass,
+rather than two passes.
+.PP
+.if n *
+.if t \(bu
+.\" change 34
+The \fIchange_\%file_\%command\fP field of the project \fIconfig\fP
+file is now available at a finer granularity.  There are 8 new commands
+(the \fIcopy_\%file_\%command\fP, \fIcopy_\%file_\%undo_\%command\fP,
+\fInew_\%file_\%command\fP, \fInew_\%file_\%undo_\%command\fP,
+\fInew_\%test_\%command\fP, \fInew_\%test_\%undo_\%command\fP,
+\fIremove_\%file_\%command\fP and \fIremove_\%file_\%undo_\%command\fP
+fields) which may be individually configured.  They default to the
+previous behaviour, for backwards compatibility.  See \fIaepconf\fP(5)
+for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 26
+A bug has been fixed in the \fIaepatch\fP(1) command, which prevented
+it form constructing patches for changes on completed branches.
+.PP
+.if n *
+.if t \(bu
+.\" change 24
+The \fIaeipass\fP(1) command now issues an error message if the build
+changes a source file.  (Previously it erroneously reported that the
+history tool had done the damage.)
+.PP
+.if n *
+.if t \(bu
+.\" change 22
+A bug has been fixed in ``aecpu -unchanged'' in the case where the change
+had no files.  (It tried to uncopy a file called the empty thring.)
+.PP
+.if n *
+.if t \(bu
+.\" change 11
+The missing \fIaemvu\fP(1) man page has been added.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 4.1

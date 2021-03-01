@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@
 #include <ael/project/files.h>
 #include <aenf.h>
 #include <arglex2.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <change/file.h>
 #include <col.h>
 #include <commit.h>
@@ -40,6 +40,7 @@
 #include <lock.h>
 #include <log.h>
 #include <os.h>
+#include <pconf.h>
 #include <progname.h>
 #include <project.h>
 #include <project/file.h>
@@ -119,7 +120,7 @@ new_file_list()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -234,14 +235,18 @@ new_file_main()
 	string_list_ty	wl2;
 	int		based;
 	string_ty	*base;
+	pconf		pconf_data;
+	int		use_template;
 
 	trace(("new_file_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	change_number = 0;
 	generated = 0;
 	string_list_constructor(&wl);
 	log_style = log_style_append_default;
 	nerrs = 0;
+	use_template = -1;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -277,7 +282,7 @@ new_file_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -313,6 +318,13 @@ new_file_main()
 		case arglex_token_current_relative:
 			user_relative_filename_preference_argument(new_file_usage);
 			break;
+
+		case arglex_token_template:
+		case arglex_token_template_not:
+			if (use_template >= 0)
+				duplicate_option(new_file_usage);
+			use_template = (arglex_token == arglex_token_template);
+			break;
 		}
 		arglex();
 	}
@@ -321,7 +333,7 @@ new_file_main()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%d", nerrs);
+		sub_var_set_long(scp, "Number", nerrs);
 		sub_var_optional(scp, "Number");
 		fatal_intl(scp, i18n("no new files"));
 		/* NOTREACHED */
@@ -438,7 +450,7 @@ new_file_main()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", wl.string[j]);
+			sub_var_set_string(scp, "File_Name", wl.string[j]);
 			change_error(cp, scp, i18n("$filename unrelated"));
 			sub_context_delete(scp);
 			++nerrs;
@@ -449,7 +461,7 @@ new_file_main()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", s2);
+			sub_var_set_string(scp, "File_Name", s2);
 			change_error(cp, scp, i18n("too many $filename"));
 			sub_context_delete(scp);
 			++nerrs;
@@ -465,8 +477,9 @@ new_file_main()
 	/*
 	 * check that each filename is OK
 	 *
-	 * If a directory is named, extract the files from beneathit.
+	 * If a directory is named, extract the files from beneath it.
 	 */
+	pconf_data = change_pconf_get(cp, 0);
 	dd = change_development_directory_get(cp, 0);
 	config_name = str_from_c(THE_CONFIG_FILE);
 	string_list_constructor(&wl2);
@@ -482,7 +495,7 @@ new_file_main()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", fn);
+			sub_var_set_string(scp, "File_Name", fn);
 			change_error(cp, scp, i18n("may not build $filename"));
 			sub_context_delete(scp);
 			++nerrs;
@@ -511,10 +524,10 @@ new_file_main()
 
 				scp = sub_context_new();
 				if (fn->str_length)
-					sub_var_set(scp, "File_Name", "%S", fn);
+					sub_var_set_string(scp, "File_Name", fn);
 				else
-					sub_var_set(scp, "File_Name", ".");
-				sub_var_set(scp, "Number", "%d", aux.found);
+					sub_var_set_charstar(scp, "File_Name", ".");
+				sub_var_set_long(scp, "Number", aux.found);
 				sub_var_optional(scp, "Number");
 				change_error
 				(
@@ -531,20 +544,33 @@ new_file_main()
 		}
 		if (os_isa_special_file(ffn))
 		{
-			/*
-			 * If the file exists, and isn't a normal file,
-			 * and isn't a directory, you can't add it as
-			 * a source file.
-			 */
-			sub_context_ty	*scp;
-			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", fn);
-			change_error(cp, scp, i18n("$filename bad nf type"));
-			sub_context_delete(scp);
-			++nerrs;
-			user_become_undo();
-			str_free(ffn);
-			continue;
+			if (pconf_data->create_symlinks_before_build)
+			{
+				/*
+				 * In the case where we are using a
+				 * symlink farm, this is probably a link
+				 * into the baseline.  Just nuke it,
+				 * and keep going.
+				 */
+				os_unlink(ffn);
+			}
+			else
+			{
+				/*
+				 * If the file exists, and isn't a normal file,
+				 * and isn't a directory, you can't add it as
+				 * a source file.
+				 */
+				sub_context_ty	*scp;
+				scp = sub_context_new();
+				sub_var_set_string(scp, "File_Name", fn);
+				change_error(cp, scp, i18n("$filename bad nf type"));
+				sub_context_delete(scp);
+				++nerrs;
+				user_become_undo();
+				str_free(ffn);
+				continue;
+			}
 		}
 		str_free(ffn);
 		user_become_undo();
@@ -559,7 +585,7 @@ new_file_main()
 			 * change_filename_check function.
 			 */
 			scp = sub_context_new();
-			sub_var_set(scp, "Message", "%S", e);
+			sub_var_set_string(scp, "Message", e);
 			change_error(cp, scp, i18n("$message"));
 			sub_context_delete(scp);
 			++nerrs;
@@ -578,7 +604,7 @@ new_file_main()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%d", nerrs);
+		sub_var_set_long(scp, "Number", nerrs);
 		sub_var_optional(scp, "Number");
 		change_fatal(cp, scp, i18n("no new files"));
 		sub_context_delete(scp);
@@ -603,8 +629,8 @@ new_file_main()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", s1);
-			sub_var_set(scp, "File_Name2", "%S", s2);
+			sub_var_set_string(scp, "File_Name", s1);
+			sub_var_set_string(scp, "File_Name2", s2);
 			sub_var_optional(scp, "File_Name2");
 			change_error(cp, scp, i18n("file $filename directory name conflict"));
 			sub_context_delete(scp);
@@ -617,8 +643,8 @@ new_file_main()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", s1);
-			sub_var_set(scp, "File_Name2", "%S", s2);
+			sub_var_set_string(scp, "File_Name", s1);
+			sub_var_set_string(scp, "File_Name2", s2);
 			sub_var_optional(scp, "File_Name2");
 			project_error(pp, scp, i18n("file $filename directory name conflict"));
 			sub_context_delete(scp);
@@ -630,7 +656,7 @@ new_file_main()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", s1);
+			sub_var_set_string(scp, "File_Name", s1);
 			change_error(cp, scp, i18n("file $filename dup"));
 			sub_context_delete(scp);
 			++nerrs;
@@ -650,7 +676,7 @@ new_file_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s1);
+				sub_var_set_string(scp, "File_Name", s1);
 				project_error
 				(
 					pp,
@@ -662,6 +688,16 @@ new_file_main()
 			}
 		}
 	}
+	if (nerrs)
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set_long(scp, "Number", nerrs);
+		sub_var_optional(scp, "Number");
+		change_fatal(cp, scp, i18n("no new files"));
+		sub_context_delete(scp);
+	}
 
 	/*
 	 * Create each file in the development directory,
@@ -670,7 +706,7 @@ new_file_main()
 	 */
 	for (j = 0; j < wl.nstrings; ++j)
 	{
-		change_file_template(cp, wl.string[j], up);
+		change_file_template(cp, wl.string[j], up, use_template);
 	}
 
 	/*
@@ -704,7 +740,7 @@ new_file_main()
 	 * run the change file command
 	 * and the project file command if necessary
 	 */
-	change_run_change_file_command(cp, &wl, up);
+	change_run_new_file_command(cp, &wl, up);
 	change_run_project_file_command(cp, up);
 
 	/*
@@ -722,7 +758,7 @@ new_file_main()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", wl.string[j]);
+		sub_var_set_string(scp, "File_Name", wl.string[j]);
 		change_verbose(cp, scp, i18n("new file $filename completed"));
 		sub_context_delete(scp);
 	}
@@ -737,20 +773,13 @@ new_file_main()
 void
 new_file()
 {
-	trace(("new_file()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		new_file_main();
-		break;
+		{ arglex_token_help,		new_file_help,	},
+		{ arglex_token_list,		new_file_list,	},
+	};
 
-	case arglex_token_help:
-		new_file_help();
-		break;
-
-	case arglex_token_list:
-		new_file_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("new_file()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), new_file_main);
+	trace(("}\n"));
 }

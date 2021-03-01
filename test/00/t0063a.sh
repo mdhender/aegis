@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997, 1998 Peter Miller;
+#	Copyright (C) 1997, 1998, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -143,7 +143,7 @@ cat > test.ok << 'fubar'
 fubar
 if test $? -ne 0 ; then fail; fi
 
-$bin/aegis -rpt -f test.in -o test.out
+$bin/aegis -rpt -f test.in -o test.out -pw=79 -pl=24
 if test $? -ne 0 ; then fail; fi
 
 sed '1,4d' < test.out > test.out2

@@ -28,9 +28,6 @@ input_pushback_transfer(to, from)
 	input_ty	*to;
 	input_ty	*from;
 {
-	int		j;
-
-	for (j = 0; j < from->pushback_len; ++j)
-		input_ungetc(to, from->pushback_buf[j]);
-	from->pushback_len = 0;
+	while (from->buffer_end > from->buffer_position)
+		input_ungetc(to, *(--(from->buffer_end)));
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
  */
 
 #include <change.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <project.h>
 #include <project/active.h>
 #include <project_hist.h>
@@ -33,7 +33,7 @@ project_active(pp, active_branch_ok)
 	project_ty	*pp;
 	int		active_branch_ok;
 {
-	size_t		j;
+	long		j;
 	long		change_number;
 	change_ty	*cp;
 	int		active;
@@ -85,6 +85,7 @@ project_active(pp, active_branch_ok)
 				/* fall through... */
 
 			case cstate_state_being_developed:
+			case cstate_state_awaiting_review:
 			case cstate_state_being_reviewed:
 			case cstate_state_awaiting_integration:
 			case cstate_state_being_integrated:
@@ -114,7 +115,7 @@ project_active_check(pp, brok)
 	if (num_err)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%d", num_err);
+		sub_var_set_long(scp, "Number", num_err);
 		sub_var_optional(scp, "Number");
 		project_fatal(pp, scp, i18n("outstanding changes"));
 		/* NOTREACHED */

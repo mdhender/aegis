@@ -70,7 +70,7 @@ The change set format is unpacked into a private work area, not directly
 into the repository.  This is a normal Aegis function.
 .IP \(bu 3n
 The change set is then confirmed to build against the repository.
-All implications flowing from the change are exersized.
+All implications flowing from the change are exercised.
 Build inconsistencies will flag the change for attention by a human,
 and the change set will not be committed to the repository.
 This is a normal Aegis function.
@@ -86,12 +86,12 @@ reviewed by a human before being committed, to validate the change set
 for suitability and completeness.  This is a normal Aegis function.
 .nh 3 "What to Send"
 .LP
-While there are many risks involved inreceiving change sets,
+While there are many risks involved in receiving change sets,
 there also problems in figuring out what to send.
 .LP
 At the core of Aegis' design is a transaction.  Think of the source files
-as fows in a database table, and each change-set as a transaction against
-thattable.  The build step represents maintaining referential integrity
+as rows in a database table, and each change-set as a transaction against
+that table.  The build step represents maintaining referential integrity
 of the database, but also represents an input validation step, as does
 the review.  And like databases, the transactions are all-or-nothing
 affairs, it is not possible to commit ``half'' a transaction.
@@ -120,13 +120,13 @@ and many of the distribution arrangements (common called topologies,
 when you draw the graphs) are supported by Aegis and \fIaedist\fP:
 .IP \(bu 2n
 The star topology has a central master repository, surrounded by
-contributing satelite repositories.  The satelites are almost always
+contributing satellite repositories.  The satellites are almost always
 ``push'' model, however the central master could be either ``push'' or
 ``pull'' model.
 .IP \(bu 2n
-The snowflake topology is like a heirarchical star topology, with
+The snowflake topology is like a hierarchical star topology, with
 contributors feeding staging posts, which eventually feed the master
-repository.  Common for large Open Sourec Internet projects.  Towards the
+repository.  Common for large Open Source Internet projects.  Towards the
 master repository is almost always ``push'' model, and away from the
 master is almost always ``pull'' model.
 .IP \(bu 2n
@@ -160,3 +160,4 @@ and coping with duplicate storms.
 .so c10.2.so
 .so c10.3.so
 .so c10.4.so
+.so c10.5.so

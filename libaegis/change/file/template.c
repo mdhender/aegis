@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2000 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,7 @@
 
 #include <change.h>
 #include <change/env_set.h>
+#include <change/file.h>
 #include <error.h> /* for assert */
 #include <file.h>
 #include <gmatch.h>
@@ -68,7 +69,7 @@ find(cp, file_name)
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp,"File_Name", "%S", s);
+				sub_var_set_string(scp, "File_Name", s);
 				change_fatal(cp, scp, i18n("bad pattern $filename"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -92,10 +93,11 @@ find(cp, file_name)
 
 
 void
-change_file_template(cp, filename, up)
+change_file_template(cp, filename, up, use_template)
 	change_ty	*cp;
 	string_ty	*filename;
 	user_ty		*up;
+	int		use_template;
 {
 	int		ok;
 	string_ty	*dd;
@@ -107,7 +109,7 @@ change_file_template(cp, filename, up)
 	 * figure the absolute path of the file
 	 */
 	trace(("change_file_template(name = \"%s\")\n{\n",
-		name->str_text));
+		filename->str_text));
 	assert(cp->reference_count >= 1);
 	dd = change_development_directory_get(cp, 0);
 	path = str_format("%S/%S", dd, filename);
@@ -122,12 +124,16 @@ change_file_template(cp, filename, up)
 		os_unlink(path);
 	ok = os_exists(path);
 	user_become_undo();
+	if (use_template < 0)
+		use_template = !ok;
+	else if (use_template)
+		ok = 0;
 	if (!ok)
 	{
 		/*
 		 * Find the template to be used to construct the new file.
 		 */
-		tp = find(cp, filename);
+		tp = use_template ? find(cp, filename) : 0;
 		if (tp && tp->body_command)
 		{
 			int		flags;
@@ -137,7 +143,7 @@ change_file_template(cp, filename, up)
 			 * Build the command to be executed.
 			 */
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", filename);
+			sub_var_set_string(scp, "File_Name", filename);
 			the_command = substitute(scp, cp, tp->body_command);
 			sub_context_delete(scp);
 
@@ -159,7 +165,7 @@ change_file_template(cp, filename, up)
 			if (!ok)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", filename);
+				sub_var_set_string(scp, "File_Name", filename);
 				change_fatal
 				(
 					cp,
@@ -183,7 +189,7 @@ change_file_template(cp, filename, up)
 			else
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", filename);
+				sub_var_set_string(scp, "File_Name", filename);
 				sub_var_optional(scp, "File_Name");
 				body = substitute(scp, cp, tp->body);
 				sub_context_delete(scp);

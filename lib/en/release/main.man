@@ -298,8 +298,15 @@ release, please see the README file available at the above site.
 Only send this notification \fIafter\fP the files are actually available
 at the archive site.
 .SS Notify Web
-\(bu) Notify \f[CW]www.freshmeat.net\fP that a new release of Aegis is available.
+\(bu) Notify \f[CW]www.freshmeat.net\fP that a new release of Aegis
+is available.
 Search for ``aegis'' as there is already an application record.
 .PP
 \(bu Notify \f[CW]www.cmtoday.com\fP that a new release of Aegis is available.
+.PP
+\(bu Notify \f[CW]davis@lrtw.org\fP that a new release of Aegis is
+available, he's the Debian package maintainer.
+.PP
+\(bu Notify \f[CW]pr@32bitsonline.com\fP that a new release of Aegis
+is available.
 .so ../man1/z_cr.so

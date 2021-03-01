@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999-2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,10 +21,8 @@
  */
 
 #include <change.h>
+#include <change/branch.h>
 #include <error.h> /* for assert */
-#include <os.h>
-#include <project.h>
-#include <sub.h>
 #include <trace.h>
 
 
@@ -35,50 +33,36 @@ change_development_directory_get(cp, resolve)
 {
 	string_ty	*result;
 
-	/*
-	 * To cope with automounters, directories are stored as given,
-	 * or are derived from the home directory in the passwd file.
-	 * Within aegis, pathnames have their symbolic links resolved,
-	 * and any comparison of paths is done on this "system idea"
-	 * of the pathname.
-	 */
-	trace(("change_development_directory_get(cp = %8.8lX)\n{\n"/*}*/, cp));
+	trace(("change_development_directory_get(cp = %8.8lX)\n{\n", cp));
 	assert(cp->reference_count >= 1);
-	if (!cp->development_directory_unresolved)
-	{
-		cstate		cstate_data;
-		string_ty	*dir;
-
-		cstate_data = change_cstate_get(cp);
-		dir = cstate_data->development_directory;
-		if (!dir)
-			change_fatal(cp, 0, i18n("no dev dir"));
-		if (dir->str_text[0] == '/')
-			cp->development_directory_unresolved = str_copy(dir);
-		else
-		{
-			cp->development_directory_unresolved =
-				os_path_cat(project_Home_path_get(cp->pp), dir);
-		}
-	}
 	if (!resolve)
+	{
+		if (!cp->development_directory_unresolved)
+		{
+			result = change_top_path_get(cp, 0);
+			if (change_was_a_branch(cp))
+				result = str_format("%S/baseline",  result);
+			else
+				result = str_copy(result);
+			cp->development_directory_unresolved = result;
+		}
 		result = cp->development_directory_unresolved;
+	}
 	else
 	{
 		if (!cp->development_directory_resolved)
 		{
-			change_become(cp);
-			cp->development_directory_resolved =
-				os_pathname
-				(
-					cp->development_directory_unresolved,
-					1
-				);
-			change_become_undo();
+			result = change_top_path_get(cp, 1);
+			if (change_was_a_branch(cp))
+				result = str_format("%S/baseline",  result);
+			else
+				result = str_copy(result);
+			cp->development_directory_resolved = result;
 		}
 		result = cp->development_directory_resolved;
 	}
+
 	trace(("result = \"%s\"\n", result->str_text));
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 	return result;
 }

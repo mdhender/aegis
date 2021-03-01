@@ -1,0 +1,147 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 3.25 features
+.\"
+.PP
+.if n *
+.if t \(bu
+.\" change 63, 62, 59
+Some optimizations have been done to the input parsing.  Depending on
+your architecture, this will or won't be noticable.
+.PP
+.if n *
+.if t \(bu
+.\" change 60
+The locking has been changed so that \fIaeipass\fP(1) takes precedence
+over new development builds, so that there is a guarantee that
+\fIaeipass\fP(1) will succeed in finite time.  Current development builds
+will run to completion, but new development builds will block until the
+\fIaeipass\fP(1) gets the basline lock and subsequently completes.
+.PP
+.if n *
+.if t \(bu
+.\" change 59
+The "file format error" bug in \fIaedist\fP(1) has been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" change 55
+There is a new \fIproject activity\fP report, which is
+useful to project leaders to see what has been happing in the project,
+sorted by time and then by user name.
+.PP
+.if n *
+.if t \(bu
+.\" change 55, 58
+Aegis can now transparently cope with binary files, even if the history
+tool cannot.  It does this by using a MIME encoding for binary files.
+(This can be configured away, if your history tool correctly handles
+binary files.)  See \fIaepconf\fP(5) and the \fIUser Guide\fP for more
+information.
+.PP
+.if n *
+.if t \(bu
+.\" change 51
+There is a fix for the "file unrelated" error commonly seen on Solaris and
+BSD when combined with an automounter, in come cases.  It relies on the
+\fIbash\fP(1) behaviour which sets the \f[CW]$PWD\fP environment variable.
+(GNU libc does this internally to the \fIgetcwd\fP(3) function,
+not all libcs do.)
+.PP
+.if n *
+.if t \(bu
+.\" change 39
+The \fIaer\fP(1) report generator now has access to the project
+\fIconfig\fP file fields, through a new \f[CW]config\fP field in the
+report generator's concept of the project state.
+.PP
+.if n *
+.if t \(bu
+.\" change 38
+There is a new \fIaer\fP(1) \f[CW]$comdir\fP substitution, which gives
+access to the shared state directory, configured at build time.
+.PP
+.if n *
+.if t \(bu
+.\" change 36
+The \fIaebuffy\fP(1) now accepts a project name on the command line.
+.PP
+.if n *
+.if t \(bu
+.\" change 33
+There is a new \fIbuild_\%covers_\%all_\%architectures\fP field in the
+project \fIconfig\fP file, so that you can tell Aegis that the build
+tool builds all architectures wimultaneouasly.  See \fIaepconf\fP(5)
+for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 29
+The \fItkaer\fP(1) command now has a comment editor, so that you can
+edit your review fail comments from within the GUI.
+.PP
+.if n *
+.if t \(bu
+.\" change 26
+A bug has been fixed which was caused \fIaenbru\fP(1) to delete one
+directory level too deep when the branch was removed.
+.PP
+.if n *
+.if t \(bu
+.\" change 23
+There is a new \f[CW]getuid()\fP function in the report generator.
+.PP
+.if n *
+.if t \(bu
+.\" change 22, 27
+This change fixed a bug in \fIaede\fP(1) where it would not allow
+a branch, created with \fIaeimport\fP(1), with new files which had
+subsequently been modified to end development, when those files had
+never existed in the baseline.
+.PP
+.if n *
+.if t \(bu
+.\" change 18
+It is now possible for project administrators to nominate the developer
+in the \fItkaenc\fP(1) dialog.  You are presented with a pick list.
+.PP
+.if n *
+.if t \(bu
+.\" change 16
+There is a new \fIaesub\fP(1) \f[CW]$history_directory\fP substitution.
+This may be used in scripts which access the history tool's files directly.
+.PP
+.if n *
+.if t \(bu
+.\" change 12
+There is a new \fIchange_\%file_\%undo_\%command\fP field of the project
+\fIconfig\fP file.  It is similar to the \fIchange_\%file_\%command\fP
+field (it defaults to it if unset), but is executed by all of the ``undo''
+file commands.
+.PP
+.if n *
+.if t \(bu
+.\" change 11
+The \fIaede\fP(1) command no longer cancels your build and test time
+stamps.  This means that you don't need to re-build if you don't change
+anything, after \fIaedeu\fP(1) or \fIaerfail\fP(1).
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 3.25

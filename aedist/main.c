@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,7 @@
 
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
+#include <signal.h>
 
 #include <arglex3.h>
 #include <env.h>
@@ -46,6 +47,7 @@ usage()
 	fprintf(stderr, "Usage: %s --send [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s --receive [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s --help\n", progname);
+	fprintf(stderr, "       %s --list\n", progname);
 	exit(1);
 }
 
@@ -57,6 +59,20 @@ main(argc, argv)
 	int		argc;
 	char		**argv;
 {
+	/*
+	 * Some versions of cron(8) set SIGCHLD to SIG_IGN.  This is
+	 * kinda dumb, because it breaks assumptions made in libc (like
+	 * pclose, for instance).  It also blows away most of Cook's
+	 * process handling.  We explicitly set the SIGCHLD signal
+	 * handling to SIG_DFL to make sure this signal does what we
+	 * expect no matter how we are invoked.
+	 */
+#ifdef SIGCHLD
+	signal(SIGCHLD, SIG_DFL);
+#else
+	signal(SIGCLD, SIG_DFL);
+#endif
+
 	arglex3_init(argc, argv); 
 	str_initialize();
 	env_initialize();

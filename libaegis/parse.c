@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1995, 1998, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,7 +36,7 @@ static sem_ty *sem_root;
 
 void *
 parse(filename, type)
-	char		*filename;
+	string_ty	*filename;
 	type_ty		*type;
 {
 	void		*addr;
@@ -181,7 +181,7 @@ sem_integer(n)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", sem_root->type->name);
+		sub_var_set_charstar(scp, "Name", sem_root->type->name);
 		lex_error(scp, i18n("value of type $name required"));
 		sub_context_delete(scp);
 	}
@@ -216,7 +216,7 @@ sem_real(n)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", sem_root->type->name);
+		sub_var_set_charstar(scp, "Name", sem_root->type->name);
 		lex_error(scp, i18n("value of type $name required"));
 		sub_context_delete(scp);
 	}
@@ -237,7 +237,7 @@ sem_string(s)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", sem_root->type->name);
+		sub_var_set_charstar(scp, "Name", sem_root->type->name);
 		lex_error(scp, i18n("value of type $name required"));
 		sub_context_delete(scp);
 	}
@@ -268,7 +268,7 @@ sem_enum(s)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", sem_root->type->name);
+		sub_var_set_charstar(scp, "Name", sem_root->type->name);
 		lex_error(scp, i18n("value of type $name required"));
 		sub_context_delete(scp);
 	}
@@ -287,8 +287,8 @@ sem_enum(s)
 			if (suggest)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Name", "%S", s);
-				sub_var_set(scp, "Guess", "%S", suggest);
+				sub_var_set_string(scp, "Name", s);
+				sub_var_set_string(scp, "Guess", suggest);
 				lex_error(scp, i18n("no \"$name\", guessing \"$guess\""));
 				sub_context_delete(scp);
 				n = sem_root->type->enum_parse(suggest);
@@ -296,7 +296,7 @@ sem_enum(s)
 				goto use_suggestion;
 			}
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%S", s);
+			sub_var_set_string(scp, "Name", s);
 			lex_error(scp, i18n("the name \"$name\" is undefined"));
 			sub_context_delete(scp);
 		}
@@ -326,7 +326,7 @@ sem_list()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", sem_root->type->name);
+		sub_var_set_charstar(scp, "Name", sem_root->type->name);
 		lex_error(scp, i18n("value of type $name required"));
 		sub_context_delete(scp);
 		sem_push(0, 0);
@@ -372,7 +372,7 @@ sem_field(name)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", sem_root->type->name);
+		sub_var_set_charstar(scp, "Name", sem_root->type->name);
 		lex_error(scp, i18n("value of type $name required"));
 		sub_context_delete(scp);
 		sem_push(0, 0);
@@ -396,8 +396,8 @@ sem_field(name)
 			if (suggest)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Name", "%S", name);
-				sub_var_set(scp, "Guess", "%S", suggest);
+				sub_var_set_string(scp, "Name", name);
+				sub_var_set_string(scp, "Guess", suggest);
 				lex_error(scp, i18n("no \"$name\", guessing \"$guess\""));
 				sub_context_delete(scp);
 				addr =
@@ -412,7 +412,7 @@ sem_field(name)
 				goto use_suggestion;
 			}
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%S", name);
+			sub_var_set_string(scp, "Name", name);
 			lex_error(scp, i18n("the name \"$name\" is undefined"));
 			sub_context_delete(scp);
 			sem_push(0, 0);
@@ -430,7 +430,7 @@ sem_field(name)
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Name", "%S", name);
+				sub_var_set_string(scp, "Name", name);
 				lex_error(scp, i18n("field \"$name\" redefined"));
 				sub_context_delete(scp);
 			}

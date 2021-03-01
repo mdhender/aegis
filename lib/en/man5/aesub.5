@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 1995, 1997, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1993-1995, 1997-2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -137,6 +137,7 @@ with the ${search_path} substitution, below.
 Administrator_List
 .br
 Space separated list of the project's administrators.
+Takes an optional argument in the same form as the \fIuser\fP substitution.
 .TP 8n
 ARCHitecture
 .br
@@ -169,7 +170,7 @@ command.
 BINary_DIRectory
 .br
 The absolute path of Aegis' architecture-specific binary (executables)
-directory.  This correspondes to the ``\fI./configure -bindir\fP''
+directory.  This corresponds to the ``\fI./configure -bindir\fP''
 option when Aegis was built.  This is where most of the Aegis executable
 programs are installed.
 .\" -------------------- C --------------------
@@ -182,7 +183,17 @@ case and the rest forced to lower case.
 .TP 8n
 Change
 .br
-The change number.
+.RS
+This substitution provides various information about the change,
+based on the argument it is given.
+.TP 8n
+number
+This returns the number of the change.
+(This is the default if no argument is given.)
+.TP 8n
+description
+This returns the brief description of the change.
+.RE
 .TP 8n
 COMment
 .br
@@ -210,7 +221,7 @@ probably need to quote, it as well.
 DATa_DIRectory
 .br
 The absolute path of Aegis' architecture-neutral library directory.
-This correspondes to the ``\fI./configure -datadir\fP'' option
+This corresponds to the ``\fI./configure -datadir\fP'' option
 when Aegis was built.
 This is where most of the scripts included with Aegis are installed.
 .TP 8n
@@ -241,10 +252,12 @@ state.
 DEVeloper
 .br
 The name of the developer.
+Takes an optional argument in the same form as the \fIuser\fP substitution.
 .TP 8n
 DEVeloper_List
 .br
 Space separated list of the project's developers.
+Takes an optional argument in the same form as the \fIuser\fP substitution.
 .TP 8n
 Development_Directory
 .br
@@ -283,6 +296,12 @@ The value of the substitution will be the argument with
 any upper case letters mapped to lower case.
 .\" -------------------- E --------------------
 .TP 8n
+ENVironment
+.br
+This substitution takes one argument.
+The value of the substitution is the value of the corresponding
+environment variable, or empty of undefined.
+.TP 8n
 ERrno
 .br
 This substitution takes no arguments.
@@ -293,11 +312,21 @@ Thus you may give the users informative system error messages.
 .TP 8n
 EXpression
 This substitution evaluates simple arithmetic expressions.
+Addition, subtraction, division, multiplication, modulo
+and negation are understood.
+The 6 basic comparison operators are available.
+The usual C syntax and precedence are used.
 The arguments must constitute a valid expression,
 white space and word boundaries are ignored.
 .\" -------------------- F --------------------
 .\" -------------------- G --------------------
 .\" -------------------- H --------------------
+.TP 8n
+History_Directory
+.br
+This substitution takes zero arguments.
+It is replaced by the absolute path of the history directory of the
+project.
 .\" -------------------- I --------------------
 .TP 8n
 IDentifier
@@ -322,10 +351,12 @@ Only available when the change is in the
 state or the
 .I "completed"
 state.
+Takes an optional argument in the same form as the \fIuser\fP substitution.
 .TP 8n
 INTegrator_List
 .br
 Space separated list of the project's integrators.
+Takes an optional argument in the same form as the \fIuser\fP substitution.
 .\" -------------------- J --------------------
 .\" -------------------- K --------------------
 .\" -------------------- L --------------------
@@ -346,14 +377,14 @@ the string to be measured.
 LIBrary
 .br
 The absolute path of Aegis' library directory.
-This correspondes to the ``\fI./configure -datadir\fP'' option
+This corresponds to the ``\fI./configure -datadir\fP'' option
 when Aegis was built.
 This substitution is deprecated \- please use ${datadir} instead.
 .TP 8n
 LIBrary_DIRectory
 .br
 The absolute path of Aegis' architecture-specific library directory.
-This correspondes to the ``\fI./configure -libdir\fP'' option
+This corresponds to the ``\fI./configure -libdir\fP'' option
 when Aegis was built.
 .\" -------------------- M --------------------
 .\" -------------------- N --------------------
@@ -373,7 +404,7 @@ PLural
 This function requires 2 or 3 arguments.
 The first argument is evaluated as a number,
 if it is plural (not equal to 1) the second argument is the result,
-otherwise the thrid argument is the result (or empty if not given).
+otherwise the third argument is the result (or empty if not given).
 This is mostly used to pluralize sentences in error messages.
 .TP 8n
 Project
@@ -396,6 +427,12 @@ numbers included).
 trunk_description
 This returns the description of the trunk of the project.
 .RE
+.TP 8n
+Project_Specific
+This substitution takes exactly one argument.  This argument is a name
+to be found in the project \fIconfig\fP file's \fIproject_\%specific\fP
+field (see \fIaepconf\fP(5) for more information).
+This returns the value listed in the project \fIconfig\fP file.
 .\" -------------------- Q --------------------
 .TP 8n
 QUote
@@ -418,6 +455,19 @@ or is not readable.
 It is a fatal error if the pathname is not absolute
 (because the current directory is undefined).
 .TP 8n
+Read_File_Simple
+.br
+Read a file and without substituting the contents of the file.
+Requires exactly one argument, the pathname of the file to be read.
+If the pathname is a project source file,
+you will need to use the
+.I source
+substitution to resolve the path.
+It is a fatal error if the file does not exist,
+or is not readable.
+It is a fatal error if the pathname is not absolute
+(because the current directory is undefined).
+.TP 8n
 Reviewer
 .br
 The name of the change's reviewer.
@@ -426,10 +476,12 @@ Only available when the change is between the
 state and the
 .I "completed"
 state.
+Takes an optional argument in the same form as the \fIuser\fP substitution.
 .TP 8n
 Reviewer_List
 .br
 Space separated list of the project's reviewers.
+Takes an optional argument in the same form as the \fIuser\fP substitution.
 .TP 8n
 RIght
 This substitution
@@ -443,6 +495,14 @@ The Search_Path substitution is replaced by a
 colon separated list of absolute paths to search when building a
 change, it will point from a change to its branch and so on up
 to the project trunk.
+.TP 8n
+Search_Path_Executable
+The Search_Path_Executable substitution is usually the same as the
+\fPSearch_Path\fP substitution.  However, during an ``aegis \-Test
+\-BaseLine'' command, it contains the baseline as the first element,
+rather then the development directory or the integration directory.
+This is of most use when looking for executables and executable support
+files while running tests.
 .TP 8n
 SHell
 .br
@@ -466,14 +526,23 @@ STate
 The state the current change is in.
 It is an error if the substitution does not refer to a change.
 .TP 8n
-.SUBSTitute
+SUBSTitute
 .br
-Regular expression substitution.  The first argument is the mattern to
+Regular expression substitution.  The first argument is the pattern to
 match, the second argument is the replacement string.  The third and
 subsequent arguments are modified as specified by the first two arguments.
 The search is not anchored, and the replacement will happen
 as many times as possible.
 Use ``^'' to match the beginning, and ``$'' to match the end.
+.TP 8n
+SWitch
+.br
+Select amongst a set of values.
+The first argument is expected to be a number.
+If the number is zero, the second argument is used;
+if the number is one, the third argument is used; etc.
+If the number is negative, or exceeds the avalable arguments,
+the last argument is used.
 .\" -------------------- T --------------------
 .TP 8n
 Trim_DIRectory
@@ -509,6 +578,9 @@ The full name of the user.
 .TP 8n
 email
 The email address of the user.
+.TP 8n
+quoted_email
+The email address of the user, quoted to avoid shell special characters.
 .TP 8n
 home
 The home directory of the user.
@@ -626,5 +698,5 @@ depending on the version of UNIX you are on.
 .SH SEE ALSO
 .TP 8n
 \fBaesub\fP(1)
-Substiture and print strings.
+Substitute and print strings.
 .so ../man1/z_cr.so

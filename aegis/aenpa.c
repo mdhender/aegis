@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -101,6 +101,7 @@ project_alias_create_main()
 	user_ty		*up;
 
 	trace(("project_alias_create_main()\n{\n"));
+	arglex();
 	project_name_count = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
@@ -161,7 +162,7 @@ project_alias_create_main()
 	)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%S", project_name[1]);
+		sub_var_set_string(scp, "Name", project_name[1]);
 		fatal_intl(scp, i18n("bad alias $name"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -178,17 +179,11 @@ project_alias_create_main()
 	 *	it is an error if it is already in use
 	 */
 	if (gonzo_alias_to_actual(project_name[1]))
-	{
-		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%S", project_name[1]);
-		fatal_intl(scp, i18n("project alias $name exists"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	}
+		fatal_project_alias_exists(project_name[1]);
 	if (gonzo_project_home_path_from_name(project_name[1]))
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%S", project_name[1]);
+		sub_var_set_string(scp, "Name", project_name[1]);
 		fatal_intl(scp, i18n("project $name exists"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -206,7 +201,7 @@ project_alias_create_main()
 	 * verbose success message
 	 */
 	scp = sub_context_new();
-	sub_var_set(scp, "Name", "%S", project_name[1]);
+	sub_var_set_string(scp, "Name", project_name[1]);
 	project_verbose(pp, scp, i18n("new alias $name complete"));
 	sub_context_delete(scp);
 	str_free(project_name[0]);
@@ -220,20 +215,13 @@ project_alias_create_main()
 void
 project_alias_create()
 {
-	trace(("project_alias_create()\n{\n"));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		project_alias_create_main();
-		break;
+		{ arglex_token_help,		project_alias_create_help, },
+		{ arglex_token_list,		project_alias_create_list, },
+	};
 
-	case arglex_token_help:
-		project_alias_create_help();
-		break;
-
-	case arglex_token_list:
-		project_alias_create_list();
-		break;
-	}
+	trace(("project_alias_create()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), project_alias_create_main);
 	trace(("}\n"));
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,7 +36,7 @@
 
 #include <arglex.h>
 #include <change.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <change/file.h>
 #include <error.h>
 #include <file.h>
@@ -55,13 +55,21 @@
 #include <sub/basename.h>
 #include <sub/binary_direc.h>
 #include <sub/capitalize.h>
+#include <sub/change/developer.h>
+#include <sub/change/integrator.h>
+#include <sub/change/number.h>
+#include <sub/change/reviewer.h>
 #include <sub/comment.h>
+#include <sub/common_direc.h>
 #include <sub/data_directo.h>
+#include <sub/delta.h>
 #include <sub/dirname.h>
 #include <sub/dirname_rel.h>
 #include <sub/dollar.h>
 #include <sub/downcase.h>
 #include <sub/expr.h>
+#include <sub/getenv.h>
+#include <sub/histo_direc.h>
 #include <sub/left.h>
 #include <sub/length.h>
 #include <sub/librar_direc.h>
@@ -71,10 +79,14 @@
 #include <sub/project/baseline.h>
 #include <sub/project/develop_list.h>
 #include <sub/project/integra_list.h>
+#include <sub/project/specific.h>
 #include <sub/project/reviewe_list.h>
 #include <sub/quote.h>
 #include <sub/right.h>
+#include <sub/search_path.h>
+#include <sub/source.h>
 #include <sub/substitute.h>
+#include <sub/switch.h>
 #include <sub/trim_directo.h>
 #include <sub/trim_extensi.h>
 #include <sub/upcase.h>
@@ -227,51 +239,11 @@ sub_context_project_get(scp)
 }
 
 
-/*
- * NAME
- *	sub_change - the change substitution
- *
- * SYNOPSIS
- *	wstring_ty *sub_change(wstring_list_ty *arg);
- *
- * DESCRIPTION
- *	The sub_change function implements the change substitution.
- *	The change substitution is replaced by the change number.
- *
- * ARGUMENTS
- *	arg	- list of arguments, including the function name as [0]
- *
- * RETURNS
- *	a pointer to a string in dynamic memory;
- *	or NULL on error, setting suberr appropriately.
- */
-
-static wstring_ty *sub_change _((sub_context_ty *, wstring_list_ty *));
-
-static wstring_ty *
-sub_change(scp, arg)
+change_ty *
+sub_context_change_get(scp)
 	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
 {
-	wstring_ty	*result;
-
-	trace(("sub_change()\n{\n"/*}*/));
-	result = 0;
-	if (arg->nitems != 1)
-		scp->suberr = i18n("requires zero arguments");
-	else if (!scp->cp || scp->cp->bogus)
-		scp->suberr = i18n("not valid in current context");
-	else
-	{
-		string_ty	*s;
-
-		s = str_format("%ld", magic_zero_decode(scp->cp->number));
-		result = str_to_wstr(s);
-		str_free(s);
-	}
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
+	return scp->cp;
 }
 
 
@@ -353,13 +325,13 @@ sub_copyright_years(scp, arg)
 	assert(scp->pp);
 	assert(scp->pp == scp->cp->pp);
 	project_copyright_years_get(scp->pp, ary, SIZEOF(ary), &ary_len);
-	change_copyright_years_get(scp->cp, ary + ary_len, SIZEOF(ary) - ary_len, &ary_len2);
+	change_copyright_years_get(scp->cp, ary + ary_len, (size_t)(SIZEOF(ary) - ary_len), &ary_len2);
 	ary_len += ary_len2;
 
 	/*
 	 * sort the array
 	 */
-	qsort(ary, ary_len, sizeof(ary[0]), icmp);
+	qsort(ary, (size_t)ary_len, sizeof(ary[0]), icmp);
 
 	/*
 	 * build the text string for the result
@@ -368,11 +340,13 @@ sub_copyright_years(scp, arg)
 	string_list_constructor(&wl);
 	for (j = 0; j < ary_len; ++j)
 	{
+		if (j && ary[j - 1] == ary[j])
+			continue;
 		s = str_format("%ld", ary[j]);
 		string_list_append(&wl, s);
 		str_free(s);
 	}
-	s = wl2str(&wl, 0, wl.nstrings, ", ");
+	s = wl2str(&wl, 0, (int)wl.nstrings, ", ");
 	string_list_destructor(&wl);
 	result = str_to_wstr(s);
 	str_free(s);
@@ -455,120 +429,6 @@ sub_date(scp, arg)
 		else
 			result = wstr_n_from_c(buf, nbytes);
 		str_free(fmt);
-	}
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
-}
-
-
-/*
- * NAME
- *	sub_delta - the delta substitution
- *
- * SYNOPSIS
- *	wstring_ty *sub_delta(wstring_list_ty *arg);
- *
- * DESCRIPTION
- *	The sub_delta function implements the delta substitution.
- *	The delta substitution is replaced by the delta number of the project.
- *
- * ARGUMENTS
- *	arg	- list of arguments, including the function name as [0]
- *
- * RETURNS
- *	a pointer to a string in dynamic memory;
- *	or NULL on error, setting suberr appropriately.
- */
-
-static wstring_ty *sub_delta _((sub_context_ty *, wstring_list_ty *));
-
-static wstring_ty *
-sub_delta(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
-{
-	wstring_ty	*result;
-	cstate		cstate_data;
-
-	trace(("sub_delta()\n{\n"/*}*/));
-	if (arg->nitems != 1)
-	{
-		scp->suberr = i18n("requires zero arguments");
-		result = 0;
-	}
-	else if (!scp->cp)
-	{
-		yuck:
-		scp->suberr = i18n("not valid in current context");
-		result = 0;
-	}
-	else
-	{
-		string_ty	*s;
-
-		cstate_data = change_cstate_get(scp->cp);
-		if (cstate_data->state != cstate_state_being_integrated)
-			goto yuck;
-		s = str_format("%ld", cstate_data->delta_number);
-		result = str_to_wstr(s);
-		str_free(s);
-	}
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
-}
-
-
-/*
- * NAME
- *	sub_developer - the developer substitution
- *
- * SYNOPSIS
- *	wstring_ty *sub_developer(wstring_list_ty *arg);
- *
- * DESCRIPTION
- *	The sub_developer function implements the developer substitution.
- *	The developer substitution is replaced by the name of the developer
- *	of the project.
- *
- * ARGUMENTS
- *	arg	- list of arguments, including the function name as [0]
- *
- * RETURNS
- *	a pointer to a string in dynamic memory;
- *	or NULL on error, setting suberr appropriately.
- */
-
-static wstring_ty *sub_developer _((sub_context_ty *, wstring_list_ty *arg));
-
-static wstring_ty *
-sub_developer(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
-{
-	wstring_ty	*result;
-	string_ty	*s;
-
-	trace(("sub_developer()\n{\n"/*}*/));
-	if (arg->nitems != 1)
-	{
-		scp->suberr = i18n("requires zero arguments");
-		result = 0;
-	}
-	else if (!scp->cp)
-	{
-		yuck:
-		scp->suberr = i18n("not valid in current context");
-		result = 0;
-	}
-	else
-	{
-		s = change_developer_name(scp->cp);
-		if (!s)
-			goto yuck;
-		result = str_to_wstr(s);
-		/* do not free s */
 	}
 	trace(("return %8.8lX;\n", (long)result));
 	trace((/*{*/"}\n"));
@@ -841,61 +701,6 @@ sub_integration_directory(scp, arg)
 }
 
 
-/*
- * NAME
- *	sub_integrator - the integrator substitution
- *
- * SYNOPSIS
- *	string_ty *sub_integrator(wstring_list_ty *arg);
- *
- * DESCRIPTION
- *	The sub_integrator function implements the integrator substitution.
- *	The integrator substitution is replaced by the name of the integrator
- *	of the project.
- *
- * ARGUMENTS
- *	arg	- list of arguments, including the function name as [0]
- *
- * RETURNS
- *	a pointer to a string in dynamic memory;
- *	or NULL on error, setting suberr appropriately.
- */
-
-static wstring_ty *sub_integrator _((sub_context_ty *, wstring_list_ty *arg));
-
-static wstring_ty *
-sub_integrator(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
-{
-	wstring_ty	*result;
-	string_ty	*s;
-
-	trace(("sub_integrator()\n{\n"/*}*/));
-	if (arg->nitems != 1)
-	{
-		scp->suberr = i18n("requires zero arguments");
-		result = 0;
-	}
-	else if (!scp->cp)
-	{
-		yuck:
-		scp->suberr = i18n("not valid in current context");
-		result = 0;
-	}
-	else
-	{
-		s = change_integrator_name(scp->cp);
-		if (!s)
-			goto yuck;
-		result = str_to_wstr(s);
-	}
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
-}
-
-
 static wstring_ty *sub_plural _((sub_context_ty *, wstring_list_ty *));
 
 static wstring_ty *
@@ -984,127 +789,12 @@ sub_read_file(scp, arg)
 
 			s1 = wstr_to_str(arg->item[1]);
 			os_become_orig();
-			s2 = read_whole_file(s1->str_text);
+			s2 = read_whole_file(s1);
 			os_become_undo();
 			str_free(s1);
 			result = str_to_wstr(s2);
 			str_free(s2);
 		}
-	}
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
-}
-
-
-/*
- * NAME
- *	sub_reviewer - the reviewer substitution
- *
- * SYNOPSIS
- *	string_ty *sub_reviewer(wstring_list_ty *arg);
- *
- * DESCRIPTION
- *	The sub_reviewer function implements the reviewer substitution.
- *	The reviewer substitution is replaced by the name of the reviewer
- *	of the project.
- *
- * ARGUMENTS
- *	arg	- list of arguments, including the function name as [0]
- *
- * RETURNS
- *	a pointer to a string in dynamic memory;
- *	or NULL on error, setting suberr appropriately.
- */
-
-static wstring_ty *sub_reviewer _((sub_context_ty *, wstring_list_ty *arg));
-
-static wstring_ty *
-sub_reviewer(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
-{
-	wstring_ty	*result;
-	string_ty	*s;
-
-	trace(("sub_reviewer()\n{\n"/*}*/));
-	if (arg->nitems != 1)
-	{
-		scp->suberr = i18n("requires zero arguments");
-		result = 0;
-	}
-	else if (!scp->cp)
-	{
-		yuck:
-		scp->suberr = i18n("not valid in current context");
-		result = 0;
-	}
-	else
-	{
-		s = change_reviewer_name(scp->cp);
-		if (!s)
-			goto yuck;
-		result = str_to_wstr(s);
-		/* do not free s */
-	}
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
-}
-
-
-/*
- * NAME
- *	sub_search_path - the search_path substitution
- *
- * SYNOPSIS
- *	string_ty *sub_search_path(wstring_list_ty *arg);
- *
- * DESCRIPTION
- *	The sub_search_path function implements the search_path
- *	substitution.  The search_path substitution is replaced by a
- *	colon separated list of absolute paths to search when building a
- *	change, it will point from a change to its branch and so on up
- *	to the project trunk.
- *
- *	Requires exactly zero arguments.
- *
- * ARGUMENTS
- *	arg	- list of arguments, including the function name as [0]
- *
- * RETURNS
- *	a pointer to a string in dynamic memory;
- *	or NULL on error, setting suberr appropriately.
- */
-
-static wstring_ty *sub_search_path _((sub_context_ty *, wstring_list_ty *arg));
-
-static wstring_ty *
-sub_search_path(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
-{
-	wstring_ty	*result;
-
-	trace(("sub_shell()\n{\n"/*}*/));
-	result = 0;
-	if (arg->nitems != 1)
-		scp->suberr = i18n("requires zero arguments");
-	else if (!scp->cp)
-	{
-		scp->suberr = i18n("not valid in current context");
-		result = 0;
-	}
-	else
-	{
-		string_list_ty		tmp;
-		string_ty	*s;
-
-		change_search_path_get(scp->cp, &tmp, 0);
-		s = wl2str(&tmp, 0, tmp.nstrings, ":");
-		string_list_destructor(&tmp);
-		result = str_to_wstr(s);
-		str_free(s);
 	}
 	trace(("return %8.8lX;\n", (long)result));
 	trace((/*{*/"}\n"));
@@ -1149,149 +839,6 @@ sub_shell(scp, arg)
 		scp->suberr = i18n("requires zero arguments");
 	else
 		result = wstr_from_c(os_shell());
-	trace(("return %8.8lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
-}
-
-
-/*
- * NAME
- *	sub_source - the source substitution
- *
- * SYNOPSIS
- *	string_ty *sub_source(wstring_list_ty *arg);
- *
- * DESCRIPTION
- *	The sub_source function implements the source substitution.
- *	The source substitution is replaced by the path of the source file,
- *	depending on wether it is in the baseline or the change.
- *	If the file named in the argument is in the change,
- *	the name will be left unchanged,
- *	but if the file is in the baseline, an absolute path will resiult.
- *	If the change is being integrated, it will always be left untouched.
- *
- *	Requires exactly one argument.
- *
- * ARGUMENTS
- *	arg	- list of arguments, including the function name as [0]
- *
- * RETURNS
- *	a pointer to a string in dynamic memory;
- *	or NULL on error, setting suberr appropriately.
- */
-
-static wstring_ty *sub_source _((sub_context_ty *, wstring_list_ty *arg));
-
-static wstring_ty *
-sub_source(scp, arg)
-	sub_context_ty	*scp;
-	wstring_list_ty	*arg;
-{
-	wstring_ty	*result;
-	cstate		cstate_data;
-	int		absolute;
-	string_ty	*fn;
-	string_ty	*s;
-
-	trace(("sub_source()\n{\n"/*}*/));
-	absolute = 0;
-	result = 0;
-	if (!scp->cp)
-	{
-		scp->suberr = i18n("not valid in current context");
-		goto done;
-	}
-	switch (arg->nitems)
-	{
-	default:
-		scp->suberr = i18n("requires one argument");
-		goto done;
-
-	case 2:
-		break;
-
-	case 3:
-		s = wstr_to_str(arg->item[2]);
-		if (arglex_compare("Relative", s->str_text))
-		{
-			str_free(s);
-			break;
-		}
-		if (arglex_compare("Absolute", s->str_text))
-		{
-			str_free(s);
-			absolute = 1;
-			break;
-		}
-		str_free(s);
-		scp->suberr = i18n("second argument must be \"Absolute\" or \"Relative\"");
-		goto done;
-		break;
-	}
-
-	/*
-	 * make sure we are in an appropriate state
-	 */
-	cstate_data = change_cstate_get(scp->cp);
-	if (cstate_data->state == cstate_state_awaiting_development)
-	{
-		scp->suberr = i18n("not valid in current context");
-		goto done;
-	}
-
-	/*
-	 * find the file's path
-	 */
-	fn = wstr_to_str(arg->item[1]);
-	if (cstate_data->state == cstate_state_completed)
-		s = project_file_path(scp->pp, fn);
-	else
-		s = change_file_source(scp->cp, fn);
-	if (!s)
-	{
-		str_free(fn);
-		scp->suberr = i18n("source file unknown");
-		goto done;
-	}
-
-	/*
-	 * To turn absolute paths into relative ones, we need to see if
-	 * the file is in the first element of the search path.
-	 */
-	if (!absolute)
-	{
-		string_list_ty		search_path;
-		string_ty	*s2;
-
-		if (cstate_data->state == cstate_state_completed)
-		{
-			string_list_constructor(&search_path);
-			project_search_path_get(scp->pp, &search_path, 0);
-		}
-		else
-			change_search_path_get(scp->cp, &search_path, 0);
-		s2 = os_below_dir(search_path.string[0], s);
-		if (s2)
-		{
-			str_free(s2);
-			str_free(s);
-			s = str_copy(fn);
-		}
-		string_list_destructor(&search_path);
-	}
-
-	/*
-	 * build the result
-	 */
-	result = str_to_wstr(s);
-	str_free(fn);
-	str_free(s);
-
-	/*
-	 * here for all exits
-	 */
-	done:
 	trace(("return %8.8lX;\n", (long)result));
 	trace((/*{*/"}\n"));
 	return result;
@@ -1384,8 +931,8 @@ sub_architecture(scp, arg)
 	}
 	else if (!scp->cp)
 	{
-		scp->suberr = i18n("not valid in current context");
-		result = 0;
+		scp->cp = project_change_get(scp->pp);
+		result = str_to_wstr(change_architecture_name(scp->cp, 1));
 	}
 	else
 		result = str_to_wstr(change_architecture_name(scp->cp, 1));
@@ -1470,9 +1017,10 @@ static sub_table_ty table[] =
 	{ "Basename",			sub_basename,			},
 	{ "BINary_DIRectory",		sub_binary_directory,		},
 	{ "CAPitalize",			sub_capitalize,			},
-	{ "Change",			sub_change,			},
+	{ "Change",			sub_change_number,		},
 	{ "Copyright_Years",		sub_copyright_years,		},
 	{ "COMment",			sub_comment,			},
+	{ "COMmon_DIRectory",		sub_common_directory,		},
 	{ "DATa_DIRectory",		sub_data_directory,		},
 	{ "DAte",			sub_date,			},
 	{ "DELta",			sub_delta,			},
@@ -1485,13 +1033,16 @@ static sub_table_ty table[] =
 	{ "DownCase",			sub_downcase,			},
 	{ "DOLlar",			sub_dollar,			},
 	/* Edit								*/
+	{ "ENVironment",		sub_getenv,			},
 	{ "ERrno",			sub_errno,			},
 	{ "EXpression",			sub_expression,			},
 	/* FieLD_List							*/
 	/* File_List							*/
 	/* File_Name							*/
+	{ "Get_Environment",		sub_getenv,			},
 	/* Guess							*/
 	/* History							*/
+	{ "History_Directory",		sub_history_directory,		},
 	/* Input							*/
 	{ "IDentifier",			sub_identifier,			},
 	{ "INTegration_Directory",	sub_integration_directory,	},
@@ -1510,16 +1061,20 @@ static sub_table_ty table[] =
 	/* ORiginal							*/
 	{ "PLural",			sub_plural,			},
 	{ "Project",			sub_project,			},
+	{ "Project_Specific",		sub_project_specific,		},
 	{ "QUote",			sub_quote,			},
 	{ "Read_File",			sub_read_file, RESUB_DOLLARS,	},
+	{ "Read_File_Simple",		sub_read_file, 			},
 	{ "Reviewer",			sub_reviewer,			},
 	{ "Reviewer_List",		sub_reviewer_list,		},
 	{ "RIght",			sub_right,			},
 	{ "Search_Path",		sub_search_path,		},
+	{ "Search_Path_Executable",	sub_search_path,		},
 	{ "SHell",			sub_shell,			},
 	{ "Source",			sub_source,			},
 	{ "STate",			sub_state,			},
 	{ "SUBSTitute",			sub_substitute,			},
+	{ "SWitch",			sub_switch,			},
 	{ "Trim_DIRectory",		sub_trim_directory,		},
 	{ "Trim_EXTension",		sub_trim_extension,		},
 	{ "UName", /* undocumented */	sub_architecture,		},
@@ -1634,8 +1189,8 @@ execute(scp, arg)
 		sub_context_ty	*inner;
 
 		inner = sub_context_new();
-		sub_var_set(inner, "File_Name", "%s", scp->file_name);
-		sub_var_set(inner, "Line_Number", "%d", scp->line_number);
+		sub_var_set_charstar(inner, "File_Name", scp->file_name);
+		sub_var_set_long(inner, "Line_Number", scp->line_number);
 		fatal_intl
 		(
 			inner,
@@ -1656,7 +1211,10 @@ execute(scp, arg)
 		if (arglex_compare(tp->name, cmd->str_text))
 		{
 			if (tp->override)
+			{
+				str_free(cmd);
 				goto override;
+			}
 			if (nhits < SIZEOF(hit))
 				hit[nhits++] = tp;
 		}
@@ -1670,7 +1228,10 @@ execute(scp, arg)
 		if (arglex_compare(tp->name, cmd->str_text))
 		{
 			if (tp->override)
+			{
+				str_free(cmd);
 				goto override;
+			}
 			if (nhits < SIZEOF(hit))
 				hit[nhits++] = tp;
 		}
@@ -1692,15 +1253,15 @@ execute(scp, arg)
 		override:
 		if (tp->value)
 		{
-			if (isdigit(tp->name[0]))
+			if (isdigit((unsigned char)tp->name[0]))
 			{
 				sub_context_ty	*inner;
 				string_ty	*vs;
 
 				inner = sub_context_new();
-				sub_var_set(inner, "Name1", "%%%s", tp->name);
+				sub_var_set_format(inner, "Name1", "%%%s", tp->name);
 				vs = wstr_to_str(tp->value);
-				sub_var_set(inner, "Name2", "%S", vs);
+				sub_var_set_string(inner, "Name2", vs);
 				trace(("%s -> %s\n", tp->name, vs->str_text));
 				str_free(vs);
 				error_intl
@@ -1752,10 +1313,10 @@ execute(scp, arg)
 		wstr_free(s2);
 		the_error = scp->suberr ? scp->suberr : "this is a bug";
 		inner = sub_context_new();
-		sub_var_set(inner, "File_Name", "%s", scp->file_name);
-		sub_var_set(inner, "Line_Number", "%d", scp->line_number);
-		sub_var_set(inner, "Name", "%S", s3);
-		sub_var_set(inner, "MeSsaGe", "%s", gettext(the_error));
+		sub_var_set_charstar(inner, "File_Name", scp->file_name);
+		sub_var_set_long(inner, "Line_Number", scp->line_number);
+		sub_var_set_string(inner, "Name", s3);
+		sub_var_set_charstar(inner, "MeSsaGe", gettext(the_error));
 		fatal_intl
 		(
 			inner,
@@ -2051,8 +1612,8 @@ percent(scp)
 				sub_context_ty	*inner;
 
 				inner = sub_context_new();
-				sub_var_set(inner, "File_Name", "%s", scp->file_name);
-				sub_var_set(inner, "Line_Number", "%d", scp->line_number);
+				sub_var_set_charstar(inner, "File_Name", scp->file_name);
+				sub_var_set_long(inner, "Line_Number", scp->line_number);
 				fatal_intl
 				(
 					inner,
@@ -2094,8 +1655,8 @@ percent(scp)
 		sub_context_ty	*inner;
 
 		inner = sub_context_new();
-		sub_var_set(inner, "File_Name", "%s", scp->file_name);
-		sub_var_set(inner, "Line_Number", "%d", scp->line_number);
+		sub_var_set_charstar(inner, "File_Name", scp->file_name);
+		sub_var_set_long(inner, "Line_Number", scp->line_number);
 		error_intl
 		(
 			inner,
@@ -2246,8 +1807,8 @@ dollar(scp)
 				sub_context_ty	*inner;
 
 				inner = sub_context_new();
-				sub_var_set(inner, "File_Name", "%s", scp->file_name);
-				sub_var_set(inner, "Line_Number", "%d", scp->line_number);
+				sub_var_set_charstar(inner, "File_Name", scp->file_name);
+				sub_var_set_long(inner, "Line_Number", scp->line_number);
 				fatal_intl
 				(
 					inner,
@@ -2281,8 +1842,8 @@ dollar(scp)
 						sub_context_ty	*inner;
 
 						inner = sub_context_new();
-						sub_var_set(inner, "File_Name", "%s", scp->file_name);
-						sub_var_set(inner, "Line_Number", "%d", scp->line_number);
+						sub_var_set_charstar(inner, "File_Name", scp->file_name);
+						sub_var_set_long(inner, "Line_Number", scp->line_number);
 						fatal_intl
 						(
 							inner,
@@ -2313,8 +1874,8 @@ dollar(scp)
 						sub_context_ty	*inner;
 
 						inner = sub_context_new();
-						sub_var_set(inner, "File_Name", "%s", scp->file_name);
-						sub_var_set(inner, "Line_Number", "%d", scp->line_number);
+						sub_var_set_charstar(inner, "File_Name", scp->file_name);
+						sub_var_set_long(inner, "Line_Number", scp->line_number);
 						fatal_intl
 						(
 							inner,
@@ -2551,12 +2112,12 @@ subst(scp, s)
 		 * translation string.
 		 */
 		inner = sub_context_new();
-		sub_var_set(inner, "File_Name", "%s", scp->file_name);
-		sub_var_set(inner, "Line_Number", "%d", scp->line_number);
+		sub_var_set_charstar(inner, "File_Name", scp->file_name);
+		sub_var_set_long(inner, "Line_Number", scp->line_number);
 		tmp = wstr_to_str(s);
-		sub_var_set(inner, "Message", "%S", tmp);
+		sub_var_set_string(inner, "Message", tmp);
 		sub_var_optional(inner, "Message");
-		sub_var_set(inner, "Name", "$%s", tp->name);
+		sub_var_set_format(inner, "Name", "$%s", tp->name);
 		sub_var_optional(inner, "Name");
 		error_intl
 		(
@@ -2579,12 +2140,12 @@ in substitution \"$message\" variable \"$name\" unused")
 		 * translation string.
 		 */
 		inner = sub_context_new();
-		sub_var_set(inner, "File_Name", "%s", scp->file_name);
-		sub_var_set(inner, "Line_Number", "%d", scp->line_number);
+		sub_var_set_charstar(inner, "File_Name", scp->file_name);
+		sub_var_set_long(inner, "Line_Number", scp->line_number);
 		tmp = wstr_to_str(s);
-		sub_var_set(inner, "Message", "%S", tmp);
+		sub_var_set_string(inner, "Message", tmp);
 		sub_var_optional(inner, "Message");
-		sub_var_set(inner, "Number", "%d", error_count);
+		sub_var_set_long(inner, "Number", error_count);
 		sub_var_optional(inner, "Number");
 		fatal_intl
 		(
@@ -2723,6 +2284,41 @@ substitute(scp, acp, s)
 }
 
 
+string_ty *
+substitute_p(scp, app, s)
+	sub_context_ty	*scp;
+	project_ty	*app;
+	string_ty	*s;
+{
+	wstring_ty	*ws;
+	wstring_ty	*result_wide;
+	string_ty	*result;
+	int		need_to_delete;
+
+	trace(("substitute(scp = %08lX, s = \"%s\")\n{\n"/*}*/,
+		(long)scp, s->str_text));
+	if (!scp)
+	{
+		scp = sub_context_new();
+		need_to_delete = 1;
+	}
+	else
+		need_to_delete = 0;
+	assert(app);
+	subst_intl_project(scp, app);
+	ws = str_to_wstr(s);
+	result_wide = subst(scp, ws);
+	wstr_free(ws);
+	result = wstr_to_str(result_wide);
+	wstr_free(result_wide);
+	if (need_to_delete)
+		sub_context_delete(scp);
+	trace(("return \"%s\";\n", result->str_text));
+	trace((/*{*/"}\n"));
+	return result;
+}
+
+
 /*
  * NAME
  *	sub_var_clear
@@ -2777,7 +2373,7 @@ sub_var_clear(scp)
  */
 
 void
-sub_var_set(scp, name, fmt sva_last)
+sub_var_set_format(scp, name, fmt sva_last)
 	sub_context_ty	*scp;
 	const char	*name;
 	const char	*fmt;
@@ -2785,11 +2381,23 @@ sub_var_set(scp, name, fmt sva_last)
 {
 	va_list		ap;
 	string_ty	*s;
-	sub_table_ty	*svp;
 
 	sva_init(ap, fmt);
 	s = str_vformat(fmt, ap);
 	va_end(ap);
+
+	sub_var_set_string(scp, name, s);
+	str_free(s);
+}
+
+
+void
+sub_var_set_string(scp, name, value)
+	sub_context_ty	*scp;
+	const char	*name;
+	string_ty	*value;
+{
+	sub_table_ty	*svp;
 
 	if (scp->sub_var_pos >= scp->sub_var_size)
 	{
@@ -2801,12 +2409,39 @@ sub_var_set(scp, name, fmt sva_last)
 	}
 	svp = &scp->sub_var_list[scp->sub_var_pos++];
 	svp->name = name;
-	svp->value = str_to_wstr(s);
-	str_free(s);
-	svp->must_be_used = !isdigit(name[0]);
+	svp->value = str_to_wstr(value);
+	svp->must_be_used = !isdigit((unsigned char)name[0]);
 	svp->append_if_unused = 0;
 	svp->override = 0;
 	svp->resubstitute = !svp->must_be_used;
+}
+
+
+void
+sub_var_set_charstar(scp, name, value)
+	sub_context_ty	*scp;
+	const char	*name;
+	const char	*value;
+{
+	string_ty	*s;
+
+	s = str_from_c(value);
+	sub_var_set_string(scp, name, s);
+	str_free(s);
+}
+
+
+void
+sub_var_set_long(scp, name, value)
+	sub_context_ty	*scp;
+	const char	*name;
+	long		value;
+{
+	string_ty	*s;
+
+	s = str_format("%ld", value);
+	sub_var_set_string(scp, name, s);
+	str_free(s);
 }
 
 
@@ -2931,7 +2566,7 @@ wrap(s)
 	 * Ask the system how wide the terminal is.
 	 * Don't use last column, many terminals are dumb.
 	 */
-	page_width = option_page_width_get() - 1;
+	page_width = option_page_width_get(-1) - 1;
 	midway = (page_width + 8) / 2;
 
 	/*
@@ -2979,7 +2614,7 @@ wrap(s)
 		else
 			ocol = 8;
 
-		wctomb(NULL, 0);
+		wctomb(NULL, 0);				/*lint !e418*/
 		ep = s;
 		break_space = 0;
 		break_space_col = 0;
@@ -3023,7 +2658,7 @@ wrap(s)
 				 * need to reset the wctomb state, it is
 				 * not broken.
 				 */
-				wctomb(NULL, 0);
+				wctomb(NULL, 0);		/*lint !e418*/
 			}
 
 			/*
@@ -3105,7 +2740,7 @@ wrap(s)
 		/*
 		 * Turn the input into a multi bytes chacacters.
 		 */
-		wctomb(NULL, 0);
+		wctomb(NULL, 0);				/*lint !e418*/
 		while (s < ep)
 		{
 			wchar_t		c;
@@ -3144,7 +2779,7 @@ wrap(s)
 				 * need to reset the wctomb state, it is
 				 * not broken.
 				 */
-				wctomb(NULL, 0);
+				wctomb(NULL, 0);		/*lint !e418*/
 			}
 			tp += nbytes;
 		}
@@ -3201,7 +2836,7 @@ error_intl(scp, s)
 	if (!scp)
 	{
 		scp = sub_context_new();
-		need_to_delete = 0;
+		need_to_delete = 1;
 	}
 	else
 		need_to_delete = 0;
@@ -3227,7 +2862,7 @@ fatal_intl(scp, s)
 	if (!scp)
 	{
 		scp = sub_context_new();
-		need_to_delete = 0;
+		need_to_delete = 1;
 	}
 	else
 		need_to_delete = 0;
@@ -3275,7 +2910,7 @@ verbose_intl(scp, s)
 	if (!scp)
 	{
 		scp = sub_context_new();
-		need_to_delete = 0;
+		need_to_delete = 1;
 	}
 	else
 		need_to_delete = 0;

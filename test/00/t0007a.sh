@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 2000 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -125,7 +125,7 @@ activity="symlink test program 104"
 cat > symlink.c << 'fubar'
 #include <sys/types.h>
 #include <sys/stat.h>
-void
+int
 main(argc, argv)
 	int	argc;
 	char	**argv;
@@ -143,6 +143,7 @@ main(argc, argv)
 #else
 	exit(2);
 #endif
+	return 0; /* eliminates an annoying gcc warning */
 }
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -370,7 +371,7 @@ if test $? -ne 0 ; then fail; fi
 #
 # Need to sleeo for a few seconds, because the directories are removed
 # in the background.
-# 
+#
 sleep 5
 
 #

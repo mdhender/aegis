@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -27,3 +27,38 @@ This chapter discusses testing, and using Aegis to manage your tests
 and testing.
 .so c11.1.so
 .so c11.2.so
+.\"
+.\" Sam Liddicott <sam.liddicott@ananova.com>, Wed, 24 Jan 2001 12:15:03 -0000
+.\" o> it would be nice to have a way to specify a timeout for aegis tests.
+.\" > If a single test does not finish within this time, it should be
+.\" > aborted and considered `No Result'.  Then aet should continue with the
+.\" > next test (as appropriate if --perservere was given).
+.\"
+.\" You could implement this in the tests themselves.
+.\"
+.\" A shell function to do this:
+.\"
+.\" killme() {
+.\"   timeout="$1"
+.\"     parent="$$"
+.\"
+.\"       ( sleep $timeout ; kill $parent; sleep 2; kill -9 $parent; )
+.\"         echo $!
+.\" 	}
+.\"
+.\"
+.\" 	to use it
+.\"
+.\" 	killer=`killme 600` # 10 minutes
+.\"
+.\" Jerry Pendergraft <jerry@endocardial.com>
+.\" Fri, 26 Jan 2001 08:52:58 -0600
+.\"
+.\" test_command = \
+.\" "PATH=${Add_Path_Suffix /${arch}/bin ${search_path_executable}}:${$}PATH \
+.\"  ${sh} ${file_name}";
+.\"  Then when a test (.sh) file calls the program it is testing
+.\"  > it is called
+.\"  > by name only and is found in the path. It works to any level
+.\"  > of branches
+.\"  > and we have had as many as 5 so far.

@@ -48,6 +48,7 @@ struct output_gzip_ty
 	Byte		*outbuf;	/* output buffer */
 	uLong		crc;		/* crc32 of uncompressed data */
 	long		pos;
+	int		bol;
 };
 
 
@@ -61,9 +62,9 @@ drop_dead(this, err)
 	sub_context_ty	*scp;
 
 	scp = sub_context_new();
-	sub_var_set(scp, "ERRNO", "%s", z_error(err)); 
+	sub_var_set_charstar(scp, "ERRNO", z_error(err)); 
 	sub_var_override(scp, "ERRNO");
-	sub_var_set(scp, "File_Name", "%s", output_filename(this->deeper));
+	sub_var_set_string(scp, "File_Name", output_filename(this->deeper));
 	fatal_intl(scp,  i18n("gzip $filename: $errno"));
 }
 
@@ -90,10 +91,10 @@ output_long_le(fp, x)
 }
 
 
-static void destructor _((output_ty *));
+static void output_gzip_destructor _((output_ty *));
 
 static void
-destructor(fp)
+output_gzip_destructor(fp)
 	output_ty	*fp;
 {
 	output_gzip_ty	*this;
@@ -144,10 +145,10 @@ destructor(fp)
 }
 
 
-static const char *filename _((output_ty *));
+static string_ty *output_gzip_filename _((output_ty *));
 
-static const char *
-filename(fp)
+static string_ty *
+output_gzip_filename(fp)
 	output_ty	*fp;
 {
 	output_gzip_ty	*this;
@@ -157,10 +158,10 @@ filename(fp)
 }
 
 
-static long otell _((output_ty *));
+static long output_gzip_ftell _((output_ty *));
 
 static long
-otell(fp)
+output_gzip_ftell(fp)
 	output_ty	*fp;
 {
 	output_gzip_ty	*this;
@@ -170,10 +171,10 @@ otell(fp)
 }
 
 
-static void owrite _((output_ty *, const void *, size_t));
+static void output_gzip_write _((output_ty *, const void *, size_t));
 
 static void
-owrite(fp, buf, len)
+output_gzip_write(fp, buf, len)
 	output_ty	*fp;
 	const void	*buf;
 	size_t		len;
@@ -182,6 +183,8 @@ owrite(fp, buf, len)
 	int		err;
 
 	this = (output_gzip_ty *)fp;
+	if (len > 0)
+		this->bol = (((const char *)buf)[len - 1] == '\n');
 	this->stream.next_in = (Bytef *)buf;
 	this->stream.avail_in = len;
 	while (this->stream.avail_in != 0)
@@ -201,30 +204,58 @@ owrite(fp, buf, len)
 }
 
 
-static void oputc _((output_ty *, int));
+static int output_gzip_page_width _((output_ty *));
+
+static int
+output_gzip_page_width(fp)
+	output_ty	*fp;
+{
+	output_gzip_ty *this;
+
+	this = (output_gzip_ty *)fp;
+	return output_page_width(this->deeper);
+}
+
+
+static int output_gzip_page_length _((output_ty *));
+
+static int
+output_gzip_page_length(fp)
+	output_ty	*fp;
+{
+	output_gzip_ty *this;
+
+	this = (output_gzip_ty *)fp;
+	return output_page_length(this->deeper);
+}
+
+
+static void output_gzip_eoln _((output_ty *));
 
 static void
-oputc(fp, c)
+output_gzip_eoln(fp)
 	output_ty	*fp;
-	int		c;
 {
-	char		buf[1];
+	output_gzip_ty *this;
 
-	buf[0] = c;
-	owrite(fp, buf, (size_t)1);
+	this = (output_gzip_ty *)fp;
+	if (!this->bol)
+		output_fputc(fp, '\n');
 }
 
 
 static output_vtbl_ty vtbl =
 {
 	sizeof(output_gzip_ty),
+	output_gzip_destructor,
+	output_gzip_filename,
+	output_gzip_ftell,
+	output_gzip_write,
+	output_generic_flush, /* don't actually do anything */
+	output_gzip_page_width,
+	output_gzip_page_length,
+	output_gzip_eoln,
 	"gzip",
-	destructor,
-	filename,
-	otell,
-	oputc,
-	output_generic_fputs,
-	owrite,
 };
 
 
@@ -271,6 +302,7 @@ output_gzip(deeper)
 	this->outbuf = mem_alloc(Z_BUFSIZE);
 	this->stream.next_out = this->outbuf;
 	this->stream.avail_out = Z_BUFSIZE;
+	this->bol = 1;
 
 	/*
 	 * Write a very simple .gz header:

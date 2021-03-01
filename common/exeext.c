@@ -35,7 +35,7 @@ memcasecmp(s1, s2, n)
 	const char	*s2;
 	size_t		n;
 {
-	int		c1, c2;
+	unsigned char	c1, c2;
 
 	while (n > 0)
 	{
@@ -46,7 +46,7 @@ memcasecmp(s1, s2, n)
 		if (isupper(c2))
 			c1 = tolower(c2);
 		if (c1 != c2)
-			return ((unsigned char)c1 - (unsigned char)c2);
+			return (c1 - c2);
 		--n;
 	}
 	return 0;
@@ -56,20 +56,20 @@ memcasecmp(s1, s2, n)
 static int look_for_suffix _((const char *, const char *));
 
 static int
-look_for_suffix(main, suffix)
-	const char	*main;
+look_for_suffix(stem, suffix)
+	const char	*stem;
 	const char	*suffix;
 {
-	size_t		main_len;
+	size_t		stem_len;
 	size_t		suffix_len;
 	size_t		idx;
 
-	main_len = strlen(main);
+	stem_len = strlen(stem);
 	suffix_len = strlen(suffix);
-	if (main_len < suffix_len)
+	if (stem_len < suffix_len)
 		return -1;
-	idx = main_len - suffix_len;
-	if (0 != memcasecmp(main + idx, suffix, suffix_len))
+	idx = stem_len - suffix_len;
+	if (0 != memcasecmp(stem + idx, suffix, suffix_len))
 		return -1;
 	return idx;
 }

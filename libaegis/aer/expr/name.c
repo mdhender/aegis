@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1997 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1997, 1999, 2000 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,10 +32,12 @@
 #include <aer/value/null.h>
 #include <aer/value/passwd.h>
 #include <aer/value/ref.h>
+#include <aer/value/uconf.h>
 #include <cattr.h>
 #include <common.h>
 #include <cstate.h>
 #include <error.h>
+#include <fstate.h>
 #include <gonzo.h>
 #include <pattr.h>
 #include <pconf.h>
@@ -85,6 +87,7 @@ init()
 	cattr__rpt_init();
 	common__rpt_init();
 	cstate__rpt_init();
+	fstate__rpt_init();
 	gstate__rpt_init();
 	pattr__rpt_init();
 	pconf__rpt_init();
@@ -100,6 +103,13 @@ init()
 	str_free(name);
 	name = str_from_c("false");
 	symtab_assign(stp, name, rpt_value_boolean(0));
+	str_free(name);
+
+	/*
+	 * This one is so you can get at .aegisrc files.
+	 */
+	name = str_from_c("user");
+	symtab_assign(stp, name, rpt_value_uconf());
 	str_free(name);
 
 	name = str_from_c("passwd");
@@ -149,7 +159,7 @@ rpt_expr_name(name)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%S", name);
+			sub_var_set_string(scp, "Name", name);
 			aer_lex_error(scp, 0, i18n("the name \"$name\" is undefined"));
 			sub_context_delete(scp);
 			data = rpt_value_nul();
@@ -159,8 +169,8 @@ rpt_expr_name(name)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%S", name);
-			sub_var_set(scp, "Guess", "%S", name2);
+			sub_var_set_string(scp, "Name", name);
+			sub_var_set_string(scp, "Guess", name2);
 			aer_lex_error(scp, 0, i18n("no \"$name\", guessing \"$guess\""));
 			sub_context_delete(scp);
 			data = symtab_query(stp, name2);
@@ -190,7 +200,7 @@ rpt_expr_name__declare(name)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%S", name);
+		sub_var_set_string(scp, "Name", name);
 		aer_lex_error(scp, 0, i18n("the name \"$name\" has already been used"));
 		sub_context_delete(scp);
 		return;

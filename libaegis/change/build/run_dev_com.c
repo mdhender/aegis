@@ -49,8 +49,8 @@ change_run_development_build_command(cp, up, partial)
 	if (!the_command)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%s", THE_CONFIG_FILE);
-		sub_var_set(scp, "FieLD_Name", "build_command");
+		sub_var_set_charstar(scp, "File_Name", THE_CONFIG_FILE);
+		sub_var_set_charstar(scp, "FieLD_Name", "build_command");
 		change_fatal
 		(
 			cp,
@@ -70,13 +70,13 @@ change_run_development_build_command(cp, up, partial)
 		string_ty	*s;
 
 		s = wl2str(partial, 0, partial->nstrings, (char *)0);
-		sub_var_set(scp, "File_List", "%S", s);
+		sub_var_set_string(scp, "File_List", s);
 		str_free(s);
 		sub_var_append_if_unused(scp, "File_List");
 	}
 	else
 	{
-		sub_var_set(scp, "File_List", "");
+		sub_var_set_charstar(scp, "File_List", "");
 		sub_var_optional(scp, "File_List");
 	}
 
@@ -89,10 +89,10 @@ change_run_development_build_command(cp, up, partial)
 	 *	and 'nnn' is the change number.
 	 * %4 = the absolute path of the project baseline directory.
 	 */
-	sub_var_set(scp, "1", "${project}");
-	sub_var_set(scp, "2", "${change}");
-	sub_var_set(scp, "3", "${version}");
-	sub_var_set(scp, "4", "${baseline}");
+	sub_var_set_charstar(scp, "1", "${project}");
+	sub_var_set_charstar(scp, "2", "${change}");
+	sub_var_set_charstar(scp, "3", "${version}");
+	sub_var_set_charstar(scp, "4", "${baseline}");
 	the_command = substitute(scp, cp, the_command);
 	sub_context_delete(scp);
 

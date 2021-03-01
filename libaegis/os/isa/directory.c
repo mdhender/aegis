@@ -53,7 +53,7 @@ os_isa_directory(path)
 			return 0;
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("stat $filename: $errno"));
 		/* NOTREACHED */
 	}

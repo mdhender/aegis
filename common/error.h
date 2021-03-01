@@ -26,9 +26,9 @@
 #include <main.h>
 #include <noreturn.h>
 
-#define error @!@!@
+#define error /!/!/
 void error_raw _((const char *, ...));
-#define fatal @!@!@
+#define fatal /!/!/
 void fatal_raw _((const char *, ...)) NORETURN;
 
 void nerror _((const char *, ...));

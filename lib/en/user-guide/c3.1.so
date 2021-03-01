@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998 Peter Miller;
+.\"	Copyright (C) 1991-1995, 1998, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -23,20 +23,23 @@
 .nh 2 "Using SCCS"
 .LP
 The entries for the commands are listed below.
-SCCS uses a slightly different model than aegis wants,
+SCCS uses a slightly different model than Aegis wants,
 so some maneuvering is required.
-The command strings in this section assume that the SCCS commands
-.I admin
-and
-.I get
-and
-.I delta
-are in the command search PATH,
-but you may like to hard-wire the paths,
-or set PATH at the start of each.
+The command strings in this section assume that the SCCS command
+\fIsccs\fP
+is in the command search PATH,
+but you may like to hard-wire the path,
+or set PATH at the start of each command.
+(It is also possible that you need to say ``delta'' instead of ``sccs delta''.
+if this is the case, these command need to be in the path.)
 You should also note that the strings are always handed to
 the Bourne shell to be executed,
 and are set to exit with an error immediately a sub-command fails.
+.LP
+One further assumption is that the \fIae-sccs-put\fP(1) command, which is
+distributed with Aegis, is in the command search path.  This insultaes
+some of the weirdness the SCCS carries on with, and make sht eommands
+below comprehensible.
 .nh 3 "history_create_command"
 .LP
 This command is used to create a new project history.
@@ -53,17 +56,15 @@ The entry in the
 file looks like this:
 .E(
 history_create_command =
-  "admin -n -i$i -y \e
-    ${d $h}/s.${b $h}; \e
-  admin -di ${d $h}/s.${b $h}; \e
-  get -e -t -p -s \e
-    ${d $h}/s.${b $h} \e
-    > /dev/null";
+  "ae-sccs-put \e
+    -y$version -G$input \e
+    ${d $h}/s.${b $h}";
 .E)
 .LP
-Note that the "get -e" is necessary to put the s.file into the edit state,
-but the result of the get can be discarded,
-because the "admin -i" did not remove the file.
+It is important that
+the \fIhistory_\%create_\%command\fP and
+the \fIhistory_\%put_\%command\fP be the same.
+This is necessary for branching to work correctly.
 .nh 3 "history_get_command"
 .LP
 This command is used to get a specific edit back from history.
@@ -102,14 +103,18 @@ The entry in the
 file looks like this:
 .E(
 history_put_command =
-  "cd ${d $i}; \e
-  delta -s -y ${d $h}/s.${b $h}; \e
-  get -e -t -p -s \e
-    ${d $h}/s.${b $h} > $i";
+  "ae-sccs-pit \e
+    -y$version -G$input \e
+    ${d $h}/s.${b $h}";
 .E)
 .LP
-Note that the SCCS file is left in the edit state,
+Note that the SCCS file is left in the \fInot-edit\fP state,
 and that the source file is left in the baseline.
+.LP
+It is important that
+the \fIhistory_\%create_\%command\fP and
+the \fIhistory_\%put_\%command\fP be the same.
+This is necessary for branching to work correctly.
 .nh 3 "history_query_command"
 .LP
 This command is used to query what the history mechanism calls the top-most
@@ -132,10 +137,10 @@ The entry in the
 file looks like this:
 .E(
 history_query_command =
-  "get -t -g ${d $h}/s.${b $h} 2>&1";
+  "get -t -g ${d $h}/s.${b $h}";
 .E)
 .LP
-Note that "get" reports the edit number on stderr.
+Note that "get" reports the edit number on stdout.
 .nh 3 "Templates"
 .LP
 The
@@ -145,3 +150,19 @@ contains all of the above commands,
 so that you may readily insert them into your project
 .I config
 file.
+.LP
+Also, there are some subtleties to writing the commands, which are not
+present in the above examples.  In particular, being able to support file
+names which contain characters which are special to the shell requires
+the use of the ${quote} substitution around all of the files names in
+the commands.
+.LP
+In addition, it is possible to have a much more useful description for
+the \fB\-y\fP option.  For example: ``\f[CW]-y${quote ($version) ${change
+description}}\fP'' inserts the version number and the brief description
+into the file's log.  This means that using the \fIsccs prs\fP(1) command
+will provide quite useful summaries.
+.nh 3 "Binary Files"
+SCCS is unable to cope with binary files.  However, Aegis
+will transparently encode all such files, if you leave the
+\fIhistory_\%content_\%limitation\fP field unset.

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997, 1998, 1999 Peter Miller;
+#	Copyright (C) 1997-2001 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -55,7 +55,7 @@ check_it()
 {
 	sed	-e "s|$work|...|g" \
 		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/$USER/USER/g" \
+		-e "s/\"$USER\"/\"USER\"/g" \
 		-e 's/19[0-9][0-9]/YYYY/' \
 		-e 's/20[0-9][0-9]/YYYY/' \
 		-e 's/node = ".*"/node = "NODE"/' \
@@ -290,7 +290,11 @@ src =
 	{
 		file_name = "fred";
 		action = modify;
-		edit_number_origin = "1.2";
+		edit_origin =
+		{
+			revision = "1.2";
+			encoding = none;
+		};
 		usage = source;
 	},
 ];
@@ -300,7 +304,7 @@ check_it ok $work/test/info/change/0/012.fs
 
 activity="check change state 304"
 cat > ok << 'fubar'
-brief_description = "two";
+brief_description = "two (clone of .D002)";
 description = "two";
 cause = internal_enhancement;
 test_exempt = true;
@@ -322,6 +326,7 @@ history =
 		when = TIME;
 		what = new_change;
 		who = "USER";
+		why = "Cloned from change 11.";
 	},
 	{
 		when = TIME;
@@ -383,6 +388,7 @@ branch =
 	default_test_exemption = true;
 	skip_unlucky = false;
 	compress_database = false;
+	develop_end_action = goto_being_reviewed;
 	history =
 	[
 		{

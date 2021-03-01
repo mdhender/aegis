@@ -1,6 +1,6 @@
 #
 #	aegis - a project change supervisor
-#	Copyright (C) 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+#	Copyright (C) 1990-1999, 2001, 2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,22 @@
 #
 # MANIFEST: instructions to make, how to build the Aegis package
 #
+#	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+#	W   W    A    RRRR   N   N   III  N   N  III  N   N   GGG
+#	W   W   A A   R   R  NN  N    I   NN  N   I   NN  N  G   G
+#	W   W  A   A  RRRR   N N N    I   N N N   I   N N N  G
+#	W W W  AAAAA  R R    N  NN    I   N  NN   I   N  NN  G  GG
+#	W W W  A   A  R  R   N   N    I   N   N   I   N   N  G   G
+#	 W W   A   A  R   R  N   N   III  N   N  III  N   N   GGG
+#
+#	DO NOT send patches which fix this file.  IT IS NOT the original
+#	source file.  This file is GENERATED.  If you find a bug in this
+#	file, please send me a patch for the the problem in the source
+#	file, usually etc/Makefile.sh or etc/Makefi.file.sh or both.
+#
+#	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
 # @configure_input@
 #
 
@@ -33,6 +49,7 @@ VPATH = @srcdir@
 #
 INSTALL = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_DATA = @INSTALL_DATA@
 
 #
@@ -91,9 +108,14 @@ comdir = @sharedstatedir@
 #	On a network, this would only be shared between machines
 #	of identical cpu-hw-os flavour.  It can be mounted read-only.
 #
+libdir = @libdir@
+
+#
+# ${NLSDIR} is for locale files
+#
 # This is where the error message (.mo) files are parked.
 #
-libdir = @libdir@
+NLSDIR = @NLSDIR@
 
 #
 # Where to put the executables
@@ -207,6 +229,14 @@ OBJEXT = @OBJEXT@
 # This is the file extension of library files.  NO DOT.
 #
 LIBEXT = a
+
+#
+# For some installations of Groff, -mm is installed as -mm, but some
+# of them install them as -mgm.  I have no idea why.
+# Ditto for ``-ms'' vs ``-mgs''
+#
+MM = -m@GROFF_MM_MACROS@
+MS = -m@GROFF_MS_MACROS@
 
 #
 # You should not need to alter anything below this point.

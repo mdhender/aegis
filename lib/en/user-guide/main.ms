@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998, 1999, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -72,16 +72,22 @@
 .so c9.0.so
 .so c6.0.so
 .so c10.0.so
+.so c12.0.so
 .so cA.0.so
 .so cB.0.so
 .so cD.0.so
 .so cI.0.so
 .br
 .if t .1C
-.if o .bp
+.bp
 .\" At this point we are at the top of the page.  The .TC macro will not
 .\" throw a new page, and so it will have the wrong page number for the
 .\" first page.  We need some garbage on this page to force .TC to throw
 .\" a new page.
 \&.
-.TC
+.\" I can't use .TC because I need to mess with the page numbers so
+.\" that I can use psselect to move the ToC to the front, afterwards.
+.\" .TC
+.P1
+.pg@begin 1001 i
+.PX

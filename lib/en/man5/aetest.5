@@ -1,0 +1,64 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2000, 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the lib/en/man5/aetest command.
+.\"
+.so z_name.so
+.TH "aetest" 5 \*(N) "Reference Manual" ""
+.SH NAME
+aetest \- test results file format
+.XX "aetest(5)" "test results file format"
+.SH DESCRIPTION
+The default configuration of the \fItest_\%command\fP and
+\fIdevelopment_\%test_\%command\fP commands of the project \fIconfig\fP
+file (see \fIaepconf\fP(5) for more information) is for the test commands
+to test a single test file and a single architecture at a time.  On some
+systems, this is not efficient.
+.PP
+When configured to run multiple simultaneous tests, or multiple
+simultaneous architectures, a file of the format described here is used
+to communicate the test results back to Aegis.
+.SH CONTENTS
+Use a separate row for each unique filename and architecture combination.
+.TP 8n
+test_result = [ { ... } ];
+.br
+.RS
+All the fields are mandatory.
+.TP 8n
+file_name = string;
+.br
+This is the name of the file being tested.
+Use the same filename as was given to the test command.
+.TP 8n
+exit_status = integer;
+.br
+This is the exit status returned by the test.
+.RE
+.SH SEE ALSO
+.TP 8n
+.IR aet (1)
+run tests
+.TP 8n
+.IR aegis (5)
+\*(n) file format syntax
+.TP 8n
+\fIaepconf\fP(5)
+Project configuration file format.
+.so z_cr.so

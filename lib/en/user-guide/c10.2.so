@@ -32,7 +32,7 @@ field of the project attributes.
 In this example, the ``example'' project sends all integrations to all
 the addresses on the \f(CWexample-developers\fP mailing list.  (The
 mailing list is maintained outside of Aegis, \fIe.g.\fP by Majordomo.)
-The relevant attribute (editted by using the \fIaepa\fP(1) command)
+The relevant attribute (edited by using the \fIaepa\fP(1) command)
 looks like this:
 .E(
 integrate_pass_notify_command =

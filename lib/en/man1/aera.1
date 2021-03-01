@@ -62,7 +62,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aera '\*(n) -ra \e!* -v'
-sh$	aera(){\*(n) -ra $* -v}
+sh$	aera(){\*(n) -ra "$@" -v}
 .fi
 .SH ERRORS
 It is an error if

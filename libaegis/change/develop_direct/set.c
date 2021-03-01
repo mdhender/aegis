@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2000 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -48,22 +48,28 @@ change_development_directory_set(cp, s)
 	 */
 	trace(("change_development_directory_set(cp = %8.8lX, s = \"%s\")\n{\n"
 		/*}*/, cp, s->str_text));
+	/* may only be applied to non-branches */
+	/* assert(!change_was_a_branch(cp)); */
 	assert(cp->reference_count >= 1);
 	if (cp->development_directory_unresolved)
 	{
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_directory));
+		sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_directory));
 		fatal_intl(scp, i18n("duplicate $name option"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
 	}
 	assert(s->str_text[0] == '/');
-	cp->development_directory_unresolved = str_copy(s);
-	change_become(cp);
-	cp->development_directory_resolved = os_pathname(s, 1);
-	change_become_undo();
+	cp->top_path_unresolved = str_copy(s);
+	cp->top_path_resolved = 0;
+	cp->development_directory_unresolved = 0;
+	cp->development_directory_resolved = 0;
+
+	/*
+	 * Now set the change appropriately.
+	 */
 	cstate_data = change_cstate_get(cp);
 	if (!cstate_data->development_directory)
 	{
@@ -77,10 +83,11 @@ change_development_directory_set(cp, s)
 				str_free(dir);
 				dir = str_from_c(".");
 			}
-			cstate_data->development_directory = dir;
+			cstate_data->development_directory = str_copy(dir);
 		}
 		else
 			cstate_data->development_directory = str_copy(s);
+		str_free(dir);
 	}
 	trace((/*{*/"}\n"));
 }

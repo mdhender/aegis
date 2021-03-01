@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 1996, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1993, 1994, 1996, 1998, 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -92,7 +92,19 @@ including both the new and removed files,
 will appear in the terse listing.
 These two features are very helpful when calling \*(n) from within
 a DMT to generate the list of source files.
+.SS Notification
+The \fInew_\%file_\%command\fP and \fIremove_\%file_\%command\fP
+in the project \fIconfig\fP file are run, if set.  The
+\fIproject_\%file_\%command\fP is also run, if set, and if there has
+been an integration recently.  See \fIaepconf\fP(5) for more information.
 .so z_whiteout.so
+.SS Notification
+On successful completion of this command, the notifications
+usually performed by the \fIaerm\fP(1), \fIaenf\fP(1) and
+\fIaent\fP(1) commands are run, as appropriate.  These include
+the \fIproject_\%file_\%command\fP, \fInew_\%file_\%command\fP,
+\fInew_\%test_\%command\fP and \fIremove_\%file_\%command\fP fields of
+the project \fIconfig\fP file.  See \fIaepconf\fP(5) for more information.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so
@@ -110,7 +122,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aemv '\*(n) -mv \e!* -v'
-sh$	aemv(){\*(n) -mv $* -v}
+sh$	aemv(){\*(n) -mv "$@" -v}
 .fi
 .SH ERRORS
 It is an error if
@@ -138,6 +150,9 @@ copy files into a change
 .TP 8n
 .IR aedb (1)
 begin development of a change
+.TP 8n
+.IR aemvu (1)
+undo the rename files as part of a change
 .TP 8n
 .IR aenf (1)
 add files to be created by a change

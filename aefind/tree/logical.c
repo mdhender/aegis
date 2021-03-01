@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -59,7 +59,7 @@ and_evaluate(tp, path, st)
 
 		scp = sub_context_new();
 		rpt_value_free(v1b);
-		sub_var_set(scp, "Name", "%s", v1->method->name);
+		sub_var_set_charstar(scp, "Name", v1->method->name);
 		rpt_value_free(v1);
 		s =
 			subst_intl
@@ -88,7 +88,7 @@ and_evaluate(tp, path, st)
 
 		scp = sub_context_new();
 		rpt_value_free(v2b);
-		sub_var_set(scp, "Name", "%s", v2->method->name);
+		sub_var_set_charstar(scp, "Name", v2->method->name);
 		rpt_value_free(v2);
 		s =
 			subst_intl
@@ -155,7 +155,7 @@ or_evaluate(tp, path, st)
 
 		scp = sub_context_new();
 		rpt_value_free(v1b);
-		sub_var_set(scp, "Name", "%s", v1->method->name);
+		sub_var_set_charstar(scp, "Name", v1->method->name);
 		rpt_value_free(v1);
 		s =
 			subst_intl
@@ -184,7 +184,7 @@ or_evaluate(tp, path, st)
 
 		scp = sub_context_new();
 		rpt_value_free(v2b);
-		sub_var_set(scp, "Name", "%s", v2->method->name);
+		sub_var_set_charstar(scp, "Name", v2->method->name);
 		rpt_value_free(v2);
 		s =
 			subst_intl
@@ -248,7 +248,7 @@ not_evaluate(tp, path, st)
 		string_ty	*s;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", v1->method->name);
+		sub_var_set_charstar(scp, "Name", v1->method->name);
 		s =
 			subst_intl
 			(
@@ -405,7 +405,7 @@ triadic_evaluate(tp, path, st)
 
 		scp = sub_context_new();
 		rpt_value_free(v1b);
-		sub_var_set(scp, "Name", "%s", v1->method->name);
+		sub_var_set_charstar(scp, "Name", v1->method->name);
 		rpt_value_free(v1);
 		s =
 			subst_intl
@@ -525,7 +525,7 @@ triadic_optimize(tp)
 
 		scp = sub_context_new();
 		rpt_value_free(v1b);
-		sub_var_set(scp, "Name", "%s", v1->method->name);
+		sub_var_set_charstar(scp, "Name", v1->method->name);
 		rpt_value_free(v1);
 		s =
 			subst_intl

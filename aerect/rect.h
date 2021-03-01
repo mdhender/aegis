@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 2000 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 #include <main.h>
 
-void rect _((char *, int, int));
+void rect _((char *, int, int, char *));
 void rect_color _((int, int, int));
 void rect_bevel _((int));
 void rect_mime _((int));

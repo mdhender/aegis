@@ -46,7 +46,7 @@ The name of a project.
 directory = string;
 .br
 Absolute path of the project's directory.
-(Only set of \fIaelias_for\fP is not set.)
+(Only set of \fIalias_for\fP is not set.)
 .TP 8n
 alias_for = string;
 .br
@@ -54,6 +54,27 @@ This is the name of another project, possibly including branch numbers.
 It allows you to have shorter or more meaningful project names.
 (Only set if \fIdirectory\fP is not set.)
 .RE
+.SH WRITING REPORT SCRIPTS
+When attempting to access these fields from within the report generator,
+you need a code fragment similar to the following:
+.RS
+.nf
+.ft CW
+auto p;
+p = project[project_name()];
+.ft R
+.fi
+.RE
+That is, the \f[CW]where\fP field is represented by the \f[CW]project\fP
+array variable, however, it does not mention the aliases, only the actual
+projects, similar to the ``\fIael projects\fP'' command.  (You can,
+however, index the \f[CW]projects\fP array by an alias, or even by a
+project name with branches on the end.)
+.PP
+In addition to the \fIproject_name\fP and \fIdirectory\fP fields specified
+above, the report generator insets a \fIstate\fP field, which gives
+you access to the project state fields (see \fIaepstate\fP(5)
+for more information).
 .SH SEE ALSO
 .TP 8n
 .IR aegis (5)

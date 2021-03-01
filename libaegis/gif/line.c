@@ -77,56 +77,96 @@ gif_line(gp, x1, y1, x2, y2, clr)
 			return; /* outside viewport */
 		if (c1 & XLO)
 		{
-			y1 = y1 + (y2 - y1) * (clip_x_min - x1) / (x2 - x1);
+			/*
+			 * No divide by zero possibility, because (x1 != x2)
+			 * otherwise (c1 & c2) would have been true.
+			 */
+			y1 = y1 + (y2 - y1) * (clip_x_min - x1)
+				/ (x2 - x1);			/*lint !e414*/
 			x1 = clip_x_min;
 			c1 = encode(x1, y1);
 			continue;
 		}
 		if (c1 & XHI)
 		{
-			y1 = y1 + (y2 - y1) * (clip_x_max - x1)/(x2 - x1);
+			/*
+			 * No divide by zero possibility, because (x1 != x2)
+			 * otherwise (c1 & c2) would have been true.
+			 */
+			y1 = y1 + (y2 - y1) * (clip_x_max - x1)
+				/ (x2 - x1);			/*lint !e414*/
 			x1 = clip_x_max;
 			c1 = encode(x1, y1);
 			continue;
 		}
 		if (c1 & YLO)
 		{
-			x1 = x1 + (x2 - x1) * (clip_y_min - y1) / (y2 - y1);
+			/*
+			 * No divide by zero possibility, because (y1 != y2)
+			 * otherwise (c1 & c2) would have been true.
+			 */
+			x1 = x1 + (x2 - x1) * (clip_y_min - y1)
+				/ (y2 - y1);			/*lint !e414*/
 			y1 = clip_y_min;
 			c1 = encode(x1, y1);
 			continue;
 		}
 		if (c1 & YHI)
 		{
-			x1 = x1 + (x2 - x1) * (clip_y_max - y1) / (y2 - y1);
+			/*
+			 * No divide by zero possibility, because (y1 != y2)
+			 * otherwise (c1 & c2) would have been true.
+			 */
+			x1 = x1 + (x2 - x1) * (clip_y_max - y1)
+				/ (y2 - y1);			/*lint !e414*/
 			y1 = clip_y_max;
 			c1 = encode(x1, y1);
 			continue;
 		}
 		if (c2 & XLO)
 		{
-			y2 = y2 + (y1 - y2) * (clip_x_min - x2) / (x1 - x2);
+			/*
+			 * No divide by zero possibility, because (x1 != x2)
+			 * otherwise (c1 & c2) would have been true.
+			 */
+			y2 = y2 + (y1 - y2) * (clip_x_min - x2)
+				/ (x1 - x2);			/*lint !e414*/
 			x2 = clip_x_min;
 			c2 = encode(x2, y2);
 			continue;
 		}
 		if (c2 & XHI)
 		{
-			y2 = y2 + (y1 - y2) * (clip_x_max - x2) / (x1 - x2);
+			/*
+			 * No divide by zero possibility, because (x1 != x2)
+			 * otherwise (c1 & c2) would have been true.
+			 */
+			y2 = y2 + (y1 - y2) * (clip_x_max - x2)
+				/ (x1 - x2);			/*lint !e414*/
 			x2 = clip_x_max;
 			c2 = encode(x2, y2);
 			continue;
 		}
 		if (c2 & YLO)
 		{
-			x2 = x2 + (x1 - x2) * (clip_y_min - y2) / (y1 - y2);
+			/*
+			 * No divide by zero possibility, because (y1 != y2)
+			 * otherwise (c1 & c2) would have been true.
+			 */
+			x2 = x2 + (x1 - x2) * (clip_y_min - y2)
+				/ (y1 - y2);			/*lint !e414*/
 			y2 = clip_y_min;
 			c2 = encode(x2, y2);
 			continue;
 		}
 		if (c2 & YHI)
 		{
-			x2 = x2 + (x1 - x2) * (clip_y_max - y2) / (y1 - y2);
+			/*
+			 * No divide by zero possibility, because (y1 != y2)
+			 * otherwise (c1 & c2) would have been true.
+			 */
+			x2 = x2 + (x1 - x2) * (clip_y_max - y2)
+				/ (y1 - y2);			/*lint !e414*/
 			y2 = clip_y_max;
 			c2 = encode(x2, y2);
 			continue;

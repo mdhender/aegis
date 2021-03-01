@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996 Peter Miller;
+ *	Copyright (C) 1996, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -66,9 +66,9 @@ run(ep, argc, argv)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Function", "strftime");
-			sub_var_set(scp, "Number", "1");
-			sub_var_set(scp, "Name", "%s", argv[0]->method->name);
+			sub_var_set_charstar(scp, "Function", "strftime");
+			sub_var_set_charstar(scp, "Number", "1");
+			sub_var_set_charstar(scp, "Name", argv[0]->method->name);
 			rpt_value_free(vp1);
 			s =
 				subst_intl
@@ -96,9 +96,9 @@ run(ep, argc, argv)
 
 			scp = sub_context_new();
 			rpt_value_free(vp2);
-			sub_var_set(scp, "Function", "strftime");
-			sub_var_set(scp, "Number", "2");
-			sub_var_set(scp, "Name", "%s", argv[1]->method->name);
+			sub_var_set_charstar(scp, "Function", "strftime");
+			sub_var_set_charstar(scp, "Number", "2");
+			sub_var_set_charstar(scp, "Name", argv[1]->method->name);
 			s =
 				subst_intl
 				(
@@ -122,7 +122,7 @@ run(ep, argc, argv)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "strftime");
+		sub_var_set_charstar(scp, "Function", "strftime");
 		s = subst_intl(scp, i18n("$function: result too long"));
 		sub_context_delete(scp);
 		result = rpt_value_error(ep->pos, s);

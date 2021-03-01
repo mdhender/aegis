@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -69,6 +69,9 @@ project_pattr_get(pp, a)
 	if (!(a->mask & pattr_compress_database_mask))
 		a->compress_database =
 			project_compress_database_get(pp);
+	if (!(a->mask & pattr_develop_end_action_mask))
+		a->develop_end_action =
+			project_develop_end_action_get(pp);
 	
 	if (!a->forced_develop_begin_notify_command)
 	{
@@ -89,6 +92,19 @@ project_pattr_get(pp, a)
 		s = project_develop_end_undo_notify_command_get(pp);
 		if (s)
 			a->develop_end_undo_notify_command = str_copy(s);
+	}
+
+	if (!a->review_begin_notify_command)
+	{
+		s = project_review_begin_notify_command_get(pp);
+		if (s)
+			a->review_begin_notify_command = str_copy(s);
+	}
+	if (!a->review_begin_undo_notify_command)
+	{
+		s = project_review_begin_undo_notify_command_get(pp);
+		if (s)
+			a->review_begin_undo_notify_command = str_copy(s);
 	}
 
 	if (!a->review_pass_notify_command)

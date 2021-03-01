@@ -103,11 +103,34 @@ This section describes just a few of them.
 The aliases for the various user commands used throughout this manual
 are obtained by appending a line of the form
 .E(
-source /usr/local/lib/aegis/cshrc
+\&. \*(D)/profile
+.E)
+to the
+.I \&.profile
+file in the user's home directory,
+if they use the \fIsh\fP(1) shell or the \fIbash\fP(1) shell.
+.LP
+If the user uses the \fIcsh\fP(1) shell,
+append a line of the form
+.E(
+source \*(D)/cshrc
 .E)
 to the
 .I \&.cshrc
 file in the user's home directory.
+.LP
+These days, many systems also provide an \fI/etc/profile.d\fP firectory,
+which has symbolic links to the start-up scripts for various packages.
+These are run automatically for all users.
+If your system has such a thing, arrange for symbolic links
+.E(
+ln -s \*(D)/profile \e
+	/etc/profile.d/aegis.sh
+ln -s \*(D)/cshrc \e
+	/etc/profile.d/aegis.csh
+.E)
+and you will not need to edit every user's \fI\&.cshrc\fP or
+\fI\&.profile\fP file.
 .nh 3 "The AEGIS_PATH environment variable"
 .LP
 If users wish to use aegis for their own projects,
@@ -117,7 +140,7 @@ the
 environment variable forms a colon separated search path
 of aegis "library" directories.
 The
-.I /usr/local/lib/aegis
+.I \*(L)
 directory is always implicitly added to this list.
 .LP
 The user should not create this library directory,
@@ -126,14 +149,14 @@ but let aegis do this for itself (otherwise you will get an error message).
 The
 .I AEGIS_PATH
 environment variable should be set in the
-.I \&.cshrc
-file in the user's home directory.
+\fI\&.cshrc\fP or \fI\&.profile\fP
+files in the user's home directory.
 Typical setting is
 .E(
 setenv AEGIS_PATH ~/lib/aegis
 .E)
 and this is the default used in the
-.I /usr/local/lib/\%aegis/cshrc
+.I \*(D)/cshrc
 file.
 .nh 3 "The \&.aegisrc file"
 .LP

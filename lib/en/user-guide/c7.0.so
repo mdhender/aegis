@@ -23,21 +23,21 @@
 .if t .2C
 .nh 1 "How Aegis Works"
 .LP
-Before you will be able to exploit aegis fully,
-you will need to know what aegis does and why.
+Before you will be able to exploit Aegis fully,
+you will need to know what Aegis does and why.
 .LP
-The aegis program provides a change control mechanism and a repository,
+The Aegis program provides a change control mechanism and a repository,
 a subset of the functionality
 which CASE vendors call Software Configuration Management (SCM).
 In order to fit into a software engineering environment,
 or any place software  is written,
-aegis needs a clearly defined place is the scheme of things.
+Aegis needs a clearly defined place in the scheme of things.
 .LP
 This chapter describes the model of the software development process
-embodied in the aegis program,
-some of the deliberate design decisions made for aegis,
-some of the things aegis will and wont do for you,
-and the situations where aegis is most and least useful.
+embodied in the Aegis program,
+some of the deliberate design decisions made for Aegis,
+some of the things Aegis will and wont do for you,
+and the situations where Aegis is most and least useful.
 .so c7.1.so
 .so c7.2.so
 .so c7.5.so

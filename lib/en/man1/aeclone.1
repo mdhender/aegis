@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1998, 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -66,11 +66,16 @@ be copied from the development directory of the change to be copied.
 Be warned: if a file in the change which was cloned subsequently changes,
 those changes
 .I "will not"
-automagicly be tracked.  It is best if changes are cloned at a stable
+automagically be tracked.  It is best if changes are cloned at a stable
 time, such as one of the states after develop end, or even after integrate pass.
 .SS Development Directory Location
 .so z_filelocn.so
 .so z_whiteout.so
+.SS Notification
+The notification commands that would be run by the \fIaecp\fP(1),
+\fIaedb\fP(1), \fIaenf\fP(1), \fIaent\fP(1) and \fIaerm\fP(1) commands
+are run, as appropriate.  The \fIproject_\%file_\%command\fP is also run,
+if set.  See \fIaepconf\fP(5) for more information.
 .SH OPTIONS
 The following options are understood:
 .so o_branch.so
@@ -87,5 +92,28 @@ the automatically determined change number.  Useful for writing scripts.
 .so o_trunk.so
 .so o_wait.so
 .so o__rules.so
+.SH ERRORS
+It is an error if
+the current user is not an administrator of the project.
+(In some cases it is possible for developers of a project to create
+changes,
+see 
+.IR aepattr (5)
+for more information.)
 .so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aenc (1)
+Create a new change.
+.TP 8n
+.IR aeca (1)
+modify the attributes of a change
+.TP 8n
+.IR aena (1)
+add a new administrator to a project
+.TP 8n
+.IR aepa (1)
+modify the attributes of a project
 .so z_cr.so

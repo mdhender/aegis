@@ -1,0 +1,52 @@
+#
+#	aegis - project change supervisor
+#	Copyright (C) 2002 Peter Miller;
+#	All rights reserved.
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#
+# MANIFEST: Russian localization
+#
+msgid	""
+msgstr	"PO-Revision-Date: 29-Jan-2002\n"
+	"Last-Translator: Alexey Voinov <voins@voins.program.ru>\n"
+	"MIME-Version: 1.0\n"
+	"Content-Type: text/plain; charset=KOI8-R\n"
+	"Content-Transfer-Encoding: 8bit\n"
+
+# --------------------------------------------------------------------------
+#
+# This fatal error message is issued when a file ches size while the
+# archive is being constructed.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"archive member $filename changed size"
+msgstr	"файл $filename изменил размер во время работы, архив испорчен"
+
+#
+# This fatal error message is issued when there would be no files in
+# the distributed change set.
+#
+msgid	"bad send no files"
+msgstr	"отсутствуют файлы для пересылки"
+
+#
+# This fatal error message is issued when a change is not in a suitable
+# state from which to make a distribution change set.
+#
+msgid	"bad send state"
+msgstr	"этот блок изменений находится в стадии $state; для пересылки он "
+	"должен быть в одной из более поздних стадий"

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,7 @@
  */
 
 #include <ac/stdio.h>
+#include <ac/stdlib.h>
 
 #include <arglex2.h>
 #include <change.h>
@@ -36,6 +37,7 @@
 #include <sub.h>
 #include <trace.h>
 #include <user.h>
+#include <version.h>
 
 
 /*
@@ -110,13 +112,14 @@ aesub_main()
 	string_ty	*s;
 	project_ty	*pp;
 	user_ty		*up;
-	change_ty	*cp;
 	sub_context_ty	*scp;
 	size_t		j;
+	int		baseline;
 
 	trace(("aesub_main()\n{\n"/*}*/));
 	project_name = 0;
 	change_number = 0;
+	baseline = 0;
 	string_list_constructor(&arg);
 	while (arglex_token != arglex_token_eoln)
 	{
@@ -137,7 +140,7 @@ aesub_main()
 			else if (change_number < 1)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl
 				(
 					scp,
@@ -161,8 +164,23 @@ aesub_main()
 			string_list_append(&arg, s);
 			str_free(s);
 			break;
+
+		case arglex_token_baseline:
+			if (baseline)
+				duplicate_option(aesub_usage);
+			baseline = 1;
+			break;
 		}
 		arglex();
+	}
+	if (change_number && baseline)
+	{
+		mutually_exclusive_options
+		(
+			arglex_token_change,
+			arglex_token_baseline,
+			aesub_usage
+		);
 	}
 
 	/*
@@ -182,30 +200,46 @@ aesub_main()
 	/*
 	 * locate change data
 	 */
-	if (!change_number)
-		change_number = user_default_change(up);
-	cp = change_alloc(pp, change_number);
-	change_bind_existing(cp);
-
-	for (j = 0; j < arg.nstrings; ++j)
+	if (baseline)
 	{
-		if (j)
-			putchar(' ');
-		scp = sub_context_New("command line", j + 1);
-		s = substitute(scp, cp, arg.string[j]);
-		sub_context_delete(scp);
-		fputs(s->str_text, stdout);
-		str_free(s);
+		for (j = 0; j < arg.nstrings; ++j)
+		{
+			if (j)
+				putchar(' ');
+			scp = sub_context_New("command line", j + 1);
+			s = substitute_p(scp, pp, arg.string[j]);
+			sub_context_delete(scp);
+			fputs(s->str_text, stdout);
+			str_free(s);
+		}
+	}
+	else
+	{
+		change_ty	*cp;
+
+		if (!change_number)
+			change_number = user_default_change(up);
+		cp = change_alloc(pp, change_number);
+		change_bind_existing(cp);
+	
+		for (j = 0; j < arg.nstrings; ++j)
+		{
+			if (j)
+				putchar(' ');
+			scp = sub_context_New("command line", j + 1);
+			s = substitute(scp, cp, arg.string[j]);
+			sub_context_delete(scp);
+			fputs(s->str_text, stdout);
+			str_free(s);
+		}
+		change_free(cp);
 	}
 	putchar('\n');
 
 	/*
 	 * clean up and go home
 	 */
-	change_free(cp);
 	project_free(pp);
-	if (project_name)
-		str_free(project_name);
 	string_list_destructor(&arg);
 	trace((/*{*/"}\n"));
 }
@@ -245,6 +279,10 @@ main(argc, argv)
 
 	case arglex_token_help:
 		aesub_help();
+		break;
+
+	case arglex_token_version:
+		version_copyright();
 		break;
 	}
 	exit(0);

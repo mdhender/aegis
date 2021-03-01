@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1995, 1997-1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -85,8 +85,8 @@ gonzo_user()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Number1", "%d", u->uid);
-			sub_var_set(scp, "Number2", "%d", AEGIS_MIN_UID);
+			sub_var_set_long(scp, "Number1", u->uid);
+			sub_var_set_long(scp, "Number2", AEGIS_MIN_UID);
 			fatal_intl(scp, i18n("AEGIS_USER_UID ($number1) vs AEGIS_MIN_UID ($number2) misconfigured"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -96,8 +96,8 @@ gonzo_user()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Number1", "%d", u->gid);
-			sub_var_set(scp, "Number2", "%d", AEGIS_MIN_GID);
+			sub_var_set_long(scp, "Number1", u->gid);
+			sub_var_set_long(scp, "Number2", AEGIS_MIN_GID);
 			fatal_intl(scp, i18n("AEGIS_USER_GID ($number1) vs AEGIS_MIN_GID ($number2) misconfigured"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -113,14 +113,7 @@ static int
 is_temporary(s)
 	string_ty	*s;
 {
-	return
-	(
-		!strncmp(s->str_text, "/tmp/", 5)
-	||
-		!strncmp(s->str_text, "/usr/tmp/", 9)
-	||
-		!strncmp(s->str_text, "/var/tmp/", 9)
-	);
+	return !!strstr(s->str_text, "/tmp/");
 }
 
 
@@ -215,7 +208,7 @@ gonzo_gstate_get(gp)
 				(gp->temporary ? -1 : user_gid(gonzo_user()))
 			);
 			gp->gstate_data =
-				gstate_read_file(gp->gstate_filename->str_text);
+				gstate_read_file(gp->gstate_filename);
 		}
 		else
 			gp->gstate_data = (gstate)gstate_type.alloc();
@@ -357,7 +350,7 @@ gonzo_gstate_write_sub(gp)
 		construct_library_directory(gp);
 		gonzo_become();
 		undo_unlink_errok(filename_new);
-		gstate_write_file(filename_new->str_text, gp->gstate_data, 0);
+		gstate_write_file(filename_new, gp->gstate_data, 0);
 		commit_rename(filename_new, gp->gstate_filename);
 		os_chmod(filename_new, 0644);
 		gonzo_become_undo();
@@ -366,7 +359,7 @@ gonzo_gstate_write_sub(gp)
 	{
 		gonzo_become();
 		undo_unlink_errok(filename_new);
-		gstate_write_file(filename_new->str_text, gp->gstate_data, 0);
+		gstate_write_file(filename_new, gp->gstate_data, 0);
 		commit_rename(gp->gstate_filename, filename_old);
 		commit_rename(filename_new, gp->gstate_filename);
 		commit_unlink_errok(filename_old);
@@ -411,8 +404,8 @@ do_tail()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Name1", "AEGIS");
-			sub_var_set(scp, "Name2", "AEGIS_PATH");
+			sub_var_set_charstar(scp, "Name1", "AEGIS");
+			sub_var_set_charstar(scp, "Name2", "AEGIS_PATH");
 			verbose_intl
 			(
 				scp,
@@ -443,7 +436,7 @@ do_tail()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_library));
+			sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_library));
 			fatal_intl(scp, i18n("test mode needs $name"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -537,6 +530,7 @@ gonzo_project_home_path_sub(gp, name)
 	gstate		gstate_data;
 	size_t		j;
 	string_ty	*result;
+	gstate_where	addr = 0;
 
 	/*
 	 * find the project in the gstate
@@ -547,8 +541,6 @@ gonzo_project_home_path_sub(gp, name)
 	result = 0;
 	for (j = 0; j < gstate_data->where->length; ++j)
 	{
-		gstate_where	addr;
-
 		addr = gstate_data->where->list[j];
 		if (addr->alias_for)
 			continue;
@@ -787,7 +779,7 @@ result = %08lX)\n{\n", uname->str_text, result));
 			str_free(ustate_path);
 			continue;
 		}
-		ustate_data = ustate_read_file(ustate_path->str_text);
+		ustate_data = ustate_read_file(ustate_path);
 		gonzo_become_undo();
 		if (!ustate_data->own)
 			ustate_data->own =
@@ -966,8 +958,8 @@ gonzo_alias_delete_destination_sub(gp, name)
 	/*
 	 * find the project in the gstate
 	 */
-	trace(("gonzo_alias_delete_destination_sub(gp = %08lX, pp = %08lX)\n{\n",
-		gp, pp));
+	trace(("gonzo_alias_delete_destination_sub(gp = %08lX)\n{\n",
+		gp));
 	gstate_data = gonzo_gstate_get(gp);
 	assert(gstate_data->where);
 	result = 0;

@@ -22,6 +22,7 @@
 
 #include <output/base64.h>
 #include <output/private.h>
+#include <str.h>
 
 static char base64[] =
    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -43,13 +44,14 @@ struct output_base64_ty
 	int		residual_bits;
 	int		output_column;
 	long		pos;
+	int		bol;
 };
 
 
-static void destructor _((output_ty *));
+static void output_base64_destructor _((output_ty *));
 
 static void
-destructor(fp)
+output_base64_destructor(fp)
 	output_ty	*fp;
 {
 	output_base64_ty *this;
@@ -77,43 +79,53 @@ destructor(fp)
 }
 
 
-static void oputc _((output_ty *, int));
+static void output_base64_write _((output_ty *, const void *, size_t));
 
 static void
-oputc(fp, c)
+output_base64_write(fp, p, len)
 	output_ty	*fp;
-	int		c;
+	const void	*p;
+	size_t		len;
 {
+	const unsigned char *data;
 	output_base64_ty *this;
 
+	data = p;
 	this = (output_base64_ty *)fp;
-	this->residual_value = (this->residual_value << 8) | (c & 0xFF);
-	this->residual_bits += 8;
-	for (;;)
+	while (len > 0)
 	{
-		this->residual_bits -= 6;
-		output_fputc
-		(
-			this->deeper,
-			map64(this->residual_value >> this->residual_bits)
-		);
-		this->output_column++;
-		if (this->residual_bits == 0 && this->output_column > 70)
+		unsigned c = *data++;
+		--len;
+
+		this->residual_value = (this->residual_value << 8) | (c & 0xFF);
+		this->residual_bits += 8;
+		for (;;)
 		{
-			output_fputc(this->deeper, '\n');
-			this->output_column = 0;
+			this->residual_bits -= 6;
+			output_fputc
+			(
+				this->deeper,
+				map64(this->residual_value >> this->residual_bits)
+			);
+			this->output_column++;
+			if (this->residual_bits == 0 && this->output_column > 70)
+			{
+				output_fputc(this->deeper, '\n');
+				this->output_column = 0;
+			}
+			if (this->residual_bits < 6)
+				break;
 		}
-		if (this->residual_bits < 6)
-			break;
+		this->pos++;
+		this->bol = (c == '\n');
 	}
-	this->pos++;
 }
 
 
-static const char *filename _((output_ty *));
+static string_ty *output_base64_filename _((output_ty *));
 
-static const char *
-filename(fp)
+static string_ty *
+output_base64_filename(fp)
 	output_ty	*fp;
 {
 	output_base64_ty *this;
@@ -123,10 +135,10 @@ filename(fp)
 }
 
 
-static long otell _((output_ty *));
+static long output_base64_ftell _((output_ty *));
 
 static long
-otell(fp)
+output_base64_ftell(fp)
 	output_ty	*fp;
 {
 	output_base64_ty *this;
@@ -136,16 +148,58 @@ otell(fp)
 }
 
 
+static int output_base64_page_width _((output_ty *));
+
+static int
+output_base64_page_width(fp)
+	output_ty	*fp;
+{
+	output_base64_ty *this;
+
+	this = (output_base64_ty *)fp;
+	return output_page_width(this->deeper);
+}
+
+
+static int output_base64_page_length _((output_ty *));
+
+static int
+output_base64_page_length(fp)
+	output_ty	*fp;
+{
+	output_base64_ty *this;
+
+	this = (output_base64_ty *)fp;
+	return output_page_length(this->deeper);
+}
+
+
+static void output_base64_eoln _((output_ty *));
+
+static void
+output_base64_eoln(fp)
+	output_ty	*fp;
+{
+	output_base64_ty *this;
+
+	this = (output_base64_ty *)fp;
+	if (!this->bol)
+		output_fputc(fp, '\n');
+}
+
+
 static output_vtbl_ty vtbl =
 {
 	sizeof(output_base64_ty),
+	output_base64_destructor,
+	output_base64_filename,
+	output_base64_ftell,
+	output_base64_write,
+	output_generic_flush,
+	output_base64_page_width,
+	output_base64_page_length,
+	output_base64_eoln,
 	"base64",
-	destructor,
-	filename,
-	otell,
-	oputc,
-	output_generic_fputs,
-	output_generic_write,
 };
 
 
@@ -165,5 +219,6 @@ output_base64(deeper, delete_on_close)
 	this->residual_bits = 0;
 	this->output_column = 0;
 	this->pos = 0;
+	this->bol = 1;
 	return result;
 }

@@ -1,12 +1,15 @@
 .so ../man1/aegis.1
+.so ../man1/ae-sccs-put.1
 .so ../man1/ae_c.1
 .so ../man1/ae_p.1
 .so ../man1/aeb.1
+.so ../man1/aebuffy.1
 .so ../man1/aeca.1
 .so ../man1/aecd.1
 .so ../man1/aechown.1
 .so ../man1/aeclean.1
 .so ../man1/aeclone.1
+.so ../man1/aecomp.1
 .so ../man1/aecp.1
 .so ../man1/aecpu.1
 .so ../man1/aed.1
@@ -21,10 +24,13 @@
 .so ../man1/aeib.1
 .so ../man1/aeibu.1
 .so ../man1/aeifail.1
+.so ../man1/aeimport.1
 .so ../man1/aeipass.1
 .so ../man1/ael.1
 .so ../man1/aelic.1
+.so ../man1/aels.1
 .so ../man1/aemv.1
+.so ../man1/aemvu.1
 .so ../man1/aena.1
 .so ../man1/aenbr.1
 .so ../man1/aenbru.1
@@ -41,8 +47,11 @@
 .so ../man1/aent.1
 .so ../man1/aentu.1
 .so ../man1/aepa.1
+.so ../man1/aepatch.1
 .so ../man1/aer.1
 .so ../man1/aera.1
+.so ../man1/aerb.1
+.so ../man1/aerbu.1
 .so ../man1/aerd.1
 .so ../man1/aerect.1
 .so ../man1/aerfail.1
@@ -60,6 +69,8 @@
 .so ../man1/tkaeca.1
 .so ../man1/tkaegis.1
 .so ../man1/tkaenc.1
+.so ../man1/tkaepa.1
+.so ../man1/tkaer.1
 .so ../man5/aecattr.5
 .so ../man5/aecstate.5
 .so ../man5/aedir.5
@@ -74,5 +85,6 @@
 .so ../man5/aer.5
 .so ../man5/aerptidx.5
 .so ../man5/aesub.5
+.so ../man5/aetest.5
 .so ../man5/aeuconf.5
 .so ../man5/aeustate.5

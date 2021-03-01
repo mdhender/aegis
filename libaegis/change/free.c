@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2000 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -49,6 +49,10 @@ change_free(cp)
 			fstate_type.free(cp->fstate_data);
 		if (cp->fstate_stp)
 			symtab_free(cp->fstate_stp);
+		if (cp->top_path_unresolved)
+			str_free(cp->top_path_unresolved);
+		if (cp->top_path_resolved)
+			str_free(cp->top_path_resolved);
 		if (cp->development_directory_unresolved)
 			str_free(cp->development_directory_unresolved);
 		if (cp->development_directory_resolved)

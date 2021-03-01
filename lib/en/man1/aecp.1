@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1996, 1997, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1994, 1996-1999, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -104,32 +104,17 @@ These two features are very helpful when calling \*(n) from within
 a DMT to generate the list of source files.
 .so z_bl_lock.so
 .so z_test_corr.so
+.SS Notification
+The \fIcopy_file_command\fP in the project \fIconfig\fP file is run,
+if set.  The \fIproject_\%file_\%command\fP is also run, if set, and
+if there has been an integration recently.  See \fIaepconf\fP(5) for
+more information.
 .SH OPTIONS
 The following options are understood:
 .so o_baserel.so
 .so o_branch.so
 .so o_change.so
-.TP 8n
-\fB-DELta\fP \fInumber\fP
-.br
-This option may be used to specify a particular
-delta in the project's history to copy the file from,
-rather than the most current version.
-If the delta has been given a name
-(see
-.IR aedn (1)
-for how)
-you may use a delta name instead of a delta number.
-It is an error if the delta specified does not exist.
-Delta numbers start from 1 and increase;
-delta 0 is a special case meaning ``when the branch started''.
-.TP 8n
-\fB-DElta_Date\fP \fIstring\fP
-.br
-This option may be used to specify a particular date and time in the
-project's history to copy the file from, rather than the most current
-version.  It is an error if the string specified cannot be interpreted
-as a valid date and time.  Quote the string if you need to use spaces.
+.so o_delta.so
 .so o_help.so
 .TP 8n
 .B -INDependent
@@ -166,7 +151,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aecp '\*(n) -cp \e!* -v'
-sh$	aecp(){\*(n) -cp $* -v}
+sh$	aecp(){\*(n) -cp "$@" -v}
 .fi
 .SH ERRORS
 It is an error if

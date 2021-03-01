@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -249,7 +249,7 @@ undo()
 	
 			case what_message:
 				scp = sub_context_new();
-				sub_var_set(scp, "Message", "%S", ap->path1);
+				sub_var_set_string(scp, "Message", ap->path1);
 				error_intl(scp, i18n("$message"));
 				sub_context_delete(scp);
 				break;
@@ -278,8 +278,8 @@ undo()
 			{
 			case what_rename:
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name1", "%S", ap->path1);
-				sub_var_set(scp, "File_Name2", "%S", ap->path2);
+				sub_var_set_string(scp, "File_Name1", ap->path1);
+				sub_var_set_string(scp, "File_Name2", ap->path2);
 				error_intl(scp, i18n("unfinished: mv $filename1 $filename2"));
 				sub_context_delete(scp);
 				break;
@@ -287,15 +287,15 @@ undo()
 			case what_chmod:
 			case what_chmod_errok:
 				scp = sub_context_new();
-				sub_var_set(scp, "Argument", "%05o", ap->arg1);
-				sub_var_set(scp, "File_Name", "%S", ap->path1);
+				sub_var_set_format(scp, "Argument", "%05o", ap->arg1);
+				sub_var_set_string(scp, "File_Name", ap->path1);
 				error_intl(scp, i18n("unfinished: chmod $arg $filename"));
 				sub_context_delete(scp);
 				break;
 
 			case what_unlink_errok:
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", ap->path1);
+				sub_var_set_string(scp, "File_Name", ap->path1);
 				error_intl(scp, i18n("unfinished: rm $filename"));
 				sub_context_delete(scp);
 				break;
@@ -303,14 +303,14 @@ undo()
 			case what_rmdir_bg:
 			case what_rmdir_errok:
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", ap->path1);
+				sub_var_set_string(scp, "File_Name", ap->path1);
 				error_intl(scp, i18n("unfinished: rmdir $filename"));
 				sub_context_delete(scp);
 				break;
 
 			case what_message:
 				scp = sub_context_new();
-				sub_var_set(scp, "Message", "%S", ap->path1);
+				sub_var_set_string(scp, "Message", ap->path1);
 				error_intl(scp, i18n("$message"));
 				sub_context_delete(scp);
 				break;

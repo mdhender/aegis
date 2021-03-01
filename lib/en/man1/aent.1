@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1996, 1997, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1996-2000, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -92,6 +92,11 @@ the \fInew_test_filename\fP field.
 .so z_filesize.so
 .so z_test_rtnl.so
 .so z_test_corr.so
+.SS Notification
+The \fInew_test_command\fP in the project \fIconfig\fP file is run,
+if set.  The \fIproject_\%file_\%command\fP is also run, if set, and
+if there has been an integration recently.  See \fIaepconf\fP(5) for
+more information.
 .SH OPTIONS
 The following options are understood;
 .so o_auto.so
@@ -106,6 +111,7 @@ The following options are understood;
 This option may be used to specify a filename which is to be written with
 the automatically determined test file name.  Useful for writing scripts.
 .so o_project.so
+.so o_template.so
 .so o_terse.so
 .so o_verbose.so
 .so o_wait.so
@@ -115,7 +121,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aent '\*(n) -nt \e!* -v'
-sh$	aent(){\*(n) -nt $* -v}
+sh$	aent(){\*(n) -nt "$@" -v}
 .fi
 .SH ERRORS
 It is an error if

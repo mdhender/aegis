@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1996, 1997, 1998, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef COMMON_AC_WCHAR_H
 #define COMMON_AC_WCHAR_H
 
-#include <config.h>
+#include <ac/stddef.h>
 
 #ifdef HAVE_WCHAR_H
 #include <wchar.h>
@@ -33,6 +33,14 @@
 #ifndef _WINT_T
 #define _WINT_T
 typedef wchar_t wint_t;
+#endif
+#endif
+
+#ifndef HAVE_MBSTATE_T
+#define HAVE_MBSTATE_T
+#ifndef _MBSTATE_T
+#define _MBSTATE_T
+typedef int mbstate_t;
 #endif
 #endif
 

@@ -1,0 +1,140 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the lib/en/man1/aels command.
+.\"
+.so z_name.so
+.ds n) aels
+.TH "\*(n)" 1 \*(N) "Reference Manual" ""
+.SH NAME
+\*(n) \- annotated directory listinbg
+.XX "aels(1)" "annotated directory listing"
+.SH SYNOPSIS
+.B \*(n)
+[
+.IR option \&...
+][
+.IR filename \&...
+]
+.br
+.B \*(n)
+.B -Help
+.br
+.B \*(n)
+.B -VERSion
+.SH DESCRIPTION
+The \fI\*(n)\fP command is used to list information about the files
+and directories named on the command line.  If no files are named,
+the current directory is listed.
+.PP
+The view presented is from Aegis' perspective.
+It unifies the development directory with the baseline.
+.SH OPTIONS
+The following options are understood:
+.TP 8n
+.B \-Recursive
+.TP 8n
+.B \-LOng
+This option implies the 
+\fB\-Show-Mode\fP,
+\fB\-Show-Attributes\fP,
+\fB\-Show-User\fP,
+\fB\-Show-Group\fP,
+\fB\-Show-Size\fP and
+\fB\-Show-When\fP
+options, unless explicitly overridden.
+.TP 8n
+.B \-Show-Dot-Files
+This option may be used to
+show files starting with a dot (.).
+.TP 8n
+.B \-Hide-Dot-Files
+This option may be used to
+hide files starting with a dot (.).
+This is the default.
+.TP 8n
+.B \-Show-Removed-Files
+This option may be used to include removed files in the listing.
+.TP 8n
+.B \-Hide-Removed-Files
+This option may be used to exclude removed files from the listing.
+This is the default.
+.TP 8n
+.B \-Show-Mode
+This option may be used to include the mode column in the listing.
+The mode column indicates the file type and permissions.
+.TP 8n
+.B \-Hide-Mode
+This option may be used to exclude the mode column from the listing.
+This is the default.
+.TP 8n
+.B \-Show-Attributes
+This option may be used to include the attributes column in the listing.
+The attributes column indicates whether the file is part of the change,
+the project or neither; whether the file is being created, modified or
+removed; whether the file is a sourec file, a test file, or neither.
+This is the default.
+.TP 8n
+.B \-Hide-Attributes
+This option may be used to exclude the attributes column from the listing.
+.TP 8n
+.B \-Show-User
+This option may be used to include file owner information in the listing.
+.TP 8n
+.B \-Hide-User
+This option may be used to exclude file owner information from the listing.
+This is the default.
+.TP 8n
+.B \-Show-Group
+This option may be used to include file group information in the listing.
+.TP 8n
+.B \-Hide-Group
+This option may be used to exclude file group information from the listing.
+This is the default.
+.TP 8n
+.B \-Show-Size
+This option may be used to include file size information in the listing.
+.TP 8n
+.B \-Hide-Size
+This option may be used to exclude file size information from the listing.
+This is the default.
+.TP 8n
+.B \-Show-When
+This option may be used to include the file modification time in the listing.
+.TP 8n
+.B \-Hide-When
+This option may be used to exclude the file modification time from the listing.
+This is the default.
+.so o_help.so
+.so o__rules.so
+.so z_exit.so
+.SH SEE ALSO
+.TP 8n
+.IR ls (1)
+list directory contents
+.TP 8n
+.IR aefind (1)
+search for files in directory hierarchy
+.TP 8n
+.I "ael cf"
+List change files.
+.TP 8n
+.I "ael pf"
+List project files.
+.so z_cr.so

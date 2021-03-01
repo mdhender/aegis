@@ -1,0 +1,103 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2001 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: recursive descent of change data structures
+ *
+ * This report is primarily of use in debugging, but can also
+ * demonstrate the shape of the internal data structures available to a
+ * report author.  If you are expluring a specific sub-section of the
+ * data tree, the best idea its to copy this report and then mangle the
+ * thing first placed on the stack.
+ */
+
+title("Project \"" ## project_name() ## "\", Change " ## change_number(),
+	"Change Recursive Debug");
+
+columns
+(
+	{ name = "Variable Name\n---------------"; right = 0; },
+	{ name = "Type\n------"; left = 16; width = 11; },
+	{ name = "Value\n------"; right = 0; }
+);
+
+/*
+ * Grab the change state, and print out how we got it, so that report
+ * writers can get an idea of how to get at these fields in the future.
+ */
+auto cs;
+cs = project[project_name()].state.branch.change[change_number()];
+print("cs = project[project_name()].state.branch.change[change_number()];");
+
+auto stack, top;
+top = 0;
+stack[top++] = { name = "cs"; value = cs; };
+
+while (top > 0)
+{
+	auto x, t, j, k, klen;
+
+	x = stack[--top];
+	t = typeof(x.value);
+	if (t == "list")
+	{
+		print(x.name, t, "");
+		klen = count(x.value);
+		for (j = 0; j < klen; ++j)
+		{
+			stack[top + klen - 1 - j] =
+				{
+					name = x.name ## "[" ## j ## "]";
+					value = x.value[j];
+				};
+		}
+		top += klen;
+	}
+	else if (t == "struct")
+	{
+		print(x.name, t, "");
+		k = sort(keys(x.value));
+		klen = count(k);
+		for (j = 0; j < klen; ++j)
+		{
+			if (typeof(k[j]) == "integer")
+			{
+				stack[top + klen - 1 - j] =
+				{
+					name = x.name ## "[" ## k[j] ## "]";
+					value = x.value[k[j]];
+				};
+			}
+			else
+			{
+				stack[top + klen - 1 - j] =
+				{
+					name = x.name ## "." ## k[j];
+					value = x.value[k[j]];
+				};
+			}
+		}
+		top += klen;
+	}
+	else if (t == "enumeration" || t == "time" || t == "integer")
+		print(x.name, t, x.value);
+	else if (t == "string")
+		print(x.name, t, "\"" ## x.value ## "\"");
+	else
+		print(x.name, t, "???");
+}

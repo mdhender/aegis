@@ -35,5 +35,5 @@ There is no need to the base64 in this case, so use the appropriate option.
 .LP
 \fIwrite this section\fP
 .LP
-You need to se t the appropriate mailcap entry, so that
+You need to set the appropriate mailcap entry, so that
 \f(CWapplication/aegis-change-set\fP is handled by \fIaedist --receive\fP.

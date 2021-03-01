@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1999 Peter Miller;
+ *	Copyright (C) 1991-1997, 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -99,8 +99,10 @@ enum edit_ty
 typedef enum edit_ty edit_ty;
 
 void os_edit _((string_ty *, edit_ty));
+string_ty *os_edit_string _((string_ty *, edit_ty));
 string_ty *os_edit_new _((edit_ty));
 string_ty *os_edit_filename _((int));
+string_ty *os_tmpdir _((void));
 
 int os_pathconf_name_max _((string_ty *));
 int os_pathconf_path_max _((string_ty *));

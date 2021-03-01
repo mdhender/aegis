@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -661,6 +661,10 @@ Will return the empty string if not set.
 gettime
 This function is used to parse a string to produce a time.
 It understands a variety of different date formats.
+.TP 8n
+getuid
+This function takes no arguments, and returns the user ID of the process
+which invoked the report generator. The return value is an integer.
 .\" ------------------------------ H ------------------------------
 .\" ------------------------------ I ------------------------------
 .\" ------------------------------ J ------------------------------
@@ -680,6 +684,9 @@ mktime
 This a synonym for the
 .I gettime
 function.
+.TP 8n
+mtime
+This function may be used to obtain the modification time of a file.
 .\" ------------------------------ N ------------------------------
 .TP 8n
 need
@@ -690,7 +697,7 @@ only a single blank line will be inserted.
 The return value is void.
 .TP 8n
 now
-This function takes not arguments, and returns the current time.
+This function takes no arguments, and returns the current time.
 .\" ------------------------------ O ------------------------------
 .\" ------------------------------ P ------------------------------
 .TP 8n
@@ -801,7 +808,7 @@ This function is used to round a number to an integer,
 towards zero.
 .TP 8n
 typeof
-This function is used to 
+This function is used to
 determine the type of a value.
 The return type is a string
 containing the name of the type,
@@ -846,6 +853,31 @@ This variable is a list
 containing the arguments passed on the
 .IR aer (1)
 command line.
+.\" ------------------------------ C ------------------------------
+.TP 8n
+change
+.RS
+There is a special type of variable created by using an expression similar
+to \fIproject[project_name()].state.change[n]\fP which contains all of the
+fields described in aecstate\fP(5), plus some extras:
+.TP 8n
+change
+Branches have a change array, just like \fIproject\fP below.
+.TP 8n
+change_number
+The number of the change.
+.TP 8n
+config
+This gives access to all of the fields described in \fIaepconf\gP(5).
+.TP 8n
+project_name
+The name of the project containing the change.
+.TP 8n
+src
+This gives access to the change files, and when indexed by file name,
+yields a value conataining fields as described in \fIaefstate\fP(5),
+for the \fIsrc\fP field.
+.RE
 .\" ------------------------------ G ------------------------------
 .TP 8n
 group
@@ -900,6 +932,17 @@ it is an array indexed by change number of change states,
 as documented in the
 .IR aecstate (5)
 manual entry.
+(See \fIchange\fP, above.)
+.TP 8n
+user
+This variable is an array containing the \fI\.aegisrc\fP file of
+each user.  Each entry is a structure with fields as documented in the
+\fIaeuconf\fP(5) manual entry.  This array may be indexed by either a
+string, treated as a user name, or by an integer, treated as a uid.
+Files which are unreadable or absent will generate an error, so you need
+to wrap accesses in a try/catch statement.
+(Note: \f[CW]count()\fP and \f[CW]keys()\fP functions think the array
+is empty; if you want a list of users, consult the \f[CW]passwd\fP array.)
 .\" ---------------------------------------------------------------
 .SH FILES
 The reports are kept in the

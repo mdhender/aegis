@@ -1,0 +1,326 @@
+#!/bin/sh
+#-*-tcl-*-
+#	aegis - project change supervisor
+#	Copyright (C) 2000, 2001 Scott Finneran
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#
+# MANIFEST: tcl-tk change set comparison program contributed by Scott Finneran.
+#
+#       Makes use of tkdiff by by John M. Klassa.
+#             TkDiff Home Page: http://www.ede.com/free/tkdiff
+#
+#	@configure_input@
+#
+# comments wrap in Tcl, but not in sh \
+exec wish $0 -- ${1+"$@"}
+
+set bindir @bindir@
+set libdir @libdir@
+set datadir @datadir@
+
+wm title . tkaer
+wm iconname . tkaer
+wm iconbitmap . @$datadir/aegis.icon
+wm iconmask . @$datadir/aegis.mask
+
+proc read_pipe { command errok } {
+    set data ""
+    set fd [open $command r]
+    if { $fd != "" } {
+	set data [read $fd]
+	set codevar ""
+	catch { close $fd } codevar
+	if { $codevar != "" && !$errok } {
+	    puts [format "Command \"%s\"\nreturned \"%s\"" \
+		    $command $codevar]
+	    exit 1
+	}
+    }
+    return [string trim $data]
+}
+
+proc handle_exit { widgetname } {
+
+    destroy $widgetname
+}
+
+proc list_selected { widgetname } {
+    # default return value.
+    set item ""
+
+    set i [$widgetname curselection]
+
+    if { $i != "" } {
+	set item [$widgetname get $i]
+    }
+
+    return "$item"
+}
+
+proc display_list {group_name file_list label_text} {
+    # List of files newly created by this change:
+    frame $group_name
+    label $group_name.label -text $label_text
+    pack $group_name.label -side top -expand y
+
+    listbox $group_name.listbox -relief raised -borderwidth 2 \
+	    -yscrollcommand "$group_name.scroll set"
+    pack $group_name.listbox -side left -expand y
+
+    scrollbar $group_name.scroll \
+	    -command "$group_name.listbox yview"
+    pack $group_name.scroll -side right -fill y -expand y
+
+    # Implement a complex search algorithm for finding
+    # the longest filename :-)
+    set longest_filename_length  0; # just to get the ball rolling
+    foreach i $file_list {
+	$group_name.listbox insert end $i
+	if {[string length $i] > $longest_filename_length} {
+	    set longest_filename_length [string length $i]
+	}
+    }
+
+    # and update the width of the listboxes to suit.
+    $group_name.listbox configure -width $longest_filename_length
+
+    pack $group_name -side left -expand y
+}
+
+proc diff_review_file {old_filename} {
+    global change1_development_directory
+    global change1_files_list_oldname
+    global change1_files_list_newname
+
+    global change2_development_directory
+    global change2_files_list_oldname
+    global change2_files_list_newname
+    global diff_command
+
+    # ok, we know the (common) old name, so first determine the new name
+    # and then diff the mongrels.
+
+    set c1_index [lsearch -exact $change1_files_list_oldname $old_filename]
+    set c1_file [format "%s/%s" $change1_development_directory \
+                 [lindex $change1_files_list_newname $c1_index]]
+
+    set c2_index [lsearch -exact $change2_files_list_oldname $old_filename]
+    set c2_file [format "%s/%s" $change2_development_directory \
+                 [lindex $change2_files_list_newname $c2_index]]
+
+    eval "exec \"$diff_command\" $c1_file $c2_file &"
+}
+
+proc process_command_line {} {
+    global argc argv argv0
+    global project_name1
+    global project_name2
+    global change_number1
+    global change_number2
+
+    set argindex 0
+
+    set project_name1 ""
+    set project_name2 ""
+    set p_count 1
+
+    set change_number1 ""
+    set change_number2 ""
+    set c_count 1
+
+    # Loop through argv seeing and try to guess at what the user wants to do.
+    while {$argindex < $argc} {
+	set arg [lindex $argv $argindex]
+	switch -regexp -- $arg {
+	    "^-p$" {
+		incr argindex
+		set project_name$p_count [lindex $argv $argindex]
+		incr p_count
+	    }
+	    "^-p.*" {
+		set project_name$p_count [string range $arg 2 end]
+		incr p_count
+	    }
+	    "^-c$" {
+		incr argindex
+		set change_number$c_count [lindex $argv $argindex]
+		incr c_count
+	    }
+	    "^-c.*" {
+		set change_number$c_count [string range $arg 2 end]
+		incr c_count
+	    }
+	    default {
+		set change_number$c_count [lindex $argv $argindex]
+		incr c_count
+	    }
+	}
+	incr argindex
+    }
+
+    # now as the counts were post-incremented, adjust the values.
+    incr c_count -1
+    incr p_count -1
+
+    # ok now we have the info provided by the user, so let's try
+    # to fill in the gaps.
+
+    if { $project_name1 == "" } {
+	# Set the project_name1 variable.  We need to ask Aegis for this,
+	# so that we get what *aegis* thinks is the default project name.
+	set project_name1 [read_pipe "|aegis -list default_project" 1]
+	if { $project_name1 == "" } {
+	    puts [format "\n%s couldn't determine the project name\n" $argv0]
+	    exit 1
+	}
+    }
+
+    if { $project_name2 == "" } {
+	# if project_name2 was not specified then assume that the 2 changes
+	# exist in the one project (not all that unreasonable really).
+	set project_name2 $project_name1
+    }
+
+
+    # The bare minimum we need to proceed is a single change number.
+    if { $change_number2 == "" } {
+	if { $c_count < 1 } {
+	    puts "\nUsage: aecomp \[Project Name\] \[Change Number\] \
+	    \[Project Name\] \[Change Number\]\n"
+	    # can't do much more....
+	    exit 1
+	}
+
+	# well the user didn't specify the second change number so ask aegis
+	# for help.
+	set change_number2 [read_pipe "|aegis -list default_change" 1]
+	if { $change_number1 == ""  } {
+	    puts [format "%s couldn't determine the change number\n" $argv0]
+	    exit 1
+	}
+    }
+}
+
+
+
+# AND BEGIN....
+
+# Firstly, lets figure out what to do.
+process_command_line
+
+# Get the change_list etc. variables from the report for change 1.
+eval [read_pipe [format "|aereport -f %s/wish/aecomp.rpt -unf \
+	-pw=1000 -project=%s -change=%s" \
+	$datadir $project_name1 $change_number1] 0]
+if { [llength $change_files_list_newname] != 0 } {
+    set change1_files_list_newname    $change_files_list_newname
+} else {
+    puts "Change $change_number1 contains no new/modified/moved files"
+    exit 1
+}
+
+if { [llength $change_files_list_oldname] != 0 } {
+    set change1_files_list_oldname    $change_files_list_oldname
+}
+
+set change1_development_directory $development_directory
+
+if { [llength $removed_files_list] != 0 } {
+    set change1_removed_files_list    $removed_files_list
+}
+
+# Get the change_list etc. variables from the report for change 2.
+# First clear out the lists as the report performs "lappend"'s
+set change_files_list_newname ""
+set change_files_list_oldname ""
+eval [read_pipe [format "|aereport -f %s/wish/aecomp.rpt -unf \
+	-pw=1000 -project=%s -change=%s" \
+	$datadir $project_name2 $change_number2] 0]
+
+if { [llength $change_files_list_newname] != 0 } {
+    set change2_files_list_newname    $change_files_list_newname
+} else {
+    puts "Change $change_number2 contains no new/modified/moved files"
+    exit 1
+}
+
+if { [llength $change_files_list_oldname] != 0 } {
+    set change2_files_list_oldname    $change_files_list_oldname
+}
+
+set change2_development_directory $development_directory
+
+if { [llength $removed_files_list] != 0 } {
+    set change2_removed_files_list    $removed_files_list
+}
+
+if { $development_directory == "" } {
+    puts [format \
+	    "%s couldn't find the development directory for change %s\n" \
+	    $argv0 $change_number]
+    exit 1
+}
+
+# OK now that we (should) have all the facts....
+
+wm title . [format "aecomp - \"%s\" - Change \"%d\" vs. \"%s\" - Change \"%d\"" \
+             $project_name1 $change_number1 $project_name2 $change_number2 ]
+wm iconname . aecomp
+
+# define the review commands.
+set diff_command [format "%s/tkdiff" $bindir]
+
+#
+# Now create the widget heirarchy
+#
+frame .toplevel
+
+frame .toplevel.files
+
+# List of files common to both changes (that are not being removed).
+# note: we consider them common if they have the same "old" name
+#       ie. in one or both of the changes, the file may have been aemv'ed
+
+# run through the change 1 files and look for corresponding names in change 2
+set num_common_files 0
+foreach i $change1_files_list_oldname {
+    if { [lsearch -exact $change2_files_list_oldname $i] != -1 } {
+	lappend common_files_list $i
+	incr num_common_files
+    }
+}
+
+if {$num_common_files == 1} {
+    set list_title [concat $num_common_files " Common File:"]
+} else {
+    set list_title [concat $num_common_files " Common Files:"]
+}
+display_list .toplevel.files.created $common_files_list $list_title
+bind .toplevel.files.created.listbox <Double-Button-1> {
+    diff_review_file [list_selected .toplevel.files.created.listbox]
+}
+
+pack .toplevel.files -expand y
+
+# And get a finished button.
+frame .toplevel.buttons
+button .toplevel.buttons.finished -text "Finished" -command {exit 0}
+pack .toplevel.buttons.finished -side bottom -expand y
+pack .toplevel.buttons -expand y
+
+pack .toplevel -expand y
+
+set errorCode 0

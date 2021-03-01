@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1998, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@ static arglex_table_ty table[] =
 static	int		argc;
 static	char		**argv;
 	arglex_value_ty	arglex_value;
-	arglex_token_ty	arglex_token;
+	int		arglex_token;
 static	arglex_table_ty	*utable;
 static	const char	*partial;
 static	int		strings_only_mode;
@@ -135,8 +135,8 @@ arglex_compare(formal, actual)
 	const char	*formal;
 	const char	*actual;
 {
-	char		fc;
-	char		ac;
+	unsigned char	fc;
+	unsigned char	ac;
 	int		result;
 
 	trace(("arglex_compare(formal = \"%s\", actual = \"%s\")\n{\n",
@@ -389,7 +389,7 @@ is_a_number(s)
  *	Must call arglex_init befor this function is called.
  */
 
-arglex_token_ty
+int
 arglex()
 {
 	arglex_table_ty	*tp;
@@ -401,7 +401,7 @@ arglex()
 	string_ty	*s1;
 	string_ty	*s2;
 
-	trace(("arglex()\n{\n"/*}*/));
+	trace(("arglex()\n{\n"));
 	if (pushback)
 	{
 		/*
@@ -561,8 +561,113 @@ arglex()
 	done:
 	arglex_value.alv_string = arg;
 	trace(("return %d; /* %s */\n", arglex_token, arglex_value.alv_string));
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 	return arglex_token;
+}
+
+
+/*
+ * NAME
+ *	arglex_prefetch
+ *
+ * SYNOPSIS
+ *	arglex_token_ty arglex_prefetch(arglex_token_ty *list, int list_len);
+ *
+ * DESCRIPTION
+ *	The arglex_prefetch function is used to perfom lexical analysis
+ *	on the command line arguments, much like the arglex function.
+ *	However, it is given a list of token to look for on the command
+ *	line, and such arguments are matched and extracted, which may
+ *	be used to relax command line argument ordering restrictions.
+ *
+ * RETURNS
+ *	One of the tokens in the list, or
+ *	ARGLEX_PREFETCH_FAIL if none of the are available.
+ *
+ * CAVEAT
+ *	Must call arglex_init before this function is called.
+ */
+
+int
+arglex_prefetch(list, list_len)
+	arglex_token_ty	*list;
+	int		list_len;
+{
+	int		j;
+
+	trace(("arglex_prefetch()\n{\n"));
+	if (strings_only_mode)
+		goto fail;
+
+	for (j = 0; j < argc; ++j)
+	{
+		char		*actual;
+		int		k;
+
+		/*
+		 * The ``--'' option means the rest of the arguments on
+		 * the command line are only strings.
+		 */
+		actual = argv[j];
+		if (actual[0] == '-' && actual[1] == '-' && !actual[2])
+			goto fail;
+	
+		/*
+		 * see if it is a number
+		 */
+		if (is_a_number(actual))
+			continue;
+	
+		/*
+		 * Turn the GNU-style leading "--"
+		 * into "-" if necessary.
+		 */
+		if
+		(
+			actual[0] == '-'
+		&&
+			actual[1] == '-'
+		&&
+			actual[2]
+		&&
+			!is_a_number(actual + 1)
+		)
+			++actual;
+
+		for (k = 0; k < list_len; ++k)
+		{
+			int token = list[k];
+			char *formal = arglex_token_name(token);
+			if (arglex_compare(formal, actual))
+			{
+				int		m;
+
+				/*
+				 * Shuffle everything down to fill in
+				 * the hole.
+				 */
+				for (m = j + 1; m < argc; ++m)
+					argv[m - 1] = argv[m];
+				--argc;
+
+				/*
+				 * Fill in the answer as it would be
+				 * returned form arglex()
+				 */
+				arglex_value.alv_string = actual;
+				arglex_token = token;
+				trace(("return %d; /* %s */\n", arglex_token,
+					arglex_value.alv_string));
+				trace(("}\n"));
+				return arglex_token;
+			}
+		}
+	}
+
+	fail:
+	trace(("return FAIL;\n"));
+	trace(("}\n"));
+	return ARGLEX_PREFETCH_FAIL;
 }
 
 
@@ -632,4 +737,63 @@ arglex_table_catenate(tp1, tp2)
 	memcpy(tp + len1, tp2, len2 * sizeof(arglex_table_ty));
 	tp[len] = zero;
 	return tp;
+}
+
+
+/*
+ * NAME
+ *	arglex_dispatch
+ *
+ * DESCRIPTION
+ *	The arglex_dispatch function is used to dispatch into a function
+ *	table, based on the presence of one of a given list of command
+ *	line arguments being poresent on the command line.
+ *
+ *	If none of them are present, the `the_default' argument (if non-zero)
+ *	is a default function to be called.
+ */
+
+void
+arglex_dispatch(choices, choices_len, the_default)
+	arglex_dispatch_ty *choices;
+	int		choices_len;
+	void		(*the_default)_((void));
+{
+	int		j;
+	int		*tmp;
+	int		tmp_len;
+	int		tok;
+	int		priority;
+
+	trace(("arglex_dispatch()\n{\n"));
+	tmp = mem_alloc(choices_len * sizeof(int));
+	for (priority = 0; ; ++priority)
+	{
+		tmp_len = 0;
+		for (j = 0; j < choices_len; ++j)
+		{
+			arglex_dispatch_ty *cp = choices + j;
+			if (cp->priority == priority)
+				tmp[tmp_len++] = cp->token;
+		}
+		if (tmp_len == 0)
+			break;
+		tok = arglex_prefetch(tmp, tmp_len);
+		for (j = 0; j < choices_len; ++j)
+		{
+			arglex_dispatch_ty *cp = choices + j;
+			if (tok == cp->token)
+			{
+				mem_free(tmp);
+				if (cp->func)
+					cp->func();
+				trace(("}\n"));
+				return;
+			}
+		}
+	}
+	mem_free(tmp);
+	if (the_default)
+		the_default();
+	trace(("}\n"));
 }

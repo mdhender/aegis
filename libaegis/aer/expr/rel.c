@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,8 @@
  *
  * MANIFEST: functions to manipulate relative comparison expressions
  */
+
+#include <ac/string.h>
 
 #include <aer/expr/rel.h>
 #include <aer/value/boolean.h>
@@ -166,8 +168,8 @@ lt_evaluate(this)
 		 * give up on this one
 		 */
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", lv1->method->name);
-		sub_var_set(scp, "Name2", "%s", rv1->method->name);
+		sub_var_set_charstar(scp, "Name1", lv1->method->name);
+		sub_var_set_charstar(scp, "Name2", rv1->method->name);
 		s =
 			subst_intl
 			(
@@ -345,8 +347,8 @@ le_evaluate(this)
 		 * give up on this one
 		 */
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", lv1->method->name);
-		sub_var_set(scp, "Name2", "%s", rv1->method->name);
+		sub_var_set_charstar(scp, "Name1", lv1->method->name);
+		sub_var_set_charstar(scp, "Name2", rv1->method->name);
 		s =
 			subst_intl
 			(
@@ -524,8 +526,8 @@ gt_evaluate(this)
 		 * give up on this one
 		 */
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", lv1->method->name);
-		sub_var_set(scp, "Name2", "%s", rv1->method->name);
+		sub_var_set_charstar(scp, "Name1", lv1->method->name);
+		sub_var_set_charstar(scp, "Name2", rv1->method->name);
 		s =
 			subst_intl
 			(
@@ -703,8 +705,8 @@ ge_evaluate(this)
 		 * give up on this one
 		 */
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", lv1->method->name);
-		sub_var_set(scp, "Name2", "%s", rv1->method->name);
+		sub_var_set_charstar(scp, "Name1", lv1->method->name);
+		sub_var_set_charstar(scp, "Name2", rv1->method->name);
 		s =
 			subst_intl
 			(
@@ -880,8 +882,8 @@ eq_evaluate(this)
 		 * give up on this one
 		 */
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", lv1->method->name);
-		sub_var_set(scp, "Name2", "%s", rv1->method->name);
+		sub_var_set_charstar(scp, "Name1", lv1->method->name);
+		sub_var_set_charstar(scp, "Name2", rv1->method->name);
 		s =
 			subst_intl
 			(
@@ -1057,8 +1059,8 @@ ne_evaluate(this)
 		 * give up on this one
 		 */
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", lv1->method->name);
-		sub_var_set(scp, "Name2", "%s", rv1->method->name);
+		sub_var_set_charstar(scp, "Name1", lv1->method->name);
+		sub_var_set_charstar(scp, "Name2", rv1->method->name);
 		s =
 			subst_intl
 			(
@@ -1175,8 +1177,8 @@ match_evaluate(this)
 
 	default:
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", lv1->method->name);
-		sub_var_set(scp, "Name2", "%s", rv1->method->name);
+		sub_var_set_charstar(scp, "Name1", lv1->method->name);
+		sub_var_set_charstar(scp, "Name2", rv1->method->name);
 		s =
 			subst_intl
 			(
@@ -1295,8 +1297,8 @@ nmatch_evaluate(this)
 
 	default:
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", lv1->method->name);
-		sub_var_set(scp, "Name2", "%s", rv1->method->name);
+		sub_var_set_charstar(scp, "Name1", lv1->method->name);
+		sub_var_set_charstar(scp, "Name2", rv1->method->name);
 		s =
 			subst_intl
 			(

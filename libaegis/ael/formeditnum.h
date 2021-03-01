@@ -25,6 +25,8 @@
 
 #include <fstate.h>
 
-void list_format_edit_number _((int, fstate_src));
+struct output_ty; /* existence */
+
+void list_format_edit_number _((struct output_ty *, fstate_src));
 
 #endif /* LIBAEGIS_AEL_FORMEDITNUM_H */

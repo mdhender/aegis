@@ -1,0 +1,594 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2000-2002 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing lib/en/howto/devel_to_dos
+.\"
+.nh 2 "The To-Do List"
+.\" ========================================================================
+.nh 3 "Documentation"
+.IP \(bu 2n
+Add a section to the branching chapter of the User Guide, describing
+how a developer may use a branch to temporarily waive the build command.
+After a series of chnages on this branch, the build command is restored,
+and the branch development ended.  This allows regular "non working"
+commits, without losing any of the strengths of the Aegis process.
+Submitted: 7-Mar-2000
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+The manual pages need to have an example(s) section added to make them
+clearer.  This isn't just for beginners, infrequently used commands need
+examples even for sophisticated Aegis users..
+Submitted: Geoff Soutter <geoff@whitewolf.com.au>, 3 Mar 2000
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Get tkdiff 3-way merge working with Aegis (see
+\f[CW]http://www.ede.com/\%free/\%tkdiff/\fP for code).
+Submitted: 24-jan-2000
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Add information to the History Tool chapter, describing
+how to use CVSup to access the RCS history tree.
+Submitted: 28-jan-2000
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+the RCS history commands in the aegis user guide all use the `-u'
+option for `ci' to check out a copy after registering/updating
+a file.  However `ci -u' always does keyword expansion.  To avoid
+this, we have omitted the -u, so the working file is gone after
+the `ci'.  We check it out again using `co', this time with the
+`-ko' option to avoid keyword expansion.
+.\"
+.\"	history_create_command =
+.\"		"ci -f -d -M -m$c -t/dev/null '$i' '$h,v'; rcs -U '$h,v'; co -ko -u '$i' '$h,v'";
+.\"	history_put_command =
+.\"		"ci -f -d -M -m$c '$i' '$h,v'; co -ko -u '$i' '$h,v'";
+.\"	history_get_command =
+.\"		"co -ko -r'$e' -p '$h,v' > '$o'";
+.\"
+Note that the -ko option is always given to the `co' command,
+never to `ci' or `rcs'.
+Submitted: Ralf Fassel <ralf@akutech.de>, 18 Jan 2000
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+* diff ; test $? -le 1 -> diff ; test $? -ne 1
+means that unchanged files prevent aede!!
+(Only fly in the ointment is moving files - need to cope with this.)
+Submitted: Gus <gus@getsystems.com> 28 Jul 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+mention in the diff tool part of the User Guide,
+that you can mess with diff_command to exclude with binary files,
+or file with CR in them, or lines too long, \fIetc\fP.
+Submitted: PMiller, 28-jun-99
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+in the branching chapter, have a section about using sub-branches
+to turn build_command off (or to ignore exit status), and inregrate lots of teeny tiny bug fixes,
+and then turn it on again.
+In the front, reference the branching chapter in ``how to extend the
+Aegis process''  Can mention extra review steps there, too.
+Submitted: choffman@dvcorp.com, 22 Jun 1999
+.\"
+.\"  Ralf fassel suggests
+.\"	Either you add new code, then you *need* a build and regression
+.\"	tests.	Or you don't add new code, then why not accumulate those
+.\"	changes in one super-comment-fix-change.  It should not affect
+.\"	the working of the program, so there is `no need' to integrate
+.\"	it *right* *now*.
+.\"
+.\"	We had situations where changing the header files revealed a
+.\"	glitch in the makefiles (some modules were rebuilt, some not, so
+.\"	the magic constants between modules did not match any longer).
+.\"	And we also had the accidental `\' at the end of a comment
+.\"	line commenting out the following line of script code.	Without
+.\"	regression tests those would have ended up in the baseline.
+.\"
+.\"	I guess this is a common problem.  We ended up having one
+.\"	super-change before the release date accumulating all those
+.\"	small bug fixes.  This way you have to run the build/test cycle
+.\"	only once.  This way the definition of `few' above could be
+.\"	shifted nearer towards the release date.  Not really satisfying.
+.\"	But fixing a small bug and introducing another by sloppy editing
+.\"	isn't either in this situation shortly before release...
+.\"
+.\"	In short, we all curse aegis for the extended development cycle, but
+.\"	at the same time we wouldn't [omit] it any more.
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Document the build_time_adjust_notify_command in the DMT chapter of the
+User Guide.  Update the example projects to use it.  Update the config
+exmaple to use it.
+Submitted: PMiller, 4-apr-99
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Mention binary files in the diff and merge section
+(may provide aebinfil command to help choose which behaviour?)
+Submitted: PMiller, 31-mar-99
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+mention ``rcs -ko'' in the User Guide and put it into the examples
+AND also fhist keywords in the User Guide and put it into the examples.
+and make sure the examples all have hist_{put,create} the same.
+Subject: Ralf Fassel <ralf@akutech.de>, 9 Mar 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+worked example,
+``5.2.7 says that the cook file contains all of the above
+commands but my copy doesn't have them ...''  [for config file
+and howto.cook file]
+BUT integration diffs not in the worked example.
+Submitted: Michael McCarty <mmccarty@xinetix.com>, 26-Feb-99
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+need discussion (Howto, or maybe the User Guide) of how to use Aegis
+when you site has a mix of Unix and Wintel.
+Submitted: Paolo Supino <paolo@schema.co.il>, 4 Feb 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+add chapter to User Guide, saying how to config web interface
+and how to use it.
+Submitted: Graham Wheeler <gram@cdsec.com>, 27 Jan 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+User Guide: big changes bouncing:
+how to use a branch to get smaller reviews and smaller diffs.
+Submitted: Ralf Fassel <ralf@akutech.de>, 27 Jan 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+note for User Guide: metrics software form
+ftp://ftp.qucis.queensu.ca/\%pub/\%software-eng/\%software/\%Cmetrics/
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+correct documentation of file locking in UG:
+correct the example around the file locking - it gives the wrong text
+of the aede error - and probably other stuff.  also, the wrong person
+comes back from aerobics
+.\" ========================================================================
+.nh 3 "More Reports"
+.IP \(bu 2n
+Add a -REVerse option, so that all of the listings (ael) come out in
+the reverse order to that used at present.
+Submitted: John Darrington <johnd@ot.com.au>, 20-Jul-2001
+.IP \(bu 2n
+Write an \fIaereport\fP file to produce MS-Project views of a project,
+making sure that the states of each change are linked,
+use averages to predict any incomplete states.
+And maybe another to produce HTML pages of the same thing.
+Submitted: 15-Jan-2000
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+On the aegis.cgi web pages, link the file edit numbers to pages which
+will retrieve the historical version.
+Submitted: Anoop Kulkarni <anoop@sasi.com>, 22 Dec 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+When you download a \f[CW].ae\fP file via aegis.cgi, it uses a stupid
+name as the save file.  Is there a HTML header we can set to suggest a
+much better name?
+Submitted: Mark Veltzer <mark2776@yahoo.com>, 16 Aug 2001
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Add a user_change report (just like ``ael user_changes'')
+which takes a user name, so you can get a list of changes by user.
+Make aegis.cgi do this, too.
+Submitted: Ralf Fassel <ralf@akutech.de>, 9 Dec 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Add a outstanding_changes report (just like ``ael outstanding_changes'')
+which takes a user name, so you can get a list of outstanding changes by user.
+Make aegis.cgi do this, too.
+Submitted: Ralf Fassel <ralf@akutech.de>, 9 Dec 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Write a report which says when you have to do to get a change completed
+Jerry says he has written most of this.
+Submitted: jerry.pendergraft@endocardial.com 3-Nov-99
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+ael change_history - write as a repot and then include project history
+for sub branches.
+Don't forget the web reports, too.
+Sumbitted:Jerry Pendergraft <jerry@endocardial.com>, 30 Aug 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+ael outstanding_changes - rewite as a report and then include sub branches.
+Don't forget the web reports, too.
+Submitted: Jerry Pendergraft <jerry@endocardial.com>, 30 Aug 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+ael project_history - rewrite as a report and then include parents and
+sub branches.  Don'f forget the web reports, too.
+Submitted: Jerry Pendergraft <jerry@endocardial.com>, 30 Aug 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+aer file_history - include parents and sub branches.
+Don't forget the web reports, too.
+Submitted: Jerry Pendergraft <jerry@endocardial.com> 30 Aug 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Some kind of web report which makes ``train track'' diagrams of file
+branching.
+.IP \(bu 2n
+Some kind of web report which makes ``train track'' diagrams of project
+branching.
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+multivariate linear regression: needed as a report generator function:
+needed for metrics analysis
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+more blurb in the statistics web pages, so they are more self-explaining
+Submitted: Ralf Fassel <ralf@akutech.de>, 13-Oct-98
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Add anew report like ``ael uc'' except that it (optionally) takes a user
+name as well, to list a particular user's changes.
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+File Activity Report (web) does not translate user name and give email link.
+Should also put user name under change state, as in change lists.
+.\" ========================================================================
+.nh 3 "Core Enhancements"
+.IP \(bu 2n
+It would be nice to have a way to specify a timeout for aegis tests.  If a
+single test does not finish within this time, it should be aborted and
+considered `No Result'.  Then aet should continue with the next test (as
+appropriate if --perservere was given).  A `--timeout' argument to `aet'
+would do the trick, and also a project config field.  The implementation
+could be interesting, since signalling the forked aegis child process
+might not be enough to stop all processes (process groups?).
+Submitted: Ralf Fassel <ralf@akutech.de>, 24-Jan-2001
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Problem with aepa that doesn't specify the default values for all the test 
+features in aeca (there are three types in aeca and only one in aepa).
+Submitted: Mark Veltzer <mark2776@yahoo.com>, 16 Aug 2001
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+The \fIaedist\fP(1) program should send changes with no files,
+or changes in "being developed".
+Submitted: Mark Veltzer <mark2776@yahoo.com>, 16 Aug 2001
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Have \fIaem\fP merge changes properly if another changed moved
+the file in the baseline.  You need to do this across the board,
+not just in \f[CW]aegis/aed.c\fP
+Submitted: Ralf Fassel <ralf@akutech.de>, 25 Feb 2000
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Add progess (%) indicators (aeib was specific example, but there may be
+others \fIe.g.\fP symlink farms and aecp, even aede for big changes)
+for use by the GUI interfaces - and maybe the text interface too.
+Submitted: Ralf Fassel <ralf@akutech.de> 10 Dec 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Extend the create_symlinks_before_build functionality to copy, not
+just symlink.  Because they would edit the files direct, we then need an
+implicit aecpcorne detector.  You need to look for other boundary conditions
+this is also going to affect.  You need a remove_symlinks_after_build
+analogue, too.
+Submitted: Darrin Thompson <dthompson@characterlink.net>, 15 Nov 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+os.h is a system header on some systems, so os.h has to move
+Sumbitted: Christophe Broult <broult@info.unicaen.fr> 30 Sep 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+aedist -rec needs to preserve (a) copyright years, (b) test exemptions
+(subject to permissions), and (c) architecture (if possible).
+AND CHANGE NUMBER?
+Submitted: Ewolt Wolters <ewolt@pallas-athena.com>, 27 Jul 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Aedist to add project history to end of description when sending change set.
+Submitted: Jerry Pendergraft <jerry@endocardial.com>, Dec-2000
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+can we separate change creation from other adminstrator permissions?
+can we make "everyone" able to create changes?
+Submitted: Ewolt Wolters <ewolt@pallas-athena.com>, 28 Jun 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+should explicitly mention
+CPPFLAGS=-I/usr/local/include; export CPPFLAGS
+LDFLAGS=-L/usr/local/lib; export LDFLAGS
+in the configuring section.
+Submitted: John Huddleston <jhudd@cody.itc.nrcs.usda.gov>, 19 Mar 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+[IF there were editable file attributes]
+add coupling between files (as file attribute)
+this means when you aecp, you get a set of files
+(see a command to set it, need to carry it thu integration, etc.)
+Submitted: PMiller, 18-Feb-99
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+The aed command does not promote aenf->aecp unless the ,D file does not exist.
+This is annoying, should always do it.
+(So should some other commands.)
+Subject: Ralf Fassel <ralf@akutech.de>, 1 Feb 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Add a default_regression_test_exemption project attribute.
+Submitted: Ralf Fassel <ralf@akutech.de>, 31 Jan 1999,
+	Jerry Pendergraft <jerry@endocardial.com>, 2 Feb 2001.
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Need a clean_exceptions file in the project config file (list of strings)
+so can have local RCS dirs, and do "ci `aegis -l cf -ter`"
+in the develop_end_command
+Submitted: 1-Feb-99
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+aenpr -dir -keep:
+allow directory to already exist if has right owner
+and is empty?
+Submitted: Jerry Pendergraft <jerry@endocardial.com>, 22 Jan 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Add a new post_merge_command
+so can generate summary of files needing editing.
+Subject: Ralf Fassel <ralf@akutech.de>, 21 Dec 1998
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Create a new aepatch command: ``aepatch -send'' to create "ordinary"
+OpenSource source patches, and ``aepatch -receive'' to turn patches into
+an Aegis change - and not necessarily only patches generated with aepatch.
+Yes, intentionally similar to aedist.
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+integrate difference should look for missing ,D files (usually
+impossible) and re-instate them.
+Submitted: PMiller, 22-Sep-98
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+tests 7, 20, 70 warn
+symlink.c: In function `main':
+symlink.c:5: warning: return type of `main' is not `int'
+Submitted: Bruce Stephen Adams <brucea@cybernetics.demon.co.uk>, 10 Sep 1998
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+change_set_env needs to set LINES and COLS
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+commands which accept -branch and/or -trunk should also accept -grandparent
+but not all do.  check.
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Add a --no-baseline-lock option to the aeb and aecp commands.
+Warn them not to in the manual pages.
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+list locks - need to spot the case where *all* of a set are taken (all 64k)
+and report sensably (not 64K lines)
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+integrate_q.sh needs work
+1. needs to diff
+2. needs to see if there is a current integration
+3. subjects in emails?
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+aemv does not correctly check the -to- filename.
+(specific example = file name length)
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+aefind needs a sort option
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+aefind needs the rest of the find functionality added
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+* Add a -output option to the aent command (\fIothers?\fP)
+for scripting support.
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+aed - when auto upgrade create to modify, clear move if set.
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+aede needs to make sure that the files (and directories) are readable
+(and searchable) by reviewers.
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+make aemv rename files within a change
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+aecp -anticipate
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Make the listing more specific for aecp aecpu aenfu aentu aerm aermu, etc
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+add a file copy notification command
+to the project config file
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Add pseudo change do can do many integrations at once (this pseudo change
+would be created by aeib and destroyed by aeipass, aeifail or aeibu).
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Version punctuation: at the moment ypou gets dots between the branch
+numbers.  Need more flexible punctuation: especially, want a hyohen first,
+then dots (sometimes).
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+* aecp -delta bug
+	``I've been making good use of the "-delta" option of aecp lately.
+	But there has been a complication in its use.  Let's say a file
+	was aerm'ed in delta 100.  Let's further say that we are at delta
+	175 and are trying to restore the source code as of delta 75.
+	If I do a "aecp - delta 75 file.c" I'm told that file.c is no
+	longer part of the project.''
+Should aecp -del fake aenf for deleted files in earlier deltas?
+Submitted: markm@endo.com
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+initernationalize -interactive
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Enhance aet to allow reviewers to run tests.
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+check library state files on project creation
+	``I was creating a new release from a large project. After copying the
+	baseline and creating hundreds of history files the aenrls failed
+	because the library dir I specified wasn't writeable by aegis and no
+	state file was created. Couldn't this be checked first?''
+Submitted: Lloyd Fischer <lloyd@dvcorp.com>
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Add precedence constraints:
+a list of prerequisite changes, which must all be in the ``completed''
+state before the change may end development.
+Submitted: Christian F. Goetze <c-goetze@u-aizu.ac.jp>
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+If there is a read error when reading the template source file
+during aent, get a stupid error within error message, and never
+tells you about the file
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+How about "include" support for the config file?
+That way one could also cover architecture specific things by 
+``include ${libdir}/${project}.defs'' in the config file.
+Submitted: Jerry Pendergraft <jerry.pendergraft@endocardial.com>, 7 Sep 2001
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Add an \fIaetouch\fP command, to touch all of the (non-build) source
+files in the change.
+Submitted: 2001
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Have the ``aeclean -list'' option say what aeclean would do, rather than
+list the change source files.
+Submitted: 2001
+.\" ========================================================================
+.nh 4 "More O(1) Scalability"
+.IP \(bu 2n
+Need to suppliment the {project,change}_file_find and
+{project,change}_file_nth interfaces with
+{project,change}_file_name_nth interfaces.
+Then, use them as often as possible.
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Need the fstate file to have a manifest field;
+access this for file names.
+Then, store each file into in a separate file;
+only access this file is file state is requied.
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+The presence or absence of the manifest field in the top-level fstate
+file tells you if the old or new file state usage is present.
+.\" ========================================================================
+.nh 3 "GUI"
+.IP \(bu 2n
+tkaeca barfs when there are no changes on the branch.
+should be more graceful.
+Submitted: Ewolt Wolters <ewolt@pallas-athena.com>, 11 Aug 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+using tkaegis: project > branch > role > integrate, a window pops
+up "Error in tcl script, Error: invalid command name ".mbar.review.menu"".
+Submitted: Ewolt Wolters <ewolt@pallas-athena.com> 9 Aug 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+user pasted in text (including back slash) into aeifail edit window.
+which was accepted, but broke change state (illegal escape sequence).
+Submitted: Michael McCarty <mmccarty@xinetix.com>, 10 May 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+A new ${architecture_list} substitution to give all architectures in a command.
+Submitted: jerry.pendergraft@endocardial.com, 31 Mar 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+have aedist -rec accept a -delta option,
+so you can tell it where to apply from.
+Anticipated use is ``-delta 0'' meaning start of branch.
+(also a -reg option).
+Submitted: PMiller, 22-mar-99
+.\" ========================================================================
+.nh 3 "Release and Build and Install"
+.IP \(bu 2n
+add debian \f[CW].deb\fP file, add notification to <cd@debian.org>
+for new releases.
+Submitted: PMiller, 22-Jun-99
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+building documentation needs to talk about libz some more.
+particularly, you either need it on ROOT's LD_LIBRARY_PATH
+or you need to static link it.
+Submitted: Ralf Fassel <ralf@akutech.de> 5-apr-99
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+have configure script whine about missing libz
+Submitted: PMiller, 7 apr 99
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+have configure script whine about missing regcomp
+Submitted: PMiller, 7 apr 99
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Sample documentation needs to make the \fIgroup\fP thing obvious.
+And also the umask at aenpr time!
+Submitted: Alan Zimmerman <alanz@electrosolv.co.za>, 5 Apr 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+genertated makefile CC=cc needs to quote cc incase has spaces
+Submitted: Aaron Johnson <adj@ccltd.com>, 31 Mar 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+The BUILDING file needs to mention that you should
+install zlib with --prefix=/usr
+because many systems think /usr/local/lib "insecure directory".
+Submitted: Fabien Campagne <campagne@Inka.MSSM.EDU>, 26 Mar 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+I suggest to move aegis.cgi in a different package (aegis-www ?) that
+requires apache.
+	Requires: apache
+Also need to note that zlib is required (or does it work this out itself?)
+	Requires: zlib
+(I don't see a way to say BuildRequires: zlib-devel)
+Submitted: Walter Franzini <walter@sys-net.it>, 18 Mar 1999
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+add piece to BUILDING file saying to get Apache first.
+Submitted: Graham Wheeler <gram@cdsec.com> 27 Jan 1999
+.\" ========================================================================
+.nh 3 "Database"
+.IP \(bu 2n
+Should the Aegis database be replaced by XML?
+(This would have \fIhuge\fP backwards compatability issues.)
+Maybe we need a way to project the Aegis database into XML?
+Submitted: Mark Veltzer <mark2776@yahoo.com>, 16 Aug 2001
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Write an ODBC interface to the database?
+Submitted: P. Miller, 16 Aug 2001
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Does it make sense to have an NNTP interface?
+Would it be any use?
+Submitted: P. Miller, 16 Aug 2001
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Write an interface so that Aegis looks just like a remote CVS server,
+accessed using the normal CVS clients.
+Of course, you would have to do the aede on the Unix server.
+Submitted: P. Miller, 16 Aug 2001

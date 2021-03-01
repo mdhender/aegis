@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1999 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1999, 2000 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -60,5 +60,6 @@ void change_file_fingerprint_check _((change_ty *, fstate_src));
 int change_file_up_to_date _((struct project_ty *, fstate_src));
 struct metric_list *change_file_metrics_get _((change_ty *, struct string_ty *));
 void change_file_list_metrics_check _((change_ty *));
+void change_file_template _((change_ty *, string_ty *, struct user_ty *, int));
 
 #endif /* CHANGE_FILE_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@
 #include <project/file.h>
 #include <project/file/list_get.h>
 #include <str_list.h>
+#include <symtab_iter.h>
 #include <trace.h>
 
 
@@ -40,8 +41,16 @@ project_file_list_get(pp)
 		long		j;
 		fstate_src	fsp;
 		string_list_ty	*wlp;
+		symtab_ty	*tmp;
+		symtab_iterator	*tmpi;
+		string_ty	*key;
+		void		*data;
 
-		wlp = string_list_new();
+		/*
+		 * Drop all the files into a symbol table.
+		 * This has O(1) insertion times.
+		 */
+		tmp = symtab_alloc(100);
 		for (ppp = pp; ppp; ppp = ppp->parent)
 		{
 			cp = project_change_get(ppp);
@@ -50,15 +59,30 @@ project_file_list_get(pp)
 				fsp = change_file_nth(cp, j);
 				if (!fsp)
 					break;
-				string_list_append_unique(wlp, fsp->file_name);
+				symtab_assign(tmp, fsp->file_name, fsp->file_name);
 			}
 		}
+
+		/*
+		 * Walk the symbol table to build the file name list.
+		 * This has O(1) insertion times.
+		 */
+		tmpi = symtab_iterator_new(tmp);
+		wlp = string_list_new();
+		while (symtab_iterator_next(tmpi, &key, &data))
+			string_list_append(wlp, key);
+		symtab_iterator_delete(tmpi);
+		symtab_free(tmp);
 
 		/*
 		 * Ensure that the file name list is in lexicographical
 		 * order, otherwise the users can see the joins (and its
 		 * harder to find the files in a listing).
 		 * (C locale)
+		 *
+		 * Overall performance is O(n) for file discovery,
+		 * plus O(n log n) for the qsort, where n is the number
+		 * of files.
 		 */
 		string_list_sort(wlp);
 		pp->file_list = wlp;

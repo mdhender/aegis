@@ -34,8 +34,8 @@ A bug has been fixed in the \fI${administrator_list}\fP substitution.
 .if n *
 .if t \(bu
 .\" change 36
-A bug has been fixed in the \fIaedist --delta\fP option, whch caused it
-to dumpo core.
+A bug has been fixed in the \fIaedist --delta\fP option, which caused it
+to dump core.
 .PP
 .if n *
 .if t \(bu

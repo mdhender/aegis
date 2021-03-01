@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996, 1997 Peter Miller;
+ *	Copyright (C) 1994, 1996-1997, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -62,25 +62,25 @@ else
 	{
 		auto en;
 
-		if (src.edit_number_origin != "" && src.edit_number != "")
+		if (src.edit_origin.revision != "" && src.edit.revision != "")
 		{
-			if (src.edit_number_origin == src.edit_number)
-				en = sprintf("%4s", src.edit_number);
+			if (src.edit_origin.revision == src.edit.revision)
+				en = sprintf("%4s", src.edit.revision);
 			else
 			{
 				en =
 					sprintf
 					(
 						"%4s -> %s",
-						src.edit_number_origin,
-						src.edit_number
+						src.edit_origin.revision,
+						src.edit.revision
 					);
 			}
 		}
-		else if (src.edit_number_origin != "")
-			en = sprintf("%4s", src.edit_number_origin);
-		else if (src.edit_number != "")
-			en = sprintf("%4s", src.edit_number);
+		else if (src.edit_origin.revision != "")
+			en = sprintf("%4s", src.edit_origin.revision);
+		else if (src.edit.revision != "")
+			en = sprintf("%4s", src.edit.revision);
 		/* if (verbose() */
 		{
 			auto psrc, tmp;
@@ -94,18 +94,18 @@ else
 					break;
 				}
 			}
-			tmp = psrc.edit_number;
-			if (tmp != "" && tmp != src.edit_number_origin)
+			tmp = psrc.edit.revision;
+			if (tmp != "" && tmp != src.edit_origin.revision)
 				en ##= " (" ## tmp ## ")";
-			tmp = psrc.edit_number_origin;
+			tmp = psrc.edit_origin.revision;
 			if
 			(
-				src.edit_number_origin_new != ""
+				src.edit_origin_new.revision != ""
 			&&
-				src.edit_number_origin_new != tmp
+				src.edit_origin_new.revision != tmp
 			)
-				en ##= "\n{cross " ## src.edit_number_origin_new
-					## "}";
+				en ##= "\n{cross " ##
+					src.edit_origin_new.revision ## "}";
 		}
 
 		print

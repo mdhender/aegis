@@ -53,8 +53,8 @@ outstanding_commentary(wlp, narch)
 		for (j = 1; j < wlp->nstrings; ++j)
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "Name1", "%S", t1);
-			sub_var_set(scp, "Name2", "\"%S\"", wlp->string[j]);
+			sub_var_set_string(scp, "Name1", t1);
+			sub_var_set_format(scp, "Name2", "\"%S\"", wlp->string[j]);
 			if (j == wlp->nstrings - 1)
 				t2 = subst_intl(scp, i18n("$name1 and $name2"));
 			else
@@ -64,8 +64,8 @@ outstanding_commentary(wlp, narch)
 			t1 = t2;
 		}
 		scp = sub_context_new();
-		sub_var_set(scp, "Name_List", "%S", t1);
-		sub_var_set(scp, "Number", "%ld", (long)wlp->nstrings);
+		sub_var_set_string(scp, "Name_List", t1);
+		sub_var_set_long(scp, "Number", (long)wlp->nstrings);
 		sub_var_optional(scp, "Number");
 		s = subst_intl(scp, i18n("for the $name_list architectures"));
 		sub_context_delete(scp);

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -70,7 +70,7 @@ simple_evaluate(this)
 		rpt_value_ty	*vp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", lv->method->name);
+		sub_var_set_charstar(scp, "Name", lv->method->name);
 		s =
 			subst_intl
 			(
@@ -185,7 +185,7 @@ bin_eval(op, e)
 		string_ty	*s;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", ptr->method->name);
+		sub_var_set_charstar(scp, "Name", ptr->method->name);
 		s =
 			subst_intl
 			(

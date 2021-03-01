@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,19 +21,20 @@
  */
 
 #include <ael/formeditnum.h>
-#include <col.h>
+#include <error.h> /* for assert */
+#include <output.h>
 
 
 void
 list_format_edit_number(edit_col, src_data)
-	int		edit_col;
+	output_ty	*edit_col;
 	fstate_src	src_data;
 {
 	if
 	(
-		src_data->edit_number_origin
+		src_data->edit_origin
 	&&
-		src_data->edit_number
+		src_data->edit
 	)
 	{
 		/*
@@ -42,54 +43,58 @@ list_format_edit_number(edit_col, src_data)
 		 * notation implying ``from the old one to the new one''
 		 * if they differ.  Only print one if thay are the same.
 		 */
-		col_printf
+		assert(src_data->edit->revision);
+		assert(src_data->edit_origin->revision);
+		output_fprintf
 		(
 			edit_col,
 			"%4s",
-			src_data->edit_number_origin->str_text
+			src_data->edit_origin->revision->str_text
 		);
 		if
 		(
 			str_equal
 			(
-				src_data->edit_number,
-				src_data->edit_number_origin
+				src_data->edit->revision,
+				src_data->edit_origin->revision
 			)
 		)
 			return;
-		col_printf
+		output_fprintf
 		(
 			edit_col,
 			" -> %s",
-			src_data->edit_number->str_text
+			src_data->edit->revision->str_text
 		);
 		return;
 	}
 
-	if (src_data->edit_number_origin)
+	if (src_data->edit_origin)
 	{
 		/*
 		 * The "original version" copied.
 		 */
-		col_printf
+		assert(src_data->edit_origin->revision);
+		output_fprintf
 		(
 			edit_col,
 			"%4s",
-			src_data->edit_number_origin->str_text
+			src_data->edit_origin->revision->str_text
 		);
 	}
-	if (src_data->edit_number)
+	if (src_data->edit)
 	{
 		/*
 		 * For active branches, the current
 		 * head revision.  For completed changes
 		 * and branches, the revision at aeipass.
 		 */
-		col_printf
+		assert(src_data->edit->revision);
+		output_fprintf
 		(
 			edit_col,
 			"%4s",
-			src_data->edit_number->str_text
+			src_data->edit->revision->str_text
 		);
 	}
 }

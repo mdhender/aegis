@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1995-1998, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -62,6 +62,9 @@ src =
 		 * it records the edit number the file assumed upon
 		 * integration completion.
 		 */
+		edit = history_version;
+
+		/* As above, but no longer used. */
 		edit_number = string;
 
 		/*
@@ -72,6 +75,9 @@ src =
 		 * file when it was copied from the branch (or ancestor)
 		 * into the change.
 		 */
+		edit_origin = history_version;
+
+		/* As above, but no longer used. */
 		edit_number_origin = string;
 
 		/*
@@ -81,6 +87,9 @@ src =
 		 * present between being_developed and being_integrated,
 		 * inclusive.)
 		 */
+		edit_origin_new = history_version;
+
+		/* As above, but no longer used. */
 		edit_number_origin_new = string;
 
 		/*

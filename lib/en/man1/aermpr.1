@@ -68,7 +68,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aermpr '\*(n) -rmpr \e!* -v'
-sh$	aermpr(){\*(n) -rmpr $* -v}
+sh$	aermpr(){\*(n) -rmpr "$@" -v}
 .fi
 .SH ERRORS
 It is an error if

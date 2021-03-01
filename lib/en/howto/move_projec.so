@@ -1,0 +1,99 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing lib/en/howto/move_projecs
+.\"
+.nh 1 "How to Move a Project"
+.LP
+By "move a project", you may wish to change the project's name but
+leave the project files in the same location, or you may wish to
+change a projects directory location and leave it with the same name.
+This section covers both.
+.LP
+There are two ways to move a project.  One is from within Aegis,
+and one is from outside Aegis.
+Each section below covers both methods.
+.nh 2 "Relocating a Project"
+.LP
+This section deals with moving a project's files from one filesystem
+location to another.
+.nh 3 "From within Aegis"
+.LP
+This works best when you are moving a project from one machine to another.
+It is a \fIvery\fP good idea if there are no active changes on \fIany\fP branch.
+.LP
+Step 1: You need to know where in the file system the project currently
+resides.  Take a look in the projects list (\fIael p\fP) and see the
+directory reported for the trunk of the project.  Ignore any active
+branches.
+.LP
+Step 2: Usually, when you remove a project, Aegis deleted all of the project
+files.  However the aerm \-keep option tells Aegis to remove the project
+name, but keep all of the project files.
+.LP
+Step 3: Move the files to their new location, you need \fIall\fP of the files
+below the directory tree you found in step 1.  This may be a simple
+file move, or may involve copying the files to tape, and then
+unpacking on a new machine.  Remember to make sure the file ownerships
+are set the way you want (usually, this means "preserved exactly").
+.LP
+Step 4: Tell Aegis where the project is.  To do this, use the \-dir
+and \-keep options of the \fIaenpr\fP(1) command.
+.nh 3 "From outside Aegis"
+.LP
+This works best of the project is staying on the same machine, or
+the same NFS network.
+.LP
+Step 1: You need to know where in the file system the project currently
+resides.  Take a look in the projects list (ael p) and see the
+directory reported for the trunk of the project.  Ignore any active
+branches.
+.LP
+Step 2: Move the files to the new location.
+.LP
+Step 3: Edit the \*(S)/state file and edit the path
+appropriately to tell Aegis where you moved the files to.
+You will need to be root for this step.
+.nh 2 "Renaming a Project"
+.LP
+This section deals with changing a project's name without moving is files.
+.nh 3 "From within Aegis"
+.LP
+Step 1: You need to know where in the file system the project currently
+resides.  Take a look in the projects list (\fIael p\fP) and see the
+directory reported for the trunk of the project.  Ignore any active
+branches.
+.LP
+Step 2: Usually, when you remove a project, Aegis deleted all of the
+project files.  However the aerm \-keep option tells Aegis to remove
+the project name, but keep all of the project files.
+.LP
+Step 3: Tell Aegis where the project is, using the new name.  To do this,
+use the \-dir and \-keep options of the \fIaenpr\fP(1) command.
+.nh 3 "From outside Aegis"
+.LP
+Step 1: Edit the \*(S)/state file and edit the name
+appropriately to tell Aegis the new name of the project.
+You will need to be root for this step.
+.nh 3 "Project Aliases"
+.LP
+You may need some transition time for your developers.  Either before or
+after you rename the project, you may want to consider adding a project
+alias (see \fIaenpa\fP(1) for more information) so that the project has
+"both" names for a while.

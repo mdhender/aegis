@@ -165,7 +165,7 @@ get_arg(ep)
 		rpt_value_ty	*result;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "sprintf");
+		sub_var_set_charstar(scp, "Function", "sprintf");
 		s = subst_intl(scp, i18n("$function: too few arguments"));
 		sub_context_delete(scp);
 		result = rpt_value_error(ep->pos, s);
@@ -195,9 +195,9 @@ get_arg_string(ep)
 		return vp2;
 
 	scp = sub_context_new();
-	sub_var_set(scp, "Function", "sprintf");
-	sub_var_set(scp, "Name", "%s", vp2->method->name);
-	sub_var_set(scp, "Number", "%ld", (long)ai);
+	sub_var_set_charstar(scp, "Function", "sprintf");
+	sub_var_set_charstar(scp, "Name", vp2->method->name);
+	sub_var_set_long(scp, "Number", (long)ai);
 	rpt_value_free(vp2);
 	s =
 		subst_intl
@@ -243,9 +243,9 @@ get_arg_integer(ep, real_ok)
 	}
 
 	scp = sub_context_new();
-	sub_var_set(scp, "Function", "sprintf");
-	sub_var_set(scp, "Name", "%s", vp2->method->name);
-	sub_var_set(scp, "Number", "%ld", (long)ai);
+	sub_var_set_charstar(scp, "Function", "sprintf");
+	sub_var_set_charstar(scp, "Name", vp2->method->name);
+	sub_var_set_long(scp, "Number", (long)ai);
 	rpt_value_free(vp2);
 	s =
 		subst_intl
@@ -286,9 +286,9 @@ get_arg_real(ep, integer_ok)
 	}
 
 	scp = sub_context_new();
-	sub_var_set(scp, "Function", "sprintf");
-	sub_var_set(scp, "Name", "%s", vp2->method->name);
-	sub_var_set(scp, "Number", "%ld", (long)ai);
+	sub_var_set_charstar(scp, "Function", "sprintf");
+	sub_var_set_charstar(scp, "Name", vp2->method->name);
+	sub_var_set_long(scp, "Number", (long)ai);
 	rpt_value_free(vp2);
 	s =
 		subst_intl
@@ -430,9 +430,9 @@ run(ep, argc, argv)
 			if (width > MAX_WIDTH)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Function", "sprintf");
-				sub_var_set(scp, "Number", "%ld", (long)ai);
-				sub_var_set(scp, "Value", "%ld", width);
+				sub_var_set_charstar(scp, "Function", "sprintf");
+				sub_var_set_long(scp, "Number", (long)ai);
+				sub_var_set_long(scp, "Value", width);
 				s =
 					subst_intl
 					(
@@ -469,9 +469,9 @@ run(ep, argc, argv)
 			if (width > MAX_WIDTH)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Function", "sprintf");
-				sub_var_set(scp, "Number", "%ld", (long)ai);
-				sub_var_set(scp, "Value", "%ld", width);
+				sub_var_set_charstar(scp, "Function", "sprintf");
+				sub_var_set_long(scp, "Number", (long)ai);
+				sub_var_set_long(scp, "Value", width);
 				s =
 					subst_intl
 					(
@@ -515,9 +515,9 @@ run(ep, argc, argv)
 				if (prec < 0 || prec > MAX_WIDTH)
 				{
 					scp = sub_context_new();
-					sub_var_set(scp, "Function", "sprintf");
-					sub_var_set(scp, "Number", "%ld", (long)ai);
-					sub_var_set(scp, "Value", "%ld", prec);
+					sub_var_set_charstar(scp, "Function", "sprintf");
+					sub_var_set_long(scp, "Number", (long)ai);
+					sub_var_set_long(scp, "Value", prec);
 					s =
 						subst_intl
 						(
@@ -553,9 +553,9 @@ run(ep, argc, argv)
 				if (prec > MAX_WIDTH)
 				{
 					scp = sub_context_new();
-					sub_var_set(scp, "Function", "sprintf");
-					sub_var_set(scp, "Number", "%ld", (long)ai);
-					sub_var_set(scp, "Value", "%ld", prec);
+					sub_var_set_charstar(scp, "Function", "sprintf");
+					sub_var_set_long(scp, "Number", (long)ai);
+					sub_var_set_long(scp, "Value", prec);
 					s =
 						subst_intl
 						(
@@ -596,8 +596,8 @@ run(ep, argc, argv)
 		{
 		default:
 			scp = sub_context_new();
-			sub_var_set(scp, "Function", "sprintf");
-			sub_var_set(scp, "Name", "%c", c);
+			sub_var_set_charstar(scp, "Function", "sprintf");
+			sub_var_set_format(scp, "Name", "%c", c);
 			s =
 				subst_intl
 				(
@@ -779,9 +779,9 @@ run(ep, argc, argv)
 	if (ai < argc)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "sprintf");
-		sub_var_set(scp, "Number1", "%ld", (long)argc);
-		sub_var_set(scp, "Number2", "%ld", (long)ai);
+		sub_var_set_charstar(scp, "Function", "sprintf");
+		sub_var_set_long(scp, "Number1", (long)argc);
+		sub_var_set_long(scp, "Number2", (long)ai);
 		s =
 			subst_intl
 			(

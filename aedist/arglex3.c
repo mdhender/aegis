@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@ static arglex_table_ty argtab[] =
 	{ "-Not_Ascii_Armor", arglex_token_ascii_armor_not, },
 	{ "-COmpress", arglex_token_compress, },
 	{ "-Not_COmpress", arglex_token_compress_not, },
+	{ "-Content_Transfer_Encoding", arglex_token_content_transfer_encoding},
 	{ "-Description_Header", arglex_token_description_header, },
 	{ "-Not_Description_Header", arglex_token_description_header_not, },
 	{ "-Entire_Source", arglex_token_entire_source, },

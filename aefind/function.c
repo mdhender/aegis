@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -103,7 +103,7 @@ function_indirection(name, args)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%S", name);
+			sub_var_set_string(scp, "Name", name);
 			cmdline_lex_error
 			(
 				scp,
@@ -116,8 +116,8 @@ function_indirection(name, args)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%S", name);
-			sub_var_set(scp, "Guess", "%S", guess);
+			sub_var_set_string(scp, "Name", name);
+			sub_var_set_string(scp, "Guess", guess);
 			cmdline_lex_error
 			(
 				scp,

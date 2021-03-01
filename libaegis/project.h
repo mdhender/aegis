@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1992-1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -100,9 +100,6 @@ int project_gid_get _((project_ty *));
 struct user_ty *project_user _((project_ty *));
 void project_become _((project_ty *));
 void project_become_undo _((void));
-string_ty *project_delta_to_edit _((project_ty *pp, long delta, string_ty *fn));
-string_ty *project_delta_date_to_edit _((project_ty *pp, time_t delta_date,
-	string_ty *fn));
 long project_next_test_number_get _((project_ty *));
 int project_is_readable _((project_ty *));
 long project_minimum_change_number_get _((project_ty *));
@@ -115,9 +112,16 @@ int project_skip_unlucky_get _((project_ty *));
 void project_skip_unlucky_set _((project_ty *, int));
 int project_compress_database_get _((project_ty *));
 void project_compress_database_set _((project_ty *, int));
+int project_develop_end_action_get _((project_ty *));
+void project_develop_end_action_set _((project_ty *, int));
 
 int break_up_version_string _((char *, long *, int, int *, int));
 void extract_version_from_project_name _((string_ty **, long *, int, int *));
 int project_name_ok _((string_ty *));
+
+struct pconf *project_pconf_get _((project_ty *));
+
+project_ty *project_new_branch _((project_ty *, struct user_ty *, long,
+	string_ty *));
 
 #endif /* PROJECT_H */

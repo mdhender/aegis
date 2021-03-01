@@ -75,8 +75,8 @@ strcasecmp(s1, s2)
 	const char	*s1;
 	const char	*s2;
 {
-	int		c1;
-	int		c2;
+	unsigned char	c1;
+	unsigned char	c2;
 
 	for (;;)
 	{

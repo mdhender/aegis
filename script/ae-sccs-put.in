@@ -1,0 +1,279 @@
+#!/bin/sh
+#
+#	aegis - project change supervisor
+#	Copyright (C) 2001 Peter Miller;
+#	All rights reserved.
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#
+# MANIFEST: Source for the ae-sccs-put script.
+#
+comment=
+gfile=
+sfile=
+adminflags=-n
+deltaflags=-n
+getflags=
+
+#
+# Some systems have an `sccs' program which launches the other bits,
+# and some don't.  Pick the appropritae one of the next two lines.
+#
+sccs=sccs
+#sccs=
+
+#
+# work through the arguments
+#
+while test $# -gt 0
+do
+	case "$1" in
+	-a*)
+		# admin, add users
+		# get, stuff for testing
+		echo "$0: option $1 ambiguous" 1>&2
+		exit 1
+		;;
+	-b)
+		# admin, binary file
+		# get, branch
+		echo "$0: option $1 ambiguous" 1>&2
+		exit 1
+		;;
+	-c*)
+		# get, cutoff date
+		getflags="$getflags $1"
+		;;
+	-d*)
+		# admin, flags to clear
+		adminflags="$adminflags $1"
+		;;
+	-D)
+		# get, debug
+		getflags="$getflags $1"
+		;;
+	-e*)
+		# admin, delete users
+		# get, for edit
+		echo "$0: option $1 ambiguous" 1>&2
+		exit 1
+		;;
+	-f*)
+		# admin, flags to set
+		adminflags="$adminflags $1"
+		;;
+	-g*)
+		# delta, it's parsed, but not acted on
+		# get, no output (prints RID on stdout)
+		echo "$0: option $1 ambiguous" 1>&2
+		exit 1
+		;;
+	-G-)
+		echo "$0: can't read input from stdin" 1>&2
+		exit 1
+		;;
+	-G*)
+		# get, the file used by humans
+		gfile="`echo $1 | sed 's|^..||'`"
+		;;
+	-h)
+		# admin, check checksum
+		adminflags="$adminflags $1"
+		;;
+	-i*)
+		# admin, the file used by humans
+		# get, list of SIDs
+		echo "$0: option $1 ambiguous" 1>&2
+		exit 1
+		;;
+	-k)
+		# get, suppress keywords
+		getflags="$getflags $1"
+		;;
+	-m*)
+		# admin, list of MRs
+		# delta, list of MRs
+		# get, show sid
+		echo "$0: option $1 ambiguous" 1>&2
+		exit 1
+		;;
+	-M)
+		# delta, list of MRs to suppress
+		deltaflags="$deltaflags $1"
+		;;
+	-n)
+		# admin, new file
+		# delta, keep g-file (we do this anyway)
+		# get, show module
+		echo "$0: option $1 ambiguous" 1>&2
+		exit 1
+		;;
+	-p)
+		# delta, display diff output
+		# get, send to stdout
+		echo "$0: option $1 ambiguous" 1>&2
+		exit 1
+		;;
+	-r*)
+		# admin, initial version
+		# delta, specific version
+		# get, specific version
+		adminflags="$adminflags $1"
+		deltaflags="$deltaflags $1"
+		;;
+	-s)
+		# delta, operate silently
+		# get, operate silently
+		deltaflags="$deltaflags $1"
+		getflags="$getflags $1"
+		;;
+	-t*)
+		# admin, title
+		# get, include branches
+		echo "$0: option $1 ambiguous" 1>&2
+		exit 1
+		;;
+	-V)
+		# admin, print version
+		# delta, print version
+		# get, print version
+		# (ignore this one)
+		;;
+	-w*)
+		# get, wstring (keh?)
+		getflags="$getflags $1"
+		;;
+	-x*)
+		# get, SIDs to exclude
+		getflags="$getflags $1"
+		;;
+	-y* | -Y)
+		# admin, comments
+		# delta, comments
+		comment="$1"
+		;;
+	-z)
+		# admin, reset checksum
+		adminflags="$adminflags $1"
+		;;
+	-*)
+		echo "$0: unknown $1 option" 1>&2
+		exit 1
+		;;
+	*)
+		sfile="$1"
+		;;
+	esac
+	shift
+done
+
+here=`pwd`
+status=$?
+test $status -ne 0 && exit $status
+
+#
+# Make sure they gave the input file (the "s-file" or "sccs file").
+#
+case "$sfile" in
+"")
+	echo "$0: no s-file specified" 1>&2
+	exit 1
+	;;
+
+/*)
+	;;
+
+*)
+	sfile="$here/$sfile"
+	;;
+esac
+
+#
+# Make sure they gave the input file (the "g-file" or "get file").
+#
+case "$gfile" in
+"")
+	echo "$0: no g-file specified" 1>&2
+	exit 1
+	;;
+
+/*)
+	;;
+
+*)
+	gfile="$here/$gfile"
+	;;
+esac
+
+#
+# The sccs delta command doesn't take a -G argument, so make
+# sure the basenames match, otherwise we can't do this.
+#
+if test `basename $sfile` != s.`basename $gfile`
+then
+	# What can I say?  SCCS is completely stupid.
+	echo "$0: basename of g-file and p-file must match" 1>&2
+	exit 1
+fi
+
+#
+# Make sure comment is specified.
+#
+if test -z "$comment"
+then
+	echo "$0: no comment specified"
+	exit 1
+fi
+
+#
+# You can only create new files with sccs admin.
+# You can only update files with sccs delta.
+# Neither can do both.
+#
+if test -f "$sfile"
+then
+	#
+	# We don't have a lock, so we need to get one.	(There is no sccs
+	# delta option which allows us to check-in without one.  Sheesh.)
+	# Throw the output away.
+	#
+	$sccs get -e $getflags -p $sfile > /dev/null
+	status=$?
+	test $status -ne 0 && exit $status
+
+	#
+	# Now we have a lock, check-in the file.  The sccs delta command
+	# doesn't take a -G argument, so we have to make sure that the
+	# current directory is the one with the g-file in it.  (Now you
+	# know why CSSC stands for "compatibly stupid source control".)
+	#
+	# Use the -n flag to hang on to the g-file.
+	# This is symmetric with the admin -n option.
+	#
+	gdir=`dirname $gfile`
+	gfile=`basename $gfile`
+	cd $gdir
+	$sccs delta $deltaflags "$comment" $sfile
+	status=$?
+	test $status -ne 0 && exit $status
+else
+	#
+	# Create the new file.
+	#
+	$sccs admin $adminflags -i$gfile "$comment" $sfile
+	status=$?
+	test $status -ne 0 && exit $status
+fi
+exit 0

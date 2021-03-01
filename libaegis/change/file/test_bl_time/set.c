@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ change_file_test_baseline_time_set(cp, src_data, when)
 	time_t		when;
 {
 	fstate_src_architecture_times_list atlp;
-	fstate_src_architecture_times atp;
+	fstate_src_architecture_times atp = 0;
 	string_ty	*variant;
 	size_t		j, k;
 
@@ -76,6 +76,7 @@ change_file_test_baseline_time_set(cp, src_data, when)
 	/*
 	 * Remember the test time.
 	 */
+	assert(atp);
 	assert(when);
 	atp->test_baseline_time = when;
 

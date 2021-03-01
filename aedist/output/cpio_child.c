@@ -20,6 +20,7 @@
  * MANIFEST: functions to manipulate cpio_childs
  */
 
+#include <error.h>
 #include <output/cpio_child.h>
 #include <output/private.h>
 #include <str.h>
@@ -35,6 +36,7 @@ struct output_cpio_child_ty
 	string_ty	*name;
 	long		length;
 	long		pos;
+	int		bol;
 };
 
 
@@ -47,11 +49,11 @@ changed_size(this)
 	sub_context_ty	*scp;
 
 	scp = sub_context_new();
-	sub_var_set
+	sub_var_set_format
 	(
 		scp,
 		"File_Name",
-		"%s(%S)",
+		"%S(%S)",
 		output_filename(this->deeper),
 		this->name
 	);
@@ -122,17 +124,21 @@ header(this)
 }
 
 
-static void destructor _((output_ty *));
+static void output_cpio_child_destructor _((output_ty *));
 
 static void
-destructor(fp)
+output_cpio_child_destructor(fp)
 	output_ty	*fp;
 {
 	output_cpio_child_ty *this;
 
 	this = (output_cpio_child_ty *)fp;
 	if (this->pos != this->length)
+	{
+error_raw("%s: %d: this->pos = %ld", __FILE__, __LINE__, this->pos);
+error_raw("%s: %d: this->length = %ld", __FILE__, __LINE__, this->length);
 		changed_size(this);
+	}
 	padding(this);
 	str_free(this->name);
 	/*
@@ -142,10 +148,10 @@ destructor(fp)
 }
 
 
-static const char *filename _((output_ty *));
+static string_ty *output_cpio_child_filename _((output_ty *));
 
-static const char *
-filename(fp)
+static string_ty *
+output_cpio_child_filename(fp)
 	output_ty	*fp;
 {
 	output_cpio_child_ty *this;
@@ -155,10 +161,10 @@ filename(fp)
 }
 
 
-static long otell _((output_ty *));
+static long output_cpio_child_ftell _((output_ty *));
 
 static long
-otell(fp)
+output_cpio_child_ftell(fp)
 	output_ty	*fp;
 {
 	output_cpio_child_ty *this;
@@ -168,25 +174,10 @@ otell(fp)
 }
 
 
-static void oputc _((output_ty *, int));
+static void output_cpio_child_write _((output_ty *, const void *, size_t));
 
 static void
-oputc(fp, c)
-	output_ty	*fp;
-	int		c;
-{
-	output_cpio_child_ty *this;
-
-	this = (output_cpio_child_ty *)fp;
-	output_fputc(this->deeper, c);
-	this->pos++;
-}
-
-
-static void owrite _((output_ty *, const void *, size_t));
-
-static void
-owrite(fp, data, len)
+output_cpio_child_write(fp, data, len)
 	output_ty	*fp;
 	const void	*data;
 	size_t		len;
@@ -196,19 +187,37 @@ owrite(fp, data, len)
 	this = (output_cpio_child_ty *)fp;
 	output_write(this->deeper, data, len);
 	this->pos += len;
+	if (len > 0)
+		this->bol = (((const char *)data)[len - 1] == '\n');
+}
+
+
+static void output_cpio_child_eoln _((output_ty *));
+
+static void
+output_cpio_child_eoln(fp)
+	output_ty	*fp;
+{
+	output_cpio_child_ty *this;
+
+	this = (output_cpio_child_ty *)fp;
+	if (!this->bol)
+		output_fputc(fp, '\n');
 }
 
 
 static output_vtbl_ty vtbl =
 {
 	sizeof(output_cpio_child_ty),
+	output_cpio_child_destructor,
+	output_cpio_child_filename,
+	output_cpio_child_ftell,
+	output_cpio_child_write,
+	output_generic_flush,
+	output_generic_page_width,
+	output_generic_page_length,
+	output_cpio_child_eoln,
 	"cpio child",
-	destructor,
-	filename,
-	otell,
-	oputc,
-	output_generic_fputs,
-	owrite,
 };
 
 
@@ -228,6 +237,7 @@ output_cpio_child_open(deeper, name, length)
 	this->name = str_copy(name);
 	this->length = length;
 	this->pos = 0;
+	this->bol = 1;
 	header(this);
 	return result;
 }

@@ -177,8 +177,8 @@ interval_create_range(first, last)
 	ip->scan_index = 0;
 	ip->scan_next_datum = 0;
 	ip->data[0] = first;
-	ip->data[1] = last + 1;
-	ip->data[2] = 2;
+	ip->data[1] = last + 1;				/*lint !e415*/
+	ip->data[2] = 2;				/*lint !e415 !e416*/
 	assert(interval_valid(ip));
 	trace(("return %8.8lX;\n", (long)ip));
 	trace((/*{*/"}\n"));

@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1995, 1996, 1997, 1998, 1999 Peter Miller;
+#	Copyright (C) 1995-2001 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -46,6 +46,13 @@
 #
 # -------------------------------------------------------------------------
 #
+msgid	""
+msgstr	"MIME-Version: 1.0\n"
+	"Content-Type: text/plain; charset=ascii\n"
+	"Content-Transfer-Encoding: 8bit\n"
+
+# -------------------------------------------------------------------------
+#
 # This error message is issued when a file has been tampered with while
 # in the 'being reviewed' or 'awaiting integration' state.  Files in
 # these states must be left strictly alone, or Aegis will assume that
@@ -66,27 +73,6 @@ msgid	"$filename bad nf type"
 msgstr	"The \"$filename\" file is a inappropriate type of file.  You may "
 	"only use this command for normal files.  Symbolic links and "
 	"other special file types must be created at build time."
-
-#
-# This progress message is issued when a test run against the baseline
-# fails.  This is what it is meant to do because either (a) it is new
-# functionality, and will fail because it is not in the baseline, or (b)
-# it is a bug fix, and failing against the baseline demonstrates that
-# the test reproduces the bug.
-#
-#	$File_Name	The name of the test file.
-#
-msgid	"$filename baseline fail, good"
-msgstr	"test \"$filename\" on baseline failed (as it should)"
-
-#
-# This error message is issued when a test run against the baseline
-# passes.  See above for why this is not good.
-#
-#	$File_Name	The name of the test file.
-#
-msgid	"$filename baseline pass, not good"
-msgstr	"test \"$filename\" on baseline passed (it must fail)"
 
 #
 # This error message is issued when a request is made to run a specific
@@ -129,14 +115,6 @@ msgstr	"the \"$filename\" file was modified after the last difference, "
 msgid	"$filename diff3ed"
 msgstr	"file \"$filename\" was out of date, see \"$filename,D\" for "
 	"merged source"
-
-#
-# This error message is issued when a test against the change fails.
-#
-#	$File_Name	The name of the test file.
-#
-msgid	"$filename fail"
-msgstr	"test \"$filename\" failed"
 
 #
 # This progress message is issued when the aecpu command completes
@@ -188,16 +166,6 @@ msgstr	"file \"$filename\" was out of date and has been merged with the "
 	"up to date version, see \"$filename,B\" for the original source"
 
 #
-# This error message is issued when aet runs a test which returns a ``no
-# result'' exit status.
-#
-#	$File_Name	The name of the offending file.
-#
-msgid	"$filename no result"
-msgstr	"test \"$filename\" returned no result; some other problem "
-	"prevented the functionality under test from being exercised"
-
-#
 # This error message is issued when aede cannot find a file in the
 # development directory corresponding to a file listed as part of the
 # change.
@@ -215,14 +183,6 @@ msgstr	"file \"$filename\" not found"
 #
 msgid	"$filename not test"
 msgstr	"file \"$filename\" is not a test"
-
-#
-# This progress message is issued when a test against the change passes.
-#
-#	$File_Name	The name of the test file.
-#
-msgid	"$filename pass"
-msgstr	"test \"$filename\" passed"
 
 #
 # This error message is issued when a command line option requires a
@@ -384,17 +344,6 @@ msgstr	"applying the change to the integration directory"
 #
 msgid	"attributes changed"
 msgstr	"attributes modified"
-
-#
-# This error message is issued when an aenc command or aeca command
-# fails, to inform the user where s/he may find the text of failed
-# attributes file.
-#
-#	$File_Name	The absolute path of the file containing the
-#			offending attributes text file.
-#
-msgid	"attributes in $filename"
-msgstr	"attributes text left in the \"$filename\" file"
 
 #
 # This error message is issued when a project alias is given to aenpa
@@ -605,7 +554,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 #
 msgid	"bad deu state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
-	"reviewed' or 'awaiting development' state to undo develop end"
+	"reviewed' or 'awaiting integration' state to undo develop end"
 
 #
 # This error message is issued when an aed command used on a change
@@ -708,6 +657,16 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to rename files with it"
 
 #
+# This error message is issued when an aemvu command is used
+# on a file which is not suitable.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"bad mv undo $filename"
+msgstr	"file \"$filename\" was not added to this change using the 'aegis "
+	"-MoVe_file' command"
+
+#
 # This error message is issued when aencu is requested of a change which
 # is not in the 'awaiting development' state.
 #
@@ -749,7 +708,7 @@ msgstr	"file \"$filename\" was not added to this change using the 'aegis "
 #
 msgid	"bad nfu branch"
 msgstr	"you may not remove files from a branch directly, you must create "
-	"a change to create new files"
+	"a change to remove files"
 
 #
 # This error message is issued when aenfu is invoked on a change which is
@@ -757,7 +716,7 @@ msgstr	"you may not remove files from a branch directly, you must create "
 #
 msgid	"bad nfu state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
-	"developed' state to create new files with it"
+	"developed' state to remove new files with it"
 
 #
 # This error message is issued when aenrls is asked to operate on a
@@ -797,13 +756,20 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to undo new tests"
 
 #
-# This error message is issued when a project name is given to aenpr
-# which contains unprintable characters or spaces.
+# This error message is issued when aerb is invoked for a change which is
+# not in the 'awaiting review' state.
 #
-#	$Name		The offending project name.
+msgid	"bad rb state"
+msgstr	"this change is in the '$state' state, it must be in the "
+	"'awaiting review' state to begin review"
+
 #
-msgid	"bad project $name"
-msgstr	"project name \"$name\" is invalid"
+# This error message is issued when aerbu is invoked for a change which is
+# not in the 'being reviewed' state.
+#
+msgid	"bad rbu state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"reviewed' state to stop reviewing"
 
 #
 # This error message is issued when a request is made to fail a review
@@ -857,7 +823,7 @@ msgstr	"this change is in the '$state' state, it must be in the "
 #
 msgid	"bad test state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
-	"developed' or 'being integrated' state to do run tests"
+	"developed' or 'being integrated' state to run tests"
 
 #
 # This error message is issued when aede finds a file which has been
@@ -908,6 +874,21 @@ msgstr	"you may only create changes and branches on branches which are "
 msgid	"build required"
 msgstr	"this change must successfully complete an 'aegis -Build' "
 	"$outstanding before it can end development"
+
+#
+# This fatal error message is issued when aeipass detects that the
+# build (or some other command between aeib and aeipass) has modified
+# a source file.  This often occurs when a source files becomes a
+# generated file.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"build trashed $filename"
+msgstr	"The build appears to have modified the \"$filename\" source "
+	"file.  This often occurs when a source files becomes a generated "
+	"file.  In a separate change you need to change the build "
+	"configuration, or ``aerm $filename'', or ``aerm $filename'' and "
+	"then ``aenf -build $filename'' in a following change."
 
 #
 # This error message is issued when aenbr is given an explicit change
@@ -1002,13 +983,13 @@ msgstr	"change $number is the currently active integration, only one "
 	"integration may be performed at a time"
 
 #
-# This fatal error message is issued when a user-supplied string can't
-# be interpreted as a date (time_t).
+# This warning message is issued when aecp -delta-date is given a time
+# which is in the future.  Unlike times in the past, the answer could
+# change at a later date.  This is Damon Poole's "time safe" property.
 #
-#	$Name		The offending string.
-#
-msgid	"date $name unknown"
-msgstr	"the string \"$name\" does not look like a date"
+msgid	"date in the future"
+msgstr	"Warning: The delta date specified is in the future.  This same "
+	"command may yield different results when re-run in the future."
 
 #
 # This error message is issued when an attempt is made to reuse an
@@ -1069,6 +1050,13 @@ msgstr	"found $number error${plural $number s}, this change remains in "
 #
 msgid	"develop end undo complete"
 msgstr	"development resumed"
+
+#
+# This error message is issued when a developer attempts to integrate her
+# own change, and the project is configured to disallow this.
+#
+msgid	"developer may not integrate"
+msgstr	"the developer of a change may not also integrate it"
 
 #
 # This error message is issued when a developer attempts to review her
@@ -1229,16 +1217,6 @@ msgstr	"file \"$filename\" is illegal, because it would result in a "
 #
 msgid	"file $filename dup"
 msgstr	"file \"$filename\" already in change"
-
-#
-# This error message is issued when aena is asked to add an
-# administrator to a project, but the group's gid is too low (too
-# privileged).
-#
-#	$Name		The offending group name.
-#
-msgid	"group \"$name\" is too privileged"
-msgstr	"group \"$name\" is too privileged"
 
 #
 # This error message is issued when a request is made to run tests, but
@@ -1446,22 +1424,10 @@ msgid	"new alias $name complete"
 msgstr	"new alias \"$name\" created"
 
 #
-# This progress message is issued when aenbr completes successfully.
-#
-msgid	"new branch complete"
-msgstr	"created"
-
-#
 # This progress message is issued when aenbru completes successfully.
 #
 msgid	"new branch undo complete"
 msgstr	"removed"
-
-#
-# This progress message is issued when aenbr completes successfully.
-#
-msgid	"new change complete"
-msgstr	"created"
 
 #
 # This progress message is issued when aencu completes successfully.
@@ -1511,12 +1477,6 @@ msgstr	"found $number fatal error${plural $number s}, no files were "
 #
 msgid	"new integrator $name complete"
 msgstr	"user \"$name\" is now an integrator"
-
-#
-# This progress message is issued when aenpr completes successfully.
-#
-msgid	"new project complete"
-msgstr	"created"
 
 #
 # This progress message is issued when aenrls completes successfully.
@@ -1860,6 +1820,16 @@ msgstr	"user \"$user\" is not the integrator, only user \"$integrator\" "
 	"may work on this change"
 
 #
+# This error message is issued when a review pass or review fail or review
+# begin undo request is given for a change which is in the being reviewed
+# state, but the requesting user is not the change's reviewer AND the
+# project attribute "develop_end_action" is set to "goto_awaiting_review".
+#
+msgid	"not reviewer"
+msgstr	"user \"$user\" is not the reviewer, only user \"$reviewer\" may "
+	"work on this change"
+
+#
 # This message is issued when partial development builds are completed.
 #
 msgid	"partial build complete"
@@ -1881,27 +1851,6 @@ msgid	"passed $number tests"
 msgstr	"passed $number test${plural $number s}"
 
 #
-# This information message is issued when aenpr automatically allocates
-# the project home directory.
-#
-#	$File_Name	The absolute path of the project home directory.
-#
-msgid	"proj dir $filename"
-msgstr	"project directory \"$filename\""
-
-#
-# This error message is issued when aenpr is given a project name which
-# is too long.  The only restriction on project name length is the
-# file system on which it must reside.
-#
-#	$Name		The offending project name.
-#	$Number		How many characters too long (how many to remove)
-#			(Optional)
-#
-msgid	"project \"$name\" too long"
-msgstr	"project name \"$name\" too long (by $number)"
-
-#
 # This string is used to format the various "file unacceptable" error messages
 # to indicate that they refer to project files, not change files. (***)
 #
@@ -1909,15 +1858,6 @@ msgstr	"project name \"$name\" too long (by $number)"
 #
 msgid	"project $message"
 msgstr	"project $message"
-
-#
-# This error message is issued when a user attempts to create a new
-# project alias, using a project name which already exists.
-#
-#	$Name		The offending project alias.
-#
-msgid	"project alias $name exists"
-msgstr	"project alias \"$name\" already in use"
 
 #
 # This error message is issued when a user attempts to remove a
@@ -1933,6 +1873,17 @@ msgstr	"the name \"$name\" is not a project alias"
 #
 msgid	"project attributes complete"
 msgstr	"attributes changed"
+
+#
+# This verbose message is issued by the aecd command when a change is
+# in the ``awaiting review'' state.  By reminding reviewers to use aerb,
+# we make the statistics more meaningful, and also block other reviewes
+# from wasting their time.
+#
+msgid	"remember to use the aerb command"
+msgstr	"If you are going to review this change, please use the ``aegis "
+	"-review-begin'' command as soon as possible.  This ensures that "
+	"other reviewers don't waste any of their valuable time."
 
 #
 # This progress message is issued when aera completes successfully.
@@ -2061,6 +2012,19 @@ msgstr	"no change should be in the $state state when Aegis is upgraded "
 	"integration"
 
 #
+# This progress message is issued when aerb completes successfully.
+#
+msgid	"review begin complete"
+msgstr	"user \"$user\" has begun review"
+
+#
+# This progress message is issued when aerbu completes successfully.
+#
+msgid	"review begin undo complete"
+msgstr	"review begin rescinded"
+
+#
+#
 # This progress message is issued when aerfail completes successfully.
 #
 msgid	"review fail complete"
@@ -2077,6 +2041,13 @@ msgstr	"passed review"
 #
 msgid	"review pass undo complete"
 msgstr	"review pass rescinded"
+
+#
+# This error message is issued when a reviewer attempts to integrate
+# a change she reviewed, and the project is configured to disallow this.
+#
+msgid	"reviewer may not integrate"
+msgstr	"the reviewer of a change may not also integrate it"
 
 #
 # This progress message is issued when aeifail is removing the
@@ -2183,13 +2154,6 @@ msgid	"too many dir"
 msgstr	"too many directories specified"
 
 #
-# This error message is issued when too many file names are specified on
-# the command line.
-#
-msgid	"too many files"
-msgstr	"too many file names specified"
-
-#
 # This error message is issued when too many information names are
 # specified to the aev command.  It only accepts one.
 #
@@ -2270,16 +2234,6 @@ msgstr	"user \"$name\" is not an administrator"
 #
 msgid	"user \"$name\" is not an integrator"
 msgstr	"user \"$name\" is not an integrator"
-
-#
-# This error message is issued when aena is asked to add an
-# administrator to a project, but the user's uid is too low (too
-# privileged).
-#
-#	$Name		The offending user name.
-#
-msgid	"user \"$name\" is too privileged"
-msgstr	"user \"$name\" is too privileged"
 
 #
 # This warning message is issued when aed automatically alters the file

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,9 @@
 #include <arglex2.h>
 #include <cattr.h>
 #include <change.h>
-#include <change_bran.h>
+#include <change/attributes.h>
+#include <change/verbose.h>
+#include <change/branch.h>
 #include <col.h>
 #include <commit.h>
 #include <common.h>
@@ -125,90 +127,6 @@ new_change_list()
 }
 
 
-static void cattr_defaults _((cattr, project_ty *, pconf));
-
-static void
-cattr_defaults(a, pp, pc)
-	cattr		a;
-	project_ty	*pp;
-	pconf		pc;
-{
-	trace(("cattr_defaults(a = %08lX, pp = %08lX, pc = %08lX)\n{\n"/*}*/,
-		(long)a, (long)pp, (long)pc));
-	if
-	(
-		a->cause == change_cause_internal_improvement
-	||
-		a->cause == change_cause_external_improvement
-	)
-	{
-		if (!(a->mask & cattr_test_exempt_mask))
-		{
-			a->test_exempt = 1;
-			a->mask |= cattr_test_exempt_mask;
-		}
-		if (!(a->mask & cattr_test_baseline_exempt_mask))
-		{
-			a->test_baseline_exempt = 1;
-			a->mask |= cattr_test_baseline_exempt_mask;
-		}
-		if (!(a->mask & cattr_regression_test_exempt_mask))
-		{
-			a->regression_test_exempt = 0;
-			a->mask |= cattr_regression_test_exempt_mask;
-		}
-	}
-	else
-	{
-		if (!(a->mask & cattr_regression_test_exempt_mask))
-		{
-			a->regression_test_exempt = 1;
-			a->mask |= cattr_regression_test_exempt_mask;
-		}
-	}
-	if (!(a->mask & cattr_test_exempt_mask))
-	{
-		a->test_exempt = project_default_test_exemption_get(pp);
-		a->mask |= cattr_test_exempt_mask;
-	}
-	if (!(a->mask & cattr_test_baseline_exempt_mask))
-	{
-		a->test_baseline_exempt =
-			project_default_test_exemption_get(pp);
-		a->mask |= cattr_test_baseline_exempt_mask;
-	}
-
-	if (!a->architecture)
-		a->architecture =
-			(cattr_architecture_list)
-			cattr_architecture_list_type.alloc();
-	assert(pc->architecture);
-	assert(pc->architecture->length);
-	if (!a->architecture->length)
-	{
-		long		j;
-
-		for (j = 0; j < pc->architecture->length; ++j)
-		{
-			type_ty		*type_p;
-			string_ty	**str_p;
-			pconf_architecture pca;
-
-			str_p =
-				cattr_architecture_list_type.list_parse
-				(
-					a->architecture,
-					&type_p
-				);
-			assert(type_p == &string_type);
-			pca = pc->architecture->list[j];
-			*str_p = str_copy(pca->name);
-		}
-	}
-	trace((/*{*/"}\n"));
-}
-
-
 void
 new_change_check_permission(pp, up)
 	project_ty	*pp;
@@ -255,8 +173,10 @@ new_change_main()
 	string_list_ty	darch;
 	string_list_ty	parch;
 	char		*output;
+	string_ty	*input;
 
 	trace(("new_change_main()\n{\n"/*}*/));
+	arglex();
 	cattr_data = 0;
 	project_name = 0;
 	edit = edit_not_set;
@@ -284,7 +204,7 @@ new_change_main()
 			else if (change_number < 1)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ls", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -293,23 +213,41 @@ new_change_main()
 
 		case arglex_token_string:
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_file));
+			sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_file));
 			error_intl(scp, i18n("warning: use $name option"));
 			sub_context_delete(scp);
 			if (cattr_data)
-				fatal_intl(0, i18n("too many files"));
+				fatal_too_many_files();
 			goto read_input_file;
 
 		case arglex_token_file:
 			if (cattr_data)
 				duplicate_option(new_change_usage);
-			if (arglex() != arglex_token_string)
-				option_needs_file(arglex_token_file, new_change_usage);
-			read_input_file:
+			input = 0;
+			switch (arglex())
+			{
+			default:
+				option_needs_file
+				(
+					arglex_token_file,
+					new_change_usage
+				);
+				/* NOTREACHED*/
+
+			case arglex_token_string:
+				read_input_file:
+				input = str_from_c(arglex_value.alv_string);
+				break;
+
+			case arglex_token_stdio:
+				input = str_from_c("");
+				break;
+			}
 			os_become_orig();
-			cattr_data = cattr_read_file(arglex_value.alv_string);
+			cattr_data = cattr_read_file(input);
 			os_become_undo();
-			cattr_verify(arglex_value.alv_string, cattr_data);
+			assert(cattr_data);
+			change_attributes_verify(input, cattr_data);
 			break;
 
 		case arglex_token_project:
@@ -397,8 +335,8 @@ new_change_main()
 	if (edit == edit_not_set && !cattr_data)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", arglex_token_name(arglex_token_file));
-		sub_var_set(scp, "Name2", "%s", arglex_token_name(arglex_token_edit));
+		sub_var_set_charstar(scp, "Name1", arglex_token_name(arglex_token_file));
+		sub_var_set_charstar(scp, "Name2", arglex_token_name(arglex_token_edit));
 		error_intl(scp, i18n("warning: no $name1, assuming $name2"));
 		sub_context_delete(scp);
 		edit = edit_foreground;
@@ -457,18 +395,18 @@ new_change_main()
 		cstate_data = change_cstate_get(cp);
 		cstate_data->state = cstate_state_awaiting_development;
 		pconf_data = change_pconf_get(cp, 0);
-		cattr_defaults(cattr_data, pp, pconf_data);
+		change_attributes_default(cattr_data, pp, pconf_data);
 		change_free(cp);
 
 		/*
 		 * edit the attributes
 		 */
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%S", project_name_get(pp));
+		sub_var_set_string(scp, "Name", project_name_get(pp));
 		io_comment_append(scp, i18n("Project $name"));
 		io_comment_append(scp, i18n("nc dflt hint"));
 		sub_context_delete(scp);
-		cattr_edit(&cattr_data, edit);
+		change_attributes_edit(&cattr_data, edit);
 	}
 
 	/*
@@ -494,7 +432,7 @@ new_change_main()
 		if (project_change_number_in_use(pp, change_number))
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "Number", "%ld", magic_zero_decode(change_number));
+			sub_var_set_long(scp, "Number", magic_zero_decode(change_number));
 			project_fatal(pp, scp, i18n("change $number used"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -531,7 +469,7 @@ new_change_main()
 		cattr_data->regression_test_exempt = 1;
 		cattr_data->mask |= cattr_regression_test_exempt_mask;
 	}
-	cattr_defaults(cattr_data, pp, pconf_data);
+	change_attributes_default(cattr_data, pp, pconf_data);
 
 	/*
 	 * when developers create changes,
@@ -555,7 +493,7 @@ new_change_main()
 		 */
 		cattr dflt = cattr_type.alloc();
 		dflt->cause = cattr_data->cause;
-		cattr_defaults(dflt, pp, pconf_data);
+		change_attributes_default(dflt, pp, pconf_data);
 
 		if
 		(
@@ -710,7 +648,7 @@ new_change_main()
 	/*
 	 * verbose success message
 	 */
-	change_verbose(cp, 0, i18n("new change complete"));
+	change_verbose_new_change_complete(cp);
 	project_free(pp);
 	change_free(cp);
 	user_free(up);
@@ -721,20 +659,13 @@ new_change_main()
 void
 new_change()
 {
-	trace(("new_change()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		new_change_main();
-		break;
+		{ arglex_token_help,		new_change_help,	},
+		{ arglex_token_list,		new_change_list,	},
+	};
 
-	case arglex_token_help:
-		new_change_help();
-		break;
-
-	case arglex_token_list:
-		new_change_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("new_change()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), new_change_main);
+	trace(("}\n"));
 }

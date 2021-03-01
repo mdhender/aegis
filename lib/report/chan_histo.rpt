@@ -1,0 +1,65 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2001 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the lib/report/chan_histo.rpt
+ */
+
+title(sprintf("Project %s, Change %d", project_name(), change_number()),
+	"History");
+
+columns
+(
+	{ width = 15; name = "What\n------"; },
+	{ width = 15; name = "When\n------"; },
+	{ width = 8; name = "Who\n-----"; },
+	{ right = 0; name = "Comment\n---------"; },
+	{ left = 8; right = 0; }
+);
+
+auto ps;
+ps = project[project_name()].state;
+auto cs;
+cs = ps.branch.change[change_number()];
+
+auto h_idx;
+for (h_idx in keys(cs.history))
+{
+	auto h, why1, why2, elapsed;
+	h = cs.history[h_idx];
+	why1 = h.why;
+	why2 = "";
+	if (length(h.why) > 80)
+	{
+		why2 = why1;
+		why1 = "";
+	}
+	if (h_idx + 1 >= count(keys(cs.history)))
+		elapsed = working_days(h.when, now());
+	else
+		elapsed = working_days(h.when, cs.history[h_idx + 1].when);
+	if (elapsed > 0.1)
+	{
+		if (why1 != "")
+			why1 ##= "\n";
+		why1 ##= sprintf("Elapsed time: %.3f", elapsed);
+	}
+	print(h.what, h.when, h.who, why1);
+	if (why2 != "")
+		print("", "", "", "", why2);
+}

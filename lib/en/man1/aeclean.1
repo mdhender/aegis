@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1998, 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -80,6 +80,11 @@ will be run, if there is one.
 You will be warned if any of the files are out-of-date and need to be merged.
 You will be warned if any files need to be differenced.
 .so o_symlnk.so
+.SS Notification
+The notification commands that would be run by the \fIaecp\fP(1),
+\fIaedb\fP(1), \fIaenf\fP(1), \fIaent\fP(1) and \fIaerm\fP(1) commands
+are run, as appropriate.  The \fIproject_\%file_\%command\fP is also run,
+if set.  See \fIaepconf\fP(5) for more information.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so

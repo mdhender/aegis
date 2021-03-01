@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997 Peter Miller;
+.\"	Copyright (C) 1997, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -220,9 +220,7 @@ problems when they are least expensive.
 This is the most interesting response.
 Once long ago, on a CPU far, far away, it may even have been true.
 When Feldman
-.[
-feld78
-.]
+[feld78]
 first wrote \fImake\fP it was 1978 and he was using a PDP11.
 Unix processes were limited to 64KB of data.
 .LP

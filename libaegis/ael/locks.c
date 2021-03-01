@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@
 #include <gonzo.h>
 #include <itab.h>
 #include <lock.h>
+#include <output.h>
 #include <project.h>
 #include <str.h>
 #include <str_list.h>
@@ -36,12 +37,13 @@
 #include <zero.h>
 
 
-static int list_locks_name_col;
-static int list_locks_type_col;
-static int list_locks_project_col;
-static int list_locks_change_col;
-static int list_locks_address_col;
-static int list_locks_process_col;
+static col_ty *colp;
+static output_ty *list_locks_name_col;
+static output_ty *list_locks_type_col;
+static output_ty *list_locks_project_col;
+static output_ty *list_locks_change_col;
+static output_ty *list_locks_address_col;
+static output_ty *list_locks_process_col;
 static string_list_ty list_locks_pnames;
 static long list_locks_count;
 
@@ -88,6 +90,10 @@ list_locks_callback(found)
 		name_str = "baseline";
 		break;
 
+	case lock_walk_name_baseline_priority:
+		name_str = "baseline priority";
+		break;
+
 	case lock_walk_name_history:
 		name_str = "history";
 		break;
@@ -117,6 +123,7 @@ list_locks_callback(found)
 	{
 	case lock_walk_name_pstate:
 	case lock_walk_name_baseline:
+	case lock_walk_name_baseline_priority:
 	case lock_walk_name_history:
 		for (j = 0; j < list_locks_pnames.nstrings; ++j)
 		{
@@ -203,24 +210,24 @@ list_locks_callback(found)
 	/*
 	 * print it all out
 	 */
-	col_printf(list_locks_name_col, "%s", name_str);
-	col_printf(list_locks_type_col, "%s", type_str);
+	output_fputs(list_locks_name_col, name_str);
+	output_fputs(list_locks_type_col, type_str);
 	if (project_str)
-		col_printf(list_locks_project_col, "%s", project_str);
+		output_fputs(list_locks_project_col, project_str);
 	if (change_number)
 	{
-		col_printf
+		output_fprintf
 		(
 			list_locks_change_col,
 			"%4ld",
 			magic_zero_decode(change_number)
 		);
 	}
-	col_printf(list_locks_address_col, "%8.8lX", found->address);
-	col_printf(list_locks_process_col, "%5d", found->pid);
+	output_fprintf(list_locks_address_col, "%8.8lX", found->address);
+	output_fprintf(list_locks_process_col, "%5d", found->pid);
 	if (!found->pid_is_local)
-		col_printf(list_locks_process_col, " remote");
-	col_eoln();
+		output_fputs(list_locks_process_col, " remote");
+	col_eoln(colp);
 }
 
 
@@ -246,25 +253,15 @@ list_locks(project_name, change_number)
 	/*
 	 * open the columns
 	 */
-	col_open((char *)0);
-	list_locks_name_col = col_create(0, 8);
-	list_locks_type_col = col_create(9, 19);
-	list_locks_project_col = col_create(20, 32);
-	list_locks_change_col = col_create(33, 40);
-	list_locks_address_col = col_create(41, 50);
-	list_locks_process_col = col_create(51, 0);
+	colp = col_open((string_ty *)0);
+	col_title(colp, "List of Locks", gonzo_lockpath_get()->str_text);
+	list_locks_name_col = col_create(colp, 0, 8, "Type\n------");
+	list_locks_type_col = col_create(colp, 9, 19, "Mode\n------");
+	list_locks_project_col = col_create(colp, 20, 32, "Project\n---------");
+	list_locks_change_col = col_create(colp, 33, 40, "Change\n------");
+	list_locks_address_col = col_create(colp, 41, 50, "Address\n--------");
+	list_locks_process_col = col_create(colp, 51, 0, "Process\n--------");
 	list_locks_count = 0;
-
-	/*
-	 * set the column headings
-	 */
-	col_title("List of Locks", gonzo_lockpath_get()->str_text);
-	col_heading(list_locks_name_col, "Type\n------");
-	col_heading(list_locks_type_col, "Mode\n------");
-	col_heading(list_locks_project_col, "Project\n---------");
-	col_heading(list_locks_change_col, "Change\n------");
-	col_heading(list_locks_address_col, "Address\n--------");
-	col_heading(list_locks_process_col, "Process\n--------");
 
 	/*
 	 * list the locks found
@@ -273,10 +270,22 @@ list_locks(project_name, change_number)
 	string_list_destructor(&list_locks_pnames);
 	if (list_locks_count == 0)
 	{
-		int info = col_create(4, 0);
-		col_puts(info, "No locks found.");
-		col_eoln();
+		output_ty *info = col_create(colp, 4, 0, (const char *)0);
+		output_fputs(info, "No locks found.");
+		col_eoln(colp);
 	}
-	col_close();
+	col_close(colp);
+
+	/*
+	 * clean up
+	 */
+	colp = 0;
+	list_locks_name_col = 0;
+	list_locks_type_col = 0;
+	list_locks_project_col = 0;
+	list_locks_change_col = 0;
+	list_locks_address_col = 0;
+	list_locks_process_col = 0;
+	list_locks_count = 0;
 	trace(("}\n"));
 }

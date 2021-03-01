@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -62,9 +62,9 @@ atime_evaluate(tp, path, st)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "atime");
-		sub_var_set(scp, "Number", "1");
-		sub_var_set(scp, "Name", "%s", vp->method->name);
+		sub_var_set_charstar(scp, "Function", "atime");
+		sub_var_set_charstar(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Name", vp->method->name);
 		rpt_value_free(vp);
 		s =
 			subst_intl
@@ -146,9 +146,9 @@ ctime_evaluate(tp, path, st)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "ctime");
-		sub_var_set(scp, "Number", "1");
-		sub_var_set(scp, "Name", "%s", vp->method->name);
+		sub_var_set_charstar(scp, "Function", "ctime");
+		sub_var_set_charstar(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Name", vp->method->name);
 		rpt_value_free(vp);
 		s =
 			subst_intl
@@ -230,9 +230,9 @@ mtime_evaluate(tp, path, st)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "mtime");
-		sub_var_set(scp, "Number", "1");
-		sub_var_set(scp, "Name", "%s", vp->method->name);
+		sub_var_set_charstar(scp, "Function", "mtime");
+		sub_var_set_charstar(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Name", vp->method->name);
 		rpt_value_free(vp);
 		s =
 			subst_intl
@@ -314,9 +314,9 @@ mode_evaluate(tp, path, st)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "mode");
-		sub_var_set(scp, "Number", "1");
-		sub_var_set(scp, "Name", "%s", vp->method->name);
+		sub_var_set_charstar(scp, "Function", "mode");
+		sub_var_set_charstar(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Name", vp->method->name);
 		rpt_value_free(vp);
 		s =
 			subst_intl
@@ -398,9 +398,9 @@ nlink_evaluate(tp, path, st)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "nlink");
-		sub_var_set(scp, "Number", "1");
-		sub_var_set(scp, "Name", "%s", vp->method->name);
+		sub_var_set_charstar(scp, "Function", "nlink");
+		sub_var_set_charstar(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Name", vp->method->name);
 		rpt_value_free(vp);
 		s =
 			subst_intl
@@ -482,9 +482,9 @@ ino_evaluate(tp, path, st)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "inode");
-		sub_var_set(scp, "Number", "1");
-		sub_var_set(scp, "Name", "%s", vp->method->name);
+		sub_var_set_charstar(scp, "Function", "inode");
+		sub_var_set_charstar(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Name", vp->method->name);
 		rpt_value_free(vp);
 		s =
 			subst_intl
@@ -566,9 +566,9 @@ uid_evaluate(tp, path, st)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "uid");
-		sub_var_set(scp, "Number", "1");
-		sub_var_set(scp, "Name", "%s", vp->method->name);
+		sub_var_set_charstar(scp, "Function", "uid");
+		sub_var_set_charstar(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Name", vp->method->name);
 		rpt_value_free(vp);
 		s =
 			subst_intl
@@ -650,9 +650,9 @@ gid_evaluate(tp, path, st)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "gid");
-		sub_var_set(scp, "Number", "1");
-		sub_var_set(scp, "Name", "%s", vp->method->name);
+		sub_var_set_charstar(scp, "Function", "gid");
+		sub_var_set_charstar(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Name", vp->method->name);
 		rpt_value_free(vp);
 		s =
 			subst_intl
@@ -734,9 +734,9 @@ size_evaluate(tp, path, st)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "size");
-		sub_var_set(scp, "Number", "1");
-		sub_var_set(scp, "Name", "%s", vp->method->name);
+		sub_var_set_charstar(scp, "Function", "size");
+		sub_var_set_charstar(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Name", vp->method->name);
 		rpt_value_free(vp);
 		s =
 			subst_intl
@@ -819,9 +819,9 @@ type_evaluate(tp, path, st)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "type");
-		sub_var_set(scp, "Number", "1");
-		sub_var_set(scp, "Name", "%s", vp->method->name);
+		sub_var_set_charstar(scp, "Function", "type");
+		sub_var_set_charstar(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Name", vp->method->name);
 		rpt_value_free(vp);
 		s =
 			subst_intl

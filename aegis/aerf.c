@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,6 +37,7 @@
 #include <lock.h>
 #include <mem.h>
 #include <os.h>
+#include <pattr.h>
 #include <progname.h>
 #include <project.h>
 #include <project/file.h>
@@ -73,11 +74,10 @@ review_fail_help()
 }
 
 
-static void review_fail_list _((void (*usage)(void)));
+static void review_fail_list _((void));
 
 static void
-review_fail_list(usage)
-	void		(*usage)_((void));
+review_fail_list()
 {
 	string_ty	*project_name;
 
@@ -89,17 +89,17 @@ review_fail_list(usage)
 		switch (arglex_token)
 		{
 		default:
-			generic_argument(usage);
+			generic_argument(review_fail_usage);
 			continue;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				option_needs_name(arglex_token_project, usage);
+				option_needs_name(arglex_token_project, review_fail_usage);
 			/* fall through... */
 
 		case arglex_token_string:
 			if (project_name)
-				duplicate_option_by_name(arglex_token_project, usage);
+				duplicate_option_by_name(arglex_token_project, review_fail_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -134,16 +134,25 @@ check_permissions(cp, up)
 	 */
 	if (cstate_data->state != cstate_state_being_reviewed)
 		change_fatal(cp, 0, i18n("bad rf state"));
-	if (!project_reviewer_query(pp, user_name(up)))
-		project_fatal(pp, 0, i18n("not a reviewer"));
-	if
-	(
-		!project_developer_may_review_get(pp)
-	&&
-		str_equal(change_developer_name(cp), user_name(up))
-	)
+	if (project_develop_end_action_get(pp) ==
+		pattr_develop_end_action_goto_awaiting_review)
 	{
-		change_fatal(cp, 0, i18n("developer may not review"));
+		if (!str_equal(change_reviewer_name(cp), user_name(up)))
+			change_fatal(cp, 0, i18n("not reviewer"));
+	}
+	else
+	{
+		if (!project_reviewer_query(pp, user_name(up)))
+			project_fatal(pp, 0, i18n("not a reviewer"));
+		if
+		(
+			!project_developer_may_review_get(pp)
+		&&
+			str_equal(change_developer_name(cp), user_name(up))
+		)
+		{
+			change_fatal(cp, 0, i18n("developer may not review"));
+		}
 	}
 }
 
@@ -153,6 +162,7 @@ static void review_fail_main _((void));
 static void
 review_fail_main()
 {
+	string_ty	*s;
 	sub_context_ty	*scp;
 	cstate		cstate_data;
 	cstate_history	history_data;
@@ -168,6 +178,7 @@ review_fail_main()
 	edit_ty		edit;
 
 	trace(("review_fail_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	change_number = 0;
 	edit = edit_not_set;
@@ -181,22 +192,42 @@ review_fail_main()
 
 		case arglex_token_string:
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_file));
+			sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_file));
 			error_intl(scp, i18n("warning: use $name option"));
 			sub_context_delete(scp);
 			if (comment)
-				fatal_intl(0, i18n("too many files"));
+				fatal_too_many_files();
 			goto read_input_file;
 
 		case arglex_token_file:
 			if (comment)
 				duplicate_option(review_fail_usage);
-			if (arglex() != arglex_token_string)
-				option_needs_file(arglex_token_file, review_fail_usage);
-			read_input_file:
-			os_become_orig();
-			comment = read_whole_file(arglex_value.alv_string);
-			os_become_undo();
+			switch (arglex())
+			{
+			default:
+				option_needs_file
+				(
+					arglex_token_file,
+					review_fail_usage
+				);
+				/*NOTREACHED*/
+
+			case arglex_token_string:
+				read_input_file:
+				os_become_orig();
+				s = str_from_c(arglex_value.alv_string);
+				comment = read_whole_file(s);
+				str_free(s);
+				os_become_undo();
+				break;
+
+			case arglex_token_stdio:
+				os_become_orig();
+				comment = read_whole_file((string_ty *)0);
+				os_become_undo();
+				break;
+			}
+			assert(comment);
 			break;
 
 		case arglex_token_reason:
@@ -221,7 +252,7 @@ review_fail_main()
 			else if (change_number < 1)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				sub_context_delete(scp);
 			}
@@ -293,8 +324,8 @@ review_fail_main()
 	if (edit == edit_not_set && !(comment || reason))
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", arglex_token_name(arglex_token_file));
-		sub_var_set(scp, "Name2", arglex_token_name(arglex_token_edit));
+		sub_var_set_charstar(scp, "Name1", arglex_token_name(arglex_token_file));
+		sub_var_set_charstar(scp, "Name2", arglex_token_name(arglex_token_edit));
 		error_intl(scp, i18n("warning: no $name1, assuming $name2"));
 		sub_context_delete(scp);
 		edit = edit_foreground;
@@ -358,7 +389,6 @@ review_fail_main()
 	history_data = change_history_new(cp, up);
 	history_data->what = cstate_history_what_review_fail;
 	history_data->why = comment;
-	change_build_times_clear(cp);
 
 	/*
 	 * add it back into the user's change list
@@ -435,20 +465,13 @@ review_fail_main()
 void
 review_fail()
 {
-	trace(("review_fail()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		review_fail_main();
-		break;
+		{ arglex_token_help,		review_fail_help,	},
+		{ arglex_token_list,		review_fail_list,	},
+	};
 
-	case arglex_token_help:
-		review_fail_help();
-		break;
-
-	case arglex_token_list:
-		review_fail_list(review_fail_usage);
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("review_fail()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), review_fail_main);
+	trace(("}\n"));
 }

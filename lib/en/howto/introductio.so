@@ -17,9 +17,6 @@
 .\"	along with this program; if not, write to the Free Software
 .\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 .\"
-.\" MANIFEST: document describing lib/en/howto/introductios
-.\"
-.\"
 .\" MANIFEST: Howto, Introduction
 .\"
 \&.
@@ -95,7 +92,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 .LP
 This manual contains a series of brief lessons or ``How To'' guides for
 using Aegis.  Each is arranged to cover two pages, so that when the manual
-lies open on the desk, the whole subject is easily visable in front of you.
+lies open on the desk, the whole subject is easily visible in front of you.
 .LP
 When printing this manual, it is essential to print it double sided,
 or the ``subject at once'' effect will not occur.
@@ -104,10 +101,10 @@ The table of contents will be printed last.
 Insert it (there should be two pages, on one sheet of paper) before this page.
 .nh 2 "Assumed Knowledge"
 .LP
-Many of thes sections are written for use by beginners, so there is a
+Many of these sections are written for use by beginners, so there is a
 fairly low level of assumed knowledge.  However, you may want to have
 \fIThe Aegis User Guide\fP, and \fIThe Aegis Reference Manual\fP very
-close by, as all of the material convered here is available in a more
+close by, as all of the material conveyed here is available in a more
 expended or detailed form on those manuals.
 .nh 2 "Howto Install Aegis"
 .LP

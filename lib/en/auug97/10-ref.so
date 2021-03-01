@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997 Peter Miller;
+.\"	Copyright (C) 1997, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,23 @@
 .br
 .ne 3i
 .nh 1 "References"
-.[
-$LIST$
-.]
+.PP
+\fBdebo88:\fP
+Adam de Boor (1988).
+\fIPMake \- A Tutorial\fP.
+University of California, Berkeley
+.PP
+\fBfeld78:\fP
+Stuart I. Feldman (1978).
+\fIMake \- A Program for Maintaining Computer Programs\fP.
+Bell Laboratories Computing Science Technical Report 57
+.PP
+\fBstal93:\fP
+Richard M. Stallman and Roland McGrath (1993).
+\fIGNU Make: A Program for Directing Recompilation\fP.
+Free Software Foundation, Inc.
+.PP
+\fBtalb91:\fP
+Steve Talbott (1991).
+\fIManaging Projects with Make, 2nd Ed\fP.
+O'Reilly & Associates, Inc.

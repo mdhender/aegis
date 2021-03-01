@@ -1,0 +1,126 @@
+#!/bin/sh
+#-*-tcl-*-
+#	aegis - project change supervisor
+#	Copyright (C) 2001 Peter Miller;
+#	All rights reserved.
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#
+# MANIFEST: aebuffy.in
+#
+# comments wrap in Tcl, but not in sh \
+exec wish $0 -- ${1+"$@"}
+
+set bindir @bindir@
+set libdir @libdir@
+set datadir @datadir@
+
+frame .frame
+scrollbar .frame.scroll -command ".frame.blurb yview"
+pack .frame.scroll -side right -fill y
+text .frame.blurb \
+	-borderwidth 0 \
+	-width 50 \
+	-height 6 \
+	-wrap none \
+	-background white \
+	-yscrollcommand ".frame.scroll set"
+pack .frame.blurb -side left -fill both -expand 1
+pack .frame -expand 1 -fill both
+
+proc doubleClick { state project change_number } {
+    global bindir
+    switch -- $state {
+	being_reviewed {
+	    eval "exec $bindir/tkaer -p $project -c $change_number &"
+	}
+	default {
+	}
+    }
+}
+
+proc readPipe { command errok } {
+	set data ""
+	set fd [open $command r]
+	if { $fd != "" } {
+		set data [read $fd]
+		set codevar ""
+		catch { close $fd } codevar
+		if { $codevar != "" && !$errok } {
+		    puts [format "Command \"%s\"\nreturned \"%s\"" \
+			    $command $codevar]
+		    exit 1
+		}
+	}
+	return [string trim $data]
+}
+
+proc processCommandLine { } {
+    global argc argv argv0
+    global projectName
+
+    set argindex 0
+    set projectName ""
+
+    # Loop through argv seeing and try to guess at what the user wants to do.
+    while {$argindex < $argc} {
+	set arg [lindex $argv $argindex]
+	switch -regexp -- $arg {
+	    "^-p$" {
+		incr argindex
+		set projectName [lindex $argv $argindex]
+	    }
+	    "^-p.*" {
+		set projectName [string range $arg 2 end]
+	    }
+	    default {
+		set projectName [lindex $argv $argindex]
+	    }
+	}
+	incr argindex
+    }
+
+    # If the user did not specify or we couldn't grok, then ask Aegis.
+    # to fill in the gaps.
+
+    if { $projectName == "" } {
+	# Set the projectName variable.  We need to ask Aegis for this,
+	# so that we get what *aegis* thinks is the default project name.
+	set projectName [readPipe "|aegis -list default_project" 1]
+	if { $projectName == "" } {
+	    puts [format "\n%s couldn't determine the project name\n" $argv0]
+	    exit 1
+	}
+    }
+}
+
+proc updateBlurb { } {
+global datadir projectName
+catch {
+    set fileId [open \
+	"|aereport -f $datadir/wish/aebuffy.rpt -pw=2000 -unf -p $projectName"\
+	"r"]
+    eval [read $fileId]
+    close $fileId
+} { }
+update
+after 60000 "updateBlurb"
+}
+
+processCommandLine
+set title [format "aebuffy - \"%s\"" $projectName]
+wm title . $title
+wm iconname . $title
+updateBlurb

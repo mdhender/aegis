@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@
 #include <ael/project/projects.h>
 #include <col.h>
 #include <option.h>
+#include <output.h>
 #include <project.h>
 #include <project_hist.h>
 #include <str_list.h>
@@ -40,11 +41,12 @@ list_projects(project_name, change_number)
 	long		change_number;
 {
 	string_list_ty	name;
-	int		name_col = 0;
-	int		dir_col = 0;
-	int		desc_col = 0;
+	output_ty	*name_col = 0;
+	output_ty	*dir_col = 0;
+	output_ty	*desc_col = 0;
 	int		j;
 	int		left;
+	col_ty		*colp;
 
 	trace(("list_projects()\n{\n"));
 	if (project_name)
@@ -60,22 +62,40 @@ list_projects(project_name, change_number)
 	/*
 	 * create the columns
 	 */
-	col_open((char *)0);
-	col_title("List of Projects", (char *)0);
+	colp = col_open((string_ty *)0);
+	col_title(colp, "List of Projects", (char *)0);
 
 	left = 0;
-	name_col = col_create(left, left + PROJECT_WIDTH);
+	name_col =
+		col_create
+		(
+			colp,
+			left,
+			left + PROJECT_WIDTH,
+			"Project\n---------"
+		);
 	left += PROJECT_WIDTH + 1;
-	col_heading(name_col, "Project\n---------");
 
 	if (!option_terse_get())
 	{
-		dir_col = col_create(left, left + DIRECTORY_WIDTH);
+		dir_col =
+			col_create
+			(
+				colp,
+				left,
+				left + DIRECTORY_WIDTH,
+				"Directory\n-----------"
+			);
 		left += DIRECTORY_WIDTH + 1;
-		col_heading(dir_col, "Directory\n-----------");
 
-		desc_col = col_create(left, 0);
-		col_heading(desc_col, "Description\n-------------");
+		desc_col =
+			col_create
+			(
+				colp,
+				left,
+				0,
+				"Description\n-------------"
+			);
 	}
 
 	/*
@@ -91,11 +111,11 @@ list_projects(project_name, change_number)
 
 		err = project_is_readable(pp);
 
-		col_puts(name_col, project_name_get(pp)->str_text);
-		if (!option_terse_get())
+		output_put_str(name_col, project_name_get(pp));
+		if (desc_col)
 		{
 			if (err)
-				col_puts(desc_col, strerror(err));
+				output_fputs(desc_col, strerror(err));
 			else
 			{
 				string_ty	*top;
@@ -107,22 +127,22 @@ list_projects(project_name, change_number)
 				 * baseline.
 				 */
 				top = project_top_path_get(pp, 0);
-				col_puts(dir_col, top->str_text);
+				output_put_str(dir_col, top);
 
-				col_puts
+				output_put_str
 				(
 					desc_col,
-					project_description_get(pp)->str_text
+					project_description_get(pp)
 				);
 			}
 		}
 		project_free(pp);
-		col_eoln();
+		col_eoln(colp);
 	}
 
 	/*
 	 * clean up and go home
 	 */
-	col_close();
+	col_close(colp);
 	trace(("}\n"));
 }

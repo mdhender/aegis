@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1996, 1997, 1998 Peter Miller;
+ *	Copyright (C) 1995-1998, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: functions to manipulate project history
  */
 
-#include <change_bran.h>
+#include <change/branch.h>
 #include <error.h>
 #include <project_hist.h>
 #include <trace.h>
@@ -131,13 +131,13 @@ project_current_integration_set(pp, change_number)
 
 
 long
-project_delta_number_get(pp)
+project_next_delta_number(pp)
 	project_ty	*pp;
 {
 	change_ty	*cp;
 
 	cp = project_change_get(pp);
-	return change_delta_number_get(cp);
+	return change_branch_next_delta_number(cp);
 }
 
 

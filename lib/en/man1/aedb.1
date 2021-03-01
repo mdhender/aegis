@@ -1,6 +1,6 @@
-'\" t
+'\" tp
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1994, 1998, 1999, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -71,7 +71,19 @@ specified change from the
 state to the
 .I "being developed"
 state.
-.PP
+.\" ------------------------------------------------------------------------
+.PS c
+boxwid = 1
+down
+S1: box "awaiting" "development"
+arrow " develop" ljust " begin" ljust
+S2: box "being" "developed"
+T1: spline -> from S2.w then left 0.75 then up 11/12 \
+	then to 1/3<S1.sw,S1.nw>
+" develop" ljust " begin" ljust " undo" ljust at T1.c - (0.75,0)
+.PE
+.\" ------------------------------------------------------------------------
+.SS Notification
 The
 .I develop_begin_command
 in the project config file
@@ -135,7 +147,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aedb '\*(n) -db \e!* -v'
-sh$	aedb(){\*(n) -db $* -v}
+sh$	aedb(){\*(n) -db "$@" -v}
 .fi
 .SH ERRORS
 It is an error if

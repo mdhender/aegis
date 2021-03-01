@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -145,6 +145,7 @@ develop_begin_main()
 	log_style_ty	log_style;
 
 	trace(("develop_begin_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	change_number = 0;
 	devdir = 0;
@@ -174,7 +175,7 @@ develop_begin_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -305,7 +306,7 @@ develop_begin_main()
 		scp = sub_context_new();
 		if (up2)
 		{
-			sub_var_set(scp, "User", "%S", user_name(up));
+			sub_var_set_string(scp, "User", user_name(up));
 			sub_var_optional(scp, "User");
 			sub_var_override(scp, "User");
 		}
@@ -327,7 +328,7 @@ develop_begin_main()
 
 		scp = sub_context_new();
 		devdir = change_development_directory_template(cp, up);
-		sub_var_set(scp, "File_Name", "%S", devdir);
+		sub_var_set_string(scp, "File_Name", devdir);
 		change_verbose(cp, scp, i18n("development directory \"$filename\""));
 		sub_context_delete(scp);
 	}
@@ -423,20 +424,13 @@ develop_begin_main()
 void
 develop_begin()
 {
-	trace(("develop_begin()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		develop_begin_main();
-		break;
+		{ arglex_token_help,		develop_begin_help,	},
+		{ arglex_token_list,		develop_begin_list,	},
+	};
 
-	case arglex_token_help:
-		develop_begin_help();
-		break;
-
-	case arglex_token_list:
-		develop_begin_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("develop_begin()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), develop_begin_main);
+	trace(("}\n"));
 }

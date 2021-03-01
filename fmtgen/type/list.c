@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1994, 1998, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -139,21 +139,24 @@ gen_code(type)
 		this->name->str_text
 	);
 	indent_printf("if (name)\n");
-	indent_more();
-	indent_printf("output_fprintf(fp, \"%%s =\\n\", name);\n");
-	indent_less();
-	indent_printf("output_fprintf(fp, \"[\\n\"/*]*/);\n");
+	indent_printf("{\n"/*}*/);
+	indent_printf("output_fputs(fp, name);\n");
+	indent_printf("output_fputs(fp, \" =\\n\");\n");
+	indent_printf(/*{*/"}\n");
+	indent_printf("assert(this->length <= this->maximum);\n");
+	indent_printf("assert(!this->list == !this->maximum);\n");
+	indent_printf("output_fputs(fp, \"[\\n\"/*]*/);\n");
 	indent_printf("for (j = 0; j < this->length; ++j)\n");
 	indent_printf("{\n"/*}*/);
 	s = str_from_c("list[j]");
 	type_gen_code_declarator(this->subtype, s, 1);
 	str_free(s);
-	indent_printf("output_fprintf(fp, \",\\n\");\n");
+	indent_printf("output_fputs(fp, \",\\n\");\n");
 	indent_printf(/*{*/"}\n");
-	indent_printf("output_fprintf(fp, /*[*/\"]\");\n");
+	indent_printf("output_fputs(fp, /*[*/\"]\");\n");
 	indent_printf("if (name)\n");
 	indent_more();
-	indent_printf("output_fprintf(fp, \";\\n\");\n");
+	indent_printf("output_fputs(fp, \";\\n\");\n");
 	indent_less();
 	indent_printf("trace((/*{*/\"}\\n\"));\n");
 	indent_printf(/*{*/"}\n");
@@ -214,6 +217,8 @@ gen_code(type)
 	       "trace((\"%s_free(this = %%08lX)\\n{\\n\"/*}*/, (long)this));\n",
 		this->name->str_text
 	);
+	indent_printf("assert(this->length <= this->maximum);\n");
+	indent_printf("assert(!this->list == !this->maximum);\n");
 	indent_printf("for (j = 0; j < this->length; ++j)\n");
 	indent_more();
 	s = str_from_c("list[j]");
@@ -252,6 +257,8 @@ gen_code(type)
 /*}*/, (long)this, (long)type_pp));\n",
 		this->name->str_text
 	);
+	indent_printf("assert(this->length <= this->maximum);\n");
+	indent_printf("assert(!this->list == !this->maximum);\n");
 	indent_printf("*type_pp = &%s_type;\n", this->subtype->name->str_text);
 	indent_printf("trace_pointer(*type_pp);\n");
 	indent_printf("if (this->length >= this->maximum)\n");
@@ -296,6 +303,8 @@ gen_code(type)
 	    "trace((\"%s_convert(this = %%08lX)\\n{\\n\"/*}*/, (long)this));\n",
 		this->name->str_text
 	);
+	indent_printf("assert(this->length <= this->maximum);\n");
+	indent_printf("assert(!this->list == !this->maximum);\n");
 	indent_printf("result = rpt_value_list();\n");
 	indent_printf("for (j = 0; j < this->length; ++j)\n");
 	indent_printf("{\n"/*}*/);

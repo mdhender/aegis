@@ -21,6 +21,12 @@
 #undef HAVE_ISWPRINT
 
 /*
+ * Define this symbol of your system has the mbstate_t type defined.
+ * It is usually in <stddef.h> or <wchar.h>
+ */
+#undef HAVE_MBSTATE_T
+
+/*
  * Define this symbol of your system has the wint_t type defined.
  * It is usually in <stddef.h> or <wctype.h>
  */

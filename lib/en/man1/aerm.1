@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1996, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1996, 1998, 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -80,6 +80,11 @@ including the the removed files,
 will not appear in the terse listing.
 These two features are very helpful when calling \*(n) from within
 a DMT to generate the list of source files.
+.SS Notification
+The \fIremove_file_command\fP in the project \fIconfig\fP file is run,
+if set.  The \fIproject_\%file_\%command\fP is also run, if set, and
+if there has been an integration recently.  See \fIaepconf\fP(5) for
+more information.
 .so z_whiteout.so
 .SH OPTIONS
 The following options are understood:
@@ -99,7 +104,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aerm '\*(n) -rm \e!* -v'
-sh$	aerm(){\*(n) -rm $* -v}
+sh$	aerm(){\*(n) -rm "$@" -v}
 .fi
 .SH ERRORS
 It is an error if

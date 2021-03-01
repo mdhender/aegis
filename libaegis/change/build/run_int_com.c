@@ -48,8 +48,8 @@ change_run_build_command(cp)
 	if (!the_command)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%s", THE_CONFIG_FILE);
-		sub_var_set(scp, "FieLD_Name", "build_command");
+		sub_var_set_charstar(scp, "File_Name", THE_CONFIG_FILE);
+		sub_var_set_charstar(scp, "FieLD_Name", "build_command");
 		change_fatal
 		(
 			cp,
@@ -69,10 +69,10 @@ change_run_build_command(cp)
 	 *	and 'nnn' is the build number.
 	 */
 	scp = sub_context_new();
-	sub_var_set(scp, "1", "${project}");
-	sub_var_set(scp, "2", "${change}");
-	sub_var_set(scp, "3", "${version}");
-	sub_var_set(scp, "File_List", "");
+	sub_var_set_charstar(scp, "1", "${project}");
+	sub_var_set_charstar(scp, "2", "${change}");
+	sub_var_set_charstar(scp, "3", "${version}");
+	sub_var_set_charstar(scp, "File_List", "");
 	sub_var_optional(scp, "File_List");
 	the_command = substitute(scp, cp, the_command);
 	sub_context_delete(scp);

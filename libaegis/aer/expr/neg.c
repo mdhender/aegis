@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -79,7 +79,7 @@ neg_evaluate(this)
 
 	default:
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", v2->method->name);
+		sub_var_set_charstar(scp, "Name", v2->method->name);
 		s = subst_intl(scp, i18n("illegal negative ($name)"));
 		sub_context_delete(scp);
 		vp = rpt_value_error(this->child[0]->pos, s);
@@ -160,7 +160,7 @@ pos_evaluate(this)
 
 	default:
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", v2->method->name);
+		sub_var_set_charstar(scp, "Name", v2->method->name);
 		s = subst_intl(scp, i18n("illegal positive ($name)"));
 		sub_context_delete(scp);
 		vp = rpt_value_error(this->child[0]->pos, s);

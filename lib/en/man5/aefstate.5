@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997 Peter Miller;
+.\"	Copyright (C) 1993-1997, 1999, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -49,27 +49,81 @@ action = (create, modify, remove);
 .br
 This field describes what is being done with the file.
 .TP 8n
-edit_number = string;
-.br
+edit = { ... };
+.RS
 For a project or an active branch, this field records the
 head revision of the file.
 For a completed change or branch, this field records
 the revision number after integrate pass.
 .TP 8n
-edit_number_origin = string;
+revision = string;
+This is the edit number, as reported by the \fIhistory_\%get_\%command\fP
+in the project \fIconfig\fP file at integrate pass time.
+.TP 8n
+encoding = (none, quoted_printable, base64);
+.RS
+This field records the encoding used when the file was added to
+the history at integrate pass time, as configured by one of the
+\fIhistory_\%put_\%command\fP or \fIhistory_\%get_\%command\fP
+and \fIhistory_\%content_\%limitation\fP fields
+of the project \fIconfig\fP file.
+.TP 8n
+none
+No encoding was applied to the file.  Either it had no binary characters,
+or the history tool is able to cope with binary files.
+.TP 8n
+quoted_printable
+The MIME Quoted Printable encoding (see RFC 1521) has been used to
+escape the binary characters of the file content.
+.TP 8n
+base64
+The MIME Base 64 encoding (see RFC 1521) has been used to encode the
+file content.
+.RE
+.PP
+The \fIhistory_content_limitation\fP field of the project \fIconfig\fP
+file is used to determine which files need encoding.  The size of the
+encoded file is compared to determine which of quoted printable and base
+64 encodings is used; the smaller is chosen.
+.RE
+.TP 8n
+edit_number = string;
 .br
+This field is obsolescent.  It is only present for backwards
+compatibility.  It has been replaced by the \fIedit\fP field.
+.TP 8n
+edit_origin = { ... };
+.RS
 This field records the edit number of the file
 when it was added to the change or branch.
 In changes, this field is not present for new files.
 (A change file is out of date if it's edit number_origin field does not equal
 the edit_number field in the project.)
+.PP
+It has the same fields, with the same meaning, as the \fIedit\fP field, above.
+.RE
 .TP 8n
-edit_number_origin_new = string;
-.br
+edit_number_origin = string;
+.RS
+This field is obsolescent.  It is only present for backwards
+compatibility.  It has been replaced by the \fIedit_origin\fP field.
+.RE
+.TP 8n
+edit_origin_new = { ... };
+.RS
 This field records the edit number of the file
-to replace the edit_number_ofigin field in the branch at integrate pass time.
+to replace the edit_number_origin field in the branch at integrate pass time.
 This is used to perform cross branch merging.
 This field cleared at integrate pass time.
+.PP
+It has the same fields, with the same meaning, as the \fIedit\fP field, above.
+.RE
+.TP 8n
+edit_number_origin_new = string;
+.RS
+This field is obsolescent.  It is only present for backwards
+compatibility.  It has been replaced by the \fIedit_origin_new\fP field.
+.RE
 .TP 8n
 usage = (source, test, manual_test);
 .br
@@ -207,6 +261,28 @@ This is used by
 .IR aet (1)
 to suggest suitable tests.
 .so aemetrics.so
+.SH WRITING REPORT SCRIPTS
+When attempting to access these fields from within the report generator,
+you need a code fragment similar to the following:
+.RS
+.nf
+.ft CW
+auto ps, pfs;
+ps = project[project_name()].state;
+fps = ps.src["somefile"];
+.sp 0.5
+auto cs, cfs;
+cs = ps.branch.change[change_number()];
+cfs = cs.src["somefile"];
+.ft R
+.fi
+.RE
+Notice that the top-level fields of the file state is not available,
+but instead are mapped onto the relevant project file and change file
+\fIsrc\fP arrays.
+.PP
+All of the src member fields mentioned in the man page can now be accessed
+as members of the \f[CW]pfs\fP or \f[CW]cfs\fP variables.
 .SH SEE ALSO
 .TP 8n
 .IR aegis (5)

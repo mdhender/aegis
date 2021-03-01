@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,5 +39,19 @@ void stracc_open _((stracc_t *));
 string_ty *stracc_close _((const stracc_t *));
 void stracc_char _((stracc_t *, int));
 void stracc_chars _((stracc_t *, const char *, size_t));
+
+/*
+ * The stracc_char function shows up in the profiles as occupying 10%
+ * of the time it takes to parse the database files.  By making it a
+ * macro, things go measurably faster.
+ *
+ * Despite looking recursive, it isn't.  Ansi C macros do not recurse,
+ * so it winds up calling the real function in the "buffer needs to
+ * grow" case.
+ */
+#define stracc_char(sap, c) \
+	((sap)->length < (sap)->maximum ? \
+	(void)((sap)->buffer[(sap)->length++] = (c)) : \
+	stracc_char((sap), (c)))
 
 #endif /* COMMON_STRACC_H */

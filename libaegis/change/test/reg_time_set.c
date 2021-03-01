@@ -26,8 +26,9 @@
 
 
 void
-change_regression_test_time_set(cp)
+change_regression_test_time_set(cp, when)
 	change_ty	*cp;
+	time_t		when;
 {
 	long		j, k;
 	cstate_architecture_times tp;
@@ -38,7 +39,7 @@ change_regression_test_time_set(cp)
 	 */
 	assert(cp->reference_count >= 1);
 	tp = change_find_architecture_variant(cp);
-	time(&tp->regression_test_time);
+	tp->regression_test_time = when;
 
 	/*
 	 * set the regression_test_time in the change state.

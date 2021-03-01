@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1994-1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@
 #include <arglex2.h>
 #include <error.h>
 #include <change.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <change/file.h>
 #include <commit.h>
 #include <cstate.h>
@@ -131,16 +131,17 @@ change_owner_main()
 	change_ty	*cp;
 	cstate		cstate_data;
 	cstate_history	history_data;
-	string_ty	*usr;
+	string_ty	*new_developer;
 	string_ty	*devdir;
 	string_ty	*old_dd;
 	size_t		j;
 	pconf		pconf_data;
 
 	trace(("change_owner_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	change_number = 0;
-	usr = 0;
+	new_developer = 0;
 	devdir = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
@@ -170,7 +171,7 @@ change_owner_main()
 			else if (change_number < 1)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -199,9 +200,9 @@ change_owner_main()
 			/* fall through... */
 
 		case arglex_token_string:
-			if (usr)
+			if (new_developer)
 				duplicate_option_by_name(arglex_token_user, change_owner_usage);
-			usr = str_from_c(arglex_value.alv_string);
+			new_developer = str_from_c(arglex_value.alv_string);
 			break;
 
 		case arglex_token_wait:
@@ -213,7 +214,7 @@ change_owner_main()
 	}
 	if (!change_number)
 		fatal_intl(0, i18n("no change number"));
-	if (!usr)
+	if (!new_developer)
 		fatal_intl(0, i18n("no user name"));
 
 	/*
@@ -228,10 +229,10 @@ change_owner_main()
 	/*
 	 * it is an error if the named user is not a developer
 	 */
-	if (!project_developer_query(pp, usr))
+	if (!project_developer_query(pp, new_developer))
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Target", "%S", usr);
+		sub_var_set_string(scp, "Target", new_developer);
 		project_fatal(pp, scp, i18n("$target not developer"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -241,12 +242,6 @@ change_owner_main()
 	 * locate user data
 	 */
 	up = user_executing(pp);
-
-	/*
-	 * It is an error if the executing user is not a project administrator
-	 */
-	if (!project_administrator_query(pp, user_name(up)))
-		project_fatal(pp, 0, i18n("not an administrator"));
 
 	/*
 	 * locate change data
@@ -261,12 +256,25 @@ change_owner_main()
 	cstate_data = change_cstate_get(cp);
 	if (cstate_data->state != cstate_state_being_developed)
 		change_fatal(cp, 0, i18n("bad chown state"));
-	if (str_equal(change_developer_name(cp), usr))
-		change_verbose(cp, 0, i18n("warning: no chown"));
+
+	/*
+	 * Get details of the two users involved.
+	 */
 	up1 = user_symbolic(pp, change_developer_name(cp));
 	trace(("up1 = %08lx\n", up1));
-	up2 = user_symbolic(pp, usr);
+	up2 = user_symbolic(pp, new_developer);
 	trace(("up2 = %08lx\n", up2));
+
+	/*
+	 * It is an error if the executing user is not a project
+	 * administrator.  However, developers are allowed to chown it
+	 * to themselves, because this is a common way of moving the
+	 * development directory of a change.
+	 */
+	if (str_equal(change_developer_name(cp), new_developer))
+		change_verbose(cp, 0, i18n("warning: no chown"));
+	else if (!project_administrator_query(pp, user_name(up)))
+		project_fatal(pp, 0, i18n("not an administrator"));
 
 	/*
 	 * Take an advisory write lock on the appropriate row of the change
@@ -286,8 +294,6 @@ change_owner_main()
 	 * It is an error if the change is already being developed by the
 	 * named user.
 	 */
-	if (cstate_data->state != cstate_state_being_developed)
-		change_fatal(cp, 0, i18n("bad chown state"));
 	if (!str_equal(change_developer_name(cp), user_name(up1)))
 		change_fatal(cp, 0, i18n("sync error, try again"));
 	if (change_is_a_branch(cp))
@@ -327,7 +333,7 @@ change_owner_main()
 	{
 		scp = sub_context_new();
 		devdir = change_development_directory_template(cp, up2);
-		sub_var_set(scp, "File_Name", "%S", devdir);
+		sub_var_set_string(scp, "File_Name", devdir);
 		change_verbose(cp, scp, i18n("development directory \"$filename\""));
 		sub_context_delete(scp);
 	}
@@ -427,8 +433,9 @@ change_owner_main()
 	lock_release();
 
 	/*
-	 * run the develop begin command
+	 * run the notification commands
 	 */
+	change_run_develop_begin_undo_command(cp, up1);
 	change_run_develop_begin_command(cp, up2);
 	change_run_forced_develop_begin_notify_command(cp, up);
 
@@ -451,9 +458,9 @@ change_owner_main()
 	 * verbose success message
 	 */
 	scp = sub_context_new();
-	sub_var_set(scp, "ORiginal", "%S", user_name(up1));
+	sub_var_set_string(scp, "ORiginal", user_name(up1));
 	sub_var_optional(scp, "ORiginal");
-	sub_var_set(scp, "Target", "%S", user_name(up2));
+	sub_var_set_string(scp, "Target", user_name(up2));
 	sub_var_optional(scp, "Target");
 	change_verbose(cp, scp, i18n("chown complete"));
 	sub_context_delete(scp);
@@ -473,20 +480,13 @@ change_owner_main()
 void
 change_owner()
 {
-	trace(("change_owner()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		change_owner_main();
-		break;
+		{ arglex_token_help,		change_owner_help,	},
+		{ arglex_token_list,		change_owner_list,	},
+	};
 
-	case arglex_token_help:
-		change_owner_help();
-		break;
-
-	case arglex_token_list:
-		change_owner_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("change_owner()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), change_owner_main);
+	trace(("}\n"));
 }

@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1995, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1991, 1992, 1993, 1995, 1998, 1999, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -66,6 +66,11 @@ for a description of the file format.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so
+.TP 8n
+\fB\-Description_Only\fP
+This option may be used to specify that only the cange description is
+the subject of this command.  It will be presented as plain text, without
+any of the quotes or escapes present when this command is not used.
 .so o_edit.so
 .so o_file.so
 .so o_help.so
@@ -80,7 +85,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aeca '\*(n) -ca \e!* -v'
-sh$	aeca(){\*(n) -ca $* -v}
+sh$	aeca(){\*(n) -ca "$@" -v}
 .fi
 .SH ERRORS
 It is an error if

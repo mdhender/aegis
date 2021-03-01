@@ -84,6 +84,12 @@
 #undef HAVE_ISWPRINT
 
 /*
+ * Define this symbol of your system has the mbstate_t type defined.
+ * It is usually in <stddef.h> or <wchar.h>
+ */
+#undef HAVE_MBSTATE_T
+
+/*
  * Define this symbol of your system has the wint_t type defined.
  * It is usually in <stddef.h> or <wctype.h>
  */
@@ -124,6 +130,9 @@
  */
 #undef CONF_enum_is_int
 
+/* Define if you have the clu_info function.  */
+#undef HAVE_CLU_INFO
+
 /* Define if you have the getpgrp function.  */
 #undef HAVE_GETPGRP
 
@@ -132,6 +141,9 @@
 
 /* Define if you have the iswctype function.  */
 #undef HAVE_ISWCTYPE
+
+/* Define if you have the mbrtowc function.  */
+#undef HAVE_MBRTOWC
 
 /* Define if you have the pathconf function.  */
 #undef HAVE_PATHCONF
@@ -168,6 +180,9 @@
 
 /* Define if you have the tcgetpgrp function.  */
 #undef HAVE_TCGETPGRP
+
+/* Define if you have the wcrtomb function.  */
+#undef HAVE_WCRTOMB
 
 /* Define if you have the wcslen function.  */
 #undef HAVE_WCSLEN
@@ -220,6 +235,9 @@
 /* Define if you have the <string.h> header file.  */
 #undef HAVE_STRING_H
 
+/* Define if you have the <sys/clu.h> header file.  */
+#undef HAVE_SYS_CLU_H
+
 /* Define if you have the <sys/dir.h> header file.  */
 #undef HAVE_SYS_DIR_H
 
@@ -240,6 +258,9 @@
 
 /* Define if you have the <zlib.h> header file.  */
 #undef HAVE_ZLIB_H
+
+/* Define if you have the clu library (-lclu).  */
+#undef HAVE_LIBCLU
 
 /* Define if you have the intl library (-lintl).  */
 #undef HAVE_LIBINTL

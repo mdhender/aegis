@@ -1,6 +1,6 @@
-'\" t
+'\" tp
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1995, 1996, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1995, 1996, 1998, 1999, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -72,6 +72,20 @@ The change is created in the
 state.
 The change is not assigned to any user.
 The change has no development directory.
+.\" ------------------------------------------------------------------------
+.PS c
+boxwid = 1
+down
+S0: arrow " new" ljust " change" ljust
+S1: box "awaiting" "development"
+arrow " develop" ljust " begin" ljust
+S2: box "being" "developed"
+spline -> from 1/3<S1.nw,S1.sw> then left 0.75 then up 2/3 "new" "change" "undo"
+T1: spline -> from S2.w then left 0.75 then up 11/12 \
+	then to 1/3<S1.sw,S1.nw>
+" develop" ljust " begin" ljust " undo" ljust at T1.c - (0.75,0)
+.PE
+.\" ------------------------------------------------------------------------
 .PP
 You may choose your own change number if you want,
 provided that it has not been used already.
@@ -88,6 +102,10 @@ and
 for more information.
 .PP
 You \fBmust\fP give the \fB\-Project\fP option, see below.
+.SS Notification
+This is one of the rare "state transitions" which does not have a
+notification command.  The assumption is this command is invoked by the
+system which usually receives notifications.
 .SH OPTIONS
 The following options are understood:
 .so o_edit.so
@@ -118,7 +136,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aenc '\*(n) -nc \e!* -v'
-sh$	aenc(){\*(n) -nc $* -v}
+sh$	aenc(){\*(n) -nc "$@" -v}
 .fi
 .SH ERRORS
 It is an error if

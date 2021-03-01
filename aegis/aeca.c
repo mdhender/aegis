@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,9 +29,12 @@
 #include <cattr.h>
 #include <commit.h>
 #include <change.h>
+#include <change/attributes.h>
 #include <error.h>
+#include <file.h>
 #include <help.h>
 #include <io.h>
+#include <language.h>
 #include <lock.h>
 #include <progname.h>
 #include <project.h>
@@ -84,104 +87,6 @@ change_attributes_help()
 }
 
 
-static void cattr_copy _((cattr, cstate));
-
-static void
-cattr_copy(a, s)
-	cattr	a;
-	cstate	s;
-{
-	trace(("cattr_copy()\n{\n"/*}*/));
-	if (!a->description && s->description)
-	{
-		a->description = str_copy(s->description);
-		a->mask |= cattr_description_mask;
-	}
-	if (!a->brief_description && s->brief_description)
-	{
-		a->brief_description = str_copy(s->brief_description);
-		a->mask |= cattr_brief_description_mask;
-	}
-	if (!(a->mask & cattr_cause_mask))
-	{
-		a->cause = s->cause;
-		a->mask |= cattr_cause_mask;
-	}
-	if (!(a->mask & cattr_regression_test_exempt_mask))
-	{
-		a->regression_test_exempt = s->regression_test_exempt;
-		a->mask |= cattr_regression_test_exempt_mask;
-	}
-	if (!(a->mask & cattr_test_exempt_mask))
-	{
-		a->test_exempt = s->test_exempt;
-		a->mask |= cattr_test_exempt_mask;
-	}
-	if (!(a->mask & cattr_test_baseline_exempt_mask))
-	{
-		a->test_baseline_exempt = s->test_baseline_exempt;
-		a->mask |= cattr_test_baseline_exempt_mask;
-	}
-
-	if (!a->architecture)
-		a->architecture =
-			(cattr_architecture_list)
-			cattr_architecture_list_type.alloc();
-	if (!a->architecture->length)
-	{
-		long		j;
-
-		for (j = 0; j < s->architecture->length; ++j)
-		{
-			type_ty		*type_p;
-			string_ty	**str_p;
-
-			str_p =
-				cattr_architecture_list_type.list_parse
-				(
-					a->architecture,
-					&type_p
-				);
-			assert(type_p == &string_type);
-			*str_p = str_copy(s->architecture->list[j]);
-		}
-	}
-
-	if (s->copyright_years)
-	{
-		if (!a->copyright_years)
-			a->copyright_years =
-				(cattr_copyright_years_list)
-				cattr_copyright_years_list_type.alloc();
-		if (!a->copyright_years->length)
-		{
-			long		j;
-
-			for (j = 0; j < s->copyright_years->length; ++j)
-			{
-				type_ty		*type_p;
-				long		*int_p;
-
-				int_p =
-					cattr_copyright_years_list_type.list_parse
-					(
-						a->copyright_years,
-						&type_p
-					);
-				assert(type_p == &integer_type);
-				*int_p = s->copyright_years->list[j];
-			}
-		}
-	}
-	if (!a->version_previous && s->version_previous)
-	{
-		a->version_previous = str_copy(s->version_previous);
-		a->mask |= cattr_version_previous_mask;
-	}
-	trace((/*{*/"}\n"));
-}
-
-
 static void change_attributes_list _((void));
 
 static void
@@ -194,11 +99,13 @@ change_attributes_list()
 	long		change_number;
 	change_ty	*cp;
 	user_ty		*up;
+	int		description_only;
 
 	trace(("change_attributes_list()\n{\n"/*}*/));
 	arglex();
 	project_name = 0;
 	change_number = 0;
+	description_only = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -223,7 +130,7 @@ change_attributes_list()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -236,6 +143,12 @@ change_attributes_list()
 			if (arglex() != arglex_token_string)
 				option_needs_name(arglex_token_project, change_attributes_usage);
 			project_name = str_from_c(arglex_value.alv_string);
+			break;
+
+		case arglex_token_description_only:
+			if (description_only)
+				duplicate_option(change_attributes_usage);
+			description_only = 1;
 			break;
 		}
 		arglex();
@@ -268,94 +181,41 @@ change_attributes_list()
 	 */
 	cstate_data = change_cstate_get(cp);
 	cattr_data = (cattr)cattr_type.alloc();
-	cattr_copy(cattr_data, cstate_data);
+	change_attributes_copy(cattr_data, cstate_data);
 
 	/*
 	 * print the cattr data
 	 */
-	cattr_write_file((char *)0, cattr_data, 0);
+	language_human();
+	if (description_only)
+	{
+		string_ty	*s;
+
+		s = cattr_data->description;
+		if (s && s->str_length)
+		{
+			printf
+			(
+				"%s%s",
+				s->str_text,
+				(
+					s->str_text[s->str_length - 1] == '\n'
+				?
+					""
+				:
+					"\n"
+				)
+			);
+		}
+	}
+	else
+		cattr_write_file((string_ty *)0, cattr_data, 0);
+	language_C();
 	cattr_type.free(cattr_data);
 	project_free(pp);
 	change_free(cp);
 	user_free(up);
 	trace((/*{*/"}\n"));
-}
-
-
-void
-cattr_verify(fn, d)
-	char		*fn;
-	cattr		d;
-{
-	if (!d->brief_description)
-	{
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%s", fn);
-		sub_var_set(scp, "FieLD_Name", "brief_description");
-		fatal_intl(scp, i18n("$filename: contains no \"$field_name\" field"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	}
-	if (!(d->mask & cattr_cause_mask))
-	{
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%s", fn);
-		sub_var_set(scp, "FieLD_Name", "cause");
-		fatal_intl(scp, i18n("$filename: contains no \"$field_name\" field"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	}
-}
-
-
-void
-cattr_edit(dp, et)
-	cattr		*dp;
-	int		et;
-{
-	sub_context_ty	*scp;
-	cattr		d;
-	string_ty	*filename;
-	string_ty	*msg;
-
-	/*
-	 * write attributes to temporary file
-	 */
-	d = *dp;
-	assert(d);
-	filename = os_edit_filename(1);
-	os_become_orig();
-	cattr_write_file(filename->str_text, d, 0);
-	cattr_type.free(d);
-
-	/*
-	 * an error message to issue if anything goes wrong
-	 */
-	scp = sub_context_new();
-	sub_var_set(scp, "File_Name", "%S", filename);
-	msg = subst_intl(scp, i18n("attributes in $filename"));
-	sub_context_delete(scp);
-	undo_message(msg);
-	str_free(msg);
-
-	/*
-	 * edit the file
-	 */
-	os_edit(filename, et);
-
-	/*
-	 * read it in again
-	 */
-	d = cattr_read_file(filename->str_text);
-	commit_unlink_errok(filename);
-	os_become_undo();
-	cattr_verify(filename->str_text, d);
-	str_free(filename);
-	*dp = d;
 }
 
 
@@ -396,18 +256,24 @@ change_attributes_main()
 	sub_context_ty	*scp;
 	string_ty	*project_name;
 	project_ty	*pp;
-	cattr		cattr_data = 0;
+	cattr		cattr_data;
 	cstate		cstate_data;
 	pconf		pconf_data;
 	long		change_number;
 	change_ty	*cp;
 	user_ty		*up;
 	edit_ty		edit;
+	int		description_only;
+	string_ty	*input;
 
 	trace(("change_attributes_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	change_number = 0;
 	edit = edit_not_set;
+	description_only = 0;
+	cattr_data = 0;
+	input = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -418,23 +284,35 @@ change_attributes_main()
 
 		case arglex_token_string:
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_file));
+			sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_file));
 			error_intl(scp, i18n("warning: use $name option"));
 			sub_context_delete(scp);
-			if (cattr_data)
-				fatal_intl(0, i18n("too many files"));
+			if (input)
+				fatal_too_many_files();
 			goto read_attr_file;
 
 		case arglex_token_file:
-			if (cattr_data)
+			if (input)
 				duplicate_option(change_attributes_usage);
-			if (arglex() != arglex_token_string)
-				option_needs_file(arglex_token_file, change_attributes_usage);
-			read_attr_file:
-			os_become_orig();
-			cattr_data = cattr_read_file(arglex_value.alv_string);
-			os_become_undo();
-			assert(cattr_data);
+			switch (arglex())
+			{
+			default:
+				option_needs_file
+				(
+					arglex_token_file,
+					change_attributes_usage
+				);
+				/*NOTREACHED*/
+
+			case arglex_token_string:
+				read_attr_file:
+				input = str_from_c(arglex_value.alv_string);
+				break;
+
+			case arglex_token_stdio:
+				input = str_from_c("");
+				break;
+			}
 			break;
 
 		case arglex_token_change:
@@ -451,7 +329,7 @@ change_attributes_main()
 			else if (change_number < 1)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -494,14 +372,37 @@ change_attributes_main()
 		case arglex_token_wait_not:
 			user_lock_wait_argument(change_attributes_usage);
 			break;
+
+		case arglex_token_description_only:
+			if (description_only)
+				duplicate_option(change_attributes_usage);
+			description_only = 1;
+			break;
 		}
 		arglex();
+	}
+	if (input)
+	{
+		if (description_only)
+		{
+			cattr_data = (cattr)cattr_type.alloc();
+			os_become_orig();
+			cattr_data->description = read_whole_file(input);
+			os_become_undo();
+		}
+		else
+		{
+			os_become_orig();
+			cattr_data = cattr_read_file(input);
+			os_become_undo();
+		}
+		assert(cattr_data);
 	}
 	if (!cattr_data && edit == edit_not_set)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", arglex_token_name(arglex_token_file));
-		sub_var_set(scp, "Name2", "%s", arglex_token_name(arglex_token_edit));
+		sub_var_set_charstar(scp, "Name1", arglex_token_name(arglex_token_file));
+		sub_var_set_charstar(scp, "Name2", arglex_token_name(arglex_token_edit));
 		error_intl(scp, i18n("warning: no $name1, assuming $name2"));
 		sub_context_delete(scp);
 		edit = edit_foreground;
@@ -546,17 +447,30 @@ change_attributes_main()
 		 * fill in any other fields
 		 */
 		cstate_data = change_cstate_get(cp);
-		cattr_copy(cattr_data, cstate_data);
+		change_attributes_copy(cattr_data, cstate_data);
 
 		/*
 		 * edit the attributes
 		 */
-		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%S", project_name_get(pp));
-		sub_var_set(scp, "Number", "%ld", magic_zero_decode(change_number));
-		io_comment_append(scp, i18n("Project $name, Change $number"));
-		sub_context_delete(scp);
-		cattr_edit(&cattr_data, edit);
+		if (description_only)
+		{
+			string_ty	*s;
+
+			s = os_edit_string(cattr_data->description, edit);
+			assert(s);
+			if (cattr_data->description)
+				str_free(cattr_data->description);
+			cattr_data->description = s;
+		}
+		else
+		{
+			scp = sub_context_new();
+			sub_var_set_string(scp, "Name", project_name_get(pp));
+			sub_var_set_long(scp, "Number", magic_zero_decode(change_number));
+			io_comment_append(scp, i18n("Project $name, Change $number"));
+			sub_context_delete(scp);
+			change_attributes_edit(&cattr_data, edit);
+		}
 	}
 
 	/*
@@ -788,20 +702,13 @@ change_attributes_main()
 void
 change_attributes()
 {
-	trace(("change_attributes()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		change_attributes_main();
-		break;
+		{ arglex_token_help,            change_attributes_help, },
+		{ arglex_token_list,            change_attributes_list, },
+	};
 
-	case arglex_token_help:
-		change_attributes_help();
-		break;
-
-	case arglex_token_list:
-		change_attributes_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("change_attributes()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), change_attributes_main);
+	trace(("}\n"));
 }

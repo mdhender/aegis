@@ -26,7 +26,5 @@
 #include <cattr.h>
 
 void change_attributes _((void));
-void cattr_edit _((cattr *, int));
-void cattr_verify _((char *, cattr));
 
 #endif /* AEGIS_AECA_H */

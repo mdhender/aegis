@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -79,7 +79,7 @@ interrupt(n)
 		return;
 	interrupted = 1;
 	scp = sub_context_new();
-	sub_var_set(scp, "Signal", "%s", strsignal(n));
+	sub_var_set_charstar(scp, "Signal", strsignal(n));
 	fatal_intl(scp, i18n("interrupted by $signal"));
 	/* NOTREACHED */
 	sub_context_delete(scp);
@@ -152,7 +152,7 @@ os_waitpid_status(child, cmd)
 		 * since we didn't do it, treat it as an error
 		 */
 		scp = sub_context_new();
-		sub_var_set(scp, "Command", "%s", cmd);
+		sub_var_set_charstar(scp, "Command", cmd);
 		fatal_intl(scp, i18n("command \"$command\" stopped"));
 		/* NOTREACHED */
 
@@ -166,8 +166,8 @@ os_waitpid_status(child, cmd)
 		 * process dies from unhandled condition
 		 */
 		scp = sub_context_new();
-		sub_var_set(scp, "Command", "%s", cmd);
-		sub_var_set(scp, "Signal", "%s", strsignal(c));
+		sub_var_set_charstar(scp, "Command", cmd);
+		sub_var_set_charstar(scp, "Signal", strsignal(c));
 		if (!b)
 			fatal_intl(scp, i18n("command \"$command\" terminated by $signal"));
 		else
@@ -204,7 +204,7 @@ os_exists(path)
 
 			scp = sub_context_new();
 			sub_errno_set(scp);
-			sub_var_set(scp, "File_Name", "%S", path);
+			sub_var_set_string(scp, "File_Name", path);
 			fatal_intl(scp, i18n("stat $filename: $errno"));
 			/* NOTREACHED */
 		}
@@ -232,8 +232,8 @@ os_mkdir(path, mode)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
-		sub_var_set(scp, "Argument", "0%o", mode);
+		sub_var_set_string(scp, "File_Name", path);
+		sub_var_set_format(scp, "Argument", "0%o", mode);
 		fatal_intl(scp, i18n("mkdir(\"$filename\", $arg): $errno"));
 		/* NOTREACHED */
 	}
@@ -250,8 +250,8 @@ os_mkdir(path, mode)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
-		sub_var_set(scp, "Argument", "%d", gid);
+		sub_var_set_string(scp, "File_Name", path);
+		sub_var_set_long(scp, "Argument", gid);
 		fatal_intl(scp, i18n("chgrp(\"$filename\", $arg): $errno"));
 		/* NOTREACHED */
 	}
@@ -268,8 +268,8 @@ os_mkdir(path, mode)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
-		sub_var_set(scp, "Argument", "0$o", mode);
+		sub_var_set_string(scp, "File_Name", path);
+		sub_var_set_format(scp, "Argument", "0$o", mode);
 		fatal_intl(scp, i18n("chmod(\"$filename\", $arg): $errno"));
 		/* NOTREACHED */
 	}
@@ -289,7 +289,7 @@ os_rmdir(path)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("rmdir $filename: $errno"));
 		/* NOTREACHED */
 	}
@@ -309,7 +309,7 @@ os_rmdir_errok(path)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		error_intl(scp, i18n("warning: rmdir $filename: $errno"));
 		sub_context_delete(scp);
 	}
@@ -329,7 +329,7 @@ os_rmdir_bg(path)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		error_intl(scp, i18n("warning: rmdir $filename: $errno"));
 		sub_context_delete(scp);
 	}
@@ -349,7 +349,7 @@ os_rmdir_tree(path)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		error_intl(scp, i18n("warning: rmdir $filename: $errno"));
 		sub_context_delete(scp);
 	}
@@ -372,8 +372,8 @@ os_rename(a, b)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name1", "%S", a);
-		sub_var_set(scp, "File_Name2", "%S", b);
+		sub_var_set_string(scp, "File_Name1", a);
+		sub_var_set_string(scp, "File_Name2", b);
 		fatal_intl(scp, i18n("rename(\"$filename1\", \"$filename2\"): $errno"));
 		/* NOTREACHED */
 	}
@@ -413,7 +413,7 @@ os_unlink(path)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("stat $filename: $errno"));
 		/* NOTREACHED */
 	}
@@ -423,7 +423,7 @@ os_unlink(path)
 
 		scp = sub_context_new();
 		sub_errno_setx(scp, EISDIR);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("unlink $filename: $errno"));
 		/* NOTREACHED */
 	}
@@ -433,7 +433,7 @@ os_unlink(path)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("unlink $filename: $errno"));
 		/* NOTREACHED */
 	}
@@ -473,7 +473,7 @@ os_unlink_errok(path)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		if (errno != ENOENT && errno != ENOTDIR)
 			fatal_intl(scp, i18n("stat $filename: $errno"));
 		error_intl(scp, i18n("warning: stat $filename: $errno"));
@@ -485,7 +485,7 @@ os_unlink_errok(path)
 
 		scp = sub_context_new();
 		sub_errno_setx(scp, EISDIR);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		error_intl(scp, i18n("warning: unlink $filename: $errno"));
 		sub_context_delete(scp);
 	}
@@ -495,7 +495,7 @@ os_unlink_errok(path)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		error_intl(scp, i18n("warning: unlink $filename: $errno"));
 		sub_context_delete(scp);
 	}
@@ -576,7 +576,7 @@ os_chdir(path)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("chdir $filename: $errno"));
 		/* NOTREACHED */
 	}
@@ -594,7 +594,7 @@ os_setuid(uid)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "Argument", "%d", uid);
+		sub_var_set_long(scp, "Argument", uid);
 		fatal_intl(scp, i18n("setuid $arg: $errno"));
 		/* NOTREACHED */
 	}
@@ -614,7 +614,7 @@ os_setgid(gid)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "Argument", "%d", gid);
+		sub_var_set_long(scp, "Argument", gid);
 		if (become_testing)
 		{
 			/*
@@ -650,8 +650,8 @@ os_execute(cmd, flags, dir)
 		else
 			s = str_copy(cmd);
 		scp = sub_context_new();
-		sub_var_set(scp, "Command", "%S", s);
-		sub_var_set(scp, "Number", "%d", result);
+		sub_var_set_string(scp, "Command", s);
+		sub_var_set_long(scp, "Number", result);
 		fatal_intl(scp, i18n("command \"$command\" exit status $number"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -689,7 +689,7 @@ who_and_where(uid, gid, dir)
 		str_free(last_dir);
 		last_dir = rdir;
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", dir);
+		sub_var_set_string(scp, "File_Name", dir);
 		error_intl(scp, i18n("cd $filename"));
 		sub_context_delete(scp);
 	}
@@ -706,16 +706,16 @@ who_and_where(uid, gid, dir)
 		last_uid = uid;
 		pw = getpwuid(uid);
 		if (pw)
-			sub_var_set(scp, "Name1", "\"%s\"", pw->pw_name);
+			sub_var_set_format(scp, "Name1", "\"%s\"", pw->pw_name);
 		else
-			sub_var_set(scp, "Name1", "%d", uid);
+			sub_var_set_long(scp, "Name1", uid);
 
 		last_gid = gid;
 		gr = getgrgid(gid);
 		if (gr)
-			sub_var_set(scp, "Name2", "\"%s\"", gr->gr_name);
+			sub_var_set_format(scp, "Name2", "\"%s\"", gr->gr_name);
 		else
-			sub_var_set(scp, "Name2", "%d", gid);
+			sub_var_set_long(scp, "Name2", gid);
 		error_intl(scp, i18n("user $name1, group $name2"));
 		sub_context_delete(scp);
 	}
@@ -808,7 +808,7 @@ os_execute_retcode(cmd, flags, dir)
 		 * let the log file (user) know what we did
 		 */
 		scp = sub_context_new();
-		sub_var_set(scp, "Message", "%S", cmd);
+		sub_var_set_string(scp, "Message", cmd);
 		error_intl(scp, "$message");
 		sub_context_delete(scp);
 
@@ -819,15 +819,15 @@ os_execute_retcode(cmd, flags, dir)
 		execl(shell, shell, "-ec", cmd->str_text, (char *)0);
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%s", shell);
+		sub_var_set_charstar(scp, "File_Name", shell);
 		fatal_intl(scp, i18n("exec \"$filename\": $errno"));
 		/* NOTREACHED */
 	}
 	if (result && (flags & OS_EXEC_FLAG_ERROK))
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Command", "%S", cmd);
-		sub_var_set(scp, "Number", "%d", result);
+		sub_var_set_string(scp, "Command", cmd);
+		sub_var_set_long(scp, "Number", result);
 		error_intl(scp, i18n("warning: command \"$command\" exit status $number"));
 		sub_context_delete(scp);
 		result = 0;
@@ -863,10 +863,17 @@ os_mtime_range(path, oldest_p, newest_p)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("stat $filename: $errno"));
 		/* NOTREACHED */
 	}
+
+	/*
+	 * This is a bit tacky.  The codafs leaves the ctime at 0
+	 * until a stat change is made.  Compensate for this.
+	 */
+	if (st.st_ctime == 0)
+		st.st_ctime = st.st_mtime;
 
 	/*
 	 * Return the last modified time.
@@ -901,7 +908,7 @@ os_mtime_actual(path)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("stat $filename: $errno"));
 		/* NOTREACHED */
 	}
@@ -937,7 +944,7 @@ os_mtime_set(path, when)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("utime $filename: $errno"));
 		/* NOTREACHED */
 	}
@@ -964,7 +971,7 @@ os_mtime_set_errok(path, when)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		error_intl(scp, i18n("warning: utime $filename: $errno"));
 		sub_context_delete(scp);
 	}
@@ -997,18 +1004,18 @@ os_chown_check(path, mode, uid, gid)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("stat $filename: $errno"));
 		/* NOTREACHED */
 	}
-	if ((st.st_mode & 07777) != mode)
+	if (mode > 0 && (st.st_mode & 07777) != mode)
 	{
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", path);
-		sub_var_set(scp, "Number1", "%5.5o", st.st_mode & 07777);
-		sub_var_set(scp, "Number2", "%5.5o", mode);
+		sub_var_set_string(scp, "File_Name", path);
+		sub_var_set_format(scp, "Number1", "%5.5o", st.st_mode & 07777);
+		sub_var_set_format(scp, "Number2", "%5.5o", mode);
 		error_intl
 		(
 			scp,
@@ -1028,9 +1035,9 @@ os_chown_check(path, mode, uid, gid)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", path);
-			sub_var_set(scp, "Number1", "%d", st.st_uid);
-			sub_var_set(scp, "Number2", "%d", geteuid());
+			sub_var_set_string(scp, "File_Name", path);
+			sub_var_set_long(scp, "Number1", st.st_uid);
+			sub_var_set_long(scp, "Number2", geteuid());
 			error_intl
 			(
 				scp,
@@ -1051,9 +1058,9 @@ os_chown_check(path, mode, uid, gid)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", path);
-			sub_var_set(scp, "Number1", "%d", st.st_uid);
-			sub_var_set(scp, "Number2", "%d", uid);
+			sub_var_set_string(scp, "File_Name", path);
+			sub_var_set_long(scp, "Number1", st.st_uid);
+			sub_var_set_long(scp, "Number2", uid);
 			error_intl
 			(
 				scp,
@@ -1067,9 +1074,9 @@ os_chown_check(path, mode, uid, gid)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", path);
-			sub_var_set(scp, "Number1", "%d", st.st_gid);
-			sub_var_set(scp, "Number2", "%d", gid);
+			sub_var_set_string(scp, "File_Name", path);
+			sub_var_set_long(scp, "Number1", st.st_gid);
+			sub_var_set_long(scp, "Number2", gid);
 			error_intl
 			(
 				scp,
@@ -1092,7 +1099,7 @@ os_chown_check(path, mode, uid, gid)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("$filename: has been tampered with (fatal)"));
 		/* NOTREACHED */
 	}
@@ -1115,8 +1122,8 @@ os_chmod(path, mode)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
-		sub_var_set(scp, "Argument", "%5.5o", mode);
+		sub_var_set_string(scp, "File_Name", path);
+		sub_var_set_format(scp, "Argument", "%5.5o", mode);
 		fatal_intl(scp, i18n("chmod(\"$filename\", $arg): $errno"));
 		/* NOTREACHED */
 	}
@@ -1145,7 +1152,7 @@ os_chmod_query(path)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("stat $filename: $errno"));
 		/* NOTREACHED */
 	}
@@ -1171,8 +1178,8 @@ os_chmod_errok(path, mode)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
-		sub_var_set(scp, "Argument", "%5.5o", mode);
+		sub_var_set_string(scp, "File_Name", path);
+		sub_var_set_format(scp, "Argument", "%5.5o", mode);
 		error_intl(scp, i18n("warning: chmod(\"$filename\", $arg): $errno"));
 		sub_context_delete(scp);
 	}
@@ -1195,8 +1202,8 @@ os_link(from, to)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name1", "%S", from);
-		sub_var_set(scp, "File_Name2", "%S", to);
+		sub_var_set_string(scp, "File_Name1", from);
+		sub_var_set_string(scp, "File_Name2", to);
 		fatal_intl(scp, i18n("link(\"$filename1\", \"$filename2\"): $errno"));
 		/* NOTREACHED */
 	}
@@ -1219,7 +1226,7 @@ os_execute_slurp(cmd, flags, dir)
 	s2 = str_format("( %S ) > %S", cmd, s1);
 	os_execute(s2, flags, dir);
 	str_free(s2);
-	s2 = read_whole_file(s1->str_text);
+	s2 = read_whole_file(s1);
 	os_unlink(s1);
 	str_free(s1);
 	trace_string(s2->str_text);
@@ -1421,94 +1428,6 @@ os_become_must_not_be_active_gizzards(file, line)
 }
 
 
-#ifdef SIGSTOP
-#ifndef HAVE_TCGETPGRP
-
-#include <sys/termio.h>
-
-int
-tcgetpgrp(fd)
-	int		fd;
-{
-	int		result;
-
-#ifdef TIOCGETPGRP
-	if (ioctl(fd, TIOCGETPGRP, &result))
-		result = -1;
-#else
-#ifdef TIOCGPGRP
-        if (ioctl(fd, TIOCGPGRP, &result))
-		result = -1;
-#else
-	result = -1;
-#endif
-#endif
-	return result;
-}
-
-#endif /* !HAVE_TCGETPGRP */
-#endif /* SIGSTOP */
-
-
-/*
- *  NAME
- *	  background - test for backgroundness
- *
- *  SYNOPSIS
- *	  int background(void);
- *
- *  DESCRIPTION
- *	  The background function is used to determin e if the curent process is
- *	  in the background.
- *
- *  RETURNS
- *	  int: zero if process is not in the background, nonzero if the process
- *	  is in the background.
- *
- * CAVEAT:
- *	This function has a huge chance of being wrong for your system.
- *	If you need to modify this function, please let the author know.
- */
-
-int
-os_background()
-{
-	RETSIGTYPE	(*x)_((int));
-
-	/*
-	 * C shell
-	 *	puts its children in a different process group.
-	 *	The process group the terminal is in is the forground.
-	 *
-	 * Only available on systems with job control.
-	 */
-#ifdef SIGSTOP
-	if (getpgrp(CONF_getpgrp_arg) != tcgetpgrp(0))
-		return 1;
-#endif
-
-	/*
-	 * Bourne shell
-	 *	sets its children to ignore SIGINT
-	 */
-	x = signal(SIGINT, SIG_IGN);
-	if (x == SIG_IGN)
-		return 1;
-	signal(SIGINT, x);
-
-	/*
-	 * There are reports that Ksh does something else,
-	 * and this function is frequently wrong.
-	 * Anybody out there use Ksh and know what to do?
-	 */
-
-	/*
-	 * probably forground
-	 */
-	return 0;
-}
-
-
 int
 os_readable(path)
 	string_ty	*path;
@@ -1645,7 +1564,7 @@ os_edit(filename, et)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "EDITOR");
+			sub_var_set_charstar(scp, "Name", "EDITOR");
 			fatal_intl(scp, i18n("environment variable $name not set"));
 			/* NOTREACHED */
 		}
@@ -1679,13 +1598,16 @@ os_edit(filename, et)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_edit));
+		sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_edit));
 		fatal_intl(scp, i18n("may not use $name in the background"));
 		/* NOTREACHED */
 	}
 
 	/*
 	 * edit the file
+	 *
+	 * Please note: we ignore the exit status on purpose.
+	 * This is because vi (amongst others) returns a silly exit status.
 	 */
 	cmd = str_format("%s %S", editor, filename);
 	cwd = os_curdir();
@@ -1698,6 +1620,15 @@ os_edit(filename, et)
 
 string_ty *
 os_edit_new(et)
+	edit_ty		et;
+{
+	return os_edit_string((string_ty *)0, et);
+}
+
+
+string_ty *
+os_edit_string(subject, et)
+	string_ty	*subject;
 	edit_ty		et;
 {
 	string_ty	*filename;
@@ -1713,13 +1644,24 @@ os_edit_new(et)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%s", filename);
+		sub_var_set_string(scp, "File_Name", filename);
 		fatal_intl(scp, i18n("open $filename: $errno"));
 		sub_context_delete(scp);
 	}
+	if (subject)
+	{
+		glue_fwrite(subject->str_text, 1, subject->str_length, fp);
+		if
+		(
+			subject->str_length
+		&&
+			subject->str_text[subject->str_length - 1] != '\n'
+		)
+			glue_fputc('\n', fp);
+	}
 	glue_fclose(fp);
 	os_edit(filename, et);
-	result = read_whole_file(filename->str_text);
+	result = read_whole_file(filename);
 	os_unlink(filename);
 	os_become_undo();
 	return result;
@@ -1744,9 +1686,7 @@ os_edit_filename(at_home)
 	}
 	else
 	{
-		dir = getenv("TMPDIR");
-		if (!dir || dir[0] != '/')
-			dir = "/tmp";
+		dir = os_tmpdir()->str_text;
 	}
 	name_max = 14;
 	buffer = str_format("-%d-%d", getpid(), ++num);
@@ -1856,7 +1796,7 @@ os_pathconf_path_max(path)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("pathconf(\"$filename\", {PATH_MAX}): $errno"));
 		/* NOTREACHED */
 	}
@@ -1883,7 +1823,7 @@ os_pathconf_name_max(path)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("pathconf(\"$filename\", {NAME_MAX}): $errno"));
 		/* NOTREACHED */
 	}
@@ -1905,8 +1845,8 @@ os_symlink(src, dst)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name1", "%S", src);
-		sub_var_set(scp, "File_Name2", "%S", dst);
+		sub_var_set_string(scp, "File_Name1", src);
+		sub_var_set_string(scp, "File_Name2", dst);
 		fatal_intl(scp, i18n("symlink(\"$filename1\", \"$filename2\"): $errno"));
 		sub_context_delete(scp);
 	}
@@ -1919,49 +1859,6 @@ os_symlink(src, dst)
 	);
 #endif
 	trace((/*{*/"}\n"));
-}
-
-
-string_ty *
-os_readlink(path)
-	string_ty	*path;
-{
-	int		nbytes;
-	string_ty	*result;
-	char		buffer[2000];
-
-	trace(("os_readlink(\"%s\")\n{\n"/*}*/, path->str_text));
-	os_become_must_be_active();
-#ifdef S_IFLNK
-	nbytes = glue_readlink(path->str_text, buffer, sizeof(buffer));
-	if (nbytes < 0)
-	{
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
-		fatal_intl(scp, i18n("readlink $filename: $errno"));
-		sub_context_delete(scp);
-	}
-	if (nbytes == 0)
-	{
-		buffer[0] = '.';
-		nbytes = 1;
-	}
-	result = str_n_from_c(buffer, nbytes);
-#else
-	fatal_raw
-	(
-		"readlink(\"%s\"): symbolic links not available",
-		src->str_text,
-		dst->str_text
-	);
-	result = str_copy(path);
-#endif
-	trace(("return \"%s\";\n", result->str_text));
-	trace((/*{*/"}\n"));
-	return result;
 }
 
 
@@ -2053,7 +1950,7 @@ os_owner_query(path, uid_p, gid_p)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("stat $filename: $errno"));
 		/* NOTREACHED */
 	}
@@ -2080,7 +1977,7 @@ os_fingerprint(path)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("fingerprint $filename: $errno"));
 		/* NOTREACHED */
 	}

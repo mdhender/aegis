@@ -441,7 +441,7 @@ change_filename_check(cp, filename, nodup)
 					sub_context_ty	*scp;
 
 					scp = sub_context_new();
-					sub_var_set(scp, "File_Name", "%S", filename);
+					sub_var_set_string(scp, "File_Name", filename);
 					result =
 						subst_intl
 						(
@@ -455,8 +455,8 @@ change_filename_check(cp, filename, nodup)
 					sub_context_ty	*scp;
 
 					scp = sub_context_new();
-					sub_var_set(scp, "File_Name1", "%S", filename);
-					sub_var_set(scp, "File_Name2", "%S", s2);
+					sub_var_set_string(scp, "File_Name1", filename);
+					sub_var_set_string(scp, "File_Name2", s2);
 					result =
 						subst_intl
 						(
@@ -482,8 +482,8 @@ change_filename_check(cp, filename, nodup)
 
 			s3 = abbreviate_8dos3(s2);
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", filename);
-			sub_var_set(scp, "SUGgest", "%S", s3);
+			sub_var_set_string(scp, "File_Name", filename);
+			sub_var_set_string(scp, "SUGgest", s3);
 			sub_var_optional(scp, "SUGgest");
 			if (part.nstrings == 1)
 			{
@@ -496,7 +496,7 @@ change_filename_check(cp, filename, nodup)
 			}
 			else
 			{
-				sub_var_set(scp, "Part", "%S", s2);
+				sub_var_set_string(scp, "Part", s2);
 				result =
 					subst_intl
 					(
@@ -513,7 +513,7 @@ change_filename_check(cp, filename, nodup)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", filename);
+			sub_var_set_string(scp, "File_Name", filename);
 			if (part.nstrings == 1)
 			{
 				result =
@@ -525,7 +525,7 @@ change_filename_check(cp, filename, nodup)
 			}
 			else
 			{
-				sub_var_set(scp, "Part", "%S", s2);
+				sub_var_set_string(scp, "Part", s2);
 				result =
 					subst_intl
 					(
@@ -554,10 +554,10 @@ change_filename_check(cp, filename, nodup)
 				s3 = abbreviate_filename(s2, max);
 			else
 				s3 = abbreviate_dirname(s2, max);
-			sub_var_set(scp, "File_Name", "%S", filename);
-			sub_var_set(scp, "Number", "%d", (int)(s2->str_length - max));
+			sub_var_set_string(scp, "File_Name", filename);
+			sub_var_set_long(scp, "Number", (int)(s2->str_length - max));
 			sub_var_optional(scp, "Number");
-			sub_var_set(scp, "SUGgest", "%S", s3);
+			sub_var_set_string(scp, "SUGgest", s3);
 			sub_var_optional(scp, "SUGgest");
 			if (part.nstrings == 1)
 			{
@@ -570,7 +570,7 @@ change_filename_check(cp, filename, nodup)
 			}
 			else
 			{
-				sub_var_set(scp, "Part", "%S", s2);
+				sub_var_set_string(scp, "Part", s2);
 				result =
 					subst_intl
 					(
@@ -591,7 +591,7 @@ i18n("file \"$filename\" part \"$part\" too long, suggest \"$suggest\" instead")
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", filename);
+			sub_var_set_string(scp, "File_Name", filename);
 			if (part.nstrings == 1)
 			{
 				result =
@@ -603,7 +603,7 @@ i18n("file \"$filename\" part \"$part\" too long, suggest \"$suggest\" instead")
 			}
 			else
 			{
-				sub_var_set(scp, "Part", "%S", s2);
+				sub_var_set_string(scp, "Part", s2);
 				result =
 					subst_intl
 					(
@@ -623,7 +623,7 @@ i18n("file \"$filename\" part \"$part\" too long, suggest \"$suggest\" instead")
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", filename);
+			sub_var_set_string(scp, "File_Name", filename);
 			if (part.nstrings == 1)
 			{
 				result =
@@ -635,7 +635,7 @@ i18n("file \"$filename\" part \"$part\" too long, suggest \"$suggest\" instead")
 			}
 			else
 			{
-				sub_var_set(scp, "Part", "%S", s2);
+				sub_var_set_string(scp, "Part", s2);
 				result =
 					subst_intl
 					(
@@ -655,7 +655,7 @@ i18n("file \"$filename\" part \"$part\" too long, suggest \"$suggest\" instead")
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", filename);
+			sub_var_set_string(scp, "File_Name", filename);
 			if (part.nstrings == 1)
 			{
 				result =
@@ -667,7 +667,7 @@ i18n("file \"$filename\" part \"$part\" too long, suggest \"$suggest\" instead")
 			}
 			else
 			{
-				sub_var_set(scp, "Part", "%S", s2);
+				sub_var_set_string(scp, "Part", s2);
 				result =
 					subst_intl
 					(
@@ -683,7 +683,7 @@ i18n("file \"$filename\" part \"$part\" too long, suggest \"$suggest\" instead")
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", filename);
+			sub_var_set_string(scp, "File_Name", filename);
 			if (part.nstrings == 1)
 			{
 				result =
@@ -695,7 +695,7 @@ i18n("file \"$filename\" part \"$part\" too long, suggest \"$suggest\" instead")
 			}
 			else
 			{
-				sub_var_set(scp, "Part", "%S", s2);
+				sub_var_set_string(scp, "Part", s2);
 				result =
 					subst_intl
 					(

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -109,7 +109,7 @@ lib/%0%.merge: lib/%0%.po i18n-tmp/%,I
 	 * There should be no differences.
 	 * If there are, this next command will show them.
 	 */
-	diff -c [resolve lib/%0%.po] [target];
+	diff -u [resolve lib/%0%.po] [target];
 }
 
 
@@ -135,6 +135,7 @@ xgettext = xgettext;
  */
 
 i18n-tmp/libaegis,I: [all,I]: [prepost "lib/en/LC_MESSAGES/" ".po" [i18n_commands]]
+		etc/i18n.clean.sh
 {
 	/*
 	 * The author only speaks English, so the master translation is
@@ -143,7 +144,6 @@ i18n-tmp/libaegis,I: [all,I]: [prepost "lib/en/LC_MESSAGES/" ".po" [i18n_command
 	[xgettext]
 		--sort-output
 		--indent
-		--omit-header
 		--add-location
 		-o [target]
 		[prepost "--dir=" "" [search_list]]
@@ -151,9 +151,15 @@ i18n-tmp/libaegis,I: [all,I]: [prepost "lib/en/LC_MESSAGES/" ".po" [i18n_command
 		--language\=PO
 		/* no need to resolve, --dir will do it */
 		[all,I];
+	/*
+	 * Get rid of the "POT-Creation-Date" header,
+	 * it messes up the .po file checking.
+	 */
+	sh [resolve etc/i18n.clean.sh] [target];
 }
 
 i18n-tmp/%,I: [%,I]: lib/en/LC_MESSAGES/libaegis.po
+		etc/i18n.clean.sh
 {
 	/*
 	 * The author only speaks English, so the master translation is
@@ -163,7 +169,6 @@ i18n-tmp/%,I: [%,I]: lib/en/LC_MESSAGES/libaegis.po
 	[xgettext]
 		--sort-output
 		--indent
-		--omit-header
 		--add-location
 		--force-po
 		-o [target]
@@ -171,6 +176,11 @@ i18n-tmp/%,I: [%,I]: lib/en/LC_MESSAGES/libaegis.po
 		--exclude-file\=lib/en/LC_MESSAGES/libaegis.po
 		--language\=PO
 		[%,I];
+	/*
+	 * Get rid of the "POT-Creation-Date" header,
+	 * it messes up the .po file checking.
+	 */
+	sh [resolve etc/i18n.clean.sh] [target];
 }
 
 %0%.c,I: %0%.c
@@ -191,6 +201,7 @@ i18n-tmp/%,I: [%,I]: lib/en/LC_MESSAGES/libaegis.po
 		--keyword\=aer_report_error
 		--keyword\=gram_error
 		--keyword\=subst_intl
+		--keyword\=input_error_fatal
 		[prepost "--dir=" "" [search_list]]
 		%0%.c;
 }

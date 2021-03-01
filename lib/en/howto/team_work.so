@@ -1,0 +1,255 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1999 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: Howto, Teamwork
+.\"
+.nh 1 "Working in Teams"
+.LP
+Aegis supports teamwork in two basic ways: local development and
+distributed development.  Local development breaks down into a single
+machine, and networked machines on a common LAN.  By building the
+description a little at a time, this section will show how each of these
+modes of development are related in the model used by Aegis.
+.nh 2 "Local"
+.LP
+.nh 3 "Single User, Single Machine"
+.LP
+The simplest case to understand is the single user.  In such an
+environment, there is a project and the user makes changes to this project
+in the usual way described in the User Guide and earlier sections of
+this How-To.
+.LP
+Even in this environment, it is often the case that a single user will
+be working on more than one thing at once.  You could have a large new
+feature being added, and a series of bug fixes happening in parallel
+during the course of this development.  Or some-one may interrupt you
+with a more important feature they need to be added.  Aegis allows
+you to simply and rapidly create as many or as few independent changes
+(and development directories) as required.
+.LP
+By using independent work areas, things which are not yet completed cannot
+be confused with immediate bug fixes.  There is no risk of untested code
+"contaminating" a bug fix, as would be the case in one large work area.
+.nh 3 "Multi User, Single Machine"
+.LP
+Having multiple developers working on the same project is very little
+different than having one developer.  There are simple many changes all
+being worked on in parallel.  Each has its own independent work area.
+Each is independently validated before it may be integrated.
+.LP
+One significant difference with multiple developers is that you now have
+enough people to do real code reviews.  This can make a huge difference
+to code quality.
+.nh 3 "Multi User, Multi Machine"
+.LP
+Aegis assumes that when working on a LAN, you will use a networked
+file system, of some sort.  NFS is adequate for this task, and commonly
+available.  By using NFS, there is very little difference between the
+single-machine case and the multi-machine case.
+.LP
+There are some system administration constraints imposed by this,
+however: it is assumed that each machine is apparently "the same",
+in terms of environment.
+.nh 4 "General Requirements"
+.LP
+You need some sort of network file system (\fIe.g.\fP NFS, AFS, DFS),
+but it needs working locks (\fIi.e.\fP not CODA at present).
+I'll assume the ubiquitous NFS for now.
+.IP \(bu 2n
+You need exactly the same \fI/etc/passwd\fP and \fP/etc/group\fP file on
+every machine.  This gives a uniform environment, with uniform security.
+(It also gets the UIDs right, which NFS needs.)  Keeping \fI/etc/passwd\fP
+and \fI/etc/group\fP in sync across more than about 3 machines can be
+time consuming and error prone if done manually - so don't.  Use NIS or
+similar - do sys admin once, automatically takes effect everywhere.
+.IP \(bu 2n
+All of the machines see the same file systems with the same path names as
+all the others.  (Actually, you only need worry about the ones Aegis is
+interested in.)  Again, you can try to keep all those \fI/etc/fstab\fP
+files in sync manually, but you are better off using NIS (or NIS+)
+and the automounter or amd.
+.IP \(bu 2n
+All of the machines need their clocks synchronized.  Otherwise tools
+which use time stamps (obviously \fImake\fP(1), but also a few others)
+will get confused.  NTP or XNTP make this simple and automatic.  In a
+pinch, you can use \fIrdate\fP(1) from cron every 15 minutes.
+.IP \(bu 2n
+Many sites are worried about the security of NFS.  Usually, you need to
+take the root password away from workstation users; once the environment
+is uniform across all of them, the need for it usually disappears.
+It also means they can't abuse NFS, and they can't run packet sniffers,
+either.  By using netgroups (I'm \fInot\fP talking about the \fI/etc/groups\fP
+file) you can further restrict who NFS will talk to.  By using NIS+
+and NFSv3 you can quash the last couple of security issues, but unless
+you have military contracts, it's rarely worth it.
+.LP
+Fortunately, NFS and NIS readily available, both for proprietary systems
+and open source systems.  Large sites use these techniques successfully
+and securely - and they \fBdon't\fP have \fIO(n^2)\fP or even \fIO(n)\fP
+sys admin issues, they get most sys admin tasks down to \fIO(1)\fP.
+.LP
+But, \fIbut\fP, \fBbut!\fP
+Many sites are \fIvery\fP concerned about being able to work when the
+server(s) are down.  I agree, however I suggest sweet talking your sys
+admin, not bashing NFS or NIS or Aegis.  It is possible to get very
+high availability from modern systems (and even ancient PCs, using Linux
+or BSD).
+.LP
+The fact is, working in a team requires interaction.  Lots of interaction.
+It is an illusion that you can work independently indefinitely.  In the
+ultimate siege mentality, you need a full and complete private copy of
+everything in order to pull this off; but expect the other team member
+to carefully inspect everything you produce this way.
+.nh 4 "Aegis-specific Requirements"
+.LP
+There are a couple of things required, once you have the above up and running.
+.IP \(bu 2n
+All of the Aegis distribution can be installed locally for
+performance, if that's what you need.  (Except, see the next item.)
+Or, you can install it all on an NFS mounted disk, which guarantees
+everyone is always running exactly the same software revision which
+can sometimes be important (shortens upgrade times, too.)
+.IP \(bu 2n
+Except the \fI${prefix}/com/aegis\fP directory, which must be the one NFS
+disk mounted by every single machine identically, and must be read write.
+\fII.e.\fP unique to the whole network (well, all machines using Aegis).
+This is where the pointer to the projects are kept, and this is where
+the database locks are kept.  If this directory isn't common to every
+machine, the Aegis database will quickly become corrupted.
+.IP \(bu 2n
+The project directory tree must be on an NFS disk which all machines
+see, and must be the same absolute path on all machines.  This is so
+that the absolute paths in \fI${prefix}/com/aegis/state\fP mean something.
+.IP \(bu 2n
+The development directories need to be on NFS disks every machine can see.
+Usually, this means a common home directory disk, or a common development
+directory disk.  This can still be a disk local to the workstation, but
+they must all be exported, and all must appear in the automount maps.
+This is because Aegis assumes that every workstation has a uniform view of
+the entire system (so reviews can review your development directory, and
+integrators can pick up the new files from your development directory).
+.LP
+Large software shops have used these techniques without difficulty.
+.nh 3 "Known Problems"
+.LP
+There is a known problem with the HP/UX NFS clients.  If you see
+persistent "no locks available" error messages when \fI\*(L)\fP is NFS
+mounted, try making the \fI\*(L)/lockfile\fP file world writable.
+.E(
+chmod 666 \*(L)/lockfile
+.E)
+There is the possibility of a denial of service attack in this mode
+(which is why the default is 0600) but since you are presently denied
+service anyway, it's academic.
+.nh 2 "Distributed"
+.LP
+The distributed functionality of Aegis is designed to be able to operate
+through corporate firewalls.  Corporate firewall administrators, however,
+take a very dim view of adding holes to the for proprietary protocols.
+Aegis, as a result, requires none.  Instead it uses existing protocols
+such as e-mail, FTP and HTTP.  It will even work with "sneaker net"
+(hand carried media).
+.LP
+The other aspect of Aegis, which you have probably noticed already,
+is that it is very keen on security.  Security of the "availability,
+integrity and confidentiality" kind.
+.LP
+Incoming change sets are subject to the same scrutiny as a change set
+produced locally.  It is dropped into a work area, built and tested,
+before being presented for review.  Just like any local change set
+would be.
+.nh 3 "Multiple Single-User Sites"
+.LP
+In the case of an Open Source project maintainer, this is essential,
+because incoming contributions are of varying quality, or may interact
+in unfortunate ways with other received change sets.  This careful
+integration checking is essential.  Imaging the chaos which could
+ensure if change sets were unconditionally dropped into the baseline.
+(Deliberate malice or sabotage, of course, also being a grim possibility.)
+.LP
+The careful reader will by now be squirming.  "How", they wonder, "can
+the maintainer examine every change every developer makes.  Surely it
+doesn't scale?"
+.LP
+Indeed, it would not.  Aegis provides a mechanism for aggregating changes
+into "super changes".  These larger changes can then be shipped around.
+(See the Branching chapter in the User Guide for more information.)
+.LP
+In the reverse direction, from the maintainer out to the developer,
+developers in an Open Source project probably aren't going to want to
+see each and every change set made to the project.  Again, they can use
+an aggregation (\fIe.g.\fP grab the latest snapshot when each release
+is announced) to resync in larger chunks, less often.  The chances of
+an intersection are fairly low (otherwise someone is duplicating effort)
+so the merge is usually quite simple.
+.nh 3 "Multiple Multi-User Sites"
+.LP
+Most distributed large-scale corporate operations are actually similar
+to Open Source projects, though they usually have more staff.
+There is usually a "senior" site, and the other sites make their
+contributions, which are scrutinized carefully before being promoted to
+full acceptance.
+.LP
+Again, aggregations become essential to the system integration phase of
+a product.  There may even be a hierarchy of concentrators along the way.
+.LP
+Junior corporate sites can sync periodically with the senior site, too,
+rather than double handle (or worse) every change set.
+.nh 3 "Telecommuting"
+.LP
+One of the most desired cases is that of telecommuting.
+How do remote worker, who may never make it into the office, develop projects using Aegis?
+.LP
+There are many way to do this, but the simplest is to have a central cite
+("the office") with satellite developers.
+.nh 4 "Office to Developer"
+.LP
+The office makes available a web interface to Aegis.  From this,
+it is possible to download individual changes, branch updates, or whole
+projects.  All of this is already present in the Aegis distribution.
+.LP
+However, many corporate sites are not going to want to make all of their
+intimate development details to comprehensively available on the web.
+For such sites, I would suggest either a direct "behind the firewall"
+dial-in, or some virtual private networking software (which means users
+can use a local ISP, and still be treated "as if" they were behind
+the firewall).
+.LP
+If a VPN won't fly (due to company security policies), then selected
+encrypted updates could be posted "outside", or perhaps an procmail
+"change set service" could be arranged.
+.nh 4 "Developer to Office"
+.LP
+It is unlikely (though possible) that you would have a web server on
+the developer's machine - usually you aren't connected, to the office
+pulling changes sets back is probably not viable.
+.LP
+The simplest mechanism is for the satellite developer to 
+configure their Aegis project so that the trunk tracks the office version.
+Once a week (or more often if you get notified something significant has
+happened) pull down the latest version of "the office" as a change set
+and apply it.
+This way, the trunk tracks the official version.
+.LP
+The developer works in a sub-branch, with aeipass configured to e-mail
+branch integrations (but not individual change sets) back to the office.
+In this way, a work package can be encapsulated in a branch, and sent
+when finished.  You also have the ability to manually send the branch
+at any earlier state, and it still encapsulates the set of changes you
+have made to date.

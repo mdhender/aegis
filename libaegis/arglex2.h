@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -45,6 +45,9 @@ enum
 	arglex_token_defaults,
 	arglex_token_delta,
 	arglex_token_delta_date,
+	arglex_token_delta_from_change,
+	arglex_token_delta_name,
+	arglex_token_description_only,
 	arglex_token_develop_begin,
 	arglex_token_develop_begin_undo,
 	arglex_token_develop_end,
@@ -76,6 +79,7 @@ enum
 	arglex_token_minimum,
 	arglex_token_minor,
 	arglex_token_move_file,
+	arglex_token_move_file_undo,
 	arglex_token_new_administrator,
 	arglex_token_new_branch,
 	arglex_token_new_branch_undo,
@@ -96,6 +100,8 @@ enum
 	arglex_token_overwriting,
 	arglex_token_pager,
 	arglex_token_no_pager,
+	arglex_token_page_headers,
+	arglex_token_page_headers_not,
 	arglex_token_page_length,
 	arglex_token_page_width,
 	arglex_token_persevere,
@@ -115,6 +121,8 @@ enum
 	arglex_token_remove_project,
 	arglex_token_remove_reviewer,
 	arglex_token_report,
+	arglex_token_review_begin,
+	arglex_token_review_begin_undo,
 	arglex_token_review_fail,
 	arglex_token_review_pass,
 	arglex_token_review_pass_undo,
@@ -123,6 +131,8 @@ enum
 	arglex_token_symbolic_links,
 	arglex_token_symbolic_links_not,
 	arglex_token_tab_width,
+	arglex_token_template,
+	arglex_token_template_not,
 	arglex_token_terse,
 	arglex_token_test,
 	arglex_token_trunk,

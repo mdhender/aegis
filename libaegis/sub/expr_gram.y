@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996, 1999 Peter Miller;
+ *	Copyright (C) 1996, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 
 #include <ac/stdarg.h>
 #include <ac/stdio.h>
+#include <ac/stdlib.h>
 
 #include <str.h>
 #include <sub.h>
@@ -38,10 +39,18 @@
 %}
 
 %token DIV
+%token EQ
+%token GE
+%token GT
 %token JUNK
+%token LE
 %token LP
+%token LT
 %token MINUS
+%token MOD
 %token MUL
+%token NE
+%token NOT
 %token NUMBER
 %token PLUS
 %token RP
@@ -53,8 +62,10 @@
 
 %type <lv_number> NUMBER expr
 
+%left NE EQ
+%left LT LE GT GE
 %left PLUS MINUS
-%left MUL DIV
+%left MUL DIV MOD
 %right UNARY
 
 %{
@@ -170,5 +181,22 @@ expr
 		{ $$ = $1 * $3; trace(("$$ = %ld;\n", $$)); }
 	| expr DIV expr
 		{ $$ = $3 ? $1 / $3 : 0; trace(("$$ = %ld;\n", $$)); }
+	| expr MOD expr
+		{ $$ = $3 ? $1 % $3 : 0; trace(("$$ = %ld;\n", $$)); }
+	| expr EQ expr
+		{ $$ = ($1 == $3); trace(("$$ = %ld;\n", $$)); }
+	| expr NE expr
+		{ $$ = ($1 != $3); trace(("$$ = %ld;\n", $$)); }
+	| expr LT expr
+		{ $$ = ($1 < $3); trace(("$$ = %ld;\n", $$)); }
+	| expr LE expr
+		{ $$ = ($1 <= $3); trace(("$$ = %ld;\n", $$)); }
+	| expr GT expr
+		{ $$ = ($1 > $3); trace(("$$ = %ld;\n", $$)); }
+	| expr GE expr
+		{ $$ = ($1 >= $3); trace(("$$ = %ld;\n", $$)); }
+	| NOT expr
+		%prec UNARY
+		{ $$ = (!$2); trace(("$$ = %ld;\n", $$)); }
 	;	
 

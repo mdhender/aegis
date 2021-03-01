@@ -36,14 +36,20 @@ sub_context_ty *sub_context_New _((const char *, int));
 void sub_context_delete _((sub_context_ty *));
 
 void sub_var_clear _((sub_context_ty *));
-void sub_var_set _((sub_context_ty *, const char *name, const char *fmt, ...));
+void sub_var_set_format _((sub_context_ty *, const char *, const char *, ...));
+void sub_var_set_string _((sub_context_ty *, const char *, struct string_ty *));
+void sub_var_set_charstar _((sub_context_ty *, const char *, const char *));
+void sub_var_set_long _((sub_context_ty *, const char *, long));
 void sub_var_optional _((sub_context_ty *, const char *));
 void sub_var_append_if_unused _((sub_context_ty *, const char *));
 void sub_var_override _((sub_context_ty *, const char *));
 void sub_var_resubstitute _((sub_context_ty *, const char *));
 void sub_errno_set _((sub_context_ty *));
 void sub_errno_setx _((sub_context_ty *, int));
-string_ty *substitute _((sub_context_ty *, struct change_ty *cp, string_ty *the_command));
+string_ty *substitute _((sub_context_ty *, struct change_ty *cp,
+	string_ty *the_command));
+string_ty *substitute_p _((sub_context_ty *, struct project_ty *cp,
+	string_ty *the_command));
 struct string_ty *subst_intl _((sub_context_ty *, const char *));
 void subst_intl_project _((sub_context_ty *, struct project_ty *));
 void subst_intl_change _((sub_context_ty *, struct change_ty *));
@@ -68,5 +74,6 @@ void verbose_intl _((sub_context_ty *, const char *));
  */
 void sub_context_error_set _((sub_context_ty *, const char *));
 struct project_ty *sub_context_project_get _((sub_context_ty *));
+struct change_ty *sub_context_change_get _((sub_context_ty *));
 
 #endif /* SUB_H */

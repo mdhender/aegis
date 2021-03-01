@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 2000 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -84,7 +84,7 @@ check_it()
 {
 	sed	-e "s|$work|...|g" \
 		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/$USER/USER/g" \
+		-e "s/\"$USER\"/\"USER\"/g" \
 		-e 's/19[0-9][0-9]/YYYY/' \
 		-e 's/20[0-9][0-9]/YYYY/' \
 		-e 's/node = ".*"/node = "NODE"/' \
@@ -339,6 +339,17 @@ copyright_years =
 	YYYY,
 ];
 state = being_reviewed;
+build_time = TIME;
+test_time = TIME;
+architecture_times =
+[
+	{
+		variant = "unspecified";
+		node = "NODE";
+		build_time = TIME;
+		test_time = TIME;
+	},
+];
 development_directory = ".../foo.chan";
 history =
 [

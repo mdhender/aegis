@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,7 @@
  */
 
 #include <ac/stdlib.h>
+#include <ac/string.h>
 
 #include <change.h>
 #include <commit.h>
@@ -67,6 +68,22 @@ long_cmp(s1p, s2p)
 }
 
 
+static int string_cmp _((const void *, const void *));
+
+static int
+string_cmp(v1, v2)
+	const void	*v1;
+	const void	*v2;
+{
+	string_ty	*s1;
+	string_ty	*s2;
+
+	s1 = *(string_ty **)v1;
+	s2 = *(string_ty **)v2;
+	return strcmp(s1->str_text, s2->str_text);
+}
+
+
 void
 change_cstate_write(cp)
 	change_ty	*cp;
@@ -101,19 +118,24 @@ change_cstate_write(cp)
 	assert(!cp->cstate_data->src);
 	if (cp->fstate_data)
 	{
+		fstate_src_list	slp;
+
 		/*
 		 * sort the files by name
 		 */
 		if (!cp->fstate_data->src)
-			cp->fstate_data->src = fstate_src_type.alloc();
-		if (cp->fstate_data->src->length >= 2)
+			cp->fstate_data->src = fstate_src_list_type.alloc();
+		slp = cp->fstate_data->src;
+		assert(slp);
+		assert(slp->length <= slp->maximum);
+		assert(!slp->list == !slp->maximum);
+		if (slp->length >= 2)
 		{
-			assert(cp->fstate_data->src->list);
 			qsort
 			(
-				cp->fstate_data->src->list,
-				cp->fstate_data->src->length,
-				sizeof(*cp->fstate_data->src->list),
+				slp->list,
+				slp->length,
+				sizeof(*slp->list),
 				src_cmp
 			);
 		}
@@ -132,14 +154,14 @@ change_cstate_write(cp)
 			os_mkdir_between(s1, s2, 02755);
 			str_free(s2);
 			undo_unlink_errok(filename_new);
-			fstate_write_file(filename_new->str_text, cp->fstate_data, compress);
+			fstate_write_file(filename_new, cp->fstate_data, compress);
 			commit_rename(filename_new, fn);
 			cp->fstate_is_a_new_file = 0;
 		}
 		else
 		{
 			undo_unlink_errok(filename_new);
-			fstate_write_file(filename_new->str_text, cp->fstate_data, compress);
+			fstate_write_file(filename_new, cp->fstate_data, compress);
 			commit_rename(fn, filename_old);
 			commit_rename(filename_new, fn);
 			commit_unlink_errok(filename_old);
@@ -168,6 +190,39 @@ change_cstate_write(cp)
 	}
 
 	/*
+	 * Force the staff lists to be sorted.
+	 * (It helps makes the tests pass, if nothing else.)
+	 */
+	if (cp->cstate_data->branch && cp->cstate_data->branch->administrator)
+	{
+		cstate_branch_administrator_list lp;
+
+		lp = cp->cstate_data->branch->administrator;
+		qsort(lp->list, lp->length, sizeof(lp->list[0]), string_cmp);
+	}
+	if (cp->cstate_data->branch && cp->cstate_data->branch->developer)
+	{
+		cstate_branch_developer_list lp;
+
+		lp = cp->cstate_data->branch->developer;
+		qsort(lp->list, lp->length, sizeof(lp->list[0]), string_cmp);
+	}
+	if (cp->cstate_data->branch && cp->cstate_data->branch->reviewer)
+	{
+		cstate_branch_reviewer_list lp;
+
+		lp = cp->cstate_data->branch->reviewer;
+		qsort(lp->list, lp->length, sizeof(lp->list[0]), string_cmp);
+	}
+	if (cp->cstate_data->branch && cp->cstate_data->branch->integrator)
+	{
+		cstate_branch_integrator_list lp;
+
+		lp = cp->cstate_data->branch->integrator;
+		qsort(lp->list, lp->length, sizeof(lp->list[0]), string_cmp);
+	}
+
+	/*
 	 * write out the cstate file
 	 */
 	fn = change_cstate_filename_get(cp);
@@ -185,14 +240,14 @@ change_cstate_write(cp)
 		os_mkdir_between(s1, s2, 02755);
 		str_free(s2);
 		undo_unlink_errok(filename_new);
-		cstate_write_file(filename_new->str_text, cp->cstate_data, compress);
+		cstate_write_file(filename_new, cp->cstate_data, compress);
 		commit_rename(filename_new, fn);
 		cp->cstate_is_a_new_file = 0;
 	}
 	else
 	{
 		undo_unlink_errok(filename_new);
-		cstate_write_file(filename_new->str_text, cp->cstate_data, compress);
+		cstate_write_file(filename_new, cp->cstate_data, compress);
 		commit_rename(fn, filename_old);
 		commit_rename(filename_new, fn);
 		commit_unlink_errok(filename_old);

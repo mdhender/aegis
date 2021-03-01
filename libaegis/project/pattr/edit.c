@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -45,14 +45,14 @@ project_pattr_edit(dp, et)
 	assert(d);
 	filename = os_edit_filename(1);
 	os_become_orig();
-	pattr_write_file(filename->str_text, d, 0);
+	pattr_write_file(filename, d, 0);
 	pattr_type.free(d);
 
 	/*
 	 * error message to issue if anything goes wrong
 	 */
 	scp = sub_context_new();
-	sub_var_set(scp, "File_Name", "%S", filename);
+	sub_var_set_string(scp, "File_Name", filename);
 	msg = subst_intl(scp, i18n("attributes in $filename"));
 	sub_context_delete(scp);
 	undo_message(msg);
@@ -66,7 +66,7 @@ project_pattr_edit(dp, et)
 	/*
 	 * read it in again
 	 */
-	d = pattr_read_file(filename->str_text);
+	d = pattr_read_file(filename);
 	commit_unlink_errok(filename);
 	os_become_undo();
 	str_free(filename);

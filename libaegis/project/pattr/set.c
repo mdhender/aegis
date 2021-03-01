@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -95,6 +95,36 @@ project_pattr_set(pp, pattr_data)
 			pattr_data->compress_database
 		);
 	}
+	if (pattr_data->mask & pattr_develop_end_action_mask)
+	{
+		project_develop_end_action_set
+		(
+			pp,
+			pattr_data->develop_end_action
+		);
+	}
+
+	/*
+	 * Make sure that developers_may_review and
+	 * develop_end_action don't contradict each other.
+	 *
+	 * At this point, we quietly change the action, but
+	 * maybe we should emit a fatal error message?
+	 */
+	if
+	(
+		!project_developer_may_review_get(pp)
+	&&
+		project_develop_end_action_get(pp) ==
+		      pattr_develop_end_action_goto_awaiting_integration
+	)
+	{
+		project_develop_end_action_set
+		(
+			pp,
+			pattr_develop_end_action_goto_being_reviewed
+		);
+	}
 
 	if (pattr_data->forced_develop_begin_notify_command)
 	{
@@ -120,6 +150,23 @@ project_pattr_set(pp, pattr_data)
 		(
 			pp,
 			pattr_data->develop_end_undo_notify_command
+		);
+	}
+
+	if (pattr_data->review_begin_notify_command)
+	{
+		project_review_begin_notify_command_set
+		(
+			pp,
+			pattr_data->review_begin_notify_command
+		);
+	}
+	if (pattr_data->review_begin_undo_notify_command)
+	{
+		project_review_begin_undo_notify_command_set
+		(
+			pp,
+			pattr_data->review_begin_undo_notify_command
 		);
 	}
 

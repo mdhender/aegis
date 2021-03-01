@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@
 
 #include <input.h>
 
-input_ty *input_file_text_open _((const char *));
+input_ty *input_file_text_open _((struct string_ty *));
+void input_file_text_escaped_newline _((input_ty *));
 
 #endif /* LIBAEGIS_INPUT_FILE_TEXT_H */

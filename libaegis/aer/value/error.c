@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -108,7 +108,7 @@ rpt_value_error_print(vp)
 	this = (rpt_value_error_ty *)vp;
 	assert(vp->method == &method);
 	scp = sub_context_new();
-	sub_var_set(scp, "Message", "%S", this->value);
+	sub_var_set_string(scp, "Message", this->value);
 	rpt_pos_error(scp, this->pp, i18n("$message"));
 	sub_context_delete(scp);
 }

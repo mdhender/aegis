@@ -68,10 +68,10 @@ change_run_project_file_command(cp, up)
 	 * All of the substitutions described in aesub(5) are available.
 	 */
 	scp = sub_context_new();
-	sub_var_set(scp, "1", "${project}");
-	sub_var_set(scp, "2", "${change}");
-	sub_var_set(scp, "3", "${version}");
-	sub_var_set(scp, "4", "${baseline}");
+	sub_var_set_charstar(scp, "1", "${project}");
+	sub_var_set_charstar(scp, "2", "${change}");
+	sub_var_set_charstar(scp, "3", "${version}");
+	sub_var_set_charstar(scp, "4", "${baseline}");
 	the_command = pconf_data->project_file_command;
 	the_command = substitute(scp,cp, the_command);
 	sub_context_delete(scp);

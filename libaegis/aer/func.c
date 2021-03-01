@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,8 +27,10 @@
 #include <aer/func/eject.h>
 #include <aer/func/getenv.h>
 #include <aer/func/gettime.h>
+#include <aer/func/getuid.h>
 #include <aer/func/keys.h>
 #include <aer/func/length.h>
+#include <aer/func/mtime.h>
 #include <aer/func/need.h>
 #include <aer/func/now.h>
 #include <aer/func/page_width.h>
@@ -63,9 +65,11 @@ static rpt_func_ty *table[] =
 	&rpt_func_floor,
 	&rpt_func_getenv,
 	&rpt_func_gettime,
+	&rpt_func_getuid,
 	&rpt_func_keys,
 	&rpt_func_length,
 	&rpt_func_mktime,
+	&rpt_func_mtime,
 	&rpt_func_need,
 	&rpt_func_now,
 	&rpt_func_page_length,

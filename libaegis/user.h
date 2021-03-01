@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -95,7 +95,10 @@ void user_delete_file_argument _((void (*)(void)));
 
 int user_diff_preference _((user_ty *));
 int user_pager_preference _((user_ty *));
-int user_persevere_preference _((user_ty *));
+
+int user_persevere_preference _((user_ty *, int));
+void user_persevere_argument _((void(*)(void)));
+
 uconf_log_file_preference_ty user_log_file_preference _((user_ty *,
 	uconf_log_file_preference_ty));
 

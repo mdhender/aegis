@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,8 @@
  *
  * MANIFEST: functions to accumulate strings
  */
+
+#include <ac/string.h>
 
 #include <mem.h>
 #include <stracc.h>
@@ -61,6 +63,8 @@ stracc_close(sap)
 	return str_n_from_c(sap->buffer, sap->length);
 }
 
+
+#undef stracc_char
 
 void
 stracc_char(sap, c)

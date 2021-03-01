@@ -1,0 +1,114 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide, Geographically Distributed Development, Patches
+.\"
+.nh 2 "Patches"
+.LP
+In the open source community, patches are common way of sharing
+enhancements to software.  This was particularly common before the
+World Wide Web, and usenet was the more common medium of distribution.
+Patches also have the advantage of being fairly small and usually
+tansportable by email with few problems.
+.nh 3 "Send"
+.LP
+If you are participating in an open source project, and using Aegis to
+manage your development, the \fIaedist \-send\fP command may be used to
+construct a patch to send to the other developers.
+.LP
+It is very similar in operation to the \fIaedist\fP(1) command,
+however it is intended for non-Aegis-using recipients.
+.LP
+To send a change to someone (a completed change, or one in progress)
+simply use a command such as
+.E(
+\f(CB%\fP aepatch -send -c \fInumber\fP | \e
+  mail joe.blow@example.com
+\f(CB%\fP
+.E)
+to send you change as a patch.  Note that it will be compressed (using
+GNU Zip) and encoded (using MIME base 64), which produces small files
+which are going to survive email transport.
+.nh 3 "Receive"
+.LP
+The simplest way of receiving a patch and turn it into a
+change set is to save it from your
+e-mail program into a file, and then
+.E(
+\f(CB%\fP aedist -receive -file \fIfilename\fP
+\&\fI...lots of information...\fP
+\f(CB%\fP
+.E)
+where \fIfilename\fP is where you saved the e-mail message.
+If your e-mail program is able to write to a pipe, you can use a simpler form.
+This example uses the Rand Mail Handler's \fIshow\fP(1) command:
+.E(
+\f(CB%\fP show | aedist -receive
+\&\fI...lots of information...\fP
+\f(CB%\fP
+.E)
+.LP
+Each of these examples assumes that you have already set the project
+name, either via \fIaeuconf\fP(5) or \fIae_p\fP(1), or you could use
+the \fI\-project\fP option.
+.LP
+The actions performed by \fIaepatch\fP on receive are not quite a
+mirror of what it does on send.  In particular, send usually extracts
+its information from the repository, but receive \fBdoes not\fP put
+the change set directly into the repository.
+.LP
+On receipt of a change set, \fIaepatrch\fP creates a new change with
+its own development directory, copies the files into it, and applies
+the patch to the files.  The receiver must be an authorized developer.
+.LP
+Once the patch is applied, it goes through the usual development cycle of
+build, difference and test.  If any portion of this fails, \fIaepatch\fP
+will stop with a suitable error message.  If all goes well, development
+of the change will end, and it will be left in the \fIbeing reviewed\fP
+state.
+.LP
+At this point, a local reviewer must examine the change,
+and it proceeds through the change integration process as normal.
+.LP
+If there is a problem with the change, it can be dealt with as you would
+with any other defective change \- by developing it some more.  Or you
+can email the sender telling them the problem and use \fIaedbu\fP(1)
+and \fIaencu\fP(1) to entirely discard the change.
+.nh 3 "Limitations"
+.LP
+Despite a great similarity of command line operations and operation,
+the \fIaepatch\fP command should \fBnot\fP be thought of as an
+equivalent for the \fIaedist\fP command, or a replacement for it.
+.LP
+The information provided by \fIaedist \-send\fP is sufficiently complete
+to recreate the change set at the remote end.  No information is lost.
+In contrast, the \fIaepatch \-send\fP command is limited to that
+information a patch file (see the \fIpatch\fP(1) command, from the GNU
+Diff utils).  There is no guarantee that the \fIaepatch \-send\fP output
+will be given to \fIaepatch \-receive\fP; it must work with \fIpatch\fP(1),
+and similar tools.
+.LP
+Conversely, there is no guarantee that the input to \fIaepatch
+\-receive\fP came from \fIaepatch \-send\fP.  It can and must be able
+to cope with the outout of a simple \fIdiff -r -N -c\fP command,
+with no additional information.
+.LP
+All this means, use \fIaedist\fP wherever possible.  The \fIaepatch\fP
+command is to simplify and streamline communication with non-Aegis
+developers.

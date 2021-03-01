@@ -1,6 +1,6 @@
-'\" t
+'\" tp
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1997, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1994, 1997-1999, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -100,7 +100,41 @@ from the
 .I "being developed"
 state to the
 .I "being reviewed"
-state.
+state, by default.
+The \fIdevelop_\%end_\%action\fP project attribute controls which of
+the following 3 paths are taken.
+.\" ------------------------------------------------------------------------
+.PS
+boxwid = 1
+down
+S30: box invis "\fIdevelop_end_action:\fP" "\fIgoto_awaiting_review\fP"
+S31: box "being" "developed"
+arrow " develop" ljust " end" ljust
+S32: box "awaiting" "review"
+arrow " review" ljust " begin" ljust
+S33: box "being" "reviewed"
+arrow " review" ljust " pass" ljust
+S34: box "awaiting" "integration"
+
+S20: box invis "\fIdevelop_end_action:\fP" "\fIgoto_being_reviewed\fP" \
+	with .w at S30.e+(0.5,0)
+S21: box "being" "developed"
+arrow " develop" ljust " end" ljust down 1.5
+S22: box "being" "reviewed"
+arrow " review" ljust " pass" ljust
+S23: box "awaiting" "integration"
+box invis "\fI(This is the default.)\fP"
+
+S10: box invis "\fIdevelop_end_action:\fP" "\fIgoto_awaiting_integration\fP" \
+	with .w at S20.e+(0.5,0)
+S11: box "being" "developed"
+arrow " develop" ljust " end" ljust down 2.5
+S12: box "awaiting" "integration"
+.PE
+.\" ------------------------------------------------------------------------
+\fBPlease Note:\fP the third alternative,m skipping reviews altogether,
+should only be used for single person projects.
+All self-respecting commercial enterprise will avoid this alternative.
 .PP
 Because branches may extend for many months or even years, it is common
 for the user who initiated the branch to be no longer with the project,
@@ -110,6 +144,11 @@ development of branches.  For normal changes in this situation, use the
 command.
 .PP
 The change is no longer considered assigned to the developer.
+.SS Notification
+On succesful completion of the command, the the
+\fIdevelop_\%end_\%notify_\%command\fP field of the project attributes
+file is run, if set.  See \fIaepa\fP(1) and \fIaepattr\fP(5) for more
+information.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so
@@ -125,7 +164,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aede '\*(n) -de \e!* -v'
-sh$	aede(){\*(n) -de $* -v}
+sh$	aede(){\*(n) -de "$@" -v}
 .fi
 .SH ERRORS
 It is an error if

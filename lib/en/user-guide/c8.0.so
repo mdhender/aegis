@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 1998 Peter Miller;
+.\"	Copyright (C) 1993, 1994, 1998, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -39,6 +39,26 @@ file to \f(CWfalse\fP, you will need to surround filenames with the
 quote filenames which actually need to be quoted, so users usually will
 not notice.  This command applies to all of the various filenames in
 the sections which follow.
+.nh 2 "Binary Files"
+.LP
+Aegis doesn't particularly care whether your files are binary or text.
+However, your difference and merge tools certainly will.
+In general, you need format-specific difference and merge tools for each
+of the file formats used in your project.
+Unfortunately, most vendors of software wich makes use of proprietary file 
+formats do not supply difference and erge tools.
+.LP
+The simplest compromise is to treat all files as text, with manual
+repairs for binary files.
+.LP
+A more elegant solution is to use a shell script invoked by the
+\fIdiff_\%command\fP in the project \fIconfig\fP file.
+This shell script examines the file to determine the file format, and then
+runs the appropriate difference tool.
+Similar considerations apply to the \fImerge_\%command\fP field.
+.\" Please note that this support is not present in Aegis itself because
+.\" (a) it would cause code bloat, and (b) it is entirely possible to
+.\" do with a shell script launched by \fIdiff_command\fP.
 .so c8.1.so
 .so c8.2.so
 .so c8.3.so

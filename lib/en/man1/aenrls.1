@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1996, 1997, 1998 Peter Miller;
+.\"	Copyright (C) 1991, 1992, 1993, 1996, 1997, 1998, 2000 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -52,6 +52,13 @@ The
 command is used to
 create a new project from an existing project.
 .I "It creates a new post-3.0 project from an old pre-3.0 project."
+.PP
+\fBPlease Note:\fP If your old-style project does not have a version
+number in the project name, you \fImust\fP supply a new project name,
+otherwise you will get an error.  (If you want to re-use the old project
+name, you need to rename the old project, and then use \fIaenrls\fP to
+create a new new-style project with the old name.  See the HOWTO for
+how to change a project's name.)
 .PP
 This command was essential before the introduction of branches into the
 Aegis model.  It is more useful to create a new release of a project by
@@ -153,7 +160,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aenrls '\*(n) -nrls \e!* -v'
-sh$	aenrls(){\*(n) -nrls $* -v}
+sh$	aenrls(){\*(n) -nrls "$@" -v}
 .fi
 .SH ERRORS
 It is an error if

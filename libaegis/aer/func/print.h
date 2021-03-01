@@ -26,7 +26,9 @@
 #include <aer/func.h>
 
 extern int rpt_func_print__ncolumns;
-extern int *rpt_func_print__column;
+extern int rpt_func_print__ncolumns_max;
+extern struct output_ty **rpt_func_print__column;
+extern struct col_ty *rpt_func_print__colp;
 
 extern rpt_func_ty rpt_func_print;
 

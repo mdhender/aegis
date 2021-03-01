@@ -441,7 +441,7 @@ monthadd(sdate, arelmonth)
 	else
 	{
 		ltime = localtime(&sdate);
-		amm = 12 * ltime->tm_year + ltime->tm_mon + arelmonth;
+		amm = 12 * (ltime->tm_year + 1900) + ltime->tm_mon + arelmonth;
 		ayear = amm / 12;
 		amm = amm % 12 + 1;
 		result = 
@@ -506,7 +506,7 @@ date_scan(p)
 	 */
 	time(&now);
         lt = localtime(&now);
-	year = lt->tm_year;
+	year = lt->tm_year + 1900;
 	month = lt->tm_mon + 1;
 	day = lt->tm_mday;
 	relsec = 0;
@@ -656,11 +656,11 @@ date_string(when)
 	sprintf
 	(
 		buffer,
-		"%s,%3d %s %2.2d %2.2d:%2.2d:%2.2d GMT",
+		"%s,%3d %s %4.4d %2.2d:%2.2d:%2.2d GMT",
 		weekday_name[tm->tm_wday],
 		tm->tm_mday,
 		month_name[tm->tm_mon],
-		tm->tm_year % 100,
+		tm->tm_year + 1900,
 		tm->tm_hour,
 		tm->tm_min,
 		tm->tm_sec
@@ -887,13 +887,30 @@ DayOfWeekSpecification
 DateSpecification
 	: NUMBER SLASH NUMBER
 		{
-			month = $1;
-			day = $3;
+			if ($1 > 12 && $3 <= 12)
+			{
+				day = $1;
+				month = $3;
+			}
+			else
+			{
+				month = $1;
+				day = $3;
+			}
 		}
 	| NUMBER SLASH NUMBER SLASH NUMBER
 		{
-			month = $1;
-			day = $3;
+			if ($1 > 12 && $3 <= 12)
+			{
+				/* european and Australian */
+				day = $1;
+				month = $3;
+			}
+			else
+			{
+				month = $1;
+				day = $3;
+			}
 			year = $5;
 		}
 	| MONTH NUMBER
@@ -1295,6 +1312,10 @@ yylex()
 		case '/':
 			token = SLASH;
 			break;
+
+		case '.':
+			/* ignore lonely dots */
+			continue;
 
 		case '-':
 			if (!isdigit(*lptr))

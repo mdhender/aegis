@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997 Peter Miller;
+.\"	Copyright (C) 1997, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -44,9 +44,7 @@ practical advice.
 The original
 .I make
 paper
-.[
-feld78
-.]
+[feld78]
 contains no reference to recursive
 .I make,
 let alone any discussion as to the relative merits of whole project
@@ -62,9 +60,7 @@ It may be this which set the ``one \f(CWMakefile\fP in every directory''
 concept so firmly in the collective Unix development mind-set.
 .nh 2 "GNU Make"
 The GNU Make manual
-.[
-stal93
-.]
+[stal93]
 contains several pages of material concerning
 recursive
 .I make,
@@ -77,9 +73,7 @@ makefiles for various subsystems that compose a larger system.''
 No mention is made of the problems you may encounter.
 .nh 2 "Managing Projects with Make"
 The Nutshell Make book
-.[
-talb91
-.]
+[talb91]
 specifically promotes recursive
 .I make
 over whole project
@@ -111,9 +105,7 @@ directory trees, however deep, are places to store files;
 between those files, however many.
 .nh 2 "BSD Make"
 The tutorial for BSD Make
-.[
-debo88
-.]
+[debo88]
 says nothing at all about recursive \fImake\fP,
 but it is one of the few which actually described,
 however briefly,

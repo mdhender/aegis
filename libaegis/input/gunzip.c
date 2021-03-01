@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -71,19 +71,19 @@ zlib_fatal_error(this, err)
 		return;
 	scp = sub_context_new();
 	if (this->stream.msg)
-		sub_var_set(scp, "ERRNO", "%s (%s)", z_error(err), this->stream.msg);
+		sub_var_set_format(scp, "ERRNO", "%s (%s)", z_error(err), this->stream.msg);
 	else
-		sub_var_set(scp, "ERRNO", "%s", z_error(err));
+		sub_var_set_charstar(scp, "ERRNO", z_error(err));
 	sub_var_override(scp, "ERRNO");
-	sub_var_set(scp, "File_Name", "%s", input_name(this->deeper));
+	sub_var_set_string(scp, "File_Name", input_name(this->deeper));
 	fatal_intl(scp, i18n("gunzip $filename: $errno"));
 }
 
 
-static void destructor _((input_ty *));
+static void input_gunzip_destructor _((input_ty *));
 
 static void
-destructor(fp)
+input_gunzip_destructor(fp)
 	input_ty	*fp;
 {
 	input_gunzip_ty	*this;
@@ -114,20 +114,20 @@ getLong(this)
 	{
     		c = input_getc(this->deeper);
 		if (c < 0)
-			input_format_error((input_ty *)this);
+			input_fatal_error((input_ty *)this, "gunzip: premature end of file");
 		result += c << (j * 8);
 	}
 	return result;
 }
 
 
-static long iread _((input_ty *, void *, long));
+static long input_gunzip_read _((input_ty *, void *, size_t));
 
 static long
-iread(fp, data, len)
+input_gunzip_read(fp, data, len)
 	input_ty	*fp;
 	void		*data;
-	long		len;
+	size_t		len;
 {
 	input_gunzip_ty	*this;
 	Bytef		*start;
@@ -155,7 +155,7 @@ iread(fp, data, len)
 			 * to follow.  Fatal error if not.
 			 */
 			if (this->stream.avail_in <= 0)
-				input_format_error(this->deeper);
+				input_fatal_error(this->deeper, "gunzip: premature end of file");
 		}
 		err = inflate(&this->stream, Z_PARTIAL_FLUSH);
 		if (err < 0)
@@ -203,18 +203,35 @@ iread(fp, data, len)
 	{
 		/*
 		 * Check CRC
+		 *
+		 * Watch out for 64-bit machines.  This is what
+		 * those aparrently redundant 0xFFFFFFFF are for.
 		 */
-		if (getLong(this) != this->crc)
-			input_format_error((input_ty *)this);
+		if ((getLong(this) & 0xFFFFFFFF) != (this->crc & 0xFFFFFFFF))
+		{
+			input_fatal_error
+			(
+				(input_ty *)this,
+				"gunzip: checksum mismatch"
+			);
+		}
 
 		/*
 		 * The uncompressed length here may be different
 		 * from this->pos in case of concatenated .gz
 		 * files.  But we don't write them that way,
 		 * so give an error if it happens.
+		 *
+		 * We shouldn't have 64-bit problems in this case.
 		 */
 		if (getLong(this) != this->pos)
-			input_format_error((input_ty *)this);
+		{
+			input_fatal_error
+			(
+				(input_ty *)this,
+				"gunzip: length mismatch"
+			);
+		}
 	}
 
 	/*
@@ -225,26 +242,10 @@ iread(fp, data, len)
 }
 
 
-static int iget _((input_ty *));
-
-static int
-iget(fp)
-	input_ty	*fp;
-{
-	unsigned char	c;
-	long		n;
-
-	n = iread(fp, &c, 1);
-	if (n <= 0)
-		return -1;
-	return c;
-}
-
-
-static long itell _((input_ty *));
+static long input_gunzip_ftell _((input_ty *));
 
 static long
-itell(fp)
+input_gunzip_ftell(fp)
 	input_ty	*fp;
 {
 	input_gunzip_ty	*this;
@@ -254,10 +255,10 @@ itell(fp)
 }
 
 
-static const char *iname _((input_ty *));
+static string_ty *input_gunzip_name _((input_ty *));
 
-static const char *
-iname(fp)
+static string_ty *
+input_gunzip_name(fp)
 	input_ty	*fp;
 {
 	input_gunzip_ty	*this;
@@ -267,10 +268,10 @@ iname(fp)
 }
 
 
-static long ilength _((input_ty *));
+static long input_gunzip_length _((input_ty *));
 
 static long
-ilength(fp)
+input_gunzip_length(fp)
 	input_ty	*fp;
 {
 	/*
@@ -334,30 +335,30 @@ check_header(deeper)
 	 */
 	method = input_getc(deeper);
 	if (method != Z_DEFLATED)
-		input_format_error(deeper);
+		input_fatal_error(deeper, "gunzip: not deflated encoding");
 	flags = input_getc(deeper);
 	if (flags < 0 || (flags & RESERVED) != 0)
-		input_format_error(deeper);
+		input_fatal_error(deeper, "gunzip: unknown flags");
 
 	/* Discard time, xflags and OS code: */
 	for (len = 0; len < 6; len++)
 		if (input_getc(deeper) < 0)
-			input_format_error(deeper);
+			input_fatal_error(deeper, "gunzip: short file");
 
 	if (flags & EXTRA_FIELD)
 	{
 		/* skip the extra field */
 		len = input_getc(deeper);
 		if (len < 0)
-			input_format_error(deeper);
+			input_fatal_error(deeper, "gunzip: invalid character value");
 		c = input_getc(deeper);
 		if (c < 0)
-			input_format_error(deeper);
+			input_fatal_error(deeper, "gunzip: short file");
 		len += (c << 8);
 		while (len-- > 0)
 		{
 			if (input_getc(deeper) < 0)
-				input_format_error(deeper);
+				input_fatal_error(deeper, "gunzip: short file");
 		}
 	}
 	if (flags & ORIG_NAME)
@@ -367,7 +368,7 @@ check_header(deeper)
 		{
 			c = input_getc(deeper);
 			if (c < 0)
-				input_format_error(deeper);
+				input_fatal_error(deeper, "gunzip: short file");
 			if (c == 0)
 				break;
 		}
@@ -379,7 +380,7 @@ check_header(deeper)
 		{
 			c = input_getc(deeper);
 			if (c < 0)
-				input_format_error(deeper);
+				input_fatal_error(deeper, "gunzip: short file");
 			if (c == 0)
 				break;
 		}
@@ -389,7 +390,7 @@ check_header(deeper)
 		/* skip the header crc */
 		for (len = 0; len < 2; len++)
 			if (input_getc(deeper) < 0)
-				input_format_error(deeper);
+				input_fatal_error(deeper, "gunzip: short file");
 	}
 	return 1;
 }
@@ -398,12 +399,11 @@ check_header(deeper)
 static input_vtbl_ty vtbl =
 {
 	sizeof(input_gunzip_ty),
-	destructor,
-	iread,
-	iget,
-	itell,
-	iname,
-	ilength,
+	input_gunzip_destructor,
+	input_gunzip_read,
+	input_gunzip_ftell,
+	input_gunzip_name,
+	input_gunzip_length,
 };
 
 

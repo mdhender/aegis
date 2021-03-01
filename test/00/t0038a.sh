@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1996, 1997, 1998, 2001 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -74,6 +74,11 @@ trap "no_result" 1 2 3 15
 #
 PAGER=cat
 export PAGER
+
+# GNU sort (at least textutils 2.0) is locale sensitive
+# ('a.o' and 'all' are swapped) with some LC_COLLATE values.
+LC_ALL=C
+export LC_ALL
 
 AEGIS_FLAGS="delete_file_preference = no_keep; \
 	lock_wait_preference = always; \

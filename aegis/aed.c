@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 #include <aed.h>
 #include <ael/change/files.h>
 #include <arglex2.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <change/file.h>
 #include <col.h>
 #include <commit.h>
@@ -119,7 +119,7 @@ difference_list()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -216,6 +216,8 @@ anticipate(project_name, change_number, branch, cn2, log_style, wl)
 	(
 		!change_is_a_branch(acp)
 	&&
+		cstate2_data->state != cstate_state_awaiting_review
+	&&
 		cstate2_data->state != cstate_state_being_reviewed
 	&&
 		cstate2_data->state != cstate_state_awaiting_integration
@@ -297,7 +299,7 @@ anticipate(project_name, change_number, branch, cn2, log_style, wl)
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s1);
+				sub_var_set_string(scp, "File_Name", s1);
 				change_error(cp, scp, i18n("$filename unrelated"));
 				sub_context_delete(scp);
 				++number_of_errors;
@@ -327,7 +329,7 @@ anticipate(project_name, change_number, branch, cn2, log_style, wl)
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s1);
+				sub_var_set_string(scp, "File_Name", s1);
 				change_error(cp, scp, i18n("no $filename"));
 				sub_context_delete(scp);
 				++number_of_errors;
@@ -338,7 +340,7 @@ anticipate(project_name, change_number, branch, cn2, log_style, wl)
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s1);
+				sub_var_set_string(scp, "File_Name", s1);
 				change_error(cp, scp, i18n("bad cp undo $filename"));
 				sub_context_delete(scp);
 				++number_of_errors;
@@ -350,7 +352,7 @@ anticipate(project_name, change_number, branch, cn2, log_style, wl)
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s1);
+				sub_var_set_string(scp, "File_Name", s1);
 				change_error(acp, scp, i18n("no $filename"));
 				sub_context_delete(scp);
 				++number_of_errors;
@@ -361,7 +363,7 @@ anticipate(project_name, change_number, branch, cn2, log_style, wl)
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s1);
+				sub_var_set_string(scp, "File_Name", s1);
 				change_error(acp, scp, i18n("bad cp undo $filename"));
 				sub_context_delete(scp);
 				++number_of_errors;
@@ -377,7 +379,7 @@ anticipate(project_name, change_number, branch, cn2, log_style, wl)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Number", "%d", number_of_errors);
+			sub_var_set_long(scp, "Number", number_of_errors);
 			sub_var_optional(scp, "Number");
 			change_fatal(cp, scp, i18n("diff fail"));
 			/* NOTREACHED */
@@ -446,24 +448,14 @@ anticipate(project_name, change_number, branch, cn2, log_style, wl)
 			undo_unlink_errok(original);
 			user_become_undo();
 
-			if
-			(
-				src1_data->edit_number
-			&&
-				!src1_data->edit_number_origin
-			)
-			{
-				/* Historical 2.3 -> 3.0 transition. */
-				src1_data->edit_number_origin =
-					str_copy(src1_data->edit_number);
-			}
-
-			assert(src1_data->edit_number_origin);
+			assert(src1_data->edit);
+			assert(src1_data->edit->revision);
+			assert(src1_data->edit_origin);
+			assert(src1_data->edit_origin->revision);
 			change_run_history_get_command
 			(
 				cp,
-				s1,
-				src1_data->edit_number_origin,
+				src1_data,
 				original,
 				up
 			);
@@ -535,6 +527,48 @@ anticipate(project_name, change_number, branch, cn2, log_style, wl)
 }
 
 
+static int project_file_exists _((project_ty *, string_ty *));
+
+static int
+project_file_exists(pp, filename)
+	project_ty	*pp;
+	string_ty	*filename;
+{
+	fstate_src	p_src_data;
+
+	p_src_data = project_file_find(pp, filename);
+	return
+	(
+		p_src_data
+	&&
+		!p_src_data->deleted_by
+	&&
+		!p_src_data->about_to_be_created_by
+	);
+}
+
+
+static int change_file_exists _((change_ty *, string_ty *));
+
+static int
+change_file_exists(cp, filename)
+	change_ty	*cp;
+	string_ty	*filename;
+{
+	fstate_src	c_src_data;
+
+	c_src_data = change_file_find(cp, filename);
+	return
+	(
+		c_src_data
+	&&
+		!c_src_data->deleted_by
+	&&
+		!c_src_data->about_to_be_created_by
+	);
+}
+
+
 static void difference_main _((void));
 
 static void
@@ -565,6 +599,7 @@ difference_main()
 	int		grandparent;
 
 	trace(("difference_main()\n{\n"/*}*/));
+	arglex();
 	string_list_constructor(&wl);
 	string_list_constructor(&need_new_build);
 	project_name = 0;
@@ -605,7 +640,7 @@ difference_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s1);
+				sub_var_set_string(scp, "File_Name", s1);
 				fatal_intl(scp, i18n("too many $filename"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -631,7 +666,7 @@ difference_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -665,7 +700,7 @@ difference_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", cn2);
+				sub_var_set_long(scp, "Number", cn2);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -965,7 +1000,7 @@ difference_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s1);
+				sub_var_set_string(scp, "File_Name", s1);
 				change_error(cp, scp, i18n("$filename unrelated"));
 				sub_context_delete(scp);
 				++number_of_errors;
@@ -1000,7 +1035,7 @@ difference_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s1);
+				sub_var_set_string(scp, "File_Name", s1);
 				change_error(cp, scp, i18n("no $filename"));
 				sub_context_delete(scp);
 				++number_of_errors;
@@ -1018,7 +1053,7 @@ difference_main()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Number", "%d", number_of_errors);
+			sub_var_set_long(scp, "Number", number_of_errors);
 			sub_var_optional(scp, "Number");
 			change_fatal(cp, scp, i18n("diff fail"));
 			sub_context_delete(scp);
@@ -1147,6 +1182,7 @@ difference_main()
 			string_ty	*curfile;
 			string_ty	*outname;
 			string_ty	*most_recent;
+			fstate_src	reconstruct;
 
 			/*
 			 * find the relevant change src data
@@ -1212,7 +1248,7 @@ difference_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s1);
+				sub_var_set_string(scp, "File_Name", s1);
 				change_fatal
 				(
 					cp,
@@ -1253,30 +1289,55 @@ difference_main()
 			undo_unlink_errok(original);
 			user_become_undo();
 
-			if
-			(
-				src1_data->edit_number
-			&&
-				!src1_data->edit_number_origin
-			)
-			{
-				/* Historical 2.3 -> 3.0 transition. */
-				src1_data->edit_number_origin =
-					str_copy(src1_data->edit_number);
-			}
-
 			/*
 			 * get the version out of history
+			 *
+			 * For cross branch merges, use the project
+			 * file's edit origin, rather then the
+			 * change file's edit origin.
 			 */
-			assert(src1_data->edit_number_origin);
+			assert(src1_data->edit_origin);
+			assert(src1_data->edit_origin->revision);
+			reconstruct = fstate_src_type.alloc();
+			reconstruct->file_name = str_copy(s1);
+			reconstruct->edit =
+				history_version_copy(src1_data->edit_origin);
+			if (cp->pp != pp2)
+			{
+				fstate_src	p_src_data;
+
+				p_src_data = project_file_find(cp->pp, s1);
+				assert(!p_src_data->edit_origin || p_src_data->edit_origin->revision);
+				if
+				(
+					p_src_data
+				&&
+					p_src_data->edit_origin
+				&&
+					!p_src_data->deleted_by
+				&&
+					!p_src_data->about_to_be_created_by
+				)
+				{
+					history_version_type.free(reconstruct->edit);
+					reconstruct->edit =
+						history_version_copy
+						(
+							p_src_data->edit_origin
+						);
+				}
+			}
+			assert(reconstruct);
+			assert(reconstruct->edit);
+			assert(reconstruct->edit->revision);
 			change_run_history_get_command
 			(
 				cp,
-				s1,
-				src1_data->edit_number_origin,
+				reconstruct,
 				original,
 				diff_user_p
 			);
+			history_version_type.free(reconstruct);
 
 			/*
 			 * use the appropriate merge command
@@ -1319,38 +1380,46 @@ difference_main()
 			str_free(original);
 
 			/*
-			 * p_src_data->edit_number
+			 * p_src_data->edit
 			 *	The head revision of the branch.
-			 * p_src_data->edit_number_origin
+			 * p_src_data->edit_origin
 			 *	The version originally copied.
 			 *
-			 * c_src_data->edit_number
+			 * c_src_data->edit
 			 *	Not meaningful until after integrate pass.
-			 * c_src_data->edit_number_origin
+			 * c_src_data->edit_origin
 			 *	The version originally copied.
-			 * c_src_data->edit_number_origin_new
-			 *	Updates branch edit_number_origin on
+			 * c_src_data->edit_origin_new
+			 *	Updates branch edit_origin on
 			 *	integrate pass.
 			 */
-			assert(src2_data->edit_number);
+			assert(src2_data->edit);
+			assert(src2_data->edit->revision);
 			if (cp->pp == pp2)
 			{
 				/* normal merge */
-				if (src1_data->edit_number_origin)
-					str_free(src1_data->edit_number_origin);
-				src1_data->edit_number_origin =
-					str_copy(src2_data->edit_number);
+				if (src1_data->edit_origin)
+				{
+					history_version_type.free
+					(
+						src1_data->edit_origin
+					);
+				}
+				src1_data->edit_origin =
+					history_version_copy(src2_data->edit);
 			}
 			else
 			{
 				/* cross branch merge */
-				if (src1_data->edit_number_origin_new)
-					str_free
+				if (src1_data->edit_origin_new)
+				{
+					history_version_type.free
 					(
-					       src1_data->edit_number_origin_new
+						src1_data->edit_origin_new
 					);
-				src1_data->edit_number_origin_new =
-					str_copy(src2_data->edit_number);
+				}
+				src1_data->edit_origin_new =
+					history_version_copy(src2_data->edit);
 			}
 
 			/*
@@ -1394,7 +1463,7 @@ difference_main()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", need_new_build.string[j]);
+			sub_var_set_string(scp, "File_Name", need_new_build.string[j]);
 			if (change_has_merge_command(cp))
 				change_error(cp, scp, i18n("$filename merged"));
 			else
@@ -1407,7 +1476,7 @@ difference_main()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Number", "%ld", (long)need_new_build.nstrings);
+			sub_var_set_long(scp, "Number", (long)need_new_build.nstrings);
 			sub_var_optional(scp, "Number");
 			change_error(cp, scp, i18n("merge complete"));
 			sub_context_delete(scp);
@@ -1421,7 +1490,7 @@ difference_main()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Number", "%ld", mergable_files);
+			sub_var_set_long(scp, "Number", mergable_files);
 			sub_var_optional(scp, "Number");
 			change_verbose(cp, scp, i18n("warning: mergable files"));
 			sub_context_delete(scp);
@@ -1534,7 +1603,7 @@ difference_main()
 					sub_context_ty	*scp;
 
 					scp = sub_context_new();
-					sub_var_set(scp, "File_Name", "%S", s1);
+					sub_var_set_string(scp, "File_Name", s1);
 					change_verbose
 					(
 						cp,
@@ -1543,12 +1612,12 @@ difference_main()
 					);
 					sub_context_delete(scp);
 					src1_data->action = file_action_modify;
-					if (src2_data->edit_number_origin)
+					if (src2_data->edit_origin)
 					{
-						src1_data->edit_number_origin =
-							str_copy
+						src1_data->edit_origin =
+							history_version_copy
 							(
-							  src2_data->edit_number
+								src2_data->edit
 							);
 					}
 					goto modifying_file;
@@ -1565,7 +1634,7 @@ difference_main()
 				(
 					src1_data->move
 				&&
-					project_file_find(pp2bl, src1_data->move)
+					project_file_exists(pp2bl, src1_data->move)
 				)
 				{
 					original =
@@ -1621,7 +1690,7 @@ difference_main()
 					sub_context_ty	*scp;
 
 					scp = sub_context_new();
-					sub_var_set(scp, "File_Name", "%S", s1);
+					sub_var_set_string(scp, "File_Name", s1);
 					change_fatal
 					(
 						cp,
@@ -1651,7 +1720,7 @@ difference_main()
 				(
 					src1_data->move
 				&&
-					change_file_find(cp, src1_data->move)
+					change_file_exists(cp, src1_data->move)
 				)
 				{
 					input =
@@ -1686,7 +1755,7 @@ difference_main()
 					sub_context_ty	*scp;
 
 					scp = sub_context_new();
-					sub_var_set(scp, "File_Name", "%S", s1);
+					sub_var_set_string(scp, "File_Name", s1);
 					change_verbose
 					(
 						cp,
@@ -1776,20 +1845,13 @@ difference_main()
 void
 difference()
 {
-	trace(("difference()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		difference_main();
-		break;
+		{ arglex_token_help,		difference_help,	},
+		{ arglex_token_list,		difference_list,	},
+	};
 
-	case arglex_token_help:
-		difference_help();
-		break;
-
-	case arglex_token_list:
-		difference_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("difference()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), difference_main);
+	trace(("}\n"));
 }

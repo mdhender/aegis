@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@
 #include <col.h>
 #include <error.h> /* for assert */
 #include <option.h>
+#include <output.h>
 #include <project.h>
 #include <project/file.h>
 #include <trace.h>
@@ -43,13 +44,14 @@ list_change_files(project_name, change_number)
 	project_ty	*pp;
 	change_ty	*cp;
 	user_ty		*up;
-	int		usage_col = 0;
-	int		action_col = 0;
-	int		edit_col = 0;
-	int		file_name_col = 0;
+	output_ty	*usage_col = 0;
+	output_ty	*action_col = 0;
+	output_ty	*edit_col = 0;
+	output_ty	*file_name_col = 0;
 	int		j;
 	string_ty	*line1;
 	int		left;
+	col_ty		*colp;
 
 	/*
 	 * locate project data
@@ -82,7 +84,7 @@ list_change_files(project_name, change_number)
 	/*
 	 * create the columns
 	 */
-	col_open((char *)0);
+	colp = col_open((string_ty *)0);
 	line1 =
 		str_format
 		(
@@ -90,26 +92,50 @@ list_change_files(project_name, change_number)
 			project_name_get(pp),
 			magic_zero_decode(change_number)
 		);
-	col_title(line1->str_text, "List of Change's Files");
+	col_title(colp, line1->str_text, "List of Change's Files");
 	str_free(line1);
 
 	left = 0;
 	if (!option_terse_get())
 	{
-		usage_col = col_create(left, left + USAGE_WIDTH);
+		usage_col =
+			col_create
+			(
+				colp,
+				left,
+				left + USAGE_WIDTH,
+				"Type\n-------"
+			);
 		left += USAGE_WIDTH + 1;
-		col_heading(usage_col, "Type\n-------");
 
-		action_col = col_create(left, left + ACTION_WIDTH);
+		action_col =
+			col_create
+			(
+				colp,
+				left,
+				left + ACTION_WIDTH,
+				"Action\n--------"
+			);
 		left += ACTION_WIDTH + 1;
-		col_heading(action_col, "Action\n--------");
 
-		edit_col = col_create(left, left + EDIT_WIDTH);
+		edit_col =
+			col_create
+			(
+				colp,
+				left,
+				left + EDIT_WIDTH,
+				"Edit\n-------"
+			);
 		left += EDIT_WIDTH + 1;
-		col_heading(edit_col, "Edit\n-------");
 	}
-	file_name_col = col_create(left, 0);
-	col_heading(file_name_col, "File Name\n-----------");
+	file_name_col =
+		col_create
+		(
+			colp,
+			left,
+			0,
+			"File Name\n-----------"
+		);
 
 	/*
 	 * list the change's files
@@ -131,12 +157,12 @@ list_change_files(project_name, change_number)
 		}
 		else
 		{
-			col_puts
+			output_fputs
 			(
 				usage_col,
 				file_usage_ename(src_data->usage)
 			);
-			col_puts
+			output_fputs
 			(
 				action_col,
 				file_action_ename(src_data->action)
@@ -155,35 +181,33 @@ list_change_files(project_name, change_number)
 				 * branch may not equal the version
 				 * ``originally'' copied.
 				 */
-				if (psrc_data && psrc_data->edit_number)
+				if (psrc_data && psrc_data->edit)
 				{
-					col_printf
+					assert(psrc_data->edit->revision);
+					output_fprintf
 					(
 						edit_col,
 						" (%s)",
-						psrc_data->edit_number->str_text
+					     psrc_data->edit->revision->str_text
 					);
 				}
 			}
-			if (src_data->edit_number_origin_new)
+			if (src_data->edit_origin_new)
 			{
 				/*
 				 * The ``cross branch merge'' version.
 				 */
-				col_bol(edit_col);
-				col_printf
+				assert(src_data->edit_origin_new->revision);
+				output_end_of_line(edit_col);
+				output_fprintf
 				(
 					edit_col,
 					"{cross %4s}",
-				      src_data->edit_number_origin_new->str_text
+				   src_data->edit_origin_new->revision->str_text
 				);
 			}
 		}
-		col_puts
-		(
-			file_name_col,
-			src_data->file_name->str_text
-		);
+		output_put_str(file_name_col, src_data->file_name);
 		if
 		(
 			cstate_data->state == cstate_state_being_developed
@@ -195,17 +219,18 @@ list_change_files(project_name, change_number)
 			psrc_data->locked_by != change_number
 		)
 		{
-			col_printf
+			output_end_of_line(file_name_col);
+			output_fprintf
 			(
 				file_name_col,
-				"\nLocked by change %ld.",
+				"Locked by change %ld.",
 				magic_zero_decode(psrc_data->locked_by)
 			);
 		}
 		if (src_data->about_to_be_created_by)
 		{
-			col_bol(file_name_col);
-			col_printf
+			output_end_of_line(file_name_col);
+			output_fprintf
 			(
 				file_name_col,
 				"About to be created by change %ld.",
@@ -214,8 +239,8 @@ list_change_files(project_name, change_number)
 		}
 		if (src_data->deleted_by)
 		{
-			col_bol(file_name_col);
-			col_printf
+			output_end_of_line(file_name_col);
+			output_fprintf
 			(
 				file_name_col,
 				"Deleted by change %ld.",
@@ -224,8 +249,8 @@ list_change_files(project_name, change_number)
 		}
 		if (src_data->locked_by)
 		{
-			col_bol(file_name_col);
-			col_printf
+			output_end_of_line(file_name_col);
+			output_fprintf
 			(
 				file_name_col,
 				"Locked by change %ld.",
@@ -234,8 +259,8 @@ list_change_files(project_name, change_number)
 		}
 		if (src_data->about_to_be_copied_by)
 		{
-			col_bol(file_name_col);
-			col_printf
+			output_end_of_line(file_name_col);
+			output_fprintf
 			(
 				file_name_col,
 				"About to be copied by change %ld.",
@@ -244,21 +269,21 @@ list_change_files(project_name, change_number)
 		}
 		if (src_data->move)
 		{
-			col_bol(file_name_col);
-			col_puts(file_name_col, "Moved ");
+			output_end_of_line(file_name_col);
+			output_fputs(file_name_col, "Moved ");
 			if (src_data->action == file_action_create)
-				col_puts(file_name_col, "from ");
+				output_fputs(file_name_col, "from ");
 			else
-				col_puts(file_name_col, "to ");
-			col_puts(file_name_col, src_data->move->str_text);
+				output_fputs(file_name_col, "to ");
+			output_fputs(file_name_col, src_data->move->str_text);
 		}
-		col_eoln();
+		col_eoln(colp);
 	}
 
 	/*
 	 * clean up and go home
 	 */
-	col_close();
+	col_close(colp);
 	project_free(pp);
 	change_free(cp);
 	user_free(up);

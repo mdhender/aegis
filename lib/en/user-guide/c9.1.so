@@ -53,9 +53,9 @@ project "gizmo.0.1": created
 .LP
 Now, for each of your desired sub-projects, create another branch
 .E(
-aenbr gizmo.0.1 1 # \fIfor the foo project\fP
-aenbr gizmo.0.1 2 # \fIfor the bar project\fP
-aenbr gizmo.0.1 3 # \fIfor the baz project\fP
+aenbr -p gizmo.0.1 1 # \fIfor the foo project\fP
+aenbr -p gizmo.0.1 2 # \fIfor the bar project\fP
+aenbr -p gizmo.0.1 3 # \fIfor the baz project\fP
 .E)
 .LP
 Now, the guys on the \fIfoo\fP project set their AEGIS_PROJECT
@@ -135,14 +135,14 @@ for developers, because they describe correct behavior outside the
 .LP
 Once you have a fully-integrated product, what happens on the next
 cycle?  Well, first you may want to finish \fIgizmo.0.1\fP and integrate
-it into \fPgizmo.0\fP, and then \fIaenbr gizmo.0 2\fP
+it into \fPgizmo.0\fP, and then \fIaenbr -p gizmo.0 2\fP
 .LP
 Then what?  Same deal as before, but anything not changed in one of
 the sub-project branches gets inherited from the ancestor.
 .E(
-aenbr gizmo.0.2 1 # \fIfor the foo project\fP
-aenbr gizmo.0.2 2 # \fIfor the bar project\fP
-aenbr gizmo.0.2 3 # \fIfor the baz project\fP
+aenbr -p gizmo.0.2 1 # \fIfor the foo project\fP
+aenbr -p gizmo.0.2 2 # \fIfor the bar project\fP
+aenbr -p gizmo.0.2 3 # \fIfor the baz project\fP
 .E)
 .LP
 Most folks find doing the whole mega-project-build every time

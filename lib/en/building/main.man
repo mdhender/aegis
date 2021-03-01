@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1992, 1993, 1994, 1995, 1997, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1992-1995, 1997-2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -98,7 +98,7 @@ The \fIconfigure\fP script checks for the compression library and
 functions.  If your system does not have them, it is worth fetching
 and installing \fBGNU zlib\fP compression library before you run the
 \fIconfigure\fP script.
-(See \f(CWhttp://www.cdrom.com/pub/infozip/zlib/\fP for download.)
+(See \f(CWhttp://www.gzip.org/zlib/\fP for download.)
 This is essential, becaise Aegis will not build.
 without it.  (\fBNote: this is not the same thing as \f(CWzlib\fP\f(CBc\fP
 which does something completely different.)
@@ -420,6 +420,9 @@ must run set-uid-root;
 please read it if you have concerns.
 .br
 .ne 1i
+.SS Remember Your Settings
+It is important to remember your configuration settings.
+This way, it will be a simple matter when it comes time to upgrade Aegis.
 .SH BUILDING AEGIS
 All you should need to do is use the
 .RS
@@ -523,6 +526,12 @@ using a newer version of
 .IR autoconf .
 .br
 .ne 1i
+.SS Upgrading
+When upgrading from one release to a newer one, it is important that all
+of the machines on your network are running the same release of Aegis.
+This minimises the possibility of database incompatibilities.  In general,
+Aegis is backwards compatible with earlier releases, but not forwards
+compatible in the face of new capabilities.
 .SH OTHER USEFUL SOFTWARE
 Before describing how to test
 .IR aegis ,
@@ -565,9 +574,11 @@ If the
 utility supplied by your flavor of unix does not have the
 .B -c
 option,
-you will need GNU diff to make patch files,
-if you want to publish software for FTP or on USENET.
+you will need GNU diff for \fIaepatch\fP(1) to work (and the
+\fIaepatch\fP(1) tests to pass).
 Context differences are also helpful for reviewing changes.
+GNU diff is essential for Solaris, because the Solaris diff has bugs
+that Aegis' tests uncover.
 .TP 8n
 RCS
 This is a source control package,
@@ -612,22 +623,9 @@ come with UNIX.
 They produce superior error messages,
 and support a wider range of functionality and fonts.
 The
-.I aegis
-User Guide was prepared with groff.
-.TP 8n
-GNU Groff patch
-There is a patch for GNU Groff available,
-which gives
-.IR groff (1)
-and
-.IR gsoelim (1)
-a \fB\-I\fP\fIpath\fP option.
-This adds an include file search path, similar to
-.IR cpp (1).
-The Makefile assumes this is available.
-The patch is at
-\f(CWhttp://www.canb.auug.org.au/~millerp/groff-1.10.patch.gz\fP
-or its mirrors.
+.I Aegis
+User Guide was prepared with GNU Groff.
+You need GNU Groff 1.14 or later.
 .TP 8n
 bison
 This GNU software is a replacement for
@@ -648,7 +646,7 @@ is a set of file history and comparison utilities.
 It was originally written by David I. Bell,
 and is based on the minimal difference algorithm by Eugene W. Myers.
 This copy is enhanced and maintained by the same author as
-.IR aegis ,
+.IR Aegis ,
 and may be found at the same archive site,
 in the same directory.
 .TP 8n
@@ -661,10 +659,16 @@ not available.)
 zlib
 This library provides access to the GNU Zip (de)compression algorithm(s).
 It is essential to have this installed before you build Aegis.
-The home page may be found at \f(CWhttp://www.cdrom.com/pub/infozip/zlib/\fP
+The home page may be found at \f(CWhttp://www.gzip.org/zlib/\fP
 if you need to download it.
 Note: this is not the same as \f(CBzlib\fP\f(CBc\fP which is
 Linux specific.
+.TP 8n
+tkdiff
+This program shows the difference between two text files, nicely
+highlighted in color.  This is used by the \fItkaer\fP and \fIaecomp\fP
+scripts (and probably others as they are contributed).
+By John M. Klassa, http://www.ede.com/free/tkdiff
 .PP
 The tests also depend on the presence of a number of common UNIX programs,
 including but not limited to:
@@ -721,6 +725,9 @@ this test gives a pass result without testing anything.
 If you are using HPUX and GCC, test 32 fails if you use -O2.
 You need to edit the Makefile to only optimize at -O,
 delete the objects and rebuild.
+.PP
+If you are using Solaris' diff, test 133 will report ``no result''.
+You need to install GNU diff, because the Solaris diff has bugs.
 .PP
 If you are using Sun's
 .I tmpfs
@@ -931,7 +938,7 @@ them manually.
 .ne 1i
 .SH USER CONFIGURATION
 The
-.I aegis
+.I Aegis
 command is assumed to be in a generally accessible place,
 otherwise users will need to add the relevant directory to their PATH.
 Users should add
@@ -952,7 +959,7 @@ for users of the Bourne shell
 Users should add
 .RS
 .ft CW
-\&. /usr/local/lib/aegis/profile
+\&. /usr/local/share/aegis/profile
 .ft R
 .RE
 to the end of their
@@ -963,7 +970,7 @@ file for the recommended aliases.
 assumes that users are using a Bourne shell which understands functions.)
 .PP
 The
-.I /usr/local/lib/aegis/state
+.I /usr/local/com/aegis/state
 file contains pointers to "system" projects.
 Users may add their own project pointers (to their own projects)
 by putting a search path into the
@@ -984,7 +991,7 @@ is finicky and wants to do this itself.
 Where projects reside is completely flexible,
 be they system projects or user projects.
 They are not kept under the
-.I /usr/local/lib/aegis
+.I /usr/local/com/aegis
 directory,
 this directory only contains pointers.
 .PP
@@ -1015,7 +1022,7 @@ The User Guide is about 100 pages long.
 .ne 1i
 .SH TIME SYNCHRONIZATION
 The
-.I aegis
+.I Aegis
 program uses time stamps to remember whether various events
 have happened and when.
 If you are using
@@ -1204,7 +1211,7 @@ as is the effort and interest required to produce it.
 .ne 1i
 .SH LICENSE
 The
-.I aegis
+.I Aegis
 program is free software;
 you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -1213,7 +1220,7 @@ either version 2 of the License,
 or (at your option) any later version.
 .PP
 The
-.I aegis
+.I Aegis
 program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY;
 without even the implied warranty of MERCHANTABILITY or

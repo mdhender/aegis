@@ -75,7 +75,7 @@ Usually in the baseline.
 .IP ${Input}
 The absolute path name of the edited version of the file.
 Usually in the development directory.
-Aegis usually moves the sourec file aside, so that the output can replace
+Aegis usually moves the source file aside, so that the output can replace
 the source file.
 .IP ${Output}
 The absolute path name of the file in which to write the difference listing.

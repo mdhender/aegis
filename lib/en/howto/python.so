@@ -1,0 +1,234 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2000 Peter Miller and Pieter Nagel;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing lib/en/howto/python
+.\"
+.nh 1 "How to use Aegis with Python"
+.LP
+This section describes how to use Aegis to supervise the development of
+Python programs.  Some of the remarks in this section may also be helpful
+to people who use Aegis to supervise development in other non-compiled
+languages.
+.LP 
+This section is contributed courtesy of Tangible Business Software,
+\f[CW]www.tbs.co.za\fP.  Python-specific questions relating to this
+section may be sent to Pieter Nagel at \f[CW]<pnagel@tbs.co.za>\fP.
+.nh 2 "Handling Aegis search paths"
+.nh 3 "The Aegis model vs. the Python model"
+.LP
+Aegis' view of a project is that it consists of a hierarchy of project
+baselines.  Each baseline consists of only those files that were modified
+as part of that (sub)project, plus all files that were built by the
+DMT (see the section of the \fIUser Guide\fP called \fIThe Dependency
+Maintenance Tool\fP).  Aegis expects the DMT to be able to collect the
+entire project into one piece by searching up this baseline search path
+for all needed files.
+.LP
+This works fine when using statically compiled languages such as C.
+The build process "projects" source files from various Aegis baselines
+onto one or more executables.  When these are run they do not need to
+search through the Aegis search path for parts of themselves; they are
+already complete.
+.LP
+Python programs, however, are never compiled and linked into a single
+executable.  One could say that a Python program is re-linked each time
+it is run.  This means that the Python program will need to be able
+to find its components at run-time.  More importantly, it will need to
+avoid importing the old versions of files from the baseline when newer
+versions are present in the development or integration directories.
+.nh 3 "The solution"
+.LP
+The simplest (and only recommended) way to marry Aegis and Python is to
+configure Aegis to keep all of the project's files visible in a the
+development and integration directories, at all times.  That way Aegis'
+search path becomes irrelevant to Python.
+.LP
+Use Aegis version 3.23 or later, and set the following in the project
+\fIconfig\fP file:
+.E(
+create_symlinks_before_build
+	= true; 
+remove_symlinks_after_integration_build
+	= false;
+.E)
+The second directive is not available in earlier versions of Aegis. 
+.LP
+If you keep your Python files in a subdirectory of your project, such as
+\fIsrc/python\fP, you will need that directory's relative in your
+\fIPYTHONPATH\fP whenever Aegis executes your code for testing, i.e. by
+setting
+.E(
+test_command="\e
+PYTHONPATH=$$PYTHONPATH:src/python \e
+python \fI...\fP";
+.E)
+in your project config file (example split across multiple lines for
+formatting only).
+.LP
+It may seem strange to you that we are not substituting the Aegis
+\fISearch_Path\fP variable into \fIPYTHONPATH\fP at all \- it does at
+first seem to be the solution that is called for.  The reason why we
+don't is very simple: \fIit does not work\fP.  It is worth stressing the
+following rule:
+.LP
+\fBNever inject any absolute path of any Aegis baseline into the Python
+search path.\fP
+.nh 3 "Why setting PYTHONPATH to the Aegis search path will not work"
+.LP
+The reason why \fIPYTHONPATH\fP does not work as Aegis expects is due
+to the way Python searches for packages.  For a full explanation of what
+packages are, you can see \fISection 6.4\fP of the \fIPython Tutorial\fP,
+but the crucial point is that a Python package consists of a directory
+with an \fI__init__.py\fP file in which the other files in that directory
+which should be treated as part of that package are listed.
+.LP
+When Python imports anything from a package, Python first
+searches for the \fI__init__.py\fP file and remembers the
+absolute path of the directory where it found it.  It will
+thereafter search for all other parts of the package within the
+same directory.  Without the \fIcreate_symlinks_before_build\fP and
+\fIremove_symlinks_after_integration_build\fP settings enabled, all the
+needed files are not guaranteed to \fIbe\fP present in one directory at
+all times, however; they will most likely be spread out over the entire
+Aegis search path.
+.LP
+The result is that if you were to try and use the approach of setting
+the \fIPYTHONPATH\fP to the Aegis search path, package import will
+mysteriously fail under (at least) two conditions:
+.IP \(bu 2n
+Whenever you modify a file in a package without modifying the accompanying
+\fI__init__.py\fP, Python will find the \fI__init__.py\fP file in the
+baseline and import the \fIold\fP files from there.
+.IP \(bu 2n
+Whenever you modify the \fI__init__.py\fP and leave some other file
+in the package unmodified, Aegis will find the \fI__init__.py\fP in
+the development/integration directory but fail to find the unmodified
+files there.
+.nh 2 "The build step"
+.LP
+Python programs do not need to be built, compiled, or linked before they
+can be run, but Aegis requires a build step as part of the development
+cycle.
+.LP
+One perfectly valid option is to explicitly declare the build step to
+be a no-op, by setting
+.E(
+build_command = "true";
+.E)
+in the project config file. \fItrue\fP(1) is a Unix command which is
+guaranteed to always succeed.
+.LP
+In practice, however, there often are housekeeping chores that can be
+done as part of the build process, so you can just as well go ahead and
+reate a Makefile, Cook recipe, or script that performs these tasks and
+make that your build step.
+.LP
+Here are some examples of tasks that can be performed during the build
+step:
+.IP \(bu 2n
+Setting the executable flag on your main scripts.  Aegis does not store
+file modes, but it is often convenient to have one or more of the Python
+source files in your project be excutable, so that one does not need to
+invoke Python explicitly to run them.
+.IP \(bu 2n
+Delete unwanted Python object files (\fI.pyc\fP and \fI.pyo\fP files).
+These could arise when you aerm and delete a Python script, but forget
+to delete the accompanying Python object file(s).  Other files will
+then mysteriously succeed in importing the removed scripts, where you
+would expect them to fail.  Your build process could use \fIael -cf\fP
+and \fIael -pf\fP) to get a list of 'allowed' scripts, and remove all
+Python object files which do not correspond to any of these.
+.IP \(bu 2n
+Autogenerate your packages \fI__init__.py\fP files.  Python wants you
+to declare your intent to have a directory treated as a package by
+creating the \fI__init__.py\fP file (otherwise a stray directory with
+a common name like 'string', 'test', 'common' or 'foo' could shadow
+like-named packages later on in the search path).  But since Aegis is,
+by definition, an authoritative source on what is and what is not part
+of your program it can just as well declare your intent for you.
+.nh 2 "Testing"
+.LP
+Testing under Aegis using Python is no different from any other language,
+only much more fun.  Python's run-time type checking makes it much easier
+to develop software from loosely-coupled components.  Such components
+are much more suited to unit testing than strongly-coupled components are.
+.LP
+If the testing script which Aegis invokes is part of your project, there
+is one important \fIPYTHONPATH\fP-related caveat: when Aegis runs the
+tests, it specifies them with an absolute path.  When Python runs any
+scripts with an absolute path, it prepends that path to its search path,
+and the danger is that the baseline directory (with the old, unchanged
+versions of files) is prepended to the search path when doing regression
+testing.
+.LP
+The solution is to use code like this to remove the test's absolute path
+from the Python path:
+.E(
+selfdir = os.path.abspath(sys.argv[0])
+if selfdir in sys.path:
+	sys.path.remove(selfdir)
+.E)
+.LP
+Instead of copying these lines into each new test file, you may want
+to centralize that code in a test harness which imports and runs the
+tests on Aegis' behalf.  This harness can also serve as a central place
+where you can translate test success or failure into the exit statuses
+Aegis expects.
+.LP
+The test harness must take care to import the file to be tested
+without needing to add the absolute path of the file to \fIsys.path\fP.
+Use \fIimp.find_module\fP and \fIimp.find_module\fP.
+.LP
+I can strongly recommend \fIPyUnit\fP, the \fIPython
+Unit Testing Framework\fP by Steve Purcell, available from
+\f[CW]http://pyunit.sourceforge.net\fP.  It is based on Kent Beck
+and Erich Gamma's \fIJUnit\fP framework for Java, and is becoming the
+\fIde-facto\fP standard testing framework for Python.
+.LP
+One bit of advice when using \fIPyUnit\fP: like Aegis, \fIPyUnit\fP
+also distinguishes between test failures as opposed to test errors,
+but I find it best to report \fIPyUnit\fP test errors as Aegis test
+failures.  This is to ensure that baseline tests fail as Aegis expects
+them to.  \fIPyUnit\fP will consider a test which raises anything other
+than a \fIAssertionError\fP to be an 'error', but in practice baseline
+test failures are often \fIAttributeError\fP exceptions which arise
+when the test invokes methods not present in the old code.  This is
+a legitemate way to verify, as Aegis wants us to, that the test does
+indeed invoke and test functionality which is not present the old code.
+.nh 2 "Running your programs"
+.LP
+Of course you will at some stage want to run the program(s) you are
+developing.
+.LP
+The simplest approach is to have your program's main script be located
+at the top of your Python source tree (\fIsrc/python\fP) in our example.
+Whenever you run that script, Python will automatically add the directory
+it was found in to the Python path, and will find all your other files
+from there.
+.LP
+You can safely let your shell's \fIPATH\fP environment variable
+point to that script's location, since the shell \fIPATH\fP and the
+\fIPYTHONPATH\fP do not mutually interfere.
+.LP
+Just avoid the temptation to set the absolute path of that script into
+your \fIPYTHONPATH\fP, or otherwise your development code and baseline
+code will interfere with each other.  This is not an Aegis-specific
+problem, though, since there would be potential confusion on any system,
+in any language, where two versions of one program are simultaneously
+visible from the same search path.

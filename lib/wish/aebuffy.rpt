@@ -1,0 +1,161 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2001 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the lib/wish/aebuffy.rpt
+ */
+columns(1000);
+
+/* The maximum intervals for various state */
+auto maxine;
+maxine = { };
+maxine[awaiting_development] = 5.0;
+maxine[being_developed] = 10.0;
+maxine[awaiting_review] = 0.5;
+maxine[being_reviewed] = 1.0;
+maxine[awaiting_integration] = 0.5;
+maxine[being_integrated] = 0.5;
+
+auto green, yellow, red;
+green = [50, 205, 50]; /* lime green */
+yellow = [255, 215, 0]; /* gold */
+red = [255, 99, 71]; /* tomato */
+
+auto abbrev;
+abbrev = { };
+abbrev[awaiting_development] = "ADev";
+abbrev[being_developed] = "Dev";
+abbrev[awaiting_review] = "ARev";
+abbrev[being_reviewed] = "Rev";
+abbrev[awaiting_integration] = "AInt";
+abbrev[being_integrated] = "Int";
+
+auto whoami;
+whoami = getenv("USER");
+if (whoami == "")
+    whoami = getenv("LOGIN");
+
+auto project_list, project_pos;
+project_list = [ "" ];
+project_pos = 0;
+
+
+/* The queue of changes */
+auto queue;
+queue = { };
+
+auto t, elapsed, prio, denom;
+auto ps, cn, cs, weight, sfx, pfx, state, chwid;
+chwid = 6;
+
+while (project_pos < count(project_list))
+{
+t = now();
+sfx = project_list[project_pos];
+pfx = "";
+if (sfx != "")
+{
+    pfx = sfx ## ".";
+    sfx = "." ## sfx;
+}
+ps = project[project_name() ## sfx].state.branch;
+project_pos = project_pos + 1;
+for (cn in sort(keys(ps.change)))
+{
+	cs = ps.change[cn];
+	state = cs.state;
+	if (count(cs.branch))
+	{
+	    project_list = project_list ## [pfx ## cn];
+	    continue;
+	}
+	denom = maxine[state];
+	if (denom + 0 == 0)
+		continue;
+	if (state == being_developed || state == being_integrated)
+	{
+		auto who;
+		who = cs.history[count(cs.history)-1].who;
+		if (who != whoami)
+		    continue;
+	}
+	if (state == awaiting_development && !(whoami in ps.developer))
+		continue;
+	if ((state == awaiting_review || state == being_reviewed)
+			&& !(whoami in ps.reviewer))
+		continue;
+	if (state == awaiting_integration && !(whoami in ps.integrator))
+		continue;
+	elapsed = working_days(cs.history[count(cs.history)-1].when, t);
+	weight = 1-elapsed/denom;
+	if (denom < 1 && weight > 0.5) weight = 0.5;
+	if (weight < 0) weight = 0;
+	if (weight > 1) weight = 1;
+	prio = sprintf("%8.3f %4d", weight, cn);
+	if (length(pfx ## cn) > chwid)
+		chwid = length(pfx ## cn);
+	queue[prio] = {
+		q_change = pfx ## cn;
+		q_state = state;
+		q_elapsed = elapsed;
+		q_description = cs.brief_description;
+		q_weight = weight;
+		q_proj_branch = project_name() ## sfx;
+		q_cn = cn;
+		};
+}
+
+print("catch { .frame.blurb delete 1.0 end } { }");
+print(sprintf(".frame.blurb insert end \"%-*s  St.   Days  Description\\n\"", chwid, "Change"));
+print(sprintf(".frame.blurb insert end \"%-*s  ----  ----  -------------\\n\"", chwid, "------"));
+auto k, q, clr, line;
+line = 3;
+for (k in sort(keys(queue)))
+{
+    clr = green;
+    q = queue[k];
+    weight = q.q_weight;
+    if (weight < 0.5)
+    {
+	weight = weight * 2.0;
+	for (t = 0; t < 3; t = t + 1)
+	clr[t] = red[t] * (1 - weight) + yellow[t] * weight;
+    }
+    else
+    {
+	weight = (weight - 0.5) * 2.0;
+	for (t = 0; t < 3; t = t + 1)
+	clr[t] = yellow[t] * (1 - weight) + green[t] * weight;
+    }
+    print(sprintf(".frame.blurb insert end \"%*s  \"", chwid, q.q_change));
+    print(sprintf(".frame.blurb insert end \"%-4.4s\"",
+	abbrev[q.q_state] != "" ? abbrev[q.q_state] : q.q_state));
+    print(sprintf(".frame.blurb insert end \"%6.2f  \"", q.q_elapsed));
+    print(".frame.blurb insert end \"" ## split(q.q_description, "\n")[0] ## "\\n\"");
+
+    /* Set the background color of the change number only */
+    t = sprintf("\"#%2.2X%2.2X%2.2X\"", clr[0], clr[1], clr[2]),
+    print(sprintf(".frame.blurb tag add line%d %d.0 %d.%d", line, line, line, chwid + 1));
+    print(sprintf(".frame.blurb tag configure line%d -background %s\n", line, t));
+
+    /* Bind the double click (of mouse button 1) to the coloured part */
+    print(sprintf(".frame.blurb tag bind line%d <Double-Button-1> {doubleClick %s %s %s}\n",
+		  line, q.q_state, q.q_proj_branch, q.q_cn));
+    line = line + 1;
+}
+}

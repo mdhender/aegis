@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994, 1995, 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -257,7 +257,7 @@ if test $? -ne 1 ; then cat log; fail; fi
 #	will need to change if fails too many places
 #
 activity="delta name 263"
-$bin/aegis -l phi -tw 0 > test.out
+$bin/aegis -l phi -tw 0 -pw=79 > test.out
 if test $? -ne 0 ; then fail; fi
 sed -e 's/[A-Z][a-z][a-z] [A-Z][a-z][a-z] [ 123][0-9]/XXX XXX XX/g' \
 	-e 's/[012][0-9]:[0-5][0-9]:[0-5][0-9] [0-9][0-9][0-9][0-9]/XX:XX:XX XXXX/g' \

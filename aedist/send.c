@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999-2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,24 +20,26 @@
  * MANIFEST: functions to manipulate sends
  */
 
+#include <ac/ctype.h>
 #include <ac/stdlib.h>
+#include <ac/string.h>
 #include <ac/time.h>
 
 #include <arglex3.h>
-#include <change.h>
 #include <change/file.h>
+#include <change.h>
 #include <error.h> /* for assert */
 #include <help.h>
 #include <input/file.h>
 #include <mem.h>
 #include <os.h>
-#include <output/base64.h>
+#include <output/conten_encod.h>
 #include <output/cpio.h>
 #include <output/file.h>
 #include <output/gzip.h>
 #include <output/indent.h>
-#include <project.h>
 #include <project/file.h>
+#include <project.h>
 #include <project_hist.h>
 #include <send.h>
 #include <str.h>
@@ -107,6 +109,26 @@ cmp(va, vb)
 }
 
 
+static int len_printable _((string_ty *, int));
+
+static int
+len_printable(s, max)
+	string_ty	*s;
+	int		max;
+{
+	const char 	*cp;
+	int		result;
+
+	/* Intentionally the C locale, not the user's locale */
+	for (cp = s->str_text; *cp && isprint((unsigned char)*cp); ++cp)
+		;
+	result = (cp - s->str_text);
+	if (result > max)
+		result = max;
+	return result;
+}
+
+
 void
 send_main(usage)
 	void		(*usage)_((void));
@@ -123,8 +145,9 @@ send_main(usage)
 	change_ty	*cp;
 	user_ty		*up;
 	cstate		cstate_data;
-	char		*output;
+	string_ty	*output;
 	string_ty	*s;
+	string_ty	*s2;
 	cstate		change_set;
 	time_t		now;
 	size_t		j;
@@ -133,7 +156,7 @@ send_main(usage)
 	int		description_header;
 	int		baseline;
 	int		entire_source;
-	int		ascii_armor;
+	content_encoding_t ascii_armor;
 	int		compress;
 
 	branch = 0;
@@ -145,7 +168,7 @@ send_main(usage)
 	description_header = -1;
 	baseline = 0;
 	entire_source = -1;
-	ascii_armor = -1;
+	ascii_armor = content_encoding_unset;
 	compress = -1;
 	while (arglex_token != arglex_token_eoln)
 	{
@@ -207,7 +230,7 @@ send_main(usage)
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 			}
@@ -258,11 +281,11 @@ send_main(usage)
 				/* NOTREACHED */
 
 			case arglex_token_stdio:
-				output = "";
+				output = str_from_c("");
 				break;
 
 			case arglex_token_string:
-				output = arglex_value.alv_string;
+				output = str_from_c(arglex_value.alv_string);
 				break;
 			}
 			break;
@@ -292,27 +315,42 @@ send_main(usage)
 			break;
 
 		case arglex_token_ascii_armor:
-			if (ascii_armor == 1)
-				duplicate_option(usage);
-			else if (ascii_armor >= 0)
+			if (ascii_armor != content_encoding_unset)
 			{
-				ascii_armor_yuck:
-				mutually_exclusive_options
+				duplicate_option_by_name
 				(
-					arglex_token_ascii_armor,
-					arglex_token_ascii_armor_not,
+					arglex_token_content_transfer_encoding,
 					usage
 				);
 			}
-			ascii_armor = 1;
+			ascii_armor = content_encoding_base64;
 			break;
 
 		case arglex_token_ascii_armor_not:
-			if (ascii_armor == 0)
+			if (ascii_armor != content_encoding_unset)
+			{
+				duplicate_option_by_name
+				(
+					arglex_token_content_transfer_encoding,
+					usage
+				);
+			}
+			ascii_armor = content_encoding_none;
+			break;
+
+		case arglex_token_content_transfer_encoding:
+			if (ascii_armor != content_encoding_unset)
 				duplicate_option(usage);
-			else if (ascii_armor >= 0)
-				goto ascii_armor_yuck;
-			ascii_armor = 0;
+			if (arglex() != arglex_token_string)
+			{
+				option_needs_string
+				(
+					arglex_token_content_transfer_encoding,
+					usage
+				);
+			}
+			ascii_armor =
+				content_encoding_grok(arglex_value.alv_string);
 			break;
 
 		case arglex_token_compress:
@@ -449,30 +487,35 @@ send_main(usage)
 	case cstate_state_being_integrated:
 	case cstate_state_awaiting_integration:
 	case cstate_state_being_reviewed:
+	case cstate_state_awaiting_review:
 	case cstate_state_being_developed:
 		break;
 	}
 
 	/* open the output */
 	os_become_orig();
-	if (ascii_armor)
+	if (ascii_armor == content_encoding_unset)
+		ascii_armor = content_encoding_base64;
+	if (ascii_armor != content_encoding_none || !compress)
 		ofp = output_file_text_open(output);
 	else
 		ofp = output_file_binary_open(output);
 	output_fputs(ofp, "MIME-Version: 1.0\n");
 	output_fputs(ofp, "Content-Type: application/aegis-change-set\n");
-	if (ascii_armor)
-		output_fputs(ofp, "Content-Transfer-Encoding: base64\n");
+	content_encoding_header(ofp, ascii_armor);
+	s = project_name_get(pp);
 	if (entire_source)
-		s = project_description_get(pp);
+		s2 = project_description_get(pp);
 	else
-		s = cstate_data->brief_description;
+		s2 = cstate_data->brief_description;
 	output_fprintf
 	(
 		ofp,
-		"Subject: %s - %.80s\n",
-		project_name_get(pp)->str_text,
-		s->str_text
+		"Subject: %.*s - %.*s\n",
+		len_printable(s, 40),
+		s->str_text,
+		len_printable(s2, 80),
+		s2->str_text
 	);
 	if (change_number && !entire_source)
 	{
@@ -480,6 +523,14 @@ send_main(usage)
 		(
 			ofp,
 			"Content-Name: %s.C%3.3ld.ae\n",
+			project_name_get(pp)->str_text,
+			change_number
+		);
+		output_fprintf
+		(
+			ofp,
+			"Content-Disposition: attachment; "
+				"filename=%s.C%3.3ld.ae\n",
 			project_name_get(pp)->str_text,
 			change_number
 		);
@@ -492,10 +543,16 @@ send_main(usage)
 			"Content-Name: %s.ae\n",
 			project_name_get(pp)->str_text
 		);
+		output_fprintf
+		(
+			ofp,
+			"Content-Disposition: attachment; "
+				"filename=%s.ae\n",
+			project_name_get(pp)->str_text
+		);
 	}
 	output_fputc(ofp, '\n');
-	if (ascii_armor)
-		ofp = output_base64(ofp, 1);
+	ofp = output_content_encoding(ofp, ascii_armor);
 	if (compress)
 		ofp = output_gzip(ofp);
 	cpio_p = output_cpio(ofp);
@@ -596,6 +653,8 @@ send_main(usage)
 			break;
 		if (src_data->action == file_action_insulate)
 			continue;
+		if (src_data->about_to_be_created_by)
+			continue;
 		if
 		(
 			src_data->usage == file_usage_build
@@ -683,6 +742,7 @@ send_main(usage)
 			continue;
 
 		case cstate_state_being_developed:
+		case cstate_state_awaiting_review:
 		case cstate_state_being_reviewed:
 		case cstate_state_awaiting_integration:
 		case cstate_state_being_integrated:
@@ -695,7 +755,7 @@ send_main(usage)
 					this_is_a_bug();
 			}
 			os_become_orig();
-			ifp = input_file_open(s->str_text);
+			ifp = input_file_open(s);
 			str_free(s);
 			break;
 
@@ -704,16 +764,20 @@ send_main(usage)
 			p_src_data = project_file_find(pp, csrc->file_name);
 			if (!p_src_data)
 				this_is_a_bug();
+			assert(p_src_data->edit);
+			assert(p_src_data->edit->revision);
+			assert(c_src_data->edit);
+			assert(c_src_data->edit->revision);
 			if
 			(
 				!c_src_data
 			||
-				str_equal(p_src_data->edit_number, c_src_data->edit_number)
+				str_equal(p_src_data->edit->revision, c_src_data->edit->revision)
 			)
 			{
 				s = project_file_path(pp, csrc->file_name);
 				os_become_orig();
-				ifp = input_file_open(s->str_text);
+				ifp = input_file_open(s);
 				str_free(s);
 			}
 			else
@@ -732,8 +796,7 @@ send_main(usage)
 				change_run_history_get_command
 				(
 					cp,
-					c_src_data->file_name,
-					c_src_data->edit_number,
+					c_src_data,
 					s,
 					up
 				);
@@ -743,7 +806,7 @@ send_main(usage)
 				 * it when we are done.
 				 */
 				os_become_orig();
-				ifp = input_file_open(s->str_text);
+				ifp = input_file_open(s);
 				input_file_unlink_on_close(ifp);
 				str_free(s);
 			}

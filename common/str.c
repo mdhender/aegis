@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,16 +28,11 @@
  * a pointer test, and thus very fast.
  */
 
-#include <ac/ctype.h>
-#include <ac/stdarg.h>
-#include <ac/stddef.h>
-#include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
 
 #include <error.h>
 #include <mem.h>
-#include <mprintf.h>
 #include <str.h>
 
 
@@ -372,7 +367,7 @@ str_free(s)
 		if (*spp == s)
 		{
 			*spp = s->str_next;
-			free(s);
+			mem_free(s);
 			--hash_load;
 			return;
 		}
@@ -381,342 +376,38 @@ str_free(s)
 	/*
 	 * should never reach here!
 	 */
+#ifdef DEBUG
+	error_raw("attempted to free non-existent string (bug)");
+	abort();
+#else
 	fatal_raw("attempted to free non-existent string (bug)");
-}
-
-
-/*
- * NAME
- *	str_catenate - join two strings
- *
- * SYNOPSIS
- *	string_ty *str_catenate(string_ty *, string_ty *);
- *
- * DESCRIPTION
- *	The str_catenate function is used to concatenate two strings to form a
- *	new string.
- *
- * RETURNS
- *	string_ty* - a pointer to a string in dynamic memory.  Use str_free when
- *	finished with.
- *
- * CAVEAT
- *	The contents of the structure pointed to MUST NOT be altered.
- */
-
-string_ty *
-str_catenate(s1, s2)
-	string_ty	*s1;
-	string_ty	*s2;
-{
-	static char	*tmp;
-	static size_t	tmplen;
-	string_ty	*s;
-	size_t		length;
-
-	length = s1->str_length + s2->str_length;
-	if (!tmp)
-	{
-		tmplen = length;
-		if (tmplen < 16)
-			tmplen = 16;
-		tmp = mem_alloc(tmplen);
-	}
-	else
-	{
-		if (tmplen < length)
-		{
-			tmplen = length;
-			tmp = mem_change_size(tmp, tmplen);
-		}
-	}
-	memcpy(tmp, s1->str_text, s1->str_length);
-	memcpy(tmp + s1->str_length, s2->str_text, s2->str_length);
-	s = str_n_from_c(tmp, length);
-	return s;
-}
-
-
-/*
- * NAME
- *	str_cat_three - join three strings
- *
- * SYNOPSIS
- *	string_ty *str_cat_three(string_ty *, string_ty *, string_ty *);
- *
- * DESCRIPTION
- *	The str_cat_three function is used to concatenate three strings to form
- *	a new string.
- *
- * RETURNS
- *	string_ty* - a pointer to a string in dynamic memory.  Use str_free when
- *	finished with.
- *
- * CAVEAT
- *	The contents of the structure pointed to MUST NOT be altered.
- */
-
-string_ty *
-str_cat_three(s1, s2, s3)
-	string_ty	*s1;
-	string_ty	*s2;
-	string_ty	*s3;
-{
-	static char	*tmp;
-	static size_t	tmplen;
-	string_ty	*s;
-	size_t		length;
-
-	length = s1->str_length + s2->str_length + s3->str_length;
-	if (!tmp)
-	{
-		tmplen = length;
-		if (tmplen < 16)
-			tmplen = 16;
-		tmp = mem_alloc(tmplen);
-	}
-	else
-	{
-		if (tmplen < length)
-		{
-			tmplen = length;
-			tmp = mem_change_size(tmp, tmplen);
-		}
-	}
-	memcpy(tmp, s1->str_text, s1->str_length);
-	memcpy(tmp + s1->str_length, s2->str_text, s2->str_length);
-	memcpy
-	(
-		tmp + s1->str_length + s2->str_length,
-		s3->str_text,
-		s3->str_length
-	);
-	s = str_n_from_c(tmp, length);
-	return s;
-}
-
-
-/*
- * NAME
- *	str_equal - test equality of strings
- *
- * SYNOPSIS
- *	int str_equal(string_ty *, string_ty *);
- *
- * DESCRIPTION
- *	The str_equal function is used to test if two strings are equal.
- *
- * RETURNS
- *	int; zero if the strings are not equal, nonzero if the strings are
- *	equal.
- *
- * CAVEAT
- *	This function is implemented as a macro in strings.h
- */
-
-#ifndef str_equal
-
-int
-str_equal(s1, s2)
-	string_ty	*s1;
-	string_ty	*s2;
-{
-	return (s1 == s2);
-}
-
 #endif
-
-
-/*
- * NAME
- *	str_upcase - upcase a string
- *
- * SYNOPSIS
- *	string_ty *str_upcase(string_ty *);
- *
- * DESCRIPTION
- *	The str_upcase function is used to form a string which is an upper case
- *	form of the supplied string.
- *
- * RETURNS
- *	string_ty* - a pointer to a string in dynamic memory.  Use str_free when
- *	finished with.
- *
- * CAVEAT
- *	The contents of the structure pointed to MUST NOT be altered.
- */
-
-string_ty *
-str_upcase(s)
-	string_ty	*s;
-{
-	static char	*tmp;
-	static size_t	tmplen;
-	string_ty	*retval;
-	char		*cp1;
-	char		*cp2;
-
-	if (!tmp)
-	{
-		tmplen = s->str_length;
-		if (tmplen < 16)
-			tmplen = 16;
-		tmp = mem_alloc(tmplen);
-	}
-	else
-	{
-		if (tmplen < s->str_length)
-		{
-			tmplen = s->str_length;
-			tmp = mem_change_size(tmp, tmplen);
-		}
-	}
-	for (cp1 = s->str_text, cp2 = tmp; *cp1; ++cp1, ++cp2)
-	{
-		int	c;
-
-		c = (unsigned char)*cp1;
-		if (islower(c))
-			c = toupper(c);
-		*cp2 = c;
-	}
-	retval = str_n_from_c(tmp, s->str_length);
-	return retval;
 }
 
 
-/*
- * NAME
- *	str_downcase - lowercase string
- *
- * SYNOPSIS
- *	string_ty *str_downcase(string_ty *);
- *
- * DESCRIPTION
- *	The str_downcase function is used to form a string which is a lowercase
- *	form of the supplied string.
- *
- * RETURNS
- *	string_ty* - a pointer to a string in dynamic memory.  Use str_free when
- *	finished with.
- *
- * CAVEAT
- *	The contents of the structure pointed to MUST NOT be altered.
- */
-
-string_ty *
-str_downcase(s)
-	string_ty	*s;
-{
-	static char	*tmp;
-	static size_t	tmplen;
-	string_ty	*retval;
-	char		*cp1;
-	char		*cp2;
-
-	if (!tmp)
-	{
-		tmplen = s->str_length;
-		if (tmplen < 16)
-			tmplen = 16;
-		tmp = mem_alloc(tmplen);
-	}
-	else
-	{
-		if (tmplen < s->str_length)
-		{
-			tmplen = s->str_length;
-			tmp = mem_change_size(tmp, tmplen);
-		}
-	}
-	for (cp1 = s->str_text, cp2 = tmp; *cp1; ++cp1, ++cp2)
-	{
-		int	c;
-
-		c = (unsigned char)*cp1;
-		if (isupper(c))
-			c = tolower(c);
-		*cp2 = c;
-	}
-	retval = str_n_from_c(tmp, s->str_length);
-	return retval;
-}
-
-
-/*
- * NAME
- *	str_bool - get boolean value
- *
- * SYNOPSIS
- *	int str_bool(string_ty *s);
- *
- * DESCRIPTION
- *	The str_bool function is used to determine the boolean value of the
- *	given string.  A "false" result is if the string is empty or
- *	0 or blank, and "true" otherwise.
- *
- * RETURNS
- *	int: zero to indicate a "false" result, nonzero to indicate a "true"
- *	result.
- */
+#ifdef DEBUG
 
 int
-str_bool(s)
+str_validate(s)
 	string_ty	*s;
 {
-	char		*cp;
+	str_hash_ty	idx;
+	string_ty	**spp;
 
-	cp = s->str_text;
-	while (*cp)
-	{
-		if (!isspace((unsigned char)*cp) && *cp != '0')
+	if (!s)
+		return 0;
+	if (s->str_references == 0)
+		return 0;
+	idx = s->str_hash & hash_cutover_mask;
+	if (idx < hash_split)
+		idx = s->str_hash & hash_cutover_split_mask;
+	for (spp = &hash_table[idx]; *spp; spp = &(*spp)->str_next)
+		if (*spp == s)
 			return 1;
-		++cp;
-	}
 	return 0;
 }
 
-
-/*
- * NAME
- *	str_field - extract a field from a string
- *
- * SYNOPSIS
- *	string_ty *str_field(string_ty *, char separator, int field_number);
- *
- * DESCRIPTION
- *	The str_field functipon is used to erxtract a field from a string.
- *	Fields of the string are separated by ``separator'' characters.
- *	Fields are numbered from 0.
- *
- * RETURNS
- *	Asking for a field off the end of the string will result in a null
- *	pointer return.  The null string is considered to have one empty field.
- */
-
-string_ty *
-str_field(s, sep, fldnum)
-	string_ty	*s;
-	int		sep;
-	int		fldnum;
-{
-	char		*cp;
-	char		*ep;
-
-	cp = s->str_text;
-	while (fldnum > 0)
-	{
-		ep = strchr(cp, sep);
-		if (!ep)
-			return 0;
-		cp = ep + 1;
-		--fldnum;
-	}
-	ep = strchr(cp, sep);
-	if (ep)
-		return str_n_from_c(cp, ep - cp);
-	return str_from_c(cp);
-}
+#endif
 
 
 void
@@ -731,28 +422,4 @@ slow_to_fast(in, out, length)
 		return;
 	for (j = 0; j < length; ++j)
 		out[j] = str_from_c(in[j]);
-}
-
-
-string_ty *
-str_format(fmt sva_last)
-	const char	*fmt;
-	sva_last_decl
-{
-	va_list		ap;
-	string_ty	*result;
-
-	sva_init(ap, fmt);
-	result = vmprintf_str(fmt, ap);
-	va_end(ap);
-	return result;
-}
-
-
-string_ty *
-str_vformat(fmt, ap)
-	const char	*fmt;
-	va_list		ap;
-{
-	return vmprintf_str(fmt, ap);
 }

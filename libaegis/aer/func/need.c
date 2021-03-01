@@ -22,9 +22,11 @@
 
 #include <aer/expr.h>
 #include <aer/func/need.h>
+#include <aer/func/print.h>
 #include <aer/value/integer.h>
 #include <aer/value/void.h>
 #include <col.h>
+#include <error.h>
 
 
 static int valid _((rpt_expr_ty *));
@@ -48,12 +50,13 @@ run(ep, argc, argv)
 	rpt_value_ty	*vp;
 	long		n;
 
+	assert(rpt_func_print__colp);
 	vp = rpt_value_integerize(argv[0]);
 	if (vp->method->type == rpt_value_type_integer)
 	{
 		n = rpt_value_integer_query(vp);
 		if (n > 0)
-			col_need(n);
+			col_need(rpt_func_print__colp, n);
 	}
 	return rpt_value_void();
 }

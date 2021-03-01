@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1996, 1998 Peter Miller;
+ *	Copyright (C) 1995, 1996, 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -113,9 +113,9 @@ wrap_run(ep, argc, argv)
 
 		scp = sub_context_new();
 		rpt_value_free(a1);
-		sub_var_set(scp, "Function", "wrap");
-		sub_var_set(scp, "Number", "1");
-		sub_var_set(scp, "Name", "%s", argv[0]->method->name);
+		sub_var_set_charstar(scp, "Function", "wrap");
+		sub_var_set_charstar(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
 		s =
 			subst_intl
 			(
@@ -137,9 +137,9 @@ wrap_run(ep, argc, argv)
 
 		scp = sub_context_new();
 		rpt_value_free(a2);
-		sub_var_set(scp, "Function", "wrap");
-		sub_var_set(scp, "Number", "2");
-		sub_var_set(scp, "Name", "%s", argv[1]->method->name);
+		sub_var_set_charstar(scp, "Function", "wrap");
+		sub_var_set_charstar(scp, "Number", "2");
+		sub_var_set_charstar(scp, "Name", argv[1]->method->name);
 		s =
 			subst_intl
 			(
@@ -158,9 +158,9 @@ wrap_run(ep, argc, argv)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "wrap");
-		sub_var_set(scp, "Number", "2");
-		sub_var_set(scp, "Value", "%ld", width);
+		sub_var_set_charstar(scp, "Function", "wrap");
+		sub_var_set_charstar(scp, "Number", "2");
+		sub_var_set_long(scp, "Value", width);
 		s =
 			subst_intl
 			(
@@ -283,9 +283,9 @@ wrap_html_run(ep, argc, argv)
 
 		scp = sub_context_new();
 		rpt_value_free(a1);
-		sub_var_set(scp, "Function", "wrap");
-		sub_var_set(scp, "Number", "1");
-		sub_var_set(scp, "Name", "%s", argv[0]->method->name);
+		sub_var_set_charstar(scp, "Function", "wrap");
+		sub_var_set_charstar(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
 		s =
 			subst_intl
 			(
@@ -307,9 +307,9 @@ wrap_html_run(ep, argc, argv)
 
 		scp = sub_context_new();
 		rpt_value_free(a2);
-		sub_var_set(scp, "Function", "wrap");
-		sub_var_set(scp, "Number", "2");
-		sub_var_set(scp, "Name", "%s", argv[1]->method->name);
+		sub_var_set_charstar(scp, "Function", "wrap");
+		sub_var_set_charstar(scp, "Number", "2");
+		sub_var_set_charstar(scp, "Name", argv[1]->method->name);
 		s =
 			subst_intl
 			(
@@ -328,9 +328,9 @@ wrap_html_run(ep, argc, argv)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Function", "wrap");
-		sub_var_set(scp, "Number", "2");
-		sub_var_set(scp, "Value", "%ld", width);
+		sub_var_set_charstar(scp, "Function", "wrap");
+		sub_var_set_charstar(scp, "Number", "2");
+		sub_var_set_long(scp, "Value", width);
 		s =
 			subst_intl
 			(

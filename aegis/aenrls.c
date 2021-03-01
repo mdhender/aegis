@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,10 +28,9 @@
 #include <sys/stat.h>
 
 #include <ael/project/projects.h>
-#include <aenbr.h>
 #include <aenrls.h>
 #include <arglex2.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <change/file.h>
 #include <commit.h>
 #include <dir.h>
@@ -201,6 +200,7 @@ new_release_main()
 	long		change_number;
 
 	trace(("new_release_main()\n{\n"/*}*/));
+	arglex();
 	log_style = log_style_create_default;
 	home = 0;
 	project_name_count = 0;
@@ -244,8 +244,8 @@ new_release_main()
 			if (new_version_number[0] != NOT_GIVEN)
 				duplicate_option(new_release_usage);
 			scp = sub_context_new();
-			sub_var_set(scp, "Name1", "%s", arglex_token_name(arglex_token_major));
-			sub_var_set(scp, "Name2", "%s", arglex_token_name(arglex_token_version));
+			sub_var_set_charstar(scp, "Name1", arglex_token_name(arglex_token_major));
+			sub_var_set_charstar(scp, "Name2", arglex_token_name(arglex_token_version));
 			error_intl(scp, "warning: $name1 obsolete, use $name2 option");
 			sub_context_delete(scp);
 			if (new_version_number_length < 1)
@@ -264,8 +264,8 @@ new_release_main()
 			if (new_version_number[1] != NOT_GIVEN)
 				duplicate_option(new_release_usage);
 			scp = sub_context_new();
-			sub_var_set(scp, "Name1", "%s", arglex_token_name(arglex_token_minor));
-			sub_var_set(scp, "Name2", "%s", arglex_token_name(arglex_token_version));
+			sub_var_set_charstar(scp, "Name1", arglex_token_name(arglex_token_minor));
+			sub_var_set_charstar(scp, "Name2", arglex_token_name(arglex_token_version));
 			error_intl(scp, i18n("warning: $name1 obsolete, use $name2 option"));
 			sub_context_delete(scp);
 			while (new_version_number_length < 2)
@@ -409,13 +409,7 @@ new_release_main()
 	 * Make sure the project name is acceptable.
 	 */
 	if (!project_name_ok(project_name[1]))
-	{
-		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%S", project_name);
-		fatal_intl(scp, i18n("bad project $name"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	}
+		fatal_bad_project_name(project_name[1]);
 
 	/*
 	 * Default to a minor release incriment.
@@ -456,7 +450,7 @@ new_release_main()
 		if (err)
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "Number", "%S", new_version_string);
+			sub_var_set_string(scp, "Number", new_version_string);
 			fatal_intl(scp, i18n("bad version $number"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -542,20 +536,12 @@ new_release_main()
 		max = os_pathconf_name_max(s2);
 		os_become_undo();
 		if (project_name[1]->str_length > max)
-		{
-			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%S", project_name[1]);
-			sub_var_set(scp, "Number", "%d", (int)(project_name[1]->str_length - max));
-			sub_var_optional(scp, "Number");
-			fatal_intl(scp, i18n("project \"$name\" too long"));
-			/* NOTREACHED */
-			sub_context_delete(scp);
-		}
+			fatal_project_name_too_long(project_name[1], max);
 		home = str_format("%S/%S", s2, project_name[1]);
 		str_free(s2);
 
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", home);
+		sub_var_set_string(scp, "File_Name", home);
 		project_verbose(pp[1], scp, i18n("proj dir $filename"));
 		sub_context_delete(scp);
 	}
@@ -746,7 +732,7 @@ new_release_main()
 		trace(("ppp = %8.8lX\n", (long)ppp));
 		change_number = magic_zero_encode(new_version_number[j]);
 		trace(("change_number = %ld;\n", change_number));
-		ppp = new_branch_internals(up, ppp, change_number, (string_ty *)0);
+		ppp = project_new_branch(ppp, up, change_number, (string_ty *)0);
 		version_pp[j] = ppp;
 	}
 
@@ -758,7 +744,7 @@ new_release_main()
 	change_bind_new(cp);
 	cstate_data = change_cstate_get(cp);
 	scp = sub_context_new();
-	sub_var_set(scp, "Name", "%S", project_name[0]);
+	sub_var_set_string(scp, "Name", project_name[0]);
 	cstate_data->brief_description =
 		subst_intl(scp, i18n("New release derived from $name."));
 	sub_context_delete(scp);
@@ -965,25 +951,23 @@ new_release_main()
 		/*
 		 * create a new history file
 		 */
-		change_run_history_create_command(cp, c_src_data->file_name);
+		change_run_history_create_command(cp, c_src_data);
 
 		/*
 		 * Extract the version number from the history file.
 		 * Record it in the project and in the change.
 		 */
-		p_src_data->edit_number =
-			change_run_history_query_command
-			(
-				cp,
-				c_src_data->file_name
-			);
-		p_src_data->edit_number_origin =
-			str_copy(p_src_data->edit_number);
-		c_src_data->edit_number =
-			str_copy(p_src_data->edit_number);
+		assert(c_src_data->edit);
+		assert(c_src_data->edit->revision);
+		p_src_data->edit =
+			history_version_copy(c_src_data->edit);
+		p_src_data->edit_origin =
+			history_version_copy(c_src_data->edit);
 		/*
 		 * Don't set edit number origin in change file state
 		 * for created files.
+		 * Why not?  Because it only means something for branches
+		 * once the change is integrated.
 		 */
 	}
 
@@ -1040,20 +1024,13 @@ new_release_main()
 void
 new_release()
 {
-	trace(("new_release()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		new_release_main();
-		break;
+		{ arglex_token_help,		new_release_help,	},
+		{ arglex_token_list,		new_release_list,	},
+	};
 
-	case arglex_token_help:
-		new_release_help();
-		break;
-
-	case arglex_token_list:
-		new_release_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("new_release()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), new_release_main);
+	trace(("}\n"));
 }

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+#	Copyright (C) 1991-2001 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -73,7 +73,7 @@ check_it()
 {
 	sed	-e "s|$work|...|g" \
 		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/$USER/USER/g" \
+		-e "s/\"$USER\"/\"USER\"/g" \
 		-e 's/delta[0-9][0-9]*/delta/' \
 		-e 's/19[0-9][0-9]/YYYY/' \
 		-e 's/20[0-9][0-9]/YYYY/' \
@@ -205,6 +205,7 @@ branch =
 	default_test_exemption = false;
 	skip_unlucky = false;
 	compress_database = false;
+	develop_end_action = goto_being_reviewed;
 	change =
 	[
 	];
@@ -245,6 +246,7 @@ reuse_change_numbers = true;
 minimum_branch_number = 1;
 skip_unlucky = false;
 compress_database = false;
+develop_end_action = goto_being_reviewed;
 fubar
 if test $? -ne 0 ; then no_result; fi
 check_it test.out ok
@@ -532,6 +534,7 @@ if test $? -ne 0 ; then fail; fi
 #
 # check the the file states are as they should be
 #
+activity="review fail ck.a 501"
 cat > ok << 'fubar'
 brief_description = "This change is used to test the aegis functionality with respect to change descriptions.";
 description = "This change is used to test the aegis functionality with respect to change descriptions.";
@@ -548,6 +551,17 @@ copyright_years =
 	YYYY,
 ];
 state = being_developed;
+build_time = TIME;
+test_time = TIME;
+architecture_times =
+[
+	{
+		variant = "unspecified";
+		node = "NODE";
+		build_time = TIME;
+		test_time = TIME;
+	},
+];
 development_directory = ".../foo.chan";
 history =
 [
@@ -576,6 +590,7 @@ history =
 fubar
 if test $? -ne 0 ; then no_result; fi
 check_it $workproj/info/change/0/001 ok
+activity="review fail ck.b 501"
 cat > ok << 'fubar'
 src =
 [
@@ -629,6 +644,13 @@ src =
 			oldest = TIME;
 			crypto = "GUNK";
 		};
+		architecture_times =
+		[
+			{
+				variant = "unspecified";
+				test_time = TIME;
+			},
+		];
 	},
 ];
 fubar
@@ -895,19 +917,31 @@ src =
 	{
 		file_name = "config";
 		action = create;
-		edit_number = "1.1";
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
 		usage = source;
 	},
 	{
 		file_name = "main.c";
 		action = create;
-		edit_number = "1.1";
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
 		usage = source;
 	},
 	{
 		file_name = "test/00/t0001a.sh";
 		action = create;
-		edit_number = "1.1";
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
 		usage = test;
 	},
 ];
@@ -965,6 +999,7 @@ branch =
 	default_test_exemption = false;
 	skip_unlucky = false;
 	compress_database = false;
+	develop_end_action = goto_being_reviewed;
 	history =
 	[
 		{
@@ -1256,14 +1291,26 @@ src =
 	{
 		file_name = "main.c";
 		action = modify;
-		edit_number = "1.2";
-		edit_number_origin = "1.1";
+		edit =
+		{
+			revision = "1.2";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
 		usage = source;
 	},
 	{
 		file_name = "test/00/t0002a.sh";
 		action = create;
-		edit_number = "1.1";
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
 		usage = test;
 	},
 ];
@@ -1330,6 +1377,7 @@ branch =
 	default_test_exemption = false;
 	skip_unlucky = false;
 	compress_database = false;
+	develop_end_action = goto_being_reviewed;
 	history =
 	[
 		{
@@ -1375,8 +1423,16 @@ src =
 	{
 		file_name = "config";
 		action = create;
-		edit_number = "1.1";
-		edit_number_origin = "1.1";
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
 		usage = source;
 		file_fp =
 		{
@@ -1392,8 +1448,16 @@ src =
 	{
 		file_name = "main.c";
 		action = create;
-		edit_number = "1.2";
-		edit_number_origin = "1.2";
+		edit =
+		{
+			revision = "1.2";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1.2";
+			encoding = none;
+		};
 		usage = source;
 		file_fp =
 		{
@@ -1410,8 +1474,16 @@ src =
 	{
 		file_name = "test/00/t0001a.sh";
 		action = create;
-		edit_number = "1.1";
-		edit_number_origin = "1.1";
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
 		usage = test;
 		file_fp =
 		{
@@ -1430,8 +1502,16 @@ src =
 	{
 		file_name = "test/00/t0002a.sh";
 		action = create;
-		edit_number = "1.1";
-		edit_number_origin = "1.1";
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
 		usage = test;
 		file_fp =
 		{

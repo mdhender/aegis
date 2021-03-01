@@ -93,8 +93,12 @@ if test $? -ne 0 ; then no_result; fi
 #
 AEGIS_MESSAGE_LIBRARY=$work/no-such-dir
 export AEGIS_MESSAGE_LIBRARY
-unset LANG
-unset LANGUAGE
+# This next bit should read...
+#       unset LANG
+#       unset LANGUAGE
+# but RedHat 6.2 (libc2.1.3) dumps core in towupper if it isn't set.
+LANG=en; export LANG
+LANGUAGE=en; export LANGUAGE
 
 #
 # test the capitalize subst functionality

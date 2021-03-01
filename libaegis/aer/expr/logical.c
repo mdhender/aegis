@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -55,7 +55,7 @@ and_evaluate(this)
 
 		scp = sub_context_new();
 		rpt_value_free(v1i);
-		sub_var_set(scp, "Name", "%s", v1->method->name);
+		sub_var_set_charstar(scp, "Name", v1->method->name);
 		rpt_value_free(v1);
 		s =
 			subst_intl
@@ -91,7 +91,7 @@ and_evaluate(this)
 
 		scp = sub_context_new();
 		rpt_value_free(v2i);
-		sub_var_set(scp, "Name", "%s", v2->method->name);
+		sub_var_set_charstar(scp, "Name", v2->method->name);
 		rpt_value_free(v2);
 		s =
 			subst_intl
@@ -161,7 +161,7 @@ or_evaluate(this)
 
 		scp = sub_context_new();
 		rpt_value_free(v1i);
-		sub_var_set(scp, "Name", "%s", v1->method->name);
+		sub_var_set_charstar(scp, "Name", v1->method->name);
 		rpt_value_free(v1);
 		s =
 			subst_intl
@@ -197,7 +197,7 @@ or_evaluate(this)
 
 		scp = sub_context_new();
 		rpt_value_free(v2i);
-		sub_var_set(scp, "Name", "%s", v2->method->name);
+		sub_var_set_charstar(scp, "Name", v2->method->name);
 		rpt_value_free(v2);
 		s =
 			subst_intl
@@ -281,7 +281,7 @@ not_evaluate(this)
 		string_ty	*s;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", v2->method->name);
+		sub_var_set_charstar(scp, "Name", v2->method->name);
 		s = subst_intl(scp, i18n("illegal logical not ($name)"));
 		sub_context_delete(scp);
 		vp = rpt_value_error(this->child[0]->pos, s);
@@ -352,7 +352,7 @@ if_evaluate(this)
 		string_ty	*s;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", v1b->method->name);
+		sub_var_set_charstar(scp, "Name", v1b->method->name);
 		rpt_value_free(v1b);
 		s =
 			subst_intl

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@
 #include <error.h> /* for assert */
 #include <gonzo.h>
 #include <option.h>
+#include <output.h>
 #include <str_list.h>
 #include <trace.h>
 
@@ -38,9 +39,10 @@ list_project_aliases(project_name, change_number)
 	long		change_number;
 {
 	string_list_ty	name;
-	int		name_col = 0;
-	int		desc_col = 0;
+	output_ty	*name_col = 0;
+	output_ty	*desc_col = 0;
 	int		j;
+	col_ty		*colp;
 
 	trace(("list_project_aliases()\n{\n"));
 	if (project_name)
@@ -56,16 +58,21 @@ list_project_aliases(project_name, change_number)
 	/*
 	 * create the columns
 	 */
-	col_open((char *)0);
-	col_title("List of Project Aliases", (char *)0);
+	colp = col_open((string_ty *)0);
+	col_title(colp, "List of Project Aliases", (char *)0);
 
-	name_col = col_create(0, PROJECT_WIDTH);
-	col_heading(name_col, "Alias\n---------");
+	name_col = col_create(colp, 0, PROJECT_WIDTH, "Alias\n---------");
 
 	if (!option_terse_get())
 	{
-		desc_col = col_create(PROJECT_WIDTH + 1, 0);
-		col_heading(desc_col, "Project\n-----------");
+		desc_col =
+			col_create
+			(
+				colp,
+				PROJECT_WIDTH + 1,
+				0,
+				"Project\n-----------"
+			);
 	}
 
 	/*
@@ -73,23 +80,34 @@ list_project_aliases(project_name, change_number)
 	 */
 	for (j = 0; j < name.nstrings; ++j)
 	{
-		col_puts(name_col, name.string[j]->str_text);
+		output_put_str(name_col, name.string[j]);
 
-		if (!option_terse_get())
+		if (desc_col)
 		{
 			string_ty	*other;
 
 			other = gonzo_alias_to_actual(name.string[j]);
 			assert(other);
 			if (other)
-				col_puts(desc_col, other->str_text);
+				output_put_str(desc_col, other);
 		}
-		col_eoln();
+		col_eoln(colp);
+	}
+	if (!name.nstrings)
+	{
+		output_ty	*fp;
+
+		output_delete(name_col);
+		if (desc_col)
+			output_delete(desc_col);
+		fp = col_create(colp, 0, 0, (const char *)0);
+		output_fputs(fp, "No project aliases.\n");
+		col_eoln(colp);
 	}
 
 	/*
 	 * clean up and go home
 	 */
-	col_close();
+	col_close(colp);
 	trace(("}\n"));
 }

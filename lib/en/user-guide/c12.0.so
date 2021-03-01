@@ -1,0 +1,64 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide, Further Reading
+.\"
+.bp
+.if t .2C
+.nh 1 "Further Reading"
+.LP
+This chapter contains information about books, articles or web sites
+relevant to some aspect of Aegis or using Aegis.  These references should
+not be taken as endorements.
+.LP
+If I've missed a good reference, it isn't personal, but I can't and
+haven't read everything out there.  AEmail me the information and I'll
+add it to this chapter (no advertising, please).
+.nh 2 "Software Configuration Management"
+.LP
+Eaton, D. (1995),
+Configuration Management Frequently Asked Questions,
+http://www.daveeaton.com/scm/CMFAQ.html
+.in +0.5i
+.ft I
+This is an essential first-stop for information about Software
+Configuration Management.  It has an excellent book list.
+.ft P
+.in -0.5i
+.LP
+Pool, D.,
+CM Today,
+http://www.cmtoday.com/
+.in +0.5i
+.ft I
+This is a configuration management portal site, with news and other links.
+.ft P
+.in -0.5i
+.nh 2 "Reviewing"
+.LP
+Baldwin, J. (1992),
+An Abbreviated C++ Code Inspection Checklist,
+http://www2.ics.hawaii.edu/~johnson/FTR/Bib/Baldwin92.html
+.in +0.5i
+.ft I
+This web page talks about C++ code inspections with some useful
+suggestions about how to conduct (rather formal) reviews and some for C++
+constructs to watch out for.
+.ft P
+.in -0.5i

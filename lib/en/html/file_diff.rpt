@@ -1,0 +1,98 @@
+/*
+ *	aegis cgi script 
+ *	Copyright (C) 2002 John Darrington
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ *  print a command which when executed shows the  differerences between 
+ *  2 deltas
+ */
+
+/* one column 1000 chars wide */
+columns(1000);
+
+
+auto src, delta1, delta2;
+auto dst1, dst2;
+
+delta1 = arg[0];
+delta2 = arg[1];
+src = arg[2];
+dst1 = arg[3];
+dst2 = arg[4];
+
+
+/* If delta1 and delta2 are non numeric, truncate them to 1 char long */
+delta1 = subst("[^0-9]+", substr(delta1, 0, 1), delta1);
+delta2 = subst("[^0-9]+", substr(delta2, 0, 1), delta2);
+
+/*
+ * Delta b is a special case, it means the baseline.
+ * Delta c is a special case, It means the version in the development
+ * directory
+ */
+auto first, second;
+if (delta1 == "b")
+    first = "";
+else
+    first = "-delta " ## delta1;
+if (delta2 == "b")
+    second = "";
+else
+    second = "-delta " ## delta2;
+auto devdir;
+
+/*
+ * If the change is being actively developed, copy directly from
+ * the development directory.
+ */
+if (delta1 == "c" || delta2 == "c")
+{
+    auto cs;
+    auto ps;
+
+    ps = project[project_name()].state;
+    cs = ps.branch.change[change_number()];
+
+    auto f, found;
+    found = false;
+
+    for (f in cs.src)
+    {
+	if (f.file_name == src)
+	    found = true;
+    }
+    if (found)
+    {
+	devdir = cs.development_directory;
+    }
+}
+
+auto cmd;
+
+if (delta1 == "c")
+    cmd = "ln -s " ## devdir ## "/" ## src ## " " ## dst1 ;
+else
+    cmd = "$bindir/aegis -cp -ind -baserel -p " ## project_name() ## " " ##
+	first ## " " ## src ## " -o " ## dst1 ;
+cmd ##= " && ";
+if (delta2 == "c")
+	cmd ##= "ln -s " ## devdir ## "/" ## src ## " " ## dst2 ;
+else
+	cmd ##= "$bindir/aegis -cp -ind -baserel -p " ## project_name() ## " "
+	    ## second ## " " ## src ## " -o " ## dst2 ;
+cmd ##= " && diff " ## dst1 ## " " ## dst2 ## "; ";
+cmd ##= "rm -f " ## dst1 ## " " ## dst2  ;
+print(cmd);

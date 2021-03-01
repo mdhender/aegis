@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -74,11 +74,10 @@ integrate_fail_help()
 }
 
 
-static void integrate_fail_list _((void (*)(void)));
+static void integrate_fail_list _((void));
 
 static void
-integrate_fail_list(usage)
-	void		(*usage)_((void));
+integrate_fail_list()
 {
 	string_ty	*project_name;
 
@@ -90,14 +89,14 @@ integrate_fail_list(usage)
 		switch (arglex_token)
 		{
 		default:
-			generic_argument(usage);
+			generic_argument(integrate_fail_usage);
 			continue;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				option_needs_name(arglex_token_project, usage);
+				option_needs_name(arglex_token_project, integrate_fail_usage);
 			if (project_name)
-				duplicate_option_by_name(arglex_token_project, usage);
+				duplicate_option_by_name(arglex_token_project, integrate_fail_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -111,6 +110,22 @@ integrate_fail_list(usage)
 	if (project_name)
 		str_free(project_name);
 	trace((/*{*/"}\n"));
+}
+
+
+static void check_directory _((change_ty *));
+
+static void
+check_directory(cp)
+	change_ty	*cp;
+{
+	string_ty	*dir;
+
+	dir = change_integration_directory_get(cp, 1);
+	os_become_orig();
+	if (os_below_dir(dir, os_curdir()))
+		change_fatal(cp, 0, i18n("leave int dir"));
+	os_become_undo();
 }
 
 
@@ -140,6 +155,7 @@ static void integrate_fail_main _((void));
 static void
 integrate_fail_main()
 {
+	string_ty	*s;
 	sub_context_ty	*scp;
 	cstate		cstate_data;
 	cstate_history	history_data;
@@ -158,6 +174,7 @@ integrate_fail_main()
 	edit_ty		edit;
 
 	trace(("integrate_fail_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	change_number = 0;
 	edit = edit_not_set;
@@ -171,22 +188,42 @@ integrate_fail_main()
 
 		case arglex_token_string:
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_file));
+			sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_file));
 			error_intl(scp, i18n("warning: use $name option"));
 			sub_context_delete(scp);
 			if (comment)
-				fatal_intl(0, i18n("too many files"));
+				fatal_too_many_files();
 			goto read_reason_file;
 
 		case arglex_token_file:
 			if (comment)
 				duplicate_option(integrate_fail_usage);
-			if (arglex() != arglex_token_string)
-				option_needs_file(arglex_token_file, integrate_fail_usage);
-			read_reason_file:
-			os_become_orig();
-			comment = read_whole_file(arglex_value.alv_string);
-			os_become_undo();
+			switch (arglex())
+			{
+			default:
+				option_needs_file
+				(
+					arglex_token_file,
+					integrate_fail_usage
+				);
+				/*NOTREACHED*/
+
+			case arglex_token_string:
+				read_reason_file:
+				os_become_orig();
+				s = str_from_c(arglex_value.alv_string);
+				comment = read_whole_file(s);
+				str_free(s);
+				os_become_undo();
+				break;
+
+			case arglex_token_stdio:
+				os_become_orig();
+				comment = read_whole_file((string_ty *)0);
+				os_become_undo();
+				break;
+			}
+			assert(comment);
 			break;
 
 		case arglex_token_reason:
@@ -211,7 +248,7 @@ integrate_fail_main()
 			else if (change_number < 1)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -284,8 +321,8 @@ integrate_fail_main()
 	if (edit == edit_not_set && !(comment || reason))
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", arglex_token_name(arglex_token_file));
-		sub_var_set(scp, "Name2", "%s", arglex_token_name(arglex_token_edit));
+		sub_var_set_charstar(scp, "Name1", arglex_token_name(arglex_token_file));
+		sub_var_set_charstar(scp, "Name2", arglex_token_name(arglex_token_edit));
 		error_intl(scp, i18n("warning: no $name1, assuming $name2"));
 		sub_context_delete(scp);
 		edit = edit_foreground;
@@ -320,6 +357,12 @@ integrate_fail_main()
 	 */
 	if (edit != edit_not_set)
 	{
+		/*
+		 * make sure they are not in the integration directory,
+		 * to avoid a wasted edit
+		 */
+		check_directory(cp);
+
 		/*
 		 * make sure they are allowed to first,
 		 * to avoid a wasted edit
@@ -362,10 +405,7 @@ integrate_fail_main()
 	 * Complain if they are in the integration directory,
 	 * because the rmdir at the end can't then run to completion.
 	 */
-	os_become_orig();
-	if (os_below_dir(dir, os_curdir()))
-		change_fatal(cp, 0, i18n("leave int dir"));
-	os_become_undo();
+	check_directory(cp);
 
 	/*
 	 * note that the project has no current integration
@@ -481,20 +521,13 @@ integrate_fail_main()
 void
 integrate_fail()
 {
-	trace(("integrate_fail()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		integrate_fail_main();
-		break;
+		{ arglex_token_help,		integrate_fail_help,	},
+		{ arglex_token_list,		integrate_fail_list,	},
+	};
 
-	case arglex_token_help:
-		integrate_fail_help();
-		break;
-
-	case arglex_token_list:
-		integrate_fail_list(integrate_fail_usage);
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("integrate_fail()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), integrate_fail_main);
+	trace(("}\n"));
 }

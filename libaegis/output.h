@@ -28,10 +28,25 @@
 
 #include <main.h>
 
+struct string_ty; /* existence */
+struct output_ty;
+
+typedef void (*output_delete_callback_ty)_((struct output_ty *, void *));
+
 typedef struct output_ty output_ty;
 struct output_ty
 {
 	struct output_vtbl_ty *vptr;
+
+	/* private: */
+	output_delete_callback_ty del_cb;
+	void		*del_cb_arg;
+
+	/* private: */
+	unsigned char	*buffer;
+	size_t		buffer_size;
+	unsigned char	*buffer_position;
+	unsigned char	*buffer_end;
 };
 
 /*
@@ -42,48 +57,48 @@ typedef struct output_vtbl_ty output_vtbl_ty;
 struct output_vtbl_ty
 {
 	int		size;
-	const char	*typename;
 
 	void (*destructor)_((output_ty *));
-	const char *(*filename)_((output_ty *));
+	struct string_ty *(*filename)_((output_ty *));
 	long (*ftell)_((output_ty *));
-	void (*fputc)_((output_ty *, int));
-	void (*fputs)_((output_ty *, const char *));
 	void (*write)_((output_ty *, const void *, size_t));
+	void (*flush)_((output_ty *));
+	int (*page_width)_((output_ty *));
+	int (*page_length)_((output_ty *));
+	void (*eoln)_((output_ty *));
+
+	/*
+	 * By putting this last, we catch many cases where a method
+	 * pointer has been left out.
+	 */
+	const char	*typename;
 };
 
 void output_delete _((output_ty *));
-const char *output_filename _((output_ty *));
+struct string_ty *output_filename _((output_ty *));
 long output_ftell _((output_ty *));
 void output_fputc _((output_ty *, int));
 void output_fputs _((output_ty *, const char *));
+void output_put_str _((output_ty *, struct string_ty *));
 void output_write _((output_ty *, const void *, size_t));
-void output_fprintf _((output_ty *, const char *, ...));
-void output_vfprintf _((output_ty *, const char *, va_list));
-
+void output_flush _((output_ty *));
+int output_page_width _((output_ty *));
+int output_page_length _((output_ty *));
+void output_fprintf _((output_ty *, const char *, ...))
 #ifdef __GNUC__
+	__attribute__ ((__format__ (__printf__, 2, 3)))
+#endif
+		;
+void output_vfprintf _((output_ty *, const char *, va_list));
+void output_end_of_line _((output_ty *));
+void output_delete_callback _((output_ty *, output_delete_callback_ty,
+	void *));
 
-extern __inline const char *output_filename(output_ty *fp) { return
-	fp->vptr->filename(fp); }
-extern __inline long output_ftell(output_ty *fp) { return
-	fp->vptr->ftell(fp); }
-extern __inline void output_fputc(output_ty *fp, int c) {
-	fp->vptr->fputc(fp, c); }
-extern __inline void output_fputs(output_ty *fp, const char *s) {
-	fp->vptr->fputs(fp, s); }
-extern __inline void output_write(output_ty *fp, const void *data, size_t len) {
-	fp->vptr->write(fp, data, len); }
-
-#else /* !__GNUC__ */
-
-#ifndef DEBUG
-#define output_filename(fp) ((fp)->vptr->filename(fp))
-#define output_ftell(fp) ((fp)->vptr->ftell(fp))
-#define output_fputc(fp, c) ((fp)->vptr->fputc((fp), (c)))
-#define output_fputs(fp, s) ((fp)->vptr->fputs((fp), (s)))
-#define output_write(fp, data, len) ((fp)->vptr->write((fp), (data), (len)))
-#endif /* DEBUG */
-
-#endif /* __GNUC__ */
+/*
+ * Thos looks recursive, but ANSI C macros are not allowed to recurse,
+ * so the second one goes to the actual function.
+ */
+#define output_fputc(fp, c) ((fp)->buffer_position < (fp)->buffer_end ? \
+	(void)(*((fp)->buffer_position)++ = (c)) : output_fputc((fp), (c)))
 
 #endif /* LIBAEGIS_OUTPUT_H */

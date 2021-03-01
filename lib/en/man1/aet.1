@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1996, 1997, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1991, 1992, 1993, 1996, 1997, 1998, 1999, 2000 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -61,6 +61,10 @@ run tests.
 If no files are named, all relevant tests are run.
 By default both automatic and manual tests are run.
 .PP
+You may name directories on the command line, and all relevant tests in
+that directory tree in the change will be run.
+It is an error if there are no relevant tests.
+.PP
 Each architecture must be tested separately.
 This is because there may be subtle problems that are only
 revealed on some architectures.
@@ -76,6 +80,9 @@ if the test previously failed,
 if the test file has changed,
 if there has been a build,
 and for each architecture.
+.so z_intuit.so
+.so z_test_rtnl.so
+.SH "TEST COMMAND CONFIGURATION"
 .PP
 The command used to execute tests is defined by the
 .I test_command
@@ -91,12 +98,47 @@ If tests require temporary files, they should create them in
 as a test cannot expect to have write permission
 in the current directory.
 .PP
-You may name directories on the command line, and all relevant tests in
-that directory tree in the change will be run.
-It is an error if there are no relevant tests.
-.so z_intuit.so
-.so z_test_rtnl.so
-.SH "TEST RESULT CODES"
+If you want to use a more sophisticated test engine, rather than a
+simple shell script, but this test engine does not return result codes
+suitable for use with \*(n), you could wrap it in a shell script which
+re-writes the exit status into the values \*(n) expects.
+You could also achieve the same results by writing a more complex
+.I test_command
+in the project
+.I config
+file.
+.PP
+It is also possible to write test commands which are able to
+test more than one file at once.  This is controlled by the
+\fIbatch_\%test_\%command\fP field of the project \fIconfig\fP file.
+In this case, the ${output} substitution indicates the name of a file
+the test command must create, in \fIaetest\fP(5) format, to contain the
+results of the tests run.  This is often used on systems with multiple
+CPUs or the ability to distribute jobs across several computers on
+a network.
+.SS "Substitutions"
+All of the \fIaesub\fP(5) substitutions are available in the test commands.
+Some of them are of particular note:
+.TP 8n
+.I ARCHitecture
+This substitution is replaced by the name of the architecture to be
+tested.
+.TP 8n
+.I Search_Path
+This substitution is replaced by a colon separated list of absolute
+paths to search when looking for test support files.
+.TP 8n
+.I Search_Path_Executable
+This substitution is replaced by a colon separated list of absolute
+paths to search when looking for executable support files (library files
+and sub-commands).
+.PP
+Most of the time \fI$Search_Path_Executable\fP are exactly the same.
+However, during ``aegis -t -bl'' they will be different, with
+\fI$Seach_Path\fP starting at the development directory (the test
+being run) and \fI$Seach_Path_Executable\fP starting at the baseline
+(the executable being run).
+.SS "Test Result Codes"
 As each test is run
 (via the
 .I test_command
@@ -117,7 +159,7 @@ i.e. that the specific function under test did not work as expected.
 .TP 4n
 No Result
 A test should exit 2 to indicate no result,
-i.e. that the specific function under test could not be exersize
+i.e. that the specific function under test could not be exersized
 because something else went wrong.
 For example, running out of disk space when creating the test input
 files in the
@@ -128,16 +170,6 @@ Actually, any exit code other than 0 or 1 will be interpreted as ``no
 result''.  However, always using 0, 1 or 2 means that if a new result
 code is required by a later release of \*(n), your existing tests will
 continue to work.
-.PP
-If you want to use a more sophisticated test engine, rather than a
-simple shell script, but this test engine does not return result codes
-suitable for use with \*(n), you could wrap it in a shell script which
-re-writes the exit status into the values \*(n) expects.
-You could also achieve the same results by writing a more complex
-.I test_command
-in the project
-.I config
-file.
 .so z_test_corr.so
 .SH OPTIONS
 The following options are understood:
@@ -204,7 +236,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aet '\*(n) -t \e!* -v'
-sh$	aet(){\*(n) -t $* -v}
+sh$	aet(){\*(n) -t "$@" -v}
 .fi
 .SH ERRORS
 It is an error if

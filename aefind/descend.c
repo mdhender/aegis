@@ -77,7 +77,7 @@ stat_stack(path, st)
 		{
 			scp = sub_context_new();
 			sub_errno_set(scp);
-			sub_var_set(scp, "File_Name", "%S", resolved_path);
+			sub_var_set_string(scp, "File_Name", resolved_path);
 			fatal_intl(scp, i18n("lstat $filename: $errno"));
 			/* NOTREACHED */
 		}
@@ -89,7 +89,7 @@ stat_stack(path, st)
 		{
 			scp = sub_context_new();
 			sub_errno_set(scp);
-			sub_var_set(scp, "File_Name", "%S", resolved_path);
+			sub_var_set_string(scp, "File_Name", resolved_path);
 			fatal_intl(scp, i18n("stat $filename: $errno"));
 			/* NOTREACHED */
 		}
@@ -98,7 +98,7 @@ stat_stack(path, st)
 	}
 	scp = sub_context_new();
 	sub_errno_setx(scp, ENOENT);
-	sub_var_set(scp, "File_Name", "%S", path);
+	sub_var_set_string(scp, "File_Name", path);
 	fatal_intl(scp, i18n("stat $filename: $errno"));
 	/* NOTREACHED */
 	return 0;
@@ -138,7 +138,7 @@ readdir_stack(path, result)
 
 			scp = sub_context_new();
 			sub_errno_set(scp);
-			sub_var_set(scp, "File_Name", "%s", path);
+			sub_var_set_string(scp, "File_Name", path);
 			fatal_intl(scp, i18n("read $filename: $errno"));
 			/* NOTREACHED */
 		}

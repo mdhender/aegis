@@ -1,0 +1,63 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 3.26 features
+.\"
+.PP
+.if n *
+.if t \(bu
+.\" change 20
+A bug has been fixed in the \fIaesub\fP(1) \f[CW]$delta\fP substitution.
+It now works correctly for completed changes.
+.PP
+.if n *
+.if t \(bu
+.\" change 19
+A bug has been fixed in \fIaermu\fP(1), when used in combination with the
+symlink farm.  It no longer complains about "multiple user permissions set".
+.PP
+.if n *
+.if t \(bu
+.\" change 18
+A serious bug has been fixed in the locking code.
+The bug meant that only one build per project could happen at a time.
+(There was never any risk of repository or Aegis database damage.)
+.PP
+.if n *
+.if t \(bu
+.\" change 17
+A bug has been fixed in the \fIaedist\fP(1) command.  It failed
+to correctly recognise files produced using the \fIaedist \-send
+\-no-ascii-armour\fP option.
+.PP
+.if n *
+.if t \(bu
+.\" change 12
+The \fIaecpu -unch\fP command now deals more gracefully with files which
+have been removed from the project in the mean time.
+.PP
+.if n *
+.if t \(bu
+.\" change 11
+There is a new \fIchange file history\fP listing, similar to the \fIfile
+history\fP report.  It is much faster, much more informatuve, and less
+selective.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 3.26

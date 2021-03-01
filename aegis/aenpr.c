@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,11 +26,10 @@
 #include <ac/string.h>
 
 #include <ael/project/projects.h>
-#include <aenbr.h>
 #include <aenpr.h>
 #include <arglex2.h>
 #include <change.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <commit.h>
 #include <error.h>
 #include <gonzo.h>
@@ -43,6 +42,7 @@
 #include <project/pattr/edit.h>
 #include <project/pattr/get.h>
 #include <project/pattr/set.h>
+#include <project/verbose.h>
 #include <project_hist.h>
 #include <sub.h>
 #include <trace.h>
@@ -91,6 +91,7 @@ static void new_project_main _((void));
 static void
 new_project_main()
 {
+	string_ty	*s;
 	sub_context_ty	*scp;
 	string_ty	*home;
 	string_ty	*s1;
@@ -111,6 +112,7 @@ new_project_main()
 	edit_ty		edit;
 
 	trace(("new_project_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	home = 0;
 	version_number_length = 0;
@@ -179,11 +181,30 @@ new_project_main()
 		case arglex_token_file:
 			if (pattr_data)
 				duplicate_option(new_project_usage);
-			if (arglex() != arglex_token_string)
-				option_needs_file(arglex_token_file, new_project_usage);
-			os_become_orig();
-			pattr_data = pattr_read_file(arglex_value.alv_string);
-			os_become_undo();
+			switch (arglex())
+			{
+			default:
+				option_needs_file
+				(
+					arglex_token_file,
+					new_project_usage
+				);
+				/*NOTREACHED*/
+
+			case arglex_token_string:
+				os_become_orig();
+				s = str_from_c(arglex_value.alv_string);
+				pattr_data = pattr_read_file(s);
+				str_free(s);
+				os_become_undo();
+				break;
+
+			case arglex_token_stdio:
+				os_become_orig();
+				pattr_data = pattr_read_file((string_ty *)0);
+				os_become_undo();
+				break;
+			}
 			assert(pattr_data);
 			break;
 
@@ -191,8 +212,8 @@ new_project_main()
 			if (version_number_length > 0 && version_number[0])
 				duplicate_option(new_project_usage);
 			scp = sub_context_new();
-			sub_var_set(scp, "Name1", "%s", arglex_token_name(arglex_token_major));
-			sub_var_set(scp, "Name2", "%s", arglex_token_name(arglex_token_version));
+			sub_var_set_charstar(scp, "Name1", arglex_token_name(arglex_token_major));
+			sub_var_set_charstar(scp, "Name2", arglex_token_name(arglex_token_version));
 			error_intl(scp, i18n("warning: $name1 obsolete, use $name2 option"));
 			sub_context_delete(scp);
 			if (arglex() != arglex_token_number)
@@ -208,8 +229,8 @@ new_project_main()
 			if (version_number_length >= 2 && version_number[1])
 				duplicate_option(new_project_usage);
 			scp = sub_context_new();
-			sub_var_set(scp, "Name1", "%s", arglex_token_name(arglex_token_minor));
-			sub_var_set(scp, "Name2", "%s", arglex_token_name(arglex_token_version));
+			sub_var_set_charstar(scp, "Name1", arglex_token_name(arglex_token_minor));
+			sub_var_set_charstar(scp, "Name2", arglex_token_name(arglex_token_version));
 			error_intl(scp, i18n("warning: $name1 obsolete, use $name2 option"));
 			sub_context_delete(scp);
 			if (arglex() != arglex_token_number)
@@ -316,13 +337,7 @@ new_project_main()
 		&version_number_length
 	);
 	if (!project_name_ok(project_name))
-	{
-		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%S", project_name);
-		fatal_intl(scp, i18n("bad project $name"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	}
+		fatal_bad_project_name(project_name);
 	if (!keep && !version_number_length && !version_string)
 	{
 		/*
@@ -362,7 +377,7 @@ new_project_main()
 		if (err)
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "Number", "%S", version_string);
+			sub_var_set_string(scp, "Number", version_string);
 			fatal_intl(scp, i18n("bad version $number"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -408,7 +423,7 @@ new_project_main()
 	if (edit != edit_not_set)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%S", project_name);
+		sub_var_set_string(scp, "Name", project_name);
 		io_comment_append(scp, "Project $name");
 		sub_context_delete(scp);
 		project_pattr_edit(&pattr_data, edit);
@@ -441,33 +456,15 @@ new_project_main()
 	 * make sure not too privileged
 	 */
 	if (!user_uid_check(up->name))
-	{
-		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%S", user_name(up));
-		fatal_intl(scp, i18n("user \"$name\" is too privileged"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	}
+		fatal_user_too_privileged(user_name(up));
 	if (!user_gid_check(up->group))
-	{
-		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%S", user_group(up));
-		fatal_intl(scp, i18n("group \"$name\" is too privileged"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	}
+		fatal_group_too_privileged(user_group(up));
 
 	/*
 	 * it is an error if the name is already in use
 	 */
 	if (gonzo_alias_to_actual(project_name))
-	{
-		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%S", project_name);
-		fatal_intl(scp, i18n("project alias $name exists"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	}
+		fatal_project_alias_exists(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	if (keep)
@@ -475,7 +472,7 @@ new_project_main()
 		if (gonzo_project_home_path_from_name(project_name))
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%S", pp->name);
+			sub_var_set_string(scp, "Name", pp->name);
 			fatal_intl(scp, i18n("project $name exists"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -511,22 +508,11 @@ new_project_main()
 		max = os_pathconf_name_max(s1);
 		os_become_undo();
 		if (project_name_get(pp)->str_length > max)
-		{
-			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%S", project_name_get(pp));
-			sub_var_set(scp, "Number", "%d", (int)(project_name_get(pp)->str_length - max));
-			sub_var_optional(scp, "Number");
-			fatal_intl(scp, i18n("project \"$name\" too long"));
-			/* NOTREACHED */
-			sub_context_delete(scp);
-		}
+			fatal_project_name_too_long(project_name_get(pp), max);
 		home = str_format("%S/%S", s1, project_name_get(pp));
 		str_free(s1);
 
-		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", home);
-		project_verbose(pp, scp, i18n("proj dir $filename"));
-		sub_context_delete(scp);
+		project_verbose_directory(pp, home);
 	}
 	if (!keep)
 		project_home_path_set(pp, home);
@@ -577,7 +563,7 @@ new_project_main()
 		trace(("ppp = %8.8lX\n", (long)ppp));
 		change_number = magic_zero_encode(version_number[j]);
 		trace(("change_number = %ld;\n", change_number));
-		ppp = new_branch_internals(up, ppp, change_number, (string_ty *)0);
+		ppp = project_new_branch(ppp, up, change_number, (string_ty *)0);
 		version_pp[j] = ppp;
 	}
 
@@ -603,9 +589,9 @@ new_project_main()
 	/*
 	 * verbose success message
 	 */
-	project_verbose(pp, 0, i18n("new project complete"));
+	project_verbose_new_project_complete(pp);
 	for (j = 0; j < version_number_length; ++j)
-		project_verbose(version_pp[j], 0, i18n("new branch complete"));
+		project_verbose_new_branch_complete(version_pp[j]);
 
 	project_free(pp);
 	user_free(up);
@@ -616,20 +602,13 @@ new_project_main()
 void
 new_project()
 {
-	trace(("new_project()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		new_project_main();
-		break;
+		{ arglex_token_help,		new_project_help,	},
+		{ arglex_token_list,		new_project_list,	},
+	};
 
-	case arglex_token_help:
-		new_project_help();
-		break;
-
-	case arglex_token_list:
-		new_project_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("new_project()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), new_project_main);
+	trace(("}\n"));
 }

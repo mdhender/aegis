@@ -85,10 +85,10 @@ wrap(s)
 			ocol = 8;
 		for (ep = s; *ep; ++ep)
 		{
-			int	cw;
-			int	c;
+			int		cw;
+			unsigned char	c;
 
-			c = (unsigned char)*ep;
+			c = *ep;
 			if (isprint(c))
 				cw = 1 + (c == '\\');
 			else
@@ -174,9 +174,7 @@ wrap(s)
 		tp = tmp + strlen(tmp);
 		while (s < ep)
 		{
-			int	c;
-
-			c = (unsigned char)*s++;
+			unsigned char c = *s++;
 			if (isprint(c))
 			{
 				if (c == '\\')
@@ -470,10 +468,15 @@ void
 quit_register(func)
 	quit_ty	func;
 {
+	int	j;
+
 	if (quitting)
 		return;
 	assert(quit_list_len < SIZEOF(quit_list));
 	assert(func);
+	for (j = 0; j < quit_list_len; ++j)
+		if (quit_list[j] == func)
+			return;
 	quit_list[quit_list_len++] = func;
 }
 

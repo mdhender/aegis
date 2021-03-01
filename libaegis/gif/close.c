@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -66,7 +66,7 @@ gif_putc(fp, fn, c)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%s", fn);
+		sub_var_set_charstar(scp, "File_Name", fn);
 		fatal_intl(scp, i18n("write $filename: $errno"));
 		/* NOTREACHED */
 	}
@@ -421,7 +421,7 @@ flush(gp)
 	char		*fn;
 	int		color_resolution;
 	int		bits_per_pixel;
-	char		*cp;
+	unsigned char	*cp;
 	int		j;
 	int		c;
 
@@ -439,7 +439,7 @@ flush(gp)
 
 			scp = sub_context_new();
 			sub_errno_set(scp);
-			sub_var_set(scp, "File_Name", "%s", fn);
+			sub_var_set_charstar(scp, "File_Name", fn);
 			fatal_intl(scp, i18n("create $filename: $errno"));
 			/* NOTREACHED */
 		}
@@ -466,7 +466,13 @@ flush(gp)
 	(
 		fp,
 		fn,
-		(0x80 | ((color_resolution - 1) << 4) | (bits_per_pixel - 1))
+		(
+			0x80
+		|
+			((unsigned)(color_resolution - 1) << 4)
+		|
+			(bits_per_pixel - 1)
+		)
 	);
 	gif_putc(fp, fn, 0); /* background */
 	gif_putc(fp, fn, 0); /* future expansion */
@@ -525,7 +531,7 @@ flush(gp)
 
 
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%s", fn);
+		sub_var_set_charstar(scp, "File_Name", fn);
 		fatal_intl(scp, i18n("write $filename: $errno"));
 		/* NOTREACHED */
 	}

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -57,6 +57,7 @@ struct type_ty
 typedef struct generic_struct_ty generic_struct_ty;
 struct generic_struct_ty
 {
+	long		reference_count;
 	unsigned long	mask;
 };
 

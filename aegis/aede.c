@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@
 #include <aede.h>
 #include <ael/change/by_state.h>
 #include <arglex2.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <change/file.h>
 #include <col.h>
 #include <commit.h>
@@ -142,6 +142,7 @@ develop_end_main()
 	int		is_a_branch;
 
 	trace(("develop_end_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	change_number = 0;
 	while (arglex_token != arglex_token_eoln)
@@ -166,7 +167,7 @@ develop_end_main()
 			else if (change_number < 1)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -363,8 +364,7 @@ develop_end_main()
 			)
 			{
 				scp = sub_context_new();
-				trace(("mark\n"));
-				sub_var_set(scp, "File_Name", "%S", c_src_data->file_name);
+				sub_var_set_string(scp, "File_Name", c_src_data->file_name);
 				change_error(cp, scp, i18n("$filename not found"));
 				sub_context_delete(scp);
 				str_free(path);
@@ -397,7 +397,7 @@ develop_end_main()
 			if (e)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "MeSsaGe", "%S", e);
+				sub_var_set_string(scp, "MeSsaGe", e);
 				str_free(e);
 				change_error(cp, scp, i18n("$message"));
 				sub_context_delete(scp);
@@ -427,8 +427,7 @@ develop_end_main()
 			)
 			{
 				scp = sub_context_new();
-				trace(("mark\n"));
-				sub_var_set(scp, "File_Name", "%S,D", c_src_data->file_name);
+				sub_var_set_format(scp, "File_Name", "%S,D", c_src_data->file_name);
 				change_error(cp, scp, i18n("$filename not found"));
 				sub_context_delete(scp);
 				errs++;
@@ -447,7 +446,7 @@ develop_end_main()
 			if (file_required && !same && c_src_data->file_fp->oldest)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", c_src_data->file_name);
+				sub_var_set_string(scp, "File_Name", c_src_data->file_name);
 				change_error(cp, scp, i18n("$filename changed after diff"));
 				sub_context_delete(scp);
 				diff_whine++;
@@ -456,7 +455,7 @@ develop_end_main()
 			else if (diff_file_required && !same_d && c_src_data->diff_file_fp->youngest)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S,D", c_src_data->file_name);
+				sub_var_set_format(scp, "File_Name", "%S,D", c_src_data->file_name);
 				change_error(cp, scp, i18n("$filename changed after diff"));
 				sub_context_delete(scp);
 				diff_whine++;
@@ -515,7 +514,7 @@ develop_end_main()
 			)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", c_src_data->file_name);
+				sub_var_set_string(scp, "File_Name", c_src_data->file_name);
 				change_error(cp, scp, i18n("no $filename in baseline"));
 				sub_context_delete(scp);
 				errs++;
@@ -540,19 +539,19 @@ develop_end_main()
 				p_src_data->usage = c_src_data->usage;
 				p_src_data->about_to_be_created_by =
 					change_number;
-				assert(c_src_data->edit_number
-					|| c_src_data->edit_number_origin);
-				p_src_data->edit_number =
-					str_copy
+				assert(c_src_data->edit
+					|| c_src_data->edit_origin);
+				p_src_data->edit =
+					history_version_copy
 					(
-						c_src_data->edit_number
+						c_src_data->edit
 					?
-						c_src_data->edit_number
+						c_src_data->edit
 					:
-						c_src_data->edit_number_origin
+						c_src_data->edit_origin
 					);
-				p_src_data->edit_number_origin =
-					str_copy(p_src_data->edit_number);
+				p_src_data->edit_origin =
+					history_version_copy(p_src_data->edit);
 				break;
 			}
 
@@ -569,7 +568,7 @@ develop_end_main()
 			)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", c_src_data->file_name);
+				sub_var_set_string(scp, "File_Name", c_src_data->file_name);
 				change_error(cp, scp, i18n("baseline $filename changed"));
 				sub_context_delete(scp);
 				errs++;
@@ -581,8 +580,8 @@ develop_end_main()
 			if (p_src_data->locked_by)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", c_src_data->file_name);
-				sub_var_set(scp, "Number", "%ld", p_src_data->locked_by);
+				sub_var_set_string(scp, "File_Name", c_src_data->file_name);
+				sub_var_set_long(scp, "Number", p_src_data->locked_by);
 				change_error(cp, scp, i18n("file \"$filename\" locked for change $number"));
 				sub_context_delete(scp);
 				errs++;
@@ -597,19 +596,58 @@ develop_end_main()
 			 */
 			if
 			(
-				!p_src_data
-			||
-				p_src_data->deleted_by
-			||
-				p_src_data->about_to_be_created_by
+				!is_a_branch
+			&&
+				(
+					!p_src_data
+				||
+					p_src_data->deleted_by
+				||
+					p_src_data->about_to_be_created_by
+				)
 			)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", c_src_data->file_name);
+				sub_var_set_string(scp, "File_Name", c_src_data->file_name);
 				change_error(cp, scp, i18n("no $filename in baseline"));
 				sub_context_delete(scp);
 				errs++;
 				continue;
+			}
+
+			/*
+			 * Make sure the file exists in the project.
+			 *
+			 * This can happen for aede on branches which
+			 * have had a new file created and then modified;
+			 * thus the file will not exist in the branch's
+			 * project.
+			 */
+			if (!p_src_data)
+			{
+				p_src_data =
+					project_file_new
+					(
+						pp,
+						c_src_data->file_name
+					);
+				p_src_data->usage = c_src_data->usage;
+				p_src_data->about_to_be_created_by =
+					change_number;
+				assert(c_src_data->edit
+					|| c_src_data->edit_origin);
+				p_src_data->edit =
+					history_version_copy
+					(
+						c_src_data->edit
+					?
+						c_src_data->edit
+					:
+						c_src_data->edit_origin
+					);
+				p_src_data->edit_origin =
+					history_version_copy(p_src_data->edit);
+				break;
 			}
 
 			/*
@@ -620,7 +658,7 @@ develop_end_main()
 			if (!change_file_up_to_date(pp, c_src_data))
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", c_src_data->file_name);
+				sub_var_set_string(scp, "File_Name", c_src_data->file_name);
 				change_error(cp, scp, i18n("baseline $filename changed"));
 				sub_context_delete(scp);
 				errs++;
@@ -632,8 +670,8 @@ develop_end_main()
 			if (p_src_data->locked_by)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", c_src_data->file_name);
-				sub_var_set(scp, "Number", "%ld", p_src_data->locked_by);
+				sub_var_set_string(scp, "File_Name", c_src_data->file_name);
+				sub_var_set_long(scp, "Number", p_src_data->locked_by);
 				change_error(cp, scp, i18n("file \"$filename\" locked for change $number"));
 				sub_context_delete(scp);
 				errs++;
@@ -648,10 +686,19 @@ develop_end_main()
 			 */
 			if (p_src_data)
 			{
-				if (!p_src_data->deleted_by)
+				if (p_src_data->about_to_be_created_by)
 				{
 					scp = sub_context_new();
-					sub_var_set(scp, "File_Name", "%S", c_src_data->file_name);
+					sub_var_set_string(scp, "File_Name", c_src_data->file_name);
+					sub_var_set_long(scp, "Number", c_src_data->about_to_be_created_by);
+					change_error(cp, scp, i18n("file \"$filename\" locked for change $number"));
+					sub_context_delete(scp);
+					++errs;
+				}
+				else if (!p_src_data->deleted_by)
+				{
+					scp = sub_context_new();
+					sub_var_set_string(scp, "File_Name", c_src_data->file_name);
 					change_error(cp, scp, i18n("$filename in baseline"));
 					sub_context_delete(scp);
 					++errs;
@@ -684,7 +731,7 @@ develop_end_main()
 			 * overlooked.
 			 */
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", c_src_data->file_name);
+			sub_var_set_string(scp, "File_Name", c_src_data->file_name);
 			change_error(cp, scp, i18n("$filename is insulation"));
 			sub_context_delete(scp);
 			errs++;
@@ -725,7 +772,7 @@ develop_end_main()
 			if (e)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Message", "%S", e);
+				sub_var_set_string(scp, "Message", e);
 				str_free(e);
 				change_error(cp, scp, i18n("project $message"));
 				sub_context_delete(scp);
@@ -733,7 +780,6 @@ develop_end_main()
 			}
 		}
 	}
-	trace(("mark\n"));
 
 	/*
 	 * verify that the youngest file is older than the
@@ -744,23 +790,22 @@ develop_end_main()
 		if (youngest_name && cstate_data->build_time)
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "Outstanding", "%s", change_outstanding_builds(cp, youngest));
+			sub_var_set_charstar(scp, "Outstanding", change_outstanding_builds(cp, youngest));
 			sub_var_optional(scp, "Outstanding");
-			sub_var_set(scp, "File_Name", "%S", youngest_name);
+			sub_var_set_string(scp, "File_Name", youngest_name);
 			change_error(cp, scp, i18n("$filename changed after build"));
 			sub_context_delete(scp);
 		}
 		else
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "Outstanding", "%s", change_outstanding_builds(cp, youngest));
+			sub_var_set_charstar(scp, "Outstanding", change_outstanding_builds(cp, youngest));
 			sub_var_optional(scp, "Outstanding");
 			change_error(cp, scp, i18n("build required"));
 			sub_context_delete(scp);
 		}
 		++errs;
 	}
-	trace(("mark\n"));
 	if
 	(
 		!cstate_data->test_exempt
@@ -773,13 +818,12 @@ develop_end_main()
 	)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Outstanding", "%s", change_outstanding_tests(cp, youngest));
+		sub_var_set_charstar(scp, "Outstanding", change_outstanding_tests(cp, youngest));
 		sub_var_optional(scp, "Outstanding");
 		change_error(cp, scp, i18n("test required"));
 		sub_context_delete(scp);
 		++errs;
 	}
-	trace(("mark\n"));
 	if
 	(
 		!cstate_data->test_baseline_exempt
@@ -792,13 +836,12 @@ develop_end_main()
 	)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Outstanding", "%s", change_outstanding_tests_baseline(cp, youngest));
+		sub_var_set_charstar(scp, "Outstanding", change_outstanding_tests_baseline(cp, youngest));
 		sub_var_optional(scp, "Outstanding");
 		change_error(cp, scp, i18n("test -bl required"));
 		sub_context_delete(scp);
 		++errs;
 	}
-	trace(("mark\n"));
 	if
 	(
 		!cstate_data->regression_test_exempt
@@ -811,13 +854,12 @@ develop_end_main()
 	)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Outstanding", "%s", change_outstanding_tests_regression(cp, youngest));
+		sub_var_set_charstar(scp, "Outstanding", change_outstanding_tests_regression(cp, youngest));
 		sub_var_optional(scp, "Outstanding");
 		change_error(cp, scp, i18n("test -reg required"));
 		sub_context_delete(scp);
 		++errs;
 	}
-	trace(("mark\n"));
 
 	/*
 	 * if there was any problem,
@@ -826,23 +868,38 @@ develop_end_main()
 	if (errs)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%d", errs);
+		sub_var_set_long(scp, "Number", errs);
 		sub_var_optional(scp, "Number");
 		change_fatal(cp, scp, i18n("develop end fail"));
 		sub_context_delete(scp);
 	}
-	trace(("mark\n"));
-	if (change_is_a_branch(cp))
-		dd = str_format("%S/baseline", change_development_directory_get(cp, 1));
-	else	
-		dd = str_copy(change_development_directory_get(cp, 1));
+	dd = str_copy(change_development_directory_get(cp, 1));
 	str_free(dd);
 
 	/*
 	 * add to history for state change
+	 * Advance the change to the being-reviewed state.
 	 */
 	history_data = change_history_new(cp, up);
 	history_data->what = cstate_history_what_develop_end;
+	cstate_data->state = cstate_state_being_reviewed;
+	switch (project_develop_end_action_get(pp))
+	{
+	case cstate_branch_develop_end_action_goto_being_reviewed:
+		history_data->what = cstate_history_what_develop_end;
+		cstate_data->state = cstate_state_being_reviewed;
+		break;
+
+	case cstate_branch_develop_end_action_goto_awaiting_review:
+		history_data->what = cstate_history_what_develop_end_2ar;
+		cstate_data->state = cstate_state_awaiting_review;
+		break;
+
+	case cstate_branch_develop_end_action_goto_awaiting_integration:
+		history_data->what = cstate_history_what_develop_end_2ai;
+		cstate_data->state = cstate_state_awaiting_integration;
+		break;
+	}
 	if (up_admin)
 	{
 		history_data->why =
@@ -852,17 +909,17 @@ develop_end_main()
 				user_name(up_admin)
 			);
 	}
-	trace(("mark\n"));
 
 	/*
-	 * Advance the change to the being-reviewed state.
-	 * Clear the build-time field.
-	 * Clear the test-time field.
-	 * Clear the test-baseline-time field.
-	 * Clear the regression-test-time field.
-	 */
-	cstate_data->state = cstate_state_being_reviewed;
+	 * It is tempting to call
+	 *
 	change_build_times_clear(cp);
+	 *
+	 * at this point, but we don't.  This is so that in the event
+	 * of an aedeu (to get out of the way of another change, maybe)
+	 * a full build-and-test cycle is only required of they actually
+	 * edit something.
+	 */
 
 	/*
 	 * Remove the change from the list of assigned changes in the user
@@ -889,13 +946,9 @@ develop_end_main()
 	/*
 	 * verbose success message
 	 */
-	trace(("mark\n"));
 	change_verbose(cp, 0, i18n("development completed"));
-	trace(("mark\n"));
 	change_free(cp);
-	trace(("mark\n"));
 	project_free(pp);
-	trace(("mark\n"));
 	user_free(up);
 	trace((/*{*/"}\n"));
 }
@@ -904,20 +957,13 @@ develop_end_main()
 void
 develop_end()
 {
-	trace(("develop_end()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		develop_end_main();
-		break;
+		{ arglex_token_help,		develop_end_help,	},
+		{ arglex_token_list,		develop_end_list,	},
+	};
 
-	case arglex_token_help:
-		develop_end_help();
-		break;
-
-	case arglex_token_list:
-		develop_end_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("develop_end()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), develop_end_main);
+	trace(("}\n"));
 }

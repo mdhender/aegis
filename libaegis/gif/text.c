@@ -457,7 +457,7 @@ glyph(gp, x, y, c, clr)
 		for (x2 = 0, bit = 0x80; x2 < 7; ++x2, bit >>= 1)
 		{
 			if (*dp & bit)
-				gif_pixel_set(gp, x + x2, y - y2, clr);
+				gif_pixel_set(gp, x + x2, y + y2, clr);
 		}
 	}
 	return (x + 7);

@@ -17,8 +17,13 @@
 #	along with this program; if not, write to the Free Software
 #	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
-# MANIFEST: error messges for the aerect command
+# MANIFEST: English localization
 #
+msgid	""
+msgstr	"MIME-Version: 1.0\n"
+	"Content-Type: text/plain; charset=ascii\n"
+	"Content-Transfer-Encoding: 8bit\n"
+
 # -----------------------------------------------------------------------------
 #
 # This error message is issued when the bevel size specified is negative,

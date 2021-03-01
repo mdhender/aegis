@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1997-2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,36 +27,47 @@ integration-build-targets:
 	archive/[project_minus].ae
 	archive/[project_minus].faq
 	archive/[project_minus].lsm
-	archive/[project_minus].rm.ps.gz
 	archive/[project_minus].spec
 	archive/[project_minus].tar.gz
-	archive/[project_minus].ug.ps.gz
-	archive/[project_short].gif
-	archive/[project_short].html
+	html-targets
 	;
 
-etc/[project_short].html.d: etc/[project_short].html
+html-targets: [html-targets];
+
+html-sources = [match_mask etc/%.html [source_files]];
+
+html-targets =
+	archive/[project_short].gif
+	[fromto etc/%.html archive/%.html
+		[html-sources]
+	]
+	;
+
+if [count [html-sources]] then
+cascade [html-sources] = etc/version.so;
+
+etc/%.html.d: etc/%.html
 	set no-cascade
 {
 	c_incl -nc -ns -eia -r -nrec
 		[prepost "-I" /[arch]/etc [search_list]]
 		[prepost "-I" "/etc" [search_list]]
-		-prefix "'cascade etc/"[project_short]".html ='"
+		-prefix "'cascade etc/%.html ='"
 		-suffix "';'"
-		[resolve etc/[project_short].html]
+		[resolve etc/%.html]
 		[prepost "-rlp=" "" [search_list]] /* remove leading path */
 		-slp [arch] "'[arch]'" /* substitute leading path */
 		-o [target];
 }
-#include-cooked-nowarn etc/[project_short].html.d
+#include-cooked-nowarn [addsuffix ".d" [match_mask etc/%.html [source_files]]]
 
-archive/[project_short].html: etc/[project_short].html etc/ssp.awk
+archive/%.html: etc/%.html: etc/ssp.awk
 	set shallow
 {
 	roffpp
 		[prepost "-I" /[arch]/etc [search_list]]
 		[prepost "-I" "/etc" [search_list]]
-		[resolve etc/[project_short].html]
+		[resolve etc/%.html]
 	| groff -Tascii -t -P-hub -man
 	| [awk] -f [resolve etc/ssp.awk]
 	> [target];
@@ -109,7 +120,8 @@ source_file_order =
 			common/config.h.in
 			common/patchlevel.h
 			configure
-			etc/CHANGES.[version_short]
+			etc/CHANGES.3
+			etc/CHANGES.4
 			[fromto 
 				lib/%1/faq/main.%2 lib/%1/faq/toc.so
 				[match_mask lib/%1/faq/main.%2 [source_files]]
@@ -126,13 +138,14 @@ source_file_order =
 				lib/icon/%.uue lib/icon/%
 				[match_mask lib/icon/%.uue [source_files]]
 			]
+			[project_short].gif
 		-
 			README
 		]
 	]
 	;
 
-MANIFEST: etc/MANIFEST.sh [vs_file]
+MANIFEST: etc/MANIFEST.sh [stringset [source_file_order] - MANIFEST]
 {
 	sh [resolve etc/MANIFEST.sh [source_file_order]] > [target];
 }
@@ -224,13 +237,11 @@ archive/[project_short].gif: lib/icon/[project_short].gif
 	cp [resolve [need]] [target];
 }
 
-archive/[project_minus].spec: etc/spec.sh [source_files]
+[project_short].gif: lib/icon/[project_short].gif
 	set shallow
 {
-	version\=[version_short]
-	sh [resolve etc/spec.sh] [source_files] > [target];
+	cp [resolve [need]] [target];
 }
-
 
 /*
  * This is not in the integration-build-targets because it takes far
@@ -241,13 +252,11 @@ RPM: archive/[project_minus]-1.i386.rpm;
 
 archive/[project_minus]-1.i386.rpm archive/[project_minus]-1.src.rpm:
 		archive/[project_minus].tar.gz etc/rpm-build.sh
-		archive/[project_short].gif
 	set shallow
 {
 	sh [resolve etc/rpm-build.sh]
 		RPM-temporary
 		[resolve archive/[project_minus].tar.gz]
-		[resolve archive/[project_short].gif]
 		;
 	mv RPM-temporary/RPMS/i386/[project_minus]-1.i386.rpm
 		archive/[project_minus]-1.i386.rpm
@@ -263,10 +272,73 @@ LICENSE: lib/en/cat1/aelic.1
 	cat [resolve [need]] > [target];
 }
 
-archive/[project_minus].ae: [source_files] [arch]/bin/aedist
+archive/[project_minus].ae: [source_files]
 {
-	[resolve [arch]/bin/aedist]
-		--send --entire-source -ndh -naa
-		-p\=[project] -c\=[change]
-		-o [target];
+	if [find_command aedist] then
+		/* must be *system* aedist, not just built aedist,
+		 * since it uses the existing project, which may
+		 * not even be readable by the newly built aedist
+		 */
+		aedist --send --entire-source -ndh -naa
+			-p\=[project] -c\=[change]
+			-o [target];
+	else
+		[print Skipping [target], since no aedist(1) found];
+
+}
+
+
+example-cook-fhist-version = 1.0;
+example-cook-fhist-baseline =
+     [collect aegis -cd -bl -p example-cook-fhist.[example-cook-fhist-version]
+	|| true];
+
+if [example-cook-fhist-baseline] then
+{
+    html-targets +=
+	archive/example-cook-fhist.html
+	archive/example-cook-fhist.ae
+	;
+
+    archive/example-cook-fhist.html: [example-cook-fhist-baseline]/README.html
+	set shallow
+    {
+	cp [need] [target];
+    }
+
+    archive/example-cook-fhist.ae:
+	[example-cook-fhist-baseline
+			]/example-cook-fhist.[example-cook-fhist-version].ae
+	set shallow
+    {
+	cp [need] [target];
+    }
+}
+
+
+example-make-rcs-version = 1.0;
+example-make-rcs-baseline =
+	[collect aegis -cd -bl -p example-make-rcs.[example-make-rcs-version]
+		|| true];
+
+if [example-make-rcs-baseline] then
+{
+    html-targets +=
+	archive/example-make-rcs.html
+	archive/example-make-rcs.ae
+	;
+
+    archive/example-make-rcs.html: [example-make-rcs-baseline]/README.html
+	set shallow
+    {
+	cp [need] [target];
+    }
+
+    archive/example-make-rcs.ae:
+	[example-make-rcs-baseline
+			]/example-make-rcs.[example-make-rcs-version].ae
+	set shallow
+    {
+	cp [need] [target];
+    }
 }

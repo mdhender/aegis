@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1993-1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 #include <ael/project/files.h>
 #include <aemv.h>
 #include <arglex2.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <change/file.h>
 #include <commit.h>
 #include <error.h>
@@ -114,7 +114,7 @@ move_file_list()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -139,14 +139,17 @@ move_file_list()
 
 
 static void move_file_innards _((user_ty *, change_ty *, string_ty *,
-	string_ty *));
+	string_ty *, string_list_ty *, string_list_ty *, string_list_ty *));
 
 static void
-move_file_innards(up, cp, old_name, new_name)
+move_file_innards(up, cp, old_name, new_name, wl_nf, wl_nt, wl_rm)
 	user_ty		*up;
 	change_ty	*cp;
 	string_ty	*old_name;
 	string_ty	*new_name;
+	string_list_ty	*wl_nf;
+	string_list_ty	*wl_nt;
+	string_list_ty	*wl_rm;
 {
 	project_ty	*pp;
 	fstate_src	p_src_data;
@@ -170,7 +173,7 @@ move_file_innards(up, cp, old_name, new_name)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", old_name);
+		sub_var_set_string(scp, "File_Name", old_name);
 		change_fatal(cp, scp, i18n("file $filename dup"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -195,8 +198,8 @@ move_file_innards(up, cp, old_name, new_name)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", old_name);
-			sub_var_set(scp, "Guess", "%S", p_src_data->file_name);
+			sub_var_set_string(scp, "File_Name", old_name);
+			sub_var_set_string(scp, "Guess", p_src_data->file_name);
 			project_fatal(pp, scp, i18n("no $filename, closest is $guess"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -206,7 +209,7 @@ move_file_innards(up, cp, old_name, new_name)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", old_name);
+			sub_var_set_string(scp, "File_Name", old_name);
 			project_fatal(pp, scp, i18n("no $filename"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -221,7 +224,7 @@ move_file_innards(up, cp, old_name, new_name)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", config_name);
+		sub_var_set_string(scp, "File_Name", config_name);
 		project_fatal(pp, scp, i18n("no move $filename"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -235,7 +238,7 @@ move_file_innards(up, cp, old_name, new_name)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", old_name);
+		sub_var_set_string(scp, "File_Name", old_name);
 		change_fatal(cp, scp, i18n("nil move $filename"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -249,7 +252,7 @@ move_file_innards(up, cp, old_name, new_name)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", new_name);
+		sub_var_set_string(scp, "File_Name", new_name);
 		change_fatal(cp, scp, i18n("file $filename dup"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -271,7 +274,7 @@ move_file_innards(up, cp, old_name, new_name)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", new_name);
+		sub_var_set_string(scp, "File_Name", new_name);
 		project_fatal(pp, scp, i18n("$filename in baseline"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -285,15 +288,33 @@ move_file_innards(up, cp, old_name, new_name)
 	c_src_data->action = file_action_remove;
 	c_src_data->usage = p_src_data->usage;
 	c_src_data->move = str_copy(new_name);
-	assert(p_src_data->edit_number);
-	if (p_src_data->edit_number)
-		c_src_data->edit_number_origin =
-			str_copy(p_src_data->edit_number);
+	assert(p_src_data->edit);
+	assert(p_src_data->edit->revision);
+	if (p_src_data->edit)
+		c_src_data->edit_origin =
+			history_version_copy(p_src_data->edit);
 
 	c_src_data = change_file_new(cp, new_name);
 	c_src_data->action = file_action_create;
 	c_src_data->usage = p_src_data->usage;
 	c_src_data->move = str_copy(old_name);
+
+	/*
+	 * Add the file to the appropriate notification lists.
+	 */
+	string_list_append(wl_rm, old_name);
+	switch (c_src_data->usage)
+	{
+	case file_usage_test:
+	case file_usage_manual_test:
+		string_list_append(wl_nt, new_name);
+		break;
+
+	case file_usage_source:
+	case file_usage_build:
+		string_list_append(wl_nf, new_name);
+		break;
+	}
 
 	/*
 	 * If the file is built, we are done.
@@ -346,7 +367,6 @@ move_file_main()
 	string_ty	*s1;
 	string_ty	*s2;
 	cstate		cstate_data;
-	string_list_ty	wl;
 	string_ty	*project_name;
 	project_ty	*pp;
 	long		change_number;
@@ -356,8 +376,14 @@ move_file_main()
 	size_t		k;
 	string_list_ty	search_path;
 	string_list_ty	wl_in;
+	string_list_ty	wl_nf;
+	string_list_ty	wl_nt;
+	string_list_ty	wl_rm;
+	int		based;
+	string_ty	*base;
 
 	trace(("move_file_main()\n{\n"/*}*/));
+	arglex();
 	old_name = 0;
 	new_name = 0;
 	project_name = 0;
@@ -373,16 +399,12 @@ move_file_main()
 
 		case arglex_token_string:
 			s1 = str_from_c(arglex_value.alv_string);
-			os_become_orig();
-			s2 = os_pathname(s1, 1);
-			os_become_undo();
-			str_free(s1);
 			if (!old_name)
-				old_name = s2;
+				old_name = s1;
 			else if (!new_name)
-				new_name = s2;
+				new_name = s1;
 			else
-				fatal_intl(0, i18n("too many files"));
+				fatal_too_many_files();
 			break;
 
 		case arglex_token_change:
@@ -399,7 +421,7 @@ move_file_main()
 			else if (change_number < 1)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -428,6 +450,11 @@ move_file_main()
 		case arglex_token_whiteout:
 		case arglex_token_whiteout_not:
 			user_whiteout_argument(move_file_usage);
+			break;
+
+		case arglex_token_base_relative:
+		case arglex_token_current_relative:
+			user_relative_filename_preference_argument(move_file_usage);
 			break;
 		}
 		arglex();
@@ -493,9 +520,52 @@ move_file_main()
 	 */
 
 	change_search_path_get(cp, &search_path, 1);
-	assert(old_name->str_text[0] == '/');
-	assert(new_name->str_text[0] == '/');
 
+	/*
+	 * Find the base for relative filenames.
+	 */
+	based =
+		(
+			search_path.nstrings >= 1
+		&&
+			(
+				user_relative_filename_preference
+				(
+					up,
+				      uconf_relative_filename_preference_current
+				)
+			==
+				uconf_relative_filename_preference_base
+			)
+		);
+	if (based)
+		base = search_path.string[0];
+	else
+	{
+		os_become_orig();
+		base = os_curdir();
+		os_become_undo();
+	}
+
+	/*
+	 * Make the old name absolute, now we know where to make it
+	 * relative to.
+	 */
+	if (old_name->str_text[0] != '/')
+	{
+		s1 = str_format("%S/%S", base, old_name);
+		str_free(old_name);
+		old_name = s1;
+	}
+	user_become(up);
+	s1 = os_pathname(old_name, 1);
+	user_become_undo();
+	str_free(old_name);
+	old_name = s1;
+
+	/*
+	 * Find the old name, relative to the project tree.
+	 */
 	s2 = 0;
 	for (k = 0; k < search_path.nstrings; ++k)
 	{
@@ -506,7 +576,7 @@ move_file_main()
 	if (!s2)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", old_name);
+		sub_var_set_string(scp, "File_Name", old_name);
 		change_fatal(cp, scp, i18n("$filename unrelated"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -514,6 +584,25 @@ move_file_main()
 	str_free(old_name);
 	old_name = s2;
 
+	/*
+	 * Make the new name absolute, now we know where to make it
+	 * relative to.
+	 */
+	if (new_name->str_text[0] != '/')
+	{
+		s1 = str_format("%S/%S", base, new_name);
+		str_free(new_name);
+		new_name = s1;
+	}
+	user_become(up);
+	s1 = os_pathname(new_name, 1);
+	user_become_undo();
+	str_free(new_name);
+	new_name = s1;
+
+	/*
+	 * Find the new name, relative to the project tree.
+	 */
 	s2 = 0;
 	for (k = 0; k < search_path.nstrings; ++k)
 	{
@@ -524,7 +613,7 @@ move_file_main()
 	if (!s2)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", new_name);
+		sub_var_set_string(scp, "File_Name", new_name);
 		change_fatal(cp, scp, i18n("$filename unrelated"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -540,6 +629,9 @@ move_file_main()
 	 * valid are done in the inner function.
 	 */
 	project_file_directory_query(pp, old_name, &wl_in, 0);
+	string_list_constructor(&wl_nf);
+	string_list_constructor(&wl_nt);
+	string_list_constructor(&wl_rm);
 	if (wl_in.nstrings)
 	{
 		size_t		j;
@@ -576,13 +668,17 @@ move_file_main()
 			/*
 			 * move the file
 			 */
-			move_file_innards(up, cp, filename_old, filename_new);
+			move_file_innards(up, cp, filename_old, filename_new,
+				&wl_nf, &wl_nt, &wl_rm);
 			str_free(filename_old);
 			str_free(filename_new);
 		}
 	}
 	else
-		move_file_innards(up, cp, old_name, new_name);
+	{
+		move_file_innards(up, cp, old_name, new_name,
+			&wl_nf, &wl_nt, &wl_rm);
+	}
 	string_list_destructor(&wl_in);
 
 	/*
@@ -602,22 +698,27 @@ move_file_main()
 	 * verbose success message
 	 */
 	scp = sub_context_new();
-	sub_var_set(scp, "File_Name1", "%S", old_name);
-	sub_var_set(scp, "File_Name2", "%S", new_name);
+	sub_var_set_string(scp, "File_Name1", old_name);
+	sub_var_set_string(scp, "File_Name2", new_name);
 	change_verbose(cp, scp, i18n("move $filename1 to $filename2 complete"));
 	sub_context_delete(scp);
+	str_free(old_name);
+	str_free(new_name);
 
 	/*
 	 * run the change file command
 	 */
 	log_open(change_logfile_get(cp), up, log_style);
-	string_list_constructor(&wl);
-	string_list_append(&wl, old_name);
-	string_list_append(&wl, new_name);
-	change_run_change_file_command(cp, &wl, up);
-	string_list_destructor(&wl);
-	str_free(old_name);
-	str_free(new_name);
+	if (wl_nf.nstrings)
+		change_run_new_file_command(cp, &wl_nf, up);
+	if (wl_nt.nstrings)
+		change_run_new_file_command(cp, &wl_nt, up);
+	if (wl_rm.nstrings)
+		change_run_remove_file_command(cp, &wl_rm, up);
+	string_list_destructor(&wl_nf);
+	string_list_destructor(&wl_nt);
+	string_list_destructor(&wl_rm);
+	change_run_project_file_command(cp, up);
 	project_free(pp);
 	change_free(cp);
 	user_free(up);
@@ -628,20 +729,13 @@ move_file_main()
 void
 move_file()
 {
-	trace(("move_file()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		move_file_main();
-		break;
+		{ arglex_token_help,		move_file_help,	},
+		{ arglex_token_list,		move_file_list,	},
+	};
 
-	case arglex_token_help:
-		move_file_help();
-		break;
-
-	case arglex_token_list:
-		move_file_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("move_file()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), move_file_main);
+	trace(("}\n"));
 }

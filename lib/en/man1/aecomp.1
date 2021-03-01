@@ -1,0 +1,57 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2000 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the lib/en/man1/aecomp command.
+.\"
+.so z_name.so
+.ds n) aecomp
+.TH "\*(n)" 1 \*(N) "Reference Manual" ""
+.SH NAME
+\*(n) \- compare two changes
+.XX "aecomp(1)" "compare two changes"
+.SH SYNOPSIS
+.B aecomp
+.I number
+[
+.I number
+]
+.SH DESCRIPTION
+The
+.I \*(n)
+script is used to compare two changes, using \fItkdiff\fP(1) to display
+the changes.  If you give one change on the command line, the other
+change is determined in the usual way.  If you give two changes, those
+are the two compared.  Both changes must be in the \fIbeing developed\fP
+state (it's only a script, after all).
+.PP
+Basically, \*(n) allows you to specify two project/change pairs (ie the
+compared changes don't have to be in the same branch or project).  \*(n)
+attempts to use defaults (for project and change number) where possible.
+As a minimum, it needs a single change number as an option. A list
+of files which are common between the two changes is constructed and
+presented.  Double clicking on any of the file names will \fItkdiff\fP
+the two versions (ie the files in each change).
+.PP
+It is useful after you have used \fIaeclone\fP(1) and then modified a change
+and subsequently wondering what on earth you did.  Files are considered
+to be "common" if they have the same name.  In the case of a file which
+has been moved, it's original filename is used (the diff of course takes
+place against the new file name).
+.SH AUTHOR
+Scott Finneran <scottf@lucent.com>

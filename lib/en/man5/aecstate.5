@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1997, 1999, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -58,11 +58,15 @@ being_developed
 .br
 The change is being developed.
 .TP 8n
+awaiting_review
+.br
+The change has been developed, and is waiting to be review.
+(Optional, controlled by the \fIdevelop end action\fP project attribute.)
+.TP 8n
 being_reviewed
 .br
-The change has been developed,
-and is being reviewed.
-(There is no 'awaiting_review' state.)
+The change has been developed, and is being reviewed.
+(Optional, controlled by the \fIdevelop end action\fP project attribute.)
 .TP 8n
 awaiting_integration
 .br
@@ -190,14 +194,22 @@ command was run for this specific pattern instance.
 .RE
 .TP 8n
 development_directory = string;
-.br
-This field is the absolute path of the change's development directory.
+.RS
+This field is the absolute path of a change's development directory.
 It is only present of the change is in a state
 between
 .I being_developed
 and
 .I being_integrated
 inclusive.
+.PP
+However, branches are treated slightly differently to changes.
+The directory is relative to the root of the project tree, in order to
+facilitate moving the project without rewriting any of the database.
+Note that its doesn't point to the branch baseline, but one level up;
+just as the project root doesn't point to the trunk baseline, but rather
+one level up.
+.RE
 .TP 8n
 integration_directory = string;
 .br
@@ -253,9 +265,16 @@ because
 is paranoid.
 .TP 8n
 developer_may_review = boolean;
+.RS
 If this field is true, then a developer may review her own change.
 This is probably only a good idea for projects of less than 3 people.
 The idea is for as many people as possible to critically examine a change.
+.PP
+Note that the \fIdevelop_\%end_\%action\fP field may not contradict
+the \fIdeveloper_\%may_\%review\fP field.  If developers may not review
+their own work, then their changes may not goto directly to the \fIbeing
+integrated\fP state (as this means much the same thing).
+.RE
 .TP 8n
 developer_may_integrate = boolean;
 If this field is true, then a developer may integrate her own change.
@@ -274,6 +293,7 @@ This tends to be a very useful thing,
 since developers find most of the bugs.
 .TP 8n
 forced_develop_begin_notify_command = string;
+.RS
 This command is used to notify a developer
 that a change requires developing;
 it is issued when a project administrator uses an
@@ -283,8 +303,15 @@ All of the substitutions described in
 .IR aesub (5)
 are available.
 This field is optional.
+.PP
+Executed as: the new developer.
+Current directory: the development directory of the change
+for the new developer.
+Exit status: ignored.
+.RE
 .TP 8n
 develop_end_notify_command = string;
+.RS
 This command is used to
 notify that a change is ready for review.
 It will probably use mail,
@@ -296,8 +323,14 @@ such as progress and defect tracking.
 All of the substitutions described by
 .IR aesub (5)
 are available.
+.PP
+Executed as: the developer.
+Current directory: the development directory of the change.
+Exit status: ignored.
+.RE
 .TP 8n
 develop_end_undo_notify_command = string;
+.RS
 This command is used to
 notify that a change had been withdrawn from review
 for further development.
@@ -310,8 +343,52 @@ such as progress and defect tracking.
 All of the substitutions described by
 .IR aesub (5)
 are available.
+.PP
+Executed as: the developer.
+Current directory: the development directory of the change.
+Exit status: ignored.
+.RE
+.TP 8n
+review_begin_notify_command = string;
+.RS
+This command is used to
+notify that a review has begun.
+It will probably use mail,
+or it could be an in-house bulletin board.
+This field is optional,
+if not present no notification will be given.
+This command could also be used to notify other management systems,
+such as progress and defect tracking.
+All of the substitutions described by
+.IR aesub (5)
+are available.
+.PP
+Executed as: the reviewer.
+Current directory: the development directory of the change.
+Exit status: ignored.
+.RE
+.TP 8n
+review_begin_undo_notify_command = string;
+.RS
+This command is used to
+notify that a review is no longer in progress, the reviewer has withdrawn.
+It will probably use mail,
+or it could be an in-house bulletin board.
+This field is optional,
+if not present no notification will be given.
+This command could also be used to notify other management systems,
+such as progress and defect tracking.
+All of the substitutions described by
+.IR aesub (5)
+are available.
+.PP
+Executed as: the reviewer.
+Current directory: the development directory of the change.
+Exit status: ignored.
+.RE
 .TP 8n
 review_pass_notify_command = string;
+.RS
 This command is used to
 notify that a review has passed.
 It will probably use mail,
@@ -323,8 +400,14 @@ such as progress and defect tracking.
 All of the substitutions described by
 .IR aesub (5)
 are available.
+.PP
+Executed as: the reviewer.
+Current directory: the development directory of the change.
+Exit status: ignored.
+.RE
 .TP 8n
 review_pass_undo_notify_command = string;
+.RS
 This command is used to
 notify that a review has passed.
 It will probably use mail,
@@ -337,8 +420,14 @@ Defaults to the same action as the \fIdevelop_end_notify_command\fP field.
 All of the substitutions described by
 .IR aesub (5)
 are available.
+.PP
+Executed as: the reviewer.
+Current directory: the development directory of the change.
+Exit status: ignored.
+.RE
 .TP 8n
 review_fail_notify_command = string;
+.RS
 This command is used to
 notify that a review has failed.
 It will probably use mail,
@@ -350,8 +439,14 @@ such as progress and defect tracking.
 All of the substitutions described by
 .IR aesub (5)
 are available.
+.PP
+Executed as: the reviewer.
+Current directory: the development directory of the change.
+Exit status: ignored.
+.RE
 .TP 8n
 integrate_pass_notify_command = string;
+.RS
 This command is used to
 notify that an integration has passed.
 It will probably use mail,
@@ -363,8 +458,14 @@ such as progress and defect tracking.
 All of the substitutions described by
 .IR aesub (5)
 are available.
+.PP
+Executed as: the project owner.
+Current directory: the new project baseline.
+Exit status: ignored.
+.RE
 .TP 8n
 integrate_fail_notify_command = string;
+.RS
 This command is used to
 notify that an integration has failed.
 It will probably use mail,
@@ -376,6 +477,11 @@ such as progress and defect tracking.
 All of the substitutions described by
 .IR aesub (5)
 are available.
+.PP
+Executed as: the integrator.
+Current directory: the development directory of the change.
+Exit status: ignored.
+.RE
 .TP 8n
 default_test_exemption = boolean;
 .br
@@ -463,12 +569,39 @@ Unless you have an exceptionally large project, coupled with fast CPUs
 and high network latency, there is probably very little benefit in
 using this feature.  (The database is usually less than 5% of the size
 of the repository.)  On slow networks, however, this can improve the
-preformance of file-related commands.
+performance of file-related commands.
+.RE
+.TP 8n
+develop_end_action = (...);
+.RS
+This field controls the state the change enters after a successful
+\fIaede\fP(1) action.
+.TP 8n
+.I goto_being_reviewed
+This means that the change goes from the \fIbeing_\%developed\fP state
+to the \fIbeing_\%reviewed\fP state.  The \fIaerb\fP(1) command only
+sends informative email.
+.TP
+.I goto_awaiting_review
+This means that the change goes from the \fIbeing_\%developed\fP state
+to the \fIawaiting_\%review\fP state.  The \fIaerb\fP(1) command is
+now mandatory.
+.TP 8n
+.I goto_awaiting_integration
+This means that the change goes from the \fIbeing_\%developed\fP
+state into the \fIawaiting_\%inmtegartion\fP state.  Code review is
+skipped entirely.
+.PP
+Note that the \fIdevelop_\%end_\%action\fP field may not contradict
+the \fIdeveloper_\%may_\%review\fP field.  If developers may not review
+their own work, then their changes may not goto directly to the \fIbeing
+integrated\fP state (as this means much the same thing).
+A contradictory setting will be replaced with \fIgoto_\%being_\%reviewed\fP.
 .RE
 .RE
 .SS Obsolete Fields
 The following fields are only present is old projects.
-They will be moved to an appropritate file state
+They will be moved to an appropriate file state
 when the change is next modified.
 See
 .IR aefstate (5)
@@ -539,6 +672,30 @@ a combination of deleting the old name and creating the new name is used.
 With deleted files, this field is used to say where it went.
 With new files, this field is used to say where it came from.
 .RE
+.SH WRITING REPORT SCRIPTS
+When attempting to access these fields from within the report generator,
+you need a code fragment similar to the following:
+.RS
+.nf
+.ft CW
+auto ps;
+ps = project[project_name()].state;
+auto cs;
+cs = ps.branch.change[change_number()];
+.ft R
+.fi
+.RE
+All of the fields mentioned in the man page can now be accessed as
+members of the \f[CW]cs\fP variable.  For example, \f[CW]cs.state\fP
+contains the state the change is in.
+.PP
+If this change state refers to a branch, when you
+access a member of the \fIbranch.change\fP field, you are given access
+to the change state data of that change on the branch.
+.PP
+When you index the \fIsrc\fP field by a filename string, you may obtain
+access the the relevant file state (see \fIaefstate\fP(5) for more
+information).
 .SH SEE ALSO
 .TP 8n
 .IR aenc (1)

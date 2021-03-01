@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 1999 Peter Miller;
+.\"	Copyright (C) 1993, 1994, 1999, 2000, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -22,10 +22,12 @@
 .bp
 .nh 2 "Writing Tests"
 .LP
-This section describes a number of things you can do to write better tests,
+This section describes a number of general guidelines
+for writing better tests,
 and some pitfalls to be avoided.
 .LP
-There are a number of suggestions for portability of tests;
+There are also a number of suggestions for portability of tests
+in specific scripting languages;
 this will definitely be important if you are writing software
 to publish on WWW or for FTP.
 Portability is often required
@@ -38,42 +40,82 @@ to another
 or the development team use
 .I gcc
 until the company finds out and forces you to use the prototype-less
-compiler supplied with the operating system.
+compiler supplied with the operating system,
+or even that the software being developed 
+must run under both
+.UX
+and Windows NT.
 .LP
 Note, also, that when using Aegis' heterogeneous build support,
 portability will again feature prominently.
-.nh 3 "Bourne Shell"
+.nh 3 "Contributors"
 .LP
-The aegis program mandates that all tests be Bourne shell scripts.
-This is because this shell is available on all flavors of the
-.UX
-operating system.
-The script files need not have execute permissions set,
-because the aegis program always invokes them as
+I'd like to thank Steven Knight <knight@baldmt.com> for writing portions
+of this information.
+.LP
+If other readers have additional testing techniques, or use other
+scripting languages, contributions are welcome.
+.nh 3 "General Guidelines "
+.LP
+This section lists a number of general guidelines
+for all aegis tests, regardless of implementation language.
+Use this section to guide how you write tests
+if the scripting language you choose
+is not specifically covered in greater detail below.
+.nh 4 "Choice of Scripting Language"
+.LP
+The aegis program uses
+the \fItest_command\fP field
+of the project \fIconfig\fP file
+to specify how tests are executed.
+The default value of the \fItest_command\fP field:
 .E(
-sh \fIfilename\fP
+test_command = "$shell $file_name";
 .E)
-so tests should not expect command line arguments.
-The test is not passed the name of the project nor the number of the change.
+specifies that tests be Bourne shell scripts.
+You may, however, change the value of \fItest_command\fP to
+specify some other scripting language interpreter,
+which allows you to write your test scripts
+in whatever scripting language
+is appropriate for your project.
+The Perl or Python scripting languages, for example,
+could be used to create test scripts that
+are portable to systems other than
+.UX
+systems.
 .LP
-This means that if you can write in in a shell script,
+This means that if you can write it
+in your scripting language of choice,
 you can test it.
 This includes such things as client-server model interfaces,
 and multi-user synchronization testing.
+.nh 4 "No Execute Permission"
 .LP
-Some indication that the test script is a Bourne shell script is
-a good idea.
-While many systems accept that a first line starting with a colon is a
-Bourne shell "magic number",
-a more widely understood "magic number" is
+Under aegis,
+script files do not have execute permission set,
+so they should always be invoked by passing
+the script file to the interpreter,
+not executing the test directly:
 .E(
-#! /bin/sh
+sh \fIfilename\fP
+perl \fIfilename\fP
 .E)
-as the first line of the script file.
-.nh 3 "Current Directory"
+.nh 4 "No Command-Line Arguments"
+.LP
+Tests should not expect command line arguments.
+Tests are not passed the name of the project nor the number of the change.
+.nh 4 "Identifying the Scripting Language"
+.LP
+Even though aegis does not execute the test script directly,
+it is a good idea to put
+some indication of its scripting language
+into the test script.
+See the sections below for suggested "magic number"
+identification of scripts in various languages.
+.nh 4 "Current Directory"
 .LP
 Tests are always run with the current directory set to either the
-development directory
+development directory of the
 change under test when testing a change,
 or the integration directory when integrating a change,
 or the baseline when performing independent tests.
@@ -85,9 +127,122 @@ and must not try to write to it,
 as this could damage the source code of a change
 under development,
 potentially destroying weeks of work.
-.nh 3 "Check Exit Status"
+.nh 4 "Check Exit Status and Return Values"
 .LP
-A test script should check the exit status of every single command,
+A test script should check the exit status or return value
+of every single command or function call,
+even those which cannot fail.
+Checking the exit status or return value
+of every statement in the script
+ensures that strange permission settings,
+or disk space problems,
+will cause the test to fail,
+rather than plow on and produce spurious results.
+See the sections below for
+specific suggestions on checking
+exit status or return values
+in various scripting languages.
+.nh 4 "Temporary Directory"
+.LP
+Tests should create a temporary subdirectory in
+the operating system's temporary directory
+(typically
+.I /tmp
+on
+.UX
+systems)
+and then change its working directory (\fIcd\fP)
+to this directory.
+This isolates any vandalism that the program under test may indulge in,
+and serves as a place to write temporary files.
+.LP
+At the end of the test, it is sufficient to change directory
+out of the temporary subdirectory and then
+remove the entire temporary subdirectory hierarchy,
+rather than track and remove all test files which may or may not be created.
+.LP
+Some
+.UX
+systems provide other temporary directories,
+such as
+.I /var/tmp ,
+which may provide a better location
+for a temporary subdirectory for testing
+(more file system space available,
+administrator preference, etc.).
+Test scripts wishing to accomodate alternate temporary directories
+should use the TMPDIR environment variable
+(or some other environment variable appropriate
+to the operating system hosting the tests)
+as the location for creating their temporary subdirectory,
+with
+.I /tmp
+as a reasonable default if TMPDIR is not set.
+.nh 4 "Trap Interrupts"
+.LP
+Test scripts should catch appropriate interrupts
+(1 2 3 and 15 on
+.UX
+systems)
+and cause the test to fail.
+The interrupt handler should perform any cleanup the test requires,
+such as removing the temporary subdirectory.
+.nh 4 "PAGER"
+.LP
+If the program under test invokes pagers on its output,
+a la \fImore\fP(1) et al,
+it should be coded to use the PAGER
+environment variable.
+Tests of such programs should always set PAGER to
+.I cat
+so that tests always behave the same,
+irrespective of invocation method (either by aegis or from the command line).
+.nh 4 "Auxiliary Files"
+.LP
+If a test requires extra files as input or output to a command,
+it must construct them itself from in-line data.
+(See the sections below for more specific information
+about how to use in-line data in various scripting languages to create files.)
+.LP
+It is almost impossible to determine the location of an auxiliary file,
+if that auxiliary file is part of the project source.
+It could be in either the change under test or the baseline.
+.nh 4 "New Test Templates"
+.LP
+Regardless of your choice of scripting language,
+it is possible to specify most of the repetitious
+items above in a
+.I "file template"
+used every time a user creates a new test.
+See the \fIaent\fP(1) command for more information.
+.LP
+Having the machine do it for you
+means that you are more likely to do it.
+.nh 3 "Bourne Shell"
+.LP
+The Bourne shell is available on all flavors of the
+.UX
+operating system,
+which allows Bourne shell scripts to
+be written portably across those systems.
+Here are some specific guidelines
+for writing aegis tests using Bourne shell scripts.
+.LP
+.nh 4 "Magic Number"
+.LP
+Some indication that the test is a Bourne shell script is
+a good idea.
+While many systems accept that a first line starting with a colon is a
+Bourne shell "magic number",
+a more widely understood "magic number" is
+.E(
+#! /bin/sh
+.E)
+as the first line of the script file.
+.nh 4 "Check Exit Status"
+.LP
+A Bourne shell test script
+should check the exit status of every single command,
 even those which cannot fail.
 Do not rely on, or use, the
 .I "set -e"
@@ -100,46 +255,42 @@ Do not use an
 .I if
 statement wrapped around an execution of the program under test
 as this will miss core dumps and other terminations caused by signals.
+.nh 4 "Temporary Directory"
 .LP
-Checking the exit status of every command in the script
-ensures that strange permission settings,
-or disk space problems,
-will cause the test to fail,
-rather than plow on and produce spurious results.
-.nh 3 "Trap Interrupts"
-.LP
-Use the
-.I trap
-statement to catch interrupts 1 2 3 and 15 an cause the test to fail.
-This should perform any cleanup the test requires
-(such as removing the temporary directory; see next item).
-.nh 3 "Temporary Directory"
-.LP
-Tests should create a temporary directory in
+Bourne shell test scripts
+should create a temporary subdirectory in
 .I /tmp
+(or the directory specified by the TMPDIR environment variable)
 and then
 .I cd
 into this directory.
-.LP
-This tends to isolate any vandalism that the program under test may indulge in,
-and serves as a place to write temporary files.
-At the end of the test, it is sufficient to
+At the end of the test, or on interrupt,
+the script should
 .I cd
-out of the temporary directory and then
+out of the temporary subdirectory and then
 .I "rm -rf"
-it,
-rather than track and remove all test files which may or may not be created.
-.nh 3 "PAGER"
+it.
+.nh 4 "Trap Interrupts"
 .LP
-If the program under test invokes pagers on its output,
-a la \fImore\fP(1) et al,
-it should be coded to use the PAGER
-environment variable.
-Tests of such programs should always set PAGER to
-.I cat
-so that tests always behave the same,
-irrespective of invocation method (either by aegis or from the command line).
-.nh 3 "[ test ]"
+Use the
+.I trap
+statement to catch interrupts 1 2 3 and 15 and cause the test to fail.
+This should perform any cleanup the test requires,
+such as removing the temporary directory.
+.nh 4 "Auxiliary Files"
+.LP
+If a test requires extra files as input or output to a command,
+it must construct them itself,
+using \fIhere\fP documents:
+.E(
+cat <<EOF >file
+contents
+of the
+file
+EOF
+.E)
+See \fIsh\fP(1) for more information.
+.nh 4 "[ test ]"
 .LP
 You should always use the
 .I test
@@ -147,22 +298,357 @@ command,
 rather than the square bracket form,
 as many systems do not have the square bracket form,
 if you publish to USENET or for FTP.
-.nh 3 "Auxiliary Files"
+.nh 4 "Other Bourne Shell Portability Issues"
+.LP
+The above list covers the most common Bourne shell
+issues that are relevant to most aegis tests.
+The documentation for the GNU autoconf utility, however,
+contains a more exhaustive list of Bourne shell portability issues.
+If you want (or need) to make your tests as portable as possible,
+see the documentation for GNU autoconf.
+.nh 3 "Perl"
+.LP
+Perl is a popular open-source scripting language
+available on a number of operating systems.
+Here are some specific guidelines
+for writing aegis tests using Perl scripts.
+.nh 4 "Magic Number"
+.LP
+Some indication that the test is a Perl script is
+a good idea.
+Because Perl is not installed in the same location on all
+.UX
+systems,
+a first-line "magic number" such as:
+.E(
+#! /usr/local/bin/perl
+.E)
+that hard-codes the Perl path name
+will not be portable
+if you publish your tests.
+.LP
+If the \fIenv\fP(1) program is available,
+a more portable "magic number" for Perl is:
+.E(
+#! /usr/bin/env perl
+.E)
+.nh 4 "Check Return Values"
+.LP
+A Perl test script
+should check the return value from every subroutine,
+even those which cannot fail.
+.LP
+A Perl test script should also
+check the exit status of every command it executes.
+Checking the exit status involves testing the contents of the
+.B $?
+variable.
+See the Perl documentation on "Predefined Variables"
+for details.
+.nh 4 "Temporary Directory"
+.LP
+Perl test scripts
+should create a temporary subdirectory in
+.I /tmp
+(or the directory specified by the
+.B $ENV{TMPDIR}
+environment variable)
+and then
+.I chdir
+into this directory.
+At the end of the test, or on interrupt,
+the script should
+.I chdir
+out of the temporary subdirectory and then
+remove it and its hierarchy.
+A portable way to do this within a Perl script:
+.E(
+use File::Find;
+finddepth(sub { if (-d $_) {
+		rmdir($_)
+	} else {
+		unlink($_)
+	} },
+	$dir);
+.E)
+.nh 4 "Trap Interrupts"
+.LP
+Use Perl's
+.I $SIG
+hash to catch interrupts for
+HUP, INT, QUIT and TERM
+and cause the test to fail.
+This should perform any cleanup the test requires,
+such as removing the temporary directory.
+A very simple example:
+.E(
+$SIG{HUP} =
+$SIG{INT} =
+$SIG{QUIT} =
+$SIG{TERM} =
+	sub { &cleanup; exit(2) };
+.E)
+.nh 4 "Auxiliary Files"
 .LP
 If a test requires extra files as input or output to a command,
 it must construct them itself,
-using \fIhere\fP documents (see \fIsh\fP(1) for more information).
+using in-line data such as \fIhere\fP documents
+See the Perl documentation for more information.
+.nh 4 "Exit Values"
 .LP
-It is almost impossible to determine the location of an auxiliary file,
-if that auxiliary file is part of the project source.
-It could be in either the change under test or the baseline.
-.nh 3 "New Test Templates"
+Aegis expects tests to exit with a status of 0 for success,
+1 for failure, and 2 for no result.
+The following code fragment
+will map all failed (non-zero) exit values
+to an exit status of 1,
+regardless of what Perl module
+called exit:
+.E(
+END { $? = 1 if $? }
+.E)
+A more complete example could
+check conditions and set the exit status to
+2 to indicate NO RESULT.
+.nh 4 "Modules"
 .LP
-It is possible to specify most of the repetitious
-items above in a
-.I "file template"
-used every time a user creates a new test.
-See the \fIaent\fP(1) command for more information.
+Perl supports the ability to re-use modules of common routines,
+and to search several directories for modules.
+This makes it convenient to write modules
+to share code among the tests in a project.
 .LP
-Having the machine do it for you
-means that you are more likely to do it.
+Any modules that are used by your test scripts
+(other than the standard modules included by Perl)
+should be checked in to the project as source files.
+Test scripts should then import the module(s)
+via the normal Perl mechanism:
+.E(
+use MyTest;
+.E)
+.LP
+When a test is run,
+the module file may actually be in the baseline directory,
+not the development or integration directories.
+To make sure that the test invocation finds the module,
+the \fItest_command\fP field
+in the project \fIconfig\fP file
+should use the Perl
+.B -I
+option to search first the local directory
+and then the baseline:
+.E(
+test_command =
+    "perl -I. -I${BaseLine} \e
+    ${File_Name}"
+.E)
+or, alternatively, if you had created your Perl test modules
+in a subdirectory named
+.B aux :
+.E(
+test_command =
+    "perl -I./aux -I${BaseLine}/aux \e
+    ${File_Name}"
+.E)
+.LP
+For details on the conventions involved
+in writing your own modules,
+consult the Perl documentation
+or other reference work.
+.LP
+\fIActually, you need to use the ${search_path} substitution.
+I'll have to fix this one day.\fP
+.nh 4 "The Test::Cmd Module"
+.LP
+A Test::Cmd module is available on CPAN
+(the Comprehensive Perl Archive Network)
+that makes it easy to write Perl scripts
+that conform to aegis test requirements.
+The Test::Cmd module supports most of the guidelines mentioned above,
+including creating a temporary subdirectory,
+cleaning up the temporary subdirectory on exit or interrupt,
+writing auxiliary files from in-line contents,
+and provides methods for exiting on success, failure, or no result.
+The following example illustrates some of its capabilities:
+.E(
+#! /usr/bin/env perl
+use Test::Cmd;
+$test = Test::Cmd->new(prog
+	=> 'program_under_test',
+		workdir => '');
+$ret = $test->write('aux_file', <<EOF);
+contents of file
+EOF
+$test->no_result(! $ret =>
+	sub { print STDERR
+	"Couldn't write file: $!\e\en"});
+$test->run(args => 'aux_file');
+$test->fail($? != 0);
+$test->pass;
+.E)
+.LP
+The various methods supplied by the Test::Cmd module
+have a number of options to control their behavior.
+.LP
+The Test::Cmd module manipulates
+file and path names using the operating-system-independent
+File::Spec module,
+so the Test::Cmd module can be used to write
+tests that are portable to any operating system
+that runs Perl and the program under test.
+.LP
+The Test::Cmd module is available on CPAN.
+See the module's documentation for details.
+.nh 4 "The Test and Test::Harness Modules"
+.LP
+Perl supplies two modules,
+Test and Test::Harness,
+to support its own testing infrastructure.
+Perl's tests use different conventions than aegis tests;
+specifically, Perl tests do not use the exit status
+to indicate the success or failure of the test,
+like aegis expects.
+The Test::Harness module
+expects that Perl tests
+report the success or failure of
+individual sub-tests on standard output,
+and always exit with a status of 0
+to indicate the script tested everything it was supposed to.
+.LP
+This difference makes it awkward to use
+the Test and Test::Harness modules for aegis tests.
+In some circumstances, though,
+you may be forced to write tests using
+the Test and Test::Harness modules--for example,
+if you use aegis to develop a Perl module for distribution--but
+still wish to have the tests conform to aegis conventions
+during development.
+.LP
+This can be done by writing each test to
+use an environment variable
+to control whether its exit status should
+conform to aegis or Perl conventions.
+This is easy when using the Test module to write tests,
+as its
+.I onfail
+method provides an appropriate place
+to set the exit status to non-zero
+if the appropriate environment variable is set.
+The following code fragment at or near the beginning
+of each Perl test script accomplishes this:
+.E(
+use Test;
+BEGIN { plan tests => 3,
+    onfail => sub {
+        $? = 1 if $ENV{AEGIS_TEST}
+        }
+    }
+.E)
+(See the documentation for the Test module
+for information about using it to write tests.)
+.LP
+There then needs to be a wrapper Perl script
+around the execution of the tests to
+set the environment variable.
+The following script
+(called
+.I mytest.pl
+for the sake of example)
+sets the
+.B AEGIS_TEST
+environment variable expected
+by the previous code fragment:
+.E(
+use Test::Harness;
+$ENV{AEGIS_TEST} = 1;
+open STDOUT, ">/dev/null" || exit (2);
+runtests(@ARGV);
+END { $? = 1 if $?;
+    print STDERR $?
+        ? "FAILED" : "PASSED",
+        "\en"; }
+.E)
+It also makes its output more nearly
+conform to aegis' examples
+by redirecting standard output to
+.B /dev/null
+and restricting its reporting of results to
+a simple
+.B FAILED
+or PASSED
+on standard error output.
+.LP
+The last piece of the puzzle is to modify
+the \fItest_command\fP field
+of the project \fIconfig\fP file
+to have the
+.I mytest.pl
+script call the test script:
+.E(
+test_command =
+    "perl -I. -I${BaseLine} mytest.pl \e
+    ${File_Name}"
+.E)
+.LP
+The Test and Test::Harness modules
+are part of the standard Perl distribution
+and do not need to be downloaded from anywhere.
+Because these modules are part of the standard distribution,
+they can be used by test scripts
+without being checked in to the project.
+.nh 4 "Granularity"
+By \fISteven Knight <knight@baldmt.com>\fP
+.LP
+The granularity of Perl and Aegis tests mesh very well at the
+individual test file (.t) level.  Aegis and Test::Harness are simply
+different harnesses that expect slightly different conventions from
+the tests they execute:  Aegis uses the exit code to communicate an
+aggregate pass/fail/no result status, Test::Harness examines the output
+from tests to decide if a failure occurred.
+.LP
+It's actually pretty easy to accomodate both conventions.
+You can do this as easily as setting the test_command variable
+in the project config file to something like the following:
+.E(
+test_command =
+	"perl -MTest::Harness -e 'runtests(\e"$fn\e"); \e
+	END {$$? = 1 if $$? }'";
+.E)
+In reality, you'll likely need to add variable expansions to generate
+-I or other Perl options for the full Aegis search path.  The END block
+takes care of mapping any non-zero Test::Harness exit code to the '1'
+that Aegis expects to indicate a failure.
+.LP
+The only thing you really lose here is the Test::Harness aggregation of
+results and timing at the end of a multi-test run.  This is more than
+offset by having Aegis track which tests need to be run for a given
+change.
+.LP
+Alternatively, you can execute the .t files directly, not through
+Test::Harness::runtests.  This is easily accomodated using the onfail
+method from the standard Perl Test module in each test.  Here's a
+standard opening block for .t tests
+.E(
+use Test;
+BEGIN { $| = 1; plan tests => 19,
+	onfail => sub { $? = 1 if $ENV{AEGIS_TEST} }
+}
+END {print "not ok 1\en" unless $loaded;}
+use Test::Cmd;
+$loaded = 1;
+ok(1);
+.E)
+That's it (modulo specifying the appropriate number of tests).  My .t
+tests now use the proper exit status to report a failure back to Aegis.
+The only other piece is configuring the project's "test_command" value
+to set the AEGIS_TEST environment variable.
+.LP
+You can also use an intermediate script that also redirects the tests's
+STDOUT to /dev/null, if you are used to and like the coarser
+PASSED/FAILED status.
+.nh 3 "Batch Testing"
+.LP
+The usual ``\fItest_command\fP'' field of the project \fIconfig\fP
+file runs a single test at a time.  When you have a multi-CPU machine,
+or are able to distribute the testing load across a range of machines,
+it is often desirable to do so.  The ``\fIbatch_test_command\fP''
+of the project config file is for this purpose.  See \fIaepconf\fP(5)
+for more information.

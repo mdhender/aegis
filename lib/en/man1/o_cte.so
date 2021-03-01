@@ -1,0 +1,47 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing lib/en/man1/o_ctes
+.\"
+.TP 8n
+\fB\-Content_Transfer_Encoding\fP \fIname\fP
+.RS
+This option may be used to specify the content transfer encoding to be used.
+It may take one of the folliwing values:
+.TP 8n
+None
+No content transfer encoding is to be performed.
+.TP 8n
+Base64
+The MIME base 64 encoding is to be used.  This is the default.
+.TP 8n
+Quoted_Printable
+The MIME quoted printable encoding is to be used.
+.TP 8n
+Unix_to_Unix_encode
+The ancient unix-to-unix encoding is to be used.
+.PP
+These encodings may be abbreviated in the same way as comment line options.
+.RE
+.TP 8n
+\fB\-Ascii_Armor
+This means the same as the ``-cte=base64'' option above.
+.TP 8n
+\fB\-No_Ascii_Armor
+This means the same as the ``-cte=none'' option above.

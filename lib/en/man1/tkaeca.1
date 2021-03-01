@@ -21,7 +21,7 @@
 .\"
 .so z_name.so
 .ds n) tkaeca
-.TH "\*(n) -Glup" 1 \*(N) "Reference Manual" ""
+.TH "\*(n)" 1 \*(N) "Reference Manual" ""
 .SH NAME
 \*(n) \- GUI interface for aeca, using TCL/TK
 .XX "tkaeca(1)" "GUI interface for aeca, using TCL/TK"
@@ -34,7 +34,7 @@ command is used to provide a GUI interface to \fIaeca\fP(1).  Its use
 should be self-evident to anyone familiar with Aegis.
 .PP
 The top line of the screen contains button for selecting the project
-and the change.  They will be defaulted whenever, using the usual Aegis
+and the change.  They will be defaulted whenever possible, using the usual Aegis
 defaulting rules.  Click on the buttons to obtain a pick list if you
 want to change; then double-click an item to select it.  (I would have
 used tk_optionMenu, but it doesn't have a scroll bar, even when all the

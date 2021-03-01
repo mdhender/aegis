@@ -1,0 +1,94 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 3.27 features
+.\"
+.PP
+.if n *
+.if t \(bu
+.\" change 55, 53, 52, 51, 50, 38, 35, 32, 11
+There is a new \fIaepatch\fP(1) program, which may be used to send an
+receive changes using the classic open source patch format.
+See \fIaepatch\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 19, 12
+The general output mechanism (for listings and reports)
+has been rewritten to be significantly faster.
+.PP
+.if n *
+.if t \(bu
+.\" change 60, 16
+Numerous small things have been improved in and around the
+\f[CW]./configure\fP script and the \f[CW]Makefile\fP.
+.PP
+.if n *
+.if t \(bu
+.\" change 58
+The web interface has been improved.  It should result in better save
+file locations being suggested for \f[CW]\.ae\fP files.
+cgi vs downloads
+.PP
+.if n *
+.if t \(bu
+.\" change 31
+Aegis now takes a baseline read lock during tests,
+so that the baseline doesn't move out from under your tests,
+causing mysterious failures.
+.PP
+.if n *
+.if t \(bu
+.\" change 29
+A bug has been fixed in the \f[CW]subst\fP function of the report generator.
+It was free()in a string twice.
+.PP
+.if n *
+.if t \(bu
+.\" change 28
+There is a new \fI${developer email}\fP substitution,
+for inserting users' preferred email addresses into commands.
+Useful for the state transition notification commands.
+.PP
+.if n *
+.if t \(bu
+.\" change 27
+There is now more text in the \fIaepconf\fP(5) man page, explaining
+how each of the pattern fields are applied to file names.  It is now
+explicit when patterns applied to whole file names, and when they only
+applied to path name elements.
+.PP
+.if n *
+.if t \(bu
+.\" change 26
+A segfault has been fixed in the removed file whiteout code.
+.PP
+.if n *
+.if t \(bu
+.\" change 17
+The \fIaesub $source\fP substitution now works in combination with
+the \fB\-BaseLine\fP option.
+.PP
+.if n *
+.if t \(bu
+.\" change 15
+The \fIaegis.spec\fP file now mentions the executables again.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 3.27

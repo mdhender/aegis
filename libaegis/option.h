@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1995, 1997 Peter Miller;
+ *	Copyright (C) 1991-1993, 1995, 1997, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,10 @@
 
 #include <main.h>
 
-#define MAX_PAGE_WIDTH 2000
+#define DEFAULT_PRINTER_WIDTH 132
+#define DEFAULT_PRINTER_LENGTH 66
+
+#define MAX_PAGE_WIDTH 5000
 
 void option_progname_set _((char *));
 char *option_progname_get _((void));
@@ -38,11 +41,14 @@ void option_terse_set _((void(*)(void)));
 int option_terse_get _((void));
 
 void option_page_width_set _((int columns, void (*usage)(void)));
-int option_page_width_get _((void));
+int option_page_width_get _((int));
 void option_page_length_set _((int rows, void (*usage)(void)));
-int option_page_length_get _((void));
+int option_page_length_get _((int));
 
 void option_tab_width_set _((int, void(*)(void)));
 int option_tab_width_get _((void));
+
+void option_page_headers_set _((int, void(*)(void)));
+int option_page_headers_get _((void));
 
 #endif /* OPTION_H */

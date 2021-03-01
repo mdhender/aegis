@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,8 +27,9 @@
 #include <aet.h>
 #include <arglex2.h>
 #include <change.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <change/file.h>
+#include <change/test/run_list.h>
 #include <commit.h>
 #include <error.h>
 #include <help.h>
@@ -85,7 +86,7 @@ test_list()
 	string_ty	*project_name;
 	long		change_number;
 
-	trace(("test_list()\n{\n"/*}*/));
+	trace(("test_list()\n{\n"));
 	project_name = 0;
 	change_number = 0;
 	arglex();
@@ -113,7 +114,7 @@ test_list()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number); 
+				sub_var_set_long(scp, "Number", change_number); 
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -133,7 +134,7 @@ test_list()
 	list_change_files(project_name, change_number);
 	if (project_name)
 		str_free(project_name);
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }
 
 
@@ -195,9 +196,9 @@ limit_suggestions(cp, flp, want, noise_percent)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Number1", "%ld", (long)flp->nstrings);
+		sub_var_set_long(scp, "Number1", (long)flp->nstrings);
 		sub_var_optional(scp, "Number1");
-		sub_var_set(scp, "Number2", "%d", want);
+		sub_var_set_long(scp, "Number2", (long)want);
 		sub_var_optional(scp, "Number2");
 		change_verbose(cp, scp, i18n("few candidate tests"));
 		sub_context_delete(scp);
@@ -315,8 +316,8 @@ limit_suggestions(cp, flp, want, noise_percent)
 			 * know why the tests were chosen.
 			 */
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", lp->filename);
-			sub_var_set(scp, "Number", "scp, %6.2f", 100. * lp->count / item[0].count);
+			sub_var_set_string(scp, "File_Name", lp->filename);
+			sub_var_set_format(scp, "Number", "scp, %6.2f", 100. * lp->count / item[0].count);
 			change_verbose(cp, scp, i18n("test $filename scored $number"));
 			sub_context_delete(scp);
 		}
@@ -332,6 +333,61 @@ limit_suggestions(cp, flp, want, noise_percent)
 }
 
 
+static void verbose_message _((project_ty *, change_ty *,
+	batch_result_list_ty *));
+
+static void
+verbose_message(pp, cp, brlp)
+	project_ty	*pp;
+	change_ty	*cp;
+	batch_result_list_ty *brlp;
+{
+	sub_context_ty	*scp;
+
+	if (brlp->pass_count)
+	{
+		scp = sub_context_new();
+		sub_var_set_long(scp, "Number", brlp->pass_count);
+		if (cp)
+			change_verbose(cp, scp, i18n("passed $number tests"));
+		else
+			project_verbose(pp, scp, i18n("passed $number tests"));
+		sub_context_delete(scp);
+	}
+	if (brlp->no_result_count)
+	{
+		scp = sub_context_new();
+		sub_var_set_long(scp, "Number", brlp->no_result_count);
+		if (brlp->fail_count)
+		{
+			if (cp)
+				change_error(cp, scp, i18n("no result $number tests"));
+			else
+				project_error(pp, scp, i18n("no result $number tests"));
+		}
+		else
+		{
+			if (cp)
+				change_fatal(cp, scp, i18n("no result $number tests"));
+			else
+				project_fatal(pp, scp, i18n("no result $number tests"));
+		}
+		sub_context_delete(scp);
+	}
+	if (brlp->fail_count)
+	{
+		scp = sub_context_new();
+		sub_var_set_long(scp, "Number", brlp->fail_count);
+		if (cp)
+			change_fatal(cp, scp, i18n("failed $number tests"));
+		else
+			project_fatal(pp, scp, i18n("failed $number tests"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
+}
+
+
 static void test_main _((void));
 
 static void
@@ -343,38 +399,32 @@ test_main()
 	int		manual_flag;
 	int		automatic_flag;
 	string_list_ty	wl, wl2;
-	string_list_ty	cfile;
-	string_list_ty	pfile;
 	string_ty	*s1;
 	string_ty	*s2;
 	fstate_src	p_src_data;
 	cstate		cstate_data;
-	fstate_src	c_src_data;
+	fstate_src	c_src_data = 0;
 	string_ty	*dir;	/* unresolved */
 	size_t		j, k;
-	int		npassed;
-	int		nfailed;
-	int		nindeterminate;
 	string_ty	*project_name;
 	project_ty	*pp;
 	long		change_number;
 	change_ty	*cp;
 	log_style_ty	log_style;
-	int		(*run_test_command)_((change_ty *, user_ty *,
-				string_ty *, string_ty *, int));
 	user_ty		*up;
 	string_list_ty	search_path;
 	time_t		now;
 	int		integrating;
-	int		persevere;
 	int		suggest;
 	int		suggest_noise;
 	int		based;
 	string_ty	*base;
 	int		exempt;
 	int		force;
+	batch_result_list_ty *brlp;
 
-	trace(("test_main()\n{\n"/*}*/));
+	trace(("test_main()\n{\n"));
+	arglex();
 	project_name = 0;
 	change_number = 0;
 	baseline_flag = 0;
@@ -384,10 +434,7 @@ test_main()
 	force = 0;
 	log_style = log_style_snuggle_default;
 	string_list_constructor(&wl);
-	string_list_constructor(&cfile);
-	string_list_constructor(&pfile);
 	dir = 0;
-	persevere = -1;
 	suggest = 0;
 	suggest_noise = -1;
 	while (arglex_token != arglex_token_eoln)
@@ -412,7 +459,7 @@ test_main()
 			else if (change_number < 1)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -476,27 +523,8 @@ test_main()
 			break;
 
 		case arglex_token_persevere:
-			if (persevere == 1)
-				duplicate_option(test_usage);
-			if (persevere == 0)
-			{
-				too_many_perseveres:
-				mutually_exclusive_options
-				(
-					arglex_token_persevere,
-					arglex_token_no_persevere,
-					test_usage
-				);
-			}
-			persevere = 1;
-			break;
-
 		case arglex_token_no_persevere:
-			if (persevere == 0)
-				duplicate_option(test_usage);
-			if (persevere == 1)
-				goto too_many_perseveres;
-			persevere = 0;
+			user_persevere_argument(test_usage);
 			break;
 
 		case arglex_token_suggest:
@@ -511,8 +539,8 @@ test_main()
 			if (suggest <= 0)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_suggest));
-				sub_var_set(scp, "Number", "%ld", arglex_value.alv_number);
+				sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_suggest));
+				sub_var_set_long(scp, "Number", arglex_value.alv_number);
 				error_intl(scp, i18n("$name $number must be pos"));
 				sub_context_delete(scp);
 				test_usage();
@@ -528,8 +556,8 @@ test_main()
 			if (suggest_noise < 0 || suggest_noise > 100)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_suggest_noise));
-				sub_var_set(scp, "Number", "%ld", arglex_value.alv_number);
+				sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_suggest_noise));
+				sub_var_set_long(scp, "Number", arglex_value.alv_number);
 				error_intl(scp, i18n("$name $number must not be neg"));
 				sub_context_delete(scp);
 				test_usage();
@@ -554,7 +582,7 @@ test_main()
 		if (automatic_flag)
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_automatic));
+			sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_automatic));
 			fatal_intl(scp, i18n("no file with $name"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -562,7 +590,7 @@ test_main()
 		if (manual_flag)
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_manual));
+			sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_manual));
 			fatal_intl(scp, i18n("no file with $name"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -571,9 +599,9 @@ test_main()
 		{
 			scp = sub_context_new();
 			if (suggest)
-				sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_suggest));
+				sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_suggest));
 			else
-				sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_regression));
+				sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_regression));
 			fatal_intl(scp, i18n("no file with $name"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -590,6 +618,9 @@ test_main()
 	trace_int(manual_flag);
 	trace_int(automatic_flag);
 
+	os_throttle();
+	time(&now);
+
 	/*
 	 * locate project data
 	 */
@@ -603,8 +634,6 @@ test_main()
 	 * locate user data
 	 */
 	up = user_executing(pp);
-	if (persevere < 0)
-		persevere = user_persevere_preference(up);
 
 	/*
 	 * locate change data
@@ -618,13 +647,13 @@ test_main()
 	 * take a lock on the change
 	 */
 	change_cstate_lock_prepare(cp);
+	project_baseline_read_lock_prepare(pp);
 	lock_take();
 	cstate_data = change_cstate_get(cp);
 
 	/*
 	 * see if it is an appropriate thing to be doing
 	 */
-	run_test_command = change_run_test_command;
 	integrating = 0;
 	switch (cstate_data->state)
 	{
@@ -646,7 +675,6 @@ test_main()
 		{
 			dir = change_development_directory_get(cp, 0);
 			trace_string(dir->str_text);
-			run_test_command = change_run_development_test_command;
 		}
 		break;
 
@@ -658,6 +686,7 @@ test_main()
 		else
 			dir = change_integration_directory_get(cp, 0);
 		integrating = 1;
+		force = 1;
 		break;
 
 	default:
@@ -676,9 +705,8 @@ test_main()
 	 * see if this is a complete change test.
 	 * If it is, we can update the relevant test time field.
 	 */
-	os_throttle();
 	if (regression_flag && !suggest)
-		change_regression_test_time_set(cp);
+		change_regression_test_time_set(cp, now);
 
 	/*
 	 * Search path for resolving filenames.
@@ -713,7 +741,6 @@ test_main()
 
 	/*
 	 * check that the named files make sense
-	 * split the named files into two separate lists
 	 */
 	string_list_constructor(&wl2);
 	for (j = 0; j < wl.nstrings; ++j)
@@ -740,7 +767,7 @@ test_main()
 		if (!s2)
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", wl.string[j]);
+			sub_var_set_string(scp, "File_Name", wl.string[j]);
 			change_fatal(cp, scp, i18n("$filename unrelated"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -772,16 +799,16 @@ test_main()
 					)
 				)
 				{
-					if (string_list_member(&cfile, s3))
+					if (string_list_member(&wl2, s3))
 					{
 						scp = sub_context_new();
-						sub_var_set(scp, "File_Name", "%S", s3);
+						sub_var_set_string(scp, "File_Name", s3);
 						change_fatal(cp, scp, i18n("too many $filename"));
 						/* NOTREACHED */
 						sub_context_delete(scp);
 					}
 					else
-						string_list_append(&cfile, s3);
+						string_list_append(&wl2, s3);
 					used = 1;
 				}
 			}
@@ -789,10 +816,10 @@ test_main()
 			{
 				scp = sub_context_new();
 				if (s2->str_length)
-					sub_var_set(scp, "File_Name", "%S", s2);
+					sub_var_set_string(scp, "File_Name", s2);
 				else
-					sub_var_set(scp, "File_Name", ".");
-				sub_var_set(scp, "Number", "%ld", (long)wl_in.nstrings);
+					sub_var_set_charstar(scp, "File_Name", ".");
+				sub_var_set_long(scp, "Number", (long)wl_in.nstrings);
 				sub_var_optional(scp, "Number");
 				project_fatal(pp, scp, i18n("directory $filename contains no relevant files"));
 				/* NOTREACHED */
@@ -818,7 +845,7 @@ test_main()
 			)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s2);
+				sub_var_set_string(scp, "File_Name", s2);
 				change_fatal(cp, scp, i18n("$filename not test"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -826,21 +853,21 @@ test_main()
 			if (c_src_data->action == file_action_remove)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s2);
+				sub_var_set_string(scp, "File_Name", s2);
 				change_fatal(cp, scp, i18n("$filename being removed"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
 			}
-			if (string_list_member(&cfile, s2))
+			if (string_list_member(&wl2, s2))
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s2);
+				sub_var_set_string(scp, "File_Name", s2);
 				change_fatal(cp, scp, i18n("too many $filename"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
 			}
 			else
-				string_list_append(&cfile, s2);
+				string_list_append(&wl2, s2);
 			if (c_src_data->usage == file_usage_manual_test)
 				log_style = log_style_none;
 		}
@@ -860,8 +887,8 @@ test_main()
 				if (p_src_data)
 				{
 					scp = sub_context_new();
-					sub_var_set(scp, "File_Name", "%S", s2);
-					sub_var_set(scp, "Guess", "%S", p_src_data->file_name);
+					sub_var_set_string(scp, "File_Name", s2);
+					sub_var_set_string(scp, "Guess", p_src_data->file_name);
 					project_fatal
 					(
 						pp,
@@ -874,7 +901,7 @@ test_main()
 				else
 				{
 					scp = sub_context_new();
-					sub_var_set(scp, "File_Name", "%S", s2);
+					sub_var_set_string(scp, "File_Name", s2);
 					change_fatal(cp, scp, i18n("no $filename"));
 					/* NOTREACHED */
 					sub_context_delete(scp);
@@ -888,32 +915,33 @@ test_main()
 			)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s2);
+				sub_var_set_string(scp, "File_Name", s2);
 				project_fatal(pp, scp, i18n("$filename not test"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
 			}
-			if (string_list_member(&pfile, s2))
+			if (string_list_member(&wl2, s2))
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s2);
+				sub_var_set_string(scp, "File_Name", s2);
 				change_fatal(cp, scp, i18n("too many $filename"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
 			}
 			else
-				string_list_append(&pfile, s2);
+				string_list_append(&wl2, s2);
 			if (p_src_data->usage == file_usage_manual_test)
 				log_style = log_style_none;
 		}
 		str_free(s2);
 	}
 	string_list_destructor(&search_path);
+	string_list_destructor(&wl);
+	wl = wl2;
 
 	if (automatic_flag || manual_flag)
 	{
-		assert(!cfile.nstrings);
-		assert(!pfile.nstrings);
+		assert(!wl.nstrings);
 		if (regression_flag)
 		{
 			/*
@@ -967,7 +995,7 @@ test_main()
 				{
 					string_list_append
 					(
-						&pfile,
+						&wl,
 						p_src_data->file_name
 					);
 				}
@@ -1007,7 +1035,7 @@ test_main()
 				{
 					string_list_append
 					(
-						&cfile,
+						&wl,
 						c_src_data->file_name
 					);
 					if
@@ -1031,18 +1059,16 @@ test_main()
 		exempt = 0;
 	else if (regression_flag)
 	{
-		assert(!cfile.nstrings);
 		exempt = cstate_data->regression_test_exempt;
 	}
 	else
 	{
-		assert(!pfile.nstrings);
 		if (baseline_flag)
 			exempt = cstate_data->test_baseline_exempt;
 		else
 			exempt = cstate_data->test_exempt;
 	}
-	if (!cfile.nstrings && !pfile.nstrings)
+	if (!wl.nstrings)
 	{
 		if (exempt)
 			quit(0);
@@ -1068,9 +1094,6 @@ test_main()
 	}
 	else
 		log_open(change_logfile_get(cp), up, log_style);
-	npassed = 0;
-	nfailed = 0;
-	nindeterminate = 0;
 
 	/*
 	 * Limit the suggestions.
@@ -1079,215 +1102,151 @@ test_main()
 	 * are recorded in the log file.
 	 */
 	if (suggest)
-		limit_suggestions(cp, &pfile, suggest, suggest_noise);
-
-	/*
-	 * Do each of the change's tests.
-	 *
-	 * During long tests the automounter can unmount the
-	 * directory referenced by the ``dir'' variable.
-	 * To minimize this, it is essential that they are
-	 * unresolved, and thus always trigger the automounter.
-	 */
-	trace_string(dir->str_text);
-	time(&now);
-	for (j = 0; j < cfile.nstrings; ++j)
+		limit_suggestions(cp, &wl, suggest, suggest_noise);
+	else if (!force)
 	{
-		int		inp;
-		int		result;
-
-		s1 = cfile.string[j];
-		c_src_data = change_file_find(cp, s1);
-		assert(c_src_data);
-		s2 = change_file_path(cp, s1);
-		assert(s2);
-
-		/*
-		 * Check the file time.  This will clear the file test
-		 * time stamps if the file has changed.
-		 */
-		assert(!c_src_data->file_fp || c_src_data->file_fp->oldest >= 0);
-		assert(!c_src_data->file_fp || c_src_data->file_fp->youngest >= 0);
-		if (!integrating)
+		string_list_constructor(&wl2);
+		for (j = 0; j < wl.nstrings; ++j)
 		{
-			change_file_fingerprint_check(cp, c_src_data);
-			assert(c_src_data->file_fp);
-			assert(c_src_data->file_fp->oldest >= 0);
-			assert(c_src_data->file_fp->youngest >= 0);
-		}
-
-		/*
-		 * Check to see if we need to run the test at all.
-		 */
-		if (!force && !integrating)
-		{
+			string_ty	*fn;
 			time_t		last_time;
+			fstate_src	src_data;
 
-			if (baseline_flag)
-				last_time = change_file_test_baseline_time_get(cp, c_src_data);
-			else
-				last_time = change_file_test_time_get(cp, c_src_data);
-			assert(c_src_data->file_fp);
-			assert(c_src_data->file_fp->youngest >= 0);
-			assert(c_src_data->file_fp->oldest >= 0);
-			if (last_time && c_src_data->file_fp->oldest < last_time)
+			/*
+			 * this only applies to change tests,
+			 * not project tests
+			 */
+			fn = wl.string[j];
+			src_data = change_file_find(cp, fn);
+			if (!src_data)
 			{
-				str_free(s2);
+				string_list_append(&wl2, fn);
 				continue;
 			}
-		}
 
-		/*
-		 * Run the test
-		 */
-		inp = (c_src_data->usage == file_usage_manual_test);
-		result = run_test_command(cp, up, s2, dir, inp);
-		str_free(s2);
-
-		/*
-		 * Record the test results.
-		 */
-		if (baseline_flag)
-		{
-			switch (result)
+			/*
+			 * verify that out idea of the file's mtime
+			 * is up-to-date
+			 */
+			if (!integrating)
 			{
-			case 1:
-				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s1);
-				change_verbose
-				(
-					cp,
-					scp,
-					i18n("$filename baseline fail, good")
-				);
-				sub_context_delete(scp);
-				++npassed;
-				change_file_test_baseline_time_set(cp, c_src_data, now);
+				change_file_fingerprint_check(cp, src_data);
+				assert(src_data->file_fp);
+				assert(src_data->file_fp->oldest >= 0);
+				assert(src_data->file_fp->youngest >= 0);
+			}
+	
+			/*
+			 * Check to see if we need to run the test at all.
+			 */
+			if (baseline_flag)
+				last_time = change_file_test_baseline_time_get(cp, src_data);
+			else
+				last_time = change_file_test_time_get(cp, src_data);
+			assert(src_data->file_fp);
+			assert(src_data->file_fp->youngest >= 0);
+			assert(src_data->file_fp->oldest >= 0);
+			if (!last_time || src_data->file_fp->oldest >= last_time)
+				string_list_append(&wl2, fn);
+		}
+		string_list_destructor(&wl);
+		wl = wl2;
+	}
+
+	/*
+	 * Do each of the tests.
+	 */
+	trace_string(dir->str_text);
+	brlp = change_test_run_list(cp, &wl, up, baseline_flag);
+
+	/*
+	 * transcribe the results
+	 */
+	trace(("brlp->length = %d\n", (int)brlp->length));
+	for (j = 0; j < brlp->length; ++j)
+	{
+		batch_result_ty *rp;
+		fstate_src	src_data;
+
+		rp = &brlp->item[j];
+		trace(("rp->filename = \"%s\"\n", rp->file_name->str_text));
+		trace(("rp->exit_status = %d\n", rp->exit_status));
+		src_data = change_file_find(cp, rp->file_name);
+		if (src_data)
+		{
+			switch (rp->exit_status)
+			{
+			case 0:
+				if (baseline_flag)
+				{
+					change_file_test_baseline_time_clear
+					(
+						cp,
+						src_data
+					);
+				}
+				else
+				{
+					change_file_test_time_set
+					(
+						cp,
+						src_data,
+						now
+					);
+				}
 				break;
 
-			case 0:
-				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s1);
-				change_verbose
-				(
-					cp,
-					scp,
-					i18n("$filename baseline pass, not good")
-				);
-				sub_context_delete(scp);
-				++nfailed;
-				change_file_test_baseline_time_clear(cp, c_src_data);
+			case 1:
+				if (baseline_flag)
+				{
+					change_file_test_baseline_time_set
+					(
+						cp,
+						src_data,
+						now
+					);
+				}
+				else
+				{
+					change_file_test_time_clear
+					(
+						cp,
+						src_data
+					);
+				}
 				break;
 
 			default:
-				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s1);
-				change_verbose
-				(
-					cp,
-					scp,
-					i18n("$filename no result")
-				);
-				sub_context_delete(scp);
-				++nindeterminate;
-				change_file_test_baseline_time_clear(cp, c_src_data);
+				if (baseline_flag)
+				{
+					change_file_test_baseline_time_clear
+					(
+						cp,
+						src_data
+					);
+				}
+				else
+				{
+					change_file_test_time_clear
+					(
+						cp,
+						src_data
+					);
+				}
 				break;
 			}
 		}
 		else
 		{
-			switch (result)
-			{
-			case 1:
-				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s1);
-				change_verbose(cp, scp, i18n("$filename fail"));
-				sub_context_delete(scp);
-				++nfailed;
-				change_file_test_time_clear(cp, c_src_data);
-				break;
-
-			case 0:
-				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s1);
-				change_verbose(cp, scp, i18n("$filename pass"));
-				sub_context_delete(scp);
-				++npassed;
-				change_file_test_time_set(cp, c_src_data, now);
-				break;
-
-			default:
-				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s1);
-				change_verbose(cp, scp, i18n("$filename no result"));
-				sub_context_delete(scp);
-				++nindeterminate;
-				change_file_test_time_clear(cp, c_src_data);
-				break;
-			}
+			if (rp->exit_status)
+				change_regression_test_time_set(cp, (time_t)0);
 		}
-
-		if (!persevere && (nfailed || nindeterminate))
-		{
-			/* don't do project tests, either */
-			string_list_destructor(&pfile);
-			break;
-		}
-	}
-
-	/*
-	 * Do each of the project's tests.
-	 * Log if no manual tests.
-	 */
-	for (j = 0; j < pfile.nstrings; ++j)
-	{
-		int		result;
-		int		inp;
-
-		s1 = pfile.string[j];
-		p_src_data = project_file_find(pp, s1);
-		assert(p_src_data);
-		s2 = project_file_path(pp, s1);
-		inp = (p_src_data->usage == file_usage_manual_test);
-		result = run_test_command(cp, up, s2, dir, inp);
-		str_free(s2);
-
-		switch (result)
-		{
-		case 1:
-			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", s1);
-			change_verbose(cp, scp, i18n("$filename fail"));
-			sub_context_delete(scp);
-			++nfailed;
-			cstate_data->regression_test_time = 0;
-			break;
-
-		case 0:
-			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", s1);
-			change_verbose(cp, scp, i18n("$filename pass"));
-			sub_context_delete(scp);
-			++npassed;
-			break;
-
-		default:
-			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", s1);
-			change_verbose(cp, scp, i18n("$filename no result"));
-			sub_context_delete(scp);
-			++nindeterminate;
-			cstate_data->regression_test_time = 0;
-			break;
-		}
-
-		if (!persevere && (nfailed || nindeterminate))
-			break;
 	}
 
 	/*
 	 * write out the data
 	 */
+	trace(("mark\n"));
 	change_cstate_write(cp);
 	commit();
 	lock_release();
@@ -1295,39 +1254,20 @@ test_main()
 	/*
 	 * verbose result message
 	 */
-	if (npassed)
-	{
-		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%d", npassed);
-		change_verbose(cp, scp, i18n("passed $number tests"));
-		sub_context_delete(scp);
-	}
-	if (nindeterminate)
-	{
-		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%d", nindeterminate);
-		if (nfailed)
-			change_error(cp, scp, i18n("no result $number tests"));
-		else
-			change_fatal(cp, scp, i18n("no result $number tests"));
-		sub_context_delete(scp);
-	}
-	if (nfailed)
-	{
-		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%d", nfailed);
-		change_fatal(cp, scp, i18n("failed $number tests"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	}
+	trace(("mark\n"));
+	verbose_message(pp, cp, brlp);
+	if (brlp->no_result_count || brlp->fail_count)
+	    quit(1);
 
 	/*
 	 * clean up and go home
 	 */
+	trace(("mark\n"));
+	batch_result_list_delete(brlp);
 	change_free(cp);
 	project_free(pp);
 	user_free(up);
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }
 
 
@@ -1345,18 +1285,16 @@ test_independent()
 	string_ty	*s3;
 	fstate_src	src_data;
 	size_t		j, k;
-	int		npassed;
-	int		nfailed;
 	string_ty	*project_name;
 	project_ty	*pp;
 	user_ty		*pup;
-	change_ty	*cp;
 	user_ty		*up;
 	string_list_ty	search_path;
 	int		based;
 	string_ty	*base;
+	batch_result_list_ty *brlp;
 
-	trace(("test_independent()\n{\n"/*}*/));
+	trace(("test_independent()\n{\n"));
 	project_name = 0;
 	automatic_flag = 0;
 	manual_flag = 0;
@@ -1417,6 +1355,11 @@ test_independent()
 		case arglex_token_current_relative:
 			user_relative_filename_preference_argument(test_usage);
 			break;
+
+		case arglex_token_persevere:
+		case arglex_token_no_persevere:
+			user_persevere_argument(test_usage);
+			break;
 		}
 		arglex();
 	}
@@ -1427,7 +1370,7 @@ test_independent()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_automatic));
+			sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_automatic));
 			error_intl(scp, i18n("no file with $name"));
 			sub_context_delete(scp);
 			test_usage();
@@ -1437,7 +1380,7 @@ test_independent()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_manual));
+			sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_manual));
 			error_intl(scp, i18n("no file with $name"));
 			sub_context_delete(scp);
 			test_usage();
@@ -1466,6 +1409,12 @@ test_independent()
 	 * locate user data
 	 */
 	up = user_executing(pp);
+
+	/*
+	 * Take a baseline read lock.
+	 */
+	project_baseline_read_lock_prepare(pp);
+	lock_take();
 
 	/*
 	 * Search path for resolving filenames.
@@ -1527,7 +1476,7 @@ test_independent()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", wl.string[j]);
+			sub_var_set_string(scp, "File_Name", wl.string[j]);
 			project_fatal(pp, scp, i18n("$filename unrelated"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -1563,7 +1512,7 @@ test_independent()
 						sub_context_ty	*scp;
 
 						scp = sub_context_new();
-						sub_var_set(scp, "File_Name", "%S", s3);
+						sub_var_set_string(scp, "File_Name", s3);
 						project_fatal(pp, scp, i18n("too many $filename"));
 						/* NOTREACHED */
 						sub_context_delete(scp);
@@ -1579,10 +1528,10 @@ test_independent()
 
 				scp = sub_context_new();
 				if (s2->str_length)
-					sub_var_set(scp, "File_Name", "%S", s2);
+					sub_var_set_string(scp, "File_Name", s2);
 				else
-					sub_var_set(scp, "File_Name", ".");
-				sub_var_set(scp, "Number", "%ld", (long)wl_in.nstrings);
+					sub_var_set_charstar(scp, "File_Name", ".");
+				sub_var_set_long(scp, "Number", (long)wl_in.nstrings);
 				sub_var_optional(scp, "Number");
 				project_fatal(pp, scp, i18n("directory $filename contains no relevant files"));
 				/* NOTREACHED */
@@ -1610,7 +1559,7 @@ test_independent()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", s2);
+			sub_var_set_string(scp, "File_Name", s2);
 			project_fatal(pp, scp, i18n("no $filename"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -1625,7 +1574,7 @@ test_independent()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", s2);
+			sub_var_set_string(scp, "File_Name", s2);
 			project_fatal(pp, scp, i18n("$filename not test"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -1635,7 +1584,7 @@ test_independent()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", s2);
+			sub_var_set_string(scp, "File_Name", s2);
 			project_fatal(pp, scp, i18n("too many $filename"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -1685,116 +1634,43 @@ test_independent()
 	}
 
 	/*
-	 * create a fake change,
-	 * so can set environment variables
-	 * for the test
-	 */
-	cp = change_alloc(pp, project_next_change_number(pp, 1));
-	change_bind_new(cp);
-	change_architecture_from_pconf(cp);
-	cp->bogus = 1;
-
-	/*
 	 * do each of the tests
 	 * (Logging is disabled, because there is no [logical] place
 	 * to put the log file; the user should redirect stdout and stderr.)
 	 */
-	npassed = 0;
-	nfailed = 0;
-	for (j = 0; j < wl.nstrings; ++j)
-	{
-		string_ty	*fn;
-		string_ty	*path;
-		int		inp;
-		int		result;
-		string_ty	*bl;
+	brlp = project_test_run_list(pp, &wl, up);
 
-		fn = wl.string[j];
-		src_data = project_file_find(pp, fn);
-		assert(src_data);
-		path = project_file_path(pp, fn);
-		assert(path);
-		inp = (src_data->usage == file_usage_manual_test);
-		bl = project_baseline_path_get(pp, 0);
-		result = change_run_test_command(cp, up, path, bl, inp);
-		str_free(path);
-
-		if (result)
-		{
-			sub_context_ty	*scp;
-
-			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", fn);
-			project_verbose(pp, scp, i18n("$filename fail"));
-			sub_context_delete(scp);
-			++nfailed;
-		}
-		else
-		{
-			sub_context_ty	*scp;
-
-			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", fn);
-			project_verbose(pp, scp, i18n("$filename pass"));
-			sub_context_delete(scp);
-			++npassed;
-		}
-	}
+	/*
+	 * Release the baseline read lock.
+	 */
+	lock_release();
 
 	/*
 	 * verbose result message
 	 */
-	if (npassed)
-	{
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%d", npassed);
-		project_verbose(pp, scp, i18n("passed $number tests"));
-		sub_context_delete(scp);
-	}
-	if (nfailed)
-	{
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%d", nfailed);
-		project_fatal(pp, scp, i18n("failed $number tests"));
-		/* NOTREACHED */
-		sub_context_delete(scp);
-	}
+	verbose_message(pp, (change_ty *)0, brlp);
 
 	/*
 	 * clean up and go home
 	 */
-	change_free(cp);
+	batch_result_list_delete(brlp);
 	user_free(up);
 	project_free(pp);
-	trace((/*{*/"}\n"));
+	trace(("}\n"));
 }
 
 
 void
 test()
 {
-	trace(("test()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		test_main();
-		break;
+		{ arglex_token_independent,	test_independent,	},
+		{ arglex_token_help,		test_help,		},
+		{ arglex_token_list,		test_list,		},
+	};
 
-	case arglex_token_help:
-		test_help();
-		break;
-
-	case arglex_token_list:
-		test_list();
-		break;
-
-	case arglex_token_independent:
-		test_independent();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("test()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), test_main);
+	trace(("}\n"));
 }

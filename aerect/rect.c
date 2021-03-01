@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 2000 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,8 @@
  *
  * MANIFEST: functions to manipulate rectangles
  */
+
+#include <ac/string.h>
 
 #include <rect.h>
 #include <gif.h>
@@ -144,10 +146,11 @@ rect_mime(n)
 
 
 void
-rect(fn, width, height)
+rect(fn, width, height, label)
 	char		*fn;
 	int		width;
 	int		height;
+	char		*label;
 {
 	gif_ty		*fp;
 	int		j;
@@ -262,6 +265,18 @@ rect(fn, width, height)
 		gif_line(fp, width, height - 1, 0, height - 1, 1);
 		gif_line(fp, 0, height - 1, 0, 0, 1);
 		gif_rect(fp, 1, 1, width - 1, height - 1, 2);
+	}
+
+	if (label)
+	{
+		int gray = 255;
+		int x, y;
+		if (color[0] * 2 + color[1] * 5 + color[2] > 4*255)
+			gray = 0;
+		gif_colormap_set(fp, 4, gray, gray, gray);
+		x = (width - 7 * (int)strlen(label)) / 2;
+		y = (height + 8) / 2;
+		gif_text(fp, x, y, label, 4);
 	}
 
 	/*

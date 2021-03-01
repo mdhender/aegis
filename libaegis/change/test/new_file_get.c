@@ -39,11 +39,11 @@ change_new_test_filename_get(cp, n, is_auto)
 	scp = sub_context_new();
 	pconf_data = change_pconf_get(cp, 1);
 	assert(pconf_data->new_test_filename);
-	sub_var_set(scp, "Hundred", "%ld", n / 100); 
+	sub_var_set_long(scp, "Hundred", n / 100); 
 	sub_var_optional(scp, "Hundred");
-	sub_var_set(scp, "Number", "%ld", n); 
+	sub_var_set_long(scp, "Number", n); 
 	/* do not gettext these next two names */
-	sub_var_set(scp, "Type", (is_auto ? "automatic" : "manual")); 
+	sub_var_set_charstar(scp, "Type", (is_auto ? "automatic" : "manual")); 
 	sub_var_optional(scp, "Type");
 	result = substitute(scp, cp, pconf_data->new_test_filename);
 	sub_context_delete(scp);

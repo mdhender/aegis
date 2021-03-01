@@ -20,10 +20,10 @@
 .\" MANIFEST: manual page describing the lib/en/man5/aelock command.
 .\"
 .so z_name.so
-.TH "\*(n) locking" 1 \*(N) "Reference Manual" ""
+.TH "\*(n) locking" 5 \*(N) "Reference Manual" ""
 .SH NAME
-\*(n) locks \- how locking works, and which command use them
-.XX "aelock(5)" " how locking works, and which command use them"
+aegis locks \- how locking works, and which commands use them
+.XX "aelock(5)" " how locking works, and which commands use them"
 .SH DESCRIPTION
 Aegis maintains a database of information about the projects in its care,
 and the various changes, both completed and in progress.  In order to
@@ -63,6 +63,16 @@ aegis -list locks
 Note that the project names are change numbers are \fIguesses\fP as the
 locks are hashed over a 16-bit range, and range overlaps are possible.
 Collisions are also possible, but fortunately rarer.
+.SS Known Problems
+There is a known problem with the HP/UX NFS clients.  If you see
+persistent "no locks available" error messages when \fI\*(L)\fP is NFS
+mounted, try making the \fI\*(L)/lockfile\fP file world writable.
+.E(
+chmod 666 \*(L)/lockfile
+.E)
+There is the possibility of a denial of service attack (which is why
+the default is 0600) but since you are presently denied service anyway,
+it's academic.
 .SH COMMANDS
 The following table shows the locks taken by the various commands.
 Note that theoretically some of the commands take too \fIfew\fP locks,

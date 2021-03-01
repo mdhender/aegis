@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -92,7 +92,7 @@ for (cn in keys(ps.branch.change))
 			{
 				usage = cf.usage;
 				action = cf.action;
-				edit = cf.edit_number;
+				edit = cf.edit.revision;
 				change = cs.change_number;
 				state = cs.state;
 				who = (cs.state == being_developed ? developer

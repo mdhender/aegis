@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -55,6 +55,7 @@ void slow_to_fast _((char **, string_ty **, size_t));
 string_ty *str_format _((const char *, ...));
 string_ty *str_vformat _((const char *, va_list));
 
+int str_equal _((string_ty *, string_ty *));
 #define str_equal(s1, s2) ((s1) == (s2))
 
 int str_re_match _((string_ty *, string_ty *,
@@ -63,5 +64,8 @@ string_ty *str_re_substitute _((string_ty *, string_ty *, string_ty *,
 	void(*)(const char *), int));
 
 string_ty *str_quote_shell _((string_ty *));
+string_ty *str_trim _((string_ty *));
+
+int str_validate _((string_ty *));
 
 #endif /* STR_H */

@@ -23,6 +23,8 @@
 #ifndef LIBAEGIS_INPUT_H
 #define LIBAEGIS_INPUT_H
 
+#include <ac/stddef.h>
+
 #include <main.h>
 
 typedef struct input_ty input_ty;
@@ -30,9 +32,10 @@ struct input_ty
 {
 	struct input_vtbl_ty *vptr;
 	/* private: */
-	unsigned char *pushback_buf;
-	int pushback_len;
-	int pushback_max;
+	unsigned char	*buffer;
+	size_t		buffer_size;
+	unsigned char	*buffer_position;
+	unsigned char	*buffer_end;
 };
 
 /*
@@ -42,49 +45,37 @@ struct input_ty
 typedef struct input_vtbl_ty input_vtbl_ty;
 struct input_vtbl_ty
 {
-	int size;
+	size_t size;
 	void (*destruct)_((input_ty *));
-	long (*read)_((input_ty *, void *, long));
-	int (*get)_((input_ty *));
+	long (*read)_((input_ty *, void *, size_t));
 	long (*ftell)_((input_ty *));
-	const char *(*name)_((input_ty *));
+	struct string_ty *(*name)_((input_ty *));
 	long (*length)_((input_ty *));
 };
 
-long input_read _((input_ty *, void *, long));
-int input_getc _((input_ty *));
-void input_ungetc _((input_ty *, int));
-const char *input_name _((input_ty *));
+long input_read _((input_ty *, void *, size_t));
+int input_getc_complicated _((input_ty *));
+void input_ungetc_complicated _((input_ty *, int));
+void input_unread _((input_ty *, const void *, size_t));
 void input_delete _((input_ty *));
-long input_length _((input_ty *));
 long input_ftell _((input_ty *));
 
-void input_format_error _((input_ty *));
+void input_fatal_error _((input_ty *, const char *));
 
 struct output_ty; /* existence */
 void input_to_output _((input_ty *, struct output_ty *));
 struct string_ty *input_one_line _((input_ty *));
 
-#ifdef __GNUC__
-extern __inline long input_read(input_ty *fp, void *data, long len)
-	{ if (len <= 0) return 0; if (fp->pushback_len > 0) {
-	fp->pushback_len--; *(char *)data = fp->pushback_buf[
-	fp->pushback_len ]; return 1; } return fp->vptr->read(fp, data, len); }
-extern __inline int input_getc(input_ty *fp) { if (fp->pushback_len >
-	0) { fp->pushback_len--; return fp->pushback_buf[ fp->pushback_len
-	]; } return fp->vptr->get(fp); }
-extern __inline const char *input_name(input_ty *fp)
-	{ return fp->vptr->name(fp); }
-extern __inline long input_length(input_ty *fp)
-	{ return fp->vptr->length(fp); }
-extern __inline long input_ftell(input_ty *fp)
-	{ return fp->vptr->ftell(fp) - fp->pushback_len; }
-#else /* !__GNUC__ */
-#ifndef DEBUG
 #define input_name(fp) ((fp)->vptr->name(fp))
 #define input_length(fp) ((fp)->vptr->length(fp))
-#define input_ftell(fp) ((fp)->vptr->ftell(fp) - (fp)->pushback_len)
-#endif /* DEBUG */
-#endif /* !__GNUC__ */
+
+#define input_getc(ip) \
+	((ip)->buffer_position < (ip)->buffer_end ? \
+	*((ip)->buffer_position)++ : \
+	input_getc_complicated((ip)))
+#define input_ungetc(ip, c) \
+	((ip)->buffer_position > (ip)->buffer ? \
+	(void)(*(--((ip)->buffer_position)) = (c)) : \
+	input_ungetc_complicated((ip), (c)))
 
 #endif /* LIBAEGIS_INPUT_H */

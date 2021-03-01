@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1995, 1998, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -77,8 +77,8 @@ copy_whole_file(from, to, cmt)
 
 			scp = sub_context_new();
 			sub_errno_set(scp);
-			sub_var_set(scp, "File_Name1", "%S", from);
-			sub_var_set(scp, "File_Name2", "%S", to);
+			sub_var_set_string(scp, "File_Name1", from);
+			sub_var_set_string(scp, "File_Name2", to);
 			fatal_intl(scp, i18n("cp $filename1 $filename2: $errno"));
 			/* NOTREACHED */
 		}
@@ -91,7 +91,7 @@ copy_whole_file(from, to, cmt)
 
 			scp = sub_context_new();
 			sub_errno_set(scp);
-			sub_var_set(scp, "File_Name", "%S", from);
+			sub_var_set_string(scp, "File_Name", from);
 			fatal_intl(scp, i18n("cat $filename: $errno"));
 			/* NOTREACHED */
 		}
@@ -102,11 +102,7 @@ copy_whole_file(from, to, cmt)
 	 */
 	if (cmt && to->str_length)
 	{
-		time_t		oldest;
-		time_t		newest;
-
-		os_mtime_range(from, &oldest, &newest);
-		os_mtime_set(to, oldest);
+		os_mtime_set(to, os_mtime_actual(from));
 	}
 	trace((/*{*/"}\n"));
 }
@@ -136,7 +132,7 @@ copy_whole_file(from, to, cmt)
 
 string_ty *
 read_whole_file(fn)
-	char		*fn;
+	string_ty	*fn;
 {
 	size_t		length_max;
 	size_t		length;
@@ -162,7 +158,7 @@ read_whole_file(fn)
 		}
 		text[length++] = c;
 	}
-	while (length > 0 && isspace(text[length - 1]))
+	while (length > 0 && isspace((unsigned char)text[length - 1]))
 		--length;
 	input_delete(fp);
 	s = str_n_from_c(text, length);
@@ -202,8 +198,8 @@ files_are_different(s1, s2)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name1", "%S", s1);
-		sub_var_set(scp, "File_Name2", "%S", s2);
+		sub_var_set_string(scp, "File_Name1", s1);
+		sub_var_set_string(scp, "File_Name2", s2);
 		fatal_intl(scp, i18n("cmp $filename1 $filename2: $errno"));
 		/* NOTREACHED */
 	}

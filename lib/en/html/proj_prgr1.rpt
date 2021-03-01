@@ -1,0 +1,172 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2000 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the project progress over years
+ */
+
+auto ps, cs;
+ps = project[project_name()].state;
+auto ph, when, n, max, href;
+
+auto script_name;
+script_name = getenv("SCRIPT_NAME");
+if (script_name == "")
+	script_name = "http://localhost/cgi-bin/aegis.cgi";
+
+auto color_map;
+color_map =
+{
+	new_change = "128+128+128";
+	develop_begin = "0+0+255";
+	develop_begin_undo = "0+95+95";
+	develop_end = "128+128+255";
+	develop_end_2ar = "96+96+255";
+	develop_end_2ai = "160+160+255";
+	develop_end_undo = "0+255+255";
+	review_begin = "255+192+0";
+	review_begin_undo = "255+128+0";
+	review_pass = "255+255+0";
+	review_pass_undo = "192+255+64";
+	review_fail = "255+0+0";
+	integrate_begin = "0+128+0";
+	integrate_begin_undo = "0+128+128";
+	integrate_fail = "255+0+255";
+	integrate_pass = "0+255+0";
+};
+
+columns({width = 1000;});
+print("Content-Type: text/html");
+print("");
+print("<html><head><title>");
+print("Project Progress Histogram");
+print("</title><head><body><h1><center>");
+print("Project ``" ## quote_html(project_name()) ## "'',<br>");
+print("Progress Histogram");
+print("</center></h1>");
+
+/* **********  Scan the Changes in this Branch  ************************* */
+
+auto earliest_year, latest_year;
+earliest_year = 0;
+latest_year = 0;
+auto bucket, year, hist, clr;
+bucket = {};
+bucket.total = {};
+for (ph in ps.branch.history)
+{
+	cs = ps.branch.change[ph.change_number];
+	for (hist in cs.history)
+	{
+		when = hist.when;
+		year = 0 + strftime("%Y", hist.when);
+		if (count(bucket[hist.what]) == 0)
+			bucket[hist.what] = {};
+		bucket[hist.what][year]++;
+		bucket.total[year]++;
+		if (earliest_year == 0 || earliest_year > year)
+			earliest_year = year;
+		if (latest_year < year)
+			latest_year = year;
+	}
+}
+	
+max = 1;
+for (year = earliest_year; year <= latest_year; ++year)
+{
+	n = 0 + bucket.total[year];
+	if (n > max)
+		max = n;
+}
+max = 400. / max;
+
+/* **********  Print the Histogram  ************************************* */
+
+print("<center><table>");
+print("<tr><th>Year</th><th>Count</th></tr>");
+for (year = earliest_year; year <= latest_year; ++year)
+{
+	n = 0 + bucket.total[year];
+	print("<tr><td align=right>");
+	if (n > 0)
+	{
+		href = script_name ## "?file@proj_prgr2";
+		href ##= "+project@" ## quote_url(project_name());
+		href ##=  "+" ## year;
+		print("<a href=\"" ## href ## "\">");
+	}
+	print(year);
+	if (n > 0)
+		print("</a>");
+	print("</td><td align=right>");
+	print(n);
+	print("</td><td>");
+	for (hist in [ new_change, develop_begin, develop_begin_undo,
+		develop_end, develop_end_undo, review_pass, review_pass_undo,
+		review_fail, integrate_begin, integrate_begin_undo,
+		integrate_fail, integrate_pass]
+	)
+	{
+		clr = color_map[hist];
+		n = bucket[hist][year];
+		if (n > 0)
+		{
+			n = round(n * max);
+			if (n < 3)
+				n = 3;
+			href = script_name ## "?file@rect+" ## n
+				## "+12+color+"## clr;
+			print("<img src=\"" ## href ## "\" width="##n##" height=12>");
+		}
+	}
+	print("</td></tr>");
+}
+print("</table></center>");
+
+print("<p>");
+print("Please note: if the number of <tt>review_fail</tt>s is zero,");
+print("or relatively low compared to <tt>review_pass</tt>s,");
+print("then the process isn't working.");
+print("Reviews are <i>intended</i> to find defects.");
+
+/* **********  Legend  ************************************************** */
+
+print("<hr>");
+print("<h2 align=center>Legend</h2>");
+
+print("<table align=center>");
+for (hist in [new_change, develop_begin, develop_begin_undo, develop_end,
+	develop_end_2ar, develop_end_2ai, develop_end_undo, review_begin,
+	review_begin_undo, review_pass, review_pass_undo, review_fail,
+	integrate_begin, integrate_begin_undo, integrate_fail,
+	integrate_pass]
+)
+{
+	clr = color_map[hist];
+	print("<tr><td valign=top align=center>");
+	href = script_name ## "?file@rect+30+12+color+" ## clr;
+	print("<img src=\"" ## href ## "\" width=30 height=12>");
+	print("</td><td valign=top>");
+	print(hist);
+	print("</td></tr>");
+}
+print("</table>");
+
+print("<hr>");
+print("This page was generated " ## now() ## ".");
+print("</body></html>");

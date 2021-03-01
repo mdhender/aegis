@@ -25,3 +25,5 @@ This option may be used to specify a
 different branch for the origin file,
 rather than the baseline.
 (See also \fB\-TRunk\fP option.\)
+Please Note: the \fB-BRanch\fP option does not take a project name,
+just the branch number suffix.

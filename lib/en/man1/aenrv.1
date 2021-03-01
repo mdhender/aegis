@@ -62,7 +62,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aenrv '\*(n) -nrv \e!* -v'
-sh$	aenrv(){\*(n) -nrv $* -v}
+sh$	aenrv(){\*(n) -nrv "$@" -v}
 .fi
 .SH ERRORS
 It is an error if

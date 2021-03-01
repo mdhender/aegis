@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - a project change supervisor
-#	Copyright (C) 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+#	Copyright (C) 1990-2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -80,8 +80,9 @@ case $file in
 	echo "	@echo Expect $numconf conflicts."
 	echo "	\$(YACC) -d $file"
 	echo "	sed -e 's/[yY][yY]/${yy}_/g' y.tab.c > ${stem}.gen.c"
-	echo "	sed -e 's/[yY][yY]/${yy}_/g' y.tab.h > ${stem}.gen.h"
-	echo "	rm y.tab.c y.tab.h"
+	echo "	sed -e 's/[yY][yY]/${yy}_/g' -e 's/Y_TAB_H/${yy}_TAB_H/g' \
+y.tab.h > ${stem}.gen.h"
+	echo "	rm -f y.tab.c y.tab.h"
 	;;
 
 */*.c)
@@ -128,7 +129,23 @@ lib/cshrc | lib/profile)
 	dir=`dirname $file`
 	echo ""
 	echo "\$(RPM_BUILD_ROOT)\$(datadir)/$rest: $file $dir/.mkdir.datadir"
-	echo "	\$(INSTALL_DATA) $file \$@"
+	echo "	\$(INSTALL_PROGRAM) $file \$@"
+	case $file in
+	lib/profile)
+		echo
+		echo "\$(RPM_BUILD_ROOT)/etc/profile.d/aegis.sh: \$(RPM_BUILD_ROOT)\$(datadir)/$rest"
+		echo '	-@mkdir -p $(RPM_BUILD_ROOT)/etc/profile.d'
+		echo "	-ln -s \$(datadir)/$rest \$@"
+		;;
+	lib/cshrc)
+		echo
+		echo "\$(RPM_BUILD_ROOT)/etc/profile.d/aegis.csh: \$(RPM_BUILD_ROOT)\$(datadir)/$rest"
+		echo '	-@mkdir -p $(RPM_BUILD_ROOT)/etc/profile.d'
+		echo "	-ln -s \$(datadir)/$rest \$@"
+		;;
+	*)
+		;;
+	esac
 	;;
 
 lib/*.sh)
@@ -155,7 +172,7 @@ lib/*.po)
 	echo "lib/$stem.mo: $file $dir/libaegis.po"
 	echo "	\$(MSGFMT) -o \$@ $file $dir/libaegis.po"
 	echo ""
-	echo "\$(RPM_BUILD_ROOT)\$(libdir)/$stem.mo: lib/$stem.mo $dir/.mkdir.libdir"
+	echo "\$(RPM_BUILD_ROOT)\$(NLSDIR)/$stem.mo: lib/$stem.mo $dir/.mkdir.libdir"
 	echo "	\$(INSTALL_DATA) lib/$stem.mo \$@"
 	echo "	-chown \$(AEGIS_UID) \$@ && chgrp \$(AEGIS_GID) \$@"
 	;;
@@ -174,13 +191,13 @@ lib/*/man[[1-9]/*.[1-9])
 
 	echo ""
 	echo "\$(RPM_BUILD_ROOT)\$(datadir)/$stem: $file $dir/.mkdir.datadir" $dep
-	echo "	\$(SOELIM) -I$dir -Ietc $file > \$\${TMPDIR-/tmp}/aegis.tmp"
+	echo "	\$(SOELIM) -I$dir -Ietc $file | sed '/^\.lf/d' > \$\${TMPDIR-/tmp}/aegis.tmp"
 	echo "	\$(INSTALL_DATA) \$\${TMPDIR-/tmp}/aegis.tmp \$@"
 	echo "	-chown \$(AEGIS_UID) \$@ && chgrp \$(AEGIS_GID) \$@"
 	echo "	@rm -f \$\${TMPDIR-/tmp}/aegis.tmp"
 	echo ""
 	echo "\$(RPM_BUILD_ROOT)\$(mandir)/$part: $file" $dep .${ugly}dir
-	echo "	\$(SOELIM) -I$dir -Ietc $file > \$\${TMPDIR-/tmp}/aegis.tmp"
+	echo "	\$(SOELIM) -I$dir -Ietc $file | sed '/^\.lf/d' > \$\${TMPDIR-/tmp}/aegis.tmp"
 	echo "	\$(INSTALL_DATA) \$\${TMPDIR-/tmp}/aegis.tmp \$@"
 	echo "	-chown \$(AEGIS_UID) \$@ && chgrp \$(AEGIS_GID) \$@"
 	echo "	@rm -f \$\${TMPDIR-/tmp}/aegis.tmp"
@@ -209,6 +226,12 @@ lib/*/*/main.*)
 	case $macros in
 	roff)
 		macros=""
+		;;
+	mm)
+		macros='$(MM)'
+		;;
+	ms)
+		macros='$(MS)'
 		;;
 	*)
 		macros="-$macros"
@@ -270,7 +293,7 @@ test/*/*.sh)
 	stem=`echo $file | sed -e 's/\.sh$//'`
 	echo ""
 	echo "$stem.ES: $file all-bin etc/test.sh"
-	echo "	CC=\$(CC) \$(SH) etc/test.sh -shell \$(SH) -run $file $stem.ES"
+	echo "	CC=\"\$(CC)\" \$(SH) etc/test.sh -shell \$(SH) -run $file $stem.ES"
 	;;
 
 script/*.tcl)

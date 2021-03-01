@@ -50,6 +50,7 @@ mode = 0%o)\n{\n", top, extn, mode));
 			continue;
 		s1 = str_n_from_c(extn->str_text, cp - extn->str_text);
 		s2 = os_path_cat(top, s1);
+		trace(("mkdir %s\n", s2->str_text));
 		if (!os_exists(s2))
 		{
 			os_mkdir(s2, mode);

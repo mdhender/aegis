@@ -21,7 +21,6 @@
  */
 
 #include <change/file.h>
-#include <trace.h>
 
 
 void

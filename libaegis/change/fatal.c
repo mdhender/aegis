@@ -52,7 +52,7 @@ change_fatal(cp, scp, s)
 	 * get ready to pass the message to the project error function
 	 */
 	/* re-use substitution context */
-	sub_var_set(scp, "Message", "%S", msg);
+	sub_var_set_string(scp, "Message", msg);
 	str_free(msg);
 
 	/*

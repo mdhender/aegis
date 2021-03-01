@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,7 @@
  * MANIFEST: functions to manipulate sch_path_gets
  */
 
+#include <change/branch.h>
 #include <change/file.h>
 #include <error.h>
 #include <project.h>
@@ -35,6 +36,7 @@ change_search_path_get(cp, wlp, resolve)
 {
 	cstate		cstate_data;
 	project_ty	*ppp;
+	string_ty	*s;
 
 	string_list_constructor(wlp);
 	if (cp->bogus)
@@ -51,10 +53,17 @@ change_search_path_get(cp, wlp, resolve)
 		this_is_a_bug();
 		break;
 
+	case cstate_state_completed:
+	case cstate_state_awaiting_development:
+		project_search_path_get(cp->pp, wlp, resolve);
+		break;
+
 	case cstate_state_being_developed:
+        case cstate_state_awaiting_review:
 	case cstate_state_being_reviewed:
 	case cstate_state_awaiting_integration:
-		string_list_append(wlp, change_development_directory_get(cp, resolve));
+		s = change_development_directory_get(cp, resolve);
+		string_list_append(wlp, s);
 		project_search_path_get(cp->pp, wlp, resolve);
 		break;
 

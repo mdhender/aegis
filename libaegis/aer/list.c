@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1997, 1999 Peter Miller;
+ *	Copyright (C) 1994, 1997, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,6 +34,7 @@
 #include <help.h>
 #include <mem.h>
 #include <os.h>
+#include <output.h>
 #include <rptidx.h>
 #include <trace.h>
 #include <str_list.h>
@@ -65,7 +66,7 @@ process(dir, nondir, result)
 		trace((/*{*/"}\n"));
 		return;
 	}
-	data = rptidx_read_file(fn->str_text);
+	data = rptidx_read_file(fn);
 	os_become_undo();
 	str_free(fn);
 	if (data->where)
@@ -137,9 +138,10 @@ report_list(usage)
 	string_list_ty		path;
 	rptidx_where_list result;
 	size_t		j;
-	int		name_col;
-	int		desc_col;
-	int		path_col;
+	output_ty	*name_col;
+	output_ty	*desc_col;
+	output_ty	*path_col;
+	col_ty		*colp;
 
 	/*
 	 * read the rest of the command line
@@ -166,14 +168,11 @@ report_list(usage)
 	/*
 	 * form the columns for the output
 	 */
-	col_open((char *)0);
-	col_title("List of Reports", (char *)0);
-	name_col = col_create(0, 15);
-	desc_col = col_create(16, 47);
-	path_col = col_create(48, 0);
-	col_heading(name_col, "Name\n------");
-	col_heading(desc_col, "Description\n-------------");
-	col_heading(path_col, "Script File\n-------------");
+	colp = col_open((string_ty *)0);
+	col_title(colp, "List of Reports", (char *)0);
+	name_col = col_create(colp, 0, 15, "Name\n------");
+	desc_col = col_create(colp, 16, 47, "Description\n-------------");
+	path_col = col_create(colp, 48, 0, "Script File\n-------------");
 
 	/*
 	 * name each of the reports
@@ -183,12 +182,12 @@ report_list(usage)
 		rptidx_where	p;
 
 		p = result->list[j];
-		col_puts(name_col, p->name->str_text);
-		col_puts(desc_col, p->description->str_text);
-		col_puts(path_col, p->filename->str_text);
-		col_eoln();
+		output_put_str(name_col, p->name);
+		output_put_str(desc_col, p->description);
+		output_put_str(path_col, p->filename);
+		col_eoln(colp);
 	}
 	rptidx_where_list_type.free(result);
-	col_close();
+	col_close(colp);
 	trace((/*{*/"}\n"));
 }

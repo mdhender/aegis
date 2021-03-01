@@ -17,7 +17,7 @@
 .\"	along with this program; if not, write to the Free Software
 .\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 .\"
-.\" MANIFEST: document describing lib/en/howto/first_times
+.\" MANIFEST: Howto, Start Using Aegis
 .\"
 .nh 1 "How to Start Using Aegis"
 .LP
@@ -66,7 +66,7 @@ when sites first try this, the working project will be one of the template
 projects from the previous section.
 .IP \(bu 2n
 Create a new project.
-For this exersize, you probably want a single user project.
+For this exercise, you probably want a single user project.
 .IP \(bu 2n
 Create a new change
 .IP \(bu 2n

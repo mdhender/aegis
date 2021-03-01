@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	This file is in the Public Domain, 1995, 1998 Peter Miller.
+ *	This file is in the Public Domain, 1995, 1998, 2000 Peter Miller.
  *
  * MANIFEST: example of using rcs in the project config file
  *
@@ -35,8 +35,6 @@
  * ${History}
  *	absolute path of the history file
  *
- * The "ci -f" option is used to specify that a copy is to be checked-in even
- *	if there are no changes.
  * The "ci -u" option is used to specify that an unlocked copy will remain in
  *	the baseline.
  * The "ci -d" option is used to specify that the file time rather than the
@@ -48,11 +46,19 @@
  * The "ci -m" option is used to specify that the change number is to be stored
  *	in the file log if this is actually an update (typically from aenf
  *	after aerm on the same file name).
+ * The "ci -w" option is used to specify the user name at checkin,
+ *	since this is always run by the project owner, and we almost
+ *	always want to know the developer.
  * The "rcs -U" option is used to specify that the new RCS file is to have
  *	unstrict locking.
+ *
+ * It is essential that the history_put_command be identical to the
+ * the history_create_command for branching to work correctly.
  */
 history_create_command =
-	"ci -f -u -d -M -m$c -t/dev/null ${quote $input} ${quote $history,v}; \
+	"ci -u -d -M -m${quote ($version) ${change description}} \
+-w$developer \
+-t/dev/null ${quote $input} ${quote $history,v}; \
 rcs -U ${quote $history,v}";
 
 
@@ -97,13 +103,18 @@ history_get_command =
  * The "ci -m" option is used to specify that the change number is to be stored
  *	in the file log, which allows rlog to be used to find the change
  *	numbers to which each revision of the file corresponds.
+ * The "ci -w" option is used to specify the user name at checkin,
+ *	since this is always run by the project owner, and we almost
+ *	always want to know the developer.
  *
- * It is possible for a a very cautious approach has been taken, in which case
- * the history_put_command may be set to the same string specified above for
- * the history_create_command.
+ * It is essential that the history_put_command be identical to the
+ * the history_create_command for branching to work correctly.
  */
 history_put_command =
-	"ci -f -u -d -M -m$c ${quote $input} ${quote $history,v}";
+	"ci -u -d -M -m${quote ($version) ${change description}} \
+-w$developer \
+-t/dev/null ${quote $input} ${quote $history,v}; \
+rcs -U ${quote $history,v}";
 
 /*
  * This command is used to query what the history mechanism calls the top-most
@@ -161,3 +172,16 @@ merge_command =
 merge -p -L baseline -L C$c ${quote $mostrecent} ${quote $original} \
 ${quote $input} > ${quote $output}; \
 test $? -le 1";
+
+/*
+ * Many history tools (including RCS) can modify the contents of the file
+ * when it is committed.  While there are usually options to turn this
+ * off, they are seldom used.  The problem is: if the commit changes the
+ * file, the source in the repository now no longer matches the object
+ * file in the repository - i.e. the history tool has compromised the
+ * referential integrity of the repository.
+ *
+ * If you use RCS keyword substitution, you will need this next line.
+ * (The default is to report a fatal error.)
+ */
+history_put_trashes_file = warn;

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,8 @@
  *
  * MANIFEST: functions to generate whiteout files
  */
+
+#include <ac/string.h>
 
 #include <change.h>
 #include <error.h> /* for assert */
@@ -66,7 +68,7 @@ change_file_whiteout(cp, name)
 	pconf_data = change_pconf_get(cp, 0);
 	if (!pconf_data->whiteout_template)
 		goto fell_off_end;
-	for (j = 0; j < pconf_data->file_template->length; ++j)
+	for (j = 0; j < pconf_data->whiteout_template->length; ++j)
 	{
 		pconf_whiteout_template ftp;
 
@@ -85,7 +87,7 @@ change_file_whiteout(cp, name)
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp,"File_Name", "%S", s);
+				sub_var_set_string(scp, "File_Name", name);
 				change_fatal(cp, scp, i18n("bad pattern $filename"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -101,7 +103,7 @@ change_file_whiteout(cp, name)
 				}
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", name);
+				sub_var_set_string(scp, "File_Name", name);
 				sub_var_optional(scp, "File_Name");
 				result = substitute(scp, cp, ftp->body);
 				sub_context_delete(scp);

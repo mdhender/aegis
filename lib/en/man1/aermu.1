@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1996, 1998 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1996, 1998, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -55,6 +55,11 @@ being removed in the named directory tree,
 other files in the tree will be ignored.
 It is an error if there are no relevant files.
 .so z_intuit.so
+.SS Notification
+The \fIremove_file_undo_command\fP in the project \fIconfig\fP file is
+run, if set.  The \fIproject_\%file_\%command\fP is also run, if set,
+and if there has been an integration recently.  See \fIaepconf\fP(5)
+for more information.
 .SS Process Side Effects
 This command will cancel any build or test registrations,
 because deleting a file logically invalidates them.
@@ -74,7 +79,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aermu '\*(n) -rmu \e!* -v'
-sh$	aermu(){\*(n) -rmu $* -v}
+sh$	aermu(){\*(n) -rmu "$@" -v}
 .fi
 .SH ERRORS
 It is an error if

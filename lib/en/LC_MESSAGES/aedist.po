@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1999 Peter Miller;
+#	Copyright (C) 1999, 2001 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,13 @@
 #	along with this program; if not, write to the Free Software
 #	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
-# MANIFEST: aedist.po
+# MANIFEST: English localization
+#
+msgid	""
+msgstr	"MIME-Version: 1.0\n"
+	"Content-Type: text/plain; charset=ascii\n"
+	"Content-Transfer-Encoding: 8bit\n"
+
 #
 # --------------------------------------------------------------------------
 #
@@ -35,7 +41,7 @@ msgstr	"archive member $filename changed size during processing, "
 # the distributed change set.
 #
 msgid	"bad send no files"
-msgstr	"there are no files to distrubute"
+msgstr	"there are no files to distribute"
 
 #
 # This fatal error message is issued when a change is not in a suitable
@@ -44,30 +50,3 @@ msgstr	"there are no files to distrubute"
 msgid	"bad send state"
 msgstr	"this change is in the $state state; it must be in a later state "
 	"to be sent"
-
-#
-# This message is issued when aedist --receive cancells a change because
-# the change is alreday present in the repository.  No action required.
-#
-msgid	"change already present"
-msgstr	"This change has been cancelled because the change set is already "
-	"present in the repository."
-
-#
-# This warning is issued when a received file could have a Trojan horse
-# attack in it, but the use said to keep going.
-#
-msgid	"warning: potential trojan, proceeding anyway"
-msgstr	"Warning: This change contains files which could host a Trojan "
-	"horse attack.  Because you specified the --no-trojan option, the "
-	"development will proceed despite this."
-
-#
-# This warning is issued when a received file could have a Trojan horse
-# attack in it.
-#
-msgid	"warning: potential trojan, review before completing development"
-msgstr	"Warning: This change contains files which could host a Trojan "
-	"horse attack.  You should review it before building it or "
-	"testing it or completing development.  This change remains in "
-	"the being_developed state."

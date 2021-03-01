@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998 Peter Miller;
+ *	Copyright (C) 1997, 1998, 2000, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -67,7 +67,7 @@ for (cn in sort(keys(ps.change)))
 	print(cs.state);
 	if (cs.state == being_developed || cs.state == being_integrated)
 	{
-		auto who, hi, h;
+		auto who, hi, h, email, long_name;
 		for (hi = count(cs.history) - 1; hi >= 0; --hi)
 		{
 			h = cs.history[hi];
@@ -83,9 +83,17 @@ for (cn in sort(keys(ps.change)))
 			)
 			{
 				who = h.who;
-				href = "mailto:" ## who;
+				email = who;
+				try { email = user[who].email_address; }
+				catch (email) { email = ""; }
+				if (email == "")
+					email = who;
+				href = "mailto:" ## email;
+				long_name = who;
+				try { long_name = passwd[who].pw_comment; }
+				catch (long_name) { long_name = who; }
 				print("<br><a href=\"" ## href ## "\"><i>" ##
-					quote_html(passwd[who].pw_comment) ##
+					quote_html(long_name) ##
 					"</i></a>");
 				break;
 			}

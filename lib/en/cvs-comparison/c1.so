@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -19,29 +19,42 @@
 .\"
 .\" MANIFEST: document describing lib/en/cvs-comparison/c1s
 .\"
-.nh 1 "Never Trust A Skinny Chef"
+.nh 1 "CVS Comparison"
+.PP
+This chapter presents a brief comparison of Aegis and CVS.
+.nh 2 "Never Trust A Skinny Chef"
 .PP
 This is a comparison of Aegis and CVS, but it's written by an Aegis
-expert who isn't a CVS expert.  This means that. from time to time,
-information may be biases in Aegis' favour even though I'm trying to
+expert who isn't a CVS expert.  This means that, from time to time,
+information may be biased in Aegis' favour even though I'm trying to
 be even handed.  Worse, there are probably inaccuracies stemming from
 my lack of familiarity with CVS: if you find any, I'd certainly like to
 know, so I can correct this document.
 .nh 2 "Contributors"
 .PP
-In putting this document together, I solicited assistance from users
+In putting this chapter together, I solicited assistance from users
 on the \f[CW]aegis-users\fP mailing list.  Where you are reading
 their comments and not mine, you'll see it as a name at the end of
 the paragraph.
-.nh 1 "The Aegis Process"
+.nh 2 "The Aegis Process"
+.PP
+.ad r
+``\fIWriting software is hard, improving the way that software is
+written is harder.\fP''  Bill Pugh
+.ad l
 .PP
 Aegis sets out to perform configuration management.  This is very
 different to version control, but to see why you'll need to understand
 what Aegis thinks a configuration is.
+Also that ``management'' word impies a degree of authorization and
+reporting, which Aegis also provides.
 .IP \(bu 2n
 A configuration is a snapshot of the source files, \fIall\fP source files
 in the project, immediately after a commit.  A single identifier can be
 used to recreate all source files for any one commit, and it isn't a date.
+(It's like a CVS tag, but different.   It carries more information and
+exists long
+before the commit.)
 .IP \(bu 2n
 The complete audit path for every file is available from this single
 identifier.  It includes who and when, with change set comments, not
@@ -82,10 +95,11 @@ Aegis is about rules, not tools.
 .br
 because the rules (the process) is the ``missing bit'' Aegis was written
 to provide.
+The "management" part of software configuration management.
 .nh 2 "CVS has no Built-in Process"
 .LP
 ``By not having a process built into CVS, the team must work out a process
-separately.  Since you're not likely to do better the the Aegis process,
+separately.  Since you're not likely to do better than the Aegis process,
 the likely result is to do worse.  Also you will have to expend effort
 to implement and enforce the process.''
 \fITrenton G. Twining <tgt@cycletime.com>\fP
@@ -102,10 +116,11 @@ accreted like CVS.  And if you are looking for code reviews and all
 that stuff, it's probably easier to do them with Aegis (with CVS it is
 a roll-your-own type affair).''
 \fIJim Kingdon <kingdon@panix7.panix.com>\fP
-.nh 1 "The Good, the Bad and the Ugly"
+(for many years, the chief CVS maintainer)
+.nh 2 "The Good, the Bad and the Ugly"
 .LP
 This section contains the answers to some frequently asked questions.
-.nh 2 "Why should I change from CVS to Aegis?"
+.nh 3 "Why should I change from CVS to Aegis?"
 .IP \(bu 2n
 enforced review - damn important in a company environment
 \fIGus <gus@getsystems.com>\fP
@@ -122,7 +137,7 @@ be written to by developers, so the audit trail is more secure.
 .IP \(bu 2n
 Support for change sets.
 My main complaint with CVS is that you are unable to associate
-modified files into a change so once the files are commited to the CVS
+modified files into a change so once the files are committed to the CVS
 repository, there is no easy way to back it out or work out which
 other files were changed as part of a logical set.
 \fITim Potter <Tim.Potter@anu.edu.au>\fP
@@ -137,13 +152,22 @@ particular assumptions made that aren't written down.
 \fITim Potter <Tim.Potter@anu.edu.au>\fP
 .IP \(bu 2n
 Automated testing support.
-.nh 2 "What features does CVS have that Aegis hasn't?"
+.nh 3 "What features does CVS have that Aegis hasn't?"
 .IP \(bu 2n
 Low change overhead.
-Developers can omit as much of the process as the feel like.
+Developers can omit as much of the process as they feel like.
 .IP \(bu 2n
 Partial checkins.
-You can commit just a few files in your work area.
+You can commit just a few files from your work area.
 .IP \(bu 2n
 Works with both Windows and Unix.
 Aegis still struggles with this, and only has weak support for Windows.
+.nh 3 "How do I do CVS-style remote development?"
+.PP
+The short answer is: you can't.
+.PP
+The long answer will require quite a
+bit of understanding how Aegis' development process works.
+See the "Teamwork" portion of Aegis Howto and the "Geographically
+Distributed Development" chapter of the Aegis User Guide for more
+information.

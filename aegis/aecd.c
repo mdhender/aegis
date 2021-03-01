@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1999 Peter Miller;
+ *	Copyright (C) 1991-1997, 1999-2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 #include <ael/change/by_state.h>
 #include <arglex2.h>
 #include <change.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <error.h>
 #include <help.h>
 #include <os.h>
@@ -97,6 +97,8 @@ change_directory_list()
 		(
 			(1 << cstate_state_being_developed)
 		|
+			(1 << cstate_state_awaiting_review)
+		|
 			(1 << cstate_state_being_reviewed)
 		|
 			(1 << cstate_state_awaiting_integration)
@@ -131,6 +133,7 @@ change_directory_main()
 	char		*branch;
 
 	trace(("change_directory_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	change_number = 0;
 	trunk = 0;
@@ -190,7 +193,7 @@ change_directory_main()
 			else if (change_number < 1)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -337,17 +340,22 @@ change_directory_main()
 				d = change_integration_directory_get(cp, 0);
 				break;
 			}
+			d = change_development_directory_get(cp, 0);
+			break;
+
+		case cstate_state_awaiting_review:
+			change_verbose
+			(
+				cp,
+				0,
+				i18n("remember to use the aerb command")
+			);
 			/* fall through... */
 
 		case cstate_state_awaiting_integration:
 		case cstate_state_being_reviewed:
 		case cstate_state_being_developed:
 			d = change_development_directory_get(cp, 0);
-			if (change_was_a_branch(cp))
-			{
-				/* known memory leak */
-				d = str_format("%S/baseline", d);
-			}
 			break;
 		}
 	}
@@ -373,7 +381,7 @@ change_directory_main()
 	 */
 	printf("%s\n", d->str_text);
 	scp = sub_context_new();
-	sub_var_set(scp, "File_Name", "%S", d);
+	sub_var_set_string(scp, "File_Name", d);
 	if (!cp)
 		project_verbose(pp, scp, i18n("change directory $filename complete"));
 	else
@@ -392,20 +400,13 @@ change_directory_main()
 void
 change_directory()
 {
-	trace(("change_directory()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		change_directory_main();
-		break;
+		{ arglex_token_help,		change_directory_help,	},
+		{ arglex_token_list,		change_directory_list,	},
+	};
 
-	case arglex_token_help:
-		change_directory_help();
-		break;
-
-	case arglex_token_list:
-		change_directory_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("change_directory()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), change_directory_main);
+	trace(("}\n"));
 }

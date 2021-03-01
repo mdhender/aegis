@@ -136,8 +136,8 @@ mul_evaluate(this)
 
 	default:
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", v1a->method->name);
-		sub_var_set(scp, "Name2", "%s", v2a->method->name);
+		sub_var_set_charstar(scp, "Name1", v1a->method->name);
+		sub_var_set_charstar(scp, "Name2", v2a->method->name);
 		s =
 			subst_intl
 			(
@@ -283,8 +283,8 @@ div_evaluate(this)
 
 	default:
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", v1a->method->name);
-		sub_var_set(scp, "Name2", "%s", v2a->method->name);
+		sub_var_set_charstar(scp, "Name1", v1a->method->name);
+		sub_var_set_charstar(scp, "Name2", v2a->method->name);
 		s = subst_intl(scp, i18n("illegal division ($name1 / $name2)"));
 		sub_context_delete(scp);
 		result = rpt_value_error(this->pos, s);
@@ -425,8 +425,8 @@ mod_evaluate(this)
 
 	default:
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", v1a->method->name);
-		sub_var_set(scp, "Name2", "%s", v2a->method->name);
+		sub_var_set_charstar(scp, "Name1", v1a->method->name);
+		sub_var_set_charstar(scp, "Name2", v2a->method->name);
 		s = subst_intl(scp, i18n("illegal modulo ($name1 %% $name2)"));
 		sub_context_delete(scp);
 		result = rpt_value_error(this->pos, s);

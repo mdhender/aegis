@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1995, 1996, 1997, 1998, 1999 Peter Miller;
+#	Copyright (C) 1995-2001 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -83,7 +83,7 @@ check_it()
 {
 	sed	-e "s|$work|...|g" \
 		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/$USER/USER/g" \
+		-e "s/\"$USER\"/\"USER\"/g" \
 		-e 's/19[0-9][0-9]/YYYY/' \
 		-e 's/20[0-9][0-9]/YYYY/' \
 		< $1 > $work/sed.out
@@ -238,6 +238,7 @@ branch =
 	default_test_exemption = true;
 	skip_unlucky = false;
 	compress_database = false;
+	develop_end_action = goto_being_reviewed;
 	history =
 	[
 		{
@@ -321,15 +322,31 @@ src =
 	{
 		file_name = "config";
 		action = create;
-		edit_number = "3";
-		edit_number_origin = "3";
+		edit =
+		{
+			revision = "3";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "3";
+			encoding = none;
+		};
 		usage = source;
 	},
 	{
 		file_name = "main.c";
 		action = create;
-		edit_number = "2";
-		edit_number_origin = "2";
+		edit =
+		{
+			revision = "2";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "2";
+			encoding = none;
+		};
 		usage = build;
 	},
 ];

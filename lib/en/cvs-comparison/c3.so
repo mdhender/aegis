@@ -1,0 +1,211 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing lib/en/cvs-comparison/c3s
+.\"
+.bp
+.hy 0
+.nh 1 "Importing and Exporting"
+.LP
+It is possible to import a CVS repository into Aegis, while preserving
+all of your history information.
+.LP
+Because Aegis uses change sets and CVS does not, it is necessary for Aegis
+to ``synthesize'' the change sets during the import process.  See the
+\fIaeimport\fP(1) command page for a complete description of how this is
+done.  Once the change sets have been discovered, the \fIaeimport\fP(1)
+command then synthesizes an Aegis change for each one, and enters it
+into the Aegis database as if it had taken place using Aegis.
+.LP
+Once this has occurred, you may then access all of the previous versions
+of the files as you would for any other Aegis project.  See \fIaecp\fP(1)
+for more information, particularly the \fB\-delta\fP option.  All of
+the various lists and reports are also available (see \fIael\fP(1)
+and \fIaer\fP(1) for more information).
+The usual web browsing is also available.
+.nh 2 "Importing from CVS"
+.LP
+The command which does the importing is simple enough, but there is some
+setup required first.
+.IP \(bu 2n
+It is usual to have a separate account which "owns" an Aegis project.
+This means that accidental file writes while browsing sources can't happen,
+among other reasons.  Whether you have a separate account per project,
+or a hold-all source account doesn't bother Aegis (the more security conscious among you,
+however, will want one account per project).
+If you have one account per project, name it after the project (there's
+less to remember that way).
+This example will call the both the account
+and the Aegis project ``\f[CW]example\fP''.
+.IP \(bu 2n
+It is also possible to have a separate Unix group for each project.
+This means that you can have fine-grained control over who has read access
+to your repository.  (Or, as above, you may want a simple source group.)
+Note that write access to the repository is controlled via a different
+mechanism in Aegis; the repository itself will be read-only to \fIall\fP
+staff, including authorized developers and integrators.
+(See the User Guide for how your changes actually reach the repository.)
+If you decide to have a group per project, use the same name as the
+project as, again, there is less to remember.
+.IP \(bu 2n
+Login as the \f[CW]example\fP user.
+.IP \(bu 2n
+You need to decide where your Aegis project is going to live.
+It could live below the \f[CW]example\fP user's home directory,
+but it does not have to.
+(It is impractical for it to actually \fIbe\fP the \f[CW]example\fP user's
+home directory.)
+Wherever you put the project directory, it must be accessible from all
+workstations and/or servers upon which development \fIand\fP code
+reviews are to be carried out.
+(See the ``Teamwork'' chapter of the HOWTO for more information.)
+In this example, we are going to put it in \f[CW]/projects/example\fP;
+again, named for the project.
+.IP \(bu 2n
+If you have a single project under your $CVSROOT directory tree,
+you use the commands
+.E(
+unset AEGIS_PATH
+aeimport $CVSROOT -project example -dir /projects/example -verbose
+.E)
+Depending on how big your project is, this may take some time.
+You will be informed of progress, though it will not mean very much if you are
+new to Aegis.
+.IP \(bu 2n
+If you have several modules under your $CVSROOT directory tree,
+and the module you wish to import is contained under a single directory,
+use a command such as this:
+.E(
+unset AEGIS_PATH
+aeimport $CVSROOT/example -project example -dir /projects/example -verbose
+.E)
+Again this may take some time.
+.IP \(bu 2n
+If you have a more complex module structure below $CVSROOT, it may be
+necessary to duplicate and manually rearrange the directories until you have
+a single directory tree you can point the \fIaeimport\fP(1) command at.
+There is no support for reading the \f[CW]$CVSROOT/CVSROOT/modules\fP
+file at this time.
+.IP \(bu 2n
+If something goes wrong part way through (\fIe.g.\fP running out of
+disk space) you will be left with a partial Aegis project that isn't
+very useful.  Use the
+.E(
+aermpr example
+.E)
+command to get rid of it.
+.IP \(bu 2n
+Once the \fIaeimport\fP(1) command completes successfully,
+you need to use the command
+.E(
+ae_p example.1.0
+ael project_files
+.E)
+to examine the names of the files Aegis has imported.  If they don't match
+your expectations (\fIe.g.\fP if the directory tree is not the shape
+you need) remove the project (\fIaermpr\fP) and re-run \fIaeimport\fP(1)
+with the appropriate arguments.
+.IP \(bu 2n
+The above commands create a project called ``\f[CW]example\fP'', with
+branches ``\f[CW]1\fP'' and ``\f[CW]1.0\fP'' (see the Branching chapter
+of the User Guide for how branching works in Aegis).  To access branch
+1.0, you use the project name ``\f[CW]example.1.0\fP''.  If you wanted
+no branches at all (just a trunk) then add ``\f[CW]\-version \-\fP''
+to the above \fIimport\fP(1) commands.  If you are new to Aegis, and
+don't understand what this paragraph is talking about, \fIdo not\fP
+change anything.
+.IP \(bu 2n
+The last thing you do as the \f[CW]example\fP user is to add your normal
+account as a project administrator.
+.E(
+aena \f[CI]yourlogin\fP
+.E)
+Now logoff the \f[CW]example\fP account, and login to your normal account.
+.IP \(bu 2n
+Aegis has populated the development roles with staff found during the import.
+Use the \fIproject staff\fP report
+to examine and verify the resulting settings.
+.E(
+ae_p example.1.0
+aer projstaff
+.E)
+If there are staff in inappropriate roles, use the
+following commands
+to rearrange them.
+.TS
+center,tab(;);
+l c c
+l l l.
+;Add;Remove
+Developer;\fIaend\fP(1);\fIaerd\fP(1)
+Reviewer;\fIaenrv\fP(1);\fIaerrv\fP(1)
+Integrator;\fIaeni\fP(1);\fIaeri\fP(1)
+Administrator;\fIaena\fP(1);\fIaera\fP(1)
+.TE
+See the User Guide for more information about the various roles within Aegis.
+.IP \(bu 2n
+You need to customize the project \f[CW]config\fP file for your project.
+In order to do this, you will need to create a change set to modify
+the file.  The worked example in the User guide will be useful in
+understanding how this is done.  It is essential that you use a change
+set for this; editing the baseline directly is a \fIbig\fP no-no.
+See also the configuration examples directory, \f[CW]\*(D)/config.example\fP,
+for some pre-built configuration settings.
+(It's probably a Bad Idea to mess with the history command settings,
+but the rest are fair game.)
+.sp 0.2
+In  particular, your need to set the build command.
+The \fIaeimport\fP(1) command has set it to ``\f[CW]exit 0\fP''.
+See the Dependency Maintenance Tool of the User Guide for more information.
+.LP
+You project should now be ready to use.
+Happy developing!
+.LP
+If you have questions, it is worth subscribing to the \f[CW]aegis-users\fP
+mailing list.  See \f[CW]http://www.canb.auuf.org.au/~millerp/aegis/\fP
+for how to do this.
+.nh 2 "Exporting to CVS"
+.LP
+If it becomes necessary to export your project from Aegis into CVS,
+this may be done relatively simply.
+.IP \(bu 2n
+This method only works if you have been using RCS as your history tool.
+.IP \(bu 2n
+Backup your CVS repository.  The next step will change it.
+.IP \(bu 2n
+Copy the \f[CW],v\fP files from the Aegis history tree into
+the CVS root tree (the Aegis project in this example is called
+``\f[CW]example\fP''.
+.E(
+ae_p example.1.0
+aecd -bl ../history
+tar cf - . | ( cd $CVSROOT ; tar xf - )
+.E)
+Note that this assumes that the two directory trees are the same shape.
+It is highly likely that you have a module called something like
+``\f[CW]example\fP'', which would change the last line above to look like
+.E(
+tar cf - . | ( cd $CVSROOT/example ; tar xf - )
+.E)
+More baroque directory structures will require more manual mangling
+during the copy.
+.LP
+Note that Aegis' expectations of locking, access lists, keyword expansion,
+\fIetc\fP, are rather different to CVS, so it may be necessary to use
+\fIfind\fP(1) and \fIrcs\fP(1) to set things the way you want.

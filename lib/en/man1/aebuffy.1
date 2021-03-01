@@ -1,0 +1,48 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the lib/en/man1/aebuffy command.
+.\"
+.so z_name.so
+.ds n) aebuffy
+.TH \*(n) 1 \*(N) "Reference Manual" ""
+.SH NAME
+\*(n) \- watch for changes
+.XX "aebuffy(1)" "watch for changes"
+.SH SYNOPSIS
+.B \*(n)
+[
+.I project-name
+]
+.SH DESCRIPTION
+The \fI\*(n)\fP command is used to
+watch for changes which the current user may be able to act upon.
+These include changes being developed by the user, and changes which
+could be reviewed or integrate dby the user.
+.PP
+If you don't use the \fIproject-name\fP command line option,
+you need to set the AEGIS_PROJECT environment variable, or the
+default_project field of the \fI\&.aegisrc\fP file before you invoke
+this command.  This is especially important if you launch it from your
+X11 session start-up file.
+.PP
+At the moment it can only watch one project.
+If you are good at Tcl/Tk, improvements
+are most welcome.
+.so z_cr.so

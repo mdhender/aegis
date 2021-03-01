@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1995, 1996 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1995, 1996, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -24,8 +24,9 @@
 The output of listings and help is piped through the pager command
 given in the \f(CWPAGER\fP environment variable
 (or \fImore\fP if not set).
-This is the default if the command is in the foreground.
-This option may be used to override an y preference specified in the
+This is the default if the command is in the foreground,
+and the output is a TTY.
+This option may be used to override any preference specified in the
 .IR aeuconf (5)
 file.
 .TP 8n
@@ -33,7 +34,9 @@ file.
 .br
 This option may be used to ensure that the output of listings and help
 is not piped through a pager command.
-This option may be used to override an y preference specified in the
+This is the default if the command is in the background,
+or if the output is not a TTY.
+This option may be used to override any preference specified in the
 .IR aeuconf (5)
 file.
 .TP 8n

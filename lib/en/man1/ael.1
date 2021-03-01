@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1994, 1999, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -64,6 +64,16 @@ in large format.
 Change_Files
 .br
 List all files in a change.
+The verbose version includes details such as the action being taken,
+the edit number of the file, and whether it's being moved.
+The terse version only lists the files names (and omits removed files),
+this is useful for shell scripts and interfacing with build tools.
+.TP 8n
+Change_File_History
+.br
+This listing shows the history of each file in the change.  It includes
+each delta number (so that you may reproduce it) and brief description,
+of each change which affected each file.
 .TP 8n
 Change_History
 .br
@@ -72,6 +82,9 @@ List the history of a change.
 Changes
 .br
 List the changes of a project.
+The verbose version includes details such as the state of the change and
+it's brief description.  The terse version lists only the change numbers,
+which is good for shell scripts.
 .TP 8n
 Default_Change
 .br
@@ -108,6 +121,12 @@ List all changes not yet completed, for all projects.
 Project_Files
 .br
 List all files in the baseline of a project.
+The verbose version includes details such as the action being taken,
+the edit number of the file.
+The terse version only lists the files names (and omits removed files),
+this is useful for shell scripts and interfacing with build tools.
+If a change number is given, files included in the change are omitted from
+the list (giving the change's perspective on what the project files are).
 .TP 8n
 Project_History
 .br
@@ -159,7 +178,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias ael '\*(n) -l \e!* -v'
-sh$	ael(){\*(n) -l $* -v}
+sh$	ael(){\*(n) -l "$@" -v}
 .fi
 .SH ERRORS
 It is an error if
@@ -183,4 +202,7 @@ pass review of a change (listing option)
 .TP 8n
 .IR aeuconf (5)
 user configuration file format
+.TP 8n
+.IR aels (1)
+annotated directory listing
 .so z_cr.so

@@ -26,7 +26,6 @@
 #include <input.h>
 
 input_ty *input_new _((input_vtbl_ty *));
-long input_generic_read _((input_ty *, void *, long));
 void input_pushback_transfer _((input_ty *, input_ty *));
 
 #endif /* LIBAEGIS_INPUT_PRIVATE_H */

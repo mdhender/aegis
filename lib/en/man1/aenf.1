@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1996, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1996, 1998-2000, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -65,6 +65,11 @@ junk first.)
 .so z_filesize.so
 .so z_intuit.so
 .so z_test_corr.so
+.SS Notification
+The \fInew_file_command\fP in the project \fIconfig\fP file is run,
+if set.  The \fIproject_\%file_\%command\fP is also run, if set, and
+if there has been an integration recently.  See \fIaepconf\fP(5) for
+more information.
 .SH OPTIONS
 The following options are understood
 .TP 8n
@@ -85,6 +90,7 @@ if at all possible.
 .so o_list.so
 .so o_nolog.so
 .so o_project.so
+.so o_template.so
 .so o_terse.so
 .so o_verbose.so
 .so o_wait.so
@@ -94,7 +100,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aenf '\*(n) -nf \e!* -v'
-sh$	aenf(){\*(n) -nf $* -v}
+sh$	aenf(){\*(n) -nf "$@" -v}
 .fi
 .SH ERRORS
 It is an error if

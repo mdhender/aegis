@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1997 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1997, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 #include <ac/string.h>
 
 #include <aer/expr/name.h>
+#include <aer/func/print.h>
 #include <aer/lex.h>
 #include <aer/parse.h>
 #include <aer/report.h>
@@ -106,12 +107,12 @@ find_filename_process(name, dir, nondir, result)
 		return;
 	}
 
-	data = rptidx_read_file(fn->str_text);
+	data = rptidx_read_file(fn);
 	os_become_undo();
 	str_free(fn);
 	if (data->where)
 	{
-		size_t		j;
+		size_t		j, k;
 
 		for (j = 0; j < data->where->length; ++j)
 		{
@@ -119,6 +120,7 @@ find_filename_process(name, dir, nondir, result)
 			rptidx_where	out;
 			rptidx_where	*out_p;
 			type_ty		*type_p;
+			int		have_it_already;
 
 			in = data->where->list[j];
 			if (!in->name || !in->filename)
@@ -128,6 +130,24 @@ find_filename_process(name, dir, nondir, result)
 			if (!arglex_compare(in->name->str_text, name->str_text))
 				continue;
 			
+			/*
+			 * If we already have this one, ignore it.
+			 * (Duplicate entries in AEGIS_PATH will cause
+			 * in exact duplicates in the result list.)
+			 */
+			have_it_already = 0;
+			for (k = 0; k < result->length; ++k)
+			{
+				out = result->list[k];
+				if (str_equal(in->name, out->name))
+				{
+					have_it_already = 1;
+					break;
+				}
+			}
+			if (have_it_already)
+				continue;
+
 			assert(result);
 			out_p =
 				rptidx_where_list_type.list_parse
@@ -205,7 +225,7 @@ find_filename(name)
 
 		scp = sub_context_new();
 		rptidx_where_list_type.free(result);
-		sub_var_set(scp, "Name", "%S", name);
+		sub_var_set_string(scp, "Name", name);
 		fatal_intl(scp, i18n("no report $name"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -226,8 +246,8 @@ find_filename(name)
 		tmp = wl2str(&path, 0, path.nstrings - 1, ", ");
 		string_list_destructor(&path);
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%S", name);
-		sub_var_set(scp, "Name_List", "%S", tmp);
+		sub_var_set_string(scp, "Name", name);
+		sub_var_set_string(scp, "Name_List", tmp);
 		sub_var_optional(scp, "Name_List");
 		fatal_intl(scp, i18n("report $name ambig"));
 		/* NOTREACHED */
@@ -294,21 +314,23 @@ report_run()
 	trace(("open the input file\n"));
 	os_become_orig();
 	rpt_lex_open(input);
-	os_become_undo();
 	trace(("parse the report\n"));
 	aer_report_parse();
 	trace(("close the input file\n"));
 	rpt_lex_close();
+	os_become_undo();
 
 	/*
 	 * execute the report
 	 */
 	trace(("open the output file\n"));
-	col_open(output ? output->str_text : (char *)0);
+	assert(!rpt_func_print__colp);
+	rpt_func_print__colp = col_open(output);
 	trace(("interpret the report\n"));
 	report_interpret();
 	trace(("close the output file\n"));
-	col_close();
+	col_close(rpt_func_print__colp);
+	rpt_func_print__colp = 0;
 
 	/*
 	 * release dynamic memory

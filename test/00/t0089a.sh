@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1999 Peter Miller;
+#	Copyright (C) 1999, 2000 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@ check_it()
 {
 	sed	-e "s|$work|...|g" \
 		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/$USER/USER/g" \
+		-e "s/\"$USER\"/\"USER\"/g" \
 		-e 's/19[0-9][0-9]/YYYY/' \
 		-e 's/20[0-9][0-9]/YYYY/' \
 		-e 's/node = ".*"/node = "NODE"/' \
@@ -241,6 +241,7 @@ Content-Type: application/aegis-change-set
 Content-Transfer-Encoding: base64
 Subject: foo.4.2 - The first change
 Content-Name: foo.4.2.C001.ae
+Content-Disposition: attachment; filename=foo.4.2.C001.ae
 
 H4sIAAAAAAAAA61U30/bMBDmNfkrrshSCiMkabvBFrFpD3tA2hNiT/thuc4l8UicYDsUBPzv
 s5OqLR3T6LS8OD7f993dd2fHJ/FJnMDw9etpwmbLfby1Jlv70z/4ba3JCoeGR61qfiI3oWQ1

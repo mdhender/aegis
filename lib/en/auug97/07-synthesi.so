@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997 Peter Miller;
+.\"	Copyright (C) 1997, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -107,3 +107,17 @@ looks like this:
 .LP
 The vertexes and edges for the include file dependency files are also
 present as these are important for \fImake\fP to function correctly.
+.nh 2 "Side Effects"
+There are a couple of desirable side-effects of using a single Makefile.
+.LP
+\(bu
+The GNU Make \f[CW]-j\fP option, for parallel builds, works even better
+than before.  It can find even more unrelated things to do at once,
+and no longer has some subtle problems.
+.\" My thanks to Marcus Harnisch <marcus_harnisch@mint-tech.com> for this
+.\" insight into parallel build problems.
+.LP
+\(bu
+The general make \f[CW]-k\fP option, to continue as far as possible even
+in the face of errors, works even better than before.  It can find even
+more things to continue with.

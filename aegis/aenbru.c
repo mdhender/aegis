@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995, 1999 Peter Miller;
+ *	Copyright (C) 1995, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@
 #include <aenbru.h>
 #include <arglex2.h>
 #include <change.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <change/file.h>
 #include <col.h>
 #include <commit.h>
@@ -150,6 +150,7 @@ new_branch_undo_main()
 	string_ty	*s;
 
 	trace(("new_branch_undo_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	change_number = 0;
 	while (arglex_token != arglex_token_eoln)
@@ -182,7 +183,7 @@ new_branch_undo_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -279,7 +280,7 @@ new_branch_undo_main()
 	/*
 	 * remove the development directory
 	 */
-	dd = change_development_directory_get(cp, 1);
+	dd = change_top_path_get(cp, 1);
 	if (user_delete_file_query(up, dd, 1))
 	{
 		change_verbose(cp, 0, i18n("remove development directory"));
@@ -335,20 +336,13 @@ new_branch_undo_main()
 void
 new_branch_undo()
 {
-	trace(("new_branch_undo()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		new_branch_undo_main();
-		break;
+		{ arglex_token_help,		new_branch_undo_help,	},
+		{ arglex_token_list,		new_branch_undo_list,	},
+	};
 
-	case arglex_token_help:
-		new_branch_undo_help();
-		break;
-
-	case arglex_token_list:
-		new_branch_undo_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("new_branch_undo()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), new_branch_undo_main);
+	trace(("}\n"));
 }

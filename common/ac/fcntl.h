@@ -31,4 +31,12 @@
 #include <sys/file.h>
 #endif
 
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+
+#ifndef O_TEXT
+#define O_TEXT 0
+#endif
+
 #endif /* COMMON_AC_FCNTL_H */

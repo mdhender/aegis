@@ -23,7 +23,6 @@
 #include <ac/stdio.h>
 #include <ac/stdarg.h>
 #include <ac/stdlib.h>
-#include <ac/string.h>
 #include <ac/errno.h>
 
 #include <error.h>
@@ -35,8 +34,6 @@
 #include <str_list.h>
 #include <parse.gen.h> /* must be last */
 
-
-#define strel(a, op, b) (strcmp(a, b) op 0)
 
 typedef struct file_ty file_ty;
 struct file_ty
@@ -124,7 +121,7 @@ lex_open(s)
 	}
 	else
 	{
-		int	j;
+		size_t		j;
 
 		f->fp = 0;
 		for (j = 0; j < include_path.nstrings; ++j)

@@ -22,6 +22,7 @@
 
 #include <output/indent.h>
 #include <output/private.h>
+#include <str.h>
 #include <trace.h>
 
 
@@ -44,10 +45,10 @@ struct output_indent_ty
 };
 
 
-static void destructor _((output_ty *));
+static void output_indent_destructor _((output_ty *));
 
 static void
-destructor(fp)
+output_indent_destructor(fp)
 	output_ty	*fp;
 {
 	output_indent_ty *this;
@@ -63,10 +64,10 @@ destructor(fp)
 }
 
 
-static const char *filename _((output_ty *));
+static string_ty *output_indent_filename _((output_ty *));
 
-static const char *
-filename(fp)
+static string_ty *
+output_indent_filename(fp)
 	output_ty	*fp;
 {
 	output_indent_ty *this;
@@ -76,10 +77,10 @@ filename(fp)
 }
 
 
-static long otell _((output_ty *));
+static long output_indent_ftell _((output_ty *));
 
 static long
-otell(fp)
+output_indent_ftell(fp)
 	output_ty	*fp;
 {
 	output_indent_ty *this;
@@ -109,102 +110,153 @@ otell(fp)
  *	'c' the character to emit.
  */
 
-static void oputc _((output_ty *, int));
+static void output_indent_write _((output_ty *, const void *, size_t));
 
 static void
-oputc(fp, c)
+output_indent_write(fp, p, len)
 	output_ty	*fp;
-	int		c;
+	const void	*p;
+	size_t		len;
+{
+	const unsigned char *data;
+	output_indent_ty *this;
+
+	data = p;
+	this = (output_indent_ty *)fp;
+	while (len > 0)
+	{
+		int c = *data++;
+		--len;
+
+		this->pos++;
+		switch (c)
+		{
+		case '\n':
+			output_fputc(this->deeper, '\n');
+			this->in_col = 0;
+			this->out_col = 0;
+			if (this->continuation_line == 1)
+				this->continuation_line = 2;
+			else
+				this->continuation_line = 0;
+			break;
+	
+		case ' ':
+			if (this->out_col)
+				this->in_col++;
+			break;
+	
+		case '\t':
+			if (this->out_col)
+				this->in_col = (this->in_col / INDENT + 1) * INDENT;
+			break;
+	
+		case '\1':
+			if (!this->out_col)
+				break;
+			if (this->in_col >= INDENT * (this->depth + 2))
+				this->in_col++;
+			else
+				this->in_col = INDENT * (this->depth + 2);
+			break;
+	
+		case /*{*/'}':
+		case /*(*/')':
+		case /*[*/']':
+			this->depth--;
+			/* fall through */
+	
+		default:
+			if (!this->out_col && c != '#' && this->continuation_line != 2)
+				this->in_col += INDENT * this->depth;
+			if (!this->out_col)
+			{
+				/*
+				 * Only emit tabs into the output if we are at
+				 * the start of a line.
+				 */
+				for (;;)
+				{
+					int	x;
+	
+					if (this->out_col + 1 >= this->in_col)
+						break;
+					x = ((this->out_col / INDENT) + 1) * INDENT;
+					if (x > this->in_col)
+						break;
+					output_fputc(this->deeper, '\t');
+					this->out_col = x;
+				}
+			}
+			while (this->out_col < this->in_col)
+			{
+				output_fputc(this->deeper, ' ');
+				this->out_col++;
+			}
+			if (c == '{'/*}*/ || c == '('/*)*/ || c == '['/*]*/)
+				this->depth++;
+			output_fputc(this->deeper, c);
+			this->in_col++;
+			this->out_col = this->in_col;
+			this->continuation_line = (c == '\\');
+			break;
+		}
+	}
+}
+
+
+static int output_indent_page_width _((output_ty *));
+
+static int
+output_indent_page_width(fp)
+	output_ty	*fp;
 {
 	output_indent_ty *this;
 
 	this = (output_indent_ty *)fp;
-	this->pos++;
-	switch (c)
-	{
-	case '\n':
-		output_fputc(this->deeper, '\n');
-		this->in_col = 0;
-		this->out_col = 0;
-		if (this->continuation_line == 1)
-			this->continuation_line = 2;
-		else
-			this->continuation_line = 0;
-		break;
+	return output_page_width(this->deeper);
+}
 
-	case ' ':
-		if (this->out_col)
-			this->in_col++;
-		break;
 
-	case '\t':
-		if (this->out_col)
-			this->in_col = (this->in_col / INDENT + 1) * INDENT;
-		break;
+static int output_indent_page_length _((output_ty *));
 
-	case '\1':
-		if (!this->out_col)
-			break;
-		if (this->in_col >= INDENT * (this->depth + 2))
-			this->in_col++;
-		else
-			this->in_col = INDENT * (this->depth + 2);
-		break;
+static int
+output_indent_page_length(fp)
+	output_ty	*fp;
+{
+	output_indent_ty *this;
 
-	case /*{*/'}':
-	case /*(*/')':
-	case /*[*/']':
-		this->depth--;
-		/* fall through */
+	this = (output_indent_ty *)fp;
+	return output_page_length(this->deeper);
+}
 
-	default:
-		if (!this->out_col && c != '#' && this->continuation_line != 2)
-			this->in_col += INDENT * this->depth;
-		if (!this->out_col)
-		{
-			/*
-			 * Only emit tabs into the output if we are at
-			 * the start of a line.
-			 */
-			for (;;)
-			{
-				int	x;
 
-				if (this->out_col + 1 >= this->in_col)
-					break;
-				x = ((this->out_col / INDENT) + 1) * INDENT;
-				if (x > this->in_col)
-					break;
-				output_fputc(this->deeper, '\t');
-				this->out_col = x;
-			}
-		}
-		while (this->out_col < this->in_col)
-		{
-			output_fputc(this->deeper, ' ');
-			this->out_col++;
-		}
-		if (c == '{'/*}*/ || c == '('/*)*/ || c == '['/*]*/)
-			this->depth++;
-		output_fputc(this->deeper, c);
-		this->in_col++;
-		this->out_col = this->in_col;
-		this->continuation_line = (c == '\\');
-		break;
-	}
+static void output_indent_eoln _((output_ty *));
+
+static void
+output_indent_eoln(fp)
+	output_ty	*fp;
+{
+	output_indent_ty *this;
+
+	this = (output_indent_ty *)fp;
+	if (this->in_col)
+		output_fputc(fp, '\n');
 }
 
 
 static output_vtbl_ty vtbl =
 {
 	sizeof(output_indent_ty),
+	output_indent_destructor,
+	output_indent_filename,
+	output_indent_ftell,
+	output_indent_write,
+	output_generic_flush,
+	output_indent_page_width,
+	output_indent_page_length,
+	output_indent_eoln,
 	"indent",
-	destructor,
-	filename,
-	otell,
-	oputc,
-	output_generic_fputs,
-	output_generic_write,
 };
 
 

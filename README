@@ -3,7 +3,8 @@ Read Me(Aegis)					   Read	Me(Aegis)
 NAME
 	aegis -	project	change supervisor
 	Copyright (C) 1991, 1992, 1993,	1994, 1995, 1996, 1997,
-	1998, 1999 Peter Miller; All rights reserved.
+	1998, 1999, 2000, 2001,	2002 Peter Miller; All rights
+	reserved.
 
 	Aegis is distributed under the terms of	the GNU	General
 	Public License.	 See the LICENSE section, below, for more
@@ -54,11 +55,6 @@ BENEFITS
 
 	Aegis uses a particular	model of the development of
 	software projects.  This model has a master source (or
-
-Reference Manual	      Aegis				1
-
-Read Me(Aegis)					   Read	Me(Aegis)
-
 	baseline) of a project,	and a team of developers creating
 	changes	to be made to this baseline.  When a change is
 	complete, it is	integrated with	the baseline, to become
@@ -111,22 +107,15 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	development process is used to validate	received change
 	sets before committing them.
 
-Reference Manual	      Aegis				2
-
-Read Me(Aegis)					   Read	Me(Aegis)
-
 ARCHIVE	SITE
 	The latest version of Aegis is available by HTTP from:
 		URL:	http://www.canb.auug.org.au/~millerp/
-		File:	aegis.html	      #	the Aegis page
-		File:	aegis.3.20.README     #	Description, from tar file
-		File:	aegis.3.20.lsm	      #	Description, in	LSM format
-		File:	aegis.3.20.ae	      #	the complete source, aedist format
-		File:	aegis.3.20.spec	      #	RedHat package specification
-		File:	aegis.3.20.tar.gz     #	the complete source
-		File:	aegis.3.20.faq	      #	Frequently Asked Questions
-		File:	aegis.3.20.rm.ps.gz   #	the Reference Manual, in PostScript
-		File:	aegis.3.20.ug.ps.gz   #	the User Guide,	in PostScript
+		File:	aegis.html	   # the Aegis page
+		File:	aegis.4.2.README   # Description, from tar file
+		File:	aegis.4.2.lsm	   # Description, in LSM format
+		File:	aegis.4.2.ae	   # the complete source, aedist format
+		File:	aegis.4.2.spec	   # RedHat package specification
+		File:	aegis.4.2.tar.gz   # the complete source
 
 	This directory also contains a few other pieces	of
 	software written by me.	 Some are referred to in the
@@ -137,18 +126,15 @@ ARCHIVE	SITE
 	See http://www.canb.auug.org.au/~millerp/ for a	list of
 	mirror sites.
 
-	Aegis is also carried by sunsite.unc.edu in its	Linux
+	Aegis is also carried by metalab.unc.edu in its	Linux
 	archives.  You will be able to find Aegis on any of its
 	mirrors.
-		URL:	ftp://sunsite.unc.edu/pub/Linux/devel/vc/
-		File:	aegis.3.20.README     #	Description, from tar file
-		File:	aegis.3.20.lsm	      #	Description, in	LSM format
-		File:	aegis.3.20.spec	      #	RedHat package specification
-		File:	aegis.3.20.ae	      #	the complete source, aedist format
-		File:	aegis.3.20.tar.gz     #	the complete source
-		File:	aegis.3.20.faq	      #	Frequently Asked Questions
-		File:	aegis.3.20.rm.ps.gz   #	the Reference Manual, in PostScript
-		File:	aegis.3.20.ug.ps.gz   #	the User Guide,	in PostScript
+		URL:	ftp://metalab.unc.edu/pub/Linux/devel/vc/
+		File:	aegis.4.2.README   # Description, from tar file
+		File:	aegis.4.2.lsm	   # Description, in LSM format
+		File:	aegis.4.2.spec	   # RedHat package specification
+		File:	aegis.4.2.ae	   # the complete source, aedist format
+		File:	aegis.4.2.tar.gz   # the complete source
 	This site is extensively mirrored around the world, so
 	look for a copy	near you (you will get much better
 	response).
@@ -169,11 +155,6 @@ MAILING	LIST
 	to
 		majordomo@canb.auug.org.au
 	with a message body containing the single line
-
-Reference Manual	      Aegis				3
-
-Read Me(Aegis)					   Read	Me(Aegis)
-
 		subscribe aegis-users
 	If you have an address which is	not readily derived from
 	your mail headers (majordomo is	only a Perl program,
@@ -228,11 +209,6 @@ SOME HISTORY
 	job is "cook", my dependency maintenance tool.	Cook had
 	existed	for 3 years before Aegis appeared on the scene,
 	and I used it daily.  When I placed cook under Aegis, I
-
-Reference Manual	      Aegis				4
-
-Read Me(Aegis)					   Read	Me(Aegis)
-
 	found 6	bugs!  Since then I have found a few more.  Not
 	only are there now fewer bugs, but they	never come back,
 	because	the regression test suite always grows.
@@ -244,7 +220,7 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	merged.	 While I noticed back in 1990 that they	were very
 	similar, it wasn't until branch	support	design was well
 	underways that they should have	been the same  data
-	structure from the begining.
+	structure from the beginning.
 
    Geographically Distributed Development
 	In 1999	a conversation on the aegis-users mailing list
@@ -287,11 +263,6 @@ LICENSE
 	later version.
 
 	Aegis is distributed in	the hope that it will be useful,
-
-Reference Manual	      Aegis				5
-
-Read Me(Aegis)					   Read	Me(Aegis)
-
 	but WITHOUT ANY	WARRANTY; without even the implied
 	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 	PURPOSE.  See the GNU General Public License for more
@@ -309,26 +280,648 @@ AUTHOR
 	Peter Miller   E-Mail:	 millerp@canb.auug.org.au
 	/\/\*		  WWW:	 http://www.canb.auug.org.au/~millerp/
 
-Reference Manual	      Aegis				6
-
-Read Me(Aegis)					   Read	Me(Aegis)
-
 RELEASE	NOTES
 	For excruciating detail, and also acknowledgments of
 	those who generously sent me feedback, please see the
-	etc/CHANGES.*  files included in this distribution.  A
-	number of features have	been added to Aegis with this
+	etc/CHANGES.*  files included in this distribution.
+
+	In general, all	the machines on	your network need to be
+	running	the same release of Aegis.  While the database
+	format is backwards compatible,	it is rarely forwards
+	compatible in the face of new capabilities.
+
+	A number of features have been added to	Aegis with this
 	release.  A few	of them	are detailed here:
 
+   Version 4.2
+	* There	is a new ``--No-Page-Headers'' option which may
+	be used	to suppress page and column headers in listings
+	and reports.
+
+	* There	is a new ``aecp	-delta-from-change'' option,
+	allowing the specification of a	delta number by
+	specifying the number of a completed change.
+
+	* The ``aecp -ind -delta'' command now omits files which
+	did not	exist at the given delta.
+
+	* There	is a new history_label_command which may be used
+	to label your history files at each integration.  See
+	aepconf(5) for more information.
+
+	* The code which guesses which change you are working on,
+	based on your current directory, has been enhanced to
+	cover far more cases.  It can recognize	the integration
+	directory, too.
+
+	* There	is a new Change_Log report, which generates
+	reports	in the style of	common Internet	change logs.
+
+	* The web interface is now able	to show	you file
+	differences between deltas.
+
+	* A bug	has been fixed in the ``aecp -delta'' command
+	(for all delta variants).  The problem occurred	when you
+	wanted to copy a version of the	file before the	file has
+	been modified by the branch (but it wasonly a problem for
+	files modified later in	the branch, files never	modified
+	by the branch were OK).	 As a side-effect of the bug fix,
+	``aecp -delta''	now goes significantly faster (N times
+	faster,	where N	is the number of files you are copying).
+
+	* Build	problems caused	by new Bison releases have been
+	fixed.
+
+	* A number of oversights in handling the new awaiting
+	review state have been corrected.
+
+	* The ${expr} substitution has been enhanced to	include
+	modulo,	logical	not and	the six	relative operators.  All
+	using the usual	C syntax and precedences.  See aesub(5)
+	for more information.
+
+	* There	is a new ${switch} substitution, see aesub(5) for
+	more information.
+
+	* A Russian localization of the	error messages has been
+	contributed.
+
+	* A bug	has been fixed in the ``aecp -output'' code,
+	which sometimes	incorrectly created directories.
+
+	* A bug	has been fixed in the symbolic link maintenance
+	code.  It now repairs links which point	to a file which
+	is too deep in the ancestor tree, and has been
+	subsequently replaced.	It now uses a single pass, rather
+	than two passes.
+
+	* The change_file_command field	of the project config
+	file is	now available at a finer granularity.  There are
+	8 new commands (the copy_file_command, copy_file_undo_-
+	command, new_file_command, new_file_undo_command, new_-
+	test_command, new_test_undo_command, remove_file_command
+	and remove_file_undo_command fields) which may be
+	individually configured.  They default to the previous
+	behaviour, for backwards compatibility.	 See aepconf(5)
+	for more information.
+
+	* A bug	has been fixed in the aepatch(1) command, which
+	prevented it form constructing patches for changes on
+	completed branches.
+
+	* The aeipass(1) command now issues an error message if
+	the build changes a source file.  (Previously it
+	erroneously reported that the history tool had done the
+	damage.)
+
+	* A bug	has been fixed in ``aecpu -unchanged'' in the
+	case where the change had no files.  (It tried to uncopy
+	a file called the empty	thring.)
+
+	* The missing aemvu(1) man page	has been added.
+
+   Version 4.1
+	Note: You will need to upgrade all of your Aegis machines
+	simultaneously for this	release.  It introduces	database
+	changes	which older Aegis release will not be able to
+	cope with.
+
+	* A bug	has been fixed in aed(1), which	tried to access	a
+	nonexistent files under	some circumstances.
+
+	* A bug	has been fixed in aede.	 When two changes created
+	the same file, the second change received a misleading
+	message	from aede.
+
+	* There	is a new German	message	translation.
+
+	* There	is a new tkaepa(1) command, giving GUI access to
+	the aepa(1) command.
+
+	* The aeclone(1) command now runs the change_file_command
+	and project_file_command from the project config file.
+	This is	in order to be more consistent withthe aecp(1)
+	command.
+
+	* The "time safe" property described by	Damon Poole
+	mostly applies to Aegis' operation.  One last area
+	related	to future times	and the	--delta	options.  There
+	is now a warning in the	instance where non-time-safe
+	behavior may occur.
+
+	* The history_put_command and history_create_command
+	field of the project config file are strongly recommended
+	to be identical.  It is	now possible to	only specify the
+	first one, and the second will default to it.
+
+	* A bug	has been fixed in the aeib(1) command, when the
+	link_integration_directory field in the	project	config
+	file is	false.
+
+	* There	is a new awaiting review state,	and new	aerb(1)
+	and aerbu(1) commands to go with it.  It is now	possible
+	to configure your project to have changes enter	the
+	awaiting review	state after aede(1), rather than the
+	being reviewed state.  It is also possible to skip the
+	review	states altogether and immediatelt enter	the
+	awaiting integration state.
+
+	* There	is a new modeP field for the specification of
+	architectures in the project config file.  The means that
+	you can	designate some architectures as	mandatory and
+	some as	optional.  See aepconf(5) for more information.
+
+	* The aenbr(1) command now populates the new branch's
+	baseline with symlinks if the project config file is set
+	so that	they would remain after	an integration build.
+	This is	more consistent	with the aedb(1) behaviour in the
+	same situation.
+
+	* There	have been a number of changes to the web pages,
+	accompanying the move to SourceForge, along with some
+	corrections.
+
+	* There	is a new aels(1) command, which	may be used to
+	list directories, annotated with Aegis'	file attribute
+	information.
+
+	* The aeclean(1) command now accepts the -Keep option, so
+	that it	reports	what it	would do, rather than actually do
+	anything.
+
+	* A problem with the CGI interface, which reported a bug
+	to the user, has been fixed.
+
+   Version 3.29
+	* The aeimport(1) command can now import CVS repositories
+	which contain binary files.
+
+	* There	is a new ${Read_File_Simple} substritution.  It
+	is like	${Read_File}, but is does not substitute into the
+	file contents.
+
+	* The aecp -independent	command	now accepts a -output
+	option.
+
+	* There	is a new ${environment}	substitution, allowing
+	you to access environment variables within substitutions.
+	See aesub(5) for more information.
+
+	* There	is a new ${project-specific} substitution,
+	allowing you to	define project specific	value to be
+	inserted into various commands.	 See aesub(5) and
+	aepconf(5) for more information.
+
+	* The aefind(1)	command	now works with completed change.
+	It searches the	baseline.
+
+	* A problem with using the ${source} substitution within
+	the integrate_pass_notify_command has been fixed.  It was
+	getting	the path wrong.
+
+	* The batch test command is only ever invoked of there
+	are tests to run.  (This fixes a problem where it would
+	simethimes run with no arguments.)
+
+	* The web reports now bahave themselves	when the names of
+	non-longer-here	user appear.
+
+	* A number of errors and typos have been fixed in the
+	documentation.
+
+   Version 3.28
+	* There	is a new aepatch(1) program, which may be used to
+	send an	receive	changes	using the classic open source
+	patch format.  See aepatch(1) for more information.
+
+	* The general output mechanism (for listings and reports)
+	has been rewritten to be significantly faster.
+
+	* Numerous small things	have been improved in and around
+	the
+
+	* The web interface has	been improved.	It should result
+	in better save file locations being suggested for .ae
+	files.	cgi vs downloads
+
+	* Aegis	now takes a baseline read lock during tests, so
+	that the baseline doesn't move out from	under your tests,
+	causing	mysterious failures.
+
+	* A bug	has been fixed in the subst function of	the
+	report generator.  It was free()in a string twice.
+
+	* There	is a new ${developer email} substitution, for
+	inserting users' preferred email addresses into	commands.
+	Useful for the state transition	notification commands.
+
+	* There	is now more text in the	aepconf(5) man page,
+	explaining how each of the pattern fields are applied to
+	file names.  It	is now explicit	when patterns applied to
+	whole file names, and when they	only applied to	path name
+	elements.
+
+	* A segfault has been fixed in the removed file	whiteout
+	code.
+
+	* The aesub $source substitution now works in combination
+	with the -BaseLine option.
+
+	* The aegis.spec file now mentions the executables again.
+
+   Version 3.27
+
+	* A bug	has been fixed in the aesub(1) $delta
+	substitution.  It now works correctly for completed
+	changes.
+
+	* A bug	has been fixed in aermu(1), when used in
+	combination with the symlink farm.  It no longer
+	complains about	"multiple user permissions set".
+
+	* A serious bug	has been fixed in the locking code.  The
+	bug meant that only one	build per project could	happen at
+	a time.	 (There	was never any risk of repository or Aegis
+	database damage.)
+
+	* A bug	has been fixed in the aedist(1)	command.  It
+	failed to correctly recognise files produced using the
+	aedist -send -no-ascii-armour option.
+
+	* The aecpu -unch command now deals more gracefully with
+	files which have been removed from the project in the
+	mean time.
+
+	* There	is a new change	file history listing, similar to
+	the file history report.  It is	much faster, much more
+	informatuve, and less selective.
+
+   Version 3.26
+	* Some optimizations have been done to the input parsing.
+	Depending on your architecture,	this will or won't be
+	noticable.
+
+	* The locking has been changed so that aeipass(1) takes
+	precedence over	new development	builds,	so that	there is
+	a guarantee that aeipass(1) will succeed in finite time.
+	Current	development builds will	run to completion, but
+	new development	builds will block until	the aeipass(1)
+	gets the basline lock and subsequently completes.
+
+	* The "file format error" bug in aedist(1) has been
+	fixed.
+
+	* There	is a new project activity report, which	is useful
+	to project leaders to see what has been	happing	in the
+	project, sorted	by time	and then by user name.
+
+	* Aegis	can now	transparently cope with	binary files,
+	even if	the history tool cannot.  It does this by using	a
+	MIME encoding for binary files.	 (This can be configured
+	away, if your history tool correctly handles binary
+	files.)	 See aepconf(5)	and the	User Guide for more
+	information.
+
+	* There	is a fix for the "file unrelated" error	commonly
+	seen on	Solaris	and BSD	when combined with an
+	automounter, in	come cases.  It	relies on the bash(1)
+	behaviour which	sets the $PWD environment variable.  (GNU
+	libc does this internally to the getcwd(3) function, not
+	all libcs do.)
+
+	* The aer(1) report generator now has access to	the
+	project	config file fields, through a new config field in
+	the report generator's concept of the project state.
+
+	* There	is a new aer(1)	$comdir	substitution, which gives
+	access to the shared state directory, configured at build
+	time.
+
+	* The aebuffy(1) now accepts a project name on the
+	command	line.
+
+	* There	is a new build_covers_all_architectures	field in
+	the project config file, so that you can tell Aegis that
+	the build tool builds all architectures	wimultaneouasly.
+	See aepconf(5) for more	information.
+
+	* The tkaer(1) command now has a comment editor, so that
+	you can	edit your review fail comments from within the
+	GUI.
+
+	* A bug	has been fixed which was caused	aenbru(1) to
+	delete one directory level too deep when the branch was
+	removed.
+
+	* There	is a new getuid() function in the report
+	generator.
+
+	* This change fixed a bug in aede(1) where it would not
+	allow a	branch,	created	with aeimport(1), with new files
+	which had subsequently been modified to	end development,
+	when those files had never existed in the baseline.
+
+	* It is	now possible for project administrators	to
+	nominate the developer in the tkaenc(1)	dialog.	 You are
+	presented with a pick list.
+
+	* There	is a new aesub(1) $history_directory
+	substitution.  This may	be used	in scripts which access
+	the history tool's files directly.
+
+	* There	is a new change_file_undo_command field	of the
+	project	config file.  It is similar to the change_file_-
+	command	field (it defaults to it if unset), but	is
+	executed by all	of the ``undo''	file commands.
+
+	* The aede(1) command no longer	cancels	your build and
+	test time stamps.  This	means that you don't need to re-
+	build if you don't change anything, after aedeu(1) or
+	aerfail(1).
+
+   Version 3.25
+	* It is	now possible to	remove users who's accounts have
+	been removed (the affects the aera(1), aerd(1),	aeri(1)
+	and aerrv(1) commands).
+
+	* There	is a new --description-only option to the aeca(1)
+	command.  This is useful for editing only the
+	descrioption, and also for use within scripts.
+
+	* The --file option has	now been generalized to	accept
+	``-'' to mean the standard input.  This	is useful in
+	scripts.
+
+	* There	is a new aebuffy(1) command, which may be used to
+	see what changes a user	has outstanding.  It needs X11
+	(Tk/Tcl) to work.  Named after the xbuffy(1) command.
+
+	* The tkaer(1) command now presents you	with a ``detail''
+	button,	so that	you may	see the	change details when
+	pwerforming a review.
+
+	* The restriction that placed the function name	at the
+	start of the command line (e.g.	the ``-cp'' of aecp) has
+	been relaxed.  This may	now appear anywhere on the
+	command	line.
+
+	* The Bourne / BASH shell aliases have been improved, so
+	that they now preserve quoting of special characters and
+	white space.  This dates from the earliest days	of Aegis.
+	It's wonderful to have it fixed	at last.
+
+	* There	is a new aemvu(1) command, which may be	used to
+	undo the effects of an aemv(1) command.	 This should
+	prove less confusing than the previous method.
+
+	* A big	has been fixed in the aemv(1) command.	It failed
+	to accept the --base-relative option, even though it was
+	documented to do so.
+
+	* A bug	has been fixed in the quote_tcl() report
+	function.  Is fixes the	problem	with getting the dollars
+	sign into descriptions when using the tkaenc(1)	command.
+
+	* The SCCS section of the User Guide and example
+	configurations have been updated and confirmed to work
+	correctly, however I've	only tested this with GNU CSSC.
+
+	* A bug	in the file name handling has been fixed.  This
+	was most obvious around	the aecpu(1) command when you had
+	create_symlinks_before_build turned on and you were using
+	an automounter,	but it occured at other	times as well.
+
+	* The aeimport(1) command now understands the SCCS
+	format.	 If the	comments in GNU	CSSC are accurate, this
+	also means you can import BitKeeper repositories, however
+	I am unable to confirm this.
+
+   Version 3.24
+	* There	is a new aeimport(1) command, which may	be used
+	to import CVS archives into Aegis.
+
+	* The cross branch merge has been improved so that it
+	uses an	earlier	version	number than it was using,
+	resulting in a more sensable merge.
+
+	* A bug	has been fixed in the ${quote} substitution which
+	incorrectly quoted the exclamation mark	(!).
+	Unfortunately, quoting isn't at	all simple, because you
+	can't exclusively use single quotes or double quotes or
+	backslash.
+
+	* There	is now a ${change description} substitution,
+	allowing you access to the brief description of	a change
+	in a substitution.  (The suggested RCS history command
+	have been changed to use it.)
+
+	* A Dutch localization of the error messages has been
+	contributed.
+
+	* Project administrators can also use the aeibu(1)
+	command.  Handy	for abandoned integrations which
+	inconvenience everyone else.
+
+	* There	is a new project config	file field, called
+	build_covers_all_architectures,	which allows you to tell
+	Aegis that your	build process can cover	all architectures
+	simultaneously.
+
+	* The ${quote} substitution has	been fixed to correctly
+	quote more characters.	It now prefers the single quote
+	(but is	is npt possible	to use this exclusively).
+
+	* The web site now uses	PDF files for documentation,
+	rather than gzipped PostScript.	 This was for lots of
+	reasons, including the fact theat many folks couldn't
+	work out how to	print them, and	also IE	decompressed them
+	``for free'' but left the .gz suffix.
+
+	* The report generator,	aereport(1), can now access
+	fields of the email address in various reports.	 * The
+	``aecp -delta''	command	now adds removed files to the
+	change as removed files	instead	of adding them as copied-
+	but-empty files.  This should make reproducing projects
+	more accurate, but you need to use aermu(1) to get rid of
+	them ,rather than aecpu(1).
+
+	* The aedist program now adds a	``Content-Disposition''
+	header to the files it generates.  This	means MIME
+	programs will unpack it	into a correctly named file more
+	often.
+
+	Numerous build problems	have been fixed, both for Unix
+	and for	Cygwin (Windows).  There have benn some	test
+	script improvements, too.
+
+	Contributions have started to roll in using the
+	``aedist'' format.  This is very encouraging.  The
+	instructions for how to	do this	are contained in the
+	``Howto'', in the Developer section.
+
+   Version 3.23
+	* A bug	has been fixed which caused the	report generator
+	change_number function to give garbage answers for change
+	number zero (fortunalely, not very common).
+
+	* There	is a new mtime function	in the report generator.
+
+	* There	is a new aecomp	utility, which may be used to
+	compare	two active changes, using tkdiff.
+
+	* A bug	in ``aesub ${dd}'' which reported the wrong
+	directory when applied to branches, has	been fixed.
+
+	* The project config file now contains two new fields,
+	create_symlinks_before_integration_build and remove_-
+	symlinks_after_integration_build, which	may be used to
+	better control the behavior of the symlink farm	at
+	integration time.  (Default behavior is	backwards
+	compatible.)
+
+	* A new	utility	called tkaer has been contributed.  It is
+	for reviewing, and shows you lists of files.  When you
+	click on one, it launches tkdiff(1) to examine it.
+	You're going to	like this one, folks!
+
+	* The aedist -receive command now preserves the	testing
+	exemptions, if possible.
+
+	* A problem with very very large test runs and the --no-
+	persevere option has been fixed.
+
+	* The aenf(1) and aent(1) commands now accept --template
+	and --no-template options, to control the use of new file
+	templates.
+
+	* A nasty Catch-22 in the aedist(1) command has	been
+	fixed, involving the (unnecessary) use of new file
+	templates, when	the actual template files don't	yet exist
+	in the --receive development directory.
+
+   Version 3.22
+	* Please Note: Some code has been added	to Aegis to
+	assist in diagnosing problems when restoring projects
+	from backups.  If you see a message ``aegis: project-
+	path: has been tampered	with (fatal)'' this means there
+	are problems with the project file ownerships.	The
+	project	owner needs to be >= AEGIS_UID (defaults to 100),
+	and the	project	group needs to be >= AEGIS_GID (defaults
+	to 10).	 Use chown -R and/or chgrp -R to fix these
+	problems.
+
+	* The aesub(1) command now accepts the ${arch}
+	substitution in	combination with the -baseline option.
+
+	* A bugs has been fixed	in the aedist -receive command,
+	when one of the	files was also locked for review.
+
+	* A bug	in aeclone(1) has been fixed, where it dropped
+	file move information.
+
+	* The aeib(1) command now correctly validates that youare
+	actually allowed to do this integration.  This may win
+	the prize for the oldest Aegis bug.
+
+	* There	is a new ${search_path_executable} substitution.
+	See aesub(5) and aet(1)	for more information.
+
+	* Line wrapping	in reports works properly again	for lines
+	with no	white space.  The previous release broke it when
+	the wide output	generalization was added.
+
+	* The aet -nopersever option works again.  The previous
+	release	broke it when the batch	test support has
+	implemented.
+
+	* A problem with the aeb(1) command which made it
+	difficult to use with th symbolic link farm (in	some
+	cases) has been	fixed.
+
+	* A new	report is available from the web interface,
+	showing	a change-of-state histogram over time for all
+	state transitions (not just the	integrate pass
+	transitions).
+
+	* A problem with the aenf(1) command which made	it
+	difficult to use with th symbolic link farm (in	some
+	cases) has been	fixed.
+
+	* The aeipass(1) command now preserve file mod times
+	across history updates,	if the history tool gratuitously
+	changes	them.
+
+	* The Solaris and IRIX build problems (wputc, et al) has
+	been fixed.
+
+	* Numerous documentation patches were received and have
+	been applied.
+
+   Version 3.21
+
+	* A couple of minor bugs have been fixed in aedist,
+	especially the problem with sending an baseline	image
+	while a	change is being	reviewed.
+
+	* A couple of bugs have	been fixed in the tkae*	commands,
+	in partucular they no longer leave temporary files lying
+	around.
+
+	* Lots of stuff	has been added to the HOWTO: a cheat
+	sheet, how to change a project's owner,	how to use
+	distributed development, how to	become a developer.
+
+	* The problem which caused `aesub ${copyright_years}' to
+	contain	duplicates has been fixed.
+
+	* There	have been Y2K fixes: the date parsing for the
+	-delta-date option has been fixed, and the web page data
+	has also been fixed.
+
+	* The aet(1) command can now run more than one test at
+	once, if configured appropriately.  This is of most use
+	on systems with	more than one CPU.
+
+	* The -UNFormatted option no longer truncates column
+	values.
+
+	* The aesub(1) command now accepts the -baseline option,
+	so that	you can	get project-specific substitution in
+	shell scripts.
+
+	* A bug	has been fixed in tkaenc(1) which gave incorrect
+	testing	ssttings.  It now also tracks the project testing
+	exemptions.
+
+	* A bug	in aenf(1) has been fixed which	allowed	multiple
+	instances of the same file to be created.
+
+	* A bug	has been fixed which caused `aesub
+	${search_path}'	to fail	in some	cases.
+
+	* A bug	has been fixed in aenf(1) which	allowed	you to
+	create the same	file multiple times, corrupting	Aegis'
+	database and causing aede(1) to	report mysterious errors.
+	Use aenfu(1) multiple times to untangle	things.
+
+	* Information has been added to	the section 5 manual
+	pages, detailing how to	access state information from
+	within the report generator.  This should make writing
+	report scripts a little	easier.
+
+	* A bug	has been fixed which caused Aegis to misbehave
+	when launched by some versions of cron(8) or at(1).
+
    Version 3.20
+
 	* The aeib command is now more robust about ``foreign''
 	files in the baseline (e.g. root-owned core files).
 
 	* A bug	has been fixed in the ${administrator_list}
 	substitution.
 
-	* A bug	has been fixed in the aedist --delta option, whch
-	caused it to dumpo core.
+	* A bug	has been fixed in the aedist --delta option,
+	which caused it	to dump	core.
 
 	* There	is now a section in the	History	Tool chapter of
 	the User Guide describing how to add checksums to your
@@ -368,11 +961,8 @@ RELEASE	NOTES
 	* A bug	with the -interactive option has been fixed.  It
 	will actually ask you, now.
 
-Reference Manual	      Aegis				7
-
-Read Me(Aegis)					   Read	Me(Aegis)
-
    Version 3.19
+
 	* You can now run a command to generate	new file
 	templates if you want, rather than using a simple string
 	substitution.  See aenf(1), aent(1) and	aepconf(5) for
@@ -425,11 +1015,8 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	* A bug	has been fixed which caused aeclean to delete the
 	development directory of changes with no files.
 
-Reference Manual	      Aegis				8
-
-Read Me(Aegis)					   Read	Me(Aegis)
-
    Version 3.18
+
 	* A bug	has been fixed which caused aecp -delta	to dump
 	core in	some cases.
 
@@ -484,11 +1071,8 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	option,	so you can specifiy the	location of the
 	development directory.
 
-Reference Manual	      Aegis				9
-
-Read Me(Aegis)					   Read	Me(Aegis)
-
    Version 3.15
+
 	* The ``aedist -receive'' command now accepts a	-delta
 	option,	allowing a received change set to be applied to
 	an historical version.
@@ -532,11 +1116,6 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	mkgroup	utilities included in the Cygwin system.
 
    Version 3.12
-
-Reference Manual	      Aegis			       10
-
-Read Me(Aegis)					   Read	Me(Aegis)
-
 	* The way the Apache config files are scanned for and
 	read has been changed, to adapt	to recent Apache changes.
 	The ./configure	script will now	find it	more often.
@@ -591,10 +1170,6 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	and a --no-trojan option which treats the incoming change
 	set as benign.
 
-Reference Manual	      Aegis			       11
-
-Read Me(Aegis)					   Read	Me(Aegis)
-
 	* The aedist --receive command now quotes filenames (if
 	necessary) when	executing commands, thus defending
 	against	filenames which	contain	semicolons.
@@ -625,6 +1200,7 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	Linux stdlib.h problem.
 
    Version 3.10
+
 	* As of	this release you must have zlib	installed before
 	you can	build Aegis.
 
@@ -649,11 +1225,6 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	* The aeclone(1), aenbr(1), aenc(1) commands now accept	a
 	-output	option,	a file to contain the automatically
 	generated change number.  This greatly assists in writing
-
-Reference Manual	      Aegis			       12
-
-Read Me(Aegis)					   Read	Me(Aegis)
-
 	scripts.  See the man pages for	more information.
 
 	* The aent(1) command now accepts a -output option, a
@@ -708,10 +1279,6 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	wins.  Mention of this is now also present in aedb(1),
 	etc; Linux UMSDOS is highlighted as problematic.
 
-Reference Manual	      Aegis			       13
-
-Read Me(Aegis)					   Read	Me(Aegis)
-
 	* Aegis	can now	collect	code metrics.  See aeb(1) and
 	aeipass(1) for more information.
 
@@ -753,10 +1320,6 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	symlink).
 
    Version 3.7
-
-Reference Manual	      Aegis			       14
-
-Read Me(Aegis)					   Read	Me(Aegis)
 
 	* The aeifail(1) and aerfail(1)	commands now have a new
 	--reason option, to specify the	failure	reason on the
@@ -812,11 +1375,6 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	* There	is a new shell_safe_filenames field in the
 	project	config file.  This field controls whether
 	filenames are required to be free of shell special
-
-Reference Manual	      Aegis			       15
-
-Read Me(Aegis)					   Read	Me(Aegis)
-
 	characters.  This field	defaults to true if not	set, so
 	if you are using any ``interesting'' filenames,	you may
 	need to	explicitly set this field to false.  (You still
@@ -854,11 +1412,6 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	locks.	See aeuconf(5) for more	information.
 
    Version 3.3
-
-Reference Manual	      Aegis			       16
-
-Read Me(Aegis)					   Read	Me(Aegis)
-
 	This release is	a bug fix release, and mostly install and
 	portability bug, at that.
 
@@ -908,10 +1461,6 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	as beta	software for about a year, in numerous
 	incarnations.  Version 3.1 is the first	completely stable
 	version	since adding full branching support.
-
-Reference Manual	      Aegis			       17
-
-Read Me(Aegis)					   Read	Me(Aegis)
 
    Version 3.0
 	Version	3.0 is fully backwards compatible with earlier
@@ -967,10 +1516,6 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	(for English) if you have not set it; otherwise	ther
 	error messages would be	terse and uninformative.
 
-Reference Manual	      Aegis			       18
-
-Read Me(Aegis)					   Read	Me(Aegis)
-
 	* The aet (1) command can now suggest tests to be run.
 	This is	done by	correlating the	source files and test
 	files from each	change.	 See aet(1) for	more information.
@@ -1024,10 +1569,6 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	run if they need to be.	 This allows you to keep working
 	on a test, and Aegis only runs those that have not yet
 	passed.
-
-Reference Manual	      Aegis			       19
-
-Read Me(Aegis)					   Read	Me(Aegis)
 
 	* Aegis	now uses ``fingerprints'' to tell if files have
 	changed, rather	than simply relying on file modification
@@ -1083,11 +1624,6 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	aecp(1)	for more information.
 
 	* The aecp(1) command now accepts a -Read_Only option,
-
-Reference Manual	      Aegis			       20
-
-Read Me(Aegis)					   Read	Me(Aegis)
-
 	allowing files to be copied into a change specifically to
 	insulate it from baseline changes.  Such files must be
 	uncopied before	development may	end.  See aecp(1) for
@@ -1142,11 +1678,6 @@ Read Me(Aegis)					   Read	Me(Aegis)
 
 	* Four more functions have been	added to the report
 	language: length, split, substr	and wrap.  See aer(5) for
-
-Reference Manual	      Aegis			       21
-
-Read Me(Aegis)					   Read	Me(Aegis)
-
 	more information.
 
 	* The tests distributed	with  are now more stable on very
@@ -1201,11 +1732,6 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	you.
 
 	* Filename lengths are now configurable.  The 14
-
-Reference Manual	      Aegis			       22
-
-Read Me(Aegis)					   Read	Me(Aegis)
-
 	character portability limit is still the default, but a
 	higher limit is	configurable for each project, up to the
 	filesystem filename limit.  See	aepconf(5) for more
@@ -1251,10 +1777,6 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	* It is	now possible for project administrators	to assign
 	changes	to specific developers.	 See aedb(1) for more
 	information.
-
-Reference Manual	      Aegis			       23
-
-Read Me(Aegis)					   Read	Me(Aegis)
 
    Version 2.1
 	* Can now ask for history to maintained	for file
@@ -1308,4 +1830,4 @@ Read Me(Aegis)					   Read	Me(Aegis)
 	* The command substitutions have been vastly improved,
 	and are	now documented.
 
-Reference Manual	      Aegis			       24
+Reference Manual	      Aegis				1

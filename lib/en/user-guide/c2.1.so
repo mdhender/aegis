@@ -21,13 +21,23 @@
 .\"
 .nh 2 "The Developer"
 .LP
-The developer role is the coal face.
+The developer role is the coal face\**.
+.FS
+I thought this expression was fairly common English usage, until I had
+a query.  "The Coal Face" is an expression meaning "where the \fIreal\fP
+work is done" in reference to old-style coal mining which was hard,
+tiring, hot, very dangerous, and bad for your health even if you were lucky
+enough not to be killed.  It was a 14-hour per day job, and you walked
+to and from work in the dark, even in summer.  Unlike the mine owners,
+who rode expensive horses and saw sunlight most days of the week.
+.FE
 This is where new software is written,
 and bugs are fixed.
 This example shows only the addition of new functionality,
 but usually as modifications of existing code,
 similar to bug-fixing activity.
 .nh 3 "Before You Start"
+.LP
 Have you configured your account to use Aegis?  See the \fIUser Setup\fP
 section of the \fITips and Traps\fP chapter for how to do this.
 .nh 3 "The First Change"
@@ -498,7 +508,7 @@ The test uses auxiliary files,
 but they are not separate source files
 (figuring where they are when some are in a change and some are in the baseline
 can be a nightmare).
-If a test want an auxiliary file,
+If a test wants an auxiliary file,
 it must construct the file itself,
 in a temporary directory.
 .XP
@@ -617,7 +627,7 @@ aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C010/test/00/
         $? -eq 0 -o $? -eq 1
 aegis: project "example.1.0": change 10: difference complete
 pat% \f(CBaede\fP
-aegis: sh /usr/local/lib/aegis/de.sh example.1.0 10 pat
+aegis: sh \*(L)/de.sh example.1.0 10 pat
 aegis: project "example.1.0": change 10: development completed
 pat%
 .E)
@@ -962,7 +972,7 @@ jan%
 Now Aegis will be satisfied
 .E(
 jan% \f(CBaede\fP
-aegis: sh /usr/local/lib/aegis/de.sh example.1.0 11 jan
+aegis: sh \*(L)/aegis/de.sh example.1.0 11 jan
 aegis: project "example.1.0": change 11: development completed
 jan%
 .E)
@@ -1372,7 +1382,7 @@ aegis: project "example.1.0": change 13: file "var.c" added
 pat%
 .E)
 .LP
-Notice how Aegis raises no objection to both Jan and Pat
+Notice how Aegis raises no objection to both Sam and Pat
 having a copy of the
 .I gram.y
 file.
@@ -1579,7 +1589,7 @@ and is not yet integrated with the baseline.
 All is finished for this change,
 .E(
 pat% \f(CBaede\fP
-aegis: sh /usr/local/lib/aegis/de.sh example.1.0 13 pat
+aegis: sh \*(L)/de.sh example.1.0 13 pat
 aegis: project "example.1.0": change 13: development completed
 pat%
 .E)
@@ -1589,36 +1599,36 @@ Pat now wanders down the hall in search of a reviewer,
 but more of that in the next section.
 .LP
 Some time later,
-Jan returns from aerobics feeling much improved.
+San returns from aerobics feeling much improved.
 All that is required for change 12 is
 to do develop end, or is it?
 .E(
-jan% \f(CBaede\fP
+sam% \f(CBaede\fP
 aegis: project "example.1.0": change 12: file "gram.y" in baseline
         has changed since last 'aegis -DIFFerence' command
-jan%
+sam%
 .E)
 .LP
-A little sleuthing on Jan's part with the Aegis list command
+A little sleuthing on Sam's part with the Aegis list command
 will reveal how this came about.
 The way to resolve this problem is with the difference command,
 but the merge variant - this will merge the new baseline version, and
-Jan's edit together.
+Sam's edit together.
 .E(
-jan% \f(CBaem\fP
+sam% \f(CBaem\fP
 aegis: logging to "/u/pat/example.1.0.C012/aegis.log"
 aegis: co -u'1.1' -p /projects/example/history/gram.y,v > /tmp/
         aegis.14594
 /projects/example/history/gram.y,v  -->  stdout revision 1.1 (unlocked)
 aegis: (diff3 -e /projects/example/baseline/gram.y /tmp/
-        aegis.14594 /u/jan/example.003/gram.y | sed -e '/^w$/d'
+        aegis.14594 /u/sam/example.003/gram.y | sed -e '/^w$/d'
         -e '/^q$/d'; \techo '1,$p' ) | ed - /projects/example/
-        baseline/gram.y,B > /u/jan/example.003/gram.y
+        baseline/gram.y,B > /u/sam/example.003/gram.y
 aegis: project "example.1.0": change 12: merge complete
 aegis: project "example.1.0": change 12: file "gram.y" was out of
         date and has been merged, see "gram.y,B" for original source
 aegis: new 'aegis -Build' required
-jan%
+sam%
 .E)
 .LP
 This was caused by the conflict between change 13,
@@ -1627,7 +1637,7 @@ and change 12;
 both of which are editing the
 .I gram.y
 file.
-Jan examines the
+Sam examines the
 .I gram.y
 file,
 and is satisfied that it contains an accurate merge of
@@ -1701,10 +1711,10 @@ In practice,
 there is rarely a real conflict,
 and it is usually small enough to detect fairly quickly.
 .LP
-Jan now rebuilds:
+Sam now rebuilds:
 .E(
-jan% \f(CBaeb\fP
-aegis: logging to "/u/jan/example.1.0.C012/aegis.log"
+sam% \f(CBaeb\fP
+aegis: logging to "/u/sam/example.1.0.C012/aegis.log"
 aegis: project "example.1.0": change 12: development build started
 aegis: cook -b /projects/example/baseline/Howto.cook
         project=example.1.0 change=12 version=1.0.C012 -nl
@@ -1722,26 +1732,26 @@ cook: rm example
 cook: cc -o example gram.o lex.o /projects/example/baseline/
         main.o /projects/example/baseline/var.o -ll -ly -lm
 aegis: project "example.1.0": change 12: development build complete
-jan%
+sam%
 .E)
 .LP
 Notice how the list of object files linked has also adapted to the
 addition of another file in the baseline,
-without any extra work by Jan.
+without any extra work by Sam.
 .LP
 All that remains is to test the change again.
 .E(
-jan% \f(CBaet\fP
-aegis: /bin/sh /u/jan/example.1.0.C012/test/00/t0003a.sh
+sam% \f(CBaet\fP
+aegis: /bin/sh /u/sam/example.1.0.C012/test/00/t0003a.sh
 aegis: project "example.1.0": change 12: test "test/00/t0003a.sh"
         passed
 aegis: project "example.1.0": change 12: passed 1 test
-jan%
+sam%
 .E)
 And test against the baseline,
 .E(
-jan% \f(CBaet -bl\fP
-aegis: /bin/sh /u/jan/example.1.0.C012/test/00/t0003a.sh
+sam% \f(CBaet -bl\fP
+aegis: /bin/sh /u/sam/example.1.0.C012/test/00/t0003a.sh
 1,3c1,6
 < 1
 < 2
@@ -1757,7 +1767,7 @@ FAILED
 aegis: project "example.1.0": change 12: test "test/00/t0003a.sh" on
         baseline failed (as it should)
 aegis: project "example.1.0": change 12: passed 1 test
-jan%
+sam%
 .E)
 .LP
 Perform the regression tests, too.
@@ -1766,8 +1776,8 @@ to make sure you didn't break the functionality
 of the code
 you merged with.
 .E(
-jan% \f(CBaet -reg\fP
-aegis: logging to "/u/jan/example.1.0.C012/aegis.log"
+sam% \f(CBaet -reg\fP
+aegis: logging to "/u/sam/example.1.0.C012/aegis.log"
 aegis: /bin/sh /projects/example/baseline/test/00/
         t0001a.sh
 aegis: project "example.1.0": change 12: test "test/00/t0001a.sh"
@@ -1781,36 +1791,36 @@ aegis: /bin/sh /projects/example/baseline/test/00/
 aegis: project "example.1.0": change 12: test "test/00/t0004a.sh"
         passed
 aegis: project "example.1.0": change 12: passed 3 tests
-jan%
+sam%
 .E)
 All done, or are we?
 .E(
-jan% \f(CBaede\fP
+sam% \f(CBaede\fP
 aegis: project "example.1.0": change 12: no current 'aegis -Diff'
         registration
-jan%
+sam%
 .E)
 The difference we did earlier,
 which revealed that we were out of date,
 does not show the differences since the two changes were
 merged, and possibly further edited.
 .E(
-jan% \f(CBaed\fP
-aegis: logging to "/u/jan/example.1.0.C012/aegis.log"
+sam% \f(CBaed\fP
+aegis: logging to "/u/sam/example.1.0.C012/aegis.log"
 aegis: set +e; diff /projects/example/baseline/gram.y /u/pat/
         example.1.0.C012/gram.y > /u/pat/example.1.0.C012/gram.y,D;
 	test $? -le 1
 aegis: project "example.1.0": change 12: difference complete
-jan%
+sam%
 .E)
 This time everything will run smoothly, 
 .E(
-jan% \f(CBaede\fP
+sam% \f(CBaede\fP
 aegis: project "example.1.0": change 12: development completed
-jan%
+sam%
 .E)
 Some time soon
-Jan will receive email that this change passed review,
+Sam will receive email that this change passed review,
 and later that it passed integration.
 .LP
 Within the scope of a limited example,

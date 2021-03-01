@@ -106,7 +106,7 @@ for_run(sp, rp)
 			string_ty	*s;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%s", vp2->method->name);
+			sub_var_set_charstar(scp, "Name", vp2->method->name);
 			rpt_value_free(vp2);
 			s =
 				subst_intl
@@ -265,7 +265,7 @@ foreach_run(sp, rp)
 		string_ty	*s;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", lhs->method->name);
+		sub_var_set_charstar(scp, "Name", lhs->method->name);
 		rpt_value_free(lhs);
 		s =
 			subst_intl
@@ -310,7 +310,7 @@ foreach_run(sp, rp)
 
 		rpt_value_free(lhs);
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", rhs->method->name);
+		sub_var_set_charstar(scp, "Name", rhs->method->name);
 		rpt_value_free(rhs);
 		s =
 			subst_intl

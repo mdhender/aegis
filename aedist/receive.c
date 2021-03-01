@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999-2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 #include <arglex3.h>
 #include <cattr.h>
 #include <change.h>
+#include <change/attributes.h>
 #include <change/file.h>
 #include <error.h> /* for assert */
 #include <help.h>
@@ -71,7 +72,7 @@ receive_main(usage)
 {
 	string_ty	*project_name;
 	long		change_number;
-	char		*ifn;
+	string_ty	*ifn;
 	input_ty	*ifp;
 	input_ty	*cpio_p;
 	string_ty	*archive_name;
@@ -82,6 +83,8 @@ receive_main(usage)
 	cstate		change_set;
 	size_t		j;
 	cattr		cattr_data;
+	cattr		dflt;
+	pconf		pconf_data;
 	string_ty	*attribute_file_name;
 	string_list_ty	files_source;
 	string_list_ty	files_build;
@@ -126,7 +129,7 @@ receive_main(usage)
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 			}
@@ -143,9 +146,20 @@ receive_main(usage)
 		case arglex_token_file:
 			if (ifn)
 				duplicate_option(usage);
-			if (arglex() != arglex_token_string)
+			switch (arglex())
+			{
+			default:
 				option_needs_file(arglex_token_file, usage);
-			ifn = arglex_value.alv_string;
+				/*NOTREACHED*/
+
+			case arglex_token_string:
+				ifn = str_from_c(arglex_value.alv_string);
+				break;
+
+			case arglex_token_stdio:
+				ifn = str_from_c("");
+				break;
+			}
 			break;
 
 		case arglex_token_trojan:
@@ -224,15 +238,15 @@ receive_main(usage)
 	archive_name = 0;
 	ifp = input_cpio_child(cpio_p, &archive_name);
 	if (!ifp)
-		input_format_error(cpio_p);
+		input_fatal_error(cpio_p, "missing file");
 	assert(archive_name);
 	s = str_from_c("etc/project-name");
 	if (!str_equal(archive_name, s))
-		input_format_error(ifp);
+		input_fatal_error(ifp, "wrong file");
 	str_free(s);
 	s = input_one_line(ifp);
 	if (!s || !s->str_length)
-		input_format_error(ifp);
+		input_fatal_error(ifp, "short file");
 	if (!project_name)
 		project_name = s;
 	else
@@ -254,8 +268,6 @@ receive_main(usage)
 	 */
 	if (!change_number)
 		change_number = project_next_change_number(pp, 1);
-	project_free(pp);
-	pp = 0;
 
 	/*
 	 * get the change details from the input
@@ -264,11 +276,11 @@ receive_main(usage)
 	os_become_orig();
 	ifp = input_cpio_child(cpio_p, &archive_name);
 	if (!ifp)
-		input_format_error(cpio_p);
+		input_fatal_error(cpio_p, "missing file");
 	assert(archive_name);
 	s = str_from_c("etc/change-set");
 	if (!str_equal(s, archive_name))
-		input_format_error(ifp);
+		input_fatal_error(ifp, "wrong file");
 	str_free(s);
 	change_set = parse_input(ifp, &cstate_type);
 	ifp = 0; /* parse_input input_delete()ed it for us */
@@ -288,7 +300,7 @@ receive_main(usage)
 	||
 		!change_set->src->length
 	)
-		input_format_error(cpio_p);
+		input_fatal_error(cpio_p, "bad change set");
 	for (j = 0; j < change_set->src->length; ++j)
 	{
 		cstate_src	src_data;
@@ -304,11 +316,14 @@ receive_main(usage)
 		||
 			!(src_data->mask & cstate_src_usage_mask)
 		)
-			input_format_error(cpio_p);
+			input_fatal_error(cpio_p, "bad change info");
 	}
 
 	/*
 	 * construct change attributes from the change_set
+	 *
+         * Be careful when copying across the testing exemptions, to
+         * make sure we don't ask for an exemption we can't have.
 	 */
 	os_become_orig();
 	attribute_file_name = os_edit_filename(0);
@@ -317,8 +332,22 @@ receive_main(usage)
 	cattr_data->brief_description = str_copy(change_set->brief_description);
 	cattr_data->description = str_copy(change_set->description);
 	cattr_data->cause = change_set->cause;
-	cattr_write_file(attribute_file_name->str_text, cattr_data, 0);
+	dflt = cattr_type.alloc();
+	dflt->cause = change_set->cause;
+	os_become_undo();
+	pconf_data = project_pconf_get(pp);
+	change_attributes_default(dflt, pp, pconf_data);
+	os_become_orig();
+	cattr_data->test_exempt = change_set->test_exempt && dflt->test_exempt;
+	cattr_data->test_baseline_exempt =
+		change_set->test_baseline_exempt && dflt->test_baseline_exempt;
+	cattr_data->regression_test_exempt =
+	     change_set->regression_test_exempt && dflt->regression_test_exempt;
+	cattr_type.free(dflt);
+	cattr_write_file(attribute_file_name, cattr_data, 0);
 	cattr_type.free(cattr_data);
+	project_free(pp);
+	pp = 0;
 
 	/*
 	 * create the new change
@@ -381,6 +410,8 @@ receive_main(usage)
 		src_data = change_set->src->list[j];
 		assert(src_data->file_name);
 		p_src_data = project_file_find(pp, src_data->file_name);
+		if (p_src_data && p_src_data->about_to_be_created_by)
+			p_src_data = 0;
 		if (!p_src_data || p_src_data->action == file_action_remove)
 		{
 			if (src_data->action == file_action_remove)
@@ -431,7 +462,7 @@ receive_main(usage)
 		/*
 		 * add it to the list
 		 */
-		string_list_append(&files_source, src_data->file_name);
+		string_list_append_unique(&files_source, src_data->file_name);
 		if
 		(
 			src_data->usage == file_usage_test
@@ -495,7 +526,7 @@ receive_main(usage)
 		/*
 		 * add it to the list
 		 */
-		string_list_append(&files_source, src_data->file_name);
+		string_list_append_unique(&files_source, src_data->file_name);
 	}
 	if (files_source.nstrings)
 	{
@@ -540,20 +571,20 @@ receive_main(usage)
 		switch (src_data->usage)
 		{
 		case file_usage_source:
-			string_list_append(&files_source, src_data->file_name);
+			string_list_append_unique(&files_source, src_data->file_name);
 			break;
 
 		case file_usage_build:
-			string_list_append(&files_build, src_data->file_name);
+			string_list_append_unique(&files_build, src_data->file_name);
 			break;
 
 		case file_usage_test:
-			string_list_append(&files_test_auto, src_data->file_name);
+			string_list_append_unique(&files_test_auto, src_data->file_name);
 			need_to_test = 1;
 			break;
 
 		case file_usage_manual_test:
-			string_list_append(&files_test_manual, src_data->file_name);
+			string_list_append_unique(&files_test_manual, src_data->file_name);
 			need_to_test = 1;
 			break;
 		}
@@ -567,7 +598,7 @@ receive_main(usage)
 		s =
 			str_format
 			(
-	      "aegis --new-file %S --build --project=%S --change=%ld --verbose",
+"aegis --new-file %S --build --project=%S --change=%ld --verbose --no-template",
 				s2,
 				project_name,
 				change_number
@@ -586,7 +617,8 @@ receive_main(usage)
 		s =
 			str_format
 			(
-	  "aegis --new-test %S --automatic --project=%S --change=%ld --verbose",
+"aegis --new-test %S --automatic --project=%S --change=%ld --verbose \
+--no-template",
 				s2,
 				project_name,
 				change_number
@@ -605,7 +637,8 @@ receive_main(usage)
 		s =
 			str_format
 			(
-	     "aegis --new-test %S --manual --project=%S --change=%ld --verbose",
+"aegis --new-test %S --manual --project=%S --change=%ld --verbose \
+--no-template",
 				s2,
 				project_name,
 				change_number
@@ -628,7 +661,7 @@ receive_main(usage)
 		s =
 			str_format
 			(
-		      "aegis --new-file %S --project=%S --change=%ld --verbose",
+        "aegis --new-file %S --project=%S --change=%ld --verbose --no-template",
 				s2,
 				project_name,
 				change_number
@@ -682,13 +715,13 @@ receive_main(usage)
 		archive_name = 0;
 		ifp = input_cpio_child(cpio_p, &archive_name);
 		if (!ifp)
-			input_format_error(cpio_p);
+			input_fatal_error(cpio_p, "missing file");
 		assert(archive_name);
 		s = str_format("src/%S", src_data->file_name);
 		if (!str_equal(archive_name, s))
-			input_format_error(ifp);
+			input_fatal_error(ifp, "wrong file");
 		str_free(s);
-		ofp = output_file_binary_open(src_data->file_name->str_text);
+		ofp = output_file_binary_open(src_data->file_name);
 		input_to_output(ifp, ofp);
 		output_delete(ofp);
 		input_delete(ifp);
@@ -702,7 +735,7 @@ receive_main(usage)
 	archive_name = 0;
 	ifp = input_cpio_child(cpio_p, &archive_name);
 	if (ifp)
-		input_format_error(cpio_p);
+		input_fatal_error(cpio_p, "archive too long");
 	input_delete(cpio_p);
 	os_become_undo();
 

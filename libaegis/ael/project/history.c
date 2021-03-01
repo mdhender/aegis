@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@
 #include <cstate.h>
 #include <error.h> /* for assert */
 #include <option.h>
+#include <output.h>
 #include <project.h>
 #include <project_hist.h>
 #include <str_list.h>
@@ -40,15 +41,16 @@ list_project_history(project_name, change_number)
 	string_ty	*project_name;
 	long		change_number;
 {
-	int		name_col = 0;
-	int		delta_col = 0;
-	int		date_col = 0;
-	int		change_col = 0;
-	int		description_col = 0;
+	output_ty	*name_col = 0;
+	output_ty	*delta_col = 0;
+	output_ty	*date_col = 0;
+	output_ty	*change_col = 0;
+	output_ty	*description_col = 0;
 	size_t		j, k;
 	project_ty	*pp;
 	string_ty	*line1;
 	int		left;
+	col_ty		*colp;
 
 	trace(("list_project_history()\n{\n"/*}*/));
 	if (change_number)
@@ -68,31 +70,49 @@ list_project_history(project_name, change_number)
 	/*
 	 * create the columns
 	 */
-	col_open((char *)0);
+	colp = col_open((string_ty *)0);
 	line1 = str_format("Project \"%S\"", project_name_get(pp));
-	col_title(line1->str_text, "History");
+	col_title(colp, line1->str_text, "History");
 	str_free(line1);
 
 	/* the delta name column is the whole page wide */
-	name_col = col_create(0, 0);
+	name_col = col_create(colp, 0, 0, (const char *)0);
 
 	left = 0;
-	delta_col = col_create(left, left + CHANGE_WIDTH);
+	delta_col =
+		col_create
+		(
+			colp,
+			left,
+			left + CHANGE_WIDTH,
+			"Delta\n-------"
+		);
 	left += CHANGE_WIDTH + 1;
-	col_heading(delta_col, "Delta\n-------");
 
 	if (!option_terse_get())
 	{
-		date_col = col_create(left, left + WHEN_WIDTH);
+		date_col =
+			col_create
+			(
+				colp,
+				left,
+				left + WHEN_WIDTH,
+				"Date and Time\n---------------"
+			);
 		left += WHEN_WIDTH + 1;
-		col_heading(date_col, "Date and Time\n---------------");
 
-		change_col = col_create(left, left + CHANGE_WIDTH);
+		change_col =
+			col_create
+			(
+				colp,
+				left,
+				left + CHANGE_WIDTH,
+				"Change\n-------"
+			);
 		left += CHANGE_WIDTH + 1;
-		col_heading(change_col, "Change\n-------");
 
-		description_col = col_create(left, 0);
-		col_heading(description_col, "Description\n-------------");
+		description_col =
+			col_create(colp, left, 0, "Description\n-------------");
 	}
 
 	/*
@@ -113,8 +133,8 @@ list_project_history(project_name, change_number)
 			name.nstrings
 		)
 		{
-			col_need(4);
-			col_printf
+			col_need(colp, 4);
+			output_fprintf
 			(
 				name_col,
 				"Name%s: ",
@@ -123,16 +143,24 @@ list_project_history(project_name, change_number)
 			for (k = 0; k < name.nstrings; ++k)
 			{
 				if (k)
-					col_printf(name_col, ", ");
-				col_printf
+					output_fputs(name_col, ", ");
+				output_fprintf
 				(
 					name_col,
 					"\"%s\"",
 					name.string[k]->str_text
 				);
 			}
+
+			/*
+			 * If we don't eoln here, and there are lots
+			 * of names, then they get intermingled with
+			 * the date and description lines, and it
+			 * looks weird.
+			 */
+			col_eoln(colp);
 		}
-		col_printf(delta_col, "%4ld", dn);
+		output_fprintf(delta_col, "%4ld", dn);
 		if (!option_terse_get())
 		{
 			cstate		cstate_data;
@@ -147,29 +175,29 @@ list_project_history(project_name, change_number)
 				[
 					cstate_data->history->length - 1
 				]->when;
-			col_puts(date_col, ctime(&t));
-			col_printf
+			output_fputs(date_col, ctime(&t));
+			output_fprintf
 			(
 				change_col,
 				"%4ld",
 				cn
 			);
 			assert(cstate_data->brief_description);
-			col_puts
+			output_put_str
 			(
 				description_col,
-				cstate_data->brief_description->str_text
+				cstate_data->brief_description
 			);
 			change_free(cp);
 		}
-		col_eoln();
+		col_eoln(colp);
 		string_list_destructor(&name);
 	}
 
 	/*
 	 * clean up and go home
 	 */
-	col_close();
+	col_close(colp);
 	project_free(pp);
 	trace((/*{*/"}\n"));
 }

@@ -31,7 +31,7 @@ list_change_inappropriate()
 	sub_context_ty	*scp;
 
 	scp = sub_context_new();
-	sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_change));
+	sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_change));
 	fatal_intl(scp, i18n("inappropriate $name option"));
 	/* NOTREACHED */
 }

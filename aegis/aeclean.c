@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998, 1999 Peter Miller;
+ *	Copyright (C) 1998-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -107,7 +107,7 @@ clean_list()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -139,6 +139,7 @@ struct clean_info_ty
 	change_ty	*cp;
 	int		minimum;
 	user_ty		*up;
+	int		verbose;
 };
 
 
@@ -174,13 +175,24 @@ clean_out_the_garbage(p, msg, path, st)
 		 */
 		if (str_equal(path, sip->dd))
 			break;
-		if (glue_rmdir(path->str_text) && errno != ENOTEMPTY)
+		if
+		(
+			glue_rmdir(path->str_text)
+		&&
+			errno != ENOTEMPTY
+		&&
+			/*
+			 * Some brain-dead Unix implementations return
+			 * EEXIST when they mean ENOTEMPTY.  Sigh.
+			 */
+			errno != EEXIST
+		)
 		{
 			sub_context_ty  *scp;
 
 			scp = sub_context_new();
 			sub_errno_set(scp);
-			sub_var_set(scp, "File_Name", "%S", path);
+			sub_var_set_string(scp, "File_Name", path);
 			error_intl(scp, i18n("warning: rmdir $filename: $errno"));
 			sub_context_delete(scp);
 		}
@@ -191,8 +203,18 @@ clean_out_the_garbage(p, msg, path, st)
 		/*
 		 * This can't be a change source file, so always
 		 * delete it.
+		 *
+		 * Taking notice of their delete file preference, of course.
 		 */
-		os_unlink_errok(path);
+		s1 = os_below_dir(sip->dd, path);
+		user_become_undo();
+		if (sip->verbose)
+			error_raw("rm %S", s1);
+		delete_me = user_delete_file_query(sip->up, s1, 0);
+		user_become(sip->up);
+		if (delete_me)
+			os_unlink_errok(path);
+		str_free(s1);
 		break;
 
 	case dir_walk_file:
@@ -230,6 +252,16 @@ clean_out_the_garbage(p, msg, path, st)
 		 */
 		if (sip->minimum && project_file_find(sip->cp->pp, s1))
 			delete_me = 0;
+
+		/*
+		 * Take notice of their delete file preference.
+		 */
+		if (delete_me)
+		{
+			if (sip->verbose)
+				error_raw("rm %S", s1);
+			delete_me = user_delete_file_query(sip->up, s1, 0);
+		}
 		user_become(sip->up);
 
 		/*
@@ -260,7 +292,10 @@ clean_main()
 	user_ty		*up;
 	int		mergeable_files;
 	int		diffable_files;
-	string_list_ty	wl;
+	string_list_ty	wl_nf;
+	string_list_ty	wl_nt;
+	string_list_ty	wl_cp;
+	string_list_ty	wl_rm;
 	fstate_src	p_src_data;
 	fstate_src	c_src_data;
 	pconf		pconf_data;
@@ -268,10 +303,12 @@ clean_main()
 	clean_info_ty	info;
 
 	trace(("clean_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	change_number = 0;
 	log_style = log_style_snuggle_default;
 	minimum = 0;
+	info.verbose = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -294,7 +331,7 @@ clean_main()
 			else if (change_number < 1)
 			{
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -324,6 +361,15 @@ clean_main()
 			if (minimum)
 				duplicate_option(clean_usage);
 			minimum = 1;
+			break;
+
+		case arglex_token_keep:
+			info.verbose = 1;
+			/* fall through... */
+
+		case arglex_token_interactive:
+		case arglex_token_no_keep:
+			user_delete_file_argument(clean_usage);
 			break;
 		}
 		arglex();
@@ -443,7 +489,7 @@ clean_main()
 			 * this one needs merging
 			 */
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", c_src_data->file_name);
+			sub_var_set_string(scp, "File_Name", c_src_data->file_name);
 			change_verbose(cp, scp, i18n("warning: file \"$filename\" needs merge"));
 			sub_context_delete(scp);
 			++mergeable_files;
@@ -479,7 +525,7 @@ clean_main()
 		if (!exists)
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", c_src_data->file_name);
+			sub_var_set_string(scp, "File_Name", c_src_data->file_name);
 			change_error(cp, scp, i18n("file \"$filename\" does not exist"));
 			sub_context_delete(scp);
 			str_free(path);
@@ -506,7 +552,7 @@ clean_main()
 		if (!ignore)
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", c_src_data->file_name);
+			sub_var_set_string(scp, "File_Name", c_src_data->file_name);
 			change_verbose(cp, scp, i18n("warning: file \"$filename\" needs diff"));
 			sub_context_delete(scp);
 			++diffable_files;
@@ -517,7 +563,7 @@ clean_main()
 	if (mergeable_files)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%ld", mergeable_files);
+		sub_var_set_long(scp, "Number", mergeable_files);
 		sub_var_optional(scp, "Number");
 		change_verbose(cp, scp, i18n("warning: mergable files"));
 		sub_context_delete(scp);
@@ -525,7 +571,7 @@ clean_main()
 	if (diffable_files)
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%ld", diffable_files);
+		sub_var_set_long(scp, "Number", diffable_files);
 		sub_var_optional(scp, "Number");
 		change_verbose(cp, scp, i18n("warning: diffable files"));
 		sub_context_delete(scp);
@@ -560,16 +606,54 @@ clean_main()
 	 * if defined, as these usually manipulate information used by
 	 * the build tool.
 	 */
-	string_list_constructor(&wl);
+	string_list_constructor(&wl_nf);
+	string_list_constructor(&wl_nt);
+	string_list_constructor(&wl_cp);
+	string_list_constructor(&wl_rm);
 	for (j = 0; ; ++j)
 	{
 		c_src_data = change_file_nth(cp, j);
 		if (!c_src_data)
 			break;
-		string_list_append(&wl, c_src_data->file_name);
+		switch (c_src_data->action)
+		{
+		case file_action_create:
+			switch (c_src_data->usage)
+			{
+			case file_usage_test:
+			case file_usage_manual_test:
+				string_list_append(&wl_nt, c_src_data->file_name);
+				break;
+
+			case file_usage_source:
+			case file_usage_build:
+				string_list_append(&wl_nf, c_src_data->file_name);
+				break;
+			}
+			break;
+
+		case file_action_modify:
+		case file_action_insulate:
+			string_list_append(&wl_cp, c_src_data->file_name);
+			break;
+
+		case file_action_remove:
+			string_list_append(&wl_rm, c_src_data->file_name);
+			break;
+		}
 	}
-	change_run_change_file_command(cp, &wl, up);
-	string_list_destructor(&wl);
+	if (wl_nf.nstrings)
+		change_run_new_file_command(cp, &wl_nf, up);
+	if (wl_nt.nstrings)
+		change_run_new_test_command(cp, &wl_nf, up);
+	if (wl_cp.nstrings)
+		change_run_copy_file_command(cp, &wl_nf, up);
+	if (wl_rm.nstrings)
+		change_run_remove_file_command(cp, &wl_nf, up);
+	string_list_destructor(&wl_nf);
+	string_list_destructor(&wl_nt);
+	string_list_destructor(&wl_cp);
+	string_list_destructor(&wl_rm);
 	cstate_data->project_file_command_sync = 0;
 	change_run_project_file_command(cp, up);
 
@@ -604,20 +688,13 @@ clean_main()
 void
 clean()
 {
-	trace(("clean()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		clean_main();
-		break;
+		{ arglex_token_help,		clean_help,	},
+		{ arglex_token_list,		clean_list,	},
+	};
 
-	case arglex_token_help:
-		clean_help();
-		break;
-
-	case arglex_token_list:
-		clean_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("clean()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), clean_main);
+	trace(("}\n"));
 }

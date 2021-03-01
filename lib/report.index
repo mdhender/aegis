@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996, 1999 Peter Miller;
+ *	Copyright (C) 1994, 1996, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,9 +37,31 @@ where =
 		filename = "report/chan_lists.rpt";
 	},
 	{
+		name = "Change_Details";
+		description = "Report the details of a change";
+		filename = "report/chan_detai.rpt";
+	},
+	{
 		name = "Change_Files";
 		description = "Report the files in a change";
 		filename = "report/chan_files.rpt";
+	},
+	{
+		name = "Change_History";
+		description = "Report the history of a change";
+		filename = "report/chan_histo.rpt";
+	},
+	{
+		name = "Change_Log";
+		description = "Report the history of a change.  Usually \
+employed on branches, where it can provides a common Internet ``Change Log'' \
+style of output.";
+		filename = "report/chan_log.rpt";
+	},
+	{
+		name = "Change_Recursive_Debug";
+		description = "Recursive descent of change information, mind-bogglingly verbose";
+		filename = "report/chan_recur.rpt";
 	},
 	{
 		name = "Developers";
@@ -79,6 +101,12 @@ This can sometimes be slow to generate.";
 		filename = "report/proj_lists.rpt";
 	},
 	{
+		name = "Project_Activity";
+		description =
+	      "Report all state change for all change in the project, by user.";
+		filename = "report/proj_activ.rpt";
+	},
+	{
 		name = "Project_Branches";
 		description = "Report all branches below the project.";
 		filename = "report/proj_bran.rpt";
@@ -99,9 +127,9 @@ This can sometimes be slow to generate.";
 		filename = "report/proj_stats.rpt";
 	},
 	{
-		name = "Recursive_Debug";
+		name = "Project_Recursive_Debug";
 		description = "Recursive descent of project information, mind-bogglingly verbose";
-		filename = "report/recursive.rpt";
+		filename = "report/proj_recur.rpt";
 	},
 	{
 		name = "Reviewers";

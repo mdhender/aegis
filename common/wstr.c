@@ -315,7 +315,7 @@ wstr_n_from_c(s, length)
 	/*
 	 * Reset the mbtowc internal state.
 	 */
-	mbtowc((wchar_t *)0, (char *)0, 0);
+	mbtowc((wchar_t *)0, (char *)0, 0);			/*lint !e418 */
 
 	/*
 	 * scan the string and extract the wide characters
@@ -359,7 +359,7 @@ wstr_n_from_c(s, length)
 			 * be "error" or broken, or otherwise useless.
 			 * Reset it so that we can keep going.
 			 */
-			mbtowc((wchar_t *)0, (char *)0, 0);
+			mbtowc((wchar_t *)0, (char *)0, 0);	/*lint !e418 */
 		}
 		else
 		{
@@ -456,7 +456,7 @@ wstr_to_mbs(s, result_p, result_length_p)
 	/*
 	 * The wctomb function has internal state.  It needs to be reset.
 	 */
-	wctomb((char *)0, 0);
+	wctomb((char *)0, 0);					/*lint !e418 */
 
 	ip = s->wstr_text;
 	remainder = s->wstr_length;
@@ -480,7 +480,7 @@ wstr_to_mbs(s, result_p, result_length_p)
 			 * be "error" or broken, or otherwise useless.
 			 * Reset it so that we can keep going.
 			 */
-			wctomb((char *)0, 0);
+			wctomb((char *)0, 0);			/*lint !e418 */
 		}
 		else
 		{

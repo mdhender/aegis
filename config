@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1998 Peter Miller;
+ *	Copyright (C) 1991-1996, 1998, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -187,6 +187,31 @@ architecture =
 	{
 		name = "linux-i486";
 		pattern = "Linux-*-*-i[4-9]86";
+	},
+	{
+		name = "sunos-4.1-sparc";
+		pattern = "SunOS-4.1*-*-sun4*";
+		mode = optional;
+	},
+	{
+		name = "solaris-2.6-sparc";
+		pattern = "SunOS-5.6*-*-sun4*";
+		mode = optional;
+	},
+	{
+		name = "solaris-2.6-i386";
+		pattern = "SunOS-5.6*-*-i86pc";
+		mode = optional;
+	},
+	{
+		name = "solaris-7-sparc";
+		pattern = "SunOS-5.7*-*-sun4*";
+		mode = optional;
+	},
+	{
+		name = "solaris-7-i386";
+		pattern = "SunOS-5.7*-*-i86pc";
+		mode = optional;
 	},
 ];
 

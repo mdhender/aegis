@@ -373,9 +373,13 @@ so that you may readily insert them into your project
 file.
 .nh 3 "GNU Make VPATH Patch"
 .LP
-There is a patch available for GNU Make which gives it improved
-VPATH semantics.  It is not maintained by the same person who
-maintains GNU Make, and it has not been exhaustively tested.
+Version 3.76 and later of GNU Make include this patch, so you don't need
+to read this section unless you have GNU Make 3.75 or earlier.
+.LP
+There is a patch available for GNU Make 3.75 and earlier which gives
+it improved VPATH semantics.  At the time it was not maintained by the
+same person who maintained GNU Make.  Since then, the maintaier changed,
+and the patch has been incorporated.
 .LP
 The patch is the work of
 Paul D. Smith <psmith@BayNetworks.com>
@@ -391,9 +395,9 @@ The version numbers track the GNU Make version numbers.
 .LP
 For a description of the VPATH problem, and how this patch addresses it,
 see the README file referenced.
-.LP
-This patch has not been extensively tested with Aegis.
-In theory, it is similar to using Cook.
+.nh 3 "GNU Make's VAPTH+"
+In theory, using GNU Make 3.76 or later (or a suitable patched earlier
+version) is similar to using Cook.
 The project
 .I config
 file now requires

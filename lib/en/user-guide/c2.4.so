@@ -52,6 +52,7 @@ is set to be the administrator of that project.
 .LP
 All of these things will be examined 
 .nh 3 "Before You Start"
+.LP
 Have you configured your account to use Aegis?  See the \fIUser Setup\fP
 section of the \fITips and Traps\fP chapter for how to do this.
 .nh 3 "The First Change"
@@ -139,7 +140,7 @@ alex%
 This is for versioning; see the \fIBranching\fP chapter for more
 information.  For the moment, we will simply work on branch 1.0.
 Notice how the branches appear as projects in the project listing;
-in general branches can be used interchangably with projects.
+in general branches can be used interchangeably with projects.
 .E(
 alex% \f(CBael p\fP
 List of Projects

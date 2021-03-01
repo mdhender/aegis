@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,7 @@
 
 struct string_ty; /* existence */
 
-struct input_ty *aedist_open _((const char *, struct string_ty **));
+struct input_ty *aedist_open _((struct string_ty *filename,
+	struct string_ty **subject_p));
 
 #endif /* AEDIST_OPEN_H */

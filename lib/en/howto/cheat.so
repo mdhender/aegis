@@ -1,0 +1,188 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2000 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing lib/en/howto/cheats
+.\"
+.nh 1 "Cheat Sheet"
+.LP
+This page is a quick reference into the common Aegis commands.
+.IP \(bu 2n
+Usually, ``\f[CW]man\fP \fIcommand_name\fP'' can be used to get more details
+on a particular command.
+.IP \(bu 2n
+See also the official Aegis quick reference in the User Guide, page 88.
+.IP \(bu 2n
+The ``\f[CW]-p\fP \fIname\fP'' option is used to specify the project name.
+.IP \(bu 2n
+The "``\f[CW]-c\fP \fInumber\fP'' option is used to specify the change number.
+.IP \(bu 2n
+The ``\f[CW]-l\fP'' (or ``\f[CW]-List\fP'') option can often be used to
+list subjects for the given command (eg. change numbers or projects) or
+simply to list rather than edit (\fIe.g.\fP a file or change attributes).
+.\" ------------------------------------------------------------------------
+.nh 2 "Common Commands"
+.IP "\f[CW]ae_p\fP \fIproject-name.branch-number\fP" 8n
+Set current project number for all following Aegis commands.  The
+\f[CW]ae_p\fP command with no arguments will `unset' this forced default.
+.IP "\f[CW]ae_c\fP \fInumber\fP" 8n
+Set current change number for all following Aegis commands.  The
+\f[CW]ae_c\fP command with no arguments will `unset' this forced default.
+.IP "\f[CW]aecd\fP [ \f[CW]-bl\fP ]" 8n
+Change directory [change to baseline].
+.IP "\f[CW]aeb\fP"
+Aegis build - used by developers, reviewers and/ or integrators.
+.IP "\f[CW]aet\fP"
+Run tests - used by developers.
+.IP "\f[CW]aed\fP"
+Difference of change files with baseline.
+.IP "\f[CW]aedless\fP"
+View difference files generated with \f[CW]aed\fP.
+.IP "\f[CW]ael cd\fP"
+List change details.
+.IP "\f[CW]aeca\fP [ \f[CW]-l\fP ]"
+Edit [list] change attributes.
+.IP "\f[CW]tkaenc\fP"
+Create a new change (see \fIaenc\fP(1) for details),
+using a GUI interface.
+This makes it a damn sight easier to type in the description field.
+.IP "\f[CW]tkaeca\fP"
+Edit change attributes (see \fIaeca\fP(1) for details),
+using a GUI interface.
+This makes it a damn sight easier to edit the description field.
+.IP "\f[CW]ael ll\fP"
+List all of the lists (there are a lot).
+.IP "\f[CW]ael c\fP"
+List all of the changes for a project (branch).
+.IP "\f[CW]ael cf\fP"
+List all of the files in a change.
+.IP "\fIaeuconf\fP(5)"
+This is a man page documenting the \f[CW]~/.aegisrc\fP file format.
+.\" ------------------------------------------------------------------------
+.nh 2 "Developer Commands"
+.LP
+Procedure:
+\f[CW]ael cd\fP \(->
+\f[CW]aedb\fP \(->
+\fIdo stuff\fP \(->
+\f[CW]aeb\fP \(->
+\f[CW]aet\fP \(->
+\f[CW]aed\fP \(->
+\f[CW]aedless\fP [ \(->
+\f[CW]aeclean\fP ] \(->
+\f[CW]aede\fP
+.IP "\f[CW]aedb[u]\fP"
+Develop begin [undo].
+.IP "\f[CW]aede[u]\fP"
+Develop end [undo].
+.IP "\f[CW]aeclean\fP"
+This will remove all files in the development directory which are not in
+the change as new files or copied files.
+This may delete files that you want, so be careful.
+.LP
+The \fIaeclean\fP(1) command uses Aegis' knowledge of what is
+\fIsupposed\fP to be in the change.  You are meant to tell Aegis about
+all source files you create in a development directory.  If you have
+forgotten to do this, it is highly likely that the integration would
+fail in any case.
+.LP
+If you are importing files from elsewhere, use ``\fIaenf .\fP'' and all
+of the files in the directory tree below dot (the current directory)
+will be added to the change (make sure there are no object files when
+you do this).
+.IP "\f[CW]aecp\fP"
+Prepares a file in the project for editing within the change; \fIi.e.\fP copy
+file into change from baseline.  Remove simlink if necessary, etc.
+.IP "\f[CW]aecpu\fP"
+Reverse the effects of the above.
+.IP "\f[CW]aecpu -unch\fP"
+Will check all files in your change to see if any
+have not been modified, and perform an \fIaecpu\fP on them.  This will stop
+an unnecessary version number increment for files that have not changed.
+(And also improves test correlations.)
+.IP "\f[CW]aem\fP"
+Merge out-of-date files.
+See the \fI-Only-merge\fP option of the \fIaed\fP(1) command.
+.IP "\f[CW]aenf[u]\fP"
+Create/ add a new file [undo].
+.IP "\f[CW]aemv\fP"
+Rename (move) files.
+.IP "\f[CW]aerm[u]\fP"
+This tells Aegis the file is to be removed from the baseline when the
+change is integrated.  Or \fIaermu\fP to undo this \fIbefore\fP the
+change is finished.
+.\" ------------------------------------------------------------------------
+.nh 2 "Reviewer Commands"
+.LP
+Procedure:
+\f[CW]ael cd\fP \(->
+\f[CW]aecd\fP \(->
+\f[CW]aedless\fP \(->
+\fIview output, review source files\fP ->
+\f[CW]aerpass\fP
+.LP
+Remember: the point of reviews is to find problems, not be a rubber stamp.
+You are expected to fail some reviews.
+.IP "\f[CW]aerpass\fP"
+Review pass.
+.IP "\f[CW]aerpu\fP"
+Review pass undo.
+.IP "\f[CW]aerfail\fP"
+Review fail.
+.\" ------------------------------------------------------------------------
+.nh 2 "Integrator Commands"
+.LP
+Procedure:
+\f[CW]aeib\fP \(->
+\f[CW]aeb\fP \(->
+\f[CW]aet\fP \(->
+\f[CW]aed\fP \(->
+\f[CW]aeipass\fP
+.LP
+There is a script distributed with Aegis to do this procedure
+automatically: it may be found at \fI\*(D)/integrate_q.sh\fP if it has
+been installed inthe standard place.
+.IP "\f[CW]aeib[u]\fP"
+Integrate begin [undo].
+.IP "\f[CW]aeipass\fP"
+Integrate pass.
+.IP "\f[CW]aeifail\fP"
+Integrate fail.
+.\" ------------------------------------------------------------------------
+.nh 2 "Project Administrator Commands"
+.LP
+This includes all of the commands that don't fit the categories above.
+.IP "\f[CW]aenc[u]\fP"
+Create a new change [undo].
+See \fIaecattr\fP(5) for description of file format,
+or use \fItkaenc\fP(1) instead.
+.IP "\f[CW]aend\fP and \f[CW]aerd\fP"
+New developer; remove developer.
+.IP "\f[CW]aenrv\fP and \f[CW]aerrv\fP"
+New reviewer; remover reviewer.
+.IP "\f[CW]aeni\fP and \f[CW]aeri\fP"
+New integrator; remove integrator.
+.IP "\f[CW]aena\fP and \f[CW]aera\fP"
+New (project) administrator; remove administrator.
+.IP "\f[CW]aepa [-l]\fP"
+Edit [list] project attributes (see \fIaepattr\fP(5) for file format).
+.IP "\f[CW]aeca [-l]\fP"
+Edit [list] change attributes (see \fIaecattr\fP(5) for file format).
+.IP "\f[CW]tkaeca\fP"
+Edit change attributes using a GUI.
+This makes it much easier to type in the description field.

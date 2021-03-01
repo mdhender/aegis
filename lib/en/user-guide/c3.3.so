@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1998 Peter Miller;
+.\"	Copyright (C) 1991-1996, 1998, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -147,3 +147,42 @@ contains all of the above commands,
 so that you may readily insert them into your project
 .I config
 file.
+.nh 3 "Capabilities"
+.LP
+By default, FHist is unable to cope will NUL characters in its input
+files, however this is the only limitation.  By default, Aegis expects
+that history tools are only able to cope with printable ASCII text.
+To tell it ontherwise, set
+.E(
+history_content_limitation = international_text;
+.E)
+in the project \fIconfig\fP file.
+.PP
+Aegis will transparently encode binary files (files which contain NUL
+characters) on entry and exit from the history tool.  This means that
+you may have binary files in your project without configuring anything
+special.
+.nh 3 "Binary Files"
+.LP
+FHist (version 1.7 and later) has support for binary files.  The \fIfhist
+\-binary\fP option may be used to specify that the file is binary,
+that it may contain NUL characters.  It is essential that you have
+consistent presence or absence of the \-binary option for each file
+when combined with the \-CReate, \-Update, \-Conditional_\%Update and
+\-Extract options.  Failure to do so will produce inconsistent results.
+is unable to cope with binary files.
+.PP
+This means that you have to \fIalways\fP use the \-binary option in the
+\fIhistory_create_command\fP and \fIhistory_put_command\fP fields.  You
+have to decide right at the very beginning if your project \fIhistory\fP
+will ever have binary files, or will never have binary files.  You can't
+change your mind later.  If you choose to use the \-binary option, set
+.E(
+history_content_limitation = binary_capable;
+.E)
+.PP
+However, Aegis
+will transparently encode all such files, if you leave the
+\fIhistory_\%content_\%limitation\fP field set for international text.
+In some cases, Aegis' encoding will be more efficient that fhist's.
+And you have the advantage of being able to change your mind later.

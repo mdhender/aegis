@@ -1,0 +1,776 @@
+#!/bin/sh
+#-*-tcl-*-
+#	aegis - project change supervisor
+#
+#       tkaer - changeset review manager
+#       Copyright (C) 2000, 2001 Scott Finneran
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#
+# MANIFEST: tcl-tk review assist program contributed by Scott Finneran.
+#
+#       Makes use of tkdiff by by John M. Klassa.
+#             TkDiff Home Page: http://www.accurev.com/free/tkdiff
+#
+#	@configure_input@
+#
+# comments wrap in Tcl, but not in sh \
+exec wish $0 -- ${1+"$@"}
+
+# TODO:
+# - Is it worth extracting the common code between edit_review_comments etc.
+# - split out some of the more general stuff like change details viewer into seperate file.
+# - a serious tidy up. (clean up some of the binding spaghetti)
+# - add more comments.
+
+set bindir @bindir@
+set libdir @libdir@
+set datadir @datadir@
+
+wm title . tkaer
+wm iconname . tkaer
+wm iconbitmap . @$datadir/aegis.icon
+wm iconmask . @$datadir/aegis.mask
+
+proc read_pipe { command errok } {
+	set data ""
+	set fd [open $command r]
+	if { $fd != "" } {
+		set data [read $fd]
+		set codevar ""
+		catch { close $fd } codevar
+		if { $codevar != "" && !$errok } {
+		    puts [format "Command \"%s\"\nreturned \"%s\"" \
+			    $command $codevar]
+		    exit 1
+		}
+	}
+	return [string trim $data]
+}
+
+proc handle_finished_review { widgetname } {
+    global change_details_is_displayed
+    global review_comments_is_displayed
+
+    if { $widgetname == "." } {
+	# first tidy up what we were doing.
+	if { $change_details_is_displayed } {
+	    handle_details_button .toplevel
+	}
+	if { $review_comments_is_displayed } {
+	    handle_comments_button .toplevel
+	}
+
+	# Prompt before quitting.
+	set result [tk_dialog .dlg "Finished" \
+		    "Select action" \
+		    question \
+		    0 "Pass" "Fail" "Quit" "Resume"]
+    } else {
+	destroy $widgetname
+    }
+
+    switch $result {
+	0 {
+	    if {[aerpass]} {
+		destroy $widgetname
+	    }
+	}
+	1 {
+	    if {[aerfail]} {
+		destroy $widgetname
+	    }
+	}
+	2 { destroy $widgetname }
+    }
+}
+
+proc list_selected { widgetname } {
+    # default return value.
+    set item ""
+
+    set i [$widgetname curselection]
+
+    if { $i != "" } {
+	set item [$widgetname get $i]
+    }
+
+    return "$item"
+}
+
+proc display_list {group_name file_list label_text} {
+    # List of files newly created by this change:
+    frame $group_name
+    label $group_name.label -text $label_text
+    pack $group_name.label -side top -fill x
+
+    listbox $group_name.listbox -relief raised -borderwidth 2 \
+	    -yscrollcommand "$group_name.scroll set"
+
+    scrollbar $group_name.scroll \
+	    -command "$group_name.listbox yview"
+
+    # Implement a complex search algorithm for finding
+    # the longest filename :-)
+    set longest_filename_length  0; # just to get the ball rolling
+    foreach i $file_list {
+	$group_name.listbox insert end $i
+	if {[string length $i] > $longest_filename_length} {
+	    set longest_filename_length [string length $i]
+	}
+    }
+
+    # and update the width of the listboxes to suit.
+    $group_name.listbox configure -width $longest_filename_length
+    pack $group_name.scroll -side right -fill y
+    pack $group_name.listbox -side left -fill both -expand 1
+
+    pack $group_name -side left -fill both -expand 1
+}
+
+proc aerpass { } {
+    global project_name
+    global change_number
+    global comments_edited
+
+    if { $comments_edited } {
+	# Prompt before quitting.
+	set result [tk_dialog .dlg "aerpass" \
+		"Review comments were edited. Are you sure you want to pass the change?" \
+		question \
+		0 "Continue" "Cancel"]
+
+	# Review changed their mind.
+	if {$result == 1} {
+	    return 0
+	}
+    }
+
+    set result [read_pipe \
+	    [format "|aegis -rpass -v -project=%s -change=%s 2>@stdout" \
+	    $project_name $change_number] 0]
+    # Display the output from aerpass for all to see
+    puts $result
+
+    # pass complete.
+    return 1
+}
+
+proc aerfail { } {
+    global project_name
+    global change_number
+    global comment_text
+
+    global comments_edited
+
+    # no comments were entered, so this may be a mistake.
+    if { !$comments_edited } {
+	# Prompt before quitting.
+	set result [tk_dialog .dlg "aerpass" \
+		"No Review comments were entered. Are you sure you want to fail the change?" \
+		question \
+		0 "Continue" "Cancel"]
+
+	# Review changed their mind.
+	if {$result == 1} {
+	    return 0
+	}
+    }
+
+    # If the comment window is still open then kill it (and make sure that the
+    # destroy is caught and that it extracts the text), then store the text
+    # in the global comment_text variable into the "unique" file
+    # and pass the filename into aerfail.
+
+    if { $comments_edited } {
+	set unique_filename "/tmp/tkaer_comments_[pid]"
+	set comment_source "-file $unique_filename"
+
+	# just in case the filename is there... delete it.
+	file delete $unique_filename
+
+	set fid [open $unique_filename w]
+	puts -nonewline $fid $comment_text
+	close $fid
+    } else {
+	set comment_source "-reason \"\""
+    }
+
+    set result [read_pipe \
+	    [format "|aegis -rfail -v -project=%s -change=%s %s 2>@stdout" \
+	    $project_name $change_number $comment_source] 0]
+
+    # And clean up.
+    if { $comments_edited } {
+	file delete $unique_filename
+    }
+
+    # Display the output from aerfail for all to see
+    puts $result
+
+    # fail complete
+    return 1
+}
+
+proc get_baseline_search_path {} {
+    global baseline_search_path
+    global project_name
+    global change_number
+
+    set baseline_search_path \
+	    [read_pipe [format "|aesub %s -project=%s -change=%s" \
+	    "\$search_path" $project_name $change_number] 0]
+
+    # the first entry will be the development directory itself,
+    # so prune it from the list.
+    set first_colon_pos [string first ":" $baseline_search_path]
+    set first_colon_pos [incr first_colon_pos]
+    set baseline_search_path \
+	    [string range $baseline_search_path $first_colon_pos end]
+}
+
+proc find_previous_version {filename} {
+    global baseline_search_path
+
+    set search_list [split $baseline_search_path :]
+
+    foreach i $search_list {
+	set temp_filename "$i/$filename"
+	if { [file isfile $temp_filename] == 1 } {
+	    return $temp_filename
+	}
+    }
+}
+
+# In the place of pretty code, I will provide comments :-)
+# These 2 functions expect filenames to contain a string of the form:
+# new_file_name<-old_file_name.
+# I believe that they fit the Macquarie Dictionary definition of cute:
+# "Ugly but interesting".
+
+proc get_new_moved_filename { filenames } {
+    set delimiter_pos [string first <- $filenames]
+    set delimiter_pos [expr $delimiter_pos - 1]
+
+    return [string range $filenames 0 $delimiter_pos]
+}
+
+proc get_old_moved_filename { filenames } {
+    set delimiter_pos [string first <- $filenames]
+    set delimiter_pos [expr $delimiter_pos + 2]
+
+    return [string range $filenames $delimiter_pos end]
+}
+
+proc review_moved_file_against_ancestor { w X Y filenames } {
+    global baseline_search_path
+    set search_list [split $baseline_search_path :]
+
+    set orig_filename [get_old_moved_filename $filenames]
+
+    set ancestor_directory ""
+    destroy $w.ancestor
+    menu $w.ancestor
+    foreach a $search_list {
+	set command_string [list review_moved_file $filenames $a]
+	if {[file exist "$a/$orig_filename"]} {
+	    $w.ancestor add command -label $a -command $command_string
+	}
+    }
+
+    tk_popup $w.ancestor $X $Y
+}
+
+proc review_moved_file {filenames prev_dir} {
+    global development_directory
+
+    set new_filename [get_new_moved_filename $filenames]
+
+    set old_filename [get_old_moved_filename $filenames]
+
+    if {$prev_dir == ""} {
+	set old_file [find_previous_version $old_filename]
+    } else {
+	set old_file "$prev_dir/$old_filename"
+    }
+
+    set new_file $development_directory/$new_filename
+
+    diff_review_file $old_file $new_file
+}
+
+proc review_modified_file_against_ancestor { w X Y filename } {
+    global baseline_search_path
+    set search_list [split $baseline_search_path :]
+
+    set ancestor_directory ""
+    destroy $w.ancestor
+    menu $w.ancestor
+    foreach a $search_list {
+	set command_string [list review_modified_file $filename $a]
+	if {[file exist "$a/$filename"]} {
+	    $w.ancestor add command -label $a -command $command_string
+	}
+    }
+
+    tk_popup $w.ancestor $X $Y
+}
+
+proc review_modified_file {file_to_review prev_dir} {
+    global development_directory
+
+    if {$prev_dir == ""} {
+	set old_file [find_previous_version $file_to_review]
+    } else {
+	set old_file "$prev_dir/$file_to_review"
+    }
+    set new_file $development_directory/$file_to_review
+
+    diff_review_file $old_file $new_file
+}
+
+proc diff_review_file {old_file new_file} {
+    global development_directory
+    global pref
+
+    cd $development_directory
+
+    eval "exec \"$pref(diff_command)\" $old_file $new_file &"
+}
+
+proc review_new_file {file_to_review} {
+    global development_directory
+    global pref
+
+    cd $development_directory
+
+    set file_to_review $development_directory/$file_to_review
+
+    eval "exec $pref(view_command) $file_to_review &"
+}
+
+proc review_removed_file {file_to_review} {
+    # Not much that can be done for removed files, but the review
+    # may want to know what was previously in there.
+    global pref
+
+    set file_to_review [find_previous_version $file_to_review]
+
+    eval "exec $pref(view_command) $file_to_review &"
+}
+
+proc process_config_file {} {
+    global bindir
+    global pref
+
+    set config_filename "~/.tkaer"
+    # if the config file already exists then just source (i.e. execute) it.
+    # otherwise create one for them.
+    if {![file exists $config_filename]} {
+	if [catch {open $config_filename w 0600} fd] {
+	    puts stderr "Cannot create config file $config_filename"
+	    exit 1
+	}
+	puts "default $config_filename created."
+
+	# defaults:
+	puts $fd "# TKAER CONFIGURATION FILE."
+	puts $fd "# -------------------------\n"
+	puts $fd "# Visual difference tool."
+	puts $fd "# This is used for comparing modified or moved files with older"
+	puts $fd "# versions."
+	if {[file exists $bindir/tkdiff]} {
+	    set cmd $bindir/tkdiff
+	} else {
+	    set cmd tkdiff
+	}
+	puts $fd [list set pref(diff_command) $cmd]
+	puts $fd ""
+	puts $fd "# File Viewer."
+	puts $fd "# This is used to view new or removed files."
+	if {[file exists /usr/X11R6/bin/xterm]} {
+	    set cmd /usr/X11R6/bin/xterm
+	} else {
+	    set cmd xterm
+	}
+	puts $fd [list set pref(view_command) "$cmd -e /bin/vi -R"]
+	puts $fd "#set pref(view_command) \"/usr/bin/gnome-terminal -x /bin/vi\""
+	puts $fd "#set pref(view_command) \"/usr/bin/emacs\""
+	puts $fd ""
+	puts $fd "# Text Viewer/Editor Font."
+	puts $fd "# Font used by the change details viewer and review comments editor."
+	puts $fd "set pref(view_edit_font) \"*-fixed-medium-r-normal-*-12-*\""
+	puts $fd "#set pref(view_edit_font) \"fixed\""
+	puts $fd "#set pref(view_edit_font) \"*-lucidatypewriter-medium-r-normal-*-12-*\""
+	puts $fd "#set pref(view_edit_font) \"*-lucidatypewriter-medium-r-normal-*-14-*\""
+	puts $fd "#set pref(view_edit_font) \"*-courier-medium-r-normal-*-12-*\""
+	puts $fd "#set pref(view_edit_font) \"*-courier-medium-r-normal-*-14-*\""
+
+	close $fd
+    }
+
+    source $config_filename
+
+}
+
+proc process_command_line {} {
+    global argc argv argv0
+    global project_name
+    global change_number
+
+    set argindex 0
+    set project_name ""
+    set change_number ""
+
+    # Loop through argv seeing and try to guess at what the user wants to do.
+    while {$argindex < $argc} {
+	set arg [lindex $argv $argindex]
+	switch -regexp -- $arg {
+	    "^-p$" {
+		incr argindex
+		set project_name [lindex $argv $argindex]
+	    }
+	    "^-p.*" {
+		set project_name [string range $arg 2 end]
+	    }
+	    "^-c$" {
+		incr argindex
+		set change_number [lindex $argv $argindex]
+	    }
+	    "^-c.*" {
+		set change_number [string range $arg 2 end]
+	    }
+	    default {
+		set change_number [lindex $argv $argindex]
+	    }
+	}
+	incr argindex
+    }
+
+    # ok now we have the info provided by the user, so let's try
+    # to fill in the gaps.
+
+    if { $project_name == "" } {
+	# Set the project_name variable.  We need to ask Aegis for this,
+	# so that we get what *aegis* thinks is the default project name.
+	set project_name [read_pipe "|aegis -list default_project" 1]
+	if { $project_name == "" } {
+	    puts [format "\n%s couldn't determine the project name\n" $argv0]
+	    exit 1
+	}
+    }
+
+    if { $change_number == "" } {
+	if { $argc > 1 } {
+	    puts "\nUsage tkaer \[Change Number\]\n"
+	    # can't do much more....
+	    exit 1
+	}
+
+	# well the user didn't specify the change number so ask aegis
+	# for help.
+	set change_number [read_pipe "|aegis -list default_change" 1]
+	if { $change_number == ""  } {
+	    puts [format "%s couldn't determine the change number\n" $argv0]
+	    exit 1
+	}
+    }
+}
+
+proc view_change_details {parent} {
+    global project_name
+    global change_number
+    global datadir
+    global pref
+
+    # catch the output from 'ael cd' for all to see
+    set ael_cf_output [read_pipe \
+	    [format "|aegis -list cd -v -project=%s -change=%s -no_pager -page_length=9999 2>@stdout" \
+	    $project_name $change_number] 0]
+    set title [format "tkaer - \"%s\" - Change \"%d\" Details" $project_name $change_number]
+
+
+    set w "$parent.change_details"
+
+    toplevel $w
+    wm title $w "$title"
+    wm iconname $w "$title"
+    wm geometry $w  "80x30"
+    wm iconbitmap $w @$datadir/aegis.icon
+
+    text $w.text -relief sunken -bd 2 -yscrollcommand "$w.fr.scroll set" -setgrid 1 \
+	    -height 30 -font $pref(view_edit_font) -highlightthickness 0
+    frame $w.fr -borderwidth 0
+    scrollbar $w.fr.scroll -command "$w.text yview"
+    pack $w.fr.scroll -side bottom -fill y -expand 1
+    pack $w.fr -side right -fill y
+    pack $w.text -expand 1 -fill both
+    $w.text insert 0.0 $ael_cf_output
+    $w.text mark set insert 0.0
+    menu $w.text.p
+    $w.text.p add command -label Quit -command "destroy $w"
+    bind $w.text <3> "tk_popup $w.text.p %X %Y"
+    bind $w <Escape> "destroy $w"
+    bind $w <Next> "$w.text yview scroll 1 pages"
+    bind $w <Prior> "$w.text yview scroll -1 pages"
+    bind $w <1> "bind $w \<Next\> \"\" ; bind $w \<Prior\> \"\""
+    bind $w <Home> "$w.text see 0.0"
+    bind $w <End> "$w.text see end"
+    bind $w.text <4> "$w.text yview scroll -6 units"
+    bind $w.text <5> "$w.text yview scroll 6 units"
+    bind $w <q> "destroy $w"
+    bind $w <Q> "destroy $w"
+    bind $w <Destroy> "set change_details_is_displayed 0; $parent.buttons.details configure -relief raised"
+}
+
+proc handle_details_button  {parent} {
+    global change_details_is_displayed
+
+    if { $change_details_is_displayed } {
+	$parent.buttons.details configure -relief raised
+	destroy $parent.change_details
+	set change_details_is_displayed 0
+    } else {
+	$parent.buttons.details configure -relief sunken
+	view_change_details $parent
+	set change_details_is_displayed 1
+    }
+}
+
+proc edit_review_comments {parent} {
+    global project_name
+    global change_number
+    global datadir
+    global comment_text
+    global pref
+
+    set title [format "tkaer - \"%s\" - Change \"%d\" Details" $project_name $change_number]
+
+    set w "$parent.review_comments"
+
+    toplevel $w
+    wm title $w "$title"
+    wm iconname $w "$title"
+    wm geometry $w  "80x30"
+    wm iconbitmap $w @$datadir/aegis.icon
+
+    frame $w.menubar -relief raised -bd 2
+    text $w.text -relief sunken -bd 2 -yscrollcommand "$w.fr.scroll set" -setgrid 1 \
+	    -height 30 -font $pref(view_edit_font) -highlightthickness 0
+    frame $w.fr -borderwidth 0
+    scrollbar $w.fr.scroll -command "$w.text yview"
+    pack $w.fr.scroll -side bottom -fill y -expand 1
+    pack $w.fr -side right -fill y
+    pack $w.menubar -side top -fill x
+    menubutton $w.menubar.file -text File -menu $w.menubar.file.menu
+    menu $w.menubar.file.menu -tearoff 0
+    $w.menubar.file.menu add command -label "Quit & Save" -command \
+	    "set comments_edited 1;set comment_text \[$w.text get 0.0 end\];destroy $w"
+    $w.menubar.file.menu add command -label Quit -command \
+	    "destroy $w"
+    pack $w.menubar.file -side left
+    pack $w.text -expand 1 -fill both
+    $w.text insert 0.0 $comment_text
+    $w.text mark set insert 0.0
+
+    bind $w <Next> "$w.text yview scroll 1 pages"
+    bind $w <Prior> "$w.text yview scroll -1 pages"
+    bind $w <1> "bind $w \<Next\> \"\" ; bind $w \<Prior\> \"\""
+    bind $w <Home> "$w.text see 0.0"
+    bind $w <End> "$w.text see end"
+    bind $w.text <4> "$w.text yview scroll -6 units"
+    bind $w.text <5> "$w.text yview scroll 6 units"
+    bind $w <Destroy> "set review_comments_is_displayed 0; $parent.buttons.comments configure -relief raised"
+}
+
+proc handle_comments_button  {parent} {
+    global review_comments_is_displayed
+    global comment_text
+    global comments_edited
+
+    if { $review_comments_is_displayed } {
+	set comment_text [$parent.review_comments.text get 0.0 end]
+	set comments_edited 1
+	$parent.buttons.comments configure -relief raised
+	destroy $parent.review_comments
+	set review_comments_is_displayed 0
+    } else {
+	$parent.buttons.comments configure -relief sunken
+	edit_review_comments $parent
+	set review_comments_is_displayed 1
+    }
+}
+
+
+# AND BEGIN....
+
+# Firstly, lets figure out what to do.
+process_command_line
+
+# And read in this users config.
+process_config_file
+
+# Get the *_change_list etc. variables from the report.
+eval [read_pipe [format "|aereport -f %s/wish/tkaer_info.rpt -unf \
+	-pw=1000 -project=%s -change=%s" \
+	$datadir $project_name $change_number] 0]
+
+if { $development_directory == "" } {
+    puts [format \
+	    "%s couldn't find the development directory for change %s\n" \
+	    $argv0 $change_number]
+    exit 1
+}
+
+get_baseline_search_path
+
+wm title . [format "tkaer - \"%s\" - Change \"%d\"" $project_name \
+	$change_number]
+wm iconname . tkaer
+
+#
+# Now create the widget heirarchy
+#
+set w .toplevel
+frame $w
+
+frame $w.files
+
+set c ""
+
+# List of files newly created by this change:
+if { [llength $new_files_list] != 0 } {
+    if {$num_new_files == 1} {
+	set list_title [concat $num_new_files " Created File:"]
+    } else {
+	set list_title [concat $num_new_files " Created Files:"]
+    }
+    set c "$c$list_title\n"
+    foreach i $new_files_list {
+	set c "$c\Comments for $i (create):\n"
+    }
+    display_list $w.files.created $new_files_list $list_title
+    bind $w.files.created.listbox <Double-Button-1> {
+	review_new_file [list_selected $w.files.created.listbox]
+    }
+    set c "$c\n"
+}
+
+# List of files modified by this change:
+if { [llength $modified_files_list] != 0 } {
+    if {$num_modified_files == 1} {
+	set list_title [concat $num_modified_files " Modified File:"]
+    } else {
+	set list_title [concat $num_modified_files " Modified Files:"]
+    }
+    set c "$c$list_title\n"
+    foreach i $modified_files_list {
+	set c "$c\Comments for $i (modify):\n"
+    }
+    display_list $w.files.modified $modified_files_list $list_title
+    bind $w.files.modified.listbox <Double-Button-1> {
+	review_modified_file [list_selected $w.files.modified.listbox] ""
+    }
+    bind $w.files.modified.listbox <Button-3> {
+	$w.files.modified.listbox selection clear 0 end;
+	$w.files.modified.listbox selection set \
+		[$w.files.modified.listbox nearest %y];
+	review_modified_file_against_ancestor $w %X %Y \
+		[list_selected $w.files.modified.listbox]
+    }
+    set c "$c\n"
+}
+
+# List of files moved by this change:
+if { [llength $moved_files_list] != 0 } {
+    if {$num_moved_files == 1} {
+	set list_title [concat $num_moved_files " Moved File:"]
+    } else {
+	set list_title [concat $num_moved_files " Moved Files:"]
+    }
+    set c "$c$list_title\n"
+    foreach i $moved_files_list {
+	set c "$c\Comments for $i (move):\n"
+    }
+    display_list $w.files.moved $moved_files_list $list_title
+    bind $w.files.moved.listbox <Double-Button-1> {
+	review_moved_file [list_selected $w.files.moved.listbox] ""
+    }
+    bind $w.files.moved.listbox <Button-3> {
+	$w.files.moved.listbox selection clear 0 end;
+	$w.files.moved.listbox selection set \
+		[$w.files.moved.listbox nearest %y];
+	review_moved_file_against_ancestor $w %X %Y \
+		[list_selected $w.files.moved.listbox]
+    }
+    set c "$c\n"
+}
+
+# List of files removed by this change:
+if { [llength $removed_files_list] != 0 } {
+    if {$num_removed_files == 1} {
+	set list_title [concat $num_removed_files " Removed File:"]
+    } else {
+	set list_title [concat $num_removed_files " Removed Files:"]
+    }
+    set c "$c$list_title\n"
+    foreach i removed_files_list {
+	set c "$c\Comments for $i (remove):\n"
+    }
+    display_list $w.files.removed $removed_files_list $list_title
+    bind $w.files.removed.listbox <Double-Button-1> {
+	review_removed_file [list_selected $w.files.removed.listbox]
+    }
+    set c "$c\n"
+}
+
+# if this change is in being_reviewed state then the finished button
+# calls up a "whatdyawannado" dialog box. Otherwise, we just exit.
+if { $change_state == "being_reviewed" } {
+    wm protocol . WM_DELETE_WINDOW { handle_finished_review . }
+    set finished_command { handle_finished_review . }
+} else {
+    set finished_command { exit 0 }
+}
+
+set comment_text $c
+set comments_edited 0
+set change_details_is_displayed 0
+set review_comments_is_displayed 0
+
+# And get finished & change_details buttons.
+frame $w.buttons
+button $w.buttons.finished -text "Finished" -command $finished_command
+
+button $w.buttons.comments -text "Comments" -command { handle_comments_button $w}
+
+button $w.buttons.details -text "Details" -command {handle_details_button $w}
+
+pack $w.buttons.details   -side left -expand 1 -padx 2m -pady 1m
+
+# To hide the change comments button, just don't pack it.
+if { $change_state == "being_reviewed" } {
+    pack $w.buttons.comments  -side left -expand 1 -padx 2m -pady 1m
+}
+pack $w.buttons.finished  -side left -expand 1 -padx 2m -pady 1m
+
+# Pack buttons first so that they still appear if someone gets
+# a little too enthusiastic about shrinking the window size.
+pack $w.buttons -side bottom
+pack $w.files -side top -expand 1 -fill both
+
+pack $w -expand 1 -fill both
+
+set errorCode 0

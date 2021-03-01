@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2000 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -19,10 +19,94 @@
 .\"
 .\" MANIFEST: document describing new 3.20 features
 .\"
-.\" .PP
-.\" .if n *
-.\" .if t \(bu
-.\" .\" change 36
+.PP
+.if n *
+.if t \(bu
+.\" change 57
+A couple of minor bugs have been fixed in \fIaedist\fP, especially the
+problem with sending an baseline image while a change is being reviewed.
+.PP
+.if n *
+.if t \(bu
+.\" change 55, 17
+A couple of bugs have been fixed in the tkae* commands,
+in partucular they no longer leave temporary files lying around.
+.PP
+.if n *
+.if t \(bu
+.\" change 51, 37, 23, 16
+Lots of stuff has been added to the HOWTO: a cheat sheet,
+how to change a project's owner,
+how to use distributed development,
+how to become a developer.
+.PP
+.if n *
+.if t \(bu
+.\" change 52
+The problem which caused `aesub ${copyright_years}' to contain duplicates
+has been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" change 36
+There have been Y2K fixes: the date parsing for the -delta-date option
+has been fixed, and the web page data has also been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" change 36
+The \fIaet\fP(1) command can now run more than one test at once, if
+configured appropriately.  This is of most use on systems with more
+than one CPU.
+.PP
+.if n *
+.if t \(bu
+.\" change 33
+The -UNFormatted option no longer truncates column values.
+.PP
+.if n *
+.if t \(bu
+.\" change 31
+The \fIaesub\fP(1) command now accepts the -baseline option,
+so that you can get project-specific substitution in shell scripts.
+.PP
+.if n *
+.if t \(bu
+.\" change 30
+A bug has been fixed in \fItkaenc\fP(1) which gave incorrect
+testing ssttings.  It now also tracks the project testing exemptions.
+.PP
+.if n *
+.if t \(bu
+.\" change 29
+A bug in \fIaenf\gP(1) has been fixed which allowed multiple instances
+of the same file to be created.
+.PP
+.if n *
+.if t \(bu
+.\" change 25
+A bug has been fixed which caused `aesub ${search_path}' to fail in some cases.
+.PP
+.if n *
+.if t \(bu
+.\" change 23
+A bug has been fixed in \fIaenf\fP(1) which allowed you to create
+the same file multiple times, corrupting Aegis' database and causing
+\fIaede\fP(1) to report mysterious errors.  Use \fIaenfu\fP(1) multiple
+times to untangle things.
+.PP
+.if n *
+.if t \(bu
+.\" change 22
+Information has been added to the section 5 manual pages, detailing how
+to access state information from within the report generator.
+This should make writing report scripts a little easier.
+.PP
+.if n *
+.if t \(bu
+.\" change 20
+A bug has been fixed which caused Aegis to misbehave when launched by
+some versions of \fIcron\fP(8) or \fIat\fP(1).
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
 .SS Version 3.20

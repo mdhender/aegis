@@ -1,0 +1,158 @@
+#
+#	aegis - project change supervisor
+#	Copyright (C) 2001 Peter Miller;
+#	All rights reserved.
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#
+# MANIFEST: glossary
+#
+list of german translations, please keep -*- text -*- alphabetically sorted
+
+abort, to ~    ---  abbrechen
+administrator  ---  Administrator
+alias          ---  Alias
+anticipate     ---  antizipieren ???
+assignable     ---  zuweisbar
+ 
+background     ---  Hintergrund
+baseline       ---  Baseline
+branch         ---  Branch (an aegis change branch of a project)
+build          ---  Build `aegis -build'
+
+cancel         ---  abbrechen
+change         ---  Change (an aegis change in a project)
+change is locked by ---  Change ist gelockt durch (???)
+closest is     ---  nächste (the closest is ...), am nächsten dran ist
+command line option ---  Kommandozeilenoption
+complete       ---  beenden
+compress       ---  komprimieren
+core dumped    ---  core dumped (abort(), SEGV etc)
+corrupted      ---  unbrauchbar (Daten, Felder)
+create         ---  erzeugen, erstellen
+
+data may have been corrupted   ---  Daten können unbrauchbar geworden sein
+decompress     ---  dekomprimieren
+decrement      ---  Dekrement (-- operator)
+default        ---  Standard
+delta          ---  Delta
+developer      ---  Entwickler
+development    ---  Bearbeitung
+development begin      ---  Bearbeitungsbeginn, Bearbeitung beginnen
+development directory  ---  Bearbeitungsverzeichnis
+development end        ---  Bearbeitungsende, Bearbeitung abschließen
+diff           ---  Diff `aegis -diff'
+do a diff      ---  einen Diff erstellen
+
+end-of-file             ---  Dateiende
+end-of-line             ---  Zeilenende
+environment variable    ---  Umgebungsvariable
+escape                  ---  Ersatzdarstellung (lt. K&R II)
+exit status             ---  exit-Status
+expression              ---  Ausdruck
+ 
+fail                    ---  fehlschlagen (Test)
+fatal                   ---  fatal (error)
+file                    ---  Datei
+file modification time  ---  Änderungszeit der/einer Datei
+file name pattern       ---  Dateinamensmuster
+fingerprint             ---  Prüfsumme, Fingerabdruck?
+
+history tool            ---  History-Tool
+
+illegal                 ---  ungültig
+inappropriate           ---  unangebracht
+increment               ---  Inkrement (++ Op)
+input                   ---  Eingabedaten
+integrate begin         ---  Integrationsbeginn
+integrate fail          ---  Integrate-Fail
+integration directory   ---  Integrationsverzeichnis
+integrator     ---  Integrator
+interrupt      ---  unterbrechen (Signal)
+
+join           ---  Verknüpfung
+
+key            ---  Schlüssel
+
+left hand side, LHS  ---  Zuweisungsseite
+left shift     ---  Linksverschiebung
+list name      ---  Listen-Name
+lock           ---  Lock (lockfile)
+log            ---  Log (aegis output, aegis.log)  Protokoll?
+logging        ---  protokolliere
+lookup         ---  Referenz
+lvalue         ---  ?lvalue?
+
+malformed      ---  unbrauchbar
+mandatory      ---  vorgeschrieben, unerläßlich
+merge, to ~    ---  mergen, zusammenführen (?)
+merged version ---  angepaßte Version, zusammengeführte Version
+misplaced      ---  fehlplaziert, an falscher Stelle
+mode           ---  Zugriffsberechtigung (file mode, chmod)
+modifiable     ---  veränderbar
+
+obsolete       ---  überholt
+owner          ---  Besitzer
+out of range   ---  ungültig
+output         ---  Ausgabedaten
+outstanding    ---  offen, nicht abgeschlossen
+
+pass integration  ---   die Integration abschließen
+path           ---  Pfad
+pattern        ---  Muster
+power          ---  Potenz (math.)
+print, to ~    ---  ausgeben (einen Wert, eine Variable)
+
+quotes         ---  Anführungszeichen
+
+recovery       ---  Wiederherstellung
+remove         ---  entfernen `aegis -remove_file'
+report         ---  Bericht
+repository     ---  Repository
+request        ---  Anforderung
+review, to ~   ---  reviewen, durchsehen (?)
+review fail    ---  Review-Fail
+review failed  ---  Review fehlgeschlagen
+review pass    ---  Review-Pass
+reviewer       ---  Reviewer
+right shift    ---  Rechtsverschiebung
+root           ---  Root (Unix superuser)
+run tests      ---  Tests laufen lassen
+
+shift          ---  Verschiebung
+source file    ---  Source-Datei  -> Quelldatei?
+specify, to ~  ---  angeben
+standard input ---  Standardeingabe
+standard output ---  Standardausgabe
+state          ---  Status Change Status (being_developed, awaiting_integration usw)
+state lock     ---  Status-Lock
+statement      ---  Anweisung (if-, else-,...)
+string         ---  Text (char string)
+substitution   ---  Ersetzung
+successfully complete a diff ---   einen Diff erfolgreich durchlaufen
+symbolic link  ---  symbolischer Link
+
+tab            ---  Tab (ASCII 9, C-i)
+tamper, to ~   ---  unerlaubt verändern
+trunk          ---  Stamm?
+
+unfinished     ---  unvollständiger
+unterminated   ---  unabgeschlossen
+user           ---  Benutzer
+use, to ~      ---  verwenden, benutzen
+
+version information name  ---  Versionsinformationsname
+
+(was given ...)  ---  (angegeben wurde ...)

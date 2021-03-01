@@ -1,0 +1,116 @@
+'\" tp
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2001, 2002 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the aerbu command.
+.\"
+.so z_name.so
+.TH "\*(n) -Review_Begin_Undo" 1 \*(N) "Reference Manual" ""
+.SH NAME
+\*(n) -Review_Begin_Undo \- stop reviewing a change
+.XX "aerbu(1)" "stop reviewing a change"
+.SH SYNOPSIS
+.B \*(n)
+.B \-Review_Begin_Undo
+[
+.IR option \&...
+]
+.br
+.B \*(n)
+.B -Help
+.br
+.B \*(n)
+.B -VERSion
+.SH DESCRIPTION
+The
+.I "\*(n) -Review_Begin_Undo"
+command is used to
+stop reviewing a change.
+It is moved from the \fIbeing reviewed\fP state back to the \fIawaiting
+review\fP state.
+.\" ------------------------------------------------------------------------
+.PS
+boxwid = 1
+down
+S1: box "awaiting" "review"
+arrow " review" ljust " begin" ljust
+S2: box "being" "reviewed"
+T1: spline -> from S2.w then left 0.5 then up 1 then to S1.w
+" review" ljust " begin" ljust " undo" ljust at T1.c-(0.5,0)
+.PE
+.\" ------------------------------------------------------------------------
+.SS Notification
+If the \fIreview_begin_undo_notify_command\fP has been set in the project
+attributes, this command will be run.  This is usually used to tell
+other reviewers that you have stopped reviewing,
+and they may like to do so instead.
+See \fIaepattr\fP(5) and \fIaepa\fP(1) for more information.
+.PP
+If used when the \fIdevelop_end_action\fP project attribute is set to
+\fIgoto_being_reviewed\fP, then only the notification message is sent.
+.SH OPTIONS
+The following options are understood:
+.so o_change.so
+.so o_help.so
+.so o_list.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o_wait.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aerbu '\*(n) -rbu \e!* -v'
+sh$	aerbu(){\*(n) -rbu "$@" -v}
+.fi
+.SH ERRORS
+It is an error if
+the change is not in the
+.I "being reviewed"
+state.
+.br
+It is an error if
+the current user is not the reviewer of the change.
+.so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aecd (1)
+change directory
+.TP 8n
+.IR aede (1)
+complete development of a change
+.TP 8n
+.IR aedeu (1)
+recall a change for further development
+.TP 8n
+.IR aerb (1)
+begin review of a change
+.TP 8n
+.IR aenrv (1)
+add a reviewer to a project
+.TP 8n
+.IR aerfail (1)
+fail review of a change
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
+.so z_cr.so

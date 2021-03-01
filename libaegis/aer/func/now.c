@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1997 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1997, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -182,9 +182,9 @@ working_days_run(ep, argc, argv)
 
 		scp = sub_context_new();
 		rpt_value_free(t1);
-		sub_var_set(scp, "Function", "working_days");
-		sub_var_set(scp, "Name", "%s", argv[0]->method->name);
-		sub_var_set(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Function", "working_days");
+		sub_var_set_charstar(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
 		s =
 			subst_intl
 			(
@@ -206,9 +206,9 @@ working_days_run(ep, argc, argv)
 		scp = sub_context_new();
 		rpt_value_free(t1);
 		rpt_value_free(t2);
-		sub_var_set(scp, "Function", "working_days");
-		sub_var_set(scp, "Name", "%s", argv[1]->method->name);
-		sub_var_set(scp, "Number", "2");
+		sub_var_set_charstar(scp, "Function", "working_days");
+		sub_var_set_charstar(scp, "Number", "2");
+		sub_var_set_charstar(scp, "Name", argv[1]->method->name);
 		s =
 			subst_intl
 			(

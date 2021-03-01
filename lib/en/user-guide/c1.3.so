@@ -76,7 +76,7 @@ See the \fItesting\fP chapter for more information.
 Code reviews of some sort are normal in most software houses.  Often,
 unfortunately, time pressures or other political pressures mean that
 code reviews manage not to happen.  Yet the literature repeatedly cites
-reviews as on of the most important factors in removing defects before
+reviews as one of the most important factors in removing defects before
 they reach your code repository.  Aegis requires a code review before
 it will commit code into your product; again, the idea is to remove
 defects \fIbefore\fP they pollute the product.

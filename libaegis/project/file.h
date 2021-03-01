@@ -38,5 +38,6 @@ fstate_src project_file_nth _((project_ty *, size_t));
 void project_search_path_get _((project_ty *, struct string_list_ty *, int));
 void project_file_shallow _((project_ty *, string_ty *, long));
 int project_file_shallow_check _((project_ty *, string_ty *));
+string_ty *project_file_version_path _((project_ty *, fstate_src, int *));
 
 #endif /* AEGIS_PROJECT_FILE_H */

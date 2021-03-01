@@ -62,7 +62,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aend '\*(n) -nd \e!* -v'
-sh$	aend(){\*(n) -nd $* -v}
+sh$	aend(){\*(n) -nd "$@" -v}
 .fi
 .SH ERRORS
 It is an error if

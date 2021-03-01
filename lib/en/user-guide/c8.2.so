@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994 Peter Miller.
+.\"	Copyright (C) 1993, 1994, 2002 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -62,7 +62,25 @@ command exits with a status of 0 if the files are identical,
 and a status of 1 if they differ.
 Any other status means something horrible happened.
 The "test" command is used to change this to the exit status aegis expects.
+.LP
+The \fB\-c\fP option says to produce a context diff.  You may choose
+to use the \fB\-u\fP option, to produce uni-diffs, if your \fIdiff\fP
+command supports it.
+.LP
+You may also whishg to consider ignoring white space in comparisons,
+as these tend to be cosmetic changes and not very interesting to code
+reviewers.  The \fB\-b\fP option of GNU Diff will ignore changes to
+the amount of white space, and the \fB\-w\fP option will ignore white
+space altogether.
+.LP
+Binary files will often cause modern versions of GNU Diff to exit with
+an exit status of 2, which is probably reasonable most of the time.
+If your project contains binary files, you may want to treat all files
+as text files.  Use the GNU Diff \fB\-a\fP option in this case.
 .nh 3 "merge_command"
+.LP
+Note: The \fImerge\fP(1) command is better than this use of the
+\fIdiff3\fP(1) command.  See the RCS chapter for more details.
 .LP
 The entry in the
 .I config
@@ -83,6 +101,7 @@ The
 command is used to produce an edit script that will
 incorporate into $MostRecent,
 all the changes between $original and $input.
+You may want the \fB\-a\fP option, to treat all files as ACSII.
 .br
 \(bu
 The

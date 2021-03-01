@@ -1,0 +1,85 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 3.28 features
+.\"
+.PP
+.if n *
+.if t \(bu
+.\" change 36
+The \fIaeimport\fP(1) command can now import CVS repositories which
+contain binary files.
+.PP
+.if n *
+.if t \(bu
+.\" change 35
+There is a new \fI${Read_File_Simple}\fP substritution.  It is like
+\fI${Read_File}\fP, but is does not substitute into the file contents.
+.PP
+.if n *
+.if t \(bu
+.\" change 26
+The \fIaecp \-independent\fP command now accepts a \fI\-output\fP option.
+.PP
+.if n *
+.if t \(bu
+.\" change 25
+There is a new \fI${environment}\fP substitution, allowing you to
+access environment variables within substitutions.  See \fIaesub\fP(5)
+for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 20
+There is a new \fI${project-specific}\fP substitution, allowing you to
+define project specific value to be inserted into various commands.
+See \fIaesub\fP(5) and \fIaepconf\fP(5) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 18
+The \fIaefind\fP(1) command now works with completed change.
+It searches the baseline.
+.PP
+.if n *
+.if t \(bu
+.\" change 17
+A problem with using the ${source} substitution within the
+\fIintegrate_\%pass_\%notify_\%command\fP has been fixed.
+It was getting the path wrong.
+.PP
+.if n *
+.if t \(bu
+.\" change 16
+The batch test command is only ever invoked of there are tests to run.
+(This fixes a problem where it would simethimes run with no arguments.)
+.PP
+.if n *
+.if t \(bu
+.\" change 15
+The web reports now bahave themselves when the names of non-longer-here
+user appear.
+.PP
+.if n *
+.if t \(bu
+.\" change 11, 12, 21, 37
+A number of errors and typos have been fixed in the documentation.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 3.28

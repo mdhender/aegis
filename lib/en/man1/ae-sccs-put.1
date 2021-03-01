@@ -1,0 +1,61 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the lib/en/man1/ae-sccs-put command.
+.\"
+.so z_name.so
+.ds n) ae-sccs-put
+.TH "\*(n)" 1 \*(N) "Reference Manual" ""
+.SH NAME
+\*(n) \- put sccs version
+.XX "ae-sccs-put(1)" "put file version into SCCS"
+.SH SYNOPSIS
+.B \*(n)
+\fB\-y\fP\fIcomment\fP
+\fB\-G\fP\fIinput-file\fP
+\fIhistory-file\fP
+.SH DESCRIPTION
+The \fI\*(n)\fP command is used to commit changes to an SCCS file.
+It insulates against a number of SCCS's quirks, and maps to Aegis'
+expectations better than using the SCCS commands directory in the history
+commands in the project \fIconfig\fP file.
+.PP
+The file comments \fImust\fP be specified on the command line.
+.PP
+The source file \fImust\fP be specified on the command line.
+.PP
+It is expected that there is not lock current in the history file.
+This is consistent with Aegis' use of its history tool.
+.PP
+The history file need to exist yet.
+It will be created (with the \fIsccs
+admin\fP command) if it does not.
+.SH OPTIONS
+The following options are understood:
+.TP 8n
+\fB\-G\fP\fIsource-file\fP
+This option must be used to
+specify the source file to be checked into the history.
+.TP 8n
+\fB\-y\fP\fIcomment\fP
+This option must be used to
+specify the comment to be attached to the file history.
+You probably need to use quotes to insluate the white space in the comment.
+.so z_exit.so
+.so z_cr.so

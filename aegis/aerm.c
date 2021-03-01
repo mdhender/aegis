@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 #include <ael/project/files.h>
 #include <aerm.h>
 #include <arglex2.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <change/file.h>
 #include <commit.h>
 #include <error.h>
@@ -152,7 +152,7 @@ remove_file_list()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -220,6 +220,7 @@ remove_file_main()
 	string_ty	*base;
 
 	trace(("remove_file_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	change_number = 0;
 	string_list_constructor(&wl);
@@ -260,7 +261,7 @@ remove_file_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Name", "%ld", change_number);
+				sub_var_set_long(scp, "Name", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -412,7 +413,7 @@ remove_file_main()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", wl.string[j]);
+			sub_var_set_string(scp, "File_Name", wl.string[j]);
 			change_error(cp, scp, i18n("$filename unrelated"));
 			sub_context_delete(scp);
 			++number_of_errors;
@@ -441,7 +442,7 @@ remove_file_main()
 						sub_context_ty	*scp;
 
 						scp = sub_context_new();
-						sub_var_set(scp, "File_Name", "%S", s3);
+						sub_var_set_string(scp, "File_Name", s3);
 						change_error(cp, scp, i18n("too many $filename"));
 						sub_context_delete(scp);
 						++number_of_errors;
@@ -459,10 +460,10 @@ remove_file_main()
 
 				scp = sub_context_new();
 				if (s2->str_length)
-					sub_var_set(scp, "File_Name", "%S", s2);
+					sub_var_set_string(scp, "File_Name", s2);
 				else
-					sub_var_set(scp, "File_Name", ".");
-				sub_var_set(scp, "Number", "%ld", (long)wl_in.nstrings);
+					sub_var_set_charstar(scp, "File_Name", ".");
+				sub_var_set_long(scp, "Number", (long)wl_in.nstrings);
 				sub_var_optional(scp, "Number");
 				change_error
 				(
@@ -483,7 +484,7 @@ remove_file_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s2);
+				sub_var_set_string(scp, "File_Name", s2);
 				change_error(cp, scp, i18n("too many $filename"));
 				sub_context_delete(scp);
 				++number_of_errors;
@@ -502,7 +503,7 @@ remove_file_main()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", config_name);
+		sub_var_set_string(scp, "File_Name", config_name);
 		change_error(cp, scp, i18n("may not remove $filename"));
 		sub_context_delete(scp);
 		++number_of_errors;
@@ -523,7 +524,7 @@ remove_file_main()
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", s1);
+			sub_var_set_string(scp, "File_Name", s1);
 			change_error(cp, scp, i18n("file $filename dup"));
 			sub_context_delete(scp);
 			++number_of_errors;
@@ -545,8 +546,8 @@ remove_file_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s1);
-				sub_var_set(scp, "Guess", "%S", p_src_data->file_name);
+				sub_var_set_string(scp, "File_Name", s1);
+				sub_var_set_string(scp, "Guess", p_src_data->file_name);
 				project_error
 				(
 					pp,
@@ -560,7 +561,7 @@ remove_file_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "File_Name", "%S", s1);
+				sub_var_set_string(scp, "File_Name", s1);
 				project_error(pp, scp, i18n("no $filename"));
 				sub_context_delete(scp);
 			}
@@ -585,16 +586,17 @@ remove_file_main()
 		 *	Updates branch edit_number_origin on
 		 *	integrate pass.
 		 */
-		assert(p_src_data->edit_number);
-		c_src_data->edit_number_origin =
-			str_copy(p_src_data->edit_number);
+		assert(p_src_data->edit);
+		assert(p_src_data->edit->revision);
+		c_src_data->edit_origin =
+			history_version_copy(p_src_data->edit);
 	}
 	if (number_of_errors)
 	{
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%d", number_of_errors);
+		sub_var_set_long(scp, "Number", number_of_errors);
 		sub_var_optional(scp, "Number");
 		change_fatal(cp, scp, i18n("remove file fail"));
 		/* NOTREACHED */
@@ -631,7 +633,7 @@ remove_file_main()
 	 * run the change file command
 	 * and the project file command if necessary
 	 */
-	change_run_change_file_command(cp, &wl, up);
+	change_run_remove_file_command(cp, &wl, up);
 	change_run_project_file_command(cp, up);
 
 	/*
@@ -649,7 +651,7 @@ remove_file_main()
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", wl.string[j]);
+		sub_var_set_string(scp, "File_Name", wl.string[j]);
 		change_verbose(cp, scp, i18n("remove file $filename complete"));
 		sub_context_delete(scp);
 	}
@@ -677,20 +679,13 @@ remove_file_main()
 void
 remove_file()
 {
-	trace(("remove_file()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		remove_file_main();
-		break;
+		{ arglex_token_help,		remove_file_help,	},
+		{ arglex_token_list,		remove_file_list,	},
+	};
 
-	case arglex_token_help:
-		remove_file_help();
-		break;
-
-	case arglex_token_list:
-		remove_file_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("remove_file()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), remove_file_main);
+	trace(("}\n"));
 }

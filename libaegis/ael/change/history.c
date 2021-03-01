@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
 #include <change.h>
 #include <col.h>
 #include <error.h> /* for assert */
+#include <output.h>
 #include <project.h>
 #include <trace.h>
 #include <user.h>
@@ -40,13 +41,14 @@ list_change_history(project_name, change_number)
 	project_ty	*pp;
 	change_ty	*cp;
 	user_ty		*up;
-	int		what_col;
-	int		when_col;
-	int		who_col;
-	int		why_col;
+	output_ty	*what_col;
+	output_ty	*when_col;
+	output_ty	*who_col;
+	output_ty	*why_col;
 	int		j;
 	string_ty	*line1;
 	int		left;
+	col_ty		*colp;
 
 	/*
 	 * locate project data
@@ -74,12 +76,11 @@ list_change_history(project_name, change_number)
 	change_bind_existing(cp);
 
 	cstate_data = change_cstate_get(cp);
-	assert(change_file_nth(cp, (size_t)0));
 
 	/*
 	 * create the columns
 	 */
-	col_open((char *)0);
+	colp = col_open((string_ty *)0);
 	line1 =
 		str_format
 		(
@@ -87,24 +88,20 @@ list_change_history(project_name, change_number)
 			project_name_get(pp),
 			magic_zero_decode(change_number)
 		);
-	col_title(line1->str_text, "History");
+	col_title(colp, line1->str_text, "History");
 	str_free(line1);
 
 	left = 0;
-	what_col = col_create(left, left + WHAT_WIDTH);
+	what_col = col_create(colp, left, left + WHAT_WIDTH, "What\n------");
 	left += WHAT_WIDTH + 1;
-	col_heading(what_col, "What\n------");
 
-	when_col = col_create(left, left + WHEN_WIDTH);
+	when_col = col_create(colp, left, left + WHEN_WIDTH, "When\n------");
 	left += WHEN_WIDTH + 1;
-	col_heading(when_col, "When\n------");
 
-	who_col = col_create(left, left + WHO_WIDTH);
+	who_col = col_create(colp, left, left + WHO_WIDTH, "Who\n-----");
 	left += WHO_WIDTH + 1;
-	col_heading(who_col, "Who\n-----");
 
-	why_col = col_create(left, 0);
-	col_heading(why_col, "Comment\n---------");
+	why_col = col_create(colp, left, 0, "Comment\n---------");
 
 	/*
 	 * list the history
@@ -115,16 +112,16 @@ list_change_history(project_name, change_number)
 		time_t		t;
 
 		history_data = cstate_data->history->list[j];
-		col_puts
+		output_fputs
 		(
 			what_col,
 			cstate_history_what_ename(history_data->what)
 		);
 		t = history_data->when;
-		col_puts(when_col, ctime(&t));
-		col_puts(who_col, history_data->who->str_text);
+		output_fputs(when_col, ctime(&t));
+		output_fputs(who_col, history_data->who->str_text);
 		if (history_data->why)
-			col_puts(why_col, history_data->why->str_text);
+			output_fputs(why_col, history_data->why->str_text);
 		if (history_data->what != cstate_history_what_integrate_pass)
 		{
 			time_t	finish;
@@ -136,8 +133,8 @@ list_change_history(project_name, change_number)
 				time(&finish);
 			if (finish - t >= ELAPSED_TIME_THRESHOLD)
 			{
-				col_bol(why_col);
-				col_printf
+				output_end_of_line(why_col);
+				output_fprintf
 				(
 					why_col,
 					"Elapsed time: %5.3f days.\n",
@@ -145,13 +142,13 @@ list_change_history(project_name, change_number)
 				);
 			}
 		}
-		col_eoln();
+		col_eoln(colp);
 	}
 
 	/*
 	 * clean up and go home
 	 */
-	col_close();
+	col_close(colp);
 	change_free(cp);
 	project_free(pp);
 	user_free(up);

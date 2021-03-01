@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -58,16 +58,16 @@ filename = \"%s\")\n{\n"/*}*/, (long)cp, filename->str_text));
 	pconf_data = change_pconf_get(cp, 1);
 	hp = project_history_path_get(cp->pp);
 	scp = sub_context_new();
-	sub_var_set(scp, "History", "%S/%S", hp, filename);
-	sub_var_set(scp, "1", "${history}");
+	sub_var_set_format(scp, "History", "%S/%S", hp, filename);
+	sub_var_set_charstar(scp, "1", "${history}");
 	the_command = pconf_data->history_query_command;
 	if (!the_command)
 	{
 		sub_context_ty	*scp2;
 
 		scp2 = sub_context_new();
-		sub_var_set(scp2, "File_Name", "%s", THE_CONFIG_FILE);
-		sub_var_set(scp2, "FieLD_Name", "history_query_command");
+		sub_var_set_charstar(scp2, "File_Name", THE_CONFIG_FILE);
+		sub_var_set_charstar(scp2, "FieLD_Name", "history_query_command");
 		change_fatal
 		(
 			cp,

@@ -1,0 +1,66 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2001 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the lib/report/proj_activ.rpt
+ */
+title("Activity Report", sprintf("Project \"%s\"", project_name()));
+columns
+(
+	{ name = "Change\n-------";                width = 7; },
+	{ name = "Date and Time\n---------------"; width = 15; },
+	{ name = "Who\n--------";                  width = 8; },
+	{ name = "What\n--------";                 width = 11; },
+	{ name = "Description\n-------------";     right = 0; }
+);
+
+auto ps;
+ps = project[project_name()].state;
+auto cn, cs, h, hn, hs;
+
+for (cn in keys(ps.branch.change))
+{
+	cs = ps.branch.change[cn];
+	for (hn in keys(cs.history))
+	{
+		hs = cs.history[hn];
+		if (count(arg) && !(hs.who in arg))
+			continue;
+		h[0 + hs.when] =
+			{
+				change_number = cn;
+				when = hs.when;
+				who = hs.who;
+				what = hs.what;
+				description = cs.brief_description;
+			};
+	}
+}
+
+for (hn in sort(keys(h)))
+{
+	hs = h[hn];
+	print
+	(
+		sprintf("%4d", hs.change_number),
+		hs.when,
+		hs.who,
+		hs.what,
+		hs.description
+	);
+}

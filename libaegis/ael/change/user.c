@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
 #include <ael/project/inappropriat.h>
 #include <change.h>
 #include <col.h>
+#include <output.h>
 #include <project.h>
 #include <str_list.h>
 #include <trace.h>
@@ -38,14 +39,15 @@ list_user_changes(project_name, change_number)
 	long		change_number;
 {
 	user_ty		*up;
-	int		project_col;
-	int		change_col;
-	int		state_col;
-	int		description_col;
+	output_ty	*project_col;
+	output_ty	*change_col;
+	output_ty	*state_col;
+	output_ty	*description_col;
 	string_ty	*s;
 	string_list_ty	name;
 	long		j;
 	int		left;
+	col_ty		*colp;
 
 	trace(("list_user_changes()\n{\n"));
 	if (project_name)
@@ -63,31 +65,49 @@ list_user_changes(project_name, change_number)
 	/*
 	 * open listing
 	 */
-	col_open((char *)0);
+	colp = col_open((string_ty *)0);
 	up = user_executing((project_ty *)0);
 	s = str_format("Owned by %S <%S>", up->full_name, user_name(up));
 	user_free(up);
-	col_title("List of Changes", s->str_text);
+	col_title(colp, "List of Changes", s->str_text);
 	str_free(s);
 
 	/*
 	 * create the columns
 	 */
 	left = 0;
-	project_col = col_create(left, left + PROJECT_WIDTH);
+	project_col =
+		col_create
+		(
+			colp,
+			left,
+			left + PROJECT_WIDTH,
+			"Project\n----------"
+		);
 	left += PROJECT_WIDTH + 1;
-	col_heading(project_col, "Project\n----------");
 
-	change_col = col_create(left, left + CHANGE_WIDTH);
+	change_col =
+		col_create
+		(
+			colp,
+			left,
+			left + CHANGE_WIDTH,
+			"Change\n------"
+		);
 	left += CHANGE_WIDTH + 1;
-	col_heading(change_col, "Change\n------");
 
-	state_col = col_create(left, left + STATE_WIDTH);
+	state_col =
+		col_create
+		(
+			colp,
+			left,
+			left + STATE_WIDTH,
+			"State\n----------"
+		);
 	left += STATE_WIDTH + 1;
-	col_heading(state_col, "State\n----------");
 
-	description_col = col_create(left, 0);
-	col_heading(description_col, "Description\n-------------");
+	description_col =
+		col_create(colp, left, 0, "Description\n-------------");
 
 	/*
 	 * for each project, see if the current user
@@ -138,28 +158,28 @@ list_user_changes(project_name, change_number)
 			/*
 			 * emit the info
 			 */
-			col_puts(project_col, project_name_get(pp)->str_text);
-			col_printf
+			output_fputs(project_col, project_name_get(pp)->str_text);
+			output_fprintf
 			(
 				change_col,
 				"%4ld",
 				magic_zero_decode(change_number)
 			);
 			cstate_data = change_cstate_get(cp);
-			col_puts
+			output_fputs
 			(
 				state_col,
 				cstate_state_ename(cstate_data->state)
 			);
 			if (cstate_data->brief_description)
 			{
-				col_puts
+				output_fputs
 				(
 					description_col,
 					cstate_data->brief_description->str_text
 				);
 			}
-			col_eoln();
+			col_eoln(colp);
 	
 			/*
 			 * release change and project
@@ -177,7 +197,7 @@ list_user_changes(project_name, change_number)
 	/*
 	 * clean up and go home
 	 */
-	col_close();
+	col_close(colp);
 	done:
 	trace(("}\n"));
 }

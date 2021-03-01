@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1997, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1994, 1997-1999, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -115,10 +115,10 @@ See
 .IR aecpu (1)
 for more information.
 .TP 8n
-.B -Delta_Name
+.B -DELta_NAme
 .br
 The
-.I "\*(n) -Delta_Name"
+.I "\*(n) -DELta_NAme"
 command is used to
 add a symbolic name to a project delta.
 See
@@ -237,6 +237,17 @@ See
 .IR aemv (1)
 for more information.
 .TP 8n
+.B -MoVe_file_Undo
+.br
+The 
+.I "\*(n) -MoVe_file_Undo"
+command is used to undo a
+change to the name of a file
+as part of a change.
+See
+.IR aemvu (1)
+for more information.
+.TP 8n
 .B -New_Administrator
 .br
 The 
@@ -335,6 +346,16 @@ command is used to
 create a new project to be watched over by \*(n).
 See
 .IR aenpr (1)
+for more information.
+.TP 8n
+.B "-New_Project_Alias"
+.br
+The
+.I "\*(n) -New_Project_Alias"
+command is used to
+create a new project alias.
+See
+.IR aenpa (1)
 for more information.
 .TP 8n
 .B -New_ReLeaSe
@@ -447,6 +468,16 @@ See
 .IR aermpr (1)
 for more information.
 .TP 8n
+.B -Remove_Project_Alias
+.br
+The 
+.I "\*(n) -Remove_Project_Alias"
+command is used to
+remove a project alias.
+See
+.IR aerpa (1)
+for more information.
+.TP 8n
 .B -Remove_ReViewer
 .br
 The 
@@ -474,6 +505,25 @@ command is used to
 fail a change review.
 See
 .IR aerfail (1)
+for more information.
+.TP 8n
+.B -Review_Begin
+.br
+The 
+.I "\*(n) -Review_Begin"
+command is used to
+begin to review a change.
+See
+.IR aerb (1)
+for more information.
+.TP 8n
+.B -Review_Begin_Undo
+.br
+The 
+.I "\*(n) -Review_Begin_Undo"
+command is used to stop reviewing a change.
+See
+.IR aerbu (1)
 for more information.
 .TP 8n
 .B -Review_Pass
@@ -520,6 +570,11 @@ All function selectors are case insensitive.
 Function selectors may be abbreviated;
 the abbreviation is the upper case letters.
 Function selectors must appear as the first command line argument.
+.SS Notification
+Many \fIaegis\fP commands are capable of notification that they have
+been run.  The individual commands document those speficif to them.
+For documentation on the various configurable notifications, see
+\fIaepconf\fP(5) and \fIaepattr\fP(5) for more information.
 .SH OPTIONS
 The following options are available to all functions.
 These options may appear anywhere on the command line following

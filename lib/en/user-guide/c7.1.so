@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1998 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1998, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 .nh 2 "The Model"
 .LP
 The model of the software development process
-used by aegis
+used by Aegis
 evolved and grew with time in a commercial software development environment,
 and it has continued to be used and developed.
 Unfortunately,
@@ -56,7 +56,7 @@ This
 is the preferred form for
 editing or composing or whatever.
 .LP
-In the aegis program,
+In the Aegis program,
 the repository is known as the
 .I baseline
 and the units of
@@ -64,24 +64,22 @@ and the units of
 are 
 .UX
 files.
-The aegis program makes no distinction between
+The Aegis program makes no distinction between
 text and binary files,
 so both are supported.
 .LP
 The history mechanism which must be included in any repository function is not
-provided by the aegis program.
+provided by the Aegis program.
 It is instead provided by some other
 per-project configurable software,
 such as RCS.
 This means that the
 user may select the history tool most suited to any given project.
-It also means that aegis is that much smaller to test and maintain.
-You will not be able to have binary files in your baseline if the
-history tool of your choice can't cope with them.
+It also means that Aegis is that much smaller to test and maintain.
 .LP
 The structure of the baseline is dictated by the nature of each project,
 with some minor exceptions.
-The aegis program attempts to make as few
+The Aegis program attempts to make as few
 arbitrary rules as possible.
 There is one mandatory file in the
 baseline,
@@ -96,11 +94,11 @@ called
 and contains all of the tests.
 The contents and structure of the
 .I test
-directory are also dictated by aegis.
+directory are also dictated by Aegis.
 Tests are treated just like any other source file,
 and are subject to the same process.
 .LP
-The baseline in aegis has one particular attribute:
+The baseline in Aegis has one particular attribute:
 it always works.
 It is
 always there to show off to visiting big-wigs,
@@ -118,7 +116,7 @@ Tests are treated just like any other source file,
 and are subject to the same process.
 A baseline is defined to "work" if and only if it passes all
 of its own tests.
-The aegis program has mandatory testing,
+The Aegis program has mandatory testing,
 to ensure
 that all changes to the baseline are accompanied by tests,
 and that
@@ -135,7 +133,7 @@ will be integrated with the baseline when that change
 is not actually of acceptable quality.
 .FE
 .LP
-The model may be summarised briefly:
+The model may be summarized briefly:
 it consists of a
 .I baseline
 (master source),
@@ -200,7 +198,7 @@ within the development directory.
 The baseline is readable by all staff,
 and usually writable by no-one.
 When it is necessary to write to the baseline,
-this is done by aegis,
+this is done by Aegis,
 as will be shown below.
 .LP
 In many ways,
@@ -208,7 +206,7 @@ the baseline may be thought of as a database,
 and all derived files are projections (views) of the source files.
 Passing its own tests may be thought of as input validation of fields.
 This is a powerful concept,
-and indeed the implementation of the aegis program performs many
+and indeed the implementation of the Aegis program performs many
 of the locking and synchronization tasks demanded of a database
 engine.
 .LP
@@ -216,7 +214,7 @@ All of the files forming this database are text files.
 This means that they may be repaired with an ordinary text editor,
 should remedial action be necessary.
 The format is documented in section 5 of the reference manual.
-Should you wish to perform some query not yet available in aegis,
+Should you wish to perform some query not yet available in Aegis,
 the files are readily accessible to members of the appropriate
 .UX
 group.
@@ -237,7 +235,7 @@ simultaneously for the baseline to continue to "work".\**
 .FS
 Whether to allow several logically independent changes to be included in the
 one change is a policy decision for individual projects to make,
-and is not dictated by the aegis program.
+and is not dictated by the Aegis program.
 It is a responsibility of reviewers
 to ensure that all new and changed functionality is tested and
 documented.
@@ -276,15 +274,15 @@ they may be modified by the same process as any other source file.
 Tests usually need to be revised as a project grows and adapts
 to changing requirements,
 or to be extended as functionality is extended.
-Tests can even be deleted if the functionality they tests has been deleted;
+Tests can even be deleted if the functionality they test has been deleted;
 tests are deleted by the same process as any other source file.
 .nh 3 "Change States"
 .LP
-As a change is developed using aegis,
+As a change is developed using Aegis,
 it passes through six states.
-Many aegis
+Many Aegis
 commands relate to transitions between these states,
-and aegis performs
+and Aegis performs
 any validation at these times.
 .LP
 The six states of a change are described as follows,
@@ -301,7 +299,7 @@ a change can't be immediately assigned to a developer
 by an administrator,
 because this disempowers the staff.
 .LP
-The aegis program is not a progress tracking tool,
+The Aegis program is not a progress tracking tool,
 nor is it a work scheduling tool;
 plenty of both already exist.
 .nh 4 "Being Developed"
@@ -337,7 +335,7 @@ will naturally fail when tested in the old baseline,
 because it is not there.
 .LP
 When these conditions are met,
-the aegis program marks all of the changes files as locked,
+the Aegis program marks all of the changes files as locked,
 simultaneously.
 If any one of them is already locked,
 you can't leave the
@@ -356,7 +354,7 @@ Locking the files at this state transition means that popular files may be
 modified simultaneously in many changes,
 but that only differences to the latest version are ever submitted for
 integration.
-The aegis program provides a mechanism,
+The Aegis program provides a mechanism,
 described later,
 for bringing out-of-date files in changes up-to-date without losing the
 edits made by the developer.
@@ -371,7 +369,7 @@ and meets other project or company standards you may have.
 .LP
 The style of review,
 and who may review,
-is not dictated by the aegis program.
+is not dictated by the Aegis program.
 A number of alternative have been observed:
 .LP
 \(bu 
@@ -389,13 +387,13 @@ You may require that only senior staff,
 familiar with large portions of the code,
 be allowed to review.
 .LP
-The aegis program enforces that a developer may not review their own code.
+The Aegis program enforces that a developer may not review their own code.
 This ensures that at least one person other than the developer
 has scrutinized the code,
 and eliminates a rather obvious conflict of interest.
 It is possible to turn this requirement off on a per-project basis,
 but this is only desirable for projects with a one person team (or maybe two).
-The aegis program has no way of knowing that the user
+The Aegis program has no way of knowing that the user
 passing a review has actually looked at,
 and understood,
 the code.
@@ -444,9 +442,9 @@ and it also allows the baseline to be the closure of the sources files.
 That is,
 all of the implications flowing from the source files,
 such as object files and linked programs or libraries.
-It is not possible for aegis to know which files these are
+It is not possible for Aegis to know which files these are
 in the development directory,
-because aegis is decoupled from the build
+because Aegis is decoupled from the build
 mechanism (this will discussed later).
 .LP
 To advance to the next state,
@@ -497,7 +495,7 @@ from the baseline,
 you will have to submit another change.
 .nh 3 "The Software Engineers"
 .LP
-The model of software development used by aegis has four different roles
+The model of software development used by Aegis has four different roles
 for software engineers to fill.
 These four roles may be overlapping sets of people,
 or be distinct,
@@ -528,7 +526,7 @@ This review may
 consist of a peer examining the code,
 or it may be handled by a single
 member of staff setting up and scheduling multi-person review panels.
-The aegis program does not mandate what style of review,
+The Aegis program does not mandate what style of review,
 it only
 requires that a reviewer pass or fail each change.
 If it passes,
@@ -545,7 +543,7 @@ problems,
 but also because this is an opportunity for more senior
 members of staff to coach juniors on the finer points of the art.
 .LP
-The aegis programs makes some of the reviewer's task easier,
+The Aegis programs makes some of the reviewer's task easier,
 because the
 reviewer knows several specific things about a change before it comes
 up for review:
@@ -557,7 +555,7 @@ the end of development,
 such as line length limits,
 or anything else
 which is automatically testable.
-The aegis program also provides a
+The Aegis program also provides a
 difference listing to the reviewer,
 so that each and every edit,
 to each and every file,
@@ -565,7 +563,7 @@ can be pointed out to the reviewer.
 .LP
 There is nothing stopping a reviewer from being either an administrator or a
 developer.
-The aegis program specifically prevents a developer from
+The Aegis program specifically prevents a developer from
 reviewing his own work,
 to avoid conflicts of interest.
 (It is possible for this
@@ -586,12 +584,12 @@ The role of the integrator is to take a change which has already been reviewed
 and integrate it with the baseline,
 to form a new baseline.
 The
-integrator is thus the last line of defence for the baseline.
+integrator is thus the last line of defense for the baseline.
 .LP
-There is nothing preventing an administrator from being an administrator,
+There is nothing preventing an integrator from being an administrator,
 a
 developer or a reviewer.
-The aegis program specifically prevents a
+The Aegis program specifically prevents a
 developer or reviewer from integrating his own work,
 eliminating any conflict of interests.
 (It is possible for this restriction to be waived,
@@ -623,7 +621,7 @@ requested.
 .LP
 \(bu Grant testing exemptions.
 By default,
-aegis insists that all changes be
+Aegis insists that all changes be
 accompanied by tests.
 The project administrator may grant case-by-case
 exemptions,
@@ -654,7 +652,7 @@ states.
 Most of the attention will be given to the conditions which
 must be met in order to progress from one state to the next,
 as this is
-where the software development model employed by aegis is most often
+where the software development model employed by Aegis is most often
 expressed.
 .LP
 See figure 2 for a picture of how all of the states and
@@ -704,7 +702,7 @@ A project administrator creates a change.
 This change will consist mostly of a
 description at this time.
 The project administrator is not able
-(through aegis) to assign it to a specific developer.
+(through Aegis) to assign it to a specific developer.
 .LP
 The change is awaiting development;
 it is in the awaiting development state.
@@ -734,7 +732,7 @@ that change to herself.
 The change is now being developed;
 it is in the being developed state.
 .LP
-A number of aegis commands only work in this state,
+A number of Aegis commands only work in this state,
 including commands to
 include files and tests in the change (be they new files to be added to
 the baseline,
@@ -760,7 +758,7 @@ world this usually means things like compiling and linking a
 program,
 but as fancy graphical programs become more wide-spread,
 the
-source files could a binary output from a graphical
+source files could be the binary output from a graphical
 Entity-Relationship-Diagram editor,
 which would then be run through a
 database schema generator.
@@ -833,10 +831,40 @@ it must have passed all its own tests,
 and it must have been
 differenced) the developer may cause the change to leave the being
 developed state and enter the being reviewed state.
-The aegis program
+The Aegis program
 will check to see that all the conditions are met at this time.
 There
 is no history kept of unsuccessful develop end attempts.
+.LP
+Most of these preconditions are determined by the use of time stamps
+which are recorded for various operations, in addition to file system
+timestamps on the files themselves.  Logical sequencing (\fIe.g.\fP
+tests being run after building after editing) is also verified.
+.LP
+Note that there are 3 kinds of tests
+.IP 1. 2m
+If a change contains a new test or a test which is being modified,
+this test must pass against the code compiled and linked in the change.
+This is simply referred to as a ``test''.
+Changes may be granted an exemption from such tests.
+.IP 2. 2m
+If a change contains a new test and the change is a bug fix,
+this test must \fIfail\fP against the old code in the baseline.
+This is to confirm that the bug has been fixed.
+This is referred to as a ``baseline test''.
+Changes may be granted an exemption from such tests.
+.IP 3. 2m
+Tests which already exist in the baseline may be run against the code
+compiled and linked in the change.  These tests must pass.  This is
+to confirm that the project has not regressed, which is why these tests
+are referred to as ``regression tests''.
+Changes may be granted an exemption from such tests.
+.LP
+A successful develop end command results in the change advancing from
+the \fIbeing developed\fP state to the \fIbeing reviewed\fP state.
+(It is also possible to advance to the \fIawaiting review\fP state or the
+\fIawaiting integration\fP state.  See \fIaede\fP(1) or \fIaepattr\fP(5)
+for more information.)
 .nh 4 "Develop End Undo"
 .LP
 There are many times when a developer thinks that a change is completed,
@@ -855,7 +883,7 @@ or
 states.
 .nh 4 "Review Pass"
 .LP
-This event is used to notify aegis that the change has been examined,
+This event is used to notify Aegis that the change has been examined,
 by a method unspecified as discussed above,
 and has been found to be acceptable.
 .nh 4 "Review Pass Undo"
@@ -871,7 +899,7 @@ The change will be returned to the
 state.
 .nh 4 "Review Fail"
 .LP
-This event is used to notify aegis that the change has been examined,
+This event is used to notify Aegis that the change has been examined,
 by a method unspecified as discussed above,
 and has been found to be unacceptable.
 .LP
@@ -908,14 +936,14 @@ and the current integration is expected to take a long time.
 .nh 4 "Integrate Pass"
 .LP
 This command is used to
-notify aegis that the change being integrated is acceptable.
+notify Aegis that the change being integrated is acceptable.
 .LP
 The current baseline is replaced with the integration copy,
 and the history is updated.
 .nh 4 "Integrate Fail"
 .LP
 This command is used to
-notify aegis that an integration is unacceptable,
+notify Aegis that an integration is unacceptable,
 usually because it failed to build or test in some way,
 or sometimes because the integrator found a deficiency.
 .LP

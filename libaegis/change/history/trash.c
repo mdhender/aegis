@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -66,7 +66,7 @@ change_history_trashed_fingerprints(cp, slp)
 
 		fn = slp->string[j];
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", fn);
+		sub_var_set_string(scp, "File_Name", fn);
 		switch (config->history_put_trashes_file)
 		{
 		case pconf_history_put_trashes_file_ignore:
@@ -93,7 +93,7 @@ change_history_trashed_fingerprints(cp, slp)
 		sub_context_delete(scp);
 	}
 	scp = sub_context_new();
-	sub_var_set(scp, "Number", "%ld", (long)slp->nstrings);
+	sub_var_set_long(scp, "Number", (long)slp->nstrings);
 	sub_var_optional(scp, "Number");
 	switch (config->history_put_trashes_file)
 	{

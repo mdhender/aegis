@@ -1,0 +1,49 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2001 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: write a tcl developer_list assignment
+ */
+columns({ width = 1000; });
+
+auto ps;
+ps = project[project_name()].state.branch;
+
+auto who_am_i;
+who_am_i = passwd[getuid()].pw_name;
+print("set who_am_i " ## who_am_i);
+
+
+print("set developer_list { \\");
+auto name, long_name;
+for (name in ps.developer)
+    print("\"" ## quote_tcl(name) ## "\" \\");
+if (count(keys(project)) == 0)
+	print("\t\"None\" \\");
+print("}");
+
+print("set developer_fullname_list { \\");
+for (name in ps.developer)
+{
+    try { long_name = passwd[name].pw_comment; }
+    catch (long_name) { long_name = name; }
+    print("\"" ## quote_tcl(long_name) ## "\" \\");
+}
+if (count(keys(project)) == 0)
+	print("\t\"None\" \\");
+print("}");

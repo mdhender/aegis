@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1999 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,44 +26,10 @@
 #include <arglex2.h>
 #include <error.h>
 #include <help.h>
-#include <pager.h>
 #include <progname.h>
 #include <sub.h>
 #include <trace.h>
-#include <version_stmp.h>
-
-
-static void version_copyright _((void));
-
-static void
-version_copyright()
-{
-	static char *text[] =
-	{
-		"All rights reserved.",
-		"",
-		"The %s program comes with ABSOLUTELY NO WARRANTY;",
-		"for details use the '%s -VERSion License' command.",
-		"The %s program is free software, and you are welcome",
-		"to redistribute it under certain conditions; for",
-		"details use the '%s -VERSion License' command.",
-	};
-
-	FILE		*fp;
-	char		**cpp;
-	char		*progname;
-
-	progname = progname_get();
-	fp = pager_open();
-	fprintf(fp, "%s version %s\n", progname, version_stamp());
-	fprintf(fp, "Copyright (C) %s Peter Miller;\n", copyright_years());
-	for (cpp = text; cpp < ENDOF(text); ++cpp)
-	{
-		fprintf(fp, *cpp, progname);
-		fputc('\n', fp);
-	}
-	pager_close(fp);
-}
+#include <version.h>
 
 
 static void version_license _((void));
@@ -114,6 +80,7 @@ version_main()
 	char		*name;
 
 	trace(("version_main()\n{\n"/*}*/));
+	arglex();
 	name = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
@@ -154,7 +121,7 @@ version_main()
 		{
 		case 0:
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%s", name);
+			sub_var_set_charstar(scp, "Name", name);
 			fatal_intl(scp, i18n("no info $name"));
 			/* NOTWEACHED */
 
@@ -170,8 +137,8 @@ version_main()
 				s1 = s2;
 			}
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%s", name);
-			sub_var_set(scp, "Name_List", "%S", s1);
+			sub_var_set_charstar(scp, "Name", name);
+			sub_var_set_string(scp, "Name_List", s1);
 			fatal_intl(scp, i18n("info $name ambig ($name_list)"));
 			/* NOTREACHED */
 			
@@ -199,16 +166,12 @@ version_help()
 void
 version()
 {
-	trace(("version()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		version_main();
-		break;
+		{ arglex_token_help,		version_help,	},
+	};
 
-	case arglex_token_help:
-		version_help();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("version()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), version_main);
+	trace(("}\n"));
 }

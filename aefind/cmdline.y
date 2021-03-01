@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1997-1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 %{
 
 #include <ac/stdio.h>
+#include <ac/stdlib.h>
 
 #include <aer/value/boolean.h>
 #include <aer/value/error.h>
@@ -195,7 +196,7 @@ report_error(vp)
 	if (vp->method->type != rpt_value_type_error)
 		return;
 	scp = sub_context_new();
-	sub_var_set(scp, "MeSsaGe", "%S", rpt_value_error_query(vp));
+	sub_var_set_string(scp, "MeSsaGe", rpt_value_error_query(vp));
 	fatal_intl(scp, i18n("$message"));
 	/* NOTREACHED */
 }
@@ -260,7 +261,7 @@ stack_relative(fn)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%S", s1);
+		sub_var_set_string(scp, "File_Name", s1);
 		if (cp)
 			change_fatal(cp, scp, i18n("$filename unrelated"));
 		project_fatal(pp, scp, i18n("$filename unrelated"));
@@ -388,7 +389,7 @@ cmdline_grammar(argc, argv)
 		 * locate user data
 		 */
 		up = user_executing(pp);
-	
+
 		/*
 		 * locate change data
 		 */
@@ -397,24 +398,33 @@ cmdline_grammar(argc, argv)
 		cp = change_alloc(pp, change_number);
 		change_bind_existing(cp);
 		cstate_data = change_cstate_get(cp);
-	
-		/*
-		 * It is an error if the change is not in the
-		 * being_developed state (if it does not have a
-		 * directory).
-		 */
-		if
-		(
-			cstate_data->state < cstate_state_being_developed
-		||
-			cstate_data->state > cstate_state_being_integrated
-		)
-			change_fatal(cp, 0, i18n("bad aefind state"));
 
-		/*
-		 * Get the search path from the change.
-		 */
-		change_search_path_get(cp, stack, 1);
+		if (cstate_data->state == cstate_state_completed)
+		{
+			/*
+			 * Get the search path from the project.
+			 */
+			project_search_path_get(pp, stack, 1);
+
+			up = 0;
+			cp = 0;
+			cstate_data = 0;
+		}
+		else
+		{
+			/*
+			 * It is an error if the change is not in the
+			 * being_developed state (if it does not have a
+			 * directory).
+			 */
+			if (cstate_data->state < cstate_state_being_developed)
+				change_fatal(cp, 0, i18n("bad aefind state"));
+
+			/*
+			 * Get the search path from the change.
+			 */
+			change_search_path_get(cp, stack, 1);
+		}
 	}
 
 	/*
@@ -1022,7 +1032,7 @@ generic_option
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);

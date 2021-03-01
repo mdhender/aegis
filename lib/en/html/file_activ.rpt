@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998 Peter Miller;
+ *	Copyright (C) 1997, 1998, 2000, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -135,7 +135,7 @@ for (cn in  keys(ps.change))
 /*
  * list all of the active files
  */
-auto fn, num_active;
+auto fn, num_active, email, long_name;
 num_active = 0;
 print("<dl>");
 for (fn in sort(keys(active)))
@@ -179,8 +179,16 @@ for (fn in sort(keys(active)))
 		print(file.state);
 		if (file.who != "")
 		{
-			print("<br><a href=\"mailto:" ## file.who ## "\"><i>");
-			print(quote_html(passwd[file.who].pw_comment) ## "</i></a>");
+			email = file.who;
+			try { email = user[file.who].email_address; }
+			catch (email) { email = ""; }
+			if (email == "")
+				email = file.who;
+			print("<br><a href=\"mailto:" ## email ## "\"><i>");
+			long_name = file.who;
+			try { long_name = passwd[file.who].pw_comment; }
+			catch (long_name) { long_name = file.who; }
+			print(quote_html(long_name) ## "</i></a>");
 		}
 		print("</td><td valign=top>");
 		print(quote_html(file.description));

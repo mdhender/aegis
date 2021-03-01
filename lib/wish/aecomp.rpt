@@ -1,0 +1,72 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2000 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: TCL script used by aecomp
+ *
+ *	report the following:
+ *           - files in a change both original and (optionally) new names.
+ *           - files removed by a change
+ *
+ *	Output is a TCL script used by aecomp.
+ */
+
+auto ps;
+ps = project[project_name()].state;
+auto cs;
+cs = ps.branch.change[change_number()];
+auto src;
+
+columns({ width = 1000; });
+
+/* First get the development_directory */
+print("set development_directory " ## "\"" ## cs.development_directory ## "\"");
+
+/* Then find out what state the change is in */
+print("set change_state " ## "\"" ## cs.state ## "\"");
+
+/* Change files */
+for (src in cs.src)
+{
+    if (!src.deleted_by && !src.about_to_be_created_by &&
+	((src.action == "create") ||
+	 (src.action == "modify")))
+    {
+	print("lappend change_files_list_newname " ##  src.file_name);
+	if (src.move == "")
+	{
+	    print("lappend change_files_list_oldname " ##  src.file_name);
+	}
+	else
+	{
+	    print("lappend change_files_list_oldname " ##  src.move);
+	}
+    }
+}
+
+/* And of course the removed ones */
+print("set removed_files_list { \\");
+for (src in cs.src)
+{
+    if (!src.deleted_by && !src.about_to_be_created_by
+        && src.action == "remove" && src.move == "")
+    {
+	print(src.file_name ## " \\");
+    }
+}
+print("}");

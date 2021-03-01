@@ -61,7 +61,7 @@ static int
 is_blank(s)
 	char	*s;
 {
-	while (isspace(*s))
+	while (isspace((unsigned char)*s))
 		++s;
 	return !*s;
 }
@@ -75,16 +75,16 @@ is_integer(s)
 {
 	char	*begin;
 
-	while (isspace(*s))
+	while (isspace((unsigned char)*s))
 		++s;
 	if (*s == '+' || *s == '-')
 		++s;
 	begin = s;
-	while (isdigit(*s))
+	while (isdigit((unsigned char)*s))
 		++s;
 	if (s == begin)
 		return 0;
-	while (isspace(*s))
+	while (isspace((unsigned char)*s))
 		++s;
 	return !*s;
 }
@@ -98,19 +98,19 @@ is_real(s)
 {
 	char	*begin;
 
-	while (isspace(*s))
+	while (isspace((unsigned char)*s))
 		++s;
 	if (*s == '+' || *s == '-')
 		++s;
 	begin = s;
-	while (isdigit(*s))
+	while (isdigit((unsigned char)*s))
 		++s;
 	if (*s == '.')
 	{
 		if (begin == s)
 			++begin;
 		++s;
-		while (isdigit(*s))
+		while (isdigit((unsigned char)*s))
 			++s;
 	}
 	if (s == begin)
@@ -121,12 +121,12 @@ is_real(s)
 		if (*s == '+' || *s == '-')
 			++s;
 		begin = s;
-		while (isdigit(*s))
+		while (isdigit((unsigned char)*s))
 			++s;
 		if (s == begin)
 			return 0;
 	}
-	while (isspace(*s))
+	while (isspace((unsigned char)*s))
 		++s;
 	return !*s;
 }

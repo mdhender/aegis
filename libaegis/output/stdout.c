@@ -20,11 +20,24 @@
  * MANIFEST: functions to deliver output to stdout
  */
 
+#include <ac/stddef.h>
 #include <ac/stdio.h>
+#include <ac/unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
+#include <option.h>
 #include <output/private.h>
 #include <output/stdout.h>
 #include <sub.h>
+
+
+typedef struct output_stdout_ty output_stdout_ty;
+struct output_stdout_ty
+{
+	output_ty	inherited;
+	int		bol;
+};
 
 
 static string_ty *standard_output _((void));
@@ -45,121 +58,126 @@ standard_output()
 }
 
 
-static void destructor _((output_ty *));
+static void output_stdout_destructor _((output_ty *));
 
 static void
-destructor(this)
+output_stdout_destructor(this)
 	output_ty	*this;
 {
-	if (fflush(stdout))
-	{
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", standard_output());
-		fatal_intl(scp, i18n("write $filename: $errno"));
-		/* NOTREACHED */
-	}
 }
 
 
-static const char *filename _((output_ty *));
+static string_ty *output_stdout_filename _((output_ty *));
 
-static const char *
-filename(this)
+static string_ty *
+output_stdout_filename(this)
 	output_ty	*this;
 {
-	return standard_output()->str_text;
+	return standard_output();
 }
 
 
-static long otell _((output_ty *));
+static long output_stdout_ftell _((output_ty *));
 
 static long
-otell(this)
-	output_ty	*this;
+output_stdout_ftell(fp)
+	output_ty	*fp;
 {
-	return ftell(stdout);
+	return lseek(fileno(stdout), 0L, SEEK_CUR);
 }
 
 
-static void oputc _((output_ty *, int));
+static void output_stdout_write _((output_ty *, const void *, size_t));
 
 static void
-oputc(this, c)
-	output_ty	*this;
-	int		c;
-{
-	if (putchar(c) == EOF)
-	{
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", standard_output());
-		fatal_intl(scp, i18n("write $filename: $errno"));
-		/* NOTREACHED */
-	}
-}
-
-
-static void oputs _((output_ty *, const char *));
-
-static void
-oputs(this, s)
-	output_ty	*this;
-	const char	*s;
-{
-	if (fputs(s, stdout) == EOF)
-	{
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", standard_output());
-		fatal_intl(scp, i18n("write $filename: $errno"));
-		/* NOTREACHED */
-	}
-}
-
-
-static void owrite _((output_ty *, const void *, size_t));
-
-static void
-owrite(this, data, len)
-	output_ty	*this;
+output_stdout_write(fp, data, len)
+	output_ty	*fp;
 	const void	*data;
 	size_t		len;
 {
-	if (fwrite(data, 1, len, stdout) == EOF)
+	output_stdout_ty *this;
+
+	this = (output_stdout_ty *)fp;
+	if (write(fileno(stdout), data, len) < 0)
 	{
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", standard_output());
+		sub_var_set_string(scp, "File_Name", standard_output());
 		fatal_intl(scp, i18n("write $filename: $errno"));
 		/* NOTREACHED */
 	}
+	if (len > 0)
+		this->bol = (((const char *)data)[len - 1] == '\n');
+}
+
+
+static int output_stdout_page_width _((output_ty *));
+
+static int
+output_stdout_page_width(fp)
+	output_ty	*fp;
+{
+	struct stat	st;
+
+	if (fstat(fileno(stdout), &st) == 0 && S_ISREG(st.st_mode))
+		return option_page_width_get(DEFAULT_PRINTER_WIDTH);
+	return option_page_width_get(-1) - 1;
+}
+
+
+static int output_stdout_page_length _((output_ty *));
+
+static int
+output_stdout_page_length(fp)
+	output_ty	*fp;
+{
+	struct stat	st;
+
+	if (fstat(fileno(stdout), &st) == 0 && S_ISREG(st.st_mode))
+		return option_page_length_get(DEFAULT_PRINTER_LENGTH);
+	return option_page_length_get(-1);
+}
+
+
+static void output_stdout_eoln _((output_ty *));
+
+static void
+output_stdout_eoln(fp)
+	output_ty	*fp;
+{
+	output_stdout_ty *this;
+
+	this = (output_stdout_ty *)fp;
+	if (!this->bol)
+		output_fputc(fp, '\n');
 }
 
 
 static output_vtbl_ty vtbl =
 {
-	sizeof(output_ty),
+	sizeof(output_stdout_ty),
+	output_stdout_destructor,
+	output_stdout_filename,
+	output_stdout_ftell,
+	output_stdout_write,
+	output_generic_flush,
+	output_stdout_page_width,
+	output_stdout_page_length,
+	output_stdout_eoln,
 	"stdout",
-	destructor,
-	filename,
-	otell,
-	oputc,
-	oputs,
-	owrite,
 };
 
 
 output_ty *
 output_stdout()
 {
-	return output_new(&vtbl);
+	output_ty	*result;
+	output_stdout_ty *this;
+
+	result = output_new(&vtbl);
+	this = (output_stdout_ty *)result;
+	this->bol = 1;
+	return result;
 }

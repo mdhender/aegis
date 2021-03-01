@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+#	Copyright (C) 1991-2002 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,8 @@ find_sizes_files="\
 	common/error.\$(OBJEXT) common/exeext.\$(OBJEXT)		\
 	common/libdir.\$(OBJEXT) common/mem.\$(OBJEXT)			\
 	common/mprintf.\$(OBJEXT) common/progname.\$(OBJEXT)		\
-	common/str.\$(OBJEXT) common/trace.\$(OBJEXT)"
+	common/str.\$(OBJEXT) common/str/format.\$(OBJEXT) 		\
+	common/trace.\$(OBJEXT)"
 fmtgen_files="\
 	common/ac/libintl.\$(OBJEXT) common/ac/stdlib.\$(OBJEXT)	\
 	common/ac/string.\$(OBJEXT) common/ac/time.\$(OBJEXT)		\
@@ -45,6 +46,7 @@ fmtgen_files="\
 	common/fstrcmp.\$(OBJEXT) common/libdir.\$(OBJEXT)		\
 	common/mem.\$(OBJEXT) common/mprintf.\$(OBJEXT)			\
 	common/progname.\$(OBJEXT) common/str.\$(OBJEXT)		\
+	common/str/format.\$(OBJEXT)					\
 	common/str_list.\$(OBJEXT) common/symtab.\$(OBJEXT)		\
 	common/trace.\$(OBJEXT)"
 
@@ -62,7 +64,8 @@ fmtgen_files="\
 #	MUST BE writable.
 #
 libdir_files=
-datadir_files=
+datadir_files="\$(RPM_BUILD_ROOT)/etc/profile.d/aegis.sh \
+	\$(RPM_BUILD_ROOT)/etc/profile.d/aegis.csh"
 comdir_files=
 man_files=
 
@@ -187,7 +190,7 @@ do
 		stem=`echo $file | sed 's|^lib/\(.*\)\.po$|\1|'`
 		src="lib/$stem.mo"
 		po_files="$po_files $src"
-		dst="\$(RPM_BUILD_ROOT)\$(libdir)/$stem.mo"
+		dst="\$(RPM_BUILD_ROOT)\$(NLSDIR)/$stem.mo"
 		install_po_files="$install_po_files $dst"
 		recursive_mkdir `dirname $src` `dirname $dst` libdir
 		;;
@@ -276,7 +279,7 @@ do
 		echo '	@sleep 1'
 		echo "	\$(CC) \$(LDFLAGS) -o \$@ \$(${name}_files) libaegis/libaegis.\$(LIBEXT) \$(LIBS)"
 		case $name in
-		aegis)
+		aegis | aeimport)
 			echo '	-chown root $@ && chmod 4755 $@'
 			;;
 		esac
@@ -288,7 +291,7 @@ do
 	echo "\$(RPM_BUILD_ROOT)\$(bindir)/\$(PROGRAM_PREFIX)$name\$(PROGRAM_SUFFIX)\$(EXEEXT): bin/$name\$(EXEEXT) .bindir"
 	echo "	\$(INSTALL_PROGRAM) bin/$name\$(EXEEXT) \$@"
 	case $name in
-	aegis)
+	aegis | aeimport)
 		echo '	-chown root $@ && chmod 4755 $@'
 		;;
 	esac
@@ -299,13 +302,13 @@ do
 	echo ''
 	echo "bin/$name\$(EXEEXT): script/${name}.in .bin"
 	echo '	@sleep 1'
-	echo "	CONFIG_FILES=\$@:script/${name}.in CONFIG_HEADERS= ./config.status"
+	echo "	CONFIG_FILES=\$@:script/${name}.in CONFIG_HEADERS= \$(SH) ./config.status"
 	echo '	chmod a+rx $@'
 	echo '	@sleep 1'
 
 	echo ''
 	echo "\$(RPM_BUILD_ROOT)\$(bindir)/\$(PROGRAM_PREFIX)$name\$(PROGRAM_SUFFIX)\$(EXEEXT): bin/$name\$(EXEEXT) .bindir"
-	echo "	\$(INSTALL_PROGRAM) bin/$name\$(EXEEXT) \$@"
+	echo "	\$(INSTALL_SCRIPT) bin/$name\$(EXEEXT) \$@"
 done
 
 echo ''
@@ -436,6 +439,7 @@ common/find_sizes.h: bin/find_sizes$(EXEEXT)
 #
 install-libdir: lib/.mkdir.datadir lib/.mkdir.libdir .comdir install-po
 	-chown root bin/aegis$(EXEEXT) && chmod 4755 bin/aegis$(EXEEXT)
+	-chown root bin/aeimport$(EXEEXT) && chmod 4755 bin/aeimport$(EXEEXT)
 
 install-lib: $(LibFiles) $(DataFiles) .comdir
 

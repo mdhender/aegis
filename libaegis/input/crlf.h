@@ -26,5 +26,6 @@
 #include <input.h>
 
 input_ty *input_crlf _((input_ty *, int));
+void input_crlf_escaped_newline _((input_ty *));
 
 #endif /* LIBAEGIS_INPUT_CRLF_H */

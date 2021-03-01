@@ -56,7 +56,7 @@ arg = %08lX)\n{\n"/*}*/, path, callback, arg));
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("lstat $filename: $errno"));
 		/* NOTREACHED */
 	}
@@ -67,7 +67,7 @@ arg = %08lX)\n{\n"/*}*/, path, callback, arg));
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", path);
+		sub_var_set_string(scp, "File_Name", path);
 		fatal_intl(scp, i18n("stat $filename: $errno"));
 		/* NOTREACHED */
 	}
@@ -83,7 +83,7 @@ arg = %08lX)\n{\n"/*}*/, path, callback, arg));
 
 			scp = sub_context_new();
 			sub_errno_set(scp);
-			sub_var_set(scp, "File_Name", "%s", path);
+			sub_var_set_string(scp, "File_Name", path);
 			fatal_intl(scp, i18n("read $filename: $errno"));
 			/* NOTREACHED */
 		}

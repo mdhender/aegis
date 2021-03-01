@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2000, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 .\"	along with this program; if not, write to the Free Software
 .\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 .\"
-.\" MANIFEST: document describing lib/en/howto/mains
+.\" MANIFEST: Howto
 .\"
 .if n .ftr CB B
 .if n .ftr CI I
@@ -337,9 +337,21 @@
 ..
 .so introductio.so
 .BP
+.so cheat.so
+.BP
 .so first_time.so
 .BP
 .so new_project.so
+.BP
+.so move_projec.so
+.BP
+.so team_work.so
+.BP
+.so python.so
+.BP
+.so branch.so
+.BP
+.so developer.so
 .\" -----------------------------------------------------------------------
 .bp
 .if e \{\
@@ -352,9 +364,12 @@
 .\" throw a new page, and so it will have the wrong page number for the
 .\" first page.  We need some garbage on this page to force .TC to throw
 .\" a new page.
-.TC
-.br
-.if o \{\
-.bp
 \&.
-.\}
+.\"
+.\" I can't use .TC because I need to mess with the page numbers so
+.\" that I can use psselect to move the ToC to the front, afterwards.
+.\" .TC
+.P1
+.pg@begin 1001 i
+.PX
+.if o .bp

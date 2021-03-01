@@ -35,10 +35,10 @@ struct input_cpio_ty
 };
 
 
-static void destructor _((input_ty *));
+static void input_cpio_destructor _((input_ty *));
 
 static void
-destructor(fp)
+input_cpio_destructor(fp)
 	input_ty	*fp;
 {
 	input_cpio_ty	*this;
@@ -48,34 +48,23 @@ destructor(fp)
 }
 
 
-static long iread _((input_ty *, void *, long));
+static long input_cpio_read _((input_ty *, void *, size_t));
 
 static long
-iread(fp, data, len)
+input_cpio_read(fp, data, len)
 	input_ty	*fp;
 	void		*data;
-	long		len;
+	size_t		len;
 {
 	assert(0);
 	return -1;
 }
 
 
-static int iget _((input_ty *));
-
-static int
-iget(fp)
-	input_ty	*fp;
-{
-	assert(0);
-	return -1;
-}
-
-
-static long itell _((input_ty *));
+static long input_cpio_ftell _((input_ty *));
 
 static long
-itell(fp)
+input_cpio_ftell(fp)
 	input_ty	*fp;
 {
 	assert(0);
@@ -83,10 +72,10 @@ itell(fp)
 }
 
 
-static const char *iname _((input_ty *));
+static string_ty *input_cpio_name _((input_ty *));
 
-static const char *
-iname(fp)
+static string_ty *
+input_cpio_name(fp)
 	input_ty	*fp;
 {
 	input_cpio_ty	*this;
@@ -96,10 +85,10 @@ iname(fp)
 }
 
 
-static long ilength _((input_ty *));
+static long input_cpio_length _((input_ty *));
 
 static long
-ilength(fp)
+input_cpio_length(fp)
 	input_ty	*fp;
 {
 	input_cpio_ty	*this;
@@ -112,12 +101,11 @@ ilength(fp)
 static input_vtbl_ty vtbl =
 {
 	sizeof(input_cpio_ty),
-	destructor,
-	iread,
-	iget,
-	itell,
-	iname,
-	ilength,
+	input_cpio_destructor,
+	input_cpio_read,
+	input_cpio_ftell,
+	input_cpio_name,
+	input_cpio_length,
 };
 
 

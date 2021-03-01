@@ -1,6 +1,6 @@
 dnl
 dnl	aegis - a project change supervisor
-dnl	Copyright (C) 1994, 1995, 1997, 1998, 1999 Peter Miller;
+dnl	Copyright (C) 1994, 1995, 1997-1999, 2001, 2002 Peter Miller;
 dnl	All rights reserved.
 dnl
 dnl	This program is free software; you can redistribute it and/or modify
@@ -51,18 +51,53 @@ AC_MINIX
 AC_ISC_POSIX
 AC_OBJEXT
 AC_EXEEXT
+
 dnl Solaris 2.5.1 and below wide-character support
-AC_CHECK_FUNC(wschr, , AC_CHECK_LIB(w, wschr))
-AC_CHECK_FUNC(gettext, , AC_CHECK_LIB(intl, gettext))
-AC_CHECK_FUNC(setsockopt, , AC_CHECK_LIB(socket, setsockopt))
+AC_CHECK_FUNC(wschr, ,
+	unset ac_cv_func_wschr
+	AC_CHECK_LIB(w, wschr))
+AC_CHECK_FUNC(gettext, ,
+	unset ac_cv_func_gettext
+	AC_CHECK_LIB(intl, gettext))
+AC_CHECK_FUNC(setsockopt, ,
+	unset ac_cv_func_setsockopt
+	AC_CHECK_LIB(socket, setsockopt))
 AC_HAVE_LIBRARY(m)
 AC_HAVE_LIBRARY(rx)
 AC_HAVE_LIBRARY(z)
+dnl The -lclu library is for OSF/1 clustering
+AC_HAVE_LIBRARY(clu)
 AC_CHECK_PROGS(MSGFMT, gmsgfmt msgfmt)
 AC_CHECK_PROGS(GROFF, groff roff)
 AC_CHECK_PROGS(SOELIM, roffpp gsoelim soelim)
 AC_CHECK_PROGS(AWK, gawk nawk awk, awk)
 AC_PATH_PROG(WISH, wish, /usr/local/bin/wish)
+
+dnl
+dnl	Test if groff takes -ms or -mgs for the macro package.
+dnl
+AC_MSG_CHECKING([for $GROFF -ms macros])
+if test `echo ' ' | groff -mgs 2> /dev/null | wc -l` -gt 0
+then
+	GROFF_MS_MACROS=gs
+else
+	GROFF_MS_MACROS=s
+fi
+AC_SUBST(GROFF_MS_MACROS)
+AC_MSG_RESULT([-m$GROFF_MS_MACROS])
+
+dnl
+dnl	Test if groff takes -mm or -mgm for the macro package.
+dnl
+AC_MSG_CHECKING([for $GROFF -mm macros])
+if test `echo ' ' | groff -mgm 2> /dev/null | wc -l` -gt 0
+then
+	GROFF_MM_MACROS=gm
+else
+	GROFF_MM_MACROS=m
+fi
+AC_SUBST(GROFF_MM_MACROS)
+AC_MSG_RESULT([-m$GROFF_MM_MACROS])
 
 dnl
 dnl	Test to see where TIOCGWINSZ is defined.
@@ -134,16 +169,16 @@ AC_MSG_RESULT(cross))
 
 AC_CHECK_HEADERS(fcntl.h iso646.h libgettext.h libintl.h limits.h locale.h \
 	memory.h mntent.h regex.h rxposix.h stddef.h stdlib.h string.h \
-	unistd.h wchar.h wctype.h widec.h zlib.h)
+	unistd.h wchar.h wctype.h widec.h zlib.h sys/clu.h)
 AC_HEADER_DIRENT
 AC_TYPE_SIGNAL
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_C_CONST
 AC_SYS_LONG_FILE_NAMES
-AC_CHECK_FUNCS(getpgrp gettext iswctype pathconf  regcomp seteuid setlocale \
-	setresuid setreuid strcasecmp strerror strftime strsignal strtoul \
-	tcgetpgrp wcslen wcwidth)
+AC_CHECK_FUNCS(clu_info getpgrp gettext iswctype mbrtowc pathconf regcomp \
+	seteuid setlocale setresuid setreuid strcasecmp strerror strftime \
+	strsignal strtoul tcgetpgrp wcrtomb wcslen wcwidth)
 
 dnl
 dnl	Check to see if wint_t is defined.
@@ -167,6 +202,31 @@ AC_TRY_COMPILE([
 ],
 [ wint_t x; ],
 AC_DEFINE(HAVE_WINT_T)
+AC_MSG_RESULT(yes),
+AC_MSG_RESULT(no))dnl
+
+dnl
+dnl	Check to see if mbstate_t is defined.
+dnl
+AC_MSG_CHECKING([for mbstate_t])
+AC_TRY_COMPILE([
+#include <ctype.h>
+#ifdef HAVE_STDDEF_H
+#include <stddef.h>
+#endif
+/* Solaris bug 1250837: include wchar.h before widec.h */
+#ifdef HAVE_WCHAR_H
+#include <wchar.h>
+#endif
+#ifdef HAVE_WIDEC_H
+#include <widec.h>
+#endif
+#ifdef HAVE_WCTYPE_H
+#include <wctype.h>
+#endif
+],
+[ mbstate_t x; ],
+AC_DEFINE(HAVE_MBSTATE_T)
 AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no))dnl
 
@@ -290,13 +350,31 @@ case "$sharedstatedir" in
 	;;
 esac
 
+dnl support for NLSDIR option
+AC_ARG_WITH(nlsdir,
+	[  --with-nlsdir=PATH	specify where the locale stuff should go ])
+
+if test "x$NLSDIR" = "x"; then
+	if test "x$with_nlsdir" != "x"; then
+		NLSDIR=$with_nlsdir
+	else
+		NLSDIR=${libdir}
+	fi
+fi
+
+AC_SUBST(NLSDIR)
+
 dnl
 dnl	See if there is already existing library files
 dnl	Use uid/gid if so, otherwise use 3/3
 dnl
+dnl	Cygwin always runs in "single user" mode, so this test isn't
+dnl	useful.  Just default the values to the preferred ones.
+dnl
 AC_MSG_CHECKING([for owner of aegis library files])
 AEGIS_UID=3
 AEGIS_GID=3
+if test "$OSTYPE" != "cygwin32" -a "$OSTYPE" != "cygwin" ; then
 if test -f ${sharedstatedir}/lockfile -o -f ${libdir}/lockfile ; then
 	cat > conftest.$ac_ext << 'EOF'
 #line __oline__ "configure"
@@ -324,6 +402,7 @@ EOF
 	fi
 	rm -rf conftest*
 fi
+fi
 AC_SUBST(AEGIS_UID)
 AC_SUBST(AEGIS_GID)
 AC_MSG_RESULT([$AEGIS_UID, $AEGIS_GID])
@@ -346,51 +425,87 @@ dnl	Look for the httpd config files, so that we can find where to
 dnl	put the CGI script, and other HTML files.
 dnl
 AC_MSG_CHECKING([for httpd server config])
-web=no
+AC_CACHE_VAL(_cv_web, [
+_cv_web=no
 for ac_dir in \
+	/etc/apache \
 	/etc/httpd \
 	/opt/apache \
+	/opt/httpd \
 	/usr/apache \
 	/usr/httpd \
 	/usr/local/apache \
+	/usr/local/apache/etc \
 	/usr/local/httpd \
+	/usr/local/httpd/etc \
 	/var/apache \
-	/var/httpd
+	/var/httpd \
+	/var/lib/apache \
+	/var/lib/httpd
 do
-	if test -f $ac_dir/conf/httpd.conf
+	if test -r $ac_dir/conf/httpd.conf -o -r $ac_dir/httpd.conf
 	then
-		web=yes
-		httpd=$ac_dir
+		_cv_web=yes
+		_cv_httpd=$ac_dir
 		break
 	fi
 done
-if test "$web" = "yes"
+])
+if test "$_cv_web" = "yes"
 then
-	AC_MSG_RESULT([$httpd])
+	AC_MSG_RESULT([$_cv_httpd])
 
-	AC_MSG_CHECKING([for httpd document root])
-	DocumentRoot=`$AWK '/^DocumentRoot/{print $2}' $httpd/conf/srm.conf $httpd/conf/httpd.conf | head -1`
-	if test "x$DocumentRoot" = "x"; then
-		DocumentRoot=no
-		web=no
-	fi
-	AC_MSG_RESULT([$DocumentRoot])
+	AC_CACHE_CHECK([for httpd document root],_cv_DocumentRoot, [
+	_cv_DocumentRoot=no
+	for f in $_cv_httpd/conf/srm.conf $_cv_httpd/conf/httpd.conf \
+		 $_cv_httpd/srm.conf $_cv_httpd/httpd.conf
+	do
+		if test -r $f
+		then
+			tmp=`$AWK '/^DocumentRoot/{print $2}' $f | head -1`
+			test "x$tmp" != "x" && _cv_DocumentRoot="$tmp"
+		fi
+	done
+	test "$_cv_DocumentRoot" = "no" && _cv_web=no
+	])
 
-	AC_MSG_CHECKING([for httpd script root])
-	ScriptRoot=`$AWK '/^ScriptAlias.*cgi-bin/{dir=$3; sub(/\/*$/, "", dir); print dir}' $httpd/conf/srm.conf $httpd/conf/httpd.conf | head -1`
-	if test "x$ScriptRoot" = "x"; then
-		ScriptRoot=no
-		web=no
-	fi
-	AC_MSG_RESULT([$ScriptRoot])
+	AC_CACHE_CHECK([for httpd script root],_cv_ScriptRoot, [
+	_cv_ScriptRoot=no
+	for f in $_cv_httpd/conf/srm.conf $_cv_httpd/conf/httpd.conf \
+		 $_cv_httpd/srm.conf $_cv_httpd/httpd.conf
+	do
+		if test -r $f
+		then
+			tmp=`$AWK '/^ScriptAlias.*cgi-bin/{dir=$3; sub(/\/*$/, "", dir); print dir}' $f | head -1`
+			test "x$tmp" != "x" && _cv_ScriptRoot="$tmp"
+		fi
+	done
+	test "$_cv_ScriptRoot" = "no" && _cv_web=no
+	])
 else
 	AC_MSG_RESULT([no])
-	DocumentRoot=no
+	_cv_DocumentRoot=no
 	ScriptRoot=no
 fi
+web=$_cv_web
 AC_SUBST(web)
+DocumentRoot=$_cv_DocumentRoot
 AC_SUBST(DocumentRoot)
+ScriptRoot=$_cv_ScriptRoot
 AC_SUBST(ScriptRoot)
+
+dnl
+dnl	If the libz.h is not present, Aegis will fail to compile.
+dnl	If the -lz is not present, Aegis will fail to link.
+dnl
+if test "$ac_cv_lib_z" != "yes" -o "$ac_cv_header_zlib_h" != "yes"
+then
+  AC_MSG_RESULT([])
+  AC_MSG_RESULT([	You need to install the GNU zlib compression])
+  AC_MSG_RESULT([	library, and then re-run this install script.])
+  AC_MSG_RESULT([	Remember to use \`\`rm config.cache'' before you do.])
+  AC_MSG_RESULT([])
+fi
 
 dnl
 dnl	If the gettext function exists, assume the msgfmt program does
@@ -421,11 +536,10 @@ then
   then
     : nothing
   else
-    AC_MSG_RESULT([])
-    AC_MSG_RESULT([	The $SOELIM program does not understand the -I])
-    AC_MSG_RESULT([	option.  There is a patch available for GNU Groff])
-    AC_MSG_RESULT([	which makes this work correctly.  See the BUILDING])
-    AC_MSG_RESULT([	file for details.])
+    AC_MSG_RESULT([
+	The $SOELIM program does not understand the -I option.
+	GNU Groff 1.15 or later works correctly.
+	See the BUILDING file for details.])
     GROFF=
   fi
 fi
@@ -434,12 +548,12 @@ then
   HAVE_GROFF=yes
 else
   HAVE_GROFF=no
-  AC_MSG_RESULT([])
-  AC_MSG_RESULT([	The Aegis documentation set and manual pages will])
-  AC_MSG_RESULT([	be formatted and installed if you first install])
-  AC_MSG_RESULT([	GNU Groff and then re-run this ./configure script.])
-  AC_MSG_RESULT([	Remember to use \`\`rm config.cache'' before you do.])
-  AC_MSG_RESULT([])
+  AC_MSG_RESULT([
+	The Aegis documentation set and manual pages will
+	be formatted and installed if you first install
+	GNU Groff 1.15 or later and then re-run this ./configure script.
+	Remember to use \`\`rm config.cache'' before you do.
+])
 fi
 AC_SUBST(HAVE_GROFF)
 

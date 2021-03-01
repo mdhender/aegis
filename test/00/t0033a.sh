@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1995, 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1995, 1996, 1997, 1998, 1999 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -248,7 +248,7 @@ LHS      RHS      <        <=       >        >=       ==       !=
 fubar
 if test $? -ne 0 ; then no_result; fi
 activity="run 249"
-$bin/aegis -report -f test.in -o test.out -pl 15 -tw 1
+$bin/aegis -report -f test.in -o test.out -pl 15 -tw 1 -pw=79
 if test $? -ne 0 ; then fail; fi
 activity="compare 252"
 sed -e 's/[A-Z][a-z][a-z] [A-Z][a-z][a-z] [ 123][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9] [12][0-9][0-9][0-9]/XXX XXX XX XX:XX:XX XXXX/' \

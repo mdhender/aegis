@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1996, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1996, 1998, 1999, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -81,6 +81,11 @@ will not be removed.
 This is because \*(n) is decoupled from the DMT,
 and cannot know what these derived file may be called.
 You may need to delete derived files manually.
+.SS Notification
+The \fIcopy_file_undo_command\fP in the project \fIconfig\fP file is
+run, if set.  The \fIproject_\%file_\%command\fP is also run, if set,
+and if there has been an integration recently.  See \fIaepconf\fP(5)
+for more information.
 .SH OPTIONS
 The following options are understood:
 .so o_baserel.so
@@ -107,7 +112,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aecpu '\*(n) -cpu \e!* -v'
-sh$	aecpu(){\*(n) -cpu $* -v}
+sh$	aecpu(){\*(n) -cpu "$@" -v}
 .fi
 .SH ERRORS
 It is an error if

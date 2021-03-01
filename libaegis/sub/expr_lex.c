@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996 Peter Miller;
+ *	Copyright (C) 1996, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -105,6 +105,39 @@ sub_expr_gram_lex()
 
 		case '/':
 			return DIV;
+
+		case '%':
+			return MOD;
+			
+		case '>':
+			c = lex_getc();
+			if (c == '=')
+				return GE;
+			lex_getc_undo(c);
+			return GT;
+			
+		case '=':
+			c = lex_getc();
+			if (c == '=')
+				return EQ;
+			lex_getc_undo(c);
+			return EQ;
+
+		case '<':
+			c = lex_getc();
+			if (c == '=')
+				return LE;
+			if (c == '>')
+				return NE;
+			lex_getc_undo(c);
+			return LT;
+
+		case '!':
+			c = lex_getc();
+			if (c == '=')
+				return NE;
+			lex_getc_undo(c);
+			return NOT;
 
 		case ' ':
 		case '\t':

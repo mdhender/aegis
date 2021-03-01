@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,24 +20,26 @@
  * MANIFEST: functions to manipulate opens
  */
 
-#include <header.h>
+#include <rfc822header.h>
 #include <input/base64.h>
 #include <input/cpio.h>
 #include <input/file.h>
 #include <input/gunzip.h>
+#include <input/uudecode.h>
 #include <open.h>
 #include <os.h>
 #include <str.h>
+#include <sub.h>
 
 
 input_ty *
 aedist_open(ifn, subject_p)
-	const char	*ifn;
+	string_ty	*ifn;
 	string_ty	**subject_p;
 {
 	input_ty	*ifp;
 	input_ty	*cpio_p;
-	header_ty	*hp;
+	rfc822_header_ty *hp;
 	string_ty	*s;
 
 	/*
@@ -45,50 +47,67 @@ aedist_open(ifn, subject_p)
 	 */
 	os_become_orig();
 	ifp = input_file_open(ifn);
-	hp = header_read(ifp);
-	s = header_query(hp, "mime-version");
+	hp = rfc822_header_read(ifp);
+	s = rfc822_header_query(hp, "mime-version");
 	if (s)
 	{
 		string_ty	*content_type;
 
-		s = header_query(hp, "content-type");
+		s = rfc822_header_query(hp, "content-type");
 		content_type = str_from_c("application/aegis-change-set");
 		if (!s || !str_equal(s, content_type))
-			input_format_error(ifp);
+			input_fatal_error(ifp, "wrong content type");
 		str_free(content_type);
 	}
 
 	/*
 	 * Deal with the content encoding.
 	 */
-	s = header_query(hp, "content-transfer-encoding");
+	s = rfc822_header_query(hp, "content-transfer-encoding");
 	if (s)
 	{
-		string_ty	*base64;
+		static string_ty *base64;
+		static string_ty *uuencode;
 
 		/*
 		 * We could cope with other encodings here,
 		 * if we ever need to.
 		 */
-		base64 = str_from_c("base64");
-		if (!str_equal(s, base64))
-			input_format_error(ifp);
-		str_free(base64);
+		if (!base64)
+			base64 = str_from_c("base64");
+		if (!uuencode)
+			uuencode = str_from_c("uuencode");
+		if (str_equal(s, base64))
+		{
+			/*
+			 * The rest of the input is in base64 encoding.
+			 */
+			ifp = input_base64(ifp, 1);
+		}
+		else if (str_equal(s, uuencode))
+		{
+			/*
+			 * The rest of the input is uuencoded.
+			 */
+			ifp = input_uudecode(ifp, 1);
+		}
+		else
+		{
+			sub_context_ty	*scp;
+			string_ty	*tmp;
 
-		/*
-		 * Some sort of start line could be nice.  This could
-		 * allow us to add comments and stuff (the long
-		 * description?)  before the actual content.
-		 *
-		 * Search for such a thing here, if and when we add that.
-		 * Use one of the base64-illegal characters to start
-		 * the line.
-		 */
-
-		/*
-		 * The rest of the input is in base64 encoding.
-		 */
-		ifp = input_base64(ifp);
+			scp = sub_context_new();
+			sub_var_set_string(scp, "Name", s);
+			tmp =
+				subst_intl
+				(
+					scp,
+				 i18n("content transfer encoding $name unknown")
+				);
+			input_fatal_error(ifp, tmp->str_text);
+			str_free(tmp);
+			sub_context_delete(scp);
+		}
 	}
 
 	/*
@@ -104,7 +123,7 @@ aedist_open(ifn, subject_p)
 	 */
 	if (subject_p)
 	{
-		s = header_query(hp, "subject");
+		s = rfc822_header_query(hp, "subject");
 		if (s && s->str_length)
 			*subject_p = str_copy(s);
 		else
@@ -114,6 +133,6 @@ aedist_open(ifn, subject_p)
 	/*
 	 * clean up and go home
 	 */
-	header_delete(hp);
+	rfc822_header_delete(hp);
 	return cpio_p;
 }

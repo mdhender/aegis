@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+.\"	Copyright (C) 1991-1995, 1999, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ and thus should not be edited by humans.
 .SH CONTENTS
 .TP 8n
 next_test_number = integer;
-Each test is numbered uniquely acrosss all branches of the project.
+Each test is numbered uniquely across all branches of the project.
 The name is of the form
 .I "t[0-9][0-9][0-9][0-9][am].sh"
 ('a' for automatic and 'm' for manual.)
@@ -98,6 +98,7 @@ This tends to be a very useful thing,
 since developers find most of the bugs.
 .TP 8n
 forced_develop_begin_notify_command = string;
+.RS
 This command is used to notify a developer
 that a change requires developing;
 it is issued when a project administrator uses an
@@ -107,8 +108,15 @@ All of the substitutions described in
 .IR aesub (5)
 are available.
 This field is optional.
+.PP
+Executed as: the new developer.
+Current directory: the development directory of the change
+for the new developer.
+Exit status: ignored.
+.RE
 .TP 8n
 develop_end_notify_command = string;
+.RS
 This command is used to
 notify that a change is ready for review.
 It will probably use mail,
@@ -120,8 +128,14 @@ such as progress and defect tracking.
 All of the substitutions described by
 .IR aesub (5)
 are available.
+.PP
+Executed as: the developer.
+Current directory: the development directory of the change.
+Exit status: ignored.
+.RE
 .TP 8n
 develop_end_undo_notify_command = string;
+.RS
 This command is used to
 notify that a change had been withdrawn from review
 for further development.
@@ -134,8 +148,14 @@ such as progress and defect tracking.
 All of the substitutions described by
 .IR aesub (5)
 are available.
+.PP
+Executed as: the developer.
+Current directory: the development directory of the change.
+Exit status: ignored.
+.RE
 .TP 8n
 review_pass_notify_command = string;
+.RS
 This command is used to
 notify that a review has passed.
 It will probably use mail,
@@ -147,6 +167,11 @@ such as progress and defect tracking.
 All of the substitutions described by
 .IR aesub (5)
 are available.
+.PP
+Executed as: the reviewer.
+Current directory: the development directory of the change.
+Exit status: ignored.
+.RE
 .TP 8n
 review_pass_undo_notify_command = string;
 This command is used to
@@ -163,6 +188,7 @@ All of the substitutions described by
 are available.
 .TP 8n
 review_fail_notify_command = string;
+.RS
 This command is used to
 notify that a review has failed.
 It will probably use mail,
@@ -174,8 +200,14 @@ such as progress and defect tracking.
 All of the substitutions described by
 .IR aesub (5)
 are available.
+.PP
+Executed as: the reviewer.
+Current directory: the development directory of the change.
+Exit status: ignored.
+.RE
 .TP 8n
 integrate_pass_notify_command = string;
+.RS
 This command is used to
 notify that an integration has passed.
 It will probably use mail,
@@ -187,8 +219,14 @@ such as progress and defect tracking.
 All of the substitutions described by
 .IR aesub (5)
 are available.
+.PP
+Executed as: the project owner.
+Current directory: the new project baseline.
+Exit status: ignored.
+.RE
 .TP 8n
 integrate_fail_notify_command = string;
+.RS
 This command is used to
 notify that an integration has failed.
 It will probably use mail,
@@ -200,6 +238,11 @@ such as progress and defect tracking.
 All of the substitutions described by
 .IR aesub (5)
 are available.
+.PP
+Executed as: the integrator.
+Current directory: the development directory of the change.
+Exit status: ignored.
+.RE
 .TP 8n
 default_development_directory = string;
 The pathname of where to place new development directories.
@@ -243,6 +286,8 @@ Deltas are numbered sequentially from one.
 This field records the next unused delta number.
 .TP 8n
 src = [ { ... } ];
+If you are writing a report, see \fIaefstate\fP(5) for the current
+documentation for this field.
 This field is a list of files in the project.
 Each list item has the form:
 .RS
@@ -321,6 +366,34 @@ Always zero or more.
 version_previous = string;
 The version number this project was derived from.
 This is of most use when producing "patch" files.
+.SH WRITING REPORT SCRIPTS
+When attempting to access these fields from within the report generator,
+you need a code fragment similar to the following:
+.RS
+.nf
+.ft CW
+auto ps;
+ps = project[project_name()].state;
+.ft R
+.fi
+.RE
+All of the fields mentioned in the man page can now be accessed as
+members of the \f[CW]ps\fP variable.
+.PP
+When you access the \fIbranch\fP field, you obtain access to the change
+state of the branch.  Even the trunk has one of these, it just doesn't
+have a number, and it is perpetually being developed.
+.PP
+When you index the \fIbranch.change\fP field by a change number,
+you obtain access to the change state of that change.
+.PP
+When you index the \fIbranch.src\fP field by a filename string, you may obtain
+access the the relevant project file state (see \fIaefstate\fP(5) for more
+information).
+.PP
+In addition to the above fields, the report generator inserts a \fIname\fP
+field containing the project name, and a \fIdirectory\fP field containing
+the project directory path.
 .SH SEE ALSO
 .TP 8n
 .IR aenpr (1)

@@ -36,12 +36,12 @@ messages significantly easier.)
 Localization is the process of translating the error messages and other
 text into various different languages or nationalities.
 This appendix is primarily aimed at localizers of Aegis.
-.nh 2 "The ``po/en.po'' File"
+.nh 2 "The ``.po'' Files"
 .LP
-The ``po'' directory in the source tree contains the various
+The ``lib/en/LC_MESSAGES'' directory in the source tree contains the various
 message files needed to localize Aegis.
-You will find a ``en.po'' file in this directory,
-it translates ``programmer cryptic'' into English.
+You will find a number of ``.po'' files in this directory,
+which translates ``programmer cryptic'' into English.
 You will see that each message has a comment attached,
 describing the message and the context in which it is used.
 Many messages also have ``substitutions'' described,
@@ -55,11 +55,11 @@ and so all of the substitutions described in \fIaesub\fP(5)
 are available to the translator.
 Of frequent use is the \fIplural\fP substitution,
 which allows grammatically correct error messages to be issued
-when faced with the singular/plural dictotomy.
+when faced with the singular/plural dichotomy.
 Other substitutions include the login name of the executing user,
 names of projects, number and state of changes, etc.
 .LP
-Ideally, the task for a translator is to take the \fIen.po\fP file
+Ideally, the task for a translator is to take the \fI.po\fP files
 and translate the \f(CWmsgstr\fP lines into the appropriate language.
 The job will, of course, not be that simple
 and so references into the code has been included,
@@ -81,11 +81,57 @@ report_error;gram_error
 rpt_value_error;
 .TE
 .LP
-In general, the \fIaux/Howto.cook\fP file causes the
-messages to be extracted into \fIpo/messages.po\fP for checking
+In general, the \fIetc/Howto.cook\fP file causes the
+messages to be extracted into \fIi18n-tmp/*.po\fP for checking
 during the build.
+.nh 2 "Translators Welcome"
 .LP
-Assuming the author has located all such instances,
-the translator need only translate the \fIpo/en.po\fP file,
-and the author will add the file to the project on receipt
-of your translation.
+If \fIyou\fP are able to translate the error messages into another
+language, please contact
+Peter Miller <millerp@canb.auug.org.au>
+and he will tell you how it is done.
+(Actually, he'll point you to this part of the User Guide.  :-)
+.LP
+To translate the error messages, look up the
+two-letter abbreviation (http://www.w3.org/WAI/ER/IG/ert/iso639.htm)
+of the language you are going to translate the error
+messages to.  The rest of these instructions will call it \fIxx\fP.
+.LP
+In the source tree, you will see a directory called
+\fIlib/en/LC_MESSAGES\fP which contains some \f[CW].po\fP files.
+These are the text form of the message catalogues.
+You can view them with a simple text editor.
+.LP
+Create a new directory for your translations, and copy the English
+messages into it.
+.E(
+mkdir lib/\fIxx\fP/LC_MESSAGES
+cp lib/en/LC_MESSAGES/*.po \e
+	lib/\fIxx\fP/LC_MESSAGES
+.E)
+Now you need to edit each of the
+\f[CW]lib/\fP\fIxx\fP\f[CW]/LC_MESSAGES/*.po\fP
+files, replacing the \f[CW]msgstr\fP strings with suitable translations.
+Leave the \f[CW]msgid\fP strings and the comments untranslated.
+These are text files, you can edit them with a simple text editor.
+GNU Emacs has a PO mode to make this easier.
+.LP
+The GNU Gettext (http://www.gnu.org/directory/gettext.html) sources have
+fairly good documentation (http://www.gnu.org/manual/gettext/index.html)
+about this process.
+.LP
+If you want to test your translations, you need to "compile" the
+text into the binary form used by the \f[CW]gettext()\fP system
+call.  This is done using the \fImsgfmt\fP(1) program from the GNU
+Gettext package.  To see you new translations in action, you create a
+\f[CW]\*(L)/\fP\fIxx\fP\f[CW]/LC_MESSAGES\fP directory and arrange for
+the \fImsgfmt\fP(1) output to be placed in it.  Some of the messages
+are hard to trigger, don't expect complete test coverage.
+.LP
+There are almost 600 error messages.
+If you average 1 message every 2 minutes, this is approximately 20 hours work.
+The German translation, for example, required around 12 hours.
+.LP
+When you are done translating, email the results to 
+Peter Miller <millerp@canb.auug.org.au>
+and they will be included in the next release of Aegis.

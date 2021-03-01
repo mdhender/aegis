@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1996, 1999 Peter Miller;
+ *	Copyright (C) 1991-1993, 1996, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,18 +20,19 @@
  * MANIFEST: project attributes file contents definition
  *
  * If you add a new project attribute, you must edit all of these files...
- *	aegis/aenbr.c		Where it is copied
+ *	libaegis/project/new_branch.c		Where it is copied
+ *	libaegis/project/pattr/set.c		Where it is copied
+ *	libaegis/project/pattr/get.c		Where it is copied
  *	aegis/aenpr.c		Where it is defaulted (if not zero)
  *	aegis/aenrls.c		Where it is defaulted (if not zero)
- *	aegis/aepa.c		Where it is edited
  *	lib/en/man5/aecstate.5	Where it is documented
  *	lib/en/man5/aepattr.5	Where it is documented
  *	libaegis/change/cstate/improve.c	Where it is defaulted
- *	libaegis/change_bran.c	Where it is set&get
- *	libaegis/change_bran.h	Where it is in a prototype
+ *	libaegis/change/branch/*.c	Where it is set&get
+ *	libaegis/change/branch.h	Where it is in a prototype
  *	libaegis/cstate.def	Where it is defined
  *	libaegis/pattr.def	Where it is defined
- *	libaegis/project.c	Where it is set&get
+ *	libaegis/project/*.c	Where it is set&get
  *	libaegis/project.h	Where it is in a prototype
  */
 
@@ -80,6 +81,11 @@ developers_may_create_changes = boolean;
  * -User' command to force development of a change by a specific user.
  * All of the substitutions described in aesub(5) are available.  This
  * field is optional.
+ *
+ * Executed as: the new developer.
+ * Current directory: the development directory of the change
+ *	for the new developer.
+ * Exit status: ignored.
  */
 forced_develop_begin_notify_command = string;
 
@@ -90,6 +96,10 @@ forced_develop_begin_notify_command = string;
  *
  * This command could also be used to notify other management systems,
  * such as progress and defect tracking.
+ *
+ * Executed as: the developer.
+ * Current directory: the development directory of the change.
+ * Exit status: ignored.
  */
 develop_end_notify_command = string;
 
@@ -101,8 +111,40 @@ develop_end_notify_command = string;
  *
  * This command could also be used to notify other management systems,
  * such as progress and defect tracking.
+ *
+ * Executed as: the developer.
+ * Current directory: the development directory of the change.
+ * Exit status: ignored.
  */
 develop_end_undo_notify_command = string;
+
+/*
+ * notify that the review has begun
+ * All of the substitutions described in aesub(5) are available.
+ * this field is optional
+ *
+ * This command could also be used to notify other management systems,
+ * such as progress and defect tracking.
+ *
+ * Executed as: the reviewer.
+ * Current directory: the development directory of the change.
+ * Exit status: ignored.
+ */
+review_begin_notify_command = string;
+
+/*
+ * notify that the review has no longer begun
+ * All of the substitutions described in aesub(5) are available.
+ * this field is optional
+ *
+ * This command could also be used to notify other management systems,
+ * such as progress and defect tracking.
+ *
+ * Executed as: the reviewer.
+ * Current directory: the development directory of the change.
+ * Exit status: ignored.
+ */
+review_begin_undo_notify_command = string;
 
 /*
  * notify that the review has passed
@@ -111,6 +153,10 @@ develop_end_undo_notify_command = string;
  *
  * This command could also be used to notify other management systems,
  * such as progress and defect tracking.
+ *
+ * Executed as: the reviewer.
+ * Current directory: the development directory of the change.
+ * Exit status: ignored.
  */
 review_pass_notify_command = string;
 
@@ -122,6 +168,10 @@ review_pass_notify_command = string;
  *
  * This command could also be used to notify other management systems,
  * such as progress and defect tracking.
+ *
+ * Executed as: the reviewer.
+ * Current directory: the development directory of the change.
+ * Exit status: ignored.
  */
 review_pass_undo_notify_command = string;
 
@@ -132,6 +182,10 @@ review_pass_undo_notify_command = string;
  *
  * This command could also be used to notify other management systems,
  * such as progress and defect tracking.
+ *
+ * Executed as: the reviewer.
+ * Current directory: the development directory of the change.
+ * Exit status: ignored.
  */
 review_fail_notify_command = string;
 
@@ -142,6 +196,10 @@ review_fail_notify_command = string;
  *
  * This command could also be used to notify other management systems,
  * such as progress and defect tracking.
+ *
+ * Executed as: the project owner.
+ * Current directory: the new project baseline.
+ * Exit status: ignored.
  */
 integrate_pass_notify_command = string;
 
@@ -152,6 +210,10 @@ integrate_pass_notify_command = string;
  *
  * This command could also be used to notify other management systems,
  * such as progress and defect tracking.
+ *
+ * Executed as: the integrator.
+ * Current directory: the development directory of the change.
+ * Exit status: ignored.
  */
 integrate_fail_notify_command = string;
 
@@ -215,3 +277,30 @@ skip_unlucky = boolean;
  * on writing.  (It is always uncompressed on reading if necessary.)
  */
 compress_database = boolean;
+
+/*
+ * This field controls the state entered on a successfil develop end
+ * state transition.  The default is "being reviewed".
+ *
+ * goto_being_reviewed
+ *	This means that the state machine goes from the being_developed
+ *	state to the being_reviewed state.  The aerb command only sends
+ *	informative email.
+ *
+ * goto_awaiting_review
+ *	This means that the state machine goes from the being_developed
+ *	state to the awaiting_review state.  The aerb command is now
+ *	essential.
+ *
+ * goto_awaiting_integration
+ *	This means that the state machine goes from the being_developed
+ *	state into the awaiting_inmtegartion state.  Code review is
+ *	skipped entirely.
+ *
+ * Note that the "developer_may_review" setting may not contradict the
+ * "develop_end_action".  If developers may not review their own work,
+ * then you may not goto directly to being integrated (as this means
+ * much te same thing).
+ */
+develop_end_action = (goto_being_reviewed, goto_awaiting_review,
+	goto_awaiting_integration);

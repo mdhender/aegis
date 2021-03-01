@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	This file is in the Public Domain, 1995, 1998 Peter Miller.
+ *	This file is in the Public Domain, 1995, 1998, 2001 Peter Miller.
  *
  * MANIFEST: example of using sccs in the project config file
  *
@@ -16,6 +16,10 @@
  * shell special characters.  A minimum of quoting is performed, so if
  * the filenames do not contain shell special characters, no quotes will
  * be used.
+ *
+ *	NOTE:  NOTE:  NOTE:  NOTE:  NOTE:  NOTE:  NOTE:  NOTE:	NOTE:
+ *	I only ever tried this stuff using GNU CSSC.  I have no idea
+ *	whether it works with any other SCCS implementation.
  */
 
 /*
@@ -28,15 +32,17 @@
  * ${History}
  *	absolute path of the history file
  *
- * Note that the "get -e" is necessary to put the s.file into the edit state,
- * but the result of the get can be discarded, because the "admin -i" did not
- * remove the file.
+ * This assumes that the ae-sccs-put script is in the $PATH.  The history
+ * file is created of it does not exist.  The file is left in the
+ * "not editing state".  The original source ($input) file is left in
+ * the baseline.
+ *
+ * It is essential that the history_put_command be identical to the
+ * the history_create_command for branching to work correctly.
  */
-history_create_command =
-	"admin -n -i${quote $input} -y \
-${quote ${dirname $history}/s.${basename $history}}; admin -di \
-${quote ${dirname $history}/s.${basename $history}}; get -e -t -p -s \
-${quote ${dirname $history}/s.${basename $history}} > /dev/null";
+history_create_command = "\
+ae-sccs-put -s -y${quote ($version) ${change description}} \
+-G${quote $input} ${quote ${dirname $history}/s.${basename $history}}";
 
 /*
  * This command is used to get a specific edit back from history.
@@ -46,13 +52,18 @@ ${quote ${dirname $history}/s.${basename $history}} > /dev/null";
  * ${History}
  *	absolute path of the history file
  * ${Edit}
- *	edit number, as given by history_\%query_\%command
+ *	edit number, as given by history_query_command
  * ${Output}
  *	absolute path of the destination file
+ *
+ * get -r<rid>	edit number
+ * get -s	silent
+ * get -p	use stdout
+ * get -k	suppress keywords
  */
-history_get_command =
-	"get -r${quote $e} -s -p -k \
-${quote ${dirname $history}/s.${basename $history}} > ${quote $o}";
+history_get_command = "\
+sccs get -r${quote $edit} -s -k -G${quote $output} \
+${quote ${dirname $history}/s.${basename $history}}";
 
 /*
  * This command is used to add a new "top-most" entry to the history file.
@@ -64,13 +75,17 @@ ${quote ${dirname $history}/s.${basename $history}} > ${quote $o}";
  * ${History}
  *	absolute path of history file
  *
- * Note that the SCCS file is left in the edit state, and that the source file
- * is left in the baseline.
+ * This assumes that the ae-sccs-put script is in the $PATH.  The history
+ * file is created of it does not exist.  The file is left in the
+ * "not editing state".  The original source ($input) file is left in
+ * the baseline.
+ *
+ * It is essential that the history_put_command be identical to the
+ * the history_create_command for branching to work correctly.
  */
-history_put_command =
-	"cd ${quote ${dirname $i}}; delta -s -y \
-${quote ${dirname $history}/s.${basename $history}}; get -e -t -p -s \
-${quote ${dirname $history}/s.${basename $history}} > $i";
+history_put_command = "\
+ae-sccs-put -s -y${quote ($version) ${change description}} \
+-G${quote $input} ${quote ${dirname $history}/s.${basename $history}}";
 
 /*
  * This command is used to query what the history mechanism calls the top-most
@@ -84,6 +99,10 @@ ${quote ${dirname $history}/s.${basename $history}} > $i";
  *	absolute path of the history file
  *
  * Note that "get" reports the edit number on stderr.
+ *
+ * get -g	no input
+ * get -t	include branches
  */
-history_query_command =
-	"get -t -g ${quote ${dirname $history}/s.${basename $history}} 2>&1";
+history_query_command = "\
+sccs get -t -g ${quote ${dirname $history}/s.${basename $history}} \
+2> /dev/null";

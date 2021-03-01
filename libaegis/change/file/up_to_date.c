@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,7 @@
  */
 
 #include <change/file.h>
+#include <error.h> /* for assert */
 #include <project.h>
 #include <project/file.h>
 #include <trace.h>
@@ -35,18 +36,14 @@ change_file_up_to_date(pp, c_src_data)
 	int		result;
 
 	/*
-	 * No edit number at all implies a new file, and is always
+	 * No edit origin implies a new file, and is always
 	 * up-to-date.
 	 */
 	trace(("change_file_up_to_date(pp = %08lX)\n{\n"/*}*/, (long)pp));
 	trace(("filename = \"%s\";\n", c_src_data->file_name->str_text));
-	if (c_src_data->edit_number && !c_src_data->edit_number_origin)
-	{
-		/* Historical 2.3 -> 3.0 transition. */
-		c_src_data->edit_number_origin =
-			str_copy(c_src_data->edit_number);
-	}
-	if (!c_src_data->edit_number_origin)
+	assert(!c_src_data->edit || c_src_data->edit->revision);
+	assert(!c_src_data->edit_origin || c_src_data->edit_origin->revision);
+	if (!c_src_data->edit_origin)
 	{
 		trace(("return 1;\n"));
 		trace((/*{*/"}\n"));
@@ -68,7 +65,7 @@ change_file_up_to_date(pp, c_src_data)
 	||
 		p_src_data->about_to_be_copied_by
 	||
-		!p_src_data->edit_number
+		!p_src_data->edit
 	)
 	{
 		trace(("return 1;\n"));
@@ -81,23 +78,27 @@ change_file_up_to_date(pp, c_src_data)
 	 * project is not the same as the edit number of the file when
 	 * originally copied from the project.
 	 *
-	 * p_src_data->edit_number
+	 * p_src_data->edit
 	 *	The head revision of the branch.
-	 * p_src_data->edit_number_origin
+	 * p_src_data->edit_origin
 	 *	The version originally copied.
 	 *
-	 * c_src_data->edit_number
+	 * c_src_data->edit
 	 *	Not meaningful until after integrate pass.
-	 * c_src_data->edit_number_origin
+	 * c_src_data->edit_origin
 	 *	The version originally copied.
-	 * c_src_data->edit_number_origin_new
-	 *	Updates branch edit_number_origin on integrate pass.
+	 * c_src_data->edit_origin_new
+	 *	Updates branch edit_origin on integrate pass.
 	 */
+	assert(p_src_data->edit);
+	assert(p_src_data->edit->revision);
+	assert(c_src_data->edit_origin);
+	assert(c_src_data->edit_origin->revision);
 	result =
 		str_equal
 		(
-			p_src_data->edit_number,
-			c_src_data->edit_number_origin
+			p_src_data->edit->revision,
+			c_src_data->edit_origin->revision
 		);
 	trace(("return %d;\n", result));
 	trace((/*{*/"}\n"));

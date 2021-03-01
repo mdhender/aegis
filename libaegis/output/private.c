@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,11 @@
  * MANIFEST: functions to perform common output functions
  */
 
+#include <ac/string.h>
+
+#include <error.h> /* for assert */
 #include <mem.h>
+#include <option.h>
 #include <output/private.h>
 
 
@@ -30,33 +34,38 @@ output_new(vptr)
 {
 	output_ty	*this;
 
+	assert(vptr);
+	assert(vptr->size > sizeof(output_ty));
 	this = mem_alloc(vptr->size);
 	this->vptr = vptr;
+	this->del_cb = 0;
+	this->del_cb_arg = 0;
+	this->buffer_size = (size_t)1 << 13;
+	this->buffer = mem_alloc(this->buffer_size);
+	this->buffer_position = this->buffer;
+	this->buffer_end = this->buffer + this->buffer_size;
 	return this;
 }
 
 
 void
-output_generic_fputs(fp, s)
+output_generic_flush(fp)
 	output_ty	*fp;
-	const char	*s;
 {
-	fp->vptr->write(fp, s, strlen(s));
 }
 
 
-void
-output_generic_write(fp, data, len)
+int
+output_generic_page_width(fp)
 	output_ty	*fp;
-	const void	*data;
-	size_t		len;
 {
-	const unsigned char *p;
+	return option_page_width_get(-1) - 1;
+}
 
-	p = data;
-	while (len > 0)
-	{
-		fp->vptr->fputc(fp, *p++);
-		--len;
-	}
+
+int
+output_generic_page_length(fp)
+	output_ty	*fp;
+{
+	return option_page_length_get(-1);
 }

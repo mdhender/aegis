@@ -79,7 +79,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aepa '\*(n) -pa \e!* -v'
-sh$	aepa(){\*(n) -pa $* -v}
+sh$	aepa(){\*(n) -pa "$@" -v}
 .fi
 .SH ERRORS
 It is an error if
@@ -88,6 +88,9 @@ the current user is not an administrator of the specified project.
 .br
 .ne 1i
 .SH SEE ALSO
+.TP 8n
+.IR tkaepa (1)
+Graphical interface to the \fIaepa\fP(1) command.
 .TP 8n
 .IR aeca (1)
 modify the attributes of a change

@@ -59,11 +59,11 @@ change_run_integrate_pass_notify_command(cp)
 	 * All of the substitutions described in aesub(5) are available.
 	 */
 	scp = sub_context_new();
-	sub_var_set(scp, "1", "${project}");
-	sub_var_set(scp, "2", "${change}");
-	sub_var_set(scp, "3", "${developer}");
-	sub_var_set(scp, "4", "${reviewer}");
-	sub_var_set(scp, "5", "${integrator}");
+	sub_var_set_charstar(scp, "1", "${project}");
+	sub_var_set_charstar(scp, "2", "${change}");
+	sub_var_set_charstar(scp, "3", "${developer}");
+	sub_var_set_charstar(scp, "4", "${reviewer}");
+	sub_var_set_charstar(scp, "5", "${integrator}");
 	the_command = substitute(scp, cp, the_command);
 	sub_context_delete(scp);
 

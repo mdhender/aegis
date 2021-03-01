@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 2000 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@
 #include <error.h>
 #include <project.h>
 #include <user.h>
+#include <zero.h>
 
 static long	change_number;
 static int	change_number_set;
@@ -101,7 +102,7 @@ change_number_run(ep, argc, argv)
 	assert(argc == 0);
 	if (!change_number && !change_number_set)
 		grab();
-	return rpt_value_integer(change_number);
+	return rpt_value_integer(magic_zero_decode(change_number));
 }
 
 

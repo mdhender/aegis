@@ -22,8 +22,10 @@
 
 #include <aer/expr.h>
 #include <aer/func/eject.h>
+#include <aer/func/print.h>
 #include <aer/value/void.h>
 #include <col.h>
+#include <error.h> /* for assert */
 
 static int valid _((rpt_expr_ty *));
 
@@ -43,7 +45,8 @@ run(ep, argc, argv)
 	size_t		argc;
 	rpt_value_ty	**argv;
 {
-	col_eject();
+	assert(rpt_func_print__colp);
+	col_eject(rpt_func_print__colp);
 	return rpt_value_void();
 }
 

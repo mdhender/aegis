@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1999 Peter Miller;
+.\"	Copyright (C) 1991, 1992, 1993, 1999, 2000 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -48,6 +48,7 @@ removed from the baseline,
 or changed in some way,
 has a corresponding "comma D" file.
 .nh 3 "Before You Start"
+.LP
 Have you configured your account to use Aegis?  See the \fIUser Setup\fP
 section of the \fITips and Traps\fP chapter for how to do this.
 .nh 3 "The First Change"
@@ -88,8 +89,8 @@ command.
 Once the change has been reviewed and found acceptable,
 it is passed:
 .E(
-robyn% \f(CBaerpass example.1.0 10\fP
-aegis: sh /usr/local/lib/aegis/rp.sh example.1.0 10 pat robyn
+robyn% \f(CBaerpass -p example.1.0 10\fP
+aegis: sh \*(L)/rp.sh example.1.0 10 pat robyn
 aegis: project "example.1.0": change 10: passed review
 robyn%
 .E)
@@ -178,8 +179,8 @@ robyn%
 Once the change is found to be acceptable,
 it is passed:
 .E(
-robyn% \f(CBaerpass example.1.0 11\fP
-aegis: sh /usr/local/lib/aegis/rp.sh example.1.0 11 jan robyn
+robyn% \f(CBaerpass -p example.1.0 11\fP
+aegis: sh \*(L)/rp.sh example.1.0 11 jan robyn
 aegis: project "example.1.0": change 11: passed review
 robyn%
 .E)

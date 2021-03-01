@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995 Peter Miller;
+ *	Copyright (C) 1994, 1995, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -75,8 +75,16 @@ for (cn in keys(ps.change))
 			hist_state = awaiting_development;
 		else if (idx.what == develop_end)
 			hist_state = being_reviewed;
+		else if (idx.what == develop_end_2ar)
+			hist_state = awaiting_review;
+		else if (idx.what == develop_end_2ai)
+			hist_state = awaiting_integration;
 		else if (idx.what == develop_end_undo)
 			hist_state = being_developed;
+		else if (idx.what == review_begin)
+			hist_state = being_reviewed;
+		else if (idx.what == review_begin_undo)
+			hist_state = awaiting_review;
 		else if (idx.what == review_fail)
 			hist_state = being_developed;
 		else if (idx.what == review_pass)
@@ -93,8 +101,8 @@ for (cn in keys(ps.change))
 			break;
 	}
 
-	for (idx in [awaiting_development, being_developed, being_reviewed,
-		awaiting_integration, being_integrated])
+	for (idx in [awaiting_development, being_developed, awaiting_review,
+		being_reviewed, awaiting_integration, being_integrated])
 	{
 		j = hist_chan[idx];
 		hist_stats[idx] += j;
@@ -137,8 +145,8 @@ columns
 		width = 7;
 	}
 );
-for (idx in [awaiting_development, being_developed, being_reviewed,
-	awaiting_integration, being_integrated])
+for (idx in [awaiting_development, being_developed, awaiting_review,
+	being_reviewed, awaiting_integration, being_integrated])
 {
 	hist_time = hist_stats[idx];
 	print

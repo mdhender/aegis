@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@
 #include <ael/change/by_state.h>
 #include <arglex2.h>
 #include <change.h>
+#include <change/branch.h>
 #include <change/file.h>
 #include <col.h>
 #include <commit.h>
@@ -43,6 +44,7 @@
 #include <os.h>
 #include <project.h>
 #include <project/file.h>
+#include <project_hist.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -108,6 +110,8 @@ develop_end_undo_list()
 	(
 		project_name,
 		(
+			(1 << cstate_state_awaiting_review)
+		|
 			(1 << cstate_state_being_reviewed)
 		|
 			(1 << cstate_state_awaiting_integration)
@@ -132,8 +136,10 @@ develop_end_undo_main()
 	long		change_number;
 	change_ty	*cp;
 	user_ty		*up;
+	user_ty		*up_admin;
 
 	trace(("develop_end_undo_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	change_number = 0;
 	while (arglex_token != arglex_token_eoln)
@@ -160,7 +166,7 @@ develop_end_undo_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -199,6 +205,7 @@ develop_end_undo_main()
 	 * locate user data
 	 */
 	up = user_executing(pp);
+	up_admin = 0;
 
 	/*
 	 * locate change data
@@ -218,12 +225,31 @@ develop_end_undo_main()
 	cstate_data = change_cstate_get(cp);
 
 	/*
+	 * Project administrators are allowed to undo end the development
+	 * of a branch, no matter who created it.
+	 */
+	if
+	(
+		change_was_a_branch(cp)
+	&&
+		!str_equal(change_developer_name(cp), user_name(up))
+	&&
+		project_administrator_query(pp, user_name(up))
+	)
+	{
+		up_admin = up;
+		up = user_symbolic(pp, change_developer_name(cp));
+	}
+
+	/*
 	 * It is an error if the change is not in one of the 'being_reviewed'
 	 * or 'awaiting_integration' states.
 	 * It is an error if the current user did not develop the change.
 	 */
 	if
 	(
+		cstate_data->state != cstate_state_awaiting_review
+	&&
 		cstate_data->state != cstate_state_being_reviewed
 	&&
 		cstate_data->state != cstate_state_awaiting_integration
@@ -239,7 +265,15 @@ develop_end_undo_main()
 	cstate_data->state = cstate_state_being_developed;
 	history_data = change_history_new(cp, up);
 	history_data->what = cstate_history_what_develop_end_undo;
-	change_build_times_clear(cp);
+	if (up_admin)
+	{
+		history_data->why =
+			str_format
+			(
+				"Forced by administrator \"%S\".",
+				user_name(up_admin)
+			);
+	}
 
 	/*
 	 * add it back into the user's change list
@@ -315,20 +349,13 @@ develop_end_undo_main()
 void
 develop_end_undo()
 {
-	trace(("develop_end_undo()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		develop_end_undo_main();
-		break;
+		{ arglex_token_help,		develop_end_undo_help,	},
+		{ arglex_token_list,		develop_end_undo_list,	},
+	};
 
-	case arglex_token_help:
-		develop_end_undo_help();
-		break;
-
-	case arglex_token_list:
-		develop_end_undo_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("develop_end_undo()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), develop_end_undo_main);
+	trace(("}\n"));
 }

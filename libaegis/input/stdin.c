@@ -48,22 +48,22 @@ standard_input()
 }
 
 
-static void destruct _((input_ty *));
+static void input_stdin_destructor _((input_ty *));
 
 static void
-destruct(this)
+input_stdin_destructor(this)
 	input_ty	*this;
 {
 }
 
 
-static long iread _((input_ty *, void *, long));
+static long input_stdin_read _((input_ty *, void *, size_t));
 
 static long
-iread(this, data, len)
+input_stdin_read(this, data, len)
 	input_ty	*this;
 	void		*data;
-	long		len;
+	size_t		len;
 {
 	long		result;
 
@@ -76,7 +76,7 @@ iread(this, data, len)
 
 		scp = sub_context_new();
 		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", standard_input());
+		sub_var_set_string(scp, "File_Name", standard_input());
 		fatal_intl(scp, i18n("read $filename: $errno"));
 		/* NOTREACHED */
 	}
@@ -84,53 +84,30 @@ iread(this, data, len)
 }
 
 
-static int get _((input_ty *));
-
-static int
-get(this)
-	input_ty	*this;
-{
-	int		c;
-
-	c = getchar();
-	if (c == EOF && ferror(stdin))
-	{
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_errno_set(scp);
-		sub_var_set(scp, "File_Name", "%S", standard_input());
-		fatal_intl(scp, i18n("read $filename: $errno"));
-		/* NOTREACHED */
-	}
-	return c;
-}
-
-
-static long itell _((input_ty *));
+static long input_stdin_ftell _((input_ty *));
 
 static long
-itell(this)
+input_stdin_ftell(this)
 	input_ty	*this;
 {
 	return ftell(stdin);
 }
 
 
-static const char *name _((input_ty *));
+static string_ty *input_stdin_name _((input_ty *));
 
-static const char *
-name(this)
+static string_ty *
+input_stdin_name(this)
 	input_ty	*this;
 {
-	return standard_input()->str_text;
+	return standard_input();
 }
 
 
-static long length _((input_ty *));
+static long input_stdin_length _((input_ty *));
 
 static long
-length(this)
+input_stdin_length(this)
 	input_ty	*this;
 {
 	struct stat	st;
@@ -146,12 +123,11 @@ length(this)
 static input_vtbl_ty vtbl =
 {
 	sizeof(input_ty),
-	destruct,
-	iread,
-	get,
-	itell,
-	name,
-	length,
+	input_stdin_destructor,
+	input_stdin_read,
+	input_stdin_ftell,
+	input_stdin_name,
+	input_stdin_length,
 };
 
 

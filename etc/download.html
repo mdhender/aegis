@@ -1,0 +1,165 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: input for archive/download.html
+.\"
+.de an-p-footer
+..
+.ad l
+.hy 0
+.so version.so
+<html>
+<head><title>Aegis Download</title></head>
+<body><h1>
+<img src="aegis.gif" align=left>
+<img src="aegis.gif" align=right>
+<center>Aegis \*(v)<br>File for Download</center></h1>
+The following files are availoable for download.
+<br clear=all>
+<table width="80%" align=center>
+<tr><th>File Name</th><th>Description</th></tr>
+<tr>
+<td valign=top>
+<a href="aegis-\*(v).README"><tt>aegis-\*(v).README</tt></a>
+</td>
+<td valign=top>
+The <tt>README</tt> file from the tar distribution.
+</td>
+</tr>
+<tr>
+<td valign=top>
+<a href="aegis-\*(v).lsm"><tt>aegis-\*(v).lsm</tt></a>
+</td>
+<td valign=top>
+Brief description in
+.nf
+<a href="ftp://metalab.unc.edu/pub/Linux/LSM-TEMPLATE">LSM</a>
+.fi
+format.
+</td>
+</tr>
+<tr>
+<td valign=top>
+<a href="aegis-\*(v).spec"><tt>aegis-\*(v).spec</tt></a>
+</td>
+<td valign=top>
+RedHat package manager
+(<a href="http://www.rpm.org/">RPM</a>)
+specification file, from the tar distribution.
+</td></tr>
+.br
+<tr>
+<td valign=top>
+<a href="aegis-\*(v).tar.gz"><tt>aegis-\*(v).tar.gz</tt></a>
+</td>
+<td valign=top>
+The complete source.
+</td>
+</tr>
+<tr>
+<td valign=top>
+<a href="aegis-\*(v).ae"><tt>aegis-\*(v).ae</tt></a>
+</td>
+<td valign=top>
+The complete source, in <i>aedist</i> format.
+This is used by Aegis developers and maintainers.
+</td>
+</tr>
+<tr>
+<td valign=top>
+<a href="aegis-\*(v).faq"><tt>aegis-\*(v).faq</tt></a>
+</td>
+<td valign=top>
+Frequently asked questions, with answers.
+</td>
+</tr>
+<tr>
+<td valign=top>
+<a href="aegis-\*(v)-1.i386.rpm"><tt>aegis-\*(v)-1.i386.rpm</tt></a>
+</td>
+<td valign=top>
+Pre-built Linux executables.
+</td>
+</tr>
+</table>
+.br
+<h2>Second Sources</h2>
+</p>
+<ul><li>
+Aegis is also available from
+<a href="ftp://metalab.unc.edu/pub/Linux/">the Linux archives</a>
+in the
+<a href="ftp://metalab.unc.edu/pub/Linux/devel/vc/">
+<tt>devel/vc</tt></a>
+directory.
+.br
+<li>
+Aegis is available as
+.br
+<a href="http://www.debian.org/Packages/stable/devel/aegis.html">
+Debian packages</a> from the
+.br
+<a href="http://www.debian.org">Debian</a> distribution.
+.br
+<li>
+Aegis is also available as
+.br
+<a href="http://www.baldmt.com/RPMS/">
+RPM packages</a>.
+.br
+<li>
+There is the beginnings of an
+.nf
+<a href="http://acsys.anu.edu.au/~tpot/aegis-mode/">aegis-mode</a>
+.fi
+for Emacs available, written by
+<a href="mailto:Tim.Potter@anu.edu.au">Tim Potter</a>.
+Feedback to Tim, please.
+</ul>
+.br
+<h2>Additional Packages</h2>
+There are some other packages you should get if and install you haven't
+already...
+<p>
+<table width="80%" align=center>
+.br
+<tr><td valign=top>
+<a href="ftp://ftp.gnu.org/gnu/gettext/">gettext</a>
+</td><td valign=top>
+GNU Gettext internationalization library.
+(If you have GNU Libc 2.0 or later, you don't need this.)
+</td></tr>
+.br
+<tr><td valign=top>
+<a href="ftp://ftp.gnu.org/gnu/rx/">rx</a>
+</td><td valign=top>
+GNU Regular eXpression library, if your system does not already have 
+the <tt>regcomp</tt> and <tt>regexec</tt> library calls.
+</td></tr>
+.br
+<tr><td valign=top>
+<a href="http://www.gzip.org/zlib/">zlib</a>
+</td><td valign=top>
+The zlib compression library (implements the GNU Zip compression
+algorithm).  Used to compress change sets for distributiuon, and to
+optionally compress Aegis' database.
+</td></tr>
+.br
+</table>
+</body></html>

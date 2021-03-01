@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1996 Peter Miller;
+ *	Copyright (C) 1991-1993, 1996, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -48,6 +48,7 @@ enum lock_walk_name
 	lock_walk_name_pstate,
 	lock_walk_name_cstate,
 	lock_walk_name_baseline,
+	lock_walk_name_baseline_priority,
 	lock_walk_name_history,
 	lock_walk_name_ustate,
 	lock_walk_name_unknown

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1997 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1997, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -98,7 +98,7 @@ grab(this)
 
 		scp = sub_context_new();
 		sub_errno_setx(scp, err);
-		sub_var_set(scp, "File_Name", "%S", project_pstate_path_get(pp));
+		sub_var_set_string(scp, "File_Name", project_pstate_path_get(pp));
 		s = subst_intl(scp, "stat $filename: $errno");
 		sub_context_delete(scp);
 		this->value = rpt_value_error((void *)0, s);

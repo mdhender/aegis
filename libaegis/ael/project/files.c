@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,11 +24,12 @@
 #include <ael/formeditnum.h>
 #include <ael/project/files.h>
 #include <change.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <change/file.h>
 #include <col.h>
 #include <error.h> /* for assert */
 #include <option.h>
+#include <output.h>
 #include <project.h>
 #include <project/file.h>
 #include <trace.h>
@@ -43,12 +44,13 @@ list_project_files(project_name, change_number)
 	project_ty	*pp;
 	change_ty	*cp;
 	user_ty		*up;
-	int		usage_col = 0;
-	int		edit_col = 0;
-	int		file_name_col = 0;
+	output_ty	*usage_col = 0;
+	output_ty	*edit_col = 0;
+	output_ty	*file_name_col = 0;
 	int		j;
 	string_ty	*line1;
 	int		left;
+	col_ty		*colp;
 
 	/*
 	 * locate project data
@@ -81,7 +83,7 @@ list_project_files(project_name, change_number)
 	/*
 	 * create the columns
 	 */
-	col_open((char *)0);
+	colp = col_open((string_ty *)0);
 	if (change_number)
 	{
 		line1 =
@@ -94,22 +96,33 @@ list_project_files(project_name, change_number)
 	}
 	else
 		line1 = str_format("Project \"%S\"", project_name_get(pp));
-	col_title(line1->str_text, "List of Project's Files");
+	col_title(colp, line1->str_text, "List of Project's Files");
 	str_free(line1);
 
 	left = 0;
 	if (!option_terse_get())
 	{
-		usage_col = col_create(left, left + USAGE_WIDTH);
+		usage_col =
+			col_create
+			(
+				colp,
+				left,
+				left + USAGE_WIDTH,
+				"Type\n-------"
+			);
 		left += USAGE_WIDTH + 1;
-		col_heading(usage_col, "Type\n-------");
 
-		edit_col = col_create(left, left + EDIT_WIDTH);
+		edit_col =
+			col_create
+			(
+				colp,
+				left,
+				left + EDIT_WIDTH,
+				"Edit\n-------"
+			);
 		left += EDIT_WIDTH + 1;
-		col_heading(edit_col, "Edit\n-------");
 	}
-	file_name_col = col_create(left, 0);
-	col_heading(file_name_col, "File Name\n-----------");
+	file_name_col = col_create(colp, left, 0, "File Name\n-----------");
 
 	/*
 	 * list the project's files
@@ -143,7 +156,7 @@ list_project_files(project_name, change_number)
 		}
 		else
 		{
-			col_puts
+			output_fputs
 			(
 				usage_col,
 				file_usage_ename(src_data->usage)
@@ -166,27 +179,24 @@ list_project_files(project_name, change_number)
 						pp->parent,
 						src_data->file_name
 					);
-				if (psrc_data && psrc_data->edit_number)
+				if (psrc_data && psrc_data->edit)
 				{
-					col_printf
+					assert(psrc_data->edit->revision);
+					output_fprintf
 					(
 						edit_col,
 						" (%s)",
-						psrc_data->edit_number->str_text
+					     psrc_data->edit->revision->str_text
 					);
 				}
 			}
 		}
 		assert(src_data->file_name);
-		col_puts
-		(
-			file_name_col,
-			src_data->file_name->str_text
-		);
+		output_put_str(file_name_col, src_data->file_name);
 		if (src_data->about_to_be_created_by)
 		{
-			col_bol(file_name_col);
-			col_printf
+			output_end_of_line(file_name_col);
+			output_fprintf
 			(
 				file_name_col,
 				"About to be created by change %ld.",
@@ -195,8 +205,8 @@ list_project_files(project_name, change_number)
 		}
 		if (src_data->deleted_by)
 		{
-			col_bol(file_name_col);
-			col_printf
+			output_end_of_line(file_name_col);
+			output_fprintf
 			(
 				file_name_col,
 				"Deleted by change %ld.",
@@ -205,8 +215,8 @@ list_project_files(project_name, change_number)
 		}
 		if (src_data->locked_by)
 		{
-			col_bol(file_name_col);
-			col_printf
+			output_end_of_line(file_name_col);
+			output_fprintf
 			(
 				file_name_col,
 				"Locked by change %ld.",
@@ -215,8 +225,8 @@ list_project_files(project_name, change_number)
 		}
 		if (src_data->about_to_be_copied_by)
 		{
-			col_bol(file_name_col);
-			col_printf
+			output_end_of_line(file_name_col);
+			output_fprintf
 			(
 				file_name_col,
 				"About to be copied by change %ld.",
@@ -225,21 +235,21 @@ list_project_files(project_name, change_number)
 		}
 		if (src_data->move)
 		{
-			col_bol(file_name_col);
-			col_puts(file_name_col, "Moved ");
+			output_end_of_line(file_name_col);
+			output_fputs(file_name_col, "Moved ");
 			if (src_data->action == file_action_create)
-				col_puts(file_name_col, "from ");
+				output_fputs(file_name_col, "from ");
 			else
-				col_puts(file_name_col, "to ");
-			col_puts(file_name_col, src_data->move->str_text);
+				output_fputs(file_name_col, "to ");
+			output_fputs(file_name_col, src_data->move->str_text);
 		}
-		col_eoln();
+		col_eoln(colp);
 	}
 
 	/*
 	 * clean up and go home
 	 */
-	col_close();
+	col_close(colp);
 	project_free(pp);
 	if (cp)
 		change_free(cp);

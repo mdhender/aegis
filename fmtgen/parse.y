@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1994, 1997-1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -228,13 +228,13 @@ generate_include_file(include_file)
 	indent_putchar('\n');
 	indent_printf
 	(
-		"void %s_write_file _((char *filename, %s value, int comp));\n",
+		"void %s_write_file _((string_ty *filename, %s value, int comp));\n",
 		s->str_text,
 		s->str_text
 	);
 	indent_printf
 	(
-		"%s %s_read_file _((char *filename));\n",
+		"%s %s_read_file _((string_ty *filename));\n",
 		s->str_text,
 		s->str_text
 	);
@@ -294,13 +294,14 @@ generate_code_file(code_file, include_file)
 	indent_printf("%s\n", cp1);
 	indent_printf("%s_read_file(filename)\n", s->str_text);
 	indent_more();
-	indent_printf("%s\1*filename;\n", "char");
+	indent_printf("%s\1*filename;\n", "string_ty");
 	indent_less();
 	indent_printf("{\n"/*}*/);
 	indent_printf("%s\1result;\n\n", cp1);
 	indent_printf
 	(
-   "trace((\"%s_read_file(filename = \\\"%%s\\\")\\n{\\n\"/*}*/, filename));\n",
+"trace((\"%s_read_file(filename = \\\"%%s\\\")\\n{\\n\"/*}*/, \
+(filename ? filename->str_text : \"\")));\n",
 		cp1
 	);
 	indent_printf("os_become_must_be_active();\n");
@@ -317,7 +318,7 @@ generate_code_file(code_file, include_file)
 	indent_printf("void\n");
 	indent_printf("%s_write_file(filename, value, compress)\n", s->str_text);
 	indent_more();
-	indent_printf("%s\1*filename;\n", "char");
+	indent_printf("%s\1*filename;\n", "string_ty");
 	indent_printf("%s\1value;\n", s->str_text);
 	indent_printf("%s\1compress;\n", "int");
 	indent_less();
@@ -326,14 +327,15 @@ generate_code_file(code_file, include_file)
 	indent_printf
 	(
 		"trace((\"%s_write_file(filename = \\\"%%s\\\", value = \
-%%08lX)\\n{\\n\"/*}*/, filename, (long)value));\n",
+%%08lX)\\n{\\n\"/*}*/, (filename ? filename->str_text : \"\"), \
+(long)value));\n",
 		cp1
 	);
 	indent_printf("if (filename)\n");
 	indent_more();
 	indent_printf("os_become_must_be_active();\n");
 	indent_less();
-	indent_printf("if (compress)\n{");
+	indent_printf("if (compress)\n{\n");
 	indent_printf("fp = output_file_binary_open(filename);\n");
 	indent_printf("fp = output_gzip(fp);\n");
 	indent_printf("}\nelse\n{\n");

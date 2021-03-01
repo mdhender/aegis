@@ -39,22 +39,22 @@ Other
 .UX
 users not in the project's group
 may be excluded, or not, by the appropriate setting of the project umask.
-This umask is used by all aegis actions,
+This umask is used by all Aegis actions,
 assuring appropriate default behaviour.
 .LP
-A second aspect of security is to ensure that developers are unable to deliberately deceive aegis.
-At develop end,
-all files in the development directory are marked read only,
-aegis notes the time stamps on the files.
+A second aspect of security is to ensure that developers are unable to deliberately deceive Aegis.
+.\" At develop end,
+.\" all files in the development directory are marked read only,
+.\" Aegis notes the time stamps on the files.
 Should the files be tampered with at any later date,
-aegis will notice.
-If a change is returned to the
-.I "being developed"
-state,
-the files are marked writable again.
+Aegis will notice.
+.\" If a change is returned to the
+.\" .I "being developed"
+.\" state,
+.\" the files are marked writable again.
 .nh 2 "Scalability"
 .LP
-How big can a project get before aegis chokes?
+How big can a project get before Aegis chokes?
 There are a huge number of variables in this question.
 .LP
 The most obvious bottleneck is the integrator.
@@ -67,7 +67,7 @@ a figure recommended by many text books
 as
 "\fIthe most you can afford to throw away\fP".
 These two assumptions mean that for this "big project"
-aegis can cope with 70 to 80 developers,
+Aegis can cope with 70 to 80 developers,
 before integrations become a bottleneck.
 .LP
 The more serious bottle neck is the dependency maintenance tool.

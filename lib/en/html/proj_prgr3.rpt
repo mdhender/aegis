@@ -1,0 +1,174 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2000 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the project progress in a month
+ */
+
+auto ps, cs;
+ps = project[project_name()].state;
+auto ph, when, n, max, href;
+
+auto script_name;
+script_name = getenv("SCRIPT_NAME");
+if (script_name == "")
+	script_name = "http://localhost/cgi-bin/aegis.cgi";
+
+auto t, month, year;
+if (count(arg) > 0)
+        t = mktime(arg[0]);
+else
+	t = now();
+month = 0 + strftime("%m", t);
+year = 0 + strftime("%Y", t);
+
+auto color_map;
+color_map =
+{
+	new_change = "128+128+128";
+	develop_begin = "0+0+255";
+	develop_begin_undo = "0+95+95";
+	develop_end = "128+128+255";
+	develop_end_2ar = "96+96+255";
+	develop_end_2ai = "160+160+255";
+	develop_end_undo = "0+255+255";
+	review_begin = "255+192+0";
+	review_begin_undo = "255+128+0";
+	review_pass = "255+255+0";
+	review_pass_undo = "192+255+64";
+	review_fail = "255+0+0";
+	integrate_begin = "0+128+0";
+	integrate_begin_undo = "0+128+128";
+	integrate_fail = "255+0+255";
+	integrate_pass = "0+255+0";
+};
+
+columns({width = 1000;});
+print("Content-Type: text/html");
+print("");
+print("<html><head><title>");
+print("Project Progress Histogram");
+print("</title><head><body><h1><center>");
+print("Project ``" ## quote_html(project_name()) ## "'',<br>");
+print("Progress Histogram<br>");
+print(strftime("%B, %Y", t));
+print("</center></h1>");
+
+/* **********  Scan the Changes in this Branch  ************************* */
+
+auto bucket, mday, hist, clr;
+bucket = {};
+bucket.total = {};
+for (ph in ps.branch.history)
+{
+	cs = ps.branch.change[ph.change_number];
+	for (hist in cs.history)
+	{
+		when = hist.when;
+		if (year != strftime("%Y", when))
+			continue;
+		if (month != strftime("%m", when))
+			continue;
+		mday = 0 + strftime("%d", when);
+		if (count(bucket[hist.what]) == 0)
+			bucket[hist.what] = {};
+		bucket[hist.what][mday]++;
+		bucket.total[mday]++;
+	}
+}
+	
+max = 1;
+for (mday = 1; mday <= 31; ++mday)
+{
+	n = 0 + bucket.total[mday];
+	if (n > max)
+		max = n;
+}
+max = 400. / max;
+
+auto last_mday;
+last_mday = 28;
+for (n = 28; n < 32; ++n)
+{
+	when = mktime(strftime("1-%b-%Y 00:00:00", t));
+	when += (n - 1) * (24 * 60 * 60);
+	if (strftime("%m", when) + 0 != month)
+		break;
+	last_mday = n;
+}
+
+/* **********  Print the Histogram  ************************************* */
+
+print("<center><table>");
+print("<tr><th>Month</th><th>Count</th></tr>");
+for (mday = 1; mday <= last_mday; ++mday)
+{
+	n = 0 + bucket.total[mday];
+	print("<tr><td align=right>");
+	print(mday);
+	print("</td><td align=right>");
+	print(n);
+	print("</td><td>");
+	for (hist in [new_change, develop_begin, develop_begin_undo,
+		develop_end, develop_end_undo, review_pass, review_pass_undo,
+		review_fail, integrate_begin, integrate_begin_undo,
+		integrate_fail, integrate_pass]
+	)
+	{
+		clr = color_map[hist];
+		n = bucket[hist][mday];
+		if (n > 0)
+		{
+			n = round(n * max);
+			if (n < 3)
+				n = 3;
+			href = script_name ## "?file@rect+" ## n
+				## "+12+color+"## clr;
+			print("<img src=\"" ## href ## "\" width="##n##" height=12>");
+		}
+	}
+	print("</td></tr>");
+}
+print("</table></center>");
+
+/* **********  Legend  ************************************************** */
+
+print("<hr>");
+print("<h2 align=center>Legend</h2>");
+
+print("<table align=center>");
+for (hist in [new_change, develop_begin, develop_begin_undo, develop_end,
+	develop_end_2ar, develop_end_2ai, develop_end_undo, review_begin,
+	review_begin_undo, review_pass, review_pass_undo,  review_fail,
+	integrate_begin, integrate_begin_undo, integrate_fail,
+	integrate_pass]
+)
+{
+	clr = color_map[hist];
+	print("<tr><td valign=top align=center>");
+	href = script_name ## "?file@rect+30+12+color+" ## clr;
+	print("<img src=\"" ## href ## "\" width=30 height=12>");
+	print("</td><td valign=top>");
+	print(hist);
+	print("</td></tr>");
+}
+print("</table>");
+
+print("<hr>");
+print("This page was generated " ## now() ## ".");
+print("</body></html>");

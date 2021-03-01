@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1997 Peter Miller;
+ *	Copyright (C) 1994-1997, 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,6 @@
  */
 
 #include <ac/stdio.h>
-#include <ac/grp.h>
 
 #include <aer/value/error.h>
 #include <aer/value/integer.h>
@@ -30,6 +29,7 @@
 #include <aer/value/string.h>
 #include <aer/value/struct.h>
 #include <error.h>
+#include <getgr_cache.h>
 #include <sub.h>
 #include <trace.h>
 
@@ -113,7 +113,7 @@ lookup(lhs, rhs, lvalue)
 
 		gid = rpt_value_integer_query(rhs2);
 		rpt_value_free(rhs2);
-		gr = getgrgid(gid);
+		gr = getgrgid_cached(gid);
 		if (gr)
 			result = gr_to_struct(gr);
 		else
@@ -122,7 +122,7 @@ lookup(lhs, rhs, lvalue)
 			string_ty	*s;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Number", "%d", gid);
+			sub_var_set_long(scp, "Number", gid);
 			s = subst_intl(scp, i18n("gid $number unknown"));
 			sub_context_delete(scp);
 			result = rpt_value_error((struct rpt_pos_ty *)0, s);
@@ -138,7 +138,7 @@ lookup(lhs, rhs, lvalue)
 			string_ty	*name;
 
 			name = rpt_value_string_query(rhs2);
-			gr = getgrnam(name->str_text);
+			gr = getgrnam_cached(name);
 			if (gr)
 				result = gr_to_struct(gr);
 			else
@@ -147,7 +147,7 @@ lookup(lhs, rhs, lvalue)
 				string_ty	*s;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Name", "%S", name);
+				sub_var_set_string(scp, "Name", name);
 				s = subst_intl(scp, i18n("group \"$name\" unknown"));
 				sub_context_delete(scp);
 				result = rpt_value_error((struct rpt_pos_ty *)0, s);
@@ -160,8 +160,8 @@ lookup(lhs, rhs, lvalue)
 			string_ty	*s;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Name1", "group");
-			sub_var_set(scp, "Name2", "%s", rhs->method->name);
+			sub_var_set_charstar(scp, "Name1", "group");
+			sub_var_set_charstar(scp, "Name2", rhs->method->name);
 			s = subst_intl(scp, i18n("illegal lookup ($name1[$name2])"));
 			sub_context_delete(scp);
 			result = rpt_value_error((struct rpt_pos_ty *)0, s);

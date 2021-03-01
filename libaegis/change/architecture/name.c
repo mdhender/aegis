@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -55,6 +55,16 @@ change_architecture_name(cp, with_arch)
 			assert(ap->pattern);
 			if (gmatch(ap->pattern->str_text, un->str_text))
 			{
+				if (ap->mode == pconf_architecture_mode_forbidden)
+				{
+					sub_context_ty	*scp;
+
+					scp = sub_context_new();
+					sub_var_set_string(scp, "Name", un);
+					change_fatal(cp, scp, i18n("architecture \"$name\" forbidden"));
+					/* NOTREACHED */
+					sub_context_delete(scp);
+				}
 				result = ap->name;
 				break;
 			}
@@ -64,7 +74,7 @@ change_architecture_name(cp, with_arch)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%S", un);
+			sub_var_set_string(scp, "Name", un);
 			change_fatal(cp, scp, i18n("architecture \"$name\" unknown"));
 			/* NOTREACHED */
 			sub_context_delete(scp);

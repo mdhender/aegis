@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997 Peter Miller;
+ *	Copyright (C) 1997, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -75,8 +75,8 @@ match_evaluate(tp, path, st)
 		string_ty	*s;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", v1->method->name);
-		sub_var_set(scp, "Name2", "%s", v2->method->name);
+		sub_var_set_charstar(scp, "Name1", v1->method->name);
+		sub_var_set_charstar(scp, "Name2", v2->method->name);
 		s = subst_intl(scp, i18n("illegal match ($name1 ~ $name2)"));
 		sub_context_delete(scp);
 		result = rpt_value_error(0, s);

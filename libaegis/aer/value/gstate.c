@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996, 1997 Peter Miller;
+ *	Copyright (C) 1994, 1996, 1997, 1999, 2000 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,8 @@
  *
  * MANIFEST: functions to manipulate gstate values
  */
+
+#include <ac/string.h> /* for strerror() */
 
 #include <aer/value/error.h>
 #include <aer/value/gstate.h>
@@ -87,6 +89,7 @@ grab_one(project_name)
 	change_ty	*cp;
 	string_ty	*dd;
 	cstate		cstate_data;
+	int		err;
 
 	/*
 	 * get details of the project
@@ -102,30 +105,46 @@ grab_one(project_name)
 	str_free(name);
 	rpt_value_free(value);
 
-	/*
-	 * The development directory of the project change is
-	 * the one which contains the trunk or branch baseline.
-	 */
-	cp = project_change_get(pp);
-	cstate_data = change_cstate_get(cp);
-	if (cstate_data->state == cstate_state_being_developed)
+	err = project_is_readable(pp);
+	if (err)
 	{
-		dd = change_development_directory_get(cp, 0);
-		name = str_from_c("directory");
-		value = rpt_value_string(dd);
+		string_ty	*s;
+
+		name = str_from_c("error");
+		s = str_from_c(strerror(err));
+		value = rpt_value_string(s);
+		str_free(s);
+		rpt_value_struct__set(vp, name, value);
+		str_free(name);
+		rpt_value_free(value);
+	}
+	else
+	{
+		/*
+		 * The development directory of the project change is
+		 * the one which contains the trunk or branch baseline.
+		 */
+		cp = project_change_get(pp);
+		cstate_data = change_cstate_get(cp);
+		if (cstate_data->state == cstate_state_being_developed)
+		{
+			dd = change_development_directory_get(cp, 0);
+			name = str_from_c("directory");
+			value = rpt_value_string(dd);
+			rpt_value_struct__set(vp, name, value);
+			str_free(name);
+			rpt_value_free(value);
+		}
+
+		name = str_from_c("state");
+		value = rpt_value_pstate(project_name_get(pp));
 		rpt_value_struct__set(vp, name, value);
 		str_free(name);
 		rpt_value_free(value);
 	}
 
-	name = str_from_c("state");
-	value = rpt_value_pstate(project_name_get(pp));
-	rpt_value_struct__set(vp, name, value);
-	str_free(name);
-	rpt_value_free(value);
-
 	project_free(pp);
-	
+
 	/*
 	 * all done
 	 */
@@ -183,8 +202,8 @@ lookup(vp, rhs, lval)
 		string_ty	*s;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "project");
-		sub_var_set(scp, "Name2", rhs->method->name);
+		sub_var_set_charstar(scp, "Name1", "project");
+		sub_var_set_charstar(scp, "Name2", rhs->method->name);
 		s = subst_intl(scp, i18n("illegal lookup ($name1[$name2])"));
 		sub_context_delete(scp);
 		result = rpt_value_error((struct rpt_pos_ty *)0, s);
@@ -245,7 +264,7 @@ count(vp)
 	if (!this->keys)
 		grab(this);
 	assert(this->keys);
-	result = rpt_value_integer(this->keys->nstrings);
+	result = rpt_value_integer((long)this->keys->nstrings);
 	trace(("return %08lX;\n", (long)result));
 	trace((/*{*/"}\n"));
 	return result;

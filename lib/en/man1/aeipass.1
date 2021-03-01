@@ -1,6 +1,6 @@
-'\" t
+'\" tp
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1996, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1996, 1998, 1999, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -53,6 +53,15 @@ from the
 state to the
 .I "completed"
 state.
+.\" ------------------------------------------------------------------------
+.PS
+boxwid = 1
+down
+box "being" "integrated"
+arrow " integrate" ljust " pass" ljust
+box "completed"
+.PE
+.\" ------------------------------------------------------------------------
 .PP
 This command updates the file histories, so that future
 .IR aecp (1)
@@ -116,6 +125,16 @@ updating the file history at a time,
 thus preventing history file corruption.
 .so z_test_corr.so
 .so z_metrics.so
+.SS Notification
+On successful completion of this command, the
+\fIintegration_\%pass_\%notify_\%command\fP field of the project
+attributes is run, if set.  See \fIaepattr\fP(5) and \fIaepa\fP(1)
+for more information.
+.PP
+Other commands run by this command include the
+\fIhistory_\%create_\%command\fP, \fIhistory_\%put_\%command\fP and
+\fIhistory_\%query_\%command\fP fields of the project \fIconfig\fP file.
+See \fIaepconf\fP(5) for more information.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so
@@ -132,7 +151,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aeipass '\*(n) -ipass \e!* -v'
-sh$	aeipass(){\*(n) -ipass $* -v}
+sh$	aeipass(){\*(n) -ipass "$@" -v}
 .fi
 .SH ERRORS
 It is an error if

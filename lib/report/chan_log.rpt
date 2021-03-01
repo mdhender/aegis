@@ -1,0 +1,126 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2002 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the lib/report/chan_log.rpt
+ */
+
+columns( { left = 0; right = 0; }, { left = 8; right = 0; });
+auto need_to_eject;
+need_to_eject = false;
+
+auto stack, stack_depth;
+stack[0] = { project = project_name(); change = change_number(); indent = 0; };
+stack_depth = 1;
+
+title
+(
+    sprintf("Project \"%s\", Change %d", project_name(), change_number()),
+    "Change Log"
+);
+
+while (stack_depth > 0)
+{
+    auto ptr;
+    --stack_depth;
+    ptr = stack[stack_depth];
+
+    auto ps;
+    ps = project[ptr.project].state;
+    auto cs;
+    cs = ps.branch.change[ptr.change];
+
+    columns
+    (
+	{ left = ptr.indent * 2;     right = 0; },
+	{ left = ptr.indent * 2 + 4; right = 0; }
+    );
+
+    if (count(cs.branch) > 0)
+    {
+	title
+	(
+	    sprintf("Project \"%s\", Branch %d", ptr.project, ptr.change),
+	    "Change Log"
+	);
+	eject();
+    }
+
+    /*
+     * find the developer name
+     */
+    auto developer_name, h, when;
+    developer_name = "";
+    for (h in cs.history)
+    {
+	if (h.what == develop_begin)
+	    developer_name = h.who;
+    }
+    when = cs.history[count(cs.history) - 1].when;
+
+    need(5);
+    print
+    (
+	sprintf("%s.D%3.3d", ptr.project, cs.delta_number) ## ", " ##
+	    developer_name ## ", " ##
+	    when ## ", " ##
+	    cs.brief_description
+    );
+    print
+    (
+    	"",
+	substr(cs.description, 0, 1000)
+    );
+
+    /*
+     * Push the branch's completed changes onto the stack.
+     *
+     * Some of these may be sub-branches.  However, we don't include
+     * incomplete sub-branches in the listing.
+     */
+    if (count(cs.branch) > 0)
+    {
+	print("");
+	columns
+	(
+	    { left = ptr.indent * 2 +  4; width = 6; name = "Change"; },
+	    { left = ptr.indent * 2 + 11; width = 6; name = "Delta"; },
+	    { left = ptr.indent * 2 + 18; right = 0;
+		name = "Brief Description"; }
+	);
+
+	for (h in cs.branch.history)
+	{
+	    print
+	    (
+		sprintf("%4d", h.change_number),
+		sprintf("%4d", h.delta_number),
+		project[ptr.project ## "." ## ptr.change].state.branch.change
+		    [h.change_number].brief_description
+	    );
+
+	    stack[stack_depth] =
+	    	{
+		    project = ptr.project ## "." ## ptr.change;
+		    change = h.change_number;
+		    indent = ptr.indent + 1;
+		};
+	    stack_depth++;
+	}
+    }
+}

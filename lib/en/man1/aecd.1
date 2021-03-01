@@ -75,7 +75,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aecd 'cd `\*(n) -cd \e!* -v`'
-sh$	aecd(){cd `\*(n) -cd $* -v`}
+sh$	aecd(){cd `\*(n) -cd "$@" -v`}
 .fi
 .SH ERRORS
 It is an error if

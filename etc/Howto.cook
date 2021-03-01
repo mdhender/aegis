@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -40,7 +40,7 @@ set unlink mkdir;
  * All files reference this file, so this will cause recompilation
  * of all files, both in the change and in the baseline.
  */
-debug = -g ;
+debug = -g /* -pg */ ;
 
 /*
  * Make sure the [project], [change], [version] and [arch] variables are set.
@@ -192,7 +192,10 @@ all =
  */
 if [defined change] then
 if [not [defined baseline]] then
-	all = [all] integration-build-targets ;
+	all += integration-build-targets ;
+if [matches %1.D%2 [version]] then
+	if [in [fromto %1.D%2 %2 [version]] 001 002] then
+		all += RPM;
 
 all: [all]
 	set default
@@ -213,38 +216,24 @@ vs_file = common/patchlevel.h;
 change_files = ;
 change_files_build = ;
 #include-cooked-nowarn etc/cook/change_files.[version]
-etc/cook/change_files.[version]:
+etc/cook/change_files.[version]: : etc/chan_files.awk
 	set shallow nodefault
 {
-	echo "'change_files ='" > [target];
 	aegis -l cf -p [project] -c [change] -unf
-		| [awk] "'/^build/{next};$2==\"remove\"{next};{print $NF}'"
-		>> [target];
-	echo "';'" >> [target];
-
-	echo "'change_files_build ='" >> [target];
-	aegis -l cf -p [project] -c [change] -unf
-		| [awk] "'/^build/{if($2!=\"remove\")print $NF}'"
-		>> [target];
-	echo "';'" >> [target];
+		| [awk] -f [resolve etc/chan_files.awk]
+		> [target]
+			set meter;
 }
 project_files = ;
 project_files_build = ;
 #include-cooked-nowarn etc/cook/project_files.[version]
-etc/cook/project_files.[version]:
+etc/cook/project_files.[version]: : etc/proj_files.awk
 	set shallow nodefault
 {
-	echo "'project_files ='" > [target];
 	aegis -l pf -p [project] -c [change] -unf
-		| [awk] "'/^build/{next};$2==\"remove\"{next};{print $NF}'"
-		>> [target];
-	echo "';'" >> [target];
-
-	echo "'project_files_build ='" >> [target];
-	aegis -l pf -p [project] -c [change] -unf
-		| [awk] "'/^build/{if($2!=\"remove\")print $NF}'"
-		>> [target];
-	echo "';'" >> [target];
+		| [awk] -f [resolve etc/proj_files.awk]
+		> [target]
+			set meter;
 }
 
 /*
@@ -403,6 +392,7 @@ fmtgen_obj =
 	[arch]/common/mprintf.o
 	[arch]/common/progname.o
 	[arch]/common/str.o
+	[arch]/common/str/format.o
 	[arch]/common/str_list.o
 	[arch]/common/symtab.o
 	[arch]/common/trace.o
@@ -423,6 +413,7 @@ find_sizes_obj =
 	[arch]/common/mprintf.o
 	[arch]/common/progname.o
 	[arch]/common/str.o
+	[arch]/common/str/format.o
 	[arch]/common/trace.o
 	;
 
@@ -464,8 +455,7 @@ configured_files: [configured_files];
 /*
  * how to compile C sources
  */
-if [not [defined cc_flags]] then
-	cc_flags = -O [debug];
+cc_flags = -O2 [debug];
 cc_include_flags = ;
 
 /*
@@ -652,8 +642,8 @@ c-dep-files =
  * to bootstrap the dependency process.  Sigh.
  */
 
-cascade aedist/receive.c = libaegis/cattr.h;
 cascade aedist/list.c = libaegis/cstate.h;
+cascade aedist/receive.c = libaegis/cattr.h;
 cascade aefind/lex.c = aefind/cmdline.gen.h ;
 cascade aegis/aeca.h = libaegis/cattr.h ;
 cascade aegis/aedb.c = libaegis/common.h ;
@@ -663,8 +653,16 @@ cascade aegis/aedeu.c = libaegis/common.h ;
 cascade aegis/aeib.c = libaegis/common.h ;
 cascade aegis/aeibu.c = libaegis/common.h ;
 cascade aegis/aeip.c = libaegis/metrics.h ;
+cascade aegis/ael.c = libaegis/fstate.h;
 cascade aegis/aenc.c = libaegis/common.h ;
 cascade aegis/aencu.c = libaegis/common.h ;
+cascade aegis/aerb.c = libaegis/pattr.h;
+cascade aegis/aerp.c = libaegis/pattr.h;
+cascade aegis/aerf.c = libaegis/pattr.h;
+cascade aeimport/format/rcs/lex.c = aeimport/format/rcs/gram.gen.h;
+cascade aeimport/format/sccs/lex.c = aeimport/format/sccs/gram.gen.h;
+cascade aeimport/synthesize.c = libaegis/cstate.h;
+cascade aepatch/receive.c = libaegis/cattr.h;
 cascade common/ac/ctype.h = [arch]/common/config.h ;
 cascade common/ac/errno.h = [arch]/common/config.h ;
 cascade common/ac/fcntl.h = [arch]/common/config.h ;
@@ -685,9 +683,11 @@ cascade etc/aegis.html = etc/version.so ;
 cascade fmtgen/lex.c = fmtgen/parse.gen.h ;
 cascade lib/en/auug93/main.mm = etc/version.so ;
 cascade lib/en/building/main.man = etc/version.so ;
+cascade lib/en/cvs-comparison/main.ms = [arch]/etc/libdir.so etc/version.so ;
 cascade lib/en/faq/main.roff = etc/version.so lib/en/faq/toc.so ;
-cascade lib/en/howto/introductio.so = etc/version.so ;
 cascade lib/en/howto/introductio.so = [arch]/etc/libdir.so ;
+cascade lib/en/howto/introductio.so = etc/version.so ;
+cascade lib/en/cvs-comparison/main.ms = etc/version.so [arch]/etc/libdir.so ;
 cascade lib/en/lsm/main.roff = etc/version.so ;
 cascade lib/en/man1/aenpr.1 = [arch]/etc/libdir.so ;
 cascade lib/en/man1/aenrls.1 = [arch]/etc/libdir.so ;
@@ -703,15 +703,20 @@ cascade lib/en/refman/main.man = lib/en/refman/parts.so lib/en/refman/index.so ;
 cascade lib/en/user-guide/c1.0.so = [arch]/etc/libdir.so etc/version.so ;
 cascade libaegis/ael/change/outstanding.c = libaegis/cstate.h;
 cascade libaegis/ael/formeditnum.c = libaegis/fstate.h;
-cascade libaegis/ael/formeditnum.c = libaegis/fstate.h;
-cascade libaegis/aer/expr/name.c = libaegis/cattr.h libaegis/common.h libaegis/cstate.h libaegis/pattr.h libaegis/pconf.h libaegis/pstate.h libaegis/uconf.h libaegis/ustate.h ;
+cascade libaegis/aer/expr/name.c = libaegis/cattr.h libaegis/common.h libaegis/cstate.h libaegis/fstate.h libaegis/pattr.h libaegis/pconf.h libaegis/pstate.h libaegis/uconf.h libaegis/ustate.h ;
 cascade libaegis/aer/lex.c = libaegis/aer/report.gen.h ;
 cascade libaegis/aer/list.c = libaegis/rptidx.h ;
 cascade libaegis/aer/parse.c = libaegis/rptidx.h ;
 cascade libaegis/cattr.c = libaegis/cattr.h ;
 cascade libaegis/change.h = libaegis/cstate.h libaegis/fstate.h libaegis/pconf.h ;
+cascade libaegis/change/attributes/copy.c = libaegis/cattr.h libaegis/cstate.h;
+cascade libaegis/change/attributes/default.c = libaegis/cattr.h libaegis/pconf.h;
+cascade libaegis/change/attributes/edit.c = libaegis/cattr.h;
+cascade libaegis/change/attributes/verify.c = libaegis/cattr.h;
 cascade libaegis/change/cstate/improve.c = libaegis/cstate.h;
 cascade libaegis/change/file/metrics/get.c = libaegis/metrics.h;
+cascade libaegis/change/test/batch.c = libaegis/tstrslt.h;
+cascade libaegis/change/test/batch_fake.c = libaegis/tstrslt.h;
 cascade libaegis/common.c = libaegis/common.h ;
 cascade libaegis/cstate.c = libaegis/cstate.h ;
 cascade libaegis/fstate.c = libaegis/fstate.h ;
@@ -719,6 +724,7 @@ cascade libaegis/gonzo.h = libaegis/gstate.h ;
 cascade libaegis/gstate.c = libaegis/gstate.h ;
 cascade libaegis/lex.c = libaegis/gram.gen.h ;
 cascade libaegis/metrics.c = libaegis/metrics.h ;
+cascade libaegis/patch/read.c = libaegis/common.h;
 cascade libaegis/pattr.c = libaegis/pattr.h ;
 cascade libaegis/pconf.c = libaegis/pconf.h ;
 cascade libaegis/project.h = libaegis/pstate.h libaegis/pattr.h ;
@@ -726,10 +732,14 @@ cascade libaegis/project/file/directory/conflict.c = libaegis/fstate.h;
 cascade libaegis/project/file/find_fuzzy.c = libaegis/fstate.h;
 cascade libaegis/project/file/nth.c = libaegis/fstate.h;
 cascade libaegis/project/pattr/edit.c = libaegis/pattr.h;
+cascade libaegis/project/pattr/get.c = libaegis/pattr.h;
+cascade libaegis/project/pattr/set.c = libaegis/pattr.h;
 cascade libaegis/project/sch_path_get.c = libaegis/fstate.h;
 cascade libaegis/pstate.c = libaegis/pstate.h ;
 cascade libaegis/rptidx.c = libaegis/rptidx.h ;
+cascade libaegis/sub/delta.c = libaegis/cstate.h ;
 cascade libaegis/sub/expr_lex.c = libaegis/sub/expr_gram.gen.h ;
+cascade libaegis/tstrslt.c = libaegis/tstrslt.h ;
 cascade libaegis/uconf.c = libaegis/uconf.h ;
 cascade libaegis/user.h = libaegis/ustate.h libaegis/uconf.h ;
 cascade libaegis/ustate.c = libaegis/ustate.h ;
@@ -748,10 +758,13 @@ yacc_flags = -v;
 	rm -f %1/%0%2.list y.output
 		set silent;
 	[yacc] -d [yacc_flags] [resolve %1/%0%2.y];
-	yy = [collect echo %0%2 | sed "'s|[^a-zA-Z0-9]|_|g'"];
-	sed "'s/[yY][yY]/"[yy]"_/g;/<stdio.h>/d'" < y.tab.c > %1/%0%2.gen.c;
+	yy = [collect echo %0%2 | sed -e "'s|[^a-zA-Z0-9]|_|g'"];
+	sed	-e "'s/[yY][yY]/"[yy]"_/g;/<stdio.h>/d'"
+		-e "'s/[yY][yY]/"[yy]"_/g;/<stdlib.h>/d'"
+		< y.tab.c > %1/%0%2.gen.c;
 	rm y.tab.c;
-	sed "'s/[yY][yY]/"[yy]"_/g'" < y.tab.h > %1/%0%2.gen.h;
+	sed -e "'s/[yY][yY]/"[yy]"_/g'" -e "'s/Y_TAB_H/"[yy]"_TAB_H/g'"
+		< y.tab.h > %1/%0%2.gen.h;
 	rm y.tab.h;
 	if [exists y.output] then
 		mv y.output %1/%0%2.list
@@ -780,6 +793,7 @@ yacc_flags = -v;
 ranlib = [find_command ranlib];
 
 [arch]/%/%.a: [%_lib]
+	set meter
 {
 	ar qc [target] [resolve [%_lib]];
 	if [ranlib] then
@@ -793,7 +807,8 @@ ranlib = [find_command ranlib];
 
 [arch]/bin/%: [%_obj]
 {
-	[cc] -o [target] [resolve [%_obj]] [libs];
+	[cc] [debug] -o [target] [resolve [%_obj]] [libs]
+		set meter;
 
 	chmod 755 [target];
 
@@ -801,7 +816,7 @@ ranlib = [find_command ranlib];
 	 * aegis itself must be set-uid-root
 	 */
 	if [defined baseline] then
-	if [in [target] [arch]/bin/aegis] then
+	if [in [target] [arch]/bin/aegis [arch]/bin/aeimport] then
 	{
 		su1 sh -c "'chown root "[target]" && chmod u+s "[target]"'"
 			set errok;
@@ -939,7 +954,7 @@ Makefile.in: etc/Makefile.head etc/Makefile.sh etc/Makefile.awk [vs_file]
 /*
  * formatting documents and manual entries
  */
-doc.targets: cat txt special;
+doc.targets: cat pdf special;
 
 /*
  * manual entries
@@ -957,7 +972,7 @@ lib/%3/cat%1/%2.%1: lib/%3/man%1/%2.%1
 		[prepost -I /[arch]/etc [search_list]]
 		[prepost "-I" "/etc" [search_list]]
 		[resolve lib/%3/man%1/%2.%1]
-	| groff -Tascii -P-h -t -man
+	| groff -Tascii -P-h -t -mpic -man
 	> [target];
 }
 
@@ -1029,85 +1044,17 @@ lib/%/readme/new.so: [match_mask lib/%/readme/new.%%.so [source_files]]
 	> [target];
 }
 
-txt =
-	[fromto lib/%1/%2/main.ms lib/%1/%2/%2.ps.gz
-		[match_mask lib/%1/%2/main.ms [source_files]]]
-	[fromto lib/%1/%2/main.mm lib/%1/%2/%2.ps.gz
-		[match_mask lib/%1/%2/main.mm [source_files]]]
-	[fromto lib/%1/%2/main.roff lib/%1/%2/%2.txt
-		[match_mask lib/%1/%2/main.roff [source_files]]]
-	[fromto lib/%1/%2/main.man lib/%1/%2/%2.txt
-		[match_mask lib/%1/%2/main.man [source_files]]]
-	[fromto lib/%1/%2/main.man lib/%1/%2/%2.ps.gz
-		[match_mask lib/%1/%2/main.man [source_files]]]
+pdf =
+	[fromto lib/en/%2/main.ms archive/%2.pdf
+		[match_mask lib/en/%2/main.ms [source_files]]]
+	[fromto lib/en/%2/main.mm archive/%2.pdf
+		[match_mask lib/en/%2/main.mm [source_files]]]
+	[fromto lib/en/%2/main.man archive/%2.pdf
+		[match_mask lib/en/%2/main.man [source_files]]]
 	;
-txt =
-	[stringset
-		[txt]
-	-
-		[fromto lib/%1/refman/main.man lib/%1/refman/refman.txt
-                	[match_mask lib/%1/refman/main.man [source_files]]
-		]
-	];
-txt: [txt];
+pdf: [pdf];
 
-lib/%1/%2/%2.ps.gz: lib/%1/%2/main.ms
-{
-	roffpp
-		[prepost "-I" "/lib/%1/%2" [search_list]]
-		[prepost "-I" /[arch]/etc [search_list]]
-		[prepost "-I" "/etc" [search_list]]
-		[resolve lib/%1/%2/main.ms]
-	| groff -R -p -t -mgs | gzip -9 > [target]
-		set meter;
-}
-
-lib/%1/%2/%2.txt: lib/%1/%2/main.ms
-{
-	roffpp
-		[prepost "-I" "/lib/%1/%2" [search_list]]
-		[prepost "-I" /[arch]/etc [search_list]]
-		[prepost "-I" "/etc" [search_list]]
-		[resolve lib/%1/%2/main.ms]
-	| groff -Tascii -R -p -t -mgs > [target]
-		set meter;
-}
-
-lib/%1/%2/%2.ps.gz: lib/%1/%2/main.mm
-{
-	roffpp
-		[prepost "-I" "/lib/%1/%2" [search_list]]
-		[prepost "-I" /[arch]/etc [search_list]]
-		[prepost "-I" "/etc" [search_list]]
-		[resolve lib/%1/%2/main.mm]
-	| groff -p -t -mgm | gzip -9 > [target]
-		set meter;
-}
-
-lib/%1/%2/%2.txt: lib/%1/%2/main.mm
-{
-	roffpp
-		[prepost "-I" "/lib/%1/%2" [search_list]]
-		[prepost "-I" /[arch]/etc [search_list]]
-		[prepost "-I" "/etc" [search_list]]
-		[resolve lib/%1/%2/main.mm]
-	| groff -Tascii -p -t -mgm > [target]
-		set meter;
-}
-
-lib/%1/%2/%2.ps.gz: lib/%1/%2/main.man
-{
-	roffpp
-		[prepost "-I" "/lib/%1/%2" [search_list]]
-		[prepost "-I" "/lib/%1/man1" [search_list]] /* for refman */
-		[prepost "-I" "/lib/%1/man5" [search_list]] /* for refman */
-		[prepost "-I" "/lib/%1/readme" [search_list]] /* for refman */
-		[prepost "-I" /[arch]/etc [search_list]]
-		[prepost "-I" "/etc" [search_list]]
-		[resolve lib/%1/%2/main.man]
-	| groff -p -t -man | gzip -9 > [target]
-		set meter;
-}
+web-html: [fromto %0%.pdf %0%.html [pdf]];
 
 lib/%1/%2/%2.txt: lib/%1/%2/main.roff: etc/ssp.awk
 {
@@ -1124,6 +1071,79 @@ lib/%1/%2/%2.txt: lib/%1/%2/main.roff: etc/ssp.awk
 	> [target];
 }
 
+archive/%2.pdf: lib/en/%2/main.ms etc/page-list.awk
+	set shallow
+{
+	roffpp
+		[prepost "-I" "/lib/en/%2" [search_list]]
+		[prepost "-I" /[arch]/etc [search_list]]
+		[prepost "-I" "/etc" [search_list]]
+		[resolve lib/en/%2/main.ms]
+		> archive/%2.groff;
+	groff -p -t [groff_ms_macros] archive/%2.groff > archive/%2.ps.tmp
+		set meter;
+	rm archive/%2.groff
+		set silent;
+	psselect -p`awk -f [resolve etc/page-list.awk] archive/%2.ps.tmp`
+		archive/%2.ps.tmp > archive/%2.ps;
+	rm archive/%2.ps.tmp
+		set silent;
+	ps2pdf archive/%2.ps archive/%2.pdf
+		set meter;
+	rm archive/%2.ps
+		set silent;
+}
+
+archive/%2.html: lib/en/%2/main.ms
+{
+	roffpp
+		[prepost "-I" "/lib/en/%2" [search_list]]
+		[prepost "-I" /[arch]/etc [search_list]]
+		[prepost "-I" "/etc" [search_list]]
+		[resolve lib/en/%2/main.ms]
+		> archive/%2.groff;
+	groff -Thtml -p -t [gorff_ms_macros] archive/%2.groff > archive/%2.html
+		set meter;
+	rm archive/%2.groff
+		set silent;
+}
+
+archive/%2.pdf: lib/en/%2/main.mm etc/page-list.awk
+{
+	roffpp
+		[prepost "-I" "/lib/en/%2" [search_list]]
+		[prepost "-I" /[arch]/etc [search_list]]
+		[prepost "-I" "/etc" [search_list]]
+		[resolve lib/en/%2/main.mm]
+		> archive/%2.groff;
+	groff -p -t [groff_mm_macros] archive/%2.groff > archive/%2.ps.tmp
+		set meter;
+	rm archive/%2.groff
+		set silent;
+	psselect -p`awk -f [resolve etc/page-list.awk] archive/%2.ps.tmp`
+		archive/%2.ps.tmp > archive/%2.ps;
+	rm archive/%2.ps.tmp
+		set silent;
+	ps2pdf archive/%2.ps archive/%2.pdf
+		set meter;
+	rm archive/%2.ps
+		set silent;
+}
+
+archive/%2.html: lib/en/%2/main.mm
+{
+	roffpp
+		[prepost "-I" "/lib/en/%2" [search_list]]
+		[prepost "-I" /[arch]/etc [search_list]]
+		[prepost "-I" "/etc" [search_list]]
+		[resolve lib/en/%2/main.mm]
+		> archive/%2.groff;
+	groff -Thtml -p -t [groff_mm_macros] archive/%2.groff > archive/%2.html
+		set meter;
+	rm archive/%2.groff
+		set silent;
+}
+
 lib/%1/%2/%2.txt: lib/%1/%2/main.man: etc/ssp.awk
 {
 	roffpp
@@ -1131,11 +1151,52 @@ lib/%1/%2/%2.txt: lib/%1/%2/main.man: etc/ssp.awk
 		[prepost "-I" /[arch]/etc [search_list]]
 		[prepost "-I" "/etc" [search_list]]
 		[resolve lib/%1/%2/main.man]
-	| groff -Tascii -t -P-hub -man
+	| groff -Tascii -t -P-hub -mpic -man
 	| [awk] -f [resolve etc/ssp.awk]
 	> [target];
 }
 
+archive/%2.pdf: lib/en/%2/main.man
+{
+	roffpp
+		[prepost "-I" "/lib/en/%2" [search_list]]
+		[prepost "-I" "/lib/en/man1" [search_list]] /* for refman */
+		[prepost "-I" "/lib/en/man5" [search_list]] /* for refman */
+		[prepost "-I" "/lib/en/readme" [search_list]] /* for refman */
+		[prepost "-I" /[arch]/etc [search_list]]
+		[prepost "-I" "/etc" [search_list]]
+		[resolve lib/en/%2/main.man]
+		> archive/%2.groff;
+	groff -p -t -mpic -man archive/%2.groff > archive/%2.ps.tmp
+		set meter;
+	rm archive/%2.groff
+		set silent;
+	psselect -p`awk -f [resolve etc/page-list.awk] archive/%2.ps.tmp`
+		archive/%2.ps.tmp > archive/%2.ps;
+	rm archive/%2.ps.tmp
+		set silent;
+	ps2pdf archive/%2.ps archive/%2.pdf
+		set meter;
+	rm archive/%2.ps
+		set silent;
+}
+
+archive/%2.html: lib/en/%2/main.man
+{
+	roffpp
+		[prepost "-I" "/lib/en/%2" [search_list]]
+		[prepost "-I" "/lib/en/man1" [search_list]] /* for refman */
+		[prepost "-I" "/lib/en/man5" [search_list]] /* for refman */
+		[prepost "-I" "/lib/en/readme" [search_list]] /* for refman */
+		[prepost "-I" /[arch]/etc [search_list]]
+		[prepost "-I" "/etc" [search_list]]
+		[resolve lib/en/%2/main.man]
+		> archive/%2.groff;
+	groff -Thtml -p -t -mpic -man archive/%2.groff > archive/%2.html
+		set meter;
+	rm archive/%2.groff
+		set silent;
+}
 
 /* Sigh.  Must be before the next recipe, and before the generic .d's. */
 lib/%/refman/main.d:: lib/%/refman/index.so lib/%/refman/parts.so;
@@ -1257,10 +1318,18 @@ BUILDING: lib/en/building/building.txt
 	cp [resolve [need]] [target];
 }
 
-etc/CHANGES.[version_short]: etc/CHANGES.sh [vs_file]
+etc/CHANGES.%: [arch]/bin/aereport lib/report/chan_detai.rpt [vs_file]
 {
-	sh [resolve etc/CHANGES.sh] [project] > [target];
+	[resolve [arch]/bin/aereport]
+		-f [resolve lib/report/chan_detai.rpt]
+		-o [target]
+		-p [fromto %%1.%%2 %%1 aegis.%]
+		-c [fromto %%1.%%2 %%2 aegis.%]
+		-pw\=80 -pl\=66
+								      set meter;
 }
+
+etc/CHANGES.[version_short]: [vs_file] set nodefault;
 
 
 configure: etc/configure.in install-sh
@@ -1276,7 +1345,20 @@ configure: etc/configure.in install-sh
 	chmod 755 [target];
 }
 
-install-sh: /usr/lib/autoconf/install-sh
+/*
+ * The install-sh script can come from a huge range of places, depending
+ * on what distribution you have installed (or whether you built it from
+ * the tarball).
+ */
+if [exists /usr/local/share/autoconf/install-sh] then
+	install-sh = /usr/local/share/autoconf/install-sh;
+else if [exists /usr/share/autoconf/install-sh] then
+	install-sh = /usr/share/autoconf/install-sh;
+else if [exists /usr/local/share/automake/install-sh] then
+	install-sh = /usr/local/share/automake/install-sh;
+else
+	install-sh = /usr/share/automake/install-sh;
+install-sh: [install-sh]
 {
 	cp [need] [target];
 	chmod 755 [target];
@@ -1363,3 +1445,8 @@ lib/%/faq/toc.so: lib/%/faq/main.roff: etc/faq.toc.awk
  * Source file metrics
  */
 #include-cooked etc/metrics.cook
+
+/*
+ * Lint checking.
+ */
+#include-cooked etc/lint.cook

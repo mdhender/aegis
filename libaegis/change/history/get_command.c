@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,11 @@
 #include <change.h>
 #include <change/env_set.h>
 #include <error.h> /* for assert */
+#include <input/base64.h>
+#include <input/file_text.h>
+#include <input/quoted_print.h>
 #include <os.h>
+#include <output/file.h>
 #include <project.h>
 #include <sub.h>
 #include <trace.h>
@@ -31,10 +35,9 @@
 
 
 void
-change_run_history_get_command(cp, file_name, edit_number, output_file, up)
+change_run_history_get_command(cp, src, output_file, up)
 	change_ty	*cp;
-	string_ty	*file_name;
-	string_ty	*edit_number;
+	fstate_src	src;
 	string_ty	*output_file;
 	user_ty		*up;
 {
@@ -43,6 +46,22 @@ change_run_history_get_command(cp, file_name, edit_number, output_file, up)
 	cstate		cstate_data;
 	string_ty	*the_command;
 	pconf		pconf_data;
+	string_ty	*name_of_encoded_file;
+	input_ty	*ip;
+	output_ty	*op;
+
+	trace(("change_run_history_get_command(cp = %8.8lX)\n{\n"/*}*/, cp));
+	assert(cp->reference_count >= 1);
+	assert(src->reference_count >= 1);
+	assert(src->file_name);
+	assert(src->edit);
+	assert(src->edit->revision);
+	if (src->edit->encoding == history_version_encoding_none)
+		name_of_encoded_file = output_file;
+	else
+		name_of_encoded_file = os_edit_filename(0);
+	trace(("file name = \"%s\";\n", src->file_name->str_text));
+	trace(("edit number = \"%s\";\n", src->edit->revision->str_text));
 
 	/*
 	 * If the edit numbers differ, extract the
@@ -62,32 +81,30 @@ change_run_history_get_command(cp, file_name, edit_number, output_file, up)
 	 * ${Output}
 	 *	output file
 	 */
-	trace(("change_run_history_get_command(cp = %8.8lX)\n{\n"/*}*/, cp));
-	assert(cp->reference_count >= 1);
 	scp = sub_context_new();
-	sub_var_set
+	sub_var_set_format
 	(
 		scp,
 		"History",
 		"%S/%S",
 		project_history_path_get(cp->pp),
-		file_name
+		src->file_name
 	);
-	sub_var_set(scp, "Edit", "%S", edit_number);
-	sub_var_set(scp, "Output", "%S", output_file);
-	sub_var_set(scp, "1", "${history}");
-	sub_var_set(scp, "2", "${edit}");
-	sub_var_set(scp, "3", "${output}");
-	pconf_data = change_pconf_get(cp, 1);
+	sub_var_set_string(scp, "Edit", src->edit->revision);
+	sub_var_set_string(scp, "Output", name_of_encoded_file);
+	sub_var_set_charstar(scp, "1", "${history}");
+	sub_var_set_charstar(scp, "2", "${edit}");
+	sub_var_set_charstar(scp, "3", "${output}");
 
+	pconf_data = change_pconf_get(cp, 1);
 	the_command = pconf_data->history_get_command;
 	if (!the_command)
 	{
 		sub_context_ty	*scp2;
 
 		scp2 = sub_context_new();
-		sub_var_set(scp2, "File_Name", "%s", THE_CONFIG_FILE);
-		sub_var_set(scp2, "FieLD_Name", "history_get_command");
+		sub_var_set_charstar(scp2, "File_Name", THE_CONFIG_FILE);
+		sub_var_set_charstar(scp2, "FieLD_Name", "history_get_command");
 		change_fatal
 		(
 			cp,
@@ -110,5 +127,39 @@ change_run_history_get_command(cp, file_name, edit_number, output_file, up)
 	os_execute(the_command, OS_EXEC_FLAG_NO_INPUT, dir);
 	user_become_undo();
 	str_free(the_command);
+
+	if (src->edit->encoding == history_version_encoding_none)
+	{
+		assert(name_of_encoded_file == output_file);
+		trace((/*{*/"}\n"));
+		return;
+	}
+
+	/*
+	 * Unencode the file.
+	 */
+	os_become_orig();
+	ip = input_file_text_open(name_of_encoded_file);
+	op = output_file_binary_open(output_file);
+	switch (src->edit->encoding)
+	{
+	case  history_version_encoding_none:
+		assert(0);
+		break;
+
+	case  history_version_encoding_quoted_printable:
+		ip = input_quoted_printable(ip, 1);
+		break;
+
+	case  history_version_encoding_base64:
+		ip = input_base64(ip, 1);
+		break;
+	}
+	input_to_output(ip, op);
+	input_delete(ip);
+	output_delete(op);
+	os_unlink(name_of_encoded_file);
+	os_become_undo();
+	str_free(name_of_encoded_file);
 	trace((/*{*/"}\n"));
 }

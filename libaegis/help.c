@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997 Peter Miller;
+ *	Copyright (C) 1991-1997, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@
 #include <libdir.h>
 #include <option.h>
 #include <os.h>
-#include <pager.h>
+#include <output/pager.h>
 #include <progname.h>
 #include <sub.h>
 #include <trace.h>
@@ -223,6 +223,16 @@ generic_argument(usage)
 		arglex();
 		break;
 
+	case arglex_token_page_headers:
+		option_page_headers_set(1, usage);
+		arglex();
+		break;
+
+	case arglex_token_page_headers_not:
+		option_page_headers_set(0, usage);
+		arglex();
+		break;
+
 	case arglex_token_tab_width:
 		if (arglex() != arglex_token_number)
 			option_needs_number(arglex_token_tab_width, usage);
@@ -276,21 +286,21 @@ bad_argument(usage)
 	{
 	case arglex_token_string:
 		scp = sub_context_new();
-		sub_var_set(scp, "File_Name", "%s", arglex_value.alv_string);
+		sub_var_set_charstar(scp, "File_Name", arglex_value.alv_string);
 		error_intl(scp, i18n("misplaced file name (\"$filename\")"));
 		sub_context_delete(scp);
 		break;
 
 	case arglex_token_number:
 		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%s", arglex_value.alv_string);
+		sub_var_set_charstar(scp, "Number", arglex_value.alv_string);
 		error_intl(scp, i18n("misplaced number ($number)"));
 		sub_context_delete(scp);
 		break;
 
 	case arglex_token_option:
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", arglex_value.alv_string);
+		sub_var_set_charstar(scp, "Name", arglex_value.alv_string);
 		error_intl(scp, i18n("unknown \"$name\" option"));
 		sub_context_delete(scp);
 		break;
@@ -301,7 +311,7 @@ bad_argument(usage)
 
 	default:
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", arglex_value.alv_string);
+		sub_var_set_charstar(scp, "Name", arglex_value.alv_string);
 		error_intl(scp, i18n("misplaced \"$name\" option"));
 		sub_context_delete(scp);
 		break;
@@ -322,8 +332,8 @@ mutually_exclusive_options(a1, a2, usage)
 	sub_context_ty	*scp;
 
 	scp = sub_context_new();
-	sub_var_set(scp, "Name1", "%s", arglex_token_name(a1));
-	sub_var_set(scp, "Name2", "%s", arglex_token_name(a2));
+	sub_var_set_charstar(scp, "Name1", arglex_token_name(a1));
+	sub_var_set_charstar(scp, "Name2", arglex_token_name(a2));
 	error_intl(scp, i18n("not $name1 and $name2 together"));
 	sub_context_delete(scp);
 
@@ -341,9 +351,9 @@ mutually_exclusive_options3(a1, a2, a3, usage)
 	sub_context_ty	*scp;
 
 	scp = sub_context_new();
-	sub_var_set(scp, "Name1", "%s", arglex_token_name(a1));
-	sub_var_set(scp, "Name2", "%s", arglex_token_name(a2));
-	sub_var_set(scp, "Name3", "%s", arglex_token_name(a3));
+	sub_var_set_charstar(scp, "Name1", arglex_token_name(a1));
+	sub_var_set_charstar(scp, "Name2", arglex_token_name(a2));
+	sub_var_set_charstar(scp, "Name3", arglex_token_name(a3));
 	error_intl(scp, i18n("not $name1 and $name2 and $name3 together"));
 	sub_context_delete(scp);
 
@@ -359,7 +369,7 @@ duplicate_option_by_name(name, usage)
 	sub_context_ty	*scp;
 
 	scp = sub_context_new();
-	sub_var_set(scp, "Name", "%s", arglex_token_name(name));
+	sub_var_set_charstar(scp, "Name", arglex_token_name(name));
 	error_intl(scp, i18n("duplicate $name option"));
 	sub_context_delete(scp);
 
@@ -383,7 +393,7 @@ option_needs_number(name, usage)
 	sub_context_ty	*scp;
 
 	scp = sub_context_new();
-	sub_var_set(scp, "Name", "%s", arglex_token_name(name));
+	sub_var_set_charstar(scp, "Name", arglex_token_name(name));
 	error_intl(scp, i18n("$name needs number"));
 	sub_context_delete(scp);
 
@@ -399,7 +409,7 @@ option_needs_string(name, usage)
 	sub_context_ty	*scp;
 
 	scp = sub_context_new();
-	sub_var_set(scp, "Name", "%s", arglex_token_name(name));
+	sub_var_set_charstar(scp, "Name", arglex_token_name(name));
 	error_intl(scp, i18n("$name needs string"));
 	sub_context_delete(scp);
 
@@ -415,7 +425,7 @@ option_needs_name(name, usage)
 	sub_context_ty	*scp;
 
 	scp = sub_context_new();
-	sub_var_set(scp, "Name", "%s", arglex_token_name(name));
+	sub_var_set_charstar(scp, "Name", arglex_token_name(name));
 	error_intl(scp, i18n("$name needs name"));
 	sub_context_delete(scp);
 
@@ -431,7 +441,7 @@ option_needs_file(name, usage)
 	sub_context_ty	*scp;
 
 	scp = sub_context_new();
-	sub_var_set(scp, "Name", "%s", arglex_token_name(name));
+	sub_var_set_charstar(scp, "Name", arglex_token_name(name));
 	error_intl(scp, i18n("$name needs file"));
 	sub_context_delete(scp);
 
@@ -447,7 +457,7 @@ option_needs_dir(name, usage)
 	sub_context_ty	*scp;
 
 	scp = sub_context_new();
-	sub_var_set(scp, "Name", "%s", arglex_token_name(name));
+	sub_var_set_charstar(scp, "Name", arglex_token_name(name));
 	error_intl(scp, i18n("$name needs dir"));
 	sub_context_delete(scp);
 
@@ -463,7 +473,7 @@ option_needs_files(name, usage)
 	sub_context_ty	*scp;
 
 	scp = sub_context_new();
-	sub_var_set(scp, "Name", "%s", arglex_token_name(name));
+	sub_var_set_charstar(scp, "Name", arglex_token_name(name));
 	error_intl(scp, i18n("$name needs files"));
 	sub_context_delete(scp);
 

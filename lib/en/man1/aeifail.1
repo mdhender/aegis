@@ -1,6 +1,6 @@
-'\" t
+'\" tp
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1995, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1995, 1998, 1999, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -74,6 +74,24 @@ state.
 The change will cease to be assigned to the current user,
 and will be reassigned to the originating developer.
 The integration directory will be deleted.
+.\" ------------------------------------------------------------------------
+.PS
+boxwid = 1
+down
+S2: box "being" "developed"
+arrow " develop" ljust " end" ljust
+box "awaiting" "review"
+arrow " review" ljust " begin" ljust
+box "being" "reviewed"
+arrow " review" ljust " pass" ljust
+box "awaiting" "integration"
+arrow " integrate" ljust " begin" ljust
+S5: box "being" "integrated"
+
+T7: spline -> from S5.e then right 0.5 then up 4 then to S2.e
+"integrate " rjust "fail " rjust at T7.c + (0.5,0)
+.PE
+.\" ------------------------------------------------------------------------
 .PP
 The reviewer and the developer will be notified by mail.
 See the integrate_fail_notify_command in 
@@ -87,6 +105,11 @@ The file is in plain text.
 It is recommended that you only use newline to terminate paragraphs,
 (rather than to terminate lines)
 as with will result in better formatting in the various listings.
+.SS Notification
+On successful completion of this command, the
+\fIintegrate_\%fail_\%notify_\%command\fP field of the project
+attributes is run, if set.  See \fIaepattr\fP(5) and \fIaepa\fP(1)
+for more information.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so
@@ -106,7 +129,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aeifail '\*(n) -ifail \e!* -v'
-sh$	aeifail(){\*(n) -ifail $* -v}
+sh$	aeifail(){\*(n) -ifail "$@" -v}
 .fi
 .SH ERRORS
 It is an error if

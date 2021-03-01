@@ -28,19 +28,6 @@
 #include <str.h>
 
 
-static pconf project_pconf_get _((project_ty *));
-
-static pconf
-project_pconf_get(pp)
-	project_ty	*pp;
-{
-	change_ty	*cp;
-
-	cp = project_change_get(pp);
-	return change_pconf_get(cp, 0);
-}
-
-
 int
 project_file_trojan_suspect(pp, fn)
 	project_ty	*pp;

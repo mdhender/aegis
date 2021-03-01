@@ -238,7 +238,6 @@ nuke_unprintable(s)
 	static size_t	buffer_max;
 	char		*ip;
 	char		*op;
-	int		c;
 
 	if (s->str_length > buffer_max)
 	{
@@ -249,7 +248,7 @@ nuke_unprintable(s)
 	op = buffer;
 	while (*ip)
 	{
-		c = (unsigned char)*ip++;
+		unsigned char c = *ip++;
 		if (isspace(c) || !isprint(c))
 			c = '_';
 		*op++ = c;
@@ -351,7 +350,7 @@ abbreviate_8dos3(s)
 		(
 			s2a->str_length == 0
 		||
-			!isalpha(s2a->str_text[0])
+			!isalpha((unsigned char)s2a->str_text[0])
 		||
 			contains_moronic_ms_restrictions(s2a)
 		)

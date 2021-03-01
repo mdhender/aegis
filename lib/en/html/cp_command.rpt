@@ -1,0 +1,75 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2001 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the lib/en/html/cp_command.rpt
+ */
+auto src, dst;
+src = arg[0];
+dst = arg[1];
+
+auto ps;
+ps = project[project_name()].state;
+
+auto cs;
+cs = ps.branch.change[change_number()];
+
+/* one column 1000 chars wide */
+columns(1000);
+
+if (cs.state == completed)
+{
+	/*
+	 * The the change has been completed, extact the historical
+	 * version from history.
+	 */
+	print("$bindir/aegis -cp -ind -p " ## project_name() ## " -delta " ##
+		cs.delta_number ## " " ## src ## " -o " ## dst);
+}
+else if (cs.state == awaiting_development)
+{
+	/*
+	 * If the change hasn't happened yet, extract the baseline version.
+	 */
+	print("$bindir/aegis -cp -ind -p " ## project_name() ## " " ##
+		src ## " -o " ## dst);
+}
+else
+{
+	/*
+	 * If the change is being actively developed, copy directly from
+	 * the development directory.
+	 */
+	auto f, found;
+	found = false;
+	for (f in cs.src)
+	{
+		if (f.file_name == src)
+			found = true;
+	}
+	if (found)
+	{
+		print("cp " ## cs.development_directory ## "/" ## src ##
+			" " ## dst);
+	}
+	else
+	{
+		print("$bindir/aegis -cp -ind -p " ## project_name() ## " " ##
+			src ## " -o " ## dst);
+	}
+}

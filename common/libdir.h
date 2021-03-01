@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@ char *configured_bindir _((void));
 char *configured_comdir _((void));
 char *configured_datadir _((void));
 char *configured_libdir _((void));
+char *configured_nlsdir _((void));
 char *configured_mandir _((void));
 int configured_aegis_uid _((void));
 int configured_aegis_gid _((void));

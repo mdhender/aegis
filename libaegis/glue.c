@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1993, 1994, 1995, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1993-1995, 1997-1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,6 @@
 #include <signal.h>
 
 #include <sys/types.h>
-#include <ac/dirent.h>
 #include <ac/fcntl.h>
 #include <ac/unistd.h>
 #include <utime.h>
@@ -55,9 +54,7 @@
  */
 #define aegis_glue_disable
 
-#include <dir.h>
 #include <error.h>
-#include <fp/combined.h>
 #include <glue.h>
 #include <lock.h> /* for lock_release_child */
 #include <mem.h>
@@ -93,6 +90,7 @@ enum
 	command_rename,
 	command_rmdir,
 	command_rmdir_bg,
+	command_rmdir_tree,
 	command_stat,
 	command_symlink,
 	command_unlink,
@@ -160,6 +158,7 @@ command_name(n)
 	case command_rename:	return "rename";
 	case command_rmdir:	return "rmdir";
 	case command_rmdir_bg:	return "rmdir_bg";
+	case command_rmdir_tree: return "rmdir_tree";
 	case command_symlink:	return "symlink";
 	case command_stat:	return "stat";
 	case command_unlink:	return "unlink";
@@ -275,12 +274,12 @@ get_long(fp)
 }
 
 
-static void put_binary _((FILE *, void *, size_t));
+static void put_binary _((FILE *, const void *, size_t));
 
 static void
 put_binary(fp, ptr, len)
 	FILE		*fp;
-	void		*ptr;
+	const void	*ptr;
 	size_t		len;
 {
 	trace(("put_binary(%ld)\n{\n"/*}*/, len));
@@ -387,7 +386,7 @@ proxy(rd_fd, wr_fd)
 	int		wr_fd;
 {
 	FILE		*command;
-	FILE		*reply;
+	FILE		*reply = 0;
 	char		*path;
 	char		*path1;
 	char		*path2;
@@ -688,6 +687,15 @@ proxy(rd_fd, wr_fd)
 		case command_rmdir_bg:
 			path = get_string(command);
 			if (rmdir_bg(path))
+				result = errno;
+			else
+				result = 0;
+			put_int(reply, result);
+			break;
+
+		case command_rmdir_tree:
+			path = get_string(command);
+			if (rmdir_tree(path))
 				result = errno;
 			else
 				result = 0;
@@ -1615,9 +1623,6 @@ glue_fgetc(fp)
 	/*
 	 * locate the appropriate proxy
 	 */
-#if 0
-	trace(("glue_fgetc()\n{\n"/*}*/));
-#endif
 	gfp = (glue_file_ty *)fp;
 	assert(gfp->guard1 == GUARD1);
 	assert(gfp->guard2 == GUARD2);
@@ -1694,11 +1699,52 @@ glue_fgetc(fp)
 	 * here for all exits
 	 */
 	done:
-#if 0
-	trace(("return %d; /* errno = %d */\n", result, errno));
-	trace((/*{*/"}\n"));
-#endif
 	return result;
+}
+
+
+long
+glue_read(fd, data, len)
+	int		fd;
+	void		*data;
+	size_t		len;
+{
+	proxy_ty	*pp;
+	long		nbytes;
+
+	/*
+	 * Leave the standard file streams alone.
+	 * There is a chance these will be seen here.
+	 */
+	if (fd == fileno(stdout) || fd == fileno(stdin) || fd == fileno(stderr))
+		return read(fd, data, len);
+
+	/*
+	 * locate the appropriate proxy
+	 */
+	pp = proxy_find();
+
+	/*
+	 * tell the proxy to read another buffer-full
+	 */
+	fputc(command_read, pp->command);
+	put_int(pp->command, fd);
+	put_long(pp->command, len);
+	end_of_command(pp);
+	nbytes = get_long(pp->reply);
+	if (nbytes < 0)
+	{
+		errno = get_int(pp->reply);
+		return -1;
+	}
+	if (nbytes == 0)
+	{
+		errno = 0;
+		return 0;
+	}
+	assert(nbytes <= len);
+	get_binary(pp->reply, data, nbytes);
+	return nbytes;
 }
 
 
@@ -2137,7 +2183,7 @@ glue_close(fd)
 int
 glue_write(fd, buf, len)
 	int		fd;
-	char		*buf;
+	const void	*buf;
 	long		len;
 {
 	proxy_ty	*pp;
@@ -2318,519 +2364,25 @@ glue_pathconf(path, cmd)
 }
 
 
-/*
- * NAME
- *	copyfile - copy a file
- *
- * SYNOPSIS
- *	int copyfile(char *src, char *dst);
- *
- * DESCRIPTION
- *	The copyfile function complements the link and rename functions.
- *
- * ARGUMENTS
- *	src	- pathname of source file
- *	dst	- pathname of destination file
- *
- * RETURNS
- *	0	on success
- *	-1	on error, setting errno appropriately
- */
-
 int
-copyfile(src, dst)
-	char	*src;
-	char	*dst;
+glue_rmdir_tree(path)
+	char		*path;
 {
-	int	src_fd;
-	int	dst_fd;
-	char	*buffer;
-	long	max;
-	long	nbytes;
-	long	nbytes2;
-	int	err;
-	int	result;
+	proxy_ty	*pp;
+	int		result;
 
-	trace(("copyfile(\"%s\", \"%s\")\n{\n"/*}*/, src, dst));
-	os_interrupt_cope();
-	result = -1;
-	src_fd = open(src, O_RDONLY, 0666);
-	if (src_fd < 0)
-		goto done;
-	dst_fd = open(dst, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-	if (dst_fd < 0)
+	trace(("glue_open()\n{\n"/*}*/));
+	pp = proxy_find();
+	fputc(command_rmdir_tree, pp->command);
+	put_string(pp->command, path);
+	end_of_command(pp);
+	result = get_int(pp->reply);
+	if (result)
 	{
-		err = errno;
-		close(src_fd);
-		errno = err;
-		goto done;
+		errno = result;
+		result = -1;
 	}
-
-	max = 1L << 13;
-	errno = 0;
-	buffer = malloc(max);
-	if (!buffer)
-	{
-		err = errno ? errno : ENOMEM;
-		close(dst_fd);
-		close(src_fd);
-		errno = err;
-		goto done;
-	}
-
-	for (;;)
-	{
-		nbytes = read(src_fd, buffer, max);
-		if (nbytes < 0)
-		{
-			err = errno;
-			close(src_fd);
-			close(dst_fd);
-			free(buffer);
-			errno = err;
-			goto done;
-		}
-		if (nbytes == 0)
-			break;
-		
-		nbytes2 = write(dst_fd, buffer, nbytes);
-		if (nbytes2 < 0)
-		{
-			err = errno;
-			close(src_fd);
-			close(dst_fd);
-			free(buffer);
-			errno = err;
-			goto done;
-		}
-		if (nbytes2 != nbytes)
-		{
-			close(src_fd);
-			close(dst_fd);
-			free(buffer);
-			errno = EIO; /* weird device, probably */
-			goto done;
-		}
-	}
-	free(buffer);
-	if (close(src_fd))
-	{
-		err = errno;
-		close(dst_fd);
-		errno = err;
-		goto done;
-	}
-	result = close(dst_fd);
-
-	/*
-	 * here for all exits
-	 */
-	done:
 	trace(("return %d; /* errno = %d */\n", result, errno));
 	trace((/*{*/"}\n"));
 	return result;
-}
-
-
-/*
- * NAME
- *	catfile - copy a file
- *
- * SYNOPSIS
- *	int catfile(char *path);
- *
- * DESCRIPTION
- *	The catfile function is used to print the contents of
- *	a file on the standard output.
- *
- * ARGUMENTS
- *	path	- pathname of source file
- *
- * RETURNS
- *	0	on success
- *	-1	on error, setting errno appropriately
- */
-
-int
-catfile(path)
-	char	*path;
-{
-	int	fd;
-	char	*buffer;
-	long	max;
-	long	nbytes;
-	long	nbytes2;
-	int	err;
-	int	result;
-
-	trace(("catfile(\"%s\")\n{\n"/*}*/, path));
-	os_interrupt_cope();
-	result = -1;
-	fd = open(path, O_RDONLY, 0666);
-	if (fd < 0)
-		goto done;
-
-	max = 1L << 13;
-	errno = 0;
-	buffer = malloc(max);
-	if (!buffer)
-	{
-		err = errno ? errno : ENOMEM;
-		close(fd);
-		errno = err;
-		goto done;
-	}
-
-	for (;;)
-	{
-		nbytes = read(fd, buffer, max);
-		if (nbytes < 0)
-		{
-			err = errno;
-			close(fd);
-			free(buffer);
-			errno = err;
-			goto done;
-		}
-		if (nbytes == 0)
-			break;
-		
-		nbytes2 = write(fileno(stdout), buffer, nbytes);
-		if (nbytes2 < 0)
-		{
-			err = errno;
-			close(fd);
-			free(buffer);
-			errno = err;
-			goto done;
-		}
-		if (nbytes2 != nbytes)
-		{
-			close(fd);
-			free(buffer);
-			errno = EIO; /* weird device, probably */
-			goto done;
-		}
-	}
-	free(buffer);
-	result = close(fd);
-
-	/*
-	 * here for all exits
-	 */
-	done:
-	trace(("return %d; /* errno = %d */\n", result, errno));
-	trace((/*{*/"}\n"));
-	return result;
-}
-
-
-int
-read_whole_dir(path, data_p, data_len_p)
-	char		*path;
-	char		**data_p;
-	long		*data_len_p;
-{
-	DIR		*dp;
-	struct dirent	*de;
-	static char	*data;
-	static size_t	data_len;
-	static size_t	data_max;
-	char		*np;
-	size_t		len;
-
-	os_interrupt_cope();
-	errno = ENOMEM;
-	dp = opendir(path);
-	if (!dp)
-		return -1;
-	errno = 0;
-	if (!data)
-	{
-		data_max = 1000;
-		data = mem_alloc(data_max);
-	}
-	data_len = 0;
-	for (;;)
-	{
-		de = readdir(dp);
-		if (!de)
-			break;
-		np = de->d_name;
-		if (np[0] == '.' && (!np[1] || (np[1] == '.' && !np[2])))
-			continue;
-		len = strlen(np) + 1;
-		if (data_len + len > data_max)
-		{
-			data_max += 1000;
-			data = mem_change_size(data, data_max);
-		}
-		memcpy(data + data_len, np, len);
-		data_len += len;
-	}
-	closedir(dp);
-	*data_p = data;
-	*data_len_p = data_len;
-	return 0;
-}
-
-
-/*
- * NAME
- *	file_compare
- *
- * SYNOPSIS
- *	int file_compare(char *, char *);
- *
- * DESCRIPTION
- *	The file_compare program reads two files and chanks to see if
- *	they are different.
- *
- * RETURNS
- *	int;	0 if the files are the same
- *		1 if the files are different
- *		-1 on any error
- */
-
-int
-file_compare(fn1, fn2)
-	char		*fn1;
-	char		*fn2;
-{
-	int		fd1;
-	int		fd2;
-	char		*buf1;
-	char		*buf2;
-	size_t		len;
-	int		err;
-	int		result;
-	long		n1;
-	long		n2;
-	struct stat	st1;
-	struct stat	st2;
-
-	/*
-	 * make sure they are the same size
-	 *
-	 * This will take care of most differences
-	 */
-	os_interrupt_cope();
-	if (stat(fn1, &st1))
-		return -1;
-	if (stat(fn2, &st2))
-		return -1;
-	if (st1.st_size != st2.st_size)
-		return 1;
-
-	/*
-	 * open the files
-	 */
-	len = (size_t)1 << 17;
-	fd1 = open(fn1, O_RDONLY, 0);
-	if (fd1 < 0)
-		return -1;
-	fd2 = open(fn2, O_RDONLY, 0);
-	if (fd2 < 0)
-	{
-		err = errno;
-		close(fd1);
-		errno = err;
-		return -1;
-	};
-
-	/*
-	 * allocate the buffers
-	 */
-	errno = 0;
-	buf1 = malloc(len);
-	if (!buf1)
-	{
-		err = errno ? errno : ENOMEM;
-		close(fd1);
-		close(fd2);
-		errno = err;
-		return -1;
-	}
-
-	errno = 0;
-	buf2 = malloc(len);
-	if (!buf2)
-	{
-		err = errno ? errno : ENOMEM;
-		close(fd1);
-		close(fd2);
-		free(buf1);
-		errno = err;
-		return -1;
-	}
-
-	/*
-	 * read the data and compare
-	 */
-	for (;;)
-	{
-		n1 = read(fd1, buf1, len);
-		if (n1 < 0)
-		{
-			bomb:
-			err = errno;
-			close(fd1);
-			close(fd2);
-			free(buf1);
-			free(buf2);
-			errno = err;
-			return -1;
-		}
-		n2 = read(fd2, buf2, len);
-		if (n2 < 0)
-			goto bomb;
-		if (!n1 && !n2)
-		{
-			result = 0;
-			break;
-		}
-		if (n1 != n2)
-		{
-			/*
-			 * we checked the length above,
-			 * but it could change while we work
-			 */
-			result = 1;
-			break;
-		}
-		if (memcmp(buf1, buf2, n1))
-		{
-			result = 1;
-			break;
-		}
-	}
-	close(fd1);
-	close(fd2);
-	free(buf1);
-	free(buf2);
-	return result;
-}
-
-
-int
-file_fingerprint(path, buf, max)
-	char		*path;
-	char		*buf;
-	int		max;
-{
-	fingerprint_ty	*fp;
-	int		result;
-	int		len;
-	char		tmp[1000];
-
-	os_interrupt_cope();
-	fp = fingerprint_new(&fp_combined);
-	result = fingerprint_file_sum(fp, path, tmp);
-	if (result < 0)
-	{
-		int err = errno;
-		fingerprint_delete(fp);
-		errno = err;
-		return -1;
-	}
-	len = strlen(tmp);
-	if (len > max)
-		len = max;
-	memcpy(buf, tmp, len);
-	fingerprint_delete(fp);
-	return len;
-}
-
-
-static void rmdir_callback _((void *, dir_walk_message_ty, string_ty *,
-	struct stat *));
-
-static void
-rmdir_callback(arg, message, path, st)
-	void		*arg;
-	dir_walk_message_ty message;
-	string_ty	*path;
-	struct stat	*st;
-{
-	switch (message)
-	{
-	case dir_walk_dir_before:
-		if (!(st->st_mode & 0200))
-			chmod(path->str_text, ((st->st_mode & 07777) | 0200));
-		break;
-
-	case dir_walk_dir_after:
-		if (rmdir(path->str_text))
-		{
-			sub_context_ty	*scp;
-
-			if (errno == ENOENT)
-				break;
-			scp = sub_context_new();
-			sub_errno_set(scp);
-			sub_var_set(scp, "File_Name", "%S", path);
-			error_intl(scp, i18n("warning: rmdir $filename: $errno"));
-			sub_context_delete(scp);
-		}
-		break;
-
-	case dir_walk_file:
-	case dir_walk_special:
-	case dir_walk_symlink:
-		if (unlink(path->str_text))
-		{
-			sub_context_ty	*scp;
-
-			if (errno == ENOENT)
-				break;
-			scp = sub_context_new();
-			sub_errno_set(scp);
-			sub_var_set(scp, "File_Name", "%S", path);
-			error_intl(scp, i18n("warning: unlink $filename: $errno"));
-			sub_context_delete(scp);
-		}
-		break;
-	}
-}
-
-
-int
-rmdir_bg(path)
-	char		*path;
-{
-	string_ty	*s;
-
-	switch (fork())
-	{
-	case -1:
-		nfatal("fork");
-
-	case 0:
-		/* child */
-		os_interrupt_ignore();
-		lock_release_child(); /* don't hold locks */
-		undo_cancel(); /* don't do anything else! */
-		s = str_from_c(path);
-		dir_walk(s, rmdir_callback, 0);
-		str_free(s);
-		exit(0);
-
-	default:
-		/* parent */
-		break;
-	}
-	return 0;
-}
-
-
-int
-rmdir_tree(path)
-	char		*path;
-{
-	string_ty	*s;
-
-	s = str_from_c(path);
-	dir_walk(s, rmdir_callback, 0);
-	str_free(s);
-	return 0;
 }

@@ -51,7 +51,7 @@ change_integration_directory_set(cp, s)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_directory));
+		sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_directory));
 		fatal_intl(scp, i18n("duplicate $name option"));
 		/* NOTREACHED */
 		sub_context_delete(scp);

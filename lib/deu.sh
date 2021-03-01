@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993, 1995, 1999 Peter Miller;
+#	Copyright (C) 1992, 1993, 1995, 1999, 2000, 2001 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -68,13 +68,14 @@ if [ $? -ne 0 ]; then quit; fi
 #
 # include full details of the change
 #
-$aegis -list change_details -project $project -change $change -verbose >> $tmp
+$aegis -list change_details -project $project -change $change -verbose \
+	-pl=66 -pw=80 >> $tmp
 if [ $? -ne 0 ]; then quit; fi
 
 #
 # mail it to all reviewers
 #
-mail $reviewers < $tmp
+mail -s "Project $prokect: Change $change: withdrawn from review" $reviewers < $tmp
 if [ $? -ne 0 ]; then quit; fi
 
 #

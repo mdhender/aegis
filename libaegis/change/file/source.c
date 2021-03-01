@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2000 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,10 +38,23 @@ change_file_source(cp, file_name)
 	fstate_src	src;
 
 	/*
-	 * see if the file is in the change
+	 * For changes which are not somewhere between `being developed'
+	 * and `being integrated' look in the project only.
 	 */
 	trace(("change_file_source(cp = %08lX, file_name = \"%s\")\n{\n"/*}*/,
 		(long)cp, file_name->str_text));
+	cstate_data = change_cstate_get(cp);
+	if
+	(
+		cstate_data->state == cstate_state_awaiting_development
+	||
+		cstate_data->state == cstate_state_completed
+	)
+		goto projfile;
+
+	/*
+	 * see if the file is in the change
+	 */
 	src = change_file_find(cp, file_name);
 	if (src && !src->about_to_be_copied_by)
 	{
@@ -57,7 +70,6 @@ change_file_source(cp, file_name)
 	 * the branch's baseline, then the path to it is in the
 	 * integration directory.
 	 */
-	cstate_data = change_cstate_get(cp);
 	if (cstate_data->state == cstate_state_being_integrated)
 	{
 		change_ty	*pcp;
@@ -80,9 +92,9 @@ change_file_source(cp, file_name)
 	/*
 	 * see if the file is in the project
 	 */
+	projfile:
 	if (project_file_find(cp->pp, file_name))
 	{
-
 		result = project_file_path(cp->pp, file_name);
 		assert(result);
 		trace(("return \"%S\";\n", result->str_text));

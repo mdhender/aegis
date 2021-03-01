@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997, 1998, 1999 Peter Miller;
+#	Copyright (C) 1997-1999, 2001 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -101,35 +101,182 @@ then
 	exit 0
 fi
 
-if test "$file" = "pre"
+
+if test "$file" = "diff"
 then
 	test -z "$project" && exit 1
-	test -z "$change" && change="--baseline"
 	test -z "$extra" && exit 1
 
-	File="$extra"
-	$bindir/aefind -resolve -baserel $project $change $extra -print \
-		> /tmp/aegis.$$ 2>&1
-	status=$?
-	if test $status -ne 0
-	then
+	File=$extra;
+
+        cmdcmd="$bindir/aereport -f $datadir/en/html/file_diff.rpt $delta1 $delta2 $File /tmp/aegis1.$$ /tmp/aegis2.$$ $project  $change -unf"
+		
+        # the script will work out where to get the file from
+        cmd="`$cmdcmd  2> /tmp/aegis.$$.log`";
+        status=$?
+		
+        if test $status -ne 0 
+        then
 		echo 'Content-Type: text/html'
 		echo ''
 		echo '<html><head><title>Error</title></head><body><h1>'
 		echo 'Error</h1>The command'
 		echo '<blockquote><tt>'
-		echo $bindir/aefind -baserel -resolve $project $change $extra -print
+                echo $cmdcmd ;
 		echo '</tt></blockquote>'
 		echo "terminated with exit status $status."
 		echo 'The following text was produced <blockquote><pre>'
-		sed 's|<|\&lt;|g' < /tmp/aegis.$$
+		sed 's|<|\&lt;|g' < /tmp/aegis.$$.log
 		echo '</pre></blockquote>'
 		echo '<hr>'
 		echo 'This page was generated'
 		date
 		echo '</body></html>'
-		rm /tmp/aegis.$$
+		rm /tmp/aegis.$$.log
 		exit 1
+        fi
+        rm /tmp/aegis.$$.log
+		
+	eval "$cmd 2> /tmp/aegis.$$.log "> /tmp/aegis.$$.out ;
+	status=$?
+	if test $status -ne 0 
+	then
+		echo 'Content-Type: text/html'
+		echo ''
+		echo '<html><head><title>Error</title></head><body><h1>'
+		echo 'Error</h1>The command'
+ 		echo '<blockquote><tt>'
+                 echo $cmd ;
+ 		echo '</tt></blockquote>'
+ 		echo "terminated with exit status $status."
+ 		echo 'The following text was produced <blockquote><pre>'
+		sed 's|<|\&lt;|g' < /tmp/aegis.$$.log
+ 		echo '</pre></blockquote>'
+ 		echo '<hr>'
+ 		echo 'This page was generated'
+ 		date
+		echo '</body></html>'
+		rm /tmp/aegis.$$.log
+		exit 1
+	fi
+	rm /tmp/aegis.$$.log
+
+	echo 'Content-Type: text/html'
+	echo ''
+	echo '<html><head><title>'
+		echo "Project \"$Project\","
+		test ! -z "$Change" && echo "Change $Change,"
+		sed 's/</&lt;/' << EOF
+Differences in file $File    
+EOF
+	echo '</title></head><body><h1>'
+		echo "Project \"$Project\","
+		test ! -z "$Change" && echo "Change $Change,"
+		cat  << EOF
+Differences in file $File <br>
+<h2>
+Delta $delta1 , 
+Delta $delta2 <br>
+</h2>
+EOF
+	echo '</h1>'
+	echo '<pre>'
+	sed 's|<|\&lt;|g' < /tmp/aegis.$$.out
+	echo '</pre>'
+	echo '<hr>'
+	echo 'This page was generated'
+	date
+	echo '</body></html>'
+	rm /tmp/aegis.$$.out
+	exit 0
+
+fi
+
+if test "$file" = "pre"
+then
+	test -z "$project" && exit 1
+	test -z "$extra" && exit 1
+
+	Delta="-delta $delta"
+        test -z "$delta" && Delta="";
+
+	File="$extra"
+	if test -z "$change" 
+	then
+		$bindir/aegis -cp -ind $project -baserel $File $Delta \
+			-o /tmp/aegis.$$ 2> /tmp/aegis.$$.log
+		status=$?
+		if test $status -ne 0
+		then
+			echo 'Content-Type: text/html'
+			echo ''
+			echo '<html><head><title>Error</title></head><body><h1>'
+			echo 'Error</h1>The command'
+			echo '<blockquote><tt>'
+			echo $bindir/aegis -cp -ind -baserel "$Delta" $project $extra
+			echo '</tt></blockquote>'
+			echo "terminated with exit status $status."
+			echo 'The following text was produced <blockquote><pre>'
+			sed 's|<|\&lt;|g' < /tmp/aegis.$$.log
+			echo '</pre></blockquote>'
+			echo '<hr>'
+			echo 'This page was generated'
+			date
+			echo '</body></html>'
+			rm -f /tmp/aegis.$$ /tmp/aegis.$$.log
+			exit 1
+		fi
+		rm -f /tmp/aegis.$$.log
+	else
+		# the script will work out where to get the file from
+		cmd="`$bindir/aereport -f $datadir/en/html/cp_command.rpt $File /tmp/aegis.$$ -unf $project $change 2> /tmp/aegis.$$.log`"
+
+		status=$?
+		if test $status -ne 0
+		then
+			echo 'Content-Type: text/html'
+			echo ''
+			echo '<html><head><title>Error</title></head><body><h1>'
+			echo 'Error</h1>The command'
+			echo '<blockquote><tt>'
+echo $bindir/aereport -f $datadir/en/html/cp_command.rpt $File /tmp/aegis.$$ -unf $project $change
+			echo '</tt></blockquote>'
+			echo "terminated with exit status $status."
+			echo 'The following text was produced <blockquote><pre>'
+			sed 's|<|\&lt;|g' < /tmp/aegis.$$.log
+			echo '</pre></blockquote>'
+			echo '<hr>'
+			echo 'This page was generated'
+			date
+			echo '</body></html>'
+			rm /tmp/aegis.$$.log
+			exit 1
+		fi
+		rm /tmp/aegis.$$.log
+
+		eval "$cmd 2> /tmp/aegis.$$.log"
+		status=$?
+		if test $status -ne 0 
+		then
+			echo 'Content-Type: text/html'
+			echo ''
+			echo '<html><head><title>Error</title></head><body><h1>'
+			echo 'Error</h1>The command'
+			echo '<blockquote><tt>'
+			echo $cmd
+			echo '</tt></blockquote>'
+			echo "terminated with exit status $status."
+			echo 'The following text was produced <blockquote><pre>'
+			sed 's|<|\&lt;|g' < /tmp/aegis.$$.log
+			echo '</pre></blockquote>'
+			echo '<hr>'
+			echo 'This page was generated'
+			date
+			echo '</body></html>'
+			rm -f /tmp/aegis.$$.log /tmp/aegis.$$
+			exit 1
+		fi
+		rm /tmp/aegis.$$.log
 	fi
 
 	echo 'Content-Type: text/html'
@@ -137,14 +284,15 @@ then
 	echo '<html><head><title>'
 		echo "Project \"$Project\","
 		test ! -z "$Change" && echo "Change $Change,"
-		echo File $File
+		x=`echo $File | sed 's/</&lt;/'`
+		echo "File $x"
 	echo '</title></head><body><h1>'
 		echo "Project \"$Project\","
 		test ! -z "$Change" && echo "Change $Change,"
-		echo File $File
+		echo "<br>File <i>$x</i>"
 	echo '</h1>'
 	echo '<pre>'
-	sed 's|<|\&lt;|g' `cat /tmp/aegis.$$` < /dev/null
+	sed 's|<|\&lt;|g' < /tmp/aegis.$$
 	echo '</pre>'
 	echo '<hr>'
 	echo 'This page was generated'

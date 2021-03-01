@@ -79,22 +79,22 @@ change_run_diff3_command(cp, up, original, most_recent, input, output)
 	pconf_data = change_pconf_get(cp, 1);
 	dd = change_development_directory_get(cp, 0);
 	scp = sub_context_new();
-	sub_var_set(scp, "ORiginal", "%S", original);
-	sub_var_set(scp, "Most_Recent", "%S", most_recent);
-	sub_var_set(scp, "Input", "%S", input);
-	sub_var_set(scp, "Output", "%S", output);
-	sub_var_set(scp, "1", "${original}");
-	sub_var_set(scp, "2", "${most_recent}");
-	sub_var_set(scp, "3", "${input}");
-	sub_var_set(scp, "4", "${output}");
+	sub_var_set_string(scp, "ORiginal", original);
+	sub_var_set_string(scp, "Most_Recent", most_recent);
+	sub_var_set_string(scp, "Input", input);
+	sub_var_set_string(scp, "Output", output);
+	sub_var_set_charstar(scp, "1", "${original}");
+	sub_var_set_charstar(scp, "2", "${most_recent}");
+	sub_var_set_charstar(scp, "3", "${input}");
+	sub_var_set_charstar(scp, "4", "${output}");
 	the_command = pconf_data->diff3_command;
 	if (!the_command)
 	{
 		sub_context_ty	*scp2;
 
 		scp2 = sub_context_new();
-		sub_var_set(scp2, "File_Name", "%s", THE_CONFIG_FILE);
-		sub_var_set(scp2, "FieLD_Name", "diff3_command");
+		sub_var_set_charstar(scp2, "File_Name", THE_CONFIG_FILE);
+		sub_var_set_charstar(scp2, "FieLD_Name", "diff3_command");
 		change_fatal
 		(
 			cp,

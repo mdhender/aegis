@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,9 @@
 #include <str_list.h>
 #include <sub.h>
 #include <sub/project/integra_list.h>
+#include <sub/user.h>
 #include <trace.h>
+#include <user.h>
 #include <wstr.h>
 #include <wstr_list.h>
 
@@ -34,12 +36,12 @@
  *	sub_integrator_list - the integrator_list substitution
  *
  * SYNOPSIS
- *	string_ty *sub_integrator_list(wstring_list_ty *arg);
+ *	wstring_ty *sub_integrator_list(wstring_list_ty *arg);
  *
  * DESCRIPTION
  *	The sub_integrator_list function implements the integrator_list
- *	substitution.  The integrator_list substitution is replaced by
- *	a space separated list of the project's integrators.
+ *	substitution.  The integrator_list substitution is replaced by a
+ *	space separated list of the project's integrators.
  *
  * ARGUMENTS
  *	arg	- list of arguments, including the function name as [0]
@@ -59,20 +61,47 @@ sub_integrator_list(scp, arg)
 	string_list_ty	wl;
 	string_ty	*s;
 	project_ty	*pp;
+	sub_user_func_ptr func;
+	user_ty		*up;
 
 	trace(("sub_integrator_list()\n{\n"));
-	if (arg->nitems != 1)
-	{
-		sub_context_error_set(scp, i18n("requires zero arguments"));
-		result = 0;
-		goto done;
-	}
 	pp = sub_context_project_get(scp);
 	if (!pp)
 	{
-		sub_context_error_set(scp, i18n("not valid in current context"));
+		sub_context_error_set
+		(
+			scp,
+			i18n("not valid in current context")
+		);
 		result = 0;
 		goto done;
+	}
+	func = user_name;
+	switch (arg->nitems)
+	{
+	default:
+		sub_context_error_set(scp, i18n("requires one argument"));
+		result = 0;
+		goto done;
+	
+	case 1:
+		break;
+
+	case 2:
+		s = wstr_to_str(arg->item[1]);
+		func = sub_user_func(s);
+		str_free(s);
+		if (!func)
+		{
+			sub_context_error_set
+			(
+				scp,
+				i18n("unknown substitution variant")
+			);
+			result = 0;
+			goto done;
+		}
+		break;
 	}
 
 	/*
@@ -84,6 +113,8 @@ sub_integrator_list(scp, arg)
 		s = project_integrator_nth(pp, j);
 		if (!s)
 			break;
+		up = user_symbolic(pp, s);
+		s = func(up);
 		string_list_append(&wl, s);
 	}
 	s = wl2str(&wl, 0, wl.nstrings, " ");

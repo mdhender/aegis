@@ -338,8 +338,10 @@ str2wl(slp, s, sep, ewhite)
 		char		*cp2;
 
 		if (ewhite)
-			while (isspace(*cp))
+		{
+			while (isspace((unsigned char)*cp))
 				cp++;
+		}
 		if (!*cp && !more)
 			break;
 		more = 0;
@@ -354,7 +356,7 @@ str2wl(slp, s, sep, ewhite)
 		else
 			cp2 = cp;
 		if (ewhite)
-			while (cp > cp1 && isspace(cp[-1]))
+			while (cp > cp1 && isspace((unsigned char)cp[-1]))
 				cp--;
 		w = str_n_from_c(cp1, cp - cp1);
 		string_list_append(slp, w);
@@ -543,3 +545,20 @@ string_list_sort(wlp)
 		wl_sort_cmp
 	);
 }
+
+
+#ifdef DEBUG
+
+int
+string_list_validate(slp)
+	string_list_ty	*slp;
+{
+	size_t		j;
+
+	for (j = 0; j < slp->nstrings; ++j)
+		if (!str_validate(slp->string[j]))
+			return 0;
+	return 1;
+}
+
+#endif

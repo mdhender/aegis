@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -79,30 +79,37 @@ project_file_shallow(pp, file_name, cn)
 		src1_data->deleted_by = cn;
 
 	/*
-	 * As a branch advances, the edit_number tracks the
-	 * history, but the edit_number_origin is the number when
+	 * As a branch advances, the edit field tracks the
+	 * history, but the edit_origin field is the number when
 	 * the file was first created or copied into the branch.
 	 * By definition, a file in a change is out of date when
-	 * it's edit_number_origin does not equal the edit_number
+	 * it's edit_origin field does not equal the edit field
 	 * of its project.
 	 *
 	 * In order to merge branches, this must be done as a
 	 * cross branch merge in a change to that branch; the
-	 * edit_number_origin_new field of the change is copied
-	 * into the edit_number_origin origin field of the branch.
+	 * edit_origin_new field of the change is copied
+	 * into the edit_origin field of the branch.
 	 *
-	 * branch's edit_number
+	 * branch's edit
 	 *	The head revision of the branch.
-	 * branch's edit_number_origin
+	 * branch's edit_origin
 	 *	The version originally copied.
 	 */
-	assert(src2_data->edit_number);
-	if (src2_data->edit_number)
-		src1_data->edit_number = str_copy(src2_data->edit_number);
+	assert(src2_data->edit);
+	if (src1_data->edit)
+		history_version_type.free(src1_data->edit);
+	if (src2_data->edit)
+		src1_data->edit = history_version_copy(src2_data->edit);
 	else
-		src1_data->edit_number = str_from_c("bogus");
-	src1_data->edit_number_origin =
-		str_copy(src1_data->edit_number);
+	{
+		src1_data->edit = history_version_type.alloc();
+		src1_data->edit->revision = str_from_c("bogus");
+	}
+	if (src1_data->edit_origin)
+		history_version_type.free(src1_data->edit_origin);
+	src1_data->edit_origin =
+		history_version_copy(src1_data->edit);
 
 	/*
 	 * pull the testing correlations across

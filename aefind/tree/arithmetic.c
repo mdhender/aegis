@@ -144,8 +144,8 @@ mul_evaluate(tp, path, st)
 
 	default:
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", v1a->method->name);
-		sub_var_set(scp, "Name2", "%s", v2a->method->name);
+		sub_var_set_charstar(scp, "Name1", v1a->method->name);
+		sub_var_set_charstar(scp, "Name2", v2a->method->name);
 		s =
 			subst_intl
 			(
@@ -291,8 +291,8 @@ divide_evaluate(tp, path, st)
 
 	default:
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", v1a->method->name);
-		sub_var_set(scp, "Name2", "%s", v2a->method->name);
+		sub_var_set_charstar(scp, "Name1", v1a->method->name);
+		sub_var_set_charstar(scp, "Name2", v2a->method->name);
 		s = subst_intl(scp, i18n("illegal division ($name1 / $name2)"));
 		sub_context_delete(scp);
 		result = rpt_value_error(0, s);
@@ -433,8 +433,8 @@ mod_evaluate(tp, path, st)
 
 	default:
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", v1a->method->name);
-		sub_var_set(scp, "Name2", "%s", v2a->method->name);
+		sub_var_set_charstar(scp, "Name1", v1a->method->name);
+		sub_var_set_charstar(scp, "Name2", v2a->method->name);
 		s = subst_intl(scp, i18n("illegal modulo ($name1 %% $name2)"));
 		sub_context_delete(scp);
 		result = rpt_value_error(0, s);
@@ -523,7 +523,7 @@ neg_evaluate(tp, path, st)
 
 	default:
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", v2->method->name);
+		sub_var_set_charstar(scp, "Name", v2->method->name);
 		s = subst_intl(scp, i18n("illegal negative ($name)"));
 		sub_context_delete(scp);
 		vp = rpt_value_error(0, s);
@@ -605,7 +605,7 @@ pos_evaluate(tp, path, st)
 
 	default:
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", v2->method->name);
+		sub_var_set_charstar(scp, "Name", v2->method->name);
 		s = subst_intl(scp, i18n("illegal positive ($name)"));
 		sub_context_delete(scp);
 		vp = rpt_value_error(0, s);
@@ -746,8 +746,8 @@ plus_evaluate(tp, path, st)
 
 	default:
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", lv2->method->name);
-		sub_var_set(scp, "Name2", "%s", rv2->method->name);
+		sub_var_set_charstar(scp, "Name1", lv2->method->name);
+		sub_var_set_charstar(scp, "Name2", rv2->method->name);
 		s = subst_intl(scp, i18n("illegal addition ($name1 + $name2)"));
 		sub_context_delete(scp);
 		vp = rpt_value_error(0, s);
@@ -890,8 +890,8 @@ subtract_evaluate(tp, path, st)
 
 	default:
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", lv2->method->name);
-		sub_var_set(scp, "Name2", "%s", rv2->method->name);
+		sub_var_set_charstar(scp, "Name1", lv2->method->name);
+		sub_var_set_charstar(scp, "Name2", rv2->method->name);
 		s =
 			subst_intl
 			(
@@ -999,8 +999,8 @@ join_evaluate(tp, path, st)
 	else
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", v1s->method->name);
-		sub_var_set(scp, "Name2", "%s", v2s->method->name);
+		sub_var_set_charstar(scp, "Name1", v1s->method->name);
+		sub_var_set_charstar(scp, "Name2", v2s->method->name);
 		s =
 			subst_intl
 			(

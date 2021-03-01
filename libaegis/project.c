@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 
 #include <arglex2.h>
 #include <change.h>
-#include <change_bran.h>
+#include <change/branch.h>
 #include <change/file.h>
 #include <commit.h>
 #include <error.h>
@@ -244,8 +244,8 @@ convert_to_new_format(pp)
 
 			yuck:
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", pp->pstate_path);
-			sub_var_set(scp, "FieLD_Name", "src");
+			sub_var_set_string(scp, "File_Name", pp->pstate_path);
+			sub_var_set_charstar(scp, "FieLD_Name", "src");
 			project_fatal(pp, scp, i18n("$filename: corrupted \"$field_name\" field"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -259,8 +259,10 @@ convert_to_new_format(pp)
 		sp2->mask |= fstate_src_action_mask;
 		if (sp1->edit_number)
 		{
-			sp2->edit_number = str_copy(sp1->edit_number);
-			sp2->edit_number_origin = str_copy(sp1->edit_number);
+			sp2->edit = history_version_type.alloc();
+			sp2->edit->revision = str_copy(sp1->edit_number);
+			sp2->edit_origin = history_version_type.alloc();
+			sp2->edit_origin->revision = str_copy(sp1->edit_number);
 		}
 		sp2->locked_by = sp1->locked_by;
 		sp2->about_to_be_created_by = sp1->about_to_be_created_by;
@@ -539,6 +541,74 @@ lock_sync(pp)
 }
 
 
+static void get_the_owner _((project_ty *));
+
+static void
+get_the_owner(pp)
+	project_ty	*pp;
+{
+	string_ty	*s;
+
+	/*
+	 * If the project owner is already established,
+	 * don't do anything here.
+	 */
+	if (pp->uid >= 0 && pp->gid >= 0)
+		return;
+
+	/*
+	 * When checking the project home path owner, we append ``/.''
+	 * to force the automounter to mount it.  Some automounters
+	 * don't actually trigger until the directory lookup happens,
+	 * which gives nasty results when we stat the directory to see
+	 * who ownes it (the automounter frequently returns 0,0 which
+	 * gives a "tampering" error).
+	 */
+	os_become_orig();
+	s = str_format("%S/.", project_home_path_get(pp));
+	os_owner_query(s, &pp->uid, &pp->gid);
+	str_free(s);
+	os_become_undo();
+
+	/*
+	 * Make sure the project UID and GID are acceptable.  This mirrors
+	 * the tests in aegis/aenpr.c when the project is first created.
+	 */
+	if (pp->uid < AEGIS_MIN_UID)
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set_string(scp, "File_Name", project_home_path_get(pp));
+		sub_var_set_long(scp, "Number1", pp->uid);
+		sub_var_set_long(scp, "Number2", AEGIS_MIN_UID);
+		fatal_intl
+		(
+			scp,
+		    i18n("$filename: uid $number1 invalid, must be >= $number2")
+		);
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
+	if (pp->gid < AEGIS_MIN_GID)
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set_string(scp, "File_Name", project_home_path_get(pp));
+		sub_var_set_long(scp, "Number1", pp->gid);
+		sub_var_set_long(scp, "Number2", AEGIS_MIN_GID);
+		fatal_intl
+		(
+			scp,
+		    i18n("$filename: gid $number1 invalid, must be >= $number2")
+		);
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
+}
+
+
 pstate
 project_pstate_get(pp)
 	project_ty	*pp;
@@ -561,8 +631,10 @@ project_pstate_get(pp)
 		 * This also means we can use UNIX system security
 		 * to exclude unwelcome access.
 		 */
+		get_the_owner(pp);
 		os_become_orig();
-		pp->pstate_data = pstate_read_file(path->str_text);
+		os_chown_check(path, 0, pp->uid, pp->gid);
+		pp->pstate_data = pstate_read_file(path);
 		os_become_undo();
 
 		if (!pp->pstate_data->next_test_number)
@@ -570,8 +642,8 @@ project_pstate_get(pp)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "File_Name", "%S", pp->pstate_path);
-			sub_var_set(scp, "FieLD_Name", "next_test_number");
+			sub_var_set_string(scp, "File_Name", pp->pstate_path);
+			sub_var_set_charstar(scp, "FieLD_Name", "next_test_number");
 			project_fatal
 			(
 				pp,
@@ -754,12 +826,12 @@ name_has_numeric_suffix(name, left, right)
 	char		*ep;
 
 	ep = name->str_text + name->str_length;
-	while (ep > name->str_text && isdigit(ep[-1]))
+	while (ep > name->str_text && isdigit((unsigned char)ep[-1]))
 		--ep;
 	if (!*ep)
 		/* still pointing to end of string */
 		return 0;
-	if (ep < name->str_text + 2 || !ispunct(ep[-1]))
+	if (ep < name->str_text + 2 || !ispunct((unsigned char)ep[-1]))
 		return 0;
 	*left = str_n_from_c(name->str_text, ep - 1 - name->str_text);
 	*right = magic_zero_encode(atol(ep));
@@ -881,8 +953,8 @@ project_bind_existing(pp)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%S", pp->name);
-			sub_var_set(scp, "Guess", "%S", best);
+			sub_var_set_string(scp, "Name", pp->name);
+			sub_var_set_string(scp, "Guess", best);
 			fatal_intl(scp, i18n("no $name project, closest is $guess"));
 		}
 		else
@@ -890,7 +962,7 @@ project_bind_existing(pp)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%S", pp->name);
+			sub_var_set_string(scp, "Name", pp->name);
 			fatal_intl(scp, i18n("no $name project"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -954,7 +1026,7 @@ project_bind_new(pp)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%S", pp->name);
+		sub_var_set_string(scp, "Name", pp->name);
 		fatal_intl(scp, i18n("project $name exists"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -1014,7 +1086,7 @@ break_up_version_string(sp, buf, buflen_max, buflen_p, leading_punct)
 		 */
 		if (leading_punct)
 		{
-			if (!ispunct(*sp))
+			if (!ispunct((unsigned char)*sp))
 				return -1;
 			++sp;
 		}
@@ -1024,7 +1096,7 @@ break_up_version_string(sp, buf, buflen_max, buflen_p, leading_punct)
 		/*
 		 * the next one must be a digit
 		 */
-		if (!isdigit(*sp))
+		if (!isdigit((unsigned char)*sp))
 			return -1;
 
 		/*
@@ -1042,7 +1114,7 @@ break_up_version_string(sp, buf, buflen_max, buflen_p, leading_punct)
 		for (;;)
 		{
 			n = n * 10 + *sp++ - '0';
-			if (!isdigit(*sp))
+			if (!isdigit((unsigned char)*sp))
 				break;
 		}
 		buf[buflen++] = magic_zero_encode(n);
@@ -1080,7 +1152,7 @@ extract_version_from_project_name(name_p, buf, buflen_max, buflen_p)
 		name->str_length < 3
 	||
 		/* C locale */
-		!isdigit(name->str_text[name->str_length - 1])
+		!isdigit((unsigned char)name->str_text[name->str_length - 1])
 	)
 		return;
 	sp = name->str_text;
@@ -1094,7 +1166,7 @@ extract_version_from_project_name(name_p, buf, buflen_max, buflen_p)
 		 * skip over leading non-punctuation
 		 * {C locale}
 		 */
-		if (!ispunct(*sp))
+		if (!ispunct((unsigned char)*sp))
 			continue;
 
 		/*
@@ -1163,7 +1235,7 @@ project_find_branch(pp, version_string)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Number", "%s", version_string);
+		sub_var_set_charstar(scp, "Number", version_string);
 		fatal_intl(scp, i18n("bad version $number"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -1185,7 +1257,7 @@ project_find_branch(pp, version_string)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Number", "%s", version_string);
+			sub_var_set_charstar(scp, "Number", version_string);
 			change_fatal(cp, scp, i18n("version $number not a branch"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -1235,13 +1307,13 @@ project_pstate_write(pp)
 		if (pp->is_a_new_file)
 		{
 			undo_unlink_errok(filename_new);
-			pstate_write_file(filename_new->str_text, pp->pstate_data, compress);
+			pstate_write_file(filename_new, pp->pstate_data, compress);
 			commit_rename(filename_new, filename);
 		}
 		else
 		{
 			undo_unlink_errok(filename_new);
-			pstate_write_file(filename_new->str_text, pp->pstate_data, compress);
+			pstate_write_file(filename_new, pp->pstate_data, compress);
 			commit_rename(filename, filename_old);
 			commit_rename(filename_new, filename);
 			commit_unlink_errok(filename_old);
@@ -1292,7 +1364,7 @@ project_home_path_get(pp)
 			sub_context_ty	*scp;
 
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%S", pp->name);
+			sub_var_set_string(scp, "Name", pp->name);
 			fatal_intl(scp, i18n("no $name project"));
 			/* NOTREACHED */
 			sub_context_delete(scp);
@@ -1343,7 +1415,7 @@ project_home_path_set(pp, s)
 		sub_context_ty	*scp;
 
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_directory));
+		sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_directory));
 		fatal_intl(scp, i18n("duplicate $name option"));
 		/* NOTREACHED */
 		sub_context_delete(scp);
@@ -1366,7 +1438,7 @@ project_top_path_get(pp, resolve)
 	change_ty	*cp;
 
 	cp = project_change_get(pp);
-	return change_development_directory_get(cp, resolve);
+	return change_top_path_get(cp, resolve);
 }
 
 
@@ -1539,7 +1611,7 @@ project_error(pp, scp, s)
 	 * pass the message to the error function
 	 */
 	/* re-use substitution context */
-	sub_var_set(scp, "Message", "%S", msg);
+	sub_var_set_string(scp, "Message", msg);
 	str_free(msg);
 	subst_intl_project(scp, pp);
 	error_intl(scp, i18n("project \"$project\": $message"));
@@ -1576,7 +1648,7 @@ project_fatal(pp, scp, s)
 	 * pass the message to the error function
 	 */
 	/* re-use substitution context */
-	sub_var_set(scp, "Message", "%S", msg);
+	sub_var_set_string(scp, "Message", msg);
 	str_free(msg);
 	subst_intl_project(scp, pp);
 	fatal_intl(scp, i18n("project \"$project\": $message"));
@@ -1614,7 +1686,7 @@ project_verbose(pp, scp, s)
 	 * pass the message to the error function
 	 */
 	/* re-use the substitution context */
-	sub_var_set(scp, "Message", "%S", msg);
+	sub_var_set_string(scp, "Message", msg);
 	str_free(msg);
 	subst_intl_project(scp, pp);
 	verbose_intl(scp, i18n("project \"$project\": $message"));
@@ -1749,12 +1821,7 @@ project_uid_get(pp)
 {
 	while (pp->parent)
 		pp = pp->parent;
-	if (pp->uid < 0)
-	{
-		os_become_orig();
-		os_owner_query(project_home_path_get(pp), &pp->uid, &pp->gid);
-		os_become_undo();
-	}
+	get_the_owner(pp);
 	return pp->uid;
 }
 
@@ -1765,12 +1832,7 @@ project_gid_get(pp)
 {
 	while (pp->parent)
 		pp = pp->parent;
-	if (pp->gid < 0)
-	{
-		os_become_orig();
-		os_owner_query(project_home_path_get(pp), &pp->uid, &pp->gid);
-		os_become_undo();
-	}
+	get_the_owner(pp);
 	return pp->gid;
 }
 
@@ -1811,82 +1873,6 @@ project_become_undo()
 	trace(("project_become_undo()\n{\n"/*}*/));
 	user_become_undo();
 	trace((/*{*/"}\n"));
-}
-
-
-/*
- * NAME
- *	project_delta_to_edit
- *
- * SYNOPSIS
- *	string_ty *project_delta_to_edit(project_ty *pp, long delta_number,
- *		string_ty *file_name);
- *
- * DESCRIPTION
- *	The project_delta_to_edit function is used to map a delta number
- *	into a specific edit number for a project source file.  This requires
- *	roll-forward of the edits to the named file, until the relevant
- *	delta is reached.
- *
- * ARGUMENTS
- *	pp		- project file is in
- *	delta_number	- delta number wanted
- *	file_name	- name of file
- *
- * RETURNS
- *	string_ty *;	string containing edit number,
- *			NULL if file does not exist at this delta.
- *
- * CAVEAT
- *	It is the caller's responsibility to free the string returned
- *	when not futher required.
- */
-
-string_ty *
-project_delta_to_edit(pp, delta_number, file_name)
-	project_ty	*pp;
-	long		delta_number;
-	string_ty	*file_name;
-{
-	return change_branch_delta_to_edit(pp, delta_number, file_name);
-}
-
-
-/*
- * NAME
- *	project_delta_to_edit
- *
- * SYNOPSIS
- *	string_ty *project_delta_to_edit(project_ty *pp, long delta_number,
- *		string_ty *file_name);
- *
- * DESCRIPTION
- *	The project_delta_to_edit function is used to map a delta number
- *	into a specific edit number for a project source file.  This requires
- *	roll-forward of the edits to the named file, until the relevant
- *	delta is reached.
- *
- * ARGUMENTS
- *	pp		- project file is in
- *	delta_number	- delta number wanted
- *	file_name	- name of file
- *
- * RETURNS
- *	string_ty *;	string containing edit number,
- *			NULL if file does not exist at this delta.
- *
- * CAVEAT
- *	It is the caller's responsibility to free the string returned
- *	when not futher required.
- */
-
-string_ty *
-project_delta_date_to_edit(pp, when, file_name)
-	project_ty	*pp;
-	time_t		when;
-	string_ty	*file_name;
-{
-	return change_branch_delta_date_to_edit(pp, when, file_name);
 }
 
 
@@ -2023,29 +2009,6 @@ project_skip_unlucky_set(pp, n)
 
 
 int
-project_compress_database_get(pp)
-	project_ty	*pp;
-{
-	change_ty	*cp;
-
-	cp = project_change_get(pp);
-	return change_branch_compress_database_get(cp);
-}
-
-
-void
-project_compress_database_set(pp, n)
-	project_ty	*pp;
-	int		n;
-{
-	change_ty	*cp;
-
-	cp = project_change_get(pp);
-	change_branch_compress_database_set(cp, n);
-}
-
-
-int
 project_name_ok(s)
 	string_ty	*s;
 {
@@ -2062,7 +2025,14 @@ project_name_ok(s)
 	for (sp = s->str_text; *sp; ++sp)
 	{
 		/* C locale */
-		if (!isprint(*sp) || isspace(*sp) || strchr(horrible, *sp))
+		if
+		(
+			!isprint((unsigned char)*sp)
+		||
+			isspace((unsigned char)*sp)
+		||
+			strchr(horrible, *sp)
+		)
 			return 0;
 	}
 	return 1;

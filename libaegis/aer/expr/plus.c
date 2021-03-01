@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -136,8 +136,8 @@ plus_evaluate(this)
 
 	default:
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", lv2->method->name);
-		sub_var_set(scp, "Name2", "%s", rv2->method->name);
+		sub_var_set_charstar(scp, "Name1", lv2->method->name);
+		sub_var_set_charstar(scp, "Name2", rv2->method->name);
 		s = subst_intl(scp, i18n("illegal addition ($name1 + $name2)"));
 		sub_context_delete(scp);
 		vp = rpt_value_error(this->pos, s);
@@ -280,8 +280,8 @@ minus_evaluate(this)
 
 	default:
 		scp = sub_context_new();
-		sub_var_set(scp, "Name1", "%s", lv2->method->name);
-		sub_var_set(scp, "Name2", "%s", rv2->method->name);
+		sub_var_set_charstar(scp, "Name1", lv2->method->name);
+		sub_var_set_charstar(scp, "Name2", rv2->method->name);
 		s =
 			subst_intl
 			(
@@ -443,8 +443,8 @@ join_evaluate(this)
 		else
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "Name1", "%s", v1s->method->name);
-			sub_var_set(scp, "Name2", "%s", v2s->method->name);
+			sub_var_set_charstar(scp, "Name1", v1s->method->name);
+			sub_var_set_charstar(scp, "Name2", v2s->method->name);
 			s =
 				subst_intl
 				(

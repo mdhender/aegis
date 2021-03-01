@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+ *	Copyright (C) 1991-1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -70,11 +70,10 @@ review_pass_undo_help()
 }
 
 
-static void review_pass_undo_list _((void (*usage)(void)));
+static void review_pass_undo_list _((void));
 
 static void
-review_pass_undo_list(usage)
-	void		(*usage)_((void));
+review_pass_undo_list()
 {
 	string_ty	*project_name;
 
@@ -86,17 +85,17 @@ review_pass_undo_list(usage)
 		switch (arglex_token)
 		{
 		default:
-			generic_argument(usage);
+			generic_argument(review_pass_undo_usage);
 			continue;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				option_needs_name(arglex_token_project, usage);
+				option_needs_name(arglex_token_project, review_pass_undo_usage);
 			/* fall through... */
 
 		case arglex_token_string:
 			if (project_name)
-				duplicate_option_by_name(arglex_token_project, usage);
+				duplicate_option_by_name(arglex_token_project, review_pass_undo_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -127,6 +126,7 @@ review_pass_undo_main()
 	user_ty		*up;
 
 	trace(("review_pass_undo_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	change_number = 0;
 	while (arglex_token != arglex_token_eoln)
@@ -153,7 +153,7 @@ review_pass_undo_main()
 				sub_context_ty	*scp;
 
 				scp = sub_context_new();
-				sub_var_set(scp, "Number", "%ld", change_number);
+				sub_var_set_long(scp, "Number", change_number);
 				fatal_intl(scp, i18n("change $number out of range"));
 				/* NOTREACHED */
 				sub_context_delete(scp);
@@ -209,8 +209,9 @@ review_pass_undo_main()
 	cstate_data = change_cstate_get(cp);
 
 	/*
-	 * it is an error if the change is not in the 'being_reviewed' state.
-	 * it is an error if the current user is not the original reviewer
+	 * It is an error if the change is not in the 'awaiting
+	 * integration' state.	It is an error if the current user is
+	 * not the original reviewer
 	 */
 	if (cstate_data->state != cstate_state_awaiting_integration)
 		change_fatal(cp, 0, i18n("bad rpu state"));
@@ -251,20 +252,13 @@ review_pass_undo_main()
 void
 review_pass_undo()
 {
-	trace(("review_pass_undo()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		review_pass_undo_main();
-		break;
+		{ arglex_token_help,		review_pass_undo_help,	},
+		{ arglex_token_list,		review_pass_undo_list,	},
+	};
 
-	case arglex_token_help:
-		review_pass_undo_help();
-		break;
-
-	case arglex_token_list:
-		review_pass_undo_list(review_pass_undo_usage);
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("review_pass_undo()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), review_pass_undo_main);
+	trace(("}\n"));
 }

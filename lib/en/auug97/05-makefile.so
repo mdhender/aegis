@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1998 Peter Miller;
+.\"	Copyright (C) 1997, 1998, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -235,7 +235,7 @@ if you have a different compiler:
 box,center;
 lw(2.5i)f(CW).
 #!/bin/sh
-gcc -MM -MG $*
+gcc -MM -MG "$@"
 .TE
 This implementation of tracking C include dependencies
 has several serious flaws, but the one most commonly discovered
@@ -303,7 +303,7 @@ test: $(OBJ)
 include $(OBJ:.o=.d)
 .sp 0.2
 %.d: %.c
-  depend.sh $(CFLAGS) $< > $@
+  depend.sh $(CFLAGS) $* > $@
 .TE
 .LP
 This has one more thing to fix: just as the object (\f(CW.o\fP) files
@@ -313,12 +313,12 @@ so do the dependency (\f(CW.d\fP) files.
 \fIfile\fP\f(CW.d \fIfile\fP\f(CW.o:
 \fP\fIfile\fP\f(CW.c\fP \fIinclude\fP\f(CW.h\fP
 .LP
-This means tinkering with the \f(CWdepend.sh\fP script once more:
+This means tinkering with the \f(CWdepend.sh\fP script again:
 .TS
 box,center;
 lw(2.5i)f(CW).
 #!/bin/sh
-gcc -MM -MG $* |
+gcc -MM -MG "$@" |
 sed -e 's@^\e(.*\e)\e.o:@\e1.d \e1.o:@'
 .TE
 .LP
@@ -335,6 +335,38 @@ In the case of a build where nothing needs to be done,
 .I make
 will actually do nothing,
 and will work this out very quickly.
+.LP
+However, the above technique assumes your project fits enitrely within
+the one directory.  For large projects, this usually isn't the case.
+This means tinkering with the \f(CWdepend.sh\fP script again:
+.TS
+box,center;
+lw(2.5i)f(CW).
+#!/bin/sh
+DIR="$1"
+shift 1
+case "$DIR" in
+"" | ".")
+gcc -MM -MG "$@" |
+sed -e 's@^\e(.*\e)\e.o:@\e1.d \e1.o:@'
+;;
+*)
+gcc -MM -MG "$@" |
+sed -e "s@^\e(.*\e)\e.o:@$DIR/\e1.d $DIR/\e1.o:@"
+;;
+esac
+.TE
+And the rule needs to change, too, to pass the directory as the first
+argument, as the script expects.
+.TS
+box,center;
+lw(2.5i)f(CW).
+%.d: %.c
+  depend.sh `dirname $*` $(CFLAGS) $* > $@
+.TE
+Note that the \f[CW].d\fP files will be relative to the top level
+directory.  Writing them so that they can be used form any level is
+possible, but beyond the scope of this paper.
 .nh 2 "Multiplier"
 All of the inefficiencies described in this section compound together.
 If you do 100

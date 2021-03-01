@@ -120,8 +120,12 @@ export AEGIS_PROJECT
 #
 AEGIS_MESSAGE_LIBRARY=$work/no-such-dir
 export AEGIS_MESSAGE_LIBRARY
-unset LANG
-unset LANGUAGE
+# This next bit should read...
+#	unset LANG
+#	unset LANGUAGE
+# but RedHat 6.2 (libc2.1.3) dumps core in towupper if it isn't set.
+LANG=en; export LANG
+LANGUAGE=en; export LANGUAGE
 
 #
 # test the aesub functionality
@@ -186,9 +190,11 @@ date > $workchan/f1
 #
 # OK, now actually aesub something
 #
-activity="aesub 179"
+activity="aesub 193"
 $bin/aesub '$project' '${upcase $pr}' > test.out 2>&1
-if test $? -ne 0 ; then cat test.out; fail; fi
+q=$?
+test $q -ge 128 && xterm -e gdb -dir=$here/bl -dir=$here $bin/aesub core
+if test $q -ne 0 ; then cat test.out; fail; fi
 
 cat > ok << 'fubar'
 example EXAMPLE

@@ -109,6 +109,11 @@ developers_may_create_changes = boolean;
  * -User' command to force development of a change by a specific user.
  * All of the substitutions described in aesub(5) are available.  This
  * field is optional.
+ *
+ * Executed as: the new developer.
+ * Current directory: the development directory of the change
+ *	for the new developer.
+ * Exit status: ignored.
  */
 forced_develop_begin_notify_command = string;
 
@@ -118,6 +123,10 @@ forced_develop_begin_notify_command = string;
  *
  * This command could also be used to notify other management systems,
  * such as progress and defect tracking.
+ *
+ * Executed as: the developer.
+ * Current directory: the development directory of the change
+ * Exit status: ignored.
  */
 develop_end_notify_command = string;
 
@@ -128,6 +137,10 @@ develop_end_notify_command = string;
  *
  * This command could also be used to notify other management systems,
  * such as progress and defect tracking.
+ *
+ * Executed as: the developer.
+ * Current directory: the development directory of the change
+ * Exit status: ignored.
  */
 develop_end_undo_notify_command = string;
 
@@ -137,6 +150,10 @@ develop_end_undo_notify_command = string;
  *
  * This command could also be used to notify other management systems,
  * such as progress and defect tracking.
+ *
+ * Executed as: the reviewer.
+ * Current directory: the development directory of the change
+ * Exit status: ignored.
  */
 review_pass_notify_command = string;
 
@@ -147,6 +164,10 @@ review_pass_notify_command = string;
  *
  * This command could also be used to notify other management systems,
  * such as progress and defect tracking.
+ *
+ * Executed as: the reviewer.
+ * Current directory: the development directory of the change
+ * Exit status: ignored.
  */
 review_pass_undo_notify_command = string;
 
@@ -156,6 +177,10 @@ review_pass_undo_notify_command = string;
  *
  * This command could also be used to notify other management systems,
  * such as progress and defect tracking.
+ *
+ * Executed as: the reviewer.
+ * Current directory: the development directory of the change
+ * Exit status: ignored.
  */
 review_fail_notify_command = string;
 
@@ -165,6 +190,10 @@ review_fail_notify_command = string;
  *
  * This command could also be used to notify other management systems,
  * such as progress and defect tracking.
+ *
+ * Executed as: the project owner.
+ * Current directory: the new project baseline
+ * Exit status: ignored.
  */
 integrate_pass_notify_command = string;
 
@@ -174,6 +203,10 @@ integrate_pass_notify_command = string;
  *
  * This command could also be used to notify other management systems,
  * such as progress and defect tracking.
+ *
+ * Executed as: the integrator.
+ * Current directory: the development directory of the change
+ * Exit status: ignored.
  */
 integrate_fail_notify_command = string;
 

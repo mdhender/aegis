@@ -102,8 +102,8 @@ find_func(name)
 		if (s)
 		{
 			scp = sub_context_new();
-			sub_var_set(scp, "Name", "%S", name);
-			sub_var_set(scp, "Guess", "%S", s);
+			sub_var_set_string(scp, "Name", name);
+			sub_var_set_string(scp, "Guess", s);
 			error_intl(scp, i18n("no \"$name\", guessing \"$guess\""));
 			sub_context_delete(scp);
 		}

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1995, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1995, 1998, 1999, 2001 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -106,7 +106,7 @@ aenpr foo.7;T{
 foo, foo.7
 T}
 T{
-aegis -npr foo -vers ""
+aegis -npr foo -vers -
 T};foo
 .TE
 The last is a special case, to enable a project to be created with no
@@ -153,7 +153,7 @@ The most common cross branch merge is when the project's files
 are out-of-date.  Because it is not possible to use \fIaegis -diff
 -merge-only\fP directly on the branch, this must be in a change on
 the branch.  As a short-cut, the branch may be specified using the
-\fI\-grandpatent\fP option.
+\fI\-grandparent\fP option.
 .nh 2 "Multiple Branch Development"
 .LP
 It is very common for a bug fix to need to be applied to more than one
@@ -163,3 +163,4 @@ An alternative is to use the \fIaegis -clone\fP command, which can be
 used to identically reproduce a change on another branch.
 .so c9.1.so
 .so c9.2.so
+.so c9.3.so

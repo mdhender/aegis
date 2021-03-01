@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 1999 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -65,9 +65,9 @@ basename_run(ep, argc, argv)
 
 		scp = sub_context_new();
 		rpt_value_free(arg);
-		sub_var_set(scp, "Function", "basename");
-		sub_var_set(scp, "Number", "1");
-		sub_var_set(scp, "Name", "%s", argv[0]->method->name);
+		sub_var_set_charstar(scp, "Function", "basename");
+		sub_var_set_charstar(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
 		s =
 			subst_intl
 			(
@@ -145,9 +145,9 @@ dirname_run(ep, argc, argv)
 
 		scp = sub_context_new();
 		rpt_value_free(arg);
-		sub_var_set(scp, "Function", "dirname");
-		sub_var_set(scp, "Number", "1");
-		sub_var_set(scp, "Name", "%s", argv[0]->method->name);
+		sub_var_set_charstar(scp, "Function", "dirname");
+		sub_var_set_charstar(scp, "Number", "1");
+		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
 		s =
 			subst_intl
 			(

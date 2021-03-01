@@ -1,0 +1,124 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2000 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	Contributed by Scott Finneran <sfinneran@lucent.com>,
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the tkaer command.
+.\"
+.so z_name.so
+.ds n) tkaer
+.TH "\*(n)" 1 \*(N) "Reference Manual" ""
+.SH NAME
+\*(n) \- GUI tool for reviewing Aegis change sets, using TCL/TK
+.XX "tkaer(1)" "GUI tool for reviewing Aegis change sets, using TCL/TK"
+.SH SYNOPSIS
+.B \*(n)
+.SH DESCRIPTION
+The
+.I "\*(n)"
+command is used to provide an easy and convenient way to review Aegis
+change sets. It provides a front-end to other tools which are used to
+view the modifications.
+.PP
+Files in the change set are shown in one of four lists. The choice of
+list is based on the operation performed on the file by the change
+(create, modify, move or remove). Empty lists are not shown. The change
+details, as provided by \fIael\fP(1) may be displayed by clicking on the
+``Details'' button.
+.SH MODIFIED AND MOVED FILES
+\fItkdiff\fP is used to show the
+differenceces between the change and baseline versions of modified and
+moved files. (In the case of moved files, the original name is used to
+access the baseline
+version.)
+.PP
+Double-clicking button 1 on a file will show the differences
+between the change and the current branch baseline. Holding down button
+3 will invoke a pop-up menu presenting the reviewer with a list of
+grandparent branches which also contain the file. This is particularly
+useful when rolling in branches.
+.SH NEW AND REMOVED FILES
+New files are viewed by opening a new \fIxterm\fP and using \fIvi\fP (in
+read-only mode) to display its contents. This method is also used for
+removed files, however it is the baseline version that is displayed (so
+that the reviewer can see what has been removed).
+.SH ADDITIONAL FEATURES FOR REVIEWERS.
+If the change is in the
+.I "being reviewed"
+state, the reviewer may open the comments editor by clicking on the
+``Comments'' button. These comments will be submitted should the
+reviewer decide that the review has failed. An outline of the files
+included in the change is automatically created.
+.PP
+Once the review is
+complete, clicking the ``Finished'' button results in a dialog box which
+will allow the reviewer to pass or fail (via the \fIaerpass\fP(1) and
+\fIaerfail\fP(1) commands) the change. Alternatively, the reviewer may
+resume reviewing or quit, leaving the change state unmodified. If the
+change was not in the
+.I "being reviewed"
+state, the ``Finished'' button simply causes
+.I "\*(n)"
+to exit.
+.SH CONFIGURING TKAER
+.I "\*(n)"
+may be customised by the .tkaer file. This file is created by
+.I "\*(n)"
+in the users home directory when it is first run. This newly created
+file contains the default configuration as described above, such as the
+choice of tools used in reviewing. The configuration file itself is a
+tcl script which is executed by the
+.I "\*(n)"
+script using the \fItcl\fP ``source'' command. Each entry takes the form
+of a ``set'' statement which adds an item to the pref array. Items currently
+supported are:
+.PP
+.TP 8n
+\fBpref(diff_command)\fP
+This is the tool used to visually display the difference between a
+changes modified or moved file and the baseline version.
+.TP 8n
+\fBpref(view_command)\fP
+This is the tool used to visually display a new file or a removed files,
+prior contents. The default is \fIvi\fP(1)
+.TP 8n
+\fBpref(view_edit_font)\fP
+This is the font used by both the change details viewer and the review
+comments editor. Any available X11 font may be used.
+.PP
+.SH OPTIONS
+.so o_change.so
+.so o_project.so
+.so z_exit.so
+.SH SEE ALSO
+.TP 8n
+.IR aerpass (1)
+pass review of a change
+.TP 8n
+.IR aerfail (1)
+fail review of a change
+.TP 8n
+.IR tkaegis (1)
+GUI interface for Aegis, using TCL/TK
+.TP 8n
+.IR tkdiff
+by John M. Klassa. TkDiff Home Page http://www.accurev.com/free/tkdiff
+.SH AUTHOR
+\fI\*(n)\fP contributed by
+Scott Finneran <sfinneran@lucent.com>

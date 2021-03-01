@@ -1,6 +1,6 @@
-'\" t
+'\" tp
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1998 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1998, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -58,6 +58,26 @@ state to the
 state.
 The integration directory will be deleted.
 The change will cease to be assigned to the current user.
+.\" ------------------------------------------------------------------------
+.PS
+boxwid = 1
+down
+S4: box "awaiting" "integration"
+arrow " integrate" ljust " begin" ljust
+S5: box "being" "integrated"
+T4: spline -> from S5.w then left 0.5 then up 1 then to S4.w
+" integrate" ljust " begin" ljust " undo" ljust at T4.c - (0.5,0)
+.PE
+.\" ------------------------------------------------------------------------
+.LP
+In the unlikely event that an integrator has wandered away and left
+an integration incomplete (say, went on holidays and won't be back for
+two weeks), project administrators are also able to use this command.
+.SS Notification
+On successful completion of this command, the
+\fIintegration_\%begin_\%undo_\%command\fP field of the project
+\fIconfig\fP file is run, if set.  See \fIaepconf\fP(5) for more
+information.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so
@@ -74,7 +94,7 @@ The recommended alias for this command is
 .nf
 .ta 8n 16n
 csh%	alias aeibu '\*(n) -ibu \e!* -v'
-sh$	aeibu(){\*(n) -ibu $* -v}
+sh$	aeibu(){\*(n) -ibu "$@" -v}
 .fi
 .SH ERRORS
 It is an error if
@@ -83,7 +103,8 @@ the change is not in the
 state.
 .br
 It is an error if
-the change is not assigned to the current user.
+the change is not assigned to the current user
+and the current user is not a project administrator.
 .so z_exit.so
 .br
 .ne 1i

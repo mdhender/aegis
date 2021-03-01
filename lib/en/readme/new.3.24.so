@@ -1,0 +1,114 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2001 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 3.24 features
+.\"
+.PP
+.if n *
+.if t \(bu
+.\" change 31
+It is now possible to remove users who's accounts have been removed (the
+affects the \fIaera\fP(1), \fIaerd\fP(1), \fIaeri\fP(1) and \fIaerrv\fP(1)
+commands).
+.PP
+.if n *
+.if t \(bu
+.\" change 28
+There is a new \fI--description-only\fP option to the \fIaeca\fP(1)
+command.  This is useful for editing only the descrioption, and also
+for use within scripts.
+.PP
+.if n *
+.if t \(bu
+.\" change 27
+The \fI--file\fP option has now been generalized to accept ``-'' to mean
+the standard input.  This is useful in scripts.
+.PP
+.if n *
+.if t \(bu
+.\" change 26
+There is a new \fIaebuffy\fP(1) command, which may be used to see
+what changes a user has outstanding.  It needs X11 (Tk/Tcl) to work.
+Named after the \fIxbuffy\fP(1) command.
+.PP
+.if n *
+.if t \(bu
+.\" change 23
+The \fItkaer\fP(1) command now presents you with a ``detail'' button,
+so that you may see the change details when pwerforming a review.
+.PP
+.if n *
+.if t \(bu
+.\" change 21
+The restriction that placed the function name at the start of the command
+line (\fIe.g.\fP the ``\-cp'' of \fIaecp\fP) has been relaxed.  This may now
+appear anywhere on the command line.
+.PP
+.if n *
+.if t \(bu
+.\" change 20
+The Bourne / BASH shell aliases have been improved, so that they now
+preserve quoting of special characters and white space.  This dates from
+the earliest days of Aegis.  It's wonderful to have it fixed at last.
+.PP
+.if n *
+.if t \(bu
+.\" change 19
+There is a new \fIaemvu\fP(1) command, which may be used to undo the
+effects of an \fIaemv\fP(1) command.
+This should prove less confusing than the previous method.
+.PP
+.if n *
+.if t \(bu
+.\" change 18
+A big has been fixed in the \fIaemv\fP(1) command.
+It failed to accept the --base-relative option, even though it was
+documented to do so.
+.PP
+.if n *
+.if t \(bu
+.\" change 17
+A bug has been fixed in the quote_tcl() report function.  Is fixes the
+problem with getting the dollars sign into descriptions when using the
+\fItkaenc\fP(1) command.
+.PP
+.if n *
+.if t \(bu
+.\" change 15
+The SCCS section of the \fIUser Guide\fP and example configurations have
+been updated and confirmed to work correctly, however I've only tested
+this with GNU CSSC.
+.PP
+.if n *
+.if t \(bu
+.\" change 12
+A bug in the file name handling has been fixed.  This was
+most obvious around the \fIaecpu\fP(1) command when you had
+\fIcreate_\%symlinks_\%before_\%build\fP turned on and you were using
+an automounter, but it occured at other times as well.
+.PP
+.if n *
+.if t \(bu
+.\" change 11
+The \fIaeimport\fP(1) command now understands the SCCS format.
+If the comments in GNU CSSC are accurate, this also means you can import
+BitKeeper repositories, however I am unable to confirm this.
+.\" ------------------------------------------------------------------------
+.\" Place new text above this line.
+.SS Version 3.24

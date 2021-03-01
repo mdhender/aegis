@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2001 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -97,6 +97,7 @@ project_alias_remove_main()
 	sub_context_ty	*scp;
 
 	trace(("project_alias_remove_main()\n{\n"/*}*/));
+	arglex();
 	project_name = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
@@ -153,7 +154,7 @@ project_alias_remove_main()
 	if (!gonzo_alias_to_actual(project_name))
 	{
 		scp = sub_context_new();
-		sub_var_set(scp, "Name", "%S", project_name);
+		sub_var_set_string(scp, "Name", project_name);
 		project_fatal(pp, scp, i18n("project alias $name exists not"));
 		/* NOTREACHED */
 	}
@@ -186,7 +187,7 @@ project_alias_remove_main()
 	 * verbose success message
 	 */
 	scp = sub_context_new();
-	sub_var_set(scp, "Name", "%S", project_name);
+	sub_var_set_string(scp, "Name", project_name);
 	project_verbose(pp, scp, i18n("remove project alias $name complete"));
 	sub_context_delete(scp);
 
@@ -203,20 +204,13 @@ project_alias_remove_main()
 void
 project_alias_remove()
 {
-	trace(("project_alias_remove()\n{\n"/*}*/));
-	switch (arglex())
+	static arglex_dispatch_ty dispatch[] =
 	{
-	default:
-		project_alias_remove_main();
-		break;
+		{ arglex_token_help,		project_alias_remove_help,	},
+		{ arglex_token_list,		project_alias_remove_list,	},
+	};
 
-	case arglex_token_help:
-		project_alias_remove_help();
-		break;
-
-	case arglex_token_list:
-		project_alias_remove_list();
-		break;
-	}
-	trace((/*{*/"}\n"));
+	trace(("project_alias_remove()\n{\n"));
+	arglex_dispatch(dispatch, SIZEOF(dispatch), project_alias_remove_main);
+	trace(("}\n"));
 }
