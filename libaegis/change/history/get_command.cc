@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate get_commands
 //
@@ -35,8 +34,8 @@
 
 
 void
-change_run_history_get_command(change_ty *cp, fstate_src_ty *src,
-    string_ty *output_file, user_ty *up)
+change_run_history_get_command(change::pointer cp, fstate_src_ty *src,
+    string_ty *output_file_name, user_ty::pointer up)
 {
     sub_context_ty  *scp;
     string_ty       *hp;
@@ -53,11 +52,25 @@ change_run_history_get_command(change_ty *cp, fstate_src_ty *src,
     assert(src->edit);
     assert(src->edit->revision);
     if (src->edit->encoding == history_version_encoding_none)
-	name_of_encoded_file = output_file;
+	name_of_encoded_file = output_file_name;
     else
 	name_of_encoded_file = os_edit_filename(0);
     trace(("file name = \"%s\";\n", src->file_name->str_text));
     trace(("edit number = \"%s\";\n", src->edit->revision->str_text));
+
+    //
+    // Inform the user of what we are doing, just in case they can't
+    // tell from the file names.  For example, with a base-64 encoded
+    // input file and a UUID history file the user has no way of knowing
+    // which source file this concerns.
+    //
+    scp = sub_context_new();
+    scp->var_set_string("File_Name", src->file_name);
+    scp->var_set_string("Edit", src->edit->revision);
+    scp->var_optional("Edit");
+    change_error(cp, scp, i18n("history get $filename"));
+    sub_context_delete(scp);
+    scp = 0;
 
     //
     // If the edit numbers differ, extract the
@@ -114,14 +127,14 @@ change_run_history_get_command(change_ty *cp, fstate_src_ty *src,
     //
     change_env_set(cp, 0);
     hp = cp->pp->history_path_get();
-    user_become(up);
+    up->become_begin();
     os_execute(the_command, OS_EXEC_FLAG_NO_INPUT | OS_EXEC_FLAG_SILENT, hp);
-    user_become_undo();
+    up->become_end();
     str_free(the_command);
 
     if (src->edit->encoding == history_version_encoding_none)
     {
-	assert(name_of_encoded_file == output_file);
+	assert(name_of_encoded_file == output_file_name);
 	trace(("}\n"));
 	return;
     }
@@ -131,7 +144,7 @@ change_run_history_get_command(change_ty *cp, fstate_src_ty *src,
     //
     os_become_orig();
     input ip = input_file_text_open(name_of_encoded_file);
-    op = output_file_binary_open(output_file);
+    op = output_file_binary_open(output_file_name);
     switch (src->edit->encoding)
     {
     case history_version_encoding_none:

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001, 2002, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -26,9 +25,15 @@
 #include <common/main.h>
 #include <common/ac/pwd.h>
 
+struct nstring; // forward
 struct string_ty; // forward
 
-struct passwd *getpwnam_cached(struct string_ty *name);
-struct passwd *getpwuid_cached(int uid);
+passwd *getpwnam_cached(const nstring &name);
+nstring getpwnam_fuzzy(const nstring &name);
+
+// DEPRECATED
+passwd *getpwnam_cached(struct string_ty *name);
+
+passwd *getpwuid_cached(int uid);
 
 #endif // LIBAEGIS_GETPW_CACHE_H

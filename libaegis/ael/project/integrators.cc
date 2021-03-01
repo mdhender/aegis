@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -34,77 +33,68 @@
 
 
 void
-list_integrators(string_ty *project_name,
-                 long change_number,
-                 string_list_ty *args)
+list_integrators(string_ty *project_name, long change_number, string_list_ty *)
 {
-	project_ty	*pp;
-	output_ty	*login_col = 0;
-	output_ty	*name_col = 0;
-	int		j;
-	string_ty	*line1;
-	int		left;
-	col_ty		*colp;
+    project_ty      *pp;
+    output_ty       *login_col = 0;
+    output_ty       *name_col = 0;
+    string_ty       *line1;
+    int	            left;
+    col          *colp;
 
-	trace(("list_integrators()\n{\n"));
-	if (change_number)
-		list_change_inappropriate();
+    trace(("list_integrators()\n{\n"));
+    if (change_number)
+	list_change_inappropriate();
 
-	//
-	// locate project data
-	//
-	if (!project_name)
-		project_name = user_default_project();
-	else
-		project_name = str_copy(project_name);
-	pp = project_alloc(project_name);
-	str_free(project_name);
-	pp->bind_existing();
+    //
+    // locate project data
+    //
+    if (!project_name)
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
+    else
+	project_name = str_copy(project_name);
+    pp = project_alloc(project_name);
+    str_free(project_name);
+    pp->bind_existing();
 
-	//
-	// create the columns
-	//
-	colp = col_open((string_ty *)0);
-	line1 = str_format("Project \"%s\"", project_name_get(pp)->str_text);
-	col_title(colp, line1->str_text, "List of Integrators");
-	str_free(line1);
+    //
+    // create the columns
+    //
+    colp = col::open((string_ty *)0);
+    line1 = str_format("Project \"%s\"", project_name_get(pp)->str_text);
+    colp->title(line1->str_text, "List of Integrators");
+    str_free(line1);
 
-	left = 0;
-	login_col = col_create(colp, left, left + LOGIN_WIDTH, "User\n------");
-	left += LOGIN_WIDTH + 2;
+    left = 0;
+    login_col = colp->create(left, left + LOGIN_WIDTH, "User\n------");
+    left += LOGIN_WIDTH + 2;
 
+    if (!option_terse_get())
+    {
+	name_col = colp->create(left, 0, "Full Name\n-----------");
+    }
+
+    //
+    // list the project's integrators
+    //
+    for (int j = 0; ; ++j)
+    {
+	nstring logname(project_integrator_nth(pp, j));
+	if (logname.empty())
+	    break;
+	login_col->fputs(logname);
 	if (!option_terse_get())
-	{
-		name_col =
-			col_create
-			(
-				colp,
-				left,
-				0,
-				"Full Name\n-----------"
-			);
-	}
+	    name_col->fputs(user_ty::full_name(logname));
+	colp->eoln();
+    }
 
-	//
-	// list the project's integrators
-	//
-	for (j = 0; ; ++j)
-	{
-		string_ty	*logname;
-
-		logname = project_integrator_nth(pp, j);
-		if (!logname)
-			break;
-		login_col->fputs(logname);
-		if (!option_terse_get())
-			name_col->fputs(user_full_name(logname));
-		col_eoln(colp);
-	}
-
-	//
-	// clean up and go home
-	//
-	col_close(colp);
-	project_free(pp);
-	trace(("}\n"));
+    //
+    // clean up and go home
+    //
+    delete colp;
+    project_free(pp);
+    trace(("}\n"));
 }

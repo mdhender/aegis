@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995, 1996, 1998, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1995, 1996, 1998, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,180 +13,148 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement the builtin wrap function
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
 
+#include <common/stracc.h>
+#include <common/trace.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/func/wrap.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/integer.h>
 #include <libaegis/aer/value/list.h>
 #include <libaegis/aer/value/string.h>
-#include <common/mem.h>
 #include <libaegis/sub.h>
 
 
-static int
-wrap_verify(rpt_expr_ty *ep)
+rpt_func_wrap::~rpt_func_wrap()
 {
-    return (ep->nchild == 2);
 }
 
 
-static string_ty *
-trim(string_ty *s)
+rpt_func_wrap::rpt_func_wrap()
 {
-    static size_t   buflen;
-    static char	    *buf;
-    char	    *bp;
-    char	    *sp;
-
-    if (buflen < s->str_length)
-    {
-	buflen = s->str_length;
-	buf = (char *)mem_change_size(buf, buflen);
-    }
-    bp = buf;
-    sp = s->str_text;
-    while (*sp && *sp != '\n' && isspace((unsigned char)*sp))
-	++sp;
-    while (*sp)
-    {
-	if (!*sp)
-	    break;
-	if (*sp == '\n')
-	{
-	    *bp++ = *sp++;
-	    while (*sp && *sp != '\n' && isspace((unsigned char)*sp))
-	       	++sp;
-	}
-	else if (isspace((unsigned char)*sp))
-	{
-	    *bp++ = ' ';
-	    do
-	       	++sp;
-	    while
-	       	(*sp && *sp != '\n' && isspace((unsigned char)*sp));
-	    if (!*sp || *sp == '\n')
-	       	--bp;
-	}
-	else
-	    *bp++ = *sp++;
-    }
-    return str_n_from_c(buf, bp - buf);
 }
 
 
-static rpt_value_ty *
-wrap_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func::pointer
+rpt_func_wrap::create()
 {
-    rpt_value_ty    *a1;
-    rpt_value_ty    *a2;
-    rpt_value_ty    *result;
-    rpt_value_ty    *tmp;
-    string_ty	    *subject;
-    string_ty	    *s;
-    long	    width;
-    char	    *sp;
+    return pointer(new rpt_func_wrap());
+}
 
-    a1 = rpt_value_stringize(argv[0]);
-    if (a1->method->type != rpt_value_type_string)
+
+const char *
+rpt_func_wrap::name()
+    const
+{
+    return "wrap";
+}
+
+
+bool
+rpt_func_wrap::optimizable()
+    const
+{
+    return true;
+}
+
+
+bool
+rpt_func_wrap::verify(const rpt_expr::pointer &ep)
+    const
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return (ep->get_nchildren() == 2);
+}
+
+
+rpt_value::pointer
+rpt_func_wrap::run(const rpt_expr::pointer &ep, size_t,
+    rpt_value::pointer *argv) const
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    rpt_value::pointer a1 = rpt_value::stringize(argv[0]);
+    rpt_value_string *a1sp = dynamic_cast<rpt_value_string *>(a1.get());
+    if (!a1sp)
     {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
-	rpt_value_free(a1);
-	sub_var_set_charstar(scp, "Function", "wrap");
-	sub_var_set_long(scp, "Number", 1);
-	sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "wrap");
+	sc.var_set_long("Number", 1);
+	sc.var_set_charstar("Name", argv[0]->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
-    i18n("$function: argument $number: string value required (was given $name)")
-	    );
-	sub_context_delete(scp);
-	tmp = rpt_value_error(ep->pos, s);
-	str_free(s);
-	return tmp;
+                i18n("$function: argument $number: string value required "
+                    "(was given $name)")
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
-    subject = trim(rpt_value_string_query(a1));
-    rpt_value_free(a1);
+    nstring subject(a1sp->query());
+    subject = subject.trim_lines();
 
-    a2 = rpt_value_integerize(argv[1]);
-    if (a2->method->type != rpt_value_type_integer)
+    rpt_value::pointer a2 = rpt_value::integerize(argv[1]);
+    rpt_value_integer *a2ip = dynamic_cast<rpt_value_integer *>(a2.get());
+    if (!a2ip)
     {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
-	rpt_value_free(a2);
-	sub_var_set_charstar(scp, "Function", "wrap");
-	sub_var_set_long(scp, "Number", 2);
-	sub_var_set_charstar(scp, "Name", argv[1]->method->name);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "wrap");
+	sc.var_set_long("Number", 2);
+	sc.var_set_charstar("Name", argv[1]->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
-   i18n("$function: argument $number: integer value required (was given $name)")
-	    );
-	sub_context_delete(scp);
-	tmp = rpt_value_error(ep->pos, s);
-	str_free(s);
-	return tmp;
+                i18n("$function: argument $number: integer value "
+                    "required (was given $name)")
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
-    width = rpt_value_integer_query(a2);
-    rpt_value_free(a2);
+    long width = a2ip->query();
     if (width < 1)
     {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Function", "wrap");
-	sub_var_set_long(scp, "Number", 2);
-	sub_var_set_long(scp, "Value", width);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "wrap");
+	sc.var_set_long("Number", 2);
+	sc.var_set_long("Value", width);
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
 		i18n("$function: argument $number: width $value out of range")
-	    );
-	sub_context_delete(scp);
-	tmp = rpt_value_error(ep->pos, s);
-	str_free(s);
-	return tmp;
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
 
     //
     // the result is a list
     // create an empty one se we can start filling it
     //
-    result = rpt_value_list();
+    rpt_value_list *p = new rpt_value_list();
+    rpt_value::pointer result(p);
 
-    sp = subject->str_text;
+    const char *sp = subject.c_str();
     while (*sp)
     {
-	char		*end_p;
-	string_ty	*os;
-
 	//
 	// find where the line ends
 	//
-	end_p = sp;
+	const char *end_p = sp;
 	while (end_p - sp < width && *end_p && *end_p != '\n')
 	    ++end_p;
 	if (*end_p && *end_p != '\n')
 	{
-	    char	    *w;
-
 	    //
 	    // see if there is a better place to wrap
 	    //
-	    w = end_p;
+	    const char *w = end_p;
 	    while (w > sp && !isspace((unsigned char)(w[-1])))
 		--w;
 	    if (w > sp + 1)
@@ -205,11 +172,9 @@ wrap_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 	//
 	// append the line to the result
 	//
-	os = str_n_from_c(sp, end_p - sp);
-	tmp = rpt_value_string(os);
-	str_free(os);
-	rpt_value_list_append(result, tmp);
-	rpt_value_free(tmp);
+	nstring os(sp, end_p - sp);
+	rpt_value::pointer tmp = rpt_value_string::create(os);
+	p->append(tmp);
 
 	//
 	// skip line terminator and spaces
@@ -221,135 +186,136 @@ wrap_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 	    ++sp;
     }
 
-    //
-    // clean up and go home
-    //
-    str_free(subject);
     return result;
 }
 
 
-rpt_func_ty rpt_func_wrap =
+rpt_func_wrap_html::~rpt_func_wrap_html()
 {
-    "wrap",
-    1, // optimizable
-    wrap_verify,
-    wrap_run
-};
-
-
-static int
-wrap_html_verify(rpt_expr_ty *ep)
-{
-    return (ep->nchild == 2);
 }
 
 
-static rpt_value_ty *
-wrap_html_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func_wrap_html::rpt_func_wrap_html()
 {
-    rpt_value_ty    *a1;
-    rpt_value_ty    *a2;
-    rpt_value_ty    *result;
-    rpt_value_ty    *tmp;
-    string_ty	    *subject;
-    string_ty	    *s;
-    long	    width;
-    char	    *sp;
+}
 
-    a1 = rpt_value_stringize(argv[0]);
-    if (a1->method->type != rpt_value_type_string)
+
+rpt_func::pointer
+rpt_func_wrap_html::create()
+{
+    return pointer(new rpt_func_wrap_html());
+}
+
+
+const char *
+rpt_func_wrap_html::name()
+    const
+{
+    return "wrap_html";
+}
+
+
+bool
+rpt_func_wrap_html::optimizable()
+    const
+{
+    return true;
+}
+
+
+bool
+rpt_func_wrap_html::verify(const rpt_expr::pointer &ep)
+    const
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return (ep->get_nchildren() == 2);
+}
+
+
+rpt_value::pointer
+rpt_func_wrap_html::run(const rpt_expr::pointer &ep, size_t,
+    rpt_value::pointer *argv) const
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    rpt_value::pointer a1 = rpt_value::stringize(argv[0]);
+    rpt_value_string *a1sp = dynamic_cast<rpt_value_string *>(a1.get());
+    if (!a1sp)
     {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
-	rpt_value_free(a1);
-	sub_var_set_charstar(scp, "Function", "wrap");
-	sub_var_set_long(scp, "Number", 1);
-	sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "wrap");
+	sc.var_set_long("Number", 1);
+	sc.var_set_charstar("Name", argv[0]->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
-    i18n("$function: argument $number: string value required (was given $name)")
-	    );
-	sub_context_delete(scp);
-	tmp = rpt_value_error(ep->pos, s);
-	str_free(s);
-	return tmp;
+                i18n("$function: argument $number: string value required "
+                    "(was given $name)")
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
-    subject = trim(rpt_value_string_query(a1));
-    rpt_value_free(a1);
+    nstring subject(a1sp->query());
+    subject = subject.trim_lines();
 
-    a2 = rpt_value_integerize(argv[1]);
-    if (a2->method->type != rpt_value_type_integer)
+    rpt_value::pointer a2 = rpt_value::integerize(argv[1]);
+    rpt_value_integer *a2ip = dynamic_cast<rpt_value_integer *>(a2.get());
+    if (!a2ip)
     {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
-	rpt_value_free(a2);
-	sub_var_set_charstar(scp, "Function", "wrap");
-	sub_var_set_long(scp, "Number", 2);
-	sub_var_set_charstar(scp, "Name", argv[1]->method->name);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "wrap");
+	sc.var_set_long("Number", 2);
+	sc.var_set_charstar("Name", argv[1]->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
-   i18n("$function: argument $number: integer value required (was given $name)")
-	    );
-	sub_context_delete(scp);
-	tmp = rpt_value_error(ep->pos, s);
-	str_free(s);
-	return tmp;
+                i18n("$function: argument $number: integer value "
+                    "required (was given $name)")
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
-    width = rpt_value_integer_query(a2);
-    rpt_value_free(a2);
+    long width = a2ip->query();
+
     if (width < 1)
     {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Function", "wrap");
-	sub_var_set_long(scp, "Number", 2);
-	sub_var_set_long(scp, "Value", width);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "wrap");
+	sc.var_set_long("Number", 2);
+	sc.var_set_long("Value", width);
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
 	        i18n("$function: argument $number: width $value out of range")
-	    );
-	sub_context_delete(scp);
-	tmp = rpt_value_error(ep->pos, s);
-	str_free(s);
-	return tmp;
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
 
     //
     // the result is a list
     // create an empty one se we can start filling it
     //
-    result = rpt_value_list();
+    rpt_value_list *p = new rpt_value_list();
+    rpt_value::pointer result(p);
 
-    sp = subject->str_text;
+    const char *sp = subject.c_str();
     while (*sp)
     {
-	char		*end_p;
-	string_ty	*os;
-
 	//
 	// find where the line ends
 	//
-	end_p = sp;
+	const char *end_p = sp;
 	while (end_p - sp < width && *end_p && *end_p != '\n')
 	    ++end_p;
 	if (*end_p && *end_p != '\n')
 	{
-	    char	    *w;
-
 	    //
 	    // see if there is a better place to wrap
 	    //
-	    w = end_p;
+	    const char *w = end_p;
 	    while (w > sp && !isspace((unsigned char)(w[-1])))
 		--w;
 	    if (w > sp + 1)
@@ -367,11 +333,9 @@ wrap_html_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 	//
 	// append the line to the result
 	//
-	os = str_n_from_c(sp, end_p - sp);
-	tmp = rpt_value_string(os);
-	str_free(os);
-	rpt_value_list_append(result, tmp);
-	rpt_value_free(tmp);
+	nstring os(sp, end_p - sp);
+	rpt_value::pointer tmp = rpt_value_string::create(os);
+	p->append(tmp);
 
 	//
 	// skip line terminator and spaces
@@ -387,37 +351,20 @@ wrap_html_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 	    ++sp;
 	    if (*sp && isspace((unsigned char)*sp))
 	    {
-		os = str_from_c("<p>");
-		tmp = rpt_value_string(os);
-		str_free(os);
-		rpt_value_list_append(result, tmp);
-		rpt_value_free(tmp);
+		os = nstring("<p>");
+		tmp = rpt_value_string::create(os);
+		p->append(tmp);
 	    }
 	    else
 	    {
-		os = str_from_c("<br>");
-		tmp = rpt_value_string(os);
-		str_free(os);
-		rpt_value_list_append(result, tmp);
-		rpt_value_free(tmp);
+		os = nstring("<br>");
+		tmp = rpt_value_string::create(os);
+		p->append(tmp);
 	    }
 	}
 	while (*sp && isspace((unsigned char)*sp))
 	    ++sp;
     }
 
-    //
-    // clean up and go home
-    //
-    str_free(subject);
     return result;
 }
-
-
-rpt_func_ty rpt_func_wrap_html =
-{
-    "wrap_html",
-    1, // optimizable
-    wrap_html_verify,
-    wrap_html_run
-};

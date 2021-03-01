@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement new release
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
@@ -157,21 +154,19 @@ new_release_main(void)
     size_t	    j;
     size_t	    k;
     pstate_ty	    *pstate_data[2];
-    string_ty	    *home;
     string_ty	    *s1;
-    string_ty	    *s2;
     string_ty	    *project_name[2];
     int		    project_name_count;
     project_ty	    *pp[2];
     project_ty	    *ppp;
-    change_ty	    *cp;
+    change::pointer cp;
     cstate_history_ty *chp;
     cstate_ty       *cstate_data;
     copy_tree_arg_ty info;
     log_style_ty    log_style;
-    user_ty	    *up;
-    user_ty	    *pup;
-    user_ty	    *pup1;
+    user_ty::pointer up;
+    user_ty::pointer pup;
+    user_ty::pointer pup1;
     long	    new_version_number[10];
     int		    new_version_number_length;
     string_ty	    *new_version_string;
@@ -183,7 +178,7 @@ new_release_main(void)
     trace(("new_release_main()\n{\n"));
     arglex();
     log_style = log_style_create_default;
-    home = 0;
+    nstring home;
     project_name_count = 0;
     new_version_number[0] = NOT_GIVEN;
     new_version_number[1] = NOT_GIVEN;
@@ -220,11 +215,9 @@ new_release_main(void)
 		    new_release_usage
 		);
 	    }
-	    s1 = str_from_c(arglex_value.alv_string);
 	    os_become_orig();
-	    home = os_pathname(s1, 1);
+	    home = os_pathname(arglex_value.alv_string, true);
 	    os_become_undo();
-	    str_free(s1);
 	    break;
 
 	case arglex_token_major:
@@ -314,7 +307,7 @@ new_release_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(new_release_usage);
+	    user_ty::lock_wait_argument(new_release_usage);
 	    break;
 	}
 	arglex();
@@ -356,13 +349,13 @@ new_release_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp[0]);
+    up = user_ty::create();
 
     //
     // it is an error if the current user is not an administrator
     // of the old project.
     //
-    if (!project_administrator_query(pp[0], user_name(up)))
+    if (!project_administrator_query(pp[0], up->name()))
 	project_fatal(pp[0], 0, i18n("not an administrator"));
 
     //
@@ -538,17 +531,14 @@ new_release_main(void)
     //
     if (!home)
     {
-	int		max;
-
-	s2 = user_default_project_directory(pup);
-	assert(s2);
+	nstring s3 = pup->default_project_directory();
+	assert(s3);
 	os_become_orig();
-	max = os_pathconf_name_max(s2);
+	int max = os_pathconf_name_max(s3);
 	os_become_undo();
 	if (project_name[1]->str_length > (size_t)max)
 	    fatal_project_name_too_long(project_name[1], max);
-	home = os_path_join(s2, project_name[1]);
-	str_free(s2);
+	home = os_path_join(s3, nstring(project_name[1]));
 
 	scp = sub_context_new();
 	sub_var_set_string(scp, "File_Name", home);
@@ -556,7 +546,6 @@ new_release_main(void)
 	sub_context_delete(scp);
     }
     pp[1]->home_path_set(home);
-    str_free(home);
 
     //
     // take the relevant locks
@@ -572,7 +561,7 @@ new_release_main(void)
     // Create the directory and subdirectories.
     // It is an error if the directories can't be created.
     //
-    home = pp[1]->home_path_get();
+    home = nstring(pp[1]->home_path_get());
     bl = pp[1]->baseline_path_get();
     hp = pp[1]->history_path_get();
     ip = pp[1]->info_path_get();
@@ -585,7 +574,7 @@ new_release_main(void)
     undo_rmdir_errok(hp);
     os_mkdir(ip, 02755);
     undo_rmdir_errok(ip);
-    project_become_undo();
+    project_become_undo(pp[1]);
 
     //
     // create a new release state file
@@ -599,7 +588,7 @@ new_release_main(void)
 	s1 = project_administrator_nth(pp[0], j);
 	if (!s1)
 	    break;
-	project_administrator_add(pp[1], s1);
+	project_administrator_add(pp[1], nstring(s1));
     }
 
     // developers
@@ -608,7 +597,7 @@ new_release_main(void)
 	s1 = project_developer_nth(pp[0], j);
 	if (!s1)
 	    break;
-	project_developer_add(pp[1], s1);
+	project_developer_add(pp[1], nstring(s1));
     }
 
     // reviewers
@@ -617,7 +606,7 @@ new_release_main(void)
 	s1 = project_reviewer_nth(pp[0], j);
 	if (!s1)
 	    break;
-	project_reviewer_add(pp[1], s1);
+	project_reviewer_add(pp[1], nstring(s1));
     }
 
     // integrators
@@ -626,7 +615,7 @@ new_release_main(void)
 	s1 = project_integrator_nth(pp[0], j);
 	if (!s1)
 	    break;
-	project_integrator_add(pp[1], s1);
+	project_integrator_add(pp[1], nstring(s1));
     }
 
     //
@@ -756,7 +745,7 @@ new_release_main(void)
     change_number = project_next_change_number(ppp, 1);
     cp = change_alloc(ppp, change_number);
     change_bind_new(cp);
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     scp = sub_context_new();
     sub_var_set_string(scp, "Name", project_name[0]);
     cstate_data->brief_description =
@@ -812,13 +801,11 @@ new_release_main(void)
 	if (!p_src_data)
 	    break;
 
-	p1_src_data = project_file_new(ppp, p_src_data->file_name);
+	p1_src_data = ppp->file_new(p_src_data);
 	p1_src_data->action = file_action_create;
-	change_file_copy_basic_attributes(p1_src_data, p_src_data);
 
-	c_src_data = change_file_new(cp, p_src_data->file_name);
+	c_src_data = cp->file_new(p_src_data);
 	c_src_data->action = file_action_create;
-	change_file_copy_basic_attributes(c_src_data, p_src_data);
 
 	//
 	// copy testing correlations
@@ -831,10 +818,8 @@ new_release_main(void)
                 (fstate_src_test_list_ty *)fstate_src_test_list_type.alloc();
 	    for (m = 0; m < p_src_data->test->length; ++m)
 	    {
-		string_ty	**addr_p;
-		type_ty		*type_p;
-
-		addr_p =
+		meta_type *type_p = 0;
+		string_ty **addr_p =
 		    (string_ty **)
 		    fstate_src_test_list_type.list_parse
 		    (
@@ -863,7 +848,7 @@ new_release_main(void)
     project_verbose(ppp, 0, i18n("copy baseline"));
     project_become(ppp);
     dir_walk(info.from, copy_tree_callback, &info);
-    project_become_undo();
+    project_become_undo(ppp);
 
     //
     // Build all of the difference files,
@@ -914,7 +899,7 @@ new_release_main(void)
         }
 	project_become(ppp);
 	change_fingerprint_same(src_data->file_fp, path, 1);
-	project_become_undo();
+	project_become_undo(ppp);
 
 	//
 	// Don't bother differencing the file for the project
@@ -946,13 +931,11 @@ new_release_main(void)
 	//
 	if (!src_data->diff_file_fp)
 	    src_data->diff_file_fp = (fingerprint_ty *)fingerprint_type.alloc();
-	user_become(pup1);
+        user_ty::become scoped(pup1);
 	change_fingerprint_same(src_data->diff_file_fp, path_d, 1);
-	user_become_undo();
 	str_free(path);
 	str_free(path_d);
     }
-    user_free(pup1);
 
     //
     // build history files
@@ -1035,8 +1018,6 @@ new_release_main(void)
     str_free(project_name[1]);
     project_free(pp[1]);
     change_free(cp);
-    user_free(up);
-    user_free(pup);
     trace(("}\n"));
 }
 
@@ -1046,8 +1027,8 @@ new_release(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, new_release_help, },
-	{arglex_token_list, new_release_list, },
+	{ arglex_token_help, new_release_help, 0 },
+	{ arglex_token_list, new_release_list, 0 },
     };
 
     trace(("new_release()\n{\n"));

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995, 1996, 1999, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1995, 1996, 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,93 +13,110 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement the builtin wrap function
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
 
+#include <common/error.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/func/split.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/list.h>
 #include <libaegis/aer/value/string.h>
-#include <common/error.h>
 #include <libaegis/sub.h>
 
 
-static int
-verify(rpt_expr_ty *ep)
+rpt_func_split::~rpt_func_split()
 {
-    return (ep->nchild == 2);
 }
 
 
-static rpt_value_ty *
-run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func_split::rpt_func_split()
 {
-    rpt_value_ty    *a1;
-    rpt_value_ty    *a2;
-    rpt_value_ty    *result;
-    rpt_value_ty    *tmp;
-    char            *sp;
-    const char      *sep;
+}
 
-    a1 = argv[0];
-    assert(a1->method->type != rpt_value_type_error);
-    a1 = rpt_value_stringize(a1);
-    if (a1->method->type != rpt_value_type_string)
+
+rpt_func::pointer
+rpt_func_split::create()
+{
+    return pointer(new rpt_func_split());
+}
+
+
+const char *
+rpt_func_split::name()
+    const
+{
+    return "split";
+}
+
+
+bool
+rpt_func_split::optimizable()
+    const
+{
+    return true;
+}
+
+
+bool
+rpt_func_split::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 2);
+}
+
+
+rpt_value::pointer
+rpt_func_split::run(const rpt_expr::pointer &ep, size_t,
+    rpt_value::pointer *argv) const
+{
+    rpt_value::pointer a1 = argv[0];
+    assert(!a1->is_an_error());
+    a1 = rpt_value::stringize(a1);
+    rpt_value_string *a1sp = dynamic_cast<rpt_value_string *>(a1.get());
+    if (!a1sp)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Function", "split");
-	sub_var_set_long(scp, "Number", 1);
-	sub_var_set_charstar(scp, "Name", a1->method->name);
-	rpt_value_free(a1);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "split");
+	sc.var_set_long("Number", 1);
+	sc.var_set_charstar("Name", a1->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
-    i18n("$function: argument $number: string value required (was given $name)")
-	    );
-	sub_context_delete(scp);
-	tmp = rpt_value_error(ep->pos, s);
-	str_free(s);
-	return tmp;
+                i18n("$function: argument $number: string value required "
+                    "(was given $name)")
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
 
-    a2 = argv[1];
-    assert(a2->method->type != rpt_value_type_error);
-    a2 = rpt_value_stringize(a2);
-    if (a2->method->type != rpt_value_type_string)
+    rpt_value::pointer a2 = argv[1];
+    assert(!a2->is_an_error());
+    a2 = rpt_value::stringize(a2);
+    rpt_value_string *a2sp = dynamic_cast<rpt_value_string *>(a2.get());
+    if (!a2sp)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	rpt_value_free(a1);
-	sub_var_set_charstar(scp, "Function", "split");
-	sub_var_set_long(scp, "Number", 2);
-	sub_var_set_charstar(scp, "Name", a2->method->name);
-	rpt_value_free(a2);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "split");
+	sc.var_set_long("Number", 2);
+	sc.var_set_charstar("Name", a2->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
-    i18n("$function: argument $number: string value required (was given $name)")
-	    );
-	sub_context_delete(scp);
-	tmp = rpt_value_error(ep->pos, s);
-	str_free(s);
-	return tmp;
+                i18n("$function: argument $number: string value required "
+                    "(was given $name)")
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
 
-    sp = rpt_value_string_query(a1)->str_text;
-    sep = rpt_value_string_query(a2)->str_text;
+    const char *sp = a1sp->query().c_str();
+    const char *sep = a2sp->query().c_str();
     if (!*sep)
 	sep = " \n\r\t\f\b";
 
@@ -108,28 +124,23 @@ run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
     // the result is a list
     // create an empty one so we can start filling it
     //
-    result = rpt_value_list();
-
+    rpt_value_list *rlp = new rpt_value_list();
+    rpt_value::pointer result(rlp);
     while (*sp)
     {
-	char		*end_p;
-	string_ty	*os;
-
 	//
 	// find where the line ends
 	//
-	end_p = sp;
+	const char *end_p = sp;
 	while (*end_p && !strchr(sep, *end_p))
 	    ++end_p;
 
 	//
 	// append the line to the result
 	//
-	os = str_n_from_c(sp, end_p - sp);
-	tmp = rpt_value_string(os);
-	str_free(os);
-	rpt_value_list_append(result, tmp);
-	rpt_value_free(tmp);
+	nstring os(sp, end_p - sp);
+	rpt_value::pointer tmp = rpt_value_string::create(os);
+	rlp->append(tmp);
 
 	//
 	// skip the separator
@@ -142,16 +153,5 @@ run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
     //
     // clean up and go home
     //
-    rpt_value_free(a1);
-    rpt_value_free(a2);
     return result;
 }
-
-
-rpt_func_ty rpt_func_split =
-{
-    "split",
-    1, // optimizable
-    verify,
-    run
-};

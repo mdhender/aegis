@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -22,36 +21,23 @@
 
 #include <common/ac/ctype.h>
 
-#include <common/mem.h>
 #include <common/str.h>
+#include <common/stracc.h>
 
 
 string_ty *
 str_upcase(string_ty *s)
 {
-    static char     *tmp;
-    static size_t   tmplen;
-    string_ty	    *retval;
-    char	    *cp1;
-    char	    *cp2;
-
-    if (s->str_length > tmplen)
+    static stracc_t ac;
+    ac.clear();
+    for (const char *cp = s->str_text; ; ++cp)
     {
-	for (;;)
-	{
-    	    tmplen = tmplen * 2 + 8;
-	    if (s->str_length <= tmplen)
-		break;
-	}
-	tmp = (char *)mem_change_size(tmp, tmplen);
-    }
-    for (cp1 = s->str_text, cp2 = tmp; *cp1; ++cp1, ++cp2)
-    {
-	unsigned char c = *cp1;
-	if (islower((unsigned char)c))
+	unsigned char c = *cp;
+	if (!c)
+	    break;
+	if (islower(c))
     	    c = toupper(c);
-	*cp2 = c;
+	ac.push_back(c);
     }
-    retval = str_n_from_c(tmp, s->str_length);
-    return retval;
+    return ac.mkstr();
 }

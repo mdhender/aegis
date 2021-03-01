@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -69,7 +68,7 @@ pathconf_inner(const char *path, int arg)
 
 
 static long
-pathconf_wrapper(char *path, int arg, long default_value)
+pathconf_wrapper(const char *path, int arg, long default_value)
 {
 #ifdef HAVE_PATHCONF
     long            result;
@@ -99,21 +98,23 @@ pathconf_wrapper(char *path, int arg, long default_value)
 int
 os_pathconf_path_max(string_ty *path)
 {
-    long            result;
+    return os_pathconf_path_max(nstring(path));
+}
 
+
+int
+os_pathconf_path_max(const nstring &path)
+{
     os_become_must_be_active();
-    result = 1024;
-    result = pathconf_wrapper(path->str_text, _PC_PATH_MAX, result);
+    long result = 1024;
+    result = pathconf_wrapper(path.c_str(), _PC_PATH_MAX, result);
     if (result < 0)
     {
-	sub_context_ty *scp;
-	int             errno_old;
-
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name", path);
-	fatal_intl(scp, i18n("pathconf(\"$filename\", {PATH_MAX}): $errno"));
+	int errno_old = errno;
+	sub_context_ty sc;
+	sc.errno_setx(errno_old);
+	sc.var_set_string("File_Name", path);
+	sc.fatal_intl(i18n("pathconf(\"$filename\", {PATH_MAX}): $errno"));
 	// NOTREACHED
     }
     return result;
@@ -123,25 +124,27 @@ os_pathconf_path_max(string_ty *path)
 int
 os_pathconf_name_max(string_ty *path)
 {
-    long            result;
+    return os_pathconf_name_max(nstring(path));
+}
 
+
+int
+os_pathconf_name_max(const nstring &path)
+{
     os_become_must_be_active();
 #ifdef HAVE_LONG_FILE_NAMES
-    result = 255;
+    long result = 255;
 #else
-    result = 14;
+    long result = 14;
 #endif
-    result = pathconf_wrapper(path->str_text, _PC_NAME_MAX, result);
+    result = pathconf_wrapper(path.c_str(), _PC_NAME_MAX, result);
     if (result < 0)
     {
-	sub_context_ty *scp;
-	int             errno_old;
-
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name", path);
-	fatal_intl(scp, i18n("pathconf(\"$filename\", {NAME_MAX}): $errno"));
+	int errno_old = errno;
+	sub_context_ty sc;
+	sc.errno_setx(errno_old);
+	sc.var_set_string("File_Name", path);
+	sc.fatal_intl(i18n("pathconf(\"$filename\", {NAME_MAX}): $errno"));
 	// NOTREACHED
     }
     return result;

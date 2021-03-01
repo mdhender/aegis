@@ -1,8 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1993-1999, 2001-2006 Peter Miller;
+//	Copyright (C) 1993-1999, 2001-2007 Peter Miller
 //	Copyright (C) 2005 Walter Franzini;
-//	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -15,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement move file
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -118,7 +115,7 @@ move_file_list(void)
 
 
 static void
-move_file_innards(user_ty *up, change_ty *cp, string_ty *old_name,
+move_file_innards(user_ty::pointer up, change::pointer cp, string_ty *old_name,
     string_ty *new_name, string_list_ty *wl_nf, string_list_ty *wl_nt,
     string_list_ty *wl_rm)
 {
@@ -272,16 +269,15 @@ move_file_innards(user_ty *up, change_ty *cp, string_ty *old_name,
     // Add the files to the change
     //
     assert(p_src_data);
-    c_src_data = change_file_new(cp, old_name);
+    c_src_data = cp->file_new(p_src_data);
     c_src_data->action = file_action_remove;
-    change_file_copy_basic_attributes(c_src_data, p_src_data);
     c_src_data->move = str_copy(new_name);
     assert(p_src_data->edit);
     assert(p_src_data->edit->revision);
     if (p_src_data->edit)
 	c_src_data->edit_origin = history_version_copy(p_src_data->edit);
 
-    c_src_data = change_file_new(cp, new_name);
+    c_src_data = cp->file_new(new_name);
     c_src_data->action = file_action_create;
     change_file_copy_basic_attributes(c_src_data, p_src_data);
     c_src_data->move = str_copy(old_name);
@@ -337,13 +333,13 @@ move_file_innards(user_ty *up, change_ty *cp, string_ty *old_name,
     // Note: the file copy destroys anything in the development
     // direcory at both "from" and "to".
     //
-    user_become(up);
+    up->become_begin();
     os_mkdir_between(dd, new_name, 02755);
     undo_unlink_errok(to);
     if (os_exists(to))
 	os_unlink(to);
     copy_whole_file(from, to, 0);
-    user_become_undo();
+    up->become_end();
     str_free(from);
     str_free(to);
 
@@ -363,9 +359,9 @@ move_file_main(void)
     string_ty	    *project_name;
     project_ty	    *pp;
     long	    change_number;
-    change_ty	    *cp;
+    change::pointer cp;
     log_style_ty    log_style;
-    user_ty	    *up;
+    user_ty::pointer up;
     size_t	    k;
     string_list_ty  search_path;
     move_list_ty    ml;
@@ -416,17 +412,17 @@ move_file_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(move_file_usage);
+	    user_ty::lock_wait_argument(move_file_usage);
 	    break;
 
 	case arglex_token_whiteout:
 	case arglex_token_whiteout_not:
-	    user_whiteout_argument(move_file_usage);
+	    user_ty::whiteout_argument(move_file_usage);
 	    break;
 
 	case arglex_token_base_relative:
 	case arglex_token_current_relative:
-	    user_relative_filename_preference_argument(move_file_usage);
+	    user_ty::relative_filename_preference_argument(move_file_usage);
 	    break;
 	}
 	arglex();
@@ -450,7 +446,10 @@ move_file_main(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -458,13 +457,13 @@ move_file_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -478,11 +477,11 @@ move_file_main(void)
     // It is an error if the change is not in the in_development state.
     // It is an error if the change is not assigned to the current user.
     //
-    if (!change_is_being_developed(cp))
+    if (!cp->is_being_developed())
 	change_fatal(cp, 0, i18n("bad mv state"));
     if (change_is_a_branch(cp))
 	change_fatal(cp, 0, i18n("bad branch cp"));
-    if (!str_equal(change_developer_name(cp), user_name(up)))
+    if (nstring(change_developer_name(cp)) != up->name())
 	change_fatal(cp, 0, i18n("not developer"));
 
     //
@@ -508,9 +507,8 @@ move_file_main(void)
 	    search_path.nstrings >= 1
 	&&
 	    (
-		user_relative_filename_preference
+		up->relative_filename_preference
 		(
-		    up,
 		    uconf_relative_filename_preference_current
 		)
 	    ==
@@ -549,9 +547,9 @@ move_file_main(void)
             str_free(old_name);
             old_name = s1;
         }
-        user_become(up);
+        up->become_begin();
         s1 = os_pathname(old_name, 1);
-        user_become_undo();
+        up->become_end();
         str_free(old_name);
         old_name = s1;
 
@@ -586,9 +584,9 @@ move_file_main(void)
             str_free(new_name);
             new_name = s1;
         }
-        user_become(up);
+        up->become_begin();
         s1 = os_pathname(new_name, 1);
-        user_become_undo();
+        up->become_end();
         str_free(new_name);
         new_name = s1;
 
@@ -686,10 +684,8 @@ move_file_main(void)
         }
     }
 
-
     if (wl_rm.nstrings != wl_nf.nstrings + wl_nt.nstrings)
         this_is_a_bug();
-
 
     //
     // the number of files changed,
@@ -704,6 +700,11 @@ move_file_main(void)
     // as was received by aedist or aepatch, and the UUID is invalidated.
     //
     change_uuid_clear(cp);
+
+    // remember wer are about to do it
+    bool recent_integration = cp->run_project_file_command_needed();
+    if (recent_integration)
+        cp->run_project_file_command_done();
 
     //
     // release the locks
@@ -726,19 +727,24 @@ move_file_main(void)
     move_list_destructor(&ml);
 
     //
-    // run the change file command
+    // run the change file commands
+    //
+    // Move is modeled as creates and removes, and the change set file
+    // notifications are called to reflect that.
     //
     log_open(change_logfile_get(cp), up, log_style);
+    assert(wl_nf.nstrings > 0 || wl_nt.nstrings > 0);
     if (wl_nf.nstrings)
-	change_run_new_file_command(cp, &wl_nf, up);
+	cp->run_new_file_command(&wl_nf, up);
     if (wl_nt.nstrings)
-	change_run_new_file_command(cp, &wl_nt, up);
-    if (wl_rm.nstrings)
-	change_run_remove_file_command(cp, &wl_rm, up);
-    change_run_project_file_command(cp, up);
+	cp->run_new_file_command(&wl_nt, up);
+    assert(wl_rm.nstrings > 0);
+    assert(wl_rm.nstrings == wl_nf.nstrings + wl_nt.nstrings);
+    cp->run_remove_file_command(&wl_rm, up);
+    if (recent_integration)
+        cp->run_project_file_command(up);
     project_free(pp);
     change_free(cp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -748,8 +754,8 @@ move_file(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, move_file_help, },
-	{arglex_token_list, move_file_list, },
+	{ arglex_token_help, move_file_help, 0 },
+	{ arglex_token_list, move_file_list, 0 },
     };
 
     trace(("move_file()\n{\n"));

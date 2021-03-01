@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2006 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 2006, 2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -15,8 +14,10 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program. If not, see
-#	<http://www.gnu.org/licenses/>.
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#
+# MANIFEST: Test the ae-repo-ci functionality
 #
 
 unset AEGIS_PROJECT
@@ -72,7 +73,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	log_file_preference = never; \
 	default_development_directory = \"$work\";"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 # This tells aeintegratq that it is being used by a test.
@@ -316,6 +317,17 @@ $bin/aegis -ipass -c 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # ------------------------------------------------------------------------
+#
+# run the ae-repo-ci command again
+#
+activity="ae-repo-ci two 324"
+$bin/ae-repo-ci --repository=svn --module file://$work/svnroot/$AEGIS_PROJECT \
+    -c 2 > log 2>&1
+if test $? -ne 0 ; then cat log; fail; fi
+
+test -f $work/svnroot/db/revs/3 || fail
+
+# --------------------------------------------------------------------------
 
 #
 # third change
@@ -366,7 +378,7 @@ $bin/ae-repo-ci --repository=svn --module file://$work/svnroot/$AEGIS_PROJECT \
     -c 3 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-test -f $work/svnroot/db/revs/3 || fail
+test -f $work/svnroot/db/revs/4 || fail
 
 #
 # Only definite negatives are possible.

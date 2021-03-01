@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Walter Franzini;
-//	All rights reserved.
+//	Copyright (C) 2005 Walter Franzini
+//	Copyright (C) 2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,20 +14,18 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the change_when_get class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change.h>
 
 
 time_t
-change_when_get(change_ty *cp, cstate_history_what_ty what)
+change_when_get(change::pointer cp, cstate_history_what_ty what)
 {
     time_t when = 0;
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
     cstate_history_list_ty *history = cstate_data->history;
     if (!history)
 	return 0;

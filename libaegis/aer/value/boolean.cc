@@ -1,102 +1,98 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2003-2005 Peter Miller;
-//	All rights reserved.
+//      aegis - project change supervisor
+//      Copyright (C) 1994, 1996, 2003-2007 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate boolean values
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
+#include <common/trace.h>
 #include <libaegis/aer/value/boolean.h>
 #include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/real.h>
 #include <libaegis/aer/value/string.h>
-#include <common/error.h>
-#include <common/str.h>
 
 
-struct rpt_value_boolean_ty
+rpt_value_boolean::~rpt_value_boolean()
 {
-	RPT_VALUE
-	int		value;
-};
-
-
-static rpt_value_ty *
-arithmetic(rpt_value_ty *vp)
-{
-	rpt_value_boolean_ty *this_thing;
-	rpt_value_ty	*result;
-
-	this_thing = (rpt_value_boolean_ty *)vp;
-	assert(this_thing->method->type == rpt_value_type_boolean);
-	result = rpt_value_integer(this_thing->value);
-	return result;
+    trace(("%s\n", __PRETTY_FUNCTION__));
 }
 
 
-static rpt_value_ty *
-stringize(rpt_value_ty *vp)
+rpt_value_boolean::rpt_value_boolean(bool a_value) :
+    value(a_value)
 {
-	rpt_value_boolean_ty *this_thing;
-	string_ty	*s;
-	rpt_value_ty	*result;
-
-	this_thing = (rpt_value_boolean_ty *)vp;
-	assert(this_thing->method->type == rpt_value_type_boolean);
-	s = str_from_c(this_thing->value ? "true" : "false");
-	result = rpt_value_string(s);
-	str_free(s);
-	return result;
+    trace(("%s\n", __PRETTY_FUNCTION__));
 }
 
 
-static rpt_value_method_ty method =
+rpt_value::pointer
+rpt_value_boolean::create(bool a_value)
 {
-	sizeof(rpt_value_boolean_ty),
-	"boolean",
-	rpt_value_type_boolean,
-	0, // construct
-	0, // destruct
-	arithmetic,
-	stringize,
-	0, // booleanize
-	0, // lookup
-	0, // keys
-	0, // count
-	0, // type_of
-};
-
-
-rpt_value_ty *
-rpt_value_boolean(int n)
-{
-	rpt_value_boolean_ty *this_thing;
-
-	this_thing = (rpt_value_boolean_ty *)rpt_value_alloc(&method);
-	this_thing->value = (n != 0);
-	return (rpt_value_ty *)this_thing;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return pointer(new rpt_value_boolean(a_value));
 }
 
 
-int
-rpt_value_boolean_query(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_boolean::arithmetic_or_null()
+    const
 {
-	rpt_value_boolean_ty *this_thing;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return rpt_value_integer::create(value);
+}
 
-	this_thing = (rpt_value_boolean_ty *)vp;
-	assert(this_thing->method->type == rpt_value_type_boolean);
-	return this_thing->value;
+
+rpt_value::pointer
+rpt_value_boolean::integerize_or_null()
+    const
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return rpt_value_integer::create(value);
+}
+
+
+rpt_value::pointer
+rpt_value_boolean::realize_or_null()
+    const
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return rpt_value_real::create(value);
+}
+
+
+rpt_value::pointer
+rpt_value_boolean::stringize_or_null()
+    const
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return rpt_value_string::create(value ? "true" : "false");
+}
+
+
+bool
+rpt_value_boolean::query()
+    const
+{
+    return value;
+}
+
+
+const char *
+rpt_value_boolean::name()
+    const
+{
+    return "boolean";
 }

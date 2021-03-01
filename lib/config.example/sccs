@@ -2,8 +2,6 @@
  *	aegis - project change supervisor
  *	This file is in the Public Domain, 1995, 1998, 2001 Peter Miller.
  *
- * MANIFEST: example of using sccs in the project config file
- *
  * The entries for the commands are listed below.  SCCS uses a slightly
  * different model than aegis wants, so some maneuvering is required.  The
  * command strings in this section assume that the SCCS commands admin and get

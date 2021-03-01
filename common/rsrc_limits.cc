@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,12 +13,11 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the rsrc_limits class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/ac/signal.h>
 #include <common/ac/stdio.h>
 #include <common/ac/unistd.h>
 #include <common/ac/sys/resource.h>
@@ -57,9 +55,33 @@ adjust_resource(rlimit_resource_ty resource)
 void
 resource_limits_init()
 {
+    //
+    // From getrlimit(2) manual page:  "A child process created via
+    // fork(2) inherits its parents resource limits.  Resource
+    // limits are preserved across execve(2)."
+    //
     adjust_resource(RLIMIT_AS);
     adjust_resource(RLIMIT_DATA);
+    adjust_resource(RLIMIT_FSIZE);
+
+    //
+    // Some operating systems generate the SIGXFSZ signal when a
+    // file exceeds the getrlimit(RLIMIT_FSIZE) size, in addition to
+    // returning the EFBIG errno value.  By ignoring this signal, the
+    // error gets returned and it is possible to report the offending
+    // file's name, making for a more useful error message.
+    //
+    // Linux ignores this signal by default, but allows it to be
+    // set.  Other posix implementations may not ignore this signal by
+    // default.
+    //
+#ifdef SIGXFSZ
+    signal(SIGXFSZ, SIG_IGN);
+#endif
 }
+
+
+#ifdef __linux__
 
 
 static void
@@ -81,7 +103,7 @@ print_size(long size, const char *caption, int pagesize)
     size *= pagesize;
     if (size < 10000)
     {
-	fprintf(stderr, "%4ldK  %s\n", size, caption);
+	fprintf(stderr, "%4ldk  %s\n", size, caption);
 	return;
     }
     size = (size + 512) >> 10;
@@ -93,6 +115,8 @@ print_size(long size, const char *caption, int pagesize)
     size = (size + 512) >> 10;
     fprintf(stderr, "%4ldG  %s\n", size, caption);
 }
+
+#endif // __linux__
 
 
 void

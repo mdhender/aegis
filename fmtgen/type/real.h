@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1998, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -26,22 +25,22 @@
 #include <fmtgen/type.h>
 
 /**
-  * The type_real_ty class is used to represent the type of a real/
+  * The type_real class is used to represent the type of a real/
   * double valued field.
   */
-class type_real_ty:
-    public type_ty
+class type_real:
+    public type
 {
 public:
     /**
       * The destructor.
       */
-    virtual ~type_real_ty();
+    virtual ~type_real();
 
     /**
       * the default constructor.
       */
-    type_real_ty();
+    type_real();
 
     // See base class for documentation.
     void gen_include_declarator(const nstring &variable_name, bool is_a_list)
@@ -75,12 +74,12 @@ private:
     /**
       * The copy constructor.  Do not use.
       */
-    type_real_ty(const type_real_ty &);
+    type_real(const type_real &);
 
     /**
       * The assignment operator.  Do not use.
       */
-    type_real_ty &operator=(const type_real_ty &);
+    type_real &operator=(const type_real &);
 };
 
 #endif // FMTGEN_TYPE_REAL_H

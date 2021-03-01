@@ -1,94 +1,70 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2003-2005 Peter Miller;
-//	All rights reserved.
+//      aegis - project change supervisor
+//      Copyright (C) 1994, 1996, 2003-2007 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate function pointer values
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
 #include <libaegis/aer/func.h>
 #include <libaegis/aer/value/func.h>
 #include <libaegis/aer/value/string.h>
-#include <common/error.h>
-#include <common/str.h>
 
 
-struct rpt_value_func_ty
+
+rpt_value_func::~rpt_value_func()
 {
-	RPT_VALUE
-	rpt_func_ty	*value;
-};
-
-
-static rpt_value_ty *
-stringize(rpt_value_ty *vp)
-{
-	rpt_value_func_ty *this_thing;
-	string_ty	*s;
-	rpt_value_ty	*result;
-
-	//
-	// stringizing a function pointer
-	// returns the name of the function
-	//
-	this_thing = (rpt_value_func_ty *)vp;
-	assert(this_thing->method->type == rpt_value_type_function);
-	s = str_from_c(this_thing->value->name);
-	result = rpt_value_string(s);
-	str_free(s);
-	return result;
 }
 
 
-static rpt_value_method_ty method =
+rpt_value_func::rpt_value_func(const rpt_func::pointer &arg) :
+    value(arg)
 {
-	sizeof(rpt_value_func_ty),
-	"function",
-	rpt_value_type_function,
-	0, // construct
-	0, // destruct
-	0, // arithmetic
-	stringize,
-	0, // booleanize
-	0, // lookup
-	0, // keys
-	0, // count
-	0, // type_of
-	0, // undefer
-};
-
-
-rpt_value_ty *
-rpt_value_func(rpt_func_ty *fp)
-{
-	rpt_value_func_ty *this_thing;
-
-	this_thing = (rpt_value_func_ty *)rpt_value_alloc(&method);
-	this_thing->value = fp;
-	return (rpt_value_ty *)this_thing;
 }
 
 
-rpt_func_ty *
-rpt_value_func_query(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_func::create(const rpt_func::pointer &arg)
 {
-	rpt_value_func_ty *this_thing;
+    return pointer(new rpt_value_func(arg));
+}
 
-	this_thing = (rpt_value_func_ty *)vp;
-	assert(this_thing->method == &method);
-	return this_thing->value;
+
+rpt_value::pointer
+rpt_value_func::stringize_or_null()
+    const
+{
+    //
+    // stringizing a function pointer
+    // returns the name of the function
+    //
+    return rpt_value_string::create(value->name());
+}
+
+
+const char *
+rpt_value_func::name()
+    const
+{
+    return "function";
+}
+
+
+rpt_func::pointer
+rpt_value_func::query()
+    const
+{
+    return value;
 }

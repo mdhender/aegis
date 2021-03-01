@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994-1998, 2004, 2005 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 1994-1998, 2004-2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -96,7 +95,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	persevere_preference = all; \
 	log_file_preference = never;"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 worklib=$work/lib
@@ -291,9 +290,14 @@ foo: main.o test.o
 end
 if test $? -ne 0 ; then no_result; fi
 cat > $workchan/aegis.conf << 'end'
-build_command = "make VERSION=$version";
+// The sleep is necessary, because the files could all have time stamps
+// within the same second on fast machines.
+build_command = "sleep 1; test -r foo && rm foo; make VERSION=$version";
 link_integration_directory = true;
-create_symlinks_before_build = true;
+development_directory_style =
+{
+    source_file_symlink = true;
+};
 
 history_get_command = "aesvt -check-out -edit ${quote $edit} "
     "-history ${quote $history} -f ${quote $output}";
@@ -409,6 +413,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 #	It will create symlinks into the baseline
 #
+workchan=$work/chan2.dir
 activity="develop begin 396"
 $bin/aegis -db -c 2 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi

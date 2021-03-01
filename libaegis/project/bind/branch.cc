@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate branchs
 //
@@ -27,7 +26,7 @@
 
 
 project_ty *
-project_ty::bind_branch(change_ty *cp)
+project_ty::bind_branch(change::pointer cp)
 {
     assert(cp->pp == this);
     project_ty *pp = 0;
@@ -53,6 +52,14 @@ project_ty::bind_branch(change_ty *cp)
 	    );
 	trace(("name = \"%s\"\n", project_name->str_text));
 	pp = project_alloc(project_name);
+        //
+        // FIXME: this method has the WRONG name - it sould be
+        // project_ty::create_branch so that project_ty::bind_branch can
+        // be used for this else clause.
+        //
+        pp->up = get_user();
+        pp->uid = uid;
+        pp->gid = gid;
 	pp->parent = project_copy(this);
 	pp->parent_bn = cp->number;
 	pp->pcp = cp;

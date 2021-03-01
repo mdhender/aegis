@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,37 +13,39 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate forcdevebegis
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h> // for assert
+#include <common/trace.h>
 #include <libaegis/change.h>
 #include <libaegis/change/env_set.h>
-#include <common/error.h> // for assert
+#include <libaegis/lock.h>
 #include <libaegis/os.h>
 #include <libaegis/project/history.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/user.h>
 
 
 void
-change_run_forced_develop_begin_notify_command(change_ty *cp, user_ty *up)
+change::run_forced_develop_begin_notify_command(const user_ty::pointer &up)
 {
-    string_ty       *the_command;
-    string_ty       *dd;
+    trace(("change::run_forced_develop_begin_notify_command(this = %8.8lX, "
+	"up = %8.8lX)\n{\n", (long)this, (long)up.get()));
 
     //
     // make sure there is one
     //
-    trace(("change_run_forced_develop_begin_notify_command(cp = %8.8lX, "
-	"up = %8.8lX)\n{\n", (long)cp, (long)up));
-    assert(cp->reference_count >= 1);
-    the_command = project_forced_develop_begin_notify_command_get(cp->pp);
+    assert(!lock_active());
+    assert(reference_count >= 1);
+    string_ty *the_command =
+        project_forced_develop_begin_notify_command_get(pp);
     if (!the_command)
-	goto done;
+    {
+        trace(("}\n"));
+        return;
+    }
 
     //
     // notify the change is ready for review
@@ -54,21 +55,15 @@ change_run_forced_develop_begin_notify_command(change_ty *cp, user_ty *up)
     //
     // All of the substitutions described in aesub(5) are available.
     //
-    the_command = substitute(0, cp, the_command);
+    the_command = substitute(0, this, the_command);
 
     //
     // execute the command
     //
-    dd = change_development_directory_get(cp, 0);
-    change_env_set(cp, 0);
-    user_become(up);
+    string_ty *dd = change_development_directory_get(this, 0);
+    change_env_set(this, 0);
+    user_ty::become scoped(up);
     os_execute(the_command, OS_EXEC_FLAG_NO_INPUT + OS_EXEC_FLAG_ERROK, dd);
-    user_become_undo();
     str_free(the_command);
-
-    //
-    // here for all exits
-    //
-    done:
     trace(("}\n"));
 }

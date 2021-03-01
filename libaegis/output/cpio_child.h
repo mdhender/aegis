@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2002, 2005, 2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -22,6 +21,8 @@
 
 #ifndef AEDIST_OUTPUT_CPIO_CHILD_H
 #define AEDIST_OUTPUT_CPIO_CHILD_H
+
+#include <common/ac/time.h>
 
 #include <common/nstring.h>
 #include <libaegis/output.h>
@@ -51,8 +52,11 @@ public:
       *     The length instance variable is used to remember the lenbgth
       *     of this archive member.  It is an error if you write a
       *     different number of bytes.
+      * \param mtime
+      *     The modify time to insert into the archive.
       */
-    output_cpio_child_ty(output_ty *deeper, const nstring &name, long len);
+    output_cpio_child_ty(output_ty *deeper, const nstring &name, long len,
+	    time_t mtime);
 
     // See base class for documentation.
     string_ty *filename() const ;
@@ -124,6 +128,12 @@ private:
       * deeper output.
       */
     void header();
+
+    /**
+      * The mtime instance variable is used to remember the time to
+      * insert into the file header.
+      */
+    time_t mtime;
 
     /**
       * The default constructor.  Do not use.

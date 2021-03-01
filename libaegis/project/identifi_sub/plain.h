@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -54,7 +53,7 @@ public:
     project_ty *get_pp();
 
     // See base class for documentation.
-    user_ty *get_up();
+    user_ty::pointer get_up();
 
     // See base class for documentation.
     void parse_change_with_branch(long &change_number, usage_t usage);
@@ -62,6 +61,9 @@ public:
     // See base class for documentation.
     void parse_change_with_branch(long &change_number, const char *&branch_arg,
 	usage_t usage);
+
+    // See base class for documentation.
+    bool set() const;
 
 private:
     /**
@@ -80,7 +82,7 @@ private:
       * The up instance variable is used to remember which user we are
       * working in behalf of.
       */
-    user_ty *up;
+    user_ty::pointer up;
 
     /**
       * The copy constructor.  Do not use.

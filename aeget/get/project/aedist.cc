@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -28,7 +27,7 @@
 
 
 void
-get_project_aedist(project_ty *pp, string_ty *fn, string_list_ty *modifier)
+get_project_aedist(project_ty *pp, string_ty *, string_list_ty *)
 {
     string_ty       *qp;
     string_ty       *command;
@@ -37,7 +36,7 @@ get_project_aedist(project_ty *pp, string_ty *fn, string_list_ty *modifier)
     command =
 	str_format
 	(
-	    "%s/aedist -send -bl -p %s -naa -ndh",
+	    "%s/aedist -send -bl -p %s -cte=none -mime-header -compress -ndh",
 	    configured_bindir(),
 	    qp->str_text
 	);

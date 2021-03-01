@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999-2005 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 1999-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -29,7 +28,6 @@
 #include <common/ac/wctype.h>
 
 #include <common/language.h>
-#include <common/mem.h>
 #include <common/str.h>
 #include <common/trace.h>
 #include <libaegis/wide_output.h>
@@ -103,7 +101,7 @@ wrap(wide_output_wrap_ty *this_thing)
         //
         if (s >= s_end)
         {
-            trace(("mark s_start=%08lX s=%08lX\n", (long)s_start, (long)s));
+            trace(("s_start=%08lX s=%08lX\n", (long)s_start, (long)s));
             language_C();
             wide_output_write(this_thing->deeper, s_start, s - s_start);
             break;
@@ -142,7 +140,7 @@ wrap(wide_output_wrap_ty *this_thing)
 
         //
         // Write out the line so far, plus the newline,
-        // and then skip any trailing spaces (including one newlines).
+        // and then skip any trailing spaces (including any newlines).
         //
         trace(("s_start=%08lX s=%08lX\n", (long)s_start, (long)s));
         language_C();
@@ -177,8 +175,7 @@ wide_output_wrap_destructor(wide_output_ty *fp)
     this_thing = (wide_output_wrap_ty *)fp;
     if (this_thing->buf_pos)
         wrap(this_thing);
-    if (this_thing->buf)
-        mem_free(this_thing->buf);
+    delete [] this_thing->buf;
     if (this_thing->delete_on_close)
         wide_output_delete(this_thing->deeper);
     this_thing->deeper = 0;
@@ -201,7 +198,7 @@ wide_output_wrap_write(wide_output_ty *fp, const wchar_t *data, size_t len)
 {
     wide_output_wrap_ty *this_thing;
 
-    trace(("wide_output_wrap_write(fp = %08lX, data = %08lX, len = %ld)\n{\n",
+    trace(("wide_output_wrap::write(fp = %08lX, data = %08lX, len = %ld)\n{\n",
         (long)fp, (long)data, (long)len));
     this_thing = (wide_output_wrap_ty *)fp;
     while (len > 0)
@@ -216,12 +213,12 @@ wide_output_wrap_write(wide_output_ty *fp, const wchar_t *data, size_t len)
         {
             if (this_thing->buf_pos >= this_thing->buf_max)
             {
-                size_t          nbytes;
-
                 this_thing->buf_max = 16 + 2 * this_thing->buf_max;
-                nbytes = this_thing->buf_max * sizeof(this_thing->buf[0]);
-                this_thing->buf =
-                    (wchar_t *)mem_change_size(this_thing->buf, nbytes);
+		wchar_t *new_buf = new wchar_t [this_thing->buf_max];
+		for (size_t k = 0; k < this_thing->buf_pos; ++k)
+		    new_buf[k] = this_thing->buf[k];
+		delete [] this_thing->buf;
+		this_thing->buf = new_buf;
             }
             this_thing->buf[this_thing->buf_pos++] = wc;
         }

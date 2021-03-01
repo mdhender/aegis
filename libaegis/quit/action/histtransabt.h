@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface of the quit_action_history_transaction_abort class
 //
@@ -24,8 +23,6 @@
 #define LIBAEGIS_QUIT_ACTION_HISTTRANSABT_H
 
 #include <common/quit/action.h>
-
-struct change_ty; // forward
 
 /**
   * The quit_action_history_transaction_abort class is used to represent
@@ -44,7 +41,7 @@ public:
     /**
       * The constructor.
       */
-    quit_action_history_transaction_abort(change_ty *);
+    quit_action_history_transaction_abort(change::pointer );
 
     // See base class for documentation.
     void operator()(int exit_status);
@@ -53,7 +50,7 @@ private:
     /**
       * The cp instance variable is used to remember the change to operate on.
       */
-    change_ty *cp;
+    change::pointer cp;
 
     /**
       * The default constructor.  Do not use.

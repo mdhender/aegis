@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2003-2005 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 2003-2006 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -20,7 +19,6 @@
 // MANIFEST: functions to manipulate moves
 //
 
-#include <common/mem.h>
 #include <libaegis/move_list.h>
 
 
@@ -58,8 +56,7 @@ move_list_destructor(move_list_ty *mlp)
 
     for (j = 0; j < mlp->length; ++j)
         move_destructor(mlp->item + j);
-    if (mlp->item)
-        mem_free(mlp->item);
+    delete [] mlp->item;
     mlp->length = 0;
     mlp->maximum = 0;
     mlp->item = 0;
@@ -80,11 +77,12 @@ move_list_append_unique(move_list_ty *mlp, string_ty *from, string_ty *to)
     }
     if (mlp->length >= mlp->maximum)
     {
-        size_t          nbytes;
-
         mlp->maximum = mlp->maximum * 2 + 4;
-        nbytes = mlp->maximum * sizeof(mlp->item[0]);
-        mlp->item = (move_ty *)mem_change_size(mlp->item, nbytes);
+	move_ty *new_item = new move_ty [mlp->maximum];
+	for (size_t k = 0; k < mlp->length; ++k)
+	    new_item[k] = mlp->item[k];
+	delete [] mlp->item;
+	mlp->item = new_item;
     }
     mp = mlp->item + mlp->length++;
     move_constructor(mp, from, to);

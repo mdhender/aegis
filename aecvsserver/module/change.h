@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface definition for aecvsserver/module/change.c
 //
@@ -23,12 +22,12 @@
 #ifndef AECVSSERVER_MODULE_CHANGE_H
 #define AECVSSERVER_MODULE_CHANGE_H
 
+#include <libaegis/change.h>
+#include <libaegis/user.h>
 #include <aecvsserver/module.h>
 
-struct change_ty; // forward
 struct project_ty; // forward
 struct string_ty; // forward
-struct user_ty; // forward
 
 /**
   * The module_change class is used to represent a CVS module
@@ -49,7 +48,7 @@ public:
       * @param arg
       *     The change being managed.
       */
-    module_change(change_ty *arg);
+    module_change(change::pointer arg);
 
     // See base class for documentation.
     void modified(server_ty *sp, string_ty *file_name, file_info_ty *fip,
@@ -75,9 +74,9 @@ public:
     string_ty *calculate_canonical_name() const;
 
 private:
-    change_ty *cp;
+    change::pointer cp;
     project_ty *pp;
-    user_ty *up;
+    user_ty::pointer up;
 
     /**
       * The default constructor.

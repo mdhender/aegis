@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995-1998, 2001-2003, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1995-1998, 2001-2003, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface definition for aegis/project_hist.c
 //
@@ -25,7 +24,6 @@
 
 #include <libaegis/project.h>
 
-struct change_ty; // existence
 struct string_list_ty; // existence
 
 bool project_history_delta_validate(project_ty *, long);
@@ -43,7 +41,7 @@ void project_current_integration_set(project_ty *, long);
 long project_next_delta_number(project_ty *);
 long project_change_number_to_delta_number(project_ty *, long);
 long project_delta_number_to_change_number(project_ty *, long);
-void project_copyright_years_merge(project_ty *, struct change_ty *);
+void project_copyright_years_merge(project_ty *, change::pointer );
 void project_copyright_years_get(project_ty *pp, int *ary, int ary_len_max,
 	int *ary_len);
 void project_copyright_year_append(project_ty *, int);
@@ -52,21 +50,48 @@ int project_history_nth(project_ty *pp, long n, long *cn, long *dn,
 	struct string_list_ty *name);
 long project_last_change_integrated(project_ty *);
 
-bool project_administrator_query(project_ty *, string_ty *);
-void project_administrator_add(project_ty *, string_ty *);
-void project_administrator_remove(project_ty *, string_ty *);
+bool project_administrator_query(project_ty *pp, string_ty *name) DEPRECATED;
+bool project_administrator_query(project_ty *pp, const nstring &name);
+
+void project_administrator_add(project_ty *pp, string_ty *name) DEPRECATED;
+void project_administrator_add(project_ty *pp, const nstring &name);
+
+void project_administrator_remove(project_ty *pp, string_ty *name) DEPRECATED;
+void project_administrator_remove(project_ty *pp, const nstring &name);
+
 string_ty *project_administrator_nth(project_ty *, long);
-bool project_developer_query(project_ty *, string_ty *);
-void project_developer_add(project_ty *, string_ty *);
-void project_developer_remove(project_ty *, string_ty *);
+
+bool project_developer_query(project_ty *pp, string_ty *name) DEPRECATED;
+bool project_developer_query(project_ty *pp, const nstring &name);
+
+void project_developer_add(project_ty *pp, string_ty *name) DEPRECATED;
+void project_developer_add(project_ty *pp, const nstring &name);
+
+void project_developer_remove(project_ty *pp, string_ty *name) DEPRECATED;
+void project_developer_remove(project_ty *pp, const nstring &name);
+
 string_ty *project_developer_nth(project_ty *, long);
-bool project_reviewer_query(project_ty *, string_ty *);
-void project_reviewer_add(project_ty *, string_ty *);
-void project_reviewer_remove(project_ty *, string_ty *);
+
+bool project_reviewer_query(project_ty *pp, string_ty *name) DEPRECATED;
+bool project_reviewer_query(project_ty *pp, const nstring &name);
+
+void project_reviewer_add(project_ty *pp, string_ty *name) DEPRECATED;
+void project_reviewer_add(project_ty *pp, const nstring &name);
+
+void project_reviewer_remove(project_ty *pp, string_ty *name) DEPRECATED;
+void project_reviewer_remove(project_ty *pp, const nstring &name);
+
 string_ty *project_reviewer_nth(project_ty *, long);
-bool project_integrator_query(project_ty *, string_ty *);
-void project_integrator_add(project_ty *, string_ty *);
-void project_integrator_remove(project_ty *, string_ty *);
+
+bool project_integrator_query(project_ty *, string_ty *) DEPRECATED;
+bool project_integrator_query(project_ty *pp, const nstring &name);
+
+void project_integrator_add(project_ty *pp, string_ty *name) DEPRECATED;
+void project_integrator_add(project_ty *pp, const nstring &name);
+
+void project_integrator_remove(project_ty *pp, string_ty *name) DEPRECATED;
+void project_integrator_remove(project_ty *pp, const nstring &name);
+
 string_ty *project_integrator_nth(project_ty *, long);
 
 void project_change_add(project_ty *, long, int);

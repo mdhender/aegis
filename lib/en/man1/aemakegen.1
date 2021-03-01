@@ -1,0 +1,97 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2006, 2007 Peter Miller
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program. If not, see
+.\"	<http://www.gnu.org/licenses/>.
+.\"
+.so z_name.so
+.ds n) aemakegen
+.TH "aemakegen" 1 \*(N) "Reference Manual" ""
+.SH NAME
+aemakegen \- generate a Makefile.in from file manifest
+.XX "aemakegen(1)" "generate a Makefile.in from file manifest"
+.SH SYNOPSIS
+\f[B]aemakegen\fP [ \f[I]option\fP... ][ \f[I]filename\fP... ]
+.br
+.B \*(n)
+.B -Help
+.br
+.B \*(n)
+.B -VERSion
+.SH DESCRIPTION
+The \fI\*(n)\fP command is used to
+generate a \f[CW]Makefile.in\fP file from a file manifest.
+The file manifest is the set of file specified on the command line.
+.PP
+If a project or change number is mentioned on the command line, the
+search path and file manifest is derived from Aegis meta-data.  File
+names on the command line are considered to be additional files, and
+will be added to the manifest.
+.PP
+If no project or change number is mentioned on the command line, it is
+assumed that the files named on the command line are all the files the
+makefile is to be generated from.
+.SS Project Structure
+The \fI\*(n)\fP command assumes a particular project structure.
+This is as follows:
+.TP 8n
+\f[CW]lib/\fP
+The \fIlib\fP directory contains C++ files to be compiled, and
+placed into the \f[CW]lib/lib.a\fP file, to be linked with the other
+executables.
+.TP 8n
+\fIprog\fP\f[CW]/\fP
+Each executable is contained in its own directory.
+Which directories contain programs are determined by
+the presence of a \f[CW]main.cc\fP file.
+.TP 8n
+\f[CW]bin/\fP
+Each program is compiled and linked, with the executable placed in the
+\fIbin\fP directory.
+.SH OPTIONS
+The following options are understood:
+.so o_change.so
+.so o_output.so
+.so o_project.so
+.TP 8n
+\fB\-SCRipt\fP \f[I]pattern\fP
+This option may be used to nominate file which are scripts.  The
+patterns are normal shell file name globbing patterns, so you may need
+to quote it.  You may use this option more than once.  Scripts in the
+\f[CW]script/\fP or \f[CW]scripts/\fP directories will be installed.
+Scripts with a basename starting with \f[CW]test_\fP will be build to
+support the \[lq]make check\[rq] target.
+.TP 8n
+\fB\-Search_Path\fP \f[I]directory\fP
+The search path option may be used to specify the search path.
+This option may be given more than once.
+.TP 8n
+\fB\-TArget\fP \f[I]name\fP
+.RS
+The option may be used to select the desired output format by name.
+The known names are:
+.TP 8n
+automake
+Generate \f[I]automake\fP(1) input, suitable for use as a top-level
+\f[CW]Makefile.am\fP file.
+.TP 8n
+makefile
+Generate \f[I]make\fP(1) input, suitable for as as a top-level
+\f[CW]Makefile.in\fP file.  This is the default.
+.RE
+.so o_help.so
+.so o__rules.so
+.so z_exit.so
+.so z_cr.so

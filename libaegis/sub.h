@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1993, 1995, 1997, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1993, 1995, 1997, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface definition for aegis/sub.c
 //
@@ -26,14 +25,15 @@
 #include <common/ac/stdarg.h>
 #include <common/ac/time.h>
 #include <common/str.h>
+#include <libaegis/change.h>
 #include <libaegis/sub/diversion/stack.h>
+#include <libaegis/sub/functor/list.h>
 
-struct change_ty; // forward
 struct project_ty; // forward
 struct sub_context_ty; // forward
 class nstring; // forward
-struct sub_table_ty; // existence
-class wstring_list_ty; // forward
+class wstring; // forward
+class wstring_list; // forward
 
 /**
   * The sub_context_ty class represents the context (variables &co) for
@@ -209,7 +209,7 @@ public:
       * \param the_command
       *     The string to be sustituted into.
       */
-    string_ty *substitute(struct change_ty *cp, string_ty *the_command);
+    string_ty *substitute(change::pointer cp, string_ty *the_command);
 
     /**
       * The substitute_p method is used to substitute into the given string.
@@ -247,7 +247,7 @@ public:
       * \param cp
       *     The change for context.
       */
-    void subst_intl_change(struct change_ty *cp);
+    void subst_intl_change(change::pointer cp);
 
     /**
       * The error_intl method is used to internationalize an error
@@ -320,7 +320,7 @@ public:
       *     This method is only to be used by the built-in functions to
       *     obtain their context.
       */
-    change_ty *change_get();
+    change::pointer change_get();
 
     /**
       * The errno_sequester_get method is used to obtain the sequestered
@@ -336,7 +336,7 @@ public:
       * \returns
       *     The string result of the substitution.
       */
-    wstring_ty *subst(wstring_ty *msg);
+    wstring subst(const wstring &msg);
 
     /**
       * The subst_inst_wide method is used to substitute the given
@@ -348,14 +348,12 @@ public:
       * \returns
       *     The string result of the substitution.
       */
-    wstring_ty *subst_intl_wide(const char *msg);
+    wstring subst_intl_wide(const char *msg);
 
 private:
     sub_diversion_stack diversion_stack;
-    sub_table_ty *var_list;
-    size_t var_size;
-    size_t var_pos;
-    change_ty *cp;
+    sub_functor_list var_list;
+    change::pointer cp;
     project_ty *pp;
 
     const char *suberr;
@@ -421,7 +419,7 @@ private:
       * the arguments are known.  The firsdt (0'th) argument is the name
       * of the substitution to perform.
       */
-    void execute(const wstring_list_ty &arg);
+    void execute(const wstring_list &arg);
 
     /**
       * The copy constructor.  Do not use.
@@ -561,7 +559,7 @@ sub_errno_setx(sub_context_ty *scp, int value)
 }
 
 inline string_ty *
-substitute(sub_context_ty *scp, struct change_ty *cp, string_ty *the_command)
+substitute(sub_context_ty *scp, change::pointer cp, string_ty *the_command)
 {
     if (!scp)
     {
@@ -606,7 +604,7 @@ subst_intl_project(sub_context_ty *scp, struct project_ty *pp)
 }
 
 inline void
-subst_intl_change(sub_context_ty *scp, struct change_ty *cp)
+subst_intl_change(sub_context_ty *scp, change::pointer cp)
 {
     if (!scp)
     {
@@ -667,7 +665,7 @@ i18n(const char *x)
     return x;
 }
 
-inline void
+DEPRECATED inline void
 sub_context_error_set(sub_context_ty *scp, const char *message)
 {
     scp->error_set(message);
@@ -679,7 +677,7 @@ sub_context_project_get(sub_context_ty *scp)
     return scp->project_get();
 }
 
-inline change_ty *
+inline change::pointer
 sub_context_change_get(sub_context_ty *scp)
 {
     return scp->change_get();

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -48,17 +47,19 @@ list_default_project(string_ty *project_name, long change_number,
     //
     if (!args->nstrings)
     {
-	project_name = user_default_project();
+        user_ty::pointer up = user_ty::create();
+        nstring n = up->default_project();
+	project_name = str_copy(n.get_ref());
     }
     else
     {
 	//
 	// Use the user name supplied by the caller.
 	//
-	string_ty *login = args->string[0];
-	user_ty *up = user_symbolic((project_ty *)0, login);
-	project_name = user_default_project_by_user(up);
-	user_free(up);
+	nstring login(args->string[0]);
+	user_ty::pointer up = user_ty::create(login);
+        nstring n = up->default_project();
+	project_name = str_copy(n.get_ref());
     }
 
     //

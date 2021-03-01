@@ -1,8 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006 Peter Miller,
+//	Copyright (C) 2005-2007 Peter Miller,
 //	Copyright (C) 2004, 2005 Walter Franzini;
-//	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -15,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the replay class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
@@ -60,13 +57,13 @@
 
 
 static long
-extract_change_number_from_url(const nstring &url)
+extract_change_number_from_url(const nstring &uri)
 {
     //
     // The URLs look like ...aeget/project.Cnnn/...
     // Look for strings of the form "[.][cC][1-9][0-9]*"
     //
-    const char *cp = url.c_str();
+    const char *cp = uri.c_str();
     for (;;)
     {
 	if
@@ -90,31 +87,31 @@ extract_change_number_from_url(const nstring &url)
 
 
 static nstring
-fix_compatibility_modifier(const nstring &url)
+fix_compatibility_modifier(const nstring &uri)
 {
-    trace(("fix_compatibility_modifier(url = %s)\n{\n", url.quote_c().c_str()));
+    trace(("fix_compatibility_modifier(uri = %s)\n{\n", uri.quote_c().c_str()));
     if
     (
-	0 != memcmp("http:", url.c_str(), 5)
+	0 != memcmp("http:", uri.c_str(), 5)
     &&
-	0 != memcmp("https:", url.c_str(), 6)
+	0 != memcmp("https:", uri.c_str(), 6)
     )
     {
 	// Only mess with HTTP URLs
-	trace(("return %s;\n", url.quote_c().c_str()));
+	trace(("return %s;\n", uri.quote_c().c_str()));
 	trace(("}\n"));
-	return url;
+	return uri;
     }
-    const char *cp = strstr(url.c_str(), "compat=");
+    const char *cp = strstr(uri.c_str(), "compat=");
     if (!cp)
     {
-	nstring result(url + "+compat=" + version_stamp());
+	nstring result(uri + "+compat=" + version_stamp());
 	trace(("return %s;\n", result.quote_c().c_str()));
 	trace(("}\n"));
 	return result;
     }
     cp += 7;
-    nstring left(url.c_str(), cp - url.c_str());
+    nstring left(uri.c_str(), cp - uri.c_str());
     while (*cp && *cp != '+')
 	++cp;
     nstring result(left + version_stamp() + cp);
@@ -164,20 +161,12 @@ replay_main(void)
         case arglex_token_file:
 	    if (!ifn.empty())
 		duplicate_option(usage);
-	    switch (arglex())
-	    {
-	    default:
+	    if (arglex() != arglex_token_string)
+            {
 		option_needs_file(arglex_token_file, usage);
 	        // NOTREACHED
-
-	    case arglex_token_string:
-                ifn = arglex_value.alv_string;
-		break;
-
-	    case arglex_token_stdio:
-		ifn = "";
-		break;
-	    }
+            }
+            ifn = arglex_value.alv_string;
 	    break;
 
         case arglex_token_exclude_uuid:
@@ -234,7 +223,7 @@ replay_main(void)
 
         case arglex_token_persevere:
 	case arglex_token_persevere_not:
-	    user_persevere_argument(usage);
+	    user_ty::persevere_argument(usage);
 	    break;
 
 	case arglex_token_maximum:
@@ -245,17 +234,22 @@ replay_main(void)
     }
 
     trace_nstring(ifn);
+    if (ifn.empty())
+        option_needs_url(arglex_token_file, usage);
 
     //
     // locate project data
     //
     if (!project_name)
-        project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     project_ty *pp = project_alloc(project_name);
     pp->bind_existing();
-    user_ty *up = user_executing(pp);
+    user_ty::pointer up = user_ty::create();
 
-    symtab<change_ty> local_inventory;
+    symtab<change> local_inventory;
     bool include_branches = true;
     bool ignore_original_uuid = false;
     change_functor_inventory_builder cf(include_branches, all_changes,
@@ -302,7 +296,7 @@ replay_main(void)
 	if (!parts.extract(line))
             continue;
 
-        change_ty *cp = local_inventory.query(parts.get_uuid());
+        change::pointer cp = local_inventory.query(parts.get_uuid());
         if (cp)
             continue;
 
@@ -424,7 +418,7 @@ replay_main(void)
 
         pp2 = project_alloc(project_name);
         pp2->bind_existing();
-        change_ty *cp = change_alloc(pp2, change_number);
+        change::pointer cp = change_alloc(pp2, change_number);
         int change_exists = change_bind_existing_errok(cp);
 
         trace_int(change_exists);
@@ -432,11 +426,11 @@ replay_main(void)
             continue;
 
         trace_int(rc);
-        if (rc && !user_persevere_preference(up, 0))
+        if (rc && !up->persevere_preference(false))
             quit(1);
 
         assert(cp);
-        cstate_ty *cstate_data = change_cstate_get(cp);
+        cstate_ty *cstate_data = cp->cstate_get();
         assert(cstate_data);
         trace(("state = %s;\n", cstate_state_ename(cstate_data->state)));
         switch (cstate_data->state)
@@ -456,7 +450,7 @@ replay_main(void)
 #ifndef DEBUG
         default:
 #endif
-            if (!user_persevere_preference(up, 0))
+            if (!up->persevere_preference(false))
                 quit(0);
 	    continue;
         }
@@ -483,7 +477,7 @@ replay_main(void)
         os_become_undo();
 
         change_lock_sync_forced(cp);
-        cstate_data = change_cstate_get(cp);
+        cstate_data = cp->cstate_get();
         assert(cstate_data);
         trace(("state = %s;\n", cstate_state_ename(cstate_data->state)));
         switch (cstate_data->state)
@@ -500,7 +494,7 @@ replay_main(void)
 #ifndef DEBUG
         default:
 #endif
-            if (!user_persevere_preference(up, 0))
+            if (!up->persevere_preference(false))
                 quit(0);
 	    continue;
         }

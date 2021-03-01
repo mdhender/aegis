@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1996, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,164 +13,118 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate shift expressionss
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
 #include <libaegis/aer/expr/shift.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/integer.h>
-#include <common/error.h>
 #include <libaegis/sub.h>
 
 
-static rpt_value_ty *
-shift_left_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_shift_left::~rpt_expr_shift_left()
 {
-    sub_context_ty  *scp;
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v1i;
-    long	    v1n;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *v2i;
-    long	    v2n;
-    rpt_value_ty    *result;
+}
 
-    assert(this_thing->nchild == 2);
-    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (v1->method->type == rpt_value_type_error)
+
+rpt_expr_shift_left::rpt_expr_shift_left(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
+{
+    append(lhs);
+    append(rhs);
+}
+
+
+rpt_expr::pointer
+rpt_expr_shift_left::create(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
+{
+    return pointer(new rpt_expr_shift_left(lhs, rhs));
+}
+
+
+rpt_value::pointer
+rpt_expr_shift_left::evaluate()
+    const
+{
+    assert(get_nchildren() == 2);
+    rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
+    if (v1->is_an_error())
 	return v1;
-    v1i = rpt_value_integerize(v1);
-    rpt_value_free(v1);
+    rpt_value::pointer v1i = rpt_value::integerize(v1);
 
-    v2 = rpt_expr_evaluate(this_thing->child[1], 1);
-    if (v2->method->type == rpt_value_type_error)
+    rpt_value::pointer v2 = nth_child(1)->evaluate(true, true);
+    if (v2->is_an_error())
 	return v2;
-    v2i = rpt_value_integerize(v2);
-    rpt_value_free(v2);
+    rpt_value::pointer v2i = rpt_value::integerize(v2);
 
-    if
-    (
-	v1i->method->type != rpt_value_type_integer
-    ||
-	v2i->method->type != rpt_value_type_integer
-    )
+    rpt_value_integer *v1ip = dynamic_cast<rpt_value_integer *>(v1i.get());
+    rpt_value_integer *v2ip = dynamic_cast<rpt_value_integer *>(v2i.get());
+    if (!v1ip || !v2ip)
     {
-	string_ty	*s;
-
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name1", v1i->method->name);
-	sub_var_set_charstar(scp, "Name2", v2i->method->name);
-	s = subst_intl(scp, i18n("illegal shift ($name1 << $name2)"));
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->pos, s);
-	str_free(s);
-	return result;
+	sub_context_ty sc;
+	sc.var_set_charstar("Name1", v1->name());
+	sc.var_set_charstar("Name2", v2->name());
+	nstring s(sc.subst_intl(i18n("illegal shift ($name1 << $name2)")));
+	return rpt_value_error::create(get_pos(), s);
     }
 
-    v1n = rpt_value_integer_query(v1i);
-    v2n = rpt_value_integer_query(v2i);
-    rpt_value_free(v1i);
-    rpt_value_free(v2i);
-    return rpt_value_integer((unsigned long)v1n << v2n);
+    long v1n = v1ip->query();
+    long v2n = v2ip->query();
+    return rpt_value_integer::create((unsigned long)v1n << v2n);
 }
 
 
-static rpt_expr_method_ty shift_left_method =
+rpt_expr_shift_right::~rpt_expr_shift_right()
 {
-    sizeof(rpt_expr_ty),
-    "shift left",
-    0, // construct
-    0, // destruct
-    shift_left_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_shift_left(rpt_expr_ty *e1, rpt_expr_ty *e2)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&shift_left_method);
-    rpt_expr_append(this_thing, e1);
-    rpt_expr_append(this_thing, e2);
-    return this_thing;
 }
 
 
-static rpt_value_ty *
-shift_right_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_shift_right::rpt_expr_shift_right(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
 {
-    sub_context_ty  *scp;
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v1i;
-    long	    v1n;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *v2i;
-    long	    v2n;
-    rpt_value_ty    *result;
+    append(lhs);
+    append(rhs);
+}
 
-    assert(this_thing->nchild == 2);
-    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (v1->method->type == rpt_value_type_error)
+
+rpt_expr::pointer
+rpt_expr_shift_right::create(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
+{
+    return pointer(new rpt_expr_shift_right(lhs, rhs));
+}
+
+
+rpt_value::pointer
+rpt_expr_shift_right::evaluate()
+    const
+{
+    assert(get_nchildren() == 2);
+    rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
+    if (v1->is_an_error())
 	return v1;
-    v1i = rpt_value_integerize(v1);
-    rpt_value_free(v1);
+    rpt_value::pointer v1i = rpt_value::integerize(v1);
 
-    v2 = rpt_expr_evaluate(this_thing->child[1], 1);
-    if (v2->method->type == rpt_value_type_error)
+    rpt_value::pointer v2 = nth_child(1)->evaluate(true, true);
+    if (v2->is_an_error())
 	return v2;
-    v2i = rpt_value_integerize(v2);
-    rpt_value_free(v2);
+    rpt_value::pointer v2i = rpt_value::integerize(v2);
 
-    if
-    (
-	v1i->method->type != rpt_value_type_integer
-    ||
-	v2i->method->type != rpt_value_type_integer
-    )
+    rpt_value_integer *v1ip = dynamic_cast<rpt_value_integer *>(v1i.get());
+    rpt_value_integer *v2ip = dynamic_cast<rpt_value_integer *>(v2i.get());
+    if (!v1ip || !v2ip)
     {
-	string_ty	*s;
-
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name1", v1i->method->name);
-	sub_var_set_charstar(scp, "Name2", v2i->method->name);
-	s = subst_intl(scp, i18n("illegal shift ($name1 >> $name2)"));
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->pos, s);
-	str_free(s);
-	return result;
+	sub_context_ty sc;
+	sc.var_set_charstar("Name1", v1->name());
+	sc.var_set_charstar("Name2", v2->name());
+	nstring s(sc.subst_intl(i18n("illegal shift ($name1 << $name2)")));
+	return rpt_value_error::create(get_pos(), s);
     }
 
-    v1n = rpt_value_integer_query(v1i);
-    v2n = rpt_value_integer_query(v2i);
-    rpt_value_free(v1i);
-    rpt_value_free(v2i);
-    return rpt_value_integer((unsigned long)v1n >> v2n);
-}
-
-
-static rpt_expr_method_ty shift_right_method =
-{
-    sizeof(rpt_expr_ty),
-    "shift right",
-    0, // construct
-    0, // destruct
-    shift_right_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_shift_right(rpt_expr_ty *e1, rpt_expr_ty *e2)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&shift_right_method);
-    rpt_expr_append(this_thing, e1);
-    rpt_expr_append(this_thing, e2);
-    return this_thing;
+    long v1n = v1ip->query();
+    long v2n = v2ip->query();
+    return rpt_value_integer::create((unsigned long)v1n >> v2n);
 }

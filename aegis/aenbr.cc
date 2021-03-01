@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1995-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -102,7 +101,7 @@ new_branch_main(void)
     project_ty	    *pp;
     project_ty	    *bp;
     long	    change_number;
-    user_ty	    *up;
+    user_ty::pointer up;
     string_ty	    *devdir;
     const char      *output;
 
@@ -164,7 +163,7 @@ new_branch_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(new_branch_usage);
+	    user_ty::lock_wait_argument(new_branch_usage);
 	    break;
 
 	case arglex_token_output:
@@ -232,7 +231,7 @@ new_branch_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // Lock the project state file and the user state file.  There
@@ -246,7 +245,7 @@ new_branch_main(void)
     // it is an error if
     // the user is not an administrator for the project.
     //
-    if (!project_administrator_query(pp, user_name(up)))
+    if (!project_administrator_query(pp, up->name()))
 	project_fatal(pp, 0, i18n("not an administrator"));
 
     //
@@ -287,9 +286,8 @@ new_branch_main(void)
 	    string_ty	    *fn;
 
 	    fn = str_from_c(output);
-	    user_become(up);
+            user_ty::become scoped(up);
 	    file_from_string(fn, content, 0644);
-	    user_become_undo();
 	    str_free(fn);
 	}
 	else
@@ -314,7 +312,6 @@ new_branch_main(void)
     //
     project_verbose_new_branch_complete(bp);
     project_free(bp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -324,8 +321,8 @@ new_branch(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, new_branch_help, },
-	{arglex_token_list, new_branch_list, },
+	{ arglex_token_help, new_branch_help, 0 },
+	{ arglex_token_list, new_branch_list, 0 },
     };
 
     trace(("new_branch()\n{\n"));

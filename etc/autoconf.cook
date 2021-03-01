@@ -1,23 +1,20 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 2002-2005 Peter Miller;
- *	All rights reserved.
+ * aegis - project change supervisor
+ * Copyright (C) 2002-2007 Peter Miller
+ * Copyright (C) 2006, 2007 Walter Franzini
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or (at
+ * your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: autoconf.cook
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 if [not [defined autoconf]] then
@@ -32,15 +29,15 @@ if [not [autoheader]] then
 
 [arch]/bin/%: script/%.in: [arch]/config.status
         set shallow
-	single-thread conftest.subs
+        single-thread conftest.subs
 {
-	if [not [exists script]] then
-		mkdir script
-			set clearstat;
-	/* these 2 env vars control what is generated */
-	CONFIG_FILES\=[target]\:[resolve script/%.in] CONFIG_HEADERS\=
-		[resolve [arch]/config.status];
-	chmod 755 [target];
+        if [not [exists script]] then
+                mkdir script
+                        set clearstat;
+        /* these 2 env vars control what is generated */
+        CONFIG_FILES\=[target]\:[resolve script/%.in] CONFIG_HEADERS\=
+                [resolve [arch]/config.status];
+        chmod 755 [target];
 }
 
 /*
@@ -49,40 +46,47 @@ if [not [autoheader]] then
  * build, or are already taken care of, and some are not meaningful.
  */
 configured_files1 =
-	[match_mask script/%.in [source_files]]
-	;
+        [match_mask script/%.in [source_files]]
+        ;
 configured_files2 =
-	[stringset
-		[match_mask %0%.in [source_files]]
-	-
-		[configured_files1]
-	];
+        [stringset
+                [match_mask %0%.in [source_files]]
+        -
+                [configured_files1]
+        ];
 configured_files =
-	[fromto script/%.in [arch]/bin/% [configured_files1]]
-	[fromto %0%.in [arch]/%0% [configured_files2]]
-	;
+        [fromto script/%.in [arch]/bin/% [configured_files1]]
+        [fromto %0%.in [arch]/%0% [configured_files2]]
+        ;
 configured_files =
-	[stringset
-		[configured_files]
-	-
-		[arch]/Makefile /* only for integration builds */
-		[arch]/etc/Howto.conf /* make cook trigger this itself */
-		[arch]/etc/config.h
-		[arch]/etc/configure
-	];
+        [stringset
+                [configured_files]
+        -
+                [arch]/Makefile /* only for integration builds */
+                [arch]/etc/Howto.conf /* make cook trigger this itself */
+                [arch]/etc/config.h
+                [arch]/etc/configure
+        ];
 configured_files: [configured_files];
 
-configure: aegis.conf.d/site.conf etc/configure.ac install-sh
+configure: aegis.conf.d/site.conf etc/configure.ac
+        install-sh config.guess config.sub
 {
-	/*
-	 * unfortunately,
-	 * install-sh must be in the current directory
-	 */
-	if [not [exists install-sh]] then
-		ln -s [resolve install-sh] install-sh
-			set clearstat;
-	[autoconf] [resolve etc/configure.ac] > [target];
-	chmod 755 [target];
+        /*
+         * unfortunately,
+         * install-sh must be in the current directory
+         */
+        if [not [exists install-sh]] then
+                ln -s [resolve install-sh] install-sh
+                        set clearstat;
+        if [not [exists config.guess]] then
+                ln -s [resolve config.guess] config.guess
+                        set clearstat;
+        if [not [exists config.sub]] then
+                ln -s [resolve config.sub] config.sub
+                        set clearstat;
+        [autoconf] [resolve etc/configure.ac] > [target];
+        chmod 755 [target];
 }
 
 /*
@@ -103,8 +107,8 @@ loop install-sh-maybe =
 {
     if [exists [install-sh-maybe]] then
     {
-       	install-sh = [install-sh-maybe];
-       	loopstop;
+        install-sh = [install-sh-maybe];
+        loopstop;
     }
 }
 if [not [install-sh]] then
@@ -112,70 +116,137 @@ if [not [install-sh]] then
 
 install-sh: [install-sh]
 {
-	cp [need] [target];
-	chmod 755 [target];
+        cp [need] [target];
+        chmod 755 [target];
 }
 
-[arch]/config.status: configure install-sh
+config.sub = ;
+loop config.sub-maybe =
+     /usr/share/autoconf/config.sub
+     /usr/share/automake/config.sub
+     [glob /usr/share/automake*/config.sub]
+     [glob /usr/local/share/autoconf*/config.sub]
+     [glob /usr/local/share/automake*/config.sub]
 {
-	if [not [exists install-sh]] then
-		ln -s [resolve install-sh] install-sh
-			set clearstat;
+    if [exists [config.sub-maybe]] then
+    {
+        config.sub = [config.sub-maybe];
+        loopstop;
+    }
+}
+if [not [config.sub]] then
+    fail "Can't locate the \"config.sub\" script from GNU autoconf";
 
-	local flags =;
-	if [defined [arch]_c++_flags] then
-	    flags += CXXFLAGS\=[quote [unsplit " " [[arch]_c++_flags]]];
-	else if [defined c++_flags] then
-	    flags += CXXFLAGS\=[quote [unsplit " " [c++_flags]]];
+config.sub: [config.sub]
+{
+    cp [need] [target];
+    chmod 755 [target];
+}
 
-	if [defined [arch]_ld_flags] then
-	    flags += LDFLAGS\=[quote [unsplit " " [[arch]_ld_flags]]];
-	else if [defined ld_flags] then
-	    flags += LDFLAGS\=[quote [unsplit " " [ld_flags]]];
+config.guess = ;
+loop config.guess-maybe =
+     /usr/share/autoconf/config.guess
+     /usr/share/automake/config.guess
+     [glob /usr/share/automake*/config.guess]
+     [glob /usr/local/share/autoconf*/config.guess]
+     [glob /usr/local/share/automake*/config.guess]
+{
+    if [exists [config.guess-maybe]] then
+    {
+        config.guess = [config.guess-maybe];
+        loopstop;
+    }
+}
+if [not [config.guess]] then
+    fail "Can't locate the \"config.guess\" script from GNU autoconf";
 
-	[unsplit " "
-	    CXX\=[quote [unsplit " " [c++]]]
-	    [unsplit " " [flags]]
+config.guess : [config.guess]
+{
+    cp [need] [target];
+    chmod 755 [target];
+}
 
-	    [pathname [resolve configure]] --cache-file\=/dev/null --verbose
-	    --no-create --srcdir\=. --sysconfdir\=/etc
+[arch]/config.status: configure install-sh config.sub config.guess
+                      aegis.conf.d/site.conf
+{
+        if [not [exists install-sh]] then
+                ln -s [resolve install-sh] install-sh
+                        set clearstat;
 
-	    && mv config.status [arch]/config.status
-	    && rm -f config.log
-	];
+        if [not [exists config.sub]] then
+                ln -s [resolve config.sub] config.sub
+                        set clearstat;
+
+        if [not [exists config.guess]] then
+                ln -s [resolve config.guess] config.guess
+                        set clearstat;
+
+        local flags =;
+        if [defined [arch]_c++_flags] then
+            flags += CXXFLAGS\=[quote
+                  [unsplit " " [filter_out "-Werror"
+                                       [split "%" [[arch]_c++_flags]]]]];
+        else if [defined c++_flags] then
+            flags += CXXFLAGS\=[quote
+                  [unsplit " " [filter_out "-Werror"
+                                       [split "%" [c++_flags]]]]];
+
+        if [defined [arch]_ld_flags] then
+            flags += LDFLAGS\=[quote [unsplit " "
+                                       [split "%" [[arch]_ld_flags]]]];
+
+        else if [defined ld_flags] then
+            flags += LDFLAGS\=[quote [unsplit " " [split "%" [ld_flags]]]];
+
+        if [defined [arch]_libs] then
+            flags += LIBS\=[quote [unsplit " " [split "%" [[arch]_libs]]]];
+        else if [defined libs] then
+            flags += LIBS\=[quote [unsplit " " [split "%" [libs]]]];
+
+        [unsplit " "
+            CXX\=[quote [unsplit " " [c++]]]
+            [unsplit " " [flags]]
+
+            [pathname [resolve configure]] --cache-file\=/dev/null --verbose
+            --no-create --srcdir\=. --sysconfdir\=/etc
+            [configure_args]
+
+            && mv config.status [arch]/config.status
+            && rm -f config.log
+        ];
 }
 
 common/config.h.in: etc/configure.ac
 {
-	[autoheader] [resolve etc/configure.ac] > [target];
+        [autoheader] [resolve etc/configure.ac] > [target];
 }
 
 
 [arch]/%0%.h: %0%.h.in [arch]/config.status
-	single-thread conftest.subs
+        single-thread conftest.subs
 {
-	if [not [exists [dirname %0%.h]]] then
-		mkdir [dirname %0%.h]
-			set clearstat;
-	/* these 2 env vars control what is generated */
-	CONFIG_FILES\= CONFIG_HEADERS\=[target]\:[resolve %0%.h.in]
-		[resolve [arch]/config.status];
+        if [not [exists [dirname %0%.h]]] then
+                mkdir [dirname %0%.h]
+                        set clearstat;
+        /* these 2 env vars control what is generated */
+        CONFIG_FILES\= CONFIG_HEADERS\=[target]\:[resolve %0%.h.in]
+                [resolve [arch]/config.status];
 }
 
 [arch]/%0%: %0%.in [arch]/config.status
-	set ['if' [not [defined baseline]] 'then' shallow]
-	single-thread conftest.subs
+        set ['if' [not [defined baseline]] 'then' shallow]
+        single-thread conftest.subs
 {
-	if [not [exists [dirname %0%]]] then
-		mkdir [dirname %0%]
-			set clearstat;
-	/* these 2 env vars control what is generated */
-	CONFIG_FILES\=[target]\:[resolve %0%.in] CONFIG_HEADERS\=
-		[resolve [arch]/config.status];
+        if [not [exists [dirname %0%]]] then
+                mkdir [dirname %0%]
+                        set clearstat;
+        /* these 2 env vars control what is generated */
+        CONFIG_FILES\=[target]\:[resolve %0%.in] CONFIG_HEADERS\=
+                [resolve [arch]/config.status];
 
-	/*
-	 * Make shell scripts and CGI scripts executable.
-	 */
-	if [or [matches %%.cgi %] [matches %%.sh %]] then
-		chmod a+rx [target];
+        /*
+         * Make shell scripts and CGI scripts executable.
+         */
+        if [or [matches %%.cgi %] [matches %%.sh %]] then
+                chmod a+rx [target];
 }

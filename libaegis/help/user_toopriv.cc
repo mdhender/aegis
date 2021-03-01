@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -20,6 +19,7 @@
 // MANIFEST: functions to manipulate user_tooprivs
 //
 
+#include <common/nstring.h>
 #include <libaegis/help.h>
 #include <libaegis/sub.h>
 
@@ -27,9 +27,14 @@
 void
 fatal_user_too_privileged(string_ty *name)
 {
-	sub_context_ty	*scp;
+    fatal_user_too_privileged(nstring(name));
+}
 
-	scp = sub_context_new();
-	sub_var_set_string(scp, "Name", name);
-	fatal_intl(scp, i18n("user $name too privileged"));
+
+void
+fatal_user_too_privileged(const nstring &name)
+{
+    sub_context_ty sc;
+    sc.var_set_string("Name", name);
+    sc.fatal_intl(i18n("user $name too privileged"));
 }

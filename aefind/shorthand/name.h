@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 2002, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,19 +13,17 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aefind/tree/name.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEFIND_SHORTHAND_NAME_H
 #define AEFIND_SHORTHAND_NAME_H
 
-#include <common/main.h>
+#include <aefind/tree.h>
 
-struct string_ty; // existence
+class nstring; // forward
 
-struct tree_ty *shorthand_name(struct string_ty *);
+tree::pointer shorthand_name(const nstring &name);
 
 #endif // AEFIND_SHORTHAND_NAME_H

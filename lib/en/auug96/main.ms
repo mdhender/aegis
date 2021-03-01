@@ -1,7 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1996, 1997, 2002, 2005 Peter Miller;
-.\"	All rights reserved.
+.\"	Copyright (C) 1996, 1997, 2002, 2005-2007 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 .\"	GNU General Public License for more details.
 .\"
 .\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: AUUG'96 Summer Conference paper
+.\"	along with this program. If not, see
+.\"	<http://www.gnu.org/licenses/>.
 .\"
 .if n .ftr CB B
 .if n .ftr CI I
@@ -106,8 +103,7 @@ staff have been happy with the Web development model in use at AGSO.
 Copyright
 .if t \(co
 .if n (C)
-1996 Peter Miller;
-All rights reserved.
+1996 Peter Miller
 .FE
 The term
 .I "Configuration Management"

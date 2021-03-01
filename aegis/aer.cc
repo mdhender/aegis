@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1997, 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1997, 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -22,20 +21,22 @@
 
 #include <common/ac/stdio.h>
 
-#include <aegis/aer.h>
-#include <libaegis/aer/list.h>
-#include <libaegis/aer/parse.h>
-#include <libaegis/aer/func/change.h>
-#include <libaegis/aer/func/project.h>
-#include <libaegis/arglex2.h>
-#include <libaegis/arglex/change.h>
-#include <libaegis/arglex/project.h>
-#include <libaegis/help.h>
 #include <common/progname.h>
 #include <common/quit.h>
-#include <libaegis/sub.h>
 #include <common/trace.h>
+#include <libaegis/aer/func/change.h>
+#include <libaegis/aer/func/project.h>
+#include <libaegis/aer/list.h>
+#include <libaegis/aer/parse.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/change/identifier.h>
+#include <libaegis/help.h>
+#include <libaegis/sub.h>
 #include <libaegis/zero.h>
+
+#include <aegis/aer.h>
 
 
 //
@@ -118,8 +119,7 @@ report_main(void)
 {
     trace(("report_main()\n{\n"));
     arglex();
-    string_ty *project_name = 0;
-    long change_number = 0;
+    change_identifier cid;
     string_ty *infile = 0;
     string_ty *outfile = 0;
     string_list_ty arg;
@@ -131,14 +131,15 @@ report_main(void)
 	    generic_argument(report_usage);
 	    continue;
 
+	case arglex_token_baseline:
 	case arglex_token_change:
-	    arglex();
-	    arglex_parse_change(&project_name, &change_number, report_usage);
-	    continue;
-
+	case arglex_token_delta:
+	case arglex_token_delta_date:
+        case arglex_token_delta_from_change:
+	case arglex_token_grandparent:
 	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, report_usage);
+	case arglex_token_trunk:
+	    cid.command_line_parse(report_usage);
 	    continue;
 
 	case arglex_token_file:
@@ -180,6 +181,7 @@ report_main(void)
 	}
 	arglex();
     }
+    cid.command_line_check(report_usage);
     if (infile)
     {
 	trace(("prepending report file name to args\n"));
@@ -200,18 +202,16 @@ report_main(void)
     //
     if (infile)
     {
-	trace(("setting input file name\n"));
-	report_parse_filename_set(infile);
+        trace(("setting input file name\n"));
+        report_parse_filename_set(infile);
     }
     if (outfile)
     {
-	trace(("setting output file name\n"));
-	report_parse_output_set(outfile);
+        trace(("setting output file name\n"));
+        report_parse_output_set(outfile);
     }
-    if (project_name)
-	report_parse_project_set(project_name);
-    if (change_number)
-	report_parse_change_set(change_number);
+    report_parse_project_set(cid);
+    report_parse_change_set(cid);
     report_parse_argument_set(&arg);
 
     //
@@ -222,8 +222,6 @@ report_main(void)
     //
     // clean up and go home
     //
-    if (project_name)
-	str_free(project_name);
     if (infile)
 	str_free(infile);
     if (outfile)
@@ -250,8 +248,8 @@ report(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, report_help, },
-	{arglex_token_list, report_list2, },
+	{ arglex_token_help, report_help, 0 },
+	{ arglex_token_list, report_list2, 0 },
     };
 
     trace(("report()\n{\n"));

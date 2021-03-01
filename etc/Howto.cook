@@ -1,29 +1,26 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 1991-2006 Peter Miller;
- *	All rights reserved.
+ * aegis - project change supervisor
+ * Copyright (C) 1991-2007 Peter Miller
+ * Copyright (C) 2007 Walter Franzini
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or (at
+ * your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: instructions to cook(1), how to build project
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 function defined-or-null =
 {
     if [defined [@1]] then
-       	return [[@1]];
+        return [[@1]];
     return;
 }
 
@@ -45,18 +42,18 @@ function build_include_search_path =
     local dir2 = ;
     loop dir = [search_list]
     {
-	loop dir2 = [arg]
-	{
-	    if [in [dir] .] then
-		result += [dir2];
-	    else
-	    {
-		if [in [dir2] . ] then
-		    result += [dir];
-		else
-		    result += [dir]/[dir2];
-	    }
-	}
+        loop dir2 = [arg]
+        {
+            if [in [dir] .] then
+                result += [dir2];
+            else
+            {
+                if [in [dir2] . ] then
+                    result += [dir];
+                else
+                    result += [dir]/[dir2];
+            }
+        }
     }
     return [result];
 }
@@ -141,16 +138,16 @@ search_tmp = [tail [split ':' [search_path]]];
 search_name = bl;
 loop
 {
-	search_dir = [head [search_tmp]];
-	if [not [search_dir]] then
-		loopstop;
-	search_tmp = [tail [search_tmp]];
+        search_dir = [head [search_tmp]];
+        if [not [search_dir]] then
+                loopstop;
+        search_tmp = [tail [search_tmp]];
 
-	if [not [exists [search_name]]] then
-		ln -s [search_dir] [search_name]
-			set clearstat;
-	search_list = [search_list] [search_name];
-	search_name = [search_name]bl;
+        if [not [exists [search_name]]] then
+                ln -s [search_dir] [search_name]
+                        set clearstat;
+        search_list = [search_list] [search_name];
+        search_name = [search_name]bl;
 }
 
 /*
@@ -159,27 +156,27 @@ loop
  */
 if [match_mask %1C%2 [version]] then
 {
-	/*
-	 * The develop_begin_command in the config file
-	 * always creates the "bl" symbolic link.
-	 */
-	baseline = bl;
+        /*
+         * The develop_begin_command in the config file
+         * always creates the "bl" symbolic link.
+         */
+        baseline = bl;
 
-	/*
-	 * Supplement file modification times with fingerprints.
-	 * Only do this for development builds.
-	 */
-	set fingerprint;
+        /*
+         * Supplement file modification times with fingerprints.
+         * Only do this for development builds.
+         */
+        set fingerprint;
 }
 
 if [not [defined baseline]] then
 {
-	/*
-	 * Turn on aggressive updating to ensure the smallest possible
-	 * range of mod times at aeipass.  This also ensures mod time
-	 * consistency on fast machines.
-	 */
-	set time-adjust-back;
+        /*
+         * Turn on aggressive updating to ensure the smallest possible
+         * range of mod times at aeipass.  This also ensures mod time
+         * consistency on fast machines.
+         */
+        set time-adjust-back;
 }
 
 /*
@@ -190,18 +187,9 @@ version_short = [fromto %1.C%2 %1 [subst D C [version]]];
 
 version_shorter = [split "." [version_short]] _ _;
 version_shorter = [unsplit "." [word 1 [version_shorter]]
-	[word 2 [version_shorter]]];
+        [word 2 [version_shorter]]];
 project_short = [fromto %.[version_short] % [project]];
 project_minus = [project_short]-[version_short];
-
-project_is_dev_version = [expr [word 2 [split "." [version_short] 0 0]] '%' 2];
-function print project_is_dev_version \= [project_is_dev_version];
-project_version_other =
-    [unsplit "."
-	[word 1 [split "." [version_short] 0 0]]
-	[expr [word 2 [split "." [version_short] 0 0]] '^' 1]
-    ];
-function print project_version_other \= [project_version_other];
 
 /*
  * use GNU awk if present
@@ -220,35 +208,37 @@ if [not [awk]] then
  * If it is not found (not cooked yet) the following
  * symbols will be undefined.
  *
- *	Must be included *after* the search_list is defined.
+ *      Must be included *after* the search_list is defined.
  */
 #include-cooked-nowarn [arch]/etc/Howto.conf
 if [not [defined prefix]] then
-	prefix = /usr/local;
+        prefix = /usr/local;
 if [not [defined exec_prefix]] then
-	exec_prefix = [prefix];
+        exec_prefix = [prefix];
 if [not [defined yacc]] then
-	yacc = yacc;
+        yacc = yacc;
 if [not [defined libs]] then
-	libs = ;
+        libs = ;
 
 if [defined [arch]_c++] then
     c++ = [[arch]_c++];
 
 if [not [defined-or-null c++]] then
-	c++ = ['if' [find_command g++] 'then' g++ 'else' c++];
+        c++ = ['if' [find_command g++] 'then' g++ 'else' c++];
 
 c++_path = [find_command [c++]];
 
 if [not [defined primary_arch]] then
+    primary_arch = ;
+if [not [count [primary_arch]]] then
     primary_arch = linux-i486;
 
 /*
  * The default recipe
  */
 all =
-	configured_files
-	;
+        configured_files
+        ;
 integration-build-targets = ;
 integration-build-targets: [integration-build-targets]
     set nodefault;
@@ -260,22 +250,22 @@ integration-build-targets: [integration-build-targets]
 if [defined change] then
 if [not [defined baseline]] then
 if [in [arch] [primary_arch]] then
-	all += integration-build-targets ;
+        all += integration-build-targets ;
 
 all: [all]
     set default
 {
     if [not [defined baseline]] then
     {
-	if [in [resolve etc/set-uid-root] etc/set-uid-root] then
-	    chmod a+rx etc/set-uid-root;
-       	set silent;
-	echo\;ls -l [arch]/bin/aegis [arch]/bin/aeimport;
-       	echo "Integrator: please do the following:";
-	echo "\"  sudo" [pathname [resolve etc/set-uid-root]] [arch]
-	    "aegis aeimport\"";
-	echo "\"if they aren't root already.  See etc/set-uid-root for\"";
-	echo "\"instructions for how to set-up your /etc/sudoers file.\"";
+        if [in [resolve etc/set-uid-root] etc/set-uid-root] then
+            chmod a+rx etc/set-uid-root;
+        set silent;
+        echo\;ls -l [arch]/bin/aegis [arch]/bin/aeimport;
+        echo "Integrator: please do the following:";
+        echo "\"  sudo" [pathname [resolve etc/set-uid-root]] [arch]
+            "aegis aeimport\"";
+        echo "\"if they aren't root already.  See etc/set-uid-root for\"";
+        echo "\"instructions for how to set-up your /etc/sudoers file.\"";
     }
 }
 
@@ -288,24 +278,43 @@ change_files_removed = ;
 change_files = ;
 change_files_build = ;
 #include-cooked-nowarn etc/cook/change_files.[version]
-etc/cook/change_files.[version]: : etc/chan_files.awk
-	set shallow nodefault
+etc/cook/change_files.[version]: : etc/quote_strin.awk
+        set shallow nodefault
 {
-	aegis -l cf -p [project] -c [change] -unf
-		| [awk] -f [resolve etc/chan_files.awk]
-		> [target]
-			set meter;
+        echo "removed_files = "
+             `aelcf -p [project] -c [change] -action remove | wc -l `
+             \"\;\" > [target];
+        echo >> [target];
+
+        echo "change_files_build =" >> [target];
+        aelcf -usage build -p [project] -c [change]
+              | awk -f [resolve etc/quote_strin.awk] >> [target];
+        echo \"\;\" >> [target];
+        echo >> [target];
+
+        echo "change_files =" >> [target];
+        aelcf -p [project] -c [change]
+              | awk -f [resolve etc/quote_strin.awk] >> [target];
+        echo \"\;\" >> [target];
+        echo >> [target];
 }
 project_files = ;
 project_files_build = ;
 #include-cooked-nowarn etc/cook/project_files.[version]
-etc/cook/project_files.[version]: : etc/proj_files.awk
-	set shallow nodefault
+etc/cook/project_files.[version]: : etc/quote_strin.awk
+        set shallow nodefault
 {
-	aegis -l pf -p [project] -c [change] -unf
-		| [awk] -f [resolve etc/proj_files.awk]
-		> [target]
-			set meter;
+        echo "project_files =" >> [target];
+        aelpf -p [project] -c [change]
+              | awk -f [resolve etc/quote_strin.awk] >> [target];
+        echo \"\;\" >> [target];
+        echo >> [target];
+
+        echo "project_files_build =" >> [target];
+        aelpf -usage build -p [project] -c [change]
+              | awk -f [resolve etc/quote_strin.awk] >> [target];
+        echo \"\;\" >> [target];
+        echo >> [target];
 }
 
 /*
@@ -316,57 +325,57 @@ if [not [change_files_removed]] then
 if [count [project_files]] then
 if [count [change_files]] then
 {
-	graph_leaf_file = [project_files] [change_files];
-	graph_leaf_pattern = /%0%;
+        graph_leaf_file = [project_files] [change_files];
+        graph_leaf_pattern = /%0%;
 }
 
 source_files =
-	[sort [stringset [project_files] [change_files]]]
-	;
+        [sort [stringset [project_files] [change_files]]]
+        ;
 
 
 version_obj = [arch]/common/version_stmp.o;
 common_obj = [arch]/common/common.a [version_obj];
 common_lib =
-	[stringset
-		[fromto
-			common/%0%.y
-			[arch]/common/%0%.gen.o
-			[match_mask common/%0%.y [source_files]]
-		]
-		[fromto
-			common/%0%.cc
-			[arch]/common/%0%.o
-			[match_mask common/%0%.cc [source_files]]
-		]
-		[fromto
-			common/%0%.cc.in
-			[arch]/common/%0%.o
-			[match_mask common/%0%.cc.in [source_files]]
-		]
-	-
-		[version_obj]
-	];
+        [stringset
+                [fromto
+                        common/%0%.y
+                        [arch]/common/%0%.gen.o
+                        [match_mask common/%0%.y [source_files]]
+                ]
+                [fromto
+                        common/%0%.cc
+                        [arch]/common/%0%.o
+                        [match_mask common/%0%.cc [source_files]]
+                ]
+                [fromto
+                        common/%0%.cc.in
+                        [arch]/common/%0%.o
+                        [match_mask common/%0%.cc.in [source_files]]
+                ]
+        -
+                [version_obj]
+        ];
 
 libaegis_obj = [arch]/libaegis/libaegis.a [version_obj];
 libaegis_lib =
-	[fromto
-		libaegis/%0%.y
-		[arch]/libaegis/%0%.gen.o
-		[match_mask libaegis/%0%.y [source_files]]
-	]
-	[fromto
-		libaegis/%0%.cc
-		[arch]/libaegis/%0%.o
-		[match_mask libaegis/%0%.cc [source_files]]
-	]
-	[fromto
-		libaegis/%0%.def
-		[arch]/libaegis/%0%.o
-		[match_mask libaegis/%0%.def [source_files]]
-	]
-	[common_lib]
-	;
+        [fromto
+                libaegis/%0%.y
+                [arch]/libaegis/%0%.gen.o
+                [match_mask libaegis/%0%.y [source_files]]
+        ]
+        [fromto
+                libaegis/%0%.cc
+                [arch]/libaegis/%0%.o
+                [match_mask libaegis/%0%.cc [source_files]]
+        ]
+        [fromto
+                libaegis/%0%.def
+                [arch]/libaegis/%0%.o
+                [match_mask libaegis/%0%.def [source_files]]
+        ]
+        [common_lib]
+        ;
 
 /*
  * There is a special list of files you must use, in preference to the
@@ -374,36 +383,37 @@ libaegis_lib =
  * is always in place.
  */
 c_incl_excludes =
-	[fromto common/ac/%0%.h -ex\=%0%.h
-	    [match_mask common/ac/%0%.h [source_files]]
-	];
+        [fromto common/ac/%0%.h -ex\=%0%.h
+            [match_mask common/ac/%0%.h [source_files]]
+        ]
+        ;
 
 /*
  * determine the list of commands
  */
 
 commands =
-	[stringset
-		[fromto %1/%0%2 %1 [match_mask %/main.cc [source_files]]]
-	-
-		fmtgen
-		find_sizes
-		aefp
-		cklinlen
-		aemakefile
-	];
+        [stringset
+                [fromto %1/%0%2 %1 [match_mask %/main.cc [source_files]]]
+        -
+                fmtgen
+                find_sizes
+                aefp
+                cklinlen
+                aemakefile
+        ];
 
 /*
  * Add the commands to the list of top-level targets.
  */
 all_commands:
-	[arch]/bin/aefp
-	[addprefix [arch]/bin/ [commands]]
-	[arch]/bin/xaegis
-	;
+        [arch]/bin/aefp
+        [addprefix [arch]/bin/ [commands]]
+        [arch]/bin/xaegis
+        ;
 all = [all]
-	all_commands
-	;
+        all_commands
+        ;
 
 /*
  * determine the object files for each command
@@ -411,112 +421,114 @@ all = [all]
 cmd_list = [commands];
 loop
 {
-	cmd = [head [cmd_list]];
-	if [not [cmd]] then
-		loopstop;
-	cmd_list = [tail [cmd_list]];
+        cmd = [head [cmd_list]];
+        if [not [cmd]] then
+                loopstop;
+        cmd_list = [tail [cmd_list]];
 
-	[cmd]_obj =
-		[fromto [cmd]/%0%.y [arch]/[cmd]/%0%.gen.o
-			[match_mask [cmd]/%0%.y [source_files]]
-		]
-		[fromto [cmd]/%0%.def [arch]/[cmd]/%0%.o
-			[match_mask [cmd]/%0%.def [source_files]]
-		]
-		[fromto [cmd]/%0%.cc [arch]/[cmd]/%0%.o
-			[match_mask [cmd]/%0%.cc [source_files]]
-		]
-		[libaegis_obj]
-		;
-	[cmd],I =
-		[fromto [cmd]/%0%.y [cmd]/%0%.gen.cc,I
-			[match_mask [cmd]/%0%.y [source_files]]
-		]
-		[fromto [cmd]/%0%.def [arch]/[cmd]/%0%.cc,I
-			[match_mask [cmd]/%0%.def [source_files]]
-		]
-		[fromto [cmd]/%0%.cc [cmd]/%0%.cc,I
-			[match_mask [cmd]/%0%.cc [source_files]]
-		]
-		;
+        [cmd]_obj =
+                [fromto [cmd]/%0%.y [arch]/[cmd]/%0%.gen.o
+                        [match_mask [cmd]/%0%.y [source_files]]
+                ]
+                [fromto [cmd]/%0%.def [arch]/[cmd]/%0%.o
+                        [match_mask [cmd]/%0%.def [source_files]]
+                ]
+                [fromto [cmd]/%0%.cc [arch]/[cmd]/%0%.o
+                        [match_mask [cmd]/%0%.cc [source_files]]
+                ]
+                [libaegis_obj]
+                ;
+        [cmd],I =
+                [fromto [cmd]/%0%.y [cmd]/%0%.gen.cc,I
+                        [match_mask [cmd]/%0%.y [source_files]]
+                ]
+                [fromto [cmd]/%0%.def [arch]/[cmd]/%0%.cc,I
+                        [match_mask [cmd]/%0%.def [source_files]]
+                ]
+                [fromto [cmd]/%0%.cc [cmd]/%0%.cc,I
+                        [match_mask [cmd]/%0%.cc [source_files]]
+                ]
+                ;
 }
 
 aefp_obj =
-	[arch]/aefp/main.o
-	[common_obj]
-	;
+        [arch]/aefp/main.o
+        [common_obj]
+        ;
 
 aemeasure_obj =
-	[fromto %0%.cc [arch]/%0%.o
-	    [match_mask aemeasure/%0%.cc [source_files]]
-	]
-	[arch]/common/common.a
-	;
+        [fromto %0%.cc [arch]/%0%.o
+            [match_mask aemeasure/%0%.cc [source_files]]
+        ]
+        [arch]/common/common.a
+        ;
 
 aemakefile_obj =
-	[fromto %0%.cc [arch]/%0%.o
-	    [match_mask aemakefile/%0%.cc [source_files]]
-	]
-	[arch]/common/common.a
-	;
+        [fromto %0%.cc [arch]/%0%.o
+            [match_mask aemakefile/%0%.cc [source_files]]
+        ]
+        [arch]/common/common.a
+        ;
 
 fmtgen_obj =
-	[fromto
-		fmtgen/%0%.y
-		[arch]/fmtgen/%0%.gen.o
-		[match_mask fmtgen/%0%.y [source_files]]
-	]
-	[fromto
-		fmtgen/%0%.cc
-		[arch]/fmtgen/%0%.o
-		[match_mask fmtgen/%0%.cc [source_files]]
-	]
-	[arch]/common/common.a
-	;
+        [fromto
+                fmtgen/%0%.y
+                [arch]/fmtgen/%0%.gen.o
+                [match_mask fmtgen/%0%.y [source_files]]
+        ]
+        [fromto
+                fmtgen/%0%.cc
+                [arch]/fmtgen/%0%.o
+                [match_mask fmtgen/%0%.cc [source_files]]
+        ]
+        [arch]/common/common.a
+        ;
 
 find_sizes_obj =
-	[fromto
-		find_sizes/%.cc
-		[arch]/find_sizes/%.o
-		[match_mask find_sizes/%.cc [source_files]]
-	]
-	[arch]/common/ac/string.o
-	[arch]/common/arglex.o
-	[arch]/common/arglex/compare.o
-	[arch]/common/error.o
-	[arch]/common/exeext.o
-	[arch]/common/libdir.o
-	[arch]/common/mem.o
-	[arch]/common/mprintf.o
-	[arch]/common/nstring.o
-	[arch]/common/progname.o
-	[arch]/common/quit.o
-	[arch]/common/rsrc_limits.o
-	[arch]/common/str.o
+        [fromto
+                find_sizes/%.cc
+                [arch]/find_sizes/%.o
+                [match_mask find_sizes/%.cc [source_files]]
+        ]
+        [arch]/common/ac/string.o
+        [arch]/common/arglex.o
+        [arch]/common/arglex/compare.o
+        [arch]/common/error.o
+        [arch]/common/exeext.o
+        [arch]/common/libdir.o
+        [arch]/common/mem.o
+        [arch]/common/mprintf.o
+        [arch]/common/nstring.o
+        [arch]/common/progname.o
+        [arch]/common/quit.o
+        [arch]/common/rsrc_limits.o
+        [arch]/common/str.o
         [arch]/common/str/catenate.o
-	[arch]/common/str/format.o
-	[arch]/common/trace.o
-	;
+        [arch]/common/str/format.o
+        [arch]/common/stracc.o
+        [arch]/common/trace.o
+        ;
 
 source_files_build =
-	[change_files_build] [project_files_build];
+        [change_files_build] [project_files_build];
 source_files_non_build =
-	[stringset [source_files] - [source_files_build]];
+        [stringset [source_files] - [source_files_build]];
 
 /*
  * how to compile C sources
  */
 if [defined [arch]_c++_flags] then
-    c++_flags = [[arch]_c++_flags];
+    c++_flags = [split "%" [[arch]_c++_flags]];
 
 if [not [defined c++_flags]] then
     c++_flags = -O2 [debug];
 
 if [defined [arch]_cc_include_flags] then
-    cc_include_flags = [[arch]_cc_include_flags];
+    cc_include_flags = [split "%" [[arch]_cc_include_flags]];
 
 if [not [defined cc_include_flags]] then
     cc_include_flags = ;
+cc_include_flags += [match_mask -I%0% [collect xml2-config --cflags]];
 
 /*
  * we need to say -I. -I./[arch]
@@ -524,73 +536,65 @@ if [not [defined cc_include_flags]] then
  *                -Iblbl -Iblbl/[arch]
  * etc, etc.
  */
-cc_include_flags += [addprefix -I [build_include_search_path . [arch]]];
+c_incl_include_flags = [addprefix -I [build_include_search_path . [arch]]];
+cc_include_flags += [c_incl_include_flags];
 
 
 if [defined [arch]_ld_flags] then
-    ld_flags = [[arch]_ld_flags];
+    ld_flags = [split "%" [[arch]_ld_flags]];
 
 if [not [defined ld_flags]] then
     ld_flags = [debug];
 
 /*
  * this next section is for g++
- *	comment it out if you don't have g++
  *
  * The g++ include files MUST be first.
  */
-g++_modern = 0;
-if [in [substring 1 3 [c++]] g++] then
-{
-    g++_modern =
-	[collect
-	    [c++] -dumpversion |
-	    cut -d. -f1,2 |
-	    [awk] "'{print ($1 > 2.95)}'"
-	];
+g++_modern = 0;;
+#if [in [substring 1 3 [c++]] g++]
 
+[arch]/etc/gxx_flags.cook: etc/gxx_flags.pl
+{
+    perl [resolve etc/gxx_flags.pl] > [target];
+}
+;;
+#include-cooked-nowarn [arch]/etc/gxx_flags.cook
+#endif
+
+c++_flags =
+    [stringset
+        -ansi -Wall -Werror
+        [c++_flags]
+        -Wshadow -Wpointer-arith -Wwrite-strings
+        /*
+         * The g++ command doesn't have the -Wmissing-declarations
+         * -Wstrict-prototypes -Wmissing-prototypes options, even though
+         * gcc does.  I've registered a bug, maybe they will put it
+         * back.  But, don't hold your breath, they can't seem to
+         * understand just how useful they are.
+         */
+    ];
+if [g++_modern] then
+{
     c++_flags =
-	[stringset
-	    [c++_flags]
-	    -ansi -Wall
-	    -Wshadow -Wpointer-arith -Wwrite-strings
-	    /*
-	     * The g++ command doesn't have the -Wmissing-declarations
-	     * -Wstrict-prototypes -Wmissing-prototypes options, even though
-	     * gcc does.  I've registered a bug, maybe they will put it
-	     * back.  But, don't hold your breath, they can't seem to
-	     * understand just how useful they are.
-	     */
-	];
-    if [g++_modern] then
-    {
-        c++_flags =
-	    [stringset
-		[c++_flags]
-		-fmessage-length\=0 /* this makes vim -q work better */
-	    ];
-    }
+        [stringset
+            [c++_flags]
+            -fmessage-length\=0 /* this makes vim -q work better */
+        ];
 }
 
-/*
- * For development builds, on the primary architecture, all warnings are
- * to be treated as errors; this ensures the cleanest possible code.
- * Make sure we are dealing with g++ and _not_ v3.x at that
- */
-if [defined baseline] then
-  if [in [arch] [primary_arch]] then
-    if [in [substring 1 3 [c++]] g++] then
-	c++_flags = [c++_flags] -Werror;
+
 
 /*
  * include files from common
  */
 include_search_list =
-	[arch]/common
-	common
-	[arch]/libaegis
-	libaegis
-	;
+        [arch]/common
+        common
+        [arch]/libaegis
+        libaegis
+        ;
 
 /*
  * Build %1/%2.o from %1/%2.cc
@@ -600,32 +604,32 @@ include_search_list =
 {
     extra = [c++_flags];
     if [defined %2_flags] then
-	    extra = [extra] [%2_flags];
+            extra = [extra] [%2_flags];
 
     if [match %%.gen %2] then
     {
-	if [in [substring 1 3 [c++]] g++] then
-	{
-	    /*
-	     * Generated files may have warnings, because we have no
-	     * control over the quality of generated code (usually
-	     * warnings about missing prototypes or unreferenced
-	     * labels).
-	     */
-	    if [g++_modern] then
-		extra += -Wno-unused-function -Wno-unused-label;
-	}
+        if [in [substring 1 3 [c++]] g++] then
+        {
+            /*
+             * Generated files may have warnings, because we have no
+             * control over the quality of generated code (usually
+             * warnings about missing prototypes or unreferenced
+             * labels).
+             */
+            if [g++_modern] then
+                extra += -Wno-unused-function -Wno-unused-label;
+        }
     }
 
     local post =;
     if [in g++ [substring 1 3 [c++]]]
-	then post = -o [target];
+        then post = -o [target];
     else
-	post = "&&" mv %2.o [target];
+        post = "&&" mv %2.o [target];
 
     [c++] [extra]
-	[cc_include_flags]
-	-c [resolve %1/%0%2.cc]
+        [cc_include_flags]
+        -c [resolve %1/%0%2.cc]
         [post];
 }
 
@@ -633,78 +637,78 @@ include_search_list =
 {
     extra = [c++_flags];
     if [defined %2_flags] then
-	extra = [extra] [%2_flags];
+        extra = [extra] [%2_flags];
 
     if [match %%.gen %2] then
     {
-	/*
-	 * Generated files may have warnings, because we have no
-	 * control over the quality of generated code (usually
-	 * warnings about missing prototypes or unreferenced
-	 * labels).
-	 */
-	extra = [stringset [extra] - -Werror];
+        /*
+         * Generated files may have warnings, because we have no
+         * control over the quality of generated code (usually
+         * warnings about missing prototypes or unreferenced
+         * labels).
+         */
+        extra = [stringset [extra] - -Werror];
     }
 
     [c++] [extra]
-	[cc_include_flags]
-	-c [resolve [arch]/%1/%0%2.cc]
-	['if' [in g++ [substring 1 3 [c++]]] 'then' -o [target]];
+        [cc_include_flags]
+        -c [resolve [arch]/%1/%0%2.cc]
+        ['if' [in g++ [substring 1 3 [c++]]] 'then' -o [target]];
     if [not [in g++ [substring 1 3 [c++]]]] then
-	mv %2.o [target];
+        mv %2.o [target];
 }
 
 %1/%0%2.cc.d: %1/%0%2.cc
     set no-cascade
 {
     c_incl -nc -ns -eia -nrec
-	[cc_include_flags]
-	-prefix "'cascade %1/%0%2.cc ='"
-	-suffix "';'"
-	[resolve %1/%0%2.cc]
-	[addprefix -rlp\= [search_list]]
-	-slp [arch] "'[arch]'"
-	-nsri
+        [c_incl_include_flags]
+        -prefix "'cascade %1/%0%2.cc ='"
+        -suffix "';'"
+        [resolve %1/%0%2.cc]
+        [addprefix -rlp\= [search_list]]
+        -slp [arch] "'[arch]'"
+        -nsri
         /*
-	 * Generated files may use excluded headers, because we
+         * Generated files may use excluded headers, because we
          * have no control over the quality of generated code.
-	 */
+         */
         ['if' [not [match %%.gen %2]] 'then'
             ['if' [not [filter common/ac/%%0%% %1/%0%2.cc]]
-	        'then' [c_incl_excludes]]]
-	-o [target];
+                'then' [c_incl_excludes]]]
+        -o [target];
 }
 
 %1/%0%2.h.d: %1/%0%2.h
     set no-cascade
 {
     c_incl -nc -ns -eia -nrec
-	[cc_include_flags]
-	-prefix "'cascade %1/%0%2.h ='"
-	-suffix "';'"
-	[resolve %1/%0%2.h]
-	[addprefix -rlp\= [search_list]]
-	-slp [arch] "'[arch]'"
-	-nsri
-	['if' [not [filter common/ac/%%0%% %1/%0%2.h]]
-	    'then' [c_incl_excludes]]
-	-o [target];
+        [c_incl_include_flags]
+        -prefix "'cascade %1/%0%2.h ='"
+        -suffix "';'"
+        [resolve %1/%0%2.h]
+        [addprefix -rlp\= [search_list]]
+        -slp [arch] "'[arch]'"
+        -nsri
+        ['if' [not [filter common/ac/%%0%% %1/%0%2.h]]
+            'then' [c_incl_excludes]]
+        -o [target];
 }
 
 %1/%0%2.cc.d: [arch]/%1/%0%2.cc
     set no-cascade
 {
     c_incl -nc -ns -eia -nrec
-	[cc_include_flags]
-	-prefix "'cascade [arch]/%1/%0%2.cc ='"
-	-suffix "';'"
-	[resolve [arch]/%1/%0%2.cc]
-	[addprefix -rlp\= [search_list]]
-	-slp [arch] "'[arch]'"
-	-nsri
-	['if' [not [filter common/ac/%%0%% %1/%0%2.h]]
-	    'then' [c_incl_excludes]]
-	-o [target];
+        [c_incl_include_flags]
+        -prefix "'cascade [arch]/%1/%0%2.cc ='"
+        -suffix "';'"
+        [resolve [arch]/%1/%0%2.cc]
+        [addprefix -rlp\= [search_list]]
+        -slp [arch] "'[arch]'"
+        -nsri
+        ['if' [not [filter common/ac/%%0%% %1/%0%2.h]]
+            'then' [c_incl_excludes]]
+        -o [target];
 }
 
 %0%.cc,M:: %0%.cc,Md;
@@ -712,31 +716,31 @@ include_search_list =
 %1/%0%2.cc,Md: %1/%0%2.cc
 {
     c_incl
-       	-nc /* no cache */
-       	-ns /* no system */
-       	-eia /* empty if absent */
-	[cc_include_flags]
-       	[resolve %1/%0%2.cc]
-       	-nsri /* no source relative includes */
-       	[prepost "-rlp=" "" [search_list]] /* remove leading path */
-       	-rlp [arch] /* remove leading architecture */
-       	-o [target];
+        -nc /* no cache */
+        -ns /* no system */
+        -eia /* empty if absent */
+        [c_incl_include_flags]
+        [resolve %1/%0%2.cc]
+        -nsri /* no source relative includes */
+        [prepost "-rlp=" "" [search_list]] /* remove leading path */
+        -rlp [arch] /* remove leading architecture */
+        -o [target];
 }
 
 c-dep-files =
-	[fromto %1/%0%2.cc %1/%0%2.cc.d
-    	    [match_mask %1/%0%2.cc [source_files]]]
-	[fromto %1/%0%2.h %1/%0%2.h.d
-	    [match_mask %1/%0%2.h [source_files]]]
-	[fromto %1/%0%2.y %1/%0%2.gen.cc.d
-	    [match_mask %1/%0%2.y [source_files]]]
-	[fromto %1/%0%2.y %1/%0%2.gen.h.d
-	    [match_mask %1/%0%2.y [source_files]]]
-	[fromto %1/%0%2.def %1/%0%2.cc.d
-	    [match_mask %1/%0%2.def [source_files]]]
-	[fromto %1/%0%2.def %1/%0%2.h.d
-	    [match_mask %1/%0%2.def [source_files]]]
-	;
+        [fromto %1/%0%2.cc %1/%0%2.cc.d
+            [match_mask %1/%0%2.cc [source_files]]]
+        [fromto %1/%0%2.h %1/%0%2.h.d
+            [match_mask %1/%0%2.h [source_files]]]
+        [fromto %1/%0%2.y %1/%0%2.gen.cc.d
+            [match_mask %1/%0%2.y [source_files]]]
+        [fromto %1/%0%2.y %1/%0%2.gen.h.d
+            [match_mask %1/%0%2.y [source_files]]]
+        [fromto %1/%0%2.def %1/%0%2.cc.d
+            [match_mask %1/%0%2.def [source_files]]]
+        [fromto %1/%0%2.def %1/%0%2.h.d
+            [match_mask %1/%0%2.def [source_files]]]
+        ;
 
 #if [count [c-dep-files]]
 #include-cooked-nowarn [c-dep-files]
@@ -996,30 +1000,31 @@ if [count [match_mask %0%.o [fmtgen_obj]]] then
 yacc_flags = -v;
 
 %1/%0%2.gen.cc %1/%0%2.gen.h: %1/%0%2.y
-	single-thread y.tab.c y.tab.h
+        single-thread y.tab.c y.tab.h
 {
-	rm -f %1/%0%2.list y.output
-		set silent;
-	[yacc] -d [yacc_flags] [resolve %1/%0%2.y];
-	yy = [collect echo %0%2 | sed -e "'s|[^a-zA-Z0-9]|_|g'"];
-	sed	-e "'s/[yY][yY]/"[yy]"_/g'"
-		-e "'/<stdio.h>/d'"
-		-e "'/<stdlib.h>/d'"
-		-e "'/<stddef.h>/d'"
-		< y.tab.c > %1/%0%2.gen.cc;
-	rm y.tab.c;
-	sed -e "'s/[yY][yY]/"[yy]"_/g'" -e "'s/Y_TAB_H/"[yy]"_TAB_H/g'"
-		< y.tab.h > %1/%0%2.gen.h;
-	rm y.tab.h;
-	if [exists y.output] then
-		mv y.output %1/%0%2.list
-			set clearstat;
+        rm -f %1/%0%2.list y.output
+                set silent;
+        [yacc] -d [yacc_flags] [resolve %1/%0%2.y];
+        yy = [collect echo %0%2 | sed -e "'s|[^a-zA-Z0-9]|_|g'"];
+        sed     -e "'s/[yY][yY]/"[yy]"_/g'"
+                -e "'s|y\.tab\.c|%1/%0%2.gen.cc|g'"
+                -e "'/<stdio.h>/d'"
+                -e "'/<stdlib.h>/d'"
+                -e "'/<stddef.h>/d'"
+                < y.tab.c > %1/%0%2.gen.cc;
+        rm y.tab.c;
+        sed -e "'s/[yY][yY]/"[yy]"_/g'" -e "'s/Y_TAB_H/"[yy]"_TAB_H/g'"
+                < y.tab.h > %1/%0%2.gen.h;
+        rm y.tab.h;
+        if [exists y.output] then
+                mv y.output %1/%0%2.list
+                        set clearstat;
 }
 
 [arch]/bin/%: script/%.tcl
 {
-	cp [resolve [need]] [target];
-	chmod 755 [target];
+        cp [resolve [need]] [target];
+        chmod 755 [target];
 }
 
 /*
@@ -1032,11 +1037,11 @@ yacc_flags = -v;
 ranlib = [find_command ranlib];
 
 [arch]/%/%.a: [%_lib]
-	set meter
+        set meter
 {
-	ar qc [target] [resolve [%_lib]];
-	if [ranlib] then
-		[ranlib] [target];
+        ar qc [target] [resolve [%_lib]];
+        if [ranlib] then
+                [ranlib] [target];
 }
 
 set-uid-root-commands = aegis aeimport aelock;
@@ -1053,9 +1058,9 @@ data
 dataend
 
     [c++] -o [target]
-	[stringset [ld_flags] [debug]]
-	[resolve [%_obj]] [libs]
-	    set meter;
+        [stringset [ld_flags] [debug]]
+        [resolve [%_obj]] [libs]
+            set meter;
 
     chmod 755 [target];
 
@@ -1064,11 +1069,11 @@ dataend
      */
     if [in [target] [addprefix [arch]/bin/ [set-uid-root-commands]]] then
     {
-	if [in [resolve etc/set-uid-root] etc/set-uid-root] then
-	    chmod a+rx etc/set-uid-root;
-	sudo [pathname [resolve etc/set-uid-root]]
-	    [arch] [entryname [target]]
-		set errok;
+        if [in [resolve etc/set-uid-root] etc/set-uid-root] then
+            chmod a+rx etc/set-uid-root;
+        sudo [pathname [resolve etc/set-uid-root]]
+            [arch] [entryname [target]]
+                set errok;
     }
 }
 
@@ -1083,56 +1088,56 @@ dataend
  */
 
 %1/%0%2.cc %1/%0%2.h: %1/%0%2.def: [arch]/bin/fmtgen
-	/* host-binding [[generate-arch]-hosts] */
+        /* host-binding [[generate-arch]-hosts] */
 {
-	/*
-	 * We don't resolve the path of the .def file, because fmtgen can
-	 * do it itself, and because this allows the unresolved source
-	 * file name to be inserted into the comment at the top of the
-	 * output files.
-	 *
-	 * We insert the unresolved file name because (a) it's less
-	 * confusing, and (b) it doesn't needlessly change the fingerprint
-	 * just because of the search path.  This, in turn, means that
-	 * cook doesn't rebuild a couple of hundred file which don't
-	 * need to be recompiled.
-	 */
-	[resolve [arch]/bin/fmtgen]
-		[addprefix "-I" [search_list]]
-		%1/%0%2.def %1/%0%2.cc %1/%0%2.h;
+        /*
+         * We don't resolve the path of the .def file, because fmtgen can
+         * do it itself, and because this allows the unresolved source
+         * file name to be inserted into the comment at the top of the
+         * output files.
+         *
+         * We insert the unresolved file name because (a) it's less
+         * confusing, and (b) it doesn't needlessly change the fingerprint
+         * just because of the search path.  This, in turn, means that
+         * cook doesn't rebuild a couple of hundred file which don't
+         * need to be recompiled.
+         */
+        [resolve [arch]/bin/fmtgen]
+                [addprefix "-I" [search_list]]
+                %1/%0%2.def %1/%0%2.cc %1/%0%2.h;
 }
 
 %1/%0%2.def.d: %1/%0%2.def
-	set no-cascade
+        set no-cascade
 {
-	c_incl -nc -ns -eia -nrec
-	    [cc_include_flags]
-	    -prefix "'cascade %1/%0%2.def ='"
-	    -suffix "';'"
-	    [resolve %1/%0%2.def]
-	    [addprefix -rlp\= [search_list]]
-	    -slp [arch] "'[arch]'"
-	    -nsri
-	    -o [target];
+        c_incl -nc -ns -eia -nrec
+            [c_incl_include_flags]
+            -prefix "'cascade %1/%0%2.def ='"
+            -suffix "';'"
+            [resolve %1/%0%2.def]
+            [addprefix -rlp\= [search_list]]
+            -slp [arch] "'[arch]'"
+            -nsri
+            -o [target];
 }
 
 %1/%0%2.def,M:: %1/%0%2.def,Md;
 
 %1/%0%2.def,Md: %1/%0%2.def
 {
-	c_incl -nc -ns -eia
-	    [cc_include_flags]
-	    [resolve %1/%0%2.def]
-	    [addprefix -rlp\= [search_list]]
-	    -slp [arch] "'[arch]'"
-	    -nsri
-	    -o [target];
+        c_incl -nc -ns -eia
+            [c_incl_include_flags]
+            [resolve %1/%0%2.def]
+            [addprefix -rlp\= [search_list]]
+            -slp [arch] "'[arch]'"
+            -nsri
+            -o [target];
 }
 
 def-dep-files =
-	[fromto %1/%0%2.def %1/%0%2.def.d
-		[match_mask %1/%0%2.def [source_files]]
-	];
+        [fromto %1/%0%2.def %1/%0%2.def.d
+                [match_mask %1/%0%2.def [source_files]]
+        ];
 
 #if [count [def-dep-files]]
 #include-cooked-nowarn [def-dep-files]
@@ -1144,13 +1149,13 @@ def-dep-files =
  */
 
 [vs_file]:
-	set shallow
+        set shallow
 {
-	echo "'#define PATCHLEVEL \""[version]"\"'" > [target];
-	aegis -list version -p [project] -c [change]
-	| [awk] "-F'[[\\\\]]'"
+        echo "'#define PATCHLEVEL \""[version]"\"'" > [target];
+        aegis -list version -p [project] -c [change]
+        | [awk] "-F'[[\\\\]]'"
 "'/^copyright_years/{print \"#define COPYRIGHT_YEARS \\\"\" $2 \"\\\"\" }'"
-	>> [target];
+        >> [target];
 }
 
 [arch]/lib/report.index : lib/report.index
@@ -1161,24 +1166,24 @@ def-dep-files =
 
 
 etc/version.so:
-	set ['if' [or [not [defined baseline] ] [not [exists bl/etc/version.so
-		] ] ] 'then' shallow]
+        set ['if' [or [not [defined baseline] ] [not [exists bl/etc/version.so
+                ] ] ] 'then' shallow]
 {
-	echo \".ds v) [version_short]\" > [target];
-	echo [version]
-		| [awk] -F.  "'{o=$2%2; print\".ds o) \"o;"
-		    "print \".ds p) \" $1 \".\" (o ? ($2 - 1) : ($2 + 1)) }'"
-		>> [target];
-	echo [version]
-		| [awk] -F. "'{print \".ds u) \"$1\".\"$2}'"
-		>> [target];
-	aegis -list version -p [project] -c [change]
-		| [awk] -F'\'"\'' "'/previous/{print $2}'"
-		| [awk] -F. "'{print \".ds w) \"$1\".\"$2}'"
-		>> [target];
-	aegis -list version -p [project] -c [change]
-	| [awk] "-F'[[\\\\]]'" "'/^copyright_years/{print \".ds Y) \" $2}'"
-	>> [target];
+        echo \".ds v) [version_short]\" > [target];
+        echo [version]
+                | [awk] -F.  "'{o=$2%2; print\".ds o) \"o;"
+                    "print \".ds p) \" $1 \".\" (o ? ($2 - 1) : ($2 + 1)) }'"
+                >> [target];
+        echo [version]
+                | [awk] -F. "'{print \".ds u) \"$1\".\"$2}'"
+                >> [target];
+        aegis -list version -p [project] -c [change]
+                | [awk] -F'\'"\'' "'/previous/{print $2}'"
+                | [awk] -F. "'{print \".ds w) \"$1\".\"$2}'"
+                >> [target];
+        aegis -list version -p [project] -c [change]
+        | [awk] "-F'[[\\\\]]'" "'/^copyright_years/{print \".ds Y) \" $2}'"
+        >> [target];
 }
 
 
@@ -1189,11 +1194,11 @@ etc/version.so:
  */
 
 makefile-per-file =
-	[addsuffix ",M"
-		[stringset [source_files] - [source_files_build]]
-		[fromto %0%.y %0%.gen.cc [match_mask %0%.y [source_files]]]
-		[fromto %0%.def %0%.cc [match_mask %0%.def [source_files]]]
-	];
+        [addsuffix ",M"
+                [stringset [source_files] - [source_files_build]]
+                [fromto %0%.y %0%.gen.cc [match_mask %0%.y [source_files]]]
+                [fromto %0%.def %0%.cc [match_mask %0%.def [source_files]]]
+        ];
 
 Makefile.in: etc/Makefile.head [arch]/bin/aemakefile [vs_file]
     [makefile-per-file]
@@ -1211,25 +1216,25 @@ dataend
 
 %0%,M: [arch]/bin/aemakefile
 {
-	[resolve [arch]/bin/aemakefile] -body %0%
-		[addprefix "-dir=" [search_list]]
-		> [target];
+        [resolve [arch]/bin/aemakefile] -body %0%
+                [addprefix "-dir=" [search_list]]
+                > [target];
 }
 
 
 etc/CHANGES: [arch]/bin/aereport lib/report/proj_detai.rpt [vs_file]
 {
-	[resolve [arch]/bin/aereport]
-		-f [resolve lib/report/proj_detai.rpt]
-		-o [target]
-		-p [project_short]
-		-pw\=80 -pl\=66
-								      set meter;
+        [resolve [arch]/bin/aereport]
+                -f [resolve lib/report/proj_detai.rpt]
+                -o [target]
+                -p [project_short]
+                -pw\=80 -pl\=66
+                                                                      set meter;
 }
 
 [arch]/common/find_sizes.h: [arch]/bin/find_sizes
 {
-	[resolve [arch]/bin/find_sizes] > [target];
+        [resolve [arch]/bin/find_sizes] > [target];
 }
 
 /*

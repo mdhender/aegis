@@ -1,23 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1996, 2003-2005 Peter Miller;
-//	All rights reserved.
+//      aegis - project change supervisor
+//      Copyright (C) 1996, 2003-2007 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate return statements
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/aer/expr.h>
@@ -26,47 +23,40 @@
 #include <common/trace.h>
 
 
-struct rpt_stmt_return_ty
+rpt_stmt_return::~rpt_stmt_return()
 {
-	RPT_STMT
-	rpt_expr_ty	*e;
-};
-
-
-static void
-run(rpt_stmt_ty *that, rpt_stmt_result_ty *rp)
-{
-	rpt_stmt_return_ty *this_thing;
-
-	trace(("return::run()\n{\n"));
-	this_thing = (rpt_stmt_return_ty *)that;
-	rp->status = rpt_stmt_status_return;
-	if (this_thing->e)
-		rp->thrown = rpt_expr_evaluate(this_thing->e, 0);
-	else
-		rp->thrown = rpt_value_void();
-	trace(("}\n"));
 }
 
 
-static rpt_stmt_method_ty method =
+rpt_stmt_return::rpt_stmt_return(const rpt_expr::pointer &a_ep) :
+    ep(a_ep)
 {
-	sizeof(rpt_stmt_return_ty),
-	"return",
-	0, // construct
-	0, // destruct
-	run
-};
+}
 
 
-rpt_stmt_ty *
-rpt_stmt_return(rpt_expr_ty *e)
+rpt_stmt::pointer
+rpt_stmt_return::create(const rpt_expr::pointer &a_ep)
 {
-	rpt_stmt_ty	*that;
-	rpt_stmt_return_ty *this_thing;
+    return pointer(new rpt_stmt_return(a_ep));
+}
 
-	that = rpt_stmt_alloc(&method);
-	this_thing = (rpt_stmt_return_ty *)that;
-	this_thing->e = e ? rpt_expr_copy(e) : 0;
-	return that;
+
+rpt_stmt::pointer
+rpt_stmt_return::create()
+{
+    return pointer(new rpt_stmt_return(rpt_expr::pointer()));
+}
+
+
+void
+rpt_stmt_return::run(rpt_stmt_result_ty *rp)
+    const
+{
+    trace(("return::run()\n{\n"));
+    rp->status = rpt_stmt_status_return;
+    if (ep)
+        rp->thrown = ep->evaluate(false, true);
+    else
+        rp->thrown = rpt_value_void::create();
+    trace(("}\n"));
 }

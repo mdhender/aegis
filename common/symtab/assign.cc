@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the symtab_assign class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/symtab.h>
@@ -26,11 +23,18 @@
 void
 symtab_ty::assign(string_ty *key, void *data)
 {
-    str_hash_ty index = key->str_hash & hash_mask;
+    assign(nstring(key), data);
+}
+
+
+void
+symtab_ty::assign(const nstring &key, void *data)
+{
+    str_hash_ty idx = key.get_hash() & hash_mask;
     row_t *p = 0;
-    for (p = hash_table[index]; p; p = p->overflow)
+    for (p = hash_table[idx]; p; p = p->overflow)
     {
-	if (str_equal(key, p->key))
+	if (key == p->key)
 	{
     	    if (reap)
        		reap(p->data);
@@ -40,10 +44,10 @@ symtab_ty::assign(string_ty *key, void *data)
     }
 
     p = new row_t;
-    p->key = str_copy(key);
-    p->overflow = hash_table[index];
+    p->key = key;
+    p->overflow = hash_table[idx];
     p->data = data;
-    hash_table[index] = p;
+    hash_table[idx] = p;
 
     hash_load++;
     if (hash_load * 10 >= hash_modulus * 8)

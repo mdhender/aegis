@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -34,11 +33,6 @@
 project_identifier_subset_plain::~project_identifier_subset_plain()
 {
     trace(("~project_identifier_subset_plain()\n{\n"));
-    if (up)
-    {
-	user_free(up);
-	up = 0;
-    }
     pp = 0;
     if (project_name);
     {
@@ -51,8 +45,7 @@ project_identifier_subset_plain::~project_identifier_subset_plain()
 
 project_identifier_subset_plain::project_identifier_subset_plain() :
     project_name(0),
-    pp(0),
-    up(0)
+    pp(0)
 {
     trace(("project_identifier_subset_plain()\n"));
 }
@@ -68,7 +61,10 @@ project_identifier_subset_plain::get_pp()
 	//
 	assert(!pp);
 	if (!project_name)
-	    project_name = user_default_project();
+        {
+            nstring n = user_ty::create()->default_project();
+            project_name = str_copy(n.get_ref());
+        }
 	pp = project_alloc(project_name);
 	pp->bind_existing();
 	assert(pp);
@@ -77,12 +73,12 @@ project_identifier_subset_plain::get_pp()
 }
 
 
-user_ty *
+user_ty::pointer
 project_identifier_subset_plain::get_up()
 {
     if (!up)
     {
-	up = user_executing(get_pp());
+	up = user_ty::create();
 	assert(up);
     }
     return up;
@@ -126,7 +122,7 @@ project_identifier_subset_plain::command_line_parse(void (*usage)(void))
 
 
 void
-project_identifier_subset_plain::command_line_check(void (*usage)(void))
+project_identifier_subset_plain::command_line_check(void (*)(void))
 {
 }
 
@@ -150,4 +146,12 @@ project_identifier_subset_plain::parse_change_with_branch(long &change_number,
 	&branch,
 	usage
     );
+}
+
+
+bool
+project_identifier_subset_plain::set()
+    const
+{
+    return !!project_name;
 }

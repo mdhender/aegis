@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1998, 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1995, 1998, 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -35,7 +34,7 @@ static sem_ty	*sem_root;
 
 
 void *
-parse(string_ty *filename, type_ty *type)
+parse(string_ty *filename, meta_type *type)
 {
     void	    *addr;
 
@@ -62,7 +61,7 @@ parse(string_ty *filename, type_ty *type)
 
 
 void *
-parse_env(const char *name, type_ty *type)
+parse_env(const char *name, meta_type *type)
 {
     void	    *addr;
 
@@ -88,7 +87,7 @@ parse_env(const char *name, type_ty *type)
 
 
 void *
-parse_input(input &ifp, type_ty *type)
+parse_input(input &ifp, meta_type *type)
 {
     trace(("parse_input(ifp = *%08lX, type = %08lx)\n{\n", (long)&ifp,
 	(long)type));
@@ -113,7 +112,7 @@ parse_input(input &ifp, type_ty *type)
 
 
 void
-sem_push(type_ty *type, void *addr)
+sem_push(meta_type *type, void *addr)
 {
     sem_ty	    *sp;
 
@@ -305,7 +304,7 @@ sem_list(void)
     }
     else
     {
-	type_ty		*type;
+	meta_type		*type;
 	void		*addr;
 
 	addr = sem_root->type->list_parse(sem_root->addr, &type);
@@ -318,7 +317,7 @@ sem_list(void)
 	    void	    *contents;
 
 	    contents = type->alloc();
-	    *(generic_struct_ty **)addr = (generic_struct_ty *)contents;
+	    *(generic_struct **)addr = (generic_struct *)contents;
 	    addr = contents;
 	}
 
@@ -350,13 +349,13 @@ sem_field(string_ty *name)
     }
     else
     {
-	type_ty		*type;
+	meta_type		*type;
 	void		*addr;
 	unsigned long	mask;
-	generic_struct_ty *gsp;
+	generic_struct *gsp;
 	int             redefok;
 
-	gsp = (generic_struct_ty *)sem_root->addr;
+	gsp = (generic_struct *)sem_root->addr;
 	redefok = 0;
 	addr = sem_root->type->struct_parse(gsp, name, &type, &mask, &redefok);
 	if (!addr)
@@ -408,7 +407,7 @@ sem_field(string_ty *name)
 		    gsp->mask |= mask;
 		    trace(("gsp->mask == 0x%08lX;\n", gsp->mask));
 		    if (type->alloc)
-			addr = (void *)*(generic_struct_ty **)addr;
+			addr = (void *)*(generic_struct **)addr;
 		    sem_push(type, addr);
 		    trace(("}\n"));
 		    return;
@@ -430,7 +429,7 @@ sem_field(string_ty *name)
 		void		*contents;
 
 		contents = type->alloc();
-		*(generic_struct_ty **)addr = (generic_struct_ty *)contents;
+		*(generic_struct **)addr = (generic_struct *)contents;
 		addr = contents;
 	    }
 

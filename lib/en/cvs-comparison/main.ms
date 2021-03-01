@@ -1,7 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001, 2002 Peter Miller;
-.\"	All rights reserved.
+.\"	Copyright (C) 1999, 2001, 2002, 2006, 2007 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 .\"	GNU General Public License for more details.
 .\"
 .\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: document compaing Aegis and CVS
+.\"	along with this program. If not, see
+.\"	<http://www.gnu.org/licenses/>.
 .\"
 .\" Format this file with
 .\"	roffpp main.ms | pic | tbl | troff -t -ms | lpr -t
@@ -105,8 +102,7 @@ This document describing the Aegis program,
 and the Aegis program itself,
 are
 .br
-Copyright \*(C) \*(Y) Peter Miller;
-All rights reserved.
+Copyright \*(C) \*(Y) Peter Miller
 .sp
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -118,9 +114,8 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 .sp
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+You should have received a copy of the GNU General Public License along
+with this program. If not, see <http://www.gnu.org/licenses/>.
 .ps 10
 .vs 12
 .bp

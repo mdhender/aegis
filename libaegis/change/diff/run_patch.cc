@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate run_patchs
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change.h>
@@ -31,8 +28,9 @@
 
 
 void
-change_run_patch_diff_command(change_ty *cp, user_ty  *up, string_ty *original,
-    string_ty *input, string_ty *output, string_ty *index_name)
+change_run_patch_diff_command(change::pointer cp, user_ty::pointer up,
+    string_ty *original, string_ty *input_file_name, string_ty *output,
+    string_ty *index_name)
 {
     sub_context_ty  *scp;
     pconf_ty        *pconf_data;
@@ -69,13 +67,13 @@ change_run_patch_diff_command(change_ty *cp, user_ty  *up, string_ty *original,
     //     purpose of generating the patch.)
     //
     trace(("change_run_patch_diff_command(cp = %8.8lX, up = %8.8lX, "
-	"original = \"%s\", input = \"%s\", output = \"%s\")\n{\n",
-	(long)cp, (long)up, original->str_text, input->str_text,
+	"original = \"%s\", input_file_name = \"%s\", output = \"%s\")\n{\n",
+	(long)cp, (long)up.get(), original->str_text, input_file_name->str_text,
 	output->str_text));
     assert(cp->reference_count >= 1);
     pconf_data = change_pconf_get(cp, 1);
     string_ty *dd = 0;
-    switch (change_cstate_get(cp)->state)
+    switch (cp->cstate_get()->state)
     {
     case cstate_state_being_developed:
     case cstate_state_awaiting_review:
@@ -99,7 +97,7 @@ change_run_patch_diff_command(change_ty *cp, user_ty  *up, string_ty *original,
     assert(dd);
     scp = sub_context_new();
     sub_var_set_string(scp, "ORiginal", original);
-    sub_var_set_string(scp, "Input", input);
+    sub_var_set_string(scp, "Input", input_file_name);
     sub_var_set_string(scp, "Output", output);
     sub_var_set_string(scp, "INDex", index_name);
     sub_var_optional(scp, "INDex");
@@ -130,11 +128,10 @@ change_run_patch_diff_command(change_ty *cp, user_ty  *up, string_ty *original,
     sub_context_delete(scp);
     trace_string(the_command->str_text);
     change_env_set(cp, 0);
-    user_become(up);
+    user_ty::become scoped(up);
     if (os_exists(output))
 	os_unlink(output);
     os_execute(the_command, OS_EXEC_FLAG_NO_INPUT, dd);
-    user_become_undo();
     str_free(the_command);
     trace(("}\n"));
 }

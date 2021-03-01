@@ -13,27 +13,27 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate dev_beg_undos
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h> // for assert
 #include <libaegis/change.h>
 #include <libaegis/change/env_set.h>
-#include <common/error.h> // for assert
+#include <libaegis/lock.h>
 #include <libaegis/os.h>
 #include <libaegis/sub.h>
 #include <libaegis/user.h>
 
 
 void
-change_run_develop_begin_undo_command(change_ty *cp, user_ty *up)
+change_run_develop_begin_undo_command(change::pointer cp, user_ty::pointer up)
 {
     pconf_ty        *pconf_data;
     string_ty       *the_command;
     string_ty       *dir;
 
+    assert(!lock_active());
     assert(cp->reference_count >= 1);
     pconf_data = change_pconf_get(cp, 0);
     if (!pconf_data->develop_begin_undo_command)
@@ -43,7 +43,7 @@ change_run_develop_begin_undo_command(change_ty *cp, user_ty *up)
     the_command = substitute(0, cp, the_command);
 
     change_env_set(cp, 0);
-    user_become(up);
+    user_ty::become scoped(up);
 
     //
     // The reason this code calls os_curdir and instead of calling
@@ -53,6 +53,5 @@ change_run_develop_begin_undo_command(change_ty *cp, user_ty *up)
     dir = os_curdir();
 
     os_execute(the_command, OS_EXEC_FLAG_NO_INPUT + OS_EXEC_FLAG_ERROK, dir);
-    user_become_undo();
     str_free(the_command);
 }

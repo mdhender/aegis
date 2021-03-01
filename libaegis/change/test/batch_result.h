@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000, 2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2000, 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -30,6 +29,7 @@ struct batch_result_ty
     string_ty       *file_name;
     int             exit_status;
     string_ty       *architecture;
+    double          elapsed; // seconds
 };
 
 struct batch_result_list_ty
@@ -39,14 +39,16 @@ struct batch_result_list_ty
     batch_result_ty *item;
 
     long            pass_count;
+    long            skip_count;
     long            no_result_count;
     long            fail_count;
+    double          elapsed; // seconds
 };
 
 batch_result_list_ty *batch_result_list_new(void);
 void batch_result_list_delete(batch_result_list_ty *);
 void batch_result_list_append(batch_result_list_ty *brlp, string_ty *file_name,
-    int exit_status, string_ty *architecture);
+    int exit_status, string_ty *architecture, double elapsed);
 void batch_result_list_append_list(batch_result_list_ty *,
     const batch_result_list_ty *);
 

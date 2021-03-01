@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement remove file
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -159,7 +156,7 @@ remove_file_list(void)
 
 
 static int
-count_config_files(change_ty *cp)
+count_config_files(change::pointer cp)
 {
     size_t          j;
     size_t          result;
@@ -208,9 +205,9 @@ remove_file_main(void)
     string_ty	    *project_name;
     project_ty	    *pp;
     long	    change_number;
-    change_ty	    *cp;
+    change::pointer cp;
     log_style_ty    log_style;
-    user_ty	    *up;
+    user_ty::pointer up;
     int		    number_of_errors;
     string_list_ty  search_path;
     int		    config_seen;
@@ -270,17 +267,17 @@ remove_file_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(remove_file_usage);
+	    user_ty::lock_wait_argument(remove_file_usage);
 	    break;
 
 	case arglex_token_whiteout:
 	case arglex_token_whiteout_not:
-	    user_whiteout_argument(remove_file_usage);
+	    user_ty::whiteout_argument(remove_file_usage);
 	    break;
 
 	case arglex_token_base_relative:
 	case arglex_token_current_relative:
-	    user_relative_filename_preference_argument(remove_file_usage);
+	    user_ty::relative_filename_preference_argument(remove_file_usage);
 	    break;
 	}
 	arglex();
@@ -295,7 +292,10 @@ remove_file_main(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -303,13 +303,13 @@ remove_file_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -342,11 +342,11 @@ remove_file_main(void)
     // It is an error if the change is not in the in_development state.
     // It is an error if the change is not assigned to the current user.
     //
-    if (!change_is_being_developed(cp))
+    if (!cp->is_being_developed())
 	change_fatal(cp, 0, i18n("bad rm state"));
     if (change_is_a_branch(cp))
 	change_fatal(cp, 0, i18n("bad nf branch"));
-    if (!str_equal(change_developer_name(cp), user_name(up)))
+    if (nstring(change_developer_name(cp)) != up->name())
 	change_fatal(cp, 0, i18n("not developer"));
 
     //
@@ -362,9 +362,8 @@ remove_file_main(void)
 	    search_path.nstrings >= 1
 	&&
 	    (
-		user_relative_filename_preference
+		up->relative_filename_preference
 		(
-		    up,
 		    uconf_relative_filename_preference_current
 		)
 	    ==
@@ -398,9 +397,9 @@ remove_file_main(void)
 	    s2 = str_copy(s1);
 	else
 	    s2 = os_path_join(base, s1);
-	user_become(up);
+	up->become_begin();
 	s1 = os_pathname(s2, 1);
-	user_become_undo();
+	up->become_end();
 	str_free(s2);
 	s2 = 0;
 	for (k = 0; k < search_path.nstrings; ++k)
@@ -573,9 +572,8 @@ remove_file_main(void)
 	    ++number_of_errors;
 	    continue;
 	}
-	c_src_data = change_file_new(cp, s1);
+	c_src_data = cp->file_new(p_src_data);
 	c_src_data->action = file_action_remove;
-	change_file_copy_basic_attributes(c_src_data, p_src_data);
 
 	//
 	// p_src_data->edit_number
@@ -640,12 +638,10 @@ remove_file_main(void)
     //
     change_uuid_clear(cp);
 
-    //
-    // run the change file command
-    // and the project file command if necessary
-    //
-    change_run_remove_file_command(cp, &wl, up);
-    change_run_project_file_command(cp, up);
+    // remember we are about to
+    bool recent_integration = cp->run_project_file_command_needed();
+    if (recent_integration)
+        cp->run_project_file_command_done();
 
     //
     // write the data and release the lock
@@ -653,6 +649,14 @@ remove_file_main(void)
     change_cstate_write(cp);
     commit();
     lock_release();
+
+    //
+    // run the change file command
+    // and the project file command if necessary
+    //
+    cp->run_remove_file_command(&wl, up);
+    if (recent_integration)
+        cp->run_project_file_command(up);
 
     //
     // verbose success message
@@ -668,7 +672,6 @@ remove_file_main(void)
     }
     change_free(cp);
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -691,8 +694,8 @@ remove_file(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, remove_file_help, },
-	{arglex_token_list, remove_file_list, },
+	{ arglex_token_help, remove_file_help, 0 },
+	{ arglex_token_list, remove_file_list, 0 },
     };
 
     trace(("remove_file()\n{\n"));

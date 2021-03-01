@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2002, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001, 2002, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -25,14 +24,31 @@
 
 #include <libaegis/input.h>
 
+struct string_ty; // forward
+class nstring; // forward
+
 /**
-  * The input_file_text_open function i sused to open text files.
+  * The input_file_text_open function is used to open text files.
   *
   * @param filename
   *     The name of the file to be opened.
   * @param escaped_newlines
   *     True if the newline escape filter is to be applied.
+  * @returns
+  *     smart point to open file
   */
 input input_file_text_open(struct string_ty *filename, bool escape_nl = false);
+
+/**
+  * The input_file_text_open function is used to open text files.
+  *
+  * @param filename
+  *     The name of the file to be opened.
+  * @param escaped_newlines
+  *     True if the newline escape filter is to be applied.
+  * @returns
+  *     smart point to open file
+  */
+input input_file_text_open(const nstring &filename, bool escape_nl = false);
 
 #endif // LIBAEGIS_INPUT_FILE_TEXT_H

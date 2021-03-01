@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate sends
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
@@ -39,6 +36,8 @@
 #include <libaegis/change.h>
 #include <libaegis/change/signedoffby.h>
 #include <libaegis/compres_algo.h>
+#include <libaegis/file/event.h>
+#include <libaegis/file/event/list.h>
 #include <libaegis/help.h>
 #include <libaegis/input/file.h>
 #include <libaegis/option.h>
@@ -96,11 +95,11 @@ usage(void)
 
 
 static string_ty *
-change_description_get(change_ty *cp)
+change_description_get(change::pointer cp)
 {
     cstate_ty       *cstate_data;
 
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     return cstate_data->description;
 }
 
@@ -123,8 +122,8 @@ patch_send(void)
     int             trunk;
     output_ty       *ofp;
     project_ty      *pp;
-    change_ty       *cp;
-    user_ty         *up;
+    change::pointer cp;
+    user_ty::pointer up;
     cstate_ty       *cstate_data;
     string_ty       *output;
     string_ty       *s;
@@ -474,7 +473,10 @@ patch_send(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -488,7 +490,7 @@ patch_send(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // it is an error if the delta does not exist
@@ -530,7 +532,7 @@ patch_send(void)
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -545,7 +547,7 @@ patch_send(void)
     //
     // Check the change state.
     //
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     project_file_roll_forward historian;
     switch (cstate_data->state)
     {
@@ -722,7 +724,7 @@ patch_send(void)
 	    fstate_src_ty   *src_data;
 	    cstate_src_ty   **dst_data_p;
 	    cstate_src_ty   *dst_data;
-	    type_ty         *type_p;
+	    meta_type *type_p = 0;
 
 	    src_data = change_file_nth(cp, j, view_path_first);
 	    if (!src_data)
@@ -938,10 +940,6 @@ patch_send(void)
 	    //
 	    switch (csrc->action)
 	    {
-		file_event_list_ty *felp;
-		file_event_ty   *fep;
-		fstate_src_ty   *old_src;
-
 	    case file_action_create:
 		original_filename = dev_null;
 		input_filename =
@@ -949,50 +947,53 @@ patch_send(void)
 		break;
 
 	    case file_action_remove:
-		felp = historian.get(csrc->file_name);
+                {
+                    file_event_list::pointer felp =
+                        historian.get(csrc->file_name);
 
-		//
-		// It's tempting to say
-		//      assert(felp);
-		// but file file may not yet exist at this point in
-		// time, so there is no need (or ability) to create a
-		// patch for it.
-		//
-		if (!felp)
-		{
-		    original_filename = str_copy(dev_null);
-		    input_filename = str_copy(dev_null);
-		    break;
-		}
+                    //
+                    // It's tempting to say
+                    //      assert(felp);
+                    // but file file may not yet exist at this point in
+                    // time, so there is no need (or ability) to create a
+                    // patch for it.
+                    //
+                    if (!felp)
+                    {
+                        original_filename = str_copy(dev_null);
+                        input_filename = str_copy(dev_null);
+                        break;
+                    }
 
-		//
-		// It is tempting to say
-		//	assert(felp->length >= 2);
-		// except that a file which is created and removed in
-		// the same branch, will result in only a remove record
-		// in its parent branch when integrated.
-		//
-		assert(felp->length >= 1);
+                    //
+                    // It is tempting to say
+                    //     assert(felp->length >= 2);
+                    // except that a file which is created and removed in
+                    // the same branch, will result in only a remove record
+                    // in its parent branch when integrated.
+                    //
+                    assert(!felp->empty());
 
-		if (felp->length < 2)
-		{
-		    original_filename = str_copy(dev_null);
-		}
-		else
-		{
-		    fep = &felp->item[felp->length - 2];
-		    old_src = fep->src;
-		    assert(old_src);
-		    original_filename =
-			project_file_version_path
-			(
-			    pp,
-			    old_src,
-			    &original_filename_unlink
-			);
-		}
+                    if (felp->size() < 2)
+                    {
+                        original_filename = str_copy(dev_null);
+                    }
+                    else
+                    {
+                        file_event *fep = felp->get(felp->size() - 2);
+                        fstate_src_ty *old_src = fep->get_src();
+                        assert(old_src);
+                        original_filename =
+                            project_file_version_path
+                            (
+                                pp,
+                                old_src,
+                                &original_filename_unlink
+                            );
+                    }
 
-		input_filename = str_copy(dev_null);
+                    input_filename = str_copy(dev_null);
+                }
 		break;
 
 #ifndef DEBUG
@@ -1001,45 +1002,48 @@ patch_send(void)
 	    case file_action_modify:
 	    case file_action_insulate:
 	    case file_action_transparent:
-		felp = historian.get(csrc->file_name);
+                {
+                    file_event_list::pointer felp =
+                        historian.get(csrc->file_name);
 
-		//
-		// It's tempting to say
-		//      assert(felp);
-		// but file file may not yet exist at this point in
-		// time, so there is no need (or ability) to create a
-		// patch for it.
-		//
-		if (!felp)
-		{
-		    original_filename = str_copy(dev_null);
-		    input_filename = str_copy(dev_null);
-		    break;
-		}
+                    //
+                    // It's tempting to say
+                    //      assert(felp);
+                    // but file file may not yet exist at this point in
+                    // time, so there is no need (or ability) to create a
+                    // patch for it.
+                    //
+                    if (!felp)
+                    {
+                        original_filename = str_copy(dev_null);
+                        input_filename = str_copy(dev_null);
+                        break;
+                    }
 
-		assert(felp->length >= 2);
+                    assert(felp->size() >= 2);
 
-		fep = &felp->item[felp->length - 2];
-		old_src = fep->src;
-		assert(old_src);
-		original_filename =
-		    project_file_version_path
-		    (
-			pp,
-			old_src,
-			&original_filename_unlink
-		    );
+                    file_event *fep = felp->get(felp->size() - 2);
+                    fstate_src_ty *old_src = fep->get_src();
+                    assert(old_src);
+                    original_filename =
+                        project_file_version_path
+                        (
+                            pp,
+                            old_src,
+                            &original_filename_unlink
+                        );
 
-		fep = &felp->item[felp->length - 1];
-		old_src = fep->src;
-		assert(old_src);
-		input_filename =
-		    project_file_version_path
-		    (
-			pp,
-			old_src,
-			&input_filename_unlink
-		    );
+                    fep = felp->back();
+                    old_src = fep->get_src();
+                    assert(old_src);
+                    input_filename =
+                        project_file_version_path
+                        (
+                            pp,
+                            old_src,
+                            &input_filename_unlink
+                        );
+                }
 		break;
 	    }
 	    break;

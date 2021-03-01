@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see
-//      <http://www.gnu.org/licenses>.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h>	// for assert
@@ -40,7 +39,7 @@
 
 
 static void
-pconf_improve(change_ty *cp, bool required)
+pconf_improve(change::pointer cp, bool required)
 {
     pconf_ty        *d;
     sub_context_ty  *scp;
@@ -68,7 +67,7 @@ pconf_improve(change_ty *cp, bool required)
     // This field is obsolete.
     if (d->mask & pconf_create_symlinks_before_build_mask)
     {
-	if (change_is_being_developed(cp))
+	if (cp->is_being_developed())
 	{
 	    change_warning_obsolete_field
 	    (
@@ -83,7 +82,7 @@ pconf_improve(change_ty *cp, bool required)
     // This field is obsolete.
     if (d->mask & pconf_remove_symlinks_after_build_mask)
     {
-	if (change_is_being_developed(cp))
+	if (cp->is_being_developed())
 	{
 	    change_warning_obsolete_field
 	    (
@@ -98,7 +97,7 @@ pconf_improve(change_ty *cp, bool required)
     // This field is obsolete.
     if (d->mask & pconf_create_symlinks_before_integration_build_mask)
     {
-	if (change_is_being_developed(cp))
+	if (cp->is_being_developed())
 	{
 	    change_warning_obsolete_field
 	    (
@@ -120,7 +119,7 @@ pconf_improve(change_ty *cp, bool required)
     // This field is obsolete.
     if (d->mask & pconf_remove_symlinks_after_integration_build_mask)
     {
-	if (change_is_being_developed(cp))
+	if (cp->is_being_developed())
 	{
 	    change_warning_obsolete_field
 	    (
@@ -317,7 +316,7 @@ pconf_improve(change_ty *cp, bool required)
 static void
 set_pconf_symlink_exceptions_defaults(pconf_ty *pconf_data)
 {
-    type_ty         *type_p;
+    meta_type *type_p = 0;
     string_ty       **str_p;
 
     //
@@ -397,7 +396,7 @@ candidate(fstate_src_ty *src)
 
 
 static pconf_ty *
-pconf_read_by_usage(change_ty *cp)
+pconf_read_by_usage(change::pointer cp)
 {
     trace(("pconf_read_by_usage(cp = %08lX)\n{\n", (long)cp));
 
@@ -408,7 +407,7 @@ pconf_read_by_usage(change_ty *cp)
     // (The string_list_append_list_unique is O(n**2), oops.)
     //
     string_list_ty filename;
-    if (cp->bogus || change_is_completed(cp))
+    if (cp->bogus || cp->is_completed())
     {
         //
         // Use project file list.
@@ -423,7 +422,7 @@ pconf_read_by_usage(change_ty *cp)
         // (branch) delta panning working.
         //
         project_ty *pp = cp->pp;
-        while (!pp->is_a_trunk() && change_is_completed(pp->change_get()))
+        while (!pp->is_a_trunk() && pp->change_get()->is_completed())
             pp = pp->parent_get();
         for (size_t j = 0;; ++j)
         {
@@ -543,7 +542,7 @@ pconf_read_by_usage(change_ty *cp)
     input ifp = input_catenate_tricky(&filename);
     pconf_ty *result = (pconf_ty *)parse_input(ifp, &pconf_type);
     ifp.close();
-    change_become_undo();
+    change_become_undo(cp);
 
     //
     // If there is a configuration directory specified, then all the
@@ -600,7 +599,7 @@ pconf_read_by_usage(change_ty *cp)
 	    ifp = input_catenate_tricky(&filename);
 	    result = (pconf_ty *)parse_input(ifp, &pconf_type);
 	    // as a side-effect, parse_input will delete fp
-	    change_become_undo();
+	    change_become_undo(cp);
 	}
     }
 
@@ -613,7 +612,7 @@ pconf_read_by_usage(change_ty *cp)
 
 
 static void
-pconf_improve_more(change_ty *cp)
+pconf_improve_more(change::pointer cp)
 {
     size_t          j;
     static string_ty *star_comma_d;
@@ -631,7 +630,7 @@ pconf_improve_more(change_ty *cp)
     }
     if (!d->architecture->length)
     {
-	type_ty         *type_p;
+	meta_type *type_p = 0;
 	pconf_architecture_ty **app;
 	pconf_architecture_ty *ap;
 
@@ -700,7 +699,7 @@ pconf_improve_more(change_ty *cp)
     }
     if (!d->filename_pattern_accept->length)
     {
-	type_ty         *type_p;
+	meta_type *type_p = 0;
 	string_ty       **addr_p;
 
 	addr_p =
@@ -735,7 +734,7 @@ pconf_improve_more(change_ty *cp)
     }
     if (j >= d->filename_pattern_reject->length)
     {
-	type_ty         *type_p;
+	meta_type *type_p = 0;
 	string_ty       **addr_p;
 
 	addr_p =
@@ -910,7 +909,7 @@ pconf_improve_more(change_ty *cp)
 
 
 pconf_ty *
-change_pconf_get(change_ty *cp, int required)
+change_pconf_get(change::pointer cp, int required)
 {
 
     trace(("change_pconf_get(cp = %8.8lX, required = %d)\n{\n", (long)cp,

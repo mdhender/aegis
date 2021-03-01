@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface definition for libaegis/change/list.c
 //
@@ -32,7 +31,7 @@ public:
 private:
     size_t          maximum;
 public:
-    struct change_ty **item;
+    change::pointer *item;
 
     /**
       * The destructor.
@@ -48,13 +47,13 @@ public:
       * The change_list_append function is used to append a change to a
       * change list.
       */
-    void append(change_ty *cp);
+    void append(change::pointer cp);
 
     /**
       * The change_list_member_p function is used to determine if a
       * given change is a member of the given change list.
       */
-    bool member_p(change_ty *cp) const;
+    bool member_p(change::pointer cp) const;
 
     /**
       * Empty the list of members.
@@ -83,7 +82,7 @@ public:
       * @param n
       *     The array element number.  No range check is performed.
       */
-    change_ty *get(size_t n) const { return item[n]; }
+    change::pointer get(size_t n) const { return item[n]; }
 
     /**
       * The [] operator is used to obtain an element of the
@@ -92,7 +91,7 @@ public:
       * @param n
       *     The array element number.  No range check is performed.
       */
-    change_ty *operator[](size_t n) const { return get(n); }
+    change::pointer operator[](size_t n) const { return get(n); }
 
 private:
     /**

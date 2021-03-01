@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2006 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 2006, 2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -18,8 +17,7 @@
 #	along with this program; if not, write to the Free Software
 #	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
-# MANIFEST: shell script to manipulate eg_oss_begins
-#
+output=
 here=`pwd`
 test $? -eq 0 || exit 1
 tmp=${TMP_DIR:-/tmp}/$$
@@ -31,6 +29,7 @@ fail() {
 }
 trap "fail" 1 2 3 15
 
+set -x
 mkdir $tmp $tmp/lib
 test $? -eq 0 || fail
 cd $tmp
@@ -76,19 +75,19 @@ default_development_directory = "$tmp";
 fubar
 test $? -eq 0 || fail
 
-$bin/aegis -pa -f paf
+$bin/aegis -pa -f paf --project=$AEGIS_PROJECT
 test $? -eq 0 || fail
 
 #
 # add project staff
 #
-$bin/aegis --new-dev -p $AEGIS_PROJECT $USER
+$bin/aegis --new-dev --project=$AEGIS_PROJECT $USER
 test $? -eq 0 || fail
 
-$bin/aegis --new-rev -p $AEGIS_PROJECT $USER
+$bin/aegis --new-rev --project=$AEGIS_PROJECT $USER
 test $? -eq 0 || fail
 
-$bin/aegis --new-int -p $AEGIS_PROJECT $USER
+$bin/aegis --new-int --project=$AEGIS_PROJECT $USER
 test $? -eq 0 || fail
 
 AEGIS_CHANGE=1
@@ -110,20 +109,25 @@ test_baseline_exempt = true;
 fubar
 test $? -eq 0 || fail
 
-$bin/aegis --new-change -p $AEGIS_PROJECT -f caf -c $AEGIS_CHANGE
+$bin/aegis --new-change -f caf \
+	--project=$AEGIS_PROJECT --change=$AEGIS_CHANGE
 test $? -eq 0 || fail
 
 #
 # Begin development of the change
 #
-$bin/aegis --develop-begin -dir $tmp/chan.dir -c $AEGIS_CHANGE -nolog > log 2>&1
+$bin/aegis --develop-begin -dir $tmp/chan.dir -nolog \
+	--project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+	> log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # Create the top-level aegis.conf file,
 # pointing into the aegis.conf.d directory.
 #
-$bin/aegis -nf $tmp/chan.dir/aegis.conf -v -nolog > log 2>&1
+$bin/aegis -nf $tmp/chan.dir/aegis.conf -v -nolog \
+	--project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+	> log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 echo 'configuration_directory = "aegis.conf.d";' > $tmp/chan.dir/aegis.conf
@@ -133,7 +137,9 @@ test $? -eq 0 || fail
 # Create the build file.  It says we don't do builds at all.
 # We will have to wait until there is some content for that to be useful.
 #
-$bin/aegis -nf $tmp/chan.dir/aegis.conf.d/build -v -nolog > log 2>&1
+$bin/aegis -nf $tmp/chan.dir/aegis.conf.d/build -v -nolog \
+	--project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+	> log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 echo 'build_command = "exit 0";' > $tmp/chan.dir/aegis.conf.d/build
@@ -146,9 +152,21 @@ test $? -eq 0 || fail
 while [ $# -ge 1 ]
 do
     case "$1" in
+    output=*)
+	output=`echo $1 | sed 's|.*=||'`
+	;;
+
     *=*)
 	name=`echo $1 | sed 's|=.*||'`
 	value=`echo $1 | sed 's|.*=||'`
+
+	$bin/aegis -nf $tmp/chan.dir/$name -v -nolog \
+	    --project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+	    > log 2>&1
+	if test $? -ne 0 ; then cat log; fail; fi
+
+	cp $here/$value $tmp/chan.dir/$name
+	test $? -eq 0 || fail
 	;;
 
     *)
@@ -157,29 +175,38 @@ do
 	;;
     esac
     shift
-
-    $bin/aegis -nf $tmp/chan.dir/$name -v -nolog > log 2>&1
-    if test $? -ne 0 ; then cat log; fail; fi
-
-    cp $here/$value $tmp/chan.dir/$name
-    test $? -eq 0 || fail
 done
 
-$bin/aegis -diff -v -nolog > log 2>&1
+if test -z "$output"
+then
+    echo "No output=[target] option given."
+    fail
+fi
+
+$bin/aegis -diff -v -nolog \
+	--project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+	> log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-$bin/aegis -dev-end
+$bin/aegis -dev-end \
+	--project=$AEGIS_PROJECT --change=$AEGIS_CHANGE
 test $? -eq 0 || fail
 
 # now integrate it
 
-$bin/aegis -integrate-begin 1 -v -nolog > log 2>&1
+$bin/aegis -integrate-begin -v -nolog \
+	--project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+	> log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-$bin/aegis -diff -v -nolog > log 2>&1
+$bin/aegis -diff -v -nolog \
+	--project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+	> log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-$bin/aegis -int-pass -v -nolog > log 2>&1
+$bin/aegis -int-pass -v -nolog \
+	--project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+	> log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 # --------------------------------------------------------------------------
@@ -205,19 +232,24 @@ regression_test_exempt = true;
 fubar
 test $? -eq 0 || fail
 
-$bin/aegis --new-change -p $AEGIS_PROJECT -f caf -c $AEGIS_CHANGE
+$bin/aegis --new-change -f caf \
+	--project=$AEGIS_PROJECT --change=$AEGIS_CHANGE
 test $? -eq 0 || fail
 
 #
 # Begin development of the change
 #
-$bin/aegis --dev-begin -dir $tmp/chan.dir -c $AEGIS_CHANGE -v -nolog > log 2>&1
+$bin/aegis --dev-begin -dir $tmp/chan.dir.2 -v -nolog \
+	--project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+	> log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-$bin/aegis -copy-file $tmp/chan.dir/aegis.conf.d/build -v -nolog > log 2>&1
+$bin/aegis -copy-file $tmp/chan.dir.2/aegis.conf.d/build -v -nolog \
+	--project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+	> log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-cat > $tmp/chan.dir/aegis.conf.d/build << 'fubar'
+cat > $tmp/chan.dir.2/aegis.conf.d/build << 'fubar'
 build_command = "make -f aegis.supplementary/makefile";
 
 development_directory_style =
@@ -240,10 +272,12 @@ test $? -eq 0 || fail
 #
 # now create the boostrapping makefile
 #
-$bin/aegis -nf $tmp/chan.dir/aegis.supplementary/makefile -v -nolog > log 2>&1
+$bin/aegis -nf $tmp/chan.dir.2/aegis.supplementary/makefile -v -nolog \
+	--project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+	> log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-cat > $tmp/chan.dir/aegis.supplementary/makefile << 'fubar'
+cat > $tmp/chan.dir.2/aegis.supplementary/makefile << 'fubar'
 #
 # Include the real Makefile, if it exists, and build it if it does not.
 #
@@ -259,18 +293,48 @@ ifeq (${prefix},)
 
 supplementary-all: all
 
+ifeq (${wildcard configure.in},configure.in)
+
 aclocal.m4: configure.in
 	aclocal
 
+# if you don't use config.h you will need to delete this rule
 config.h.in: configure.in aclocal.m4
 	autoheader
 
 ./configure: configure.in aclocal.m4
 	autoconf
 
+ifeq (${wildcard Makefile.am},Makefile.am)
+
 Makefile.in: Makefile.am configure.in config.h.in
 	automake -a
 
+endif
+
+else
+
+aclocal.m4: configure.ac
+	aclocal
+
+# if you don't use config.h you will need to delete this rule
+config.h.in: configure.ac aclocal.m4
+	autoheader
+
+./configure: configure.ac aclocal.m4
+	autoconf
+
+ifeq (${wildcard Makefile.am},Makefile.am)
+
+Makefile.in: Makefile.am configure.ac config.h.in
+	automake -a
+
+endif
+
+endif
+
+# If you don't use config.h you will need to delete both references from
+# this rule.
 Makefile config.h: Makefile.in config.h.in configure
 	./configure --prefix=/usr --sysconfdir=/etc
 
@@ -281,7 +345,11 @@ test $? -eq 0 || fail
 #
 # Package the change set.
 #
-$bin/aedist -send -ndh -mh -naa -comp-alg=gzip -compat=4.6
+$bin/aedist -send -ndh -mh -naa -comp-alg=gzip -compat=4.6 \
+	--ignore-uuid \
+	--output="$here/$output" \
+	--project=$AEGIS_PROJECT --change=$AEGIS_CHANGE
+test $? -eq 0 || fail
 
 # --------------------------------------------------------------------------
 

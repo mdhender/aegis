@@ -2,8 +2,6 @@
  *	aegis - project change supervisor
  *	This file is in the Public Domain, 1999 Peter Miller.
  *
- * MANIFEST: example use of fhist in the project config file
- *
  * The fhist program was written by David I. Bell and is admirably
  * suited to providing a history mechanism with out the "cruft" that
  * SCCS and RCS impose.  The fhist program also comes with two other

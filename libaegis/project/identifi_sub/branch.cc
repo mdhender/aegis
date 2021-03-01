@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -167,7 +166,7 @@ project_identifier_subset_branch::parse_change_with_branch(long &change_number,
 }
 
 
-user_ty *
+user_ty::pointer
 project_identifier_subset_branch::get_up()
 {
     return deeper.get_up();
@@ -188,4 +187,12 @@ project_identifier_subset_branch::get_pp()
 	}
     }
     return pp_with_branch;
+}
+
+
+bool
+project_identifier_subset_branch::set()
+    const
+{
+    return deeper.set();
 }

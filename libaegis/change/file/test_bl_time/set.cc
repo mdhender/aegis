@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate sets
 //
@@ -26,7 +25,7 @@
 
 
 void
-change_file_test_baseline_time_set(change_ty *cp, fstate_src_ty *src_data,
+change_file_test_baseline_time_set(change::pointer cp, fstate_src_ty *src_data,
     time_t when, string_ty *variant)
 {
     trace(("change_file_test_baseline_time_set(cp = %08lX, src_data = %08lX, "
@@ -65,7 +64,7 @@ change_file_test_baseline_time_set(change_ty *cp, fstate_src_ty *src_data,
     if (j >= atlp->length)
     {
 	fstate_src_architecture_times_ty **addr;
-	type_ty         *type_p;
+	meta_type *type_p = 0;
 
 	addr =
 	    (fstate_src_architecture_times_ty **)

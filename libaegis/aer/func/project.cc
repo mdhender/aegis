@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2003-2005 Peter Miller.
-//	All rights reserved.
+//	Copyright (C) 1994, 2003-2007 Peter Miller.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,79 +13,130 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to impliment the builtin project function
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
+#include <common/str.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/func/project.h>
 #include <libaegis/aer/value/boolean.h>
 #include <libaegis/aer/value/string.h>
-#include <common/error.h>
-#include <common/str.h>
+#include <libaegis/change/identifier.h>
+#include <libaegis/project.h>
 #include <libaegis/user.h>
 
 
-static string_ty *project_name;
-static int	project_name_set;
+static change_identifier *cidp;
 
 
 void
-report_parse_project_set(string_ty *s)
+report_parse_project_set(change_identifier &cid)
 {
-	assert(!project_name);
-	project_name = str_copy(s);
-	project_name_set = 1;
+    assert(!cidp);
+    cidp = &cid;
 }
 
 
-static int
-project_name_validate(rpt_expr_ty *ep)
+rpt_func_project_name::~rpt_func_project_name()
 {
-	return (ep->nchild == 0);
 }
 
 
-static rpt_value_ty *
-project_name_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func_project_name::rpt_func_project_name()
 {
-	assert(argc == 0);
-	if (!project_name)
-		project_name = user_default_project();
-	return rpt_value_string(project_name);
 }
 
 
-rpt_func_ty rpt_func_project_name =
+rpt_func::pointer
+rpt_func_project_name::create()
 {
-	"project_name",
-	0, // not foldable
-	project_name_validate,
-	project_name_run,
-};
-
-
-static int
-project_name_set_validate(rpt_expr_ty *ep)
-{
-	return (ep->nchild == 0);
+    return pointer(new rpt_func_project_name());
 }
 
 
-static rpt_value_ty *
-project_name_set_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+const char *
+rpt_func_project_name::name()
+    const
 {
-	assert(argc == 0);
-	return rpt_value_boolean(project_name_set);
+    return "project_name";
 }
 
 
-rpt_func_ty rpt_func_project_name_set =
+bool
+rpt_func_project_name::optimizable()
+    const
 {
-	"project_name_set",
-	0, // not foldable
-	project_name_set_validate,
-	project_name_set_run,
-};
+    return false;
+}
+
+
+bool
+rpt_func_project_name::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 0);
+}
+
+
+rpt_value::pointer
+rpt_func_project_name::run(const rpt_expr::pointer &, size_t,
+    rpt_value::pointer *) const
+{
+    assert(cidp);
+    project_ty *pp = cidp->get_pp();
+    if (cidp->get_baseline())
+        pp = pp->parent_get();
+    return rpt_value_string::create(nstring(pp->name_get()));
+}
+
+
+rpt_func_project_name_set::~rpt_func_project_name_set()
+{
+}
+
+
+rpt_func_project_name_set::rpt_func_project_name_set()
+{
+}
+
+
+rpt_func::pointer
+rpt_func_project_name_set::create()
+{
+    return pointer(new rpt_func_project_name_set());
+}
+
+
+const char *
+rpt_func_project_name_set::name()
+    const
+{
+    return "project_name_set";
+}
+
+
+bool
+rpt_func_project_name_set::optimizable()
+    const
+{
+    return false;
+}
+
+
+bool
+rpt_func_project_name_set::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 0);
+}
+
+
+rpt_value::pointer
+rpt_func_project_name_set::run(const rpt_expr::pointer &, size_t,
+    rpt_value::pointer *) const
+{
+    assert(cidp);
+    return rpt_value_boolean::create(cidp->project_set());
+}

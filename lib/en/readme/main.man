@@ -1,7 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1990-1995, 1997-1999, 2001, 2002 Peter Miller;
-.\"	All rights reserved.
+.\"	Copyright (C) 1990-1995, 1997-1999, 2001, 2002, 2006, 2007 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 .\"	GNU General Public License for more details.
 .\"
 .\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: source for the README file
+.\"	along with this program. If not, see
+.\"	<http://www.gnu.org/licenses/>.
 .\"
 .if n .ftr CB B
 .if n .ftr CI I
@@ -34,8 +31,7 @@ aegis \- project change supervisor
 .br
 .if t .ds C) \(co
 .if n .ds C) (C)
-Copyright \*(C) \*(Y) Peter Miller;
-All rights reserved.
+Copyright \*(C) \*(Y) Peter Miller
 .PP
 .I Aegis
 is distributed under the terms of the
@@ -367,9 +363,8 @@ without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU General Public License for more details.
 .PP
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+You should have received a copy of the GNU General Public License along
+with this program. If not, see <http://www.gnu.org/licenses/>.
 .PP
 It should be in the
 .I LICENSE
@@ -380,7 +375,7 @@ file included in this distribution.
 .TS
 tab(;);
 l r l.
-Peter Miller;E-Mail:;millerp@canb.auug.org.au
+Peter MillerE-Mail:;millerp@canb.auug.org.au
 \f(CW/\e/\e*\fR;WWW:;http://www.canb.auug.org.au/~millerp/
 .TE
 .bp

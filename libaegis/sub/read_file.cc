@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -25,8 +24,7 @@
 #include <libaegis/sub.h>
 #include <libaegis/sub/read_file.h>
 #include <common/trace.h>
-#include <common/wstr.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
 
 
 //
@@ -49,32 +47,31 @@
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_read_file(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_read_file(sub_context_ty *scp, const wstring_list &arg)
 {
     trace(("sub_read_file()\n{\n"));
-    if (arg->size() != 2)
+    wstring result;
+    if (arg.size() != 2)
     {
-	sub_context_error_set(scp, i18n("requires one argument"));
-	trace(("return NULL;\n"));
+	scp->error_set(i18n("requires one argument"));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
 
-    if (arg->get(1)->wstr_text[0] != '/')
+    if (arg[1][0] != '/')
     {
-	sub_context_error_set(scp, i18n("absolute path required"));
-	trace(("return NULL;\n"));
+	scp->error_set(i18n("absolute path required"));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
 
-    nstring s1(wstr_to_str(arg->get(1)));
+    nstring s1 = arg[1].to_nstring();
     os_become_orig();
     nstring s2 = read_whole_file(s1);
     os_become_undo();
-    wstring_ty *result = str_to_wstr(s2.get_ref());
-    trace(("return %8.8lX;\n", (long)result));
+    result = wstring(s2);
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate contentss
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -25,21 +22,23 @@
 #include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
+#include <common/error.h>
+#include <common/now.h>
+#include <common/str_list.h>
 #include <libaegis/attribute.h>
-#include <libaegis/change.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
+#include <libaegis/change.h>
 #include <libaegis/dir_stack.h>
-#include <common/error.h>
+#include <libaegis/file/event.h>
 #include <libaegis/file.h>
-#include <aeget/get/file/contents.h>
-#include <aeget/http.h>
-#include <common/now.h>
 #include <libaegis/os.h>
 #include <libaegis/project/file.h>
 #include <libaegis/project/file/roll_forward.h>
 #include <libaegis/project.h>
-#include <common/str_list.h>
+
+#include <aeget/get/file/contents.h>
+#include <aeget/http.h>
 
 
 static void
@@ -180,7 +179,7 @@ hunt_tristate(const string_list_ty *modifier, const char *s)
 
 
 static void
-emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
+emit_dir(change::pointer cp, string_list_ty *search_path, string_ty *filename,
     string_list_ty *modifier)
 {
     string_list_ty  gizzards;
@@ -579,7 +578,8 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 
 
 void
-get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
+get_file_contents(change::pointer cp, string_ty *filename,
+    string_list_ty *modifier)
 {
     string_ty       *absolute_path;
     struct stat     st;
@@ -608,7 +608,7 @@ get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 #ifndef DEBUG
 	    default:
 #endif
-		if (change_is_completed(cp))
+		if (cp->is_completed())
 		{
 		    int             delete_me;
 		    string_ty       *s;
@@ -656,13 +656,13 @@ get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	//
 	if
 	(
-	    change_is_completed(cp)
+	    cp->is_completed()
 	&&
 	    project_file_find(cp->pp, filename, view_path_simple)
 	)
 	{
 	    time_t          when;
-	    file_event_ty   *fep;
+	    file_event   *fep;
 	    string_ty       *s;
 	    int             delete_me;
 
@@ -678,16 +678,16 @@ get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 		no_such_file(filename);
 		return;
 	    }
-	    assert(fep->src);
+	    assert(fep->get_src());
 
-	    s = project_file_version_path(cp->pp, fep->src, &delete_me);
+	    s = project_file_version_path(cp->pp, fep->get_src(), &delete_me);
 	    assert(s);
 	    if (!s)
 	    {
 		no_such_file(filename);
 		return;
 	    }
-	    emit_path(fep->src, s);
+	    emit_path(fep->get_src(), s);
 	    if (delete_me)
 	    {
 		os_become_orig();

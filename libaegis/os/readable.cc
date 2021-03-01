@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -29,13 +28,19 @@
 
 
 int
-os_readable(string_ty *path)
+os_readable(const nstring &path)
 {
-    int             fd;
     os_become_must_be_active();
-    fd = glue_open(path->str_text, 0, 0666);
+    int fd = glue_open(path.c_str(), 0, 0666);
     if (fd < 0)
 	return errno;
     glue_close(fd);
     return 0;
+}
+
+
+int
+os_readable(string_ty *path)
+{
+    return os_readable(nstring(path));
 }

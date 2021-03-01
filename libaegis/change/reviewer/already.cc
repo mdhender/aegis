@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: implementation of the change_reviewer_already class
 //
@@ -25,9 +24,16 @@
 
 
 bool
-change_reviewer_already(change_ty *cp, string_ty *login)
+change_reviewer_already(change::pointer cp, const nstring &login)
 {
     string_list_ty staff;
     change_reviewer_list(cp, staff);
-    return staff.member(login);
+    return staff.member(login.get_ref());
+}
+
+
+bool
+change_reviewer_already(change::pointer cp, string_ty *login)
+{
+    return change_reviewer_already(cp, nstring(login));
 }

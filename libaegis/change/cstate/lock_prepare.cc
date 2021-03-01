@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate lock_prepares
 //
@@ -32,10 +31,10 @@
 static void
 waiting_callback(void *p)
 {
-    change_ty       *cp;
+    change::pointer cp;
 
-    cp = (change_ty *)p;
-    if (user_lock_wait(0))
+    cp = (change::pointer )p;
+    if (user_ty::create()->lock_wait())
 	change_verbose(cp, 0, i18n("waiting for lock"));
     else
 	change_verbose(cp, 0, i18n("lock not available"));
@@ -43,7 +42,7 @@ waiting_callback(void *p)
 
 
 void
-change_cstate_lock_prepare(change_ty *cp)
+change_cstate_lock_prepare(change::pointer cp)
 {
     trace(("change_cstate_lock_prepare(cp = %08lX)\n{\n", (long)cp));
     assert(cp->reference_count >= 1);

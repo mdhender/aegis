@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -223,13 +222,13 @@ input_base64::recognise(input &ifp)
     // of wrongness.
     //
     bool result = true;
-    stracc_t buffer;
-    while (buffer.size() < 8000)
+    stracc_t sac;
+    while (sac.size() < 8000)
     {
 	int c = ifp->getch();
 	if (c < 0)
 	    break;
-	buffer.push_back(c);
+	sac.push_back(c);
 	switch (c)
 	{
 	case '\t':
@@ -309,7 +308,7 @@ input_base64::recognise(input &ifp)
 	}
 	break;
     }
-    ifp->unread(buffer.get_data(), buffer.size());
+    ifp->unread(sac.get_data(), sac.size());
     return result;
 }
 

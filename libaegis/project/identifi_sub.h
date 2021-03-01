@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -23,9 +22,10 @@
 #ifndef LIBAEGIS_PROJECT_IDENTIFI_SUB_H
 #define LIBAEGIS_PROJECT_IDENTIFI_SUB_H
 
+#include <libaegis/user.h>
+
 struct project_ty; // forward
 struct string_ty; // forward
-struct user_ty; // forward
 
 /**
   * The project_identifier_subset class is used to represent the project
@@ -74,7 +74,7 @@ public:
       * The get_up method is used to get the user pointer for the
       * change identified.
       */
-    virtual user_ty *get_up() = 0;
+    virtual user_ty::pointer get_up() = 0;
 
     /**
       * The parse_change_with_branch method is used to parse the
@@ -96,6 +96,14 @@ public:
       */
     virtual void parse_change_with_branch(long &change_number,
 	const char *&branch_arg, usage_t usage) = 0;
+
+    /**
+      * The set method may be used to determine whether or not the
+      * project name has been set yet (either indirectly or directly).
+      * If you test this early enough, you will know if the project name
+      * was specified on the command line.
+      */
+    virtual bool set() const = 0;
 
 private:
     /**

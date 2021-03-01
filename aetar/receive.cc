@@ -1,8 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2006 Peter Miller;
+//	Copyright (C) 2002-2007 Peter Miller
 //	Copyright (C) 2006 Walter Franzini;
-//	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -15,12 +14,13 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to receive change sets
 //
 
+#include <common/ac/ctype.h>
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 #include <common/ac/string.h>
@@ -149,10 +149,59 @@ mangle(nstring &filename)
 
 
 static void
-get_exclude_attribute(change_ty *cp, nstring_list &exclude)
+get_exclude_attribute(change::pointer cp, nstring_list &exclude)
 {
     nstring value = cp->pconf_attributes_find("aetar:exclude");
     exclude.split(value);
+}
+
+
+static void
+read_cvs_ignore(const nstring &filename, nstring_list &patterns)
+{
+    nstring dir = filename.dirname();
+    if (dir == ".")
+        dir = "";
+    else
+        dir += "/";
+    FILE *fp = fopen(filename.c_str(), "r");
+    if (!fp)
+        return;
+    for (;;)
+    {
+        char buffer[300];
+        if (!fgets(buffer, sizeof(buffer), fp))
+            break;
+
+        char *bp = buffer;
+        while (*bp && isspace((unsigned char)*bp))
+            ++bp;
+        if (!*bp || *bp == '#')
+            continue;
+        char *ep = bp + strlen(bp);
+        while (ep > bp && isspace((unsigned char)ep[-1]))
+            --ep;
+        assert(ep > bp);
+
+        patterns.push_back(dir + nstring(bp, ep - bp));
+    }
+    fclose(fp);
+}
+
+
+static void
+remove_by_pattern(nstring_list &filenames, const nstring_list &patterns)
+{
+    nstring_list culled;
+    for (size_t j = 0; j < filenames.size(); ++j)
+    {
+        nstring fn = filenames[j];
+        if (fn.gmatch(patterns))
+            os_unlink_errok(fn);
+        else
+            culled.push_back(fn);
+    }
+    filenames = culled;
 }
 
 
@@ -164,7 +213,7 @@ receive(void)
     nstring         ifn;
     string_ty       *s;
     project_ty      *pp;
-    change_ty       *cp;
+    change::pointer cp;
     string_ty       *attribute_file_name;
     string_ty       *dot;
     const char      *delta;
@@ -177,8 +226,9 @@ receive(void)
     trojan = -1;
     delta = 0;
     devdir = 0;
-    nstring_list exclude;
-    bool exclude_auto_tools = false;
+    nstring_list exclude_patterns;
+    int exclude_auto_tools = -1;
+    int exclude_cvs = -1;
     arglex();
     while (arglex_token != arglex_token_eoln)
     {
@@ -300,13 +350,31 @@ receive(void)
 	case arglex_token_exclude:
 	    if (arglex() != arglex_token_string)
 		option_needs_file(arglex_token_exclude, usage);
-	    exclude.push_back_unique(arglex_value.alv_string);
+	    exclude_patterns.push_back_unique(arglex_value.alv_string);
 	    break;
 
 	case arglex_token_exclude_auto_tools:
-	    if (exclude_auto_tools)
+	    if (exclude_auto_tools >= 0)
 		duplicate_option(usage);
-	    exclude_auto_tools = true;
+	    exclude_auto_tools = 1;
+	    break;
+
+	case arglex_token_exclude_auto_tools_not:
+	    if (exclude_auto_tools >= 0)
+		duplicate_option(usage);
+	    exclude_auto_tools = 0;
+	    break;
+
+	case arglex_token_exclude_cvs:
+	    if (exclude_cvs >= 0)
+		duplicate_option(usage);
+	    exclude_cvs = 1;
+	    break;
+
+	case arglex_token_exclude_cvs_not:
+	    if (exclude_cvs >= 0)
+		duplicate_option(usage);
+	    exclude_cvs = 0;
 	    break;
 	}
 	arglex();
@@ -326,9 +394,21 @@ receive(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     pp->bind_existing();
+
+    //
+    // Look to see if there are any relevant attributes in the
+    // aegis.conf file's project_specific field.
+    //
+    if (exclude_auto_tools < 0)
+        pp->attribute_get_boolean("aetar:exclude-auto-tools");
+    if (exclude_cvs < 0)
+        pp->attribute_get_boolean("aetar:exclude-cvs");
 
     //
     // default the change number
@@ -395,12 +475,11 @@ receive(void)
     change_bind_existing(cp);
     nstring dd(change_development_directory_get(cp, 0));
     int umask = change_umask(cp);
-    get_exclude_attribute(cp, exclude);
+    get_exclude_attribute(cp, exclude_patterns);
     change_free(cp);
     cp = 0;
     nstring_list files_created;
     nstring_list files_modified;
-    nstring_list files_removed;
     nstring_list file_manifest;
 
     os_chdir(dd);
@@ -417,8 +496,9 @@ receive(void)
 	// Find the next file in the archive.
 	//
 	nstring filename;
+        bool executable = false;
 	os_become_orig();
-	input ip = tar_p->child(filename);
+	input ip = tar_p->child(filename, executable);
 	os_become_undo();
 	if (!ip.is_open())
 	    break;
@@ -428,7 +508,7 @@ receive(void)
 	//
 	mangle(filename);
         trace_string(filename.c_str());
-	if (exclude.member(filename))
+	if (filename.gmatch(exclude_patterns))
 	    continue;
 	file_manifest.push_back(filename);
 
@@ -488,16 +568,41 @@ receive(void)
 	*ofp << ip;
 	delete ofp;
 	ip.close();
+        int mode = 0666;
+        if (executable)
+            mode |= 0111;
+        os_chmod(filename, mode & ~umask);
 	os_become_undo();
     }
     delete tar_p;
+
+    if (exclude_cvs)
+    {
+        //
+        // Build the list of patterns of file names to be rejected.
+        //
+        exclude_patterns.push_back("Attic/*");
+        exclude_patterns.push_back("CVS/*");
+        exclude_patterns.push_back(".cvsignore");
+        exclude_patterns.push_back("*/Attic/*");
+        exclude_patterns.push_back("*/CVS/*");
+        exclude_patterns.push_back("*/.cvsignore");
+        for (size_t n = 0; n < file_manifest.size(); ++n)
+        {
+            nstring fn = file_manifest[n];
+            if (fn == ".cvsignore" || fn.gmatch("*/.cvsignore"))
+            {
+                read_cvs_ignore(fn, exclude_patterns);
+            }
+        }
+    }
 
     //
     // Now we have to see if any of the files in the file manifest need
     // to be excluded, because they are derived files from the various
     // GNU auto tools.
     //
-    if (exclude_auto_tools)
+    if (exclude_auto_tools > 0)
     {
 	if
        	(
@@ -509,6 +614,7 @@ receive(void)
 	    const char *table[] =
 	    {
 		"aclocal.m4",
+		// "acinclude.m4",
 		"autom4te.cache",
 		"config.guess",
 		"config.h",
@@ -518,6 +624,7 @@ receive(void)
 		"config.sub",
 		"configure",
 		"install-sh",
+                // "ltmain.h",
 		"stamp-h",
 		"stamp-h.in",
 	    };
@@ -525,9 +632,8 @@ receive(void)
 	    for (const char **tp = table; tp < ENDOF(table); ++tp)
 	    {
 		nstring fn = *tp;
-		files_created.remove(fn);
-		files_modified.remove(fn);
-		exclude.push_back_unique(fn);
+                exclude_patterns.push_back(fn);
+                exclude_patterns.push_back("*/" + fn);
 	    }
 	}
 	if (file_manifest.member("Makefile.am"))
@@ -546,25 +652,39 @@ receive(void)
 	    for (const char **tp = table; tp < ENDOF(table); ++tp)
 	    {
 		nstring fn = *tp;
-		files_created.remove(fn);
-		files_modified.remove(fn);
-		exclude.push_back_unique(fn);
+		exclude_patterns.push_back(fn);
+		exclude_patterns.push_back("*/" + fn);
 	    }
 	}
     }
 
     //
+    // Cull the file name lists
+    //
+    os_become_orig();
+    remove_by_pattern(file_manifest, exclude_patterns);
+    remove_by_pattern(files_created, exclude_patterns);
+    remove_by_pattern(files_modified, exclude_patterns);
+    os_become_undo();
+
+    //
     // See if we need to remove any of the excluded files.
     //
-    for (size_t j = 0; j < exclude.size(); ++j)
+    nstring_list files_removed;
+    for (size_t j = 0; ; ++j)
     {
-	nstring fn = exclude[j];
-	if (project_file_find(pp, fn.get_ref(), view_path_extreme))
+        fstate_src_ty *src = pp->file_nth(j, view_path_extreme);
+        if (!src)
+            break;
+        nstring fn(src->file_name);
+        if (fn.gmatch(exclude_patterns))
+        {
 	    files_removed.push_back(fn);
 
-	os_become_orig();
-	os_unlink_errok(fn);
-	os_become_undo();
+            os_become_orig();
+            os_unlink_errok(fn);
+            os_become_undo();
+        }
     }
     if (!files_removed.empty())
     {

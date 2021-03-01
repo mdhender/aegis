@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005, 2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -21,6 +20,7 @@
 //
 
 #include <libaegis/change/identifi_sub.h>
+#include <libaegis/file/event.h>
 #include <libaegis/project/file.h>
 #include <libaegis/project/file/roll_forward.h>
 
@@ -31,8 +31,8 @@ change_identifier_subset::get_project_file(const nstring &filename)
     if (need_historical_perspective())
     {
 	project_file_roll_forward *hp = get_historian();
-	file_event_ty *fep = hp->get_last(filename.get_ref());
-	return (fep ? fep->src : 0);
+	file_event *fep = hp->get_last(filename.get_ref());
+	return (fep ? fep->get_src() : 0);
     }
     return project_file_find(get_pp(), filename.get_ref(), view_path_simple);
 }

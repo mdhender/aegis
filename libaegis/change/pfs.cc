@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: implementation of the change_pfs class
 //
@@ -26,7 +25,7 @@
 
 
 void
-change_pfs_write(change_ty *cp)
+change_pfs_write(change::pointer cp)
 {
     //
     // All it does is create a hard link.  This will be broken at the
@@ -43,7 +42,7 @@ change_pfs_write(change_ty *cp)
     pconf_ty *pconf_data = change_pconf_get(cp, 1);
     if (pconf_data->cache_project_file_list_for_each_delta)
     {
-	change_ty *pcp = cp->pp->change_get();
+	change::pointer pcp = cp->pp->change_get();
 	string_ty *fn1 = change_fstate_filename_get(pcp);
 	string_ty *fn2 = change_pfstate_filename_get(cp);
 	change_become(cp);
@@ -55,6 +54,6 @@ change_pfs_write(change_ty *cp)
 	//
 	commit_hard_link(fn1, fn2);
 
-	change_become_undo();
+	change_become_undo(cp);
     }
 }

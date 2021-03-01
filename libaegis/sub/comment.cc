@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -22,7 +21,7 @@
 
 #include <libaegis/sub/comment.h>
 #include <common/trace.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
 
 
 //
@@ -44,8 +43,8 @@
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_comment(struct sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_comment(sub_context_ty *, const wstring_list &)
 {
 	wstring_ty	*result;
 

@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-2006 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 1991-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions for implementing integrate fail
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -133,7 +130,7 @@ integrate_fail_list(void)
 
 
 static void
-check_directory(change_ty *cp)
+check_directory(change::pointer cp)
 {
     string_ty       *dir;
 
@@ -146,18 +143,18 @@ check_directory(change_ty *cp)
 
 
 static void
-check_permissions(change_ty *cp, user_ty *up)
+check_permissions(change::pointer cp, user_ty::pointer up)
 {
     cstate_ty       *cstate_data;
 
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
 
     //
     // it is an error if the change is not in the 'being_integrated' state.
     //
     if (cstate_data->state != cstate_state_being_integrated)
         change_fatal(cp, 0, i18n("bad if state"));
-    if (!str_equal(change_integrator_name(cp), user_name(up)))
+    if (nstring(change_integrator_name(cp)) != up->name())
         change_fatal(cp, 0, i18n("not integrator"));
 }
 
@@ -174,9 +171,9 @@ integrate_fail_main(void)
     string_ty       *project_name;
     project_ty      *pp;
     long            change_number;
-    change_ty       *cp;
-    user_ty         *up;
-    user_ty         *devup;
+    change::pointer cp;
+    user_ty::pointer up;
+    user_ty::pointer devup;
     edit_ty         edit;
 
     trace(("integrate_fail_main()\n{\n"));
@@ -284,7 +281,7 @@ integrate_fail_main(void)
 
         case arglex_token_wait:
         case arglex_token_wait_not:
-            user_lock_wait_argument(integrate_fail_usage);
+            user_ty::lock_wait_argument(integrate_fail_usage);
             break;
         }
         arglex();
@@ -336,7 +333,10 @@ integrate_fail_main(void)
     // locate project data
     //
     if (!project_name)
-        project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -344,13 +344,13 @@ integrate_fail_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-        change_number = user_default_change(up);
+        change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -380,7 +380,7 @@ integrate_fail_main(void)
     change_cstate_lock_prepare(cp);
     lock_prepare_ustate_all(0, 0); // we don't know which users until later
     lock_take();
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
 
     //
     // make sure they are allowed to
@@ -423,9 +423,9 @@ integrate_fail_main(void)
     // Remove it from the integrator's change list, and
     // add it back into the developer's change list.
     //
-    user_own_remove(up, project_name_get(pp), change_number);
-    devup = user_symbolic(pp, change_developer_name(cp));
-    user_own_add(devup, project_name_get(pp), change_number);
+    up->own_remove(pp, change_number);
+    devup = user_ty::create(nstring(change_developer_name(cp)));
+    devup->own_add(pp, change_number);
 
     //
     // go through the files in the change and unlock them
@@ -500,7 +500,7 @@ integrate_fail_main(void)
     change_verbose(cp, 0, i18n("rm int dir"));
     project_become(pp);
     commit_rmdir_tree_bg(dir);
-    project_become_undo();
+    project_become_undo(pp);
 
     //
     // Make the development directory writable again.
@@ -517,8 +517,8 @@ integrate_fail_main(void)
     // write out the data and release the locks
     //
     change_cstate_write(cp);
-    user_ustate_write(up);
-    user_ustate_write(devup);
+    up->ustate_write();
+    devup->ustate_write();
     pp->pstate_write();
     str_free(dir);
     commit();
@@ -527,7 +527,7 @@ integrate_fail_main(void)
     //
     // run the notify command
     //
-    change_run_integrate_fail_notify_command(cp);
+    cp->run_integrate_fail_notify_command();
 
     //
     // Update the RSS feed file if necessary.
@@ -540,8 +540,6 @@ integrate_fail_main(void)
     change_verbose(cp, 0, i18n("integrate fail complete"));
     change_free(cp);
     project_free(pp);
-    user_free(up);
-    user_free(devup);
     trace(("}\n"));
 }
 
@@ -551,8 +549,8 @@ integrate_fail(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-        {arglex_token_help, integrate_fail_help, },
-        {arglex_token_list, integrate_fail_list, },
+        { arglex_token_help, integrate_fail_help, 0 },
+        { arglex_token_list, integrate_fail_list, 0 },
     };
 
     trace(("integrate_fail()\n{\n"));

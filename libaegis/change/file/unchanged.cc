@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
+//	Copyright (C) 2006 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: implementation of the change_file_unchanged function
 //
@@ -31,7 +31,8 @@
 
 
 bool
-change_file_unchanged(change_ty *cp, fstate_src_ty *src_data, user_ty *up)
+change_file_unchanged(change::pointer cp, fstate_src_ty *src_data,
+    user_ty::pointer up)
 {
     //
     // The policy only applies to simple change sets, not to branches.
@@ -85,7 +86,7 @@ change_file_unchanged(change_ty *cp, fstate_src_ty *src_data, user_ty *up)
     // so make sure this is sensable.
     //
     fstate_src_ty *psrc_data =
-	project_file_find_by_meta(cp->pp, src_data, view_path_extreme);
+	project_file_find(cp->pp, src_data, view_path_extreme);
     if (!psrc_data)
 	return false;
 
@@ -95,9 +96,9 @@ change_file_unchanged(change_ty *cp, fstate_src_ty *src_data, user_ty *up)
     int blf_unlink = 0;
     nstring blf(project_file_path(cp->pp, psrc_data->file_name));
     assert(!blf.empty());
-    user_become(up);
+    up->become_begin();
     int blf_exists = os_exists(blf);
-    user_become_undo();
+    up->become_end();
     assert(blf_exists);
     if (!blf_exists)
     {
@@ -148,9 +149,9 @@ change_file_unchanged(change_ty *cp, fstate_src_ty *src_data, user_ty *up)
     //
     // Perform the comparison.
     //
-    user_become(up);
+    up->become_begin();
     bool different = files_are_different(cfp, blf);
-    user_become_undo();
+    up->become_end();
     if (blf_unlink)
     {
 	os_become_orig();

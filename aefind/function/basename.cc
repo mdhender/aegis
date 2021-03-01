@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,70 +13,82 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate basename tree nodes
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
 #include <common/ac/string.h>
 
+#include <common/str.h>
 #include <libaegis/aer/value/string.h>
+
 #include <aefind/function/basename.h>
 #include <aefind/function/needs.h>
-#include <common/str.h>
 #include <aefind/tree/list.h>
 #include <aefind/tree/monadic.h>
 
 
-static rpt_value_ty *
-evaluate(tree_ty *tp, string_ty *path1, string_ty *path2, string_ty *path3,
-    struct stat *st)
+tree_basename::~tree_basename()
 {
-    tree_monadic_ty *this_thing;
-    rpt_value_ty    *vp;
-    rpt_value_ty    *svp;
-    rpt_value_ty    *result;
-    string_ty	    *s;
-    char	    *cp;
+}
 
-    this_thing = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this_thing->arg, path1, path2, path3, st);
-    svp = rpt_value_stringize(vp);
-    rpt_value_free(vp);
 
-    s = rpt_value_string_query(svp);
-    cp = strrchr(s->str_text, '/');
-    if (cp)
-	++cp;
-    else
-	cp = s->str_text;
-    s = str_from_c(cp);
-    rpt_value_free(svp);
+tree_basename::tree_basename(const pointer &a_arg) :
+    tree_monadic(a_arg)
+{
+}
 
-    result = rpt_value_string(s);
-    str_free(s);
+
+tree::pointer
+tree_basename::create(const pointer &a_arg)
+{
+    return pointer(new tree_basename(a_arg));
+}
+
+
+tree::pointer
+tree_basename::create_l(const tree_list &args)
+{
+    function_needs_one("execute", args);
+    return create(args[0]);
+}
+
+
+rpt_value::pointer
+tree_basename::evaluate(string_ty *path1, string_ty *path2, string_ty *path3,
+    struct stat *st) const
+{
+    rpt_value::pointer vp = get_arg()->evaluate(path1, path2, path3, st);
+    rpt_value::pointer svp = rpt_value::stringize(vp);
+
+    rpt_value_string *ss = dynamic_cast<rpt_value_string *>(svp.get());
+    if (!ss)
+    {
+        // FIXME:: shouldn't this be an error?
+        return rpt_value_string::create("");
+    }
+
+    nstring s(ss->query());
+    rpt_value::pointer result = rpt_value_string::create(s.basename());
     return result;
 }
 
 
-static tree_method_ty method =
+tree::pointer
+tree_basename::optimize()
+    const
 {
-    sizeof(tree_monadic_ty),
-    "basename",
-    tree_monadic_destructor,
-    tree_monadic_print,
-    evaluate,
-    tree_monadic_useful,
-    tree_monadic_constant,
-    tree_monadic_optimize,
-};
+    tree::pointer tp = create(get_arg()->optimize());
+    if (tp->constant())
+        tp = tp->optimize_constant();
+    return tp;
+}
 
 
-tree_ty *
-function_basename(tree_list_ty *args)
+const char *
+tree_basename::name()
+    const
 {
-    function_needs_one("basename", args);
-    return tree_monadic_new(&method, args->item[0]);
+    return "basename";
 }

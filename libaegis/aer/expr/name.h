@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2002, 2005, 2006 Peter Miller.
-//	All rights reserved.
+//	Copyright (C) 1994, 2002, 2005-2007 Peter Miller.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aegis/aer/expr/name.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEGIS_AER_EXPR_NAME_H
@@ -25,10 +22,10 @@
 
 #include <libaegis/aer/expr.h>
 
-struct string_ty;
+class nstring; // forward
 
-rpt_expr_ty *rpt_expr_name(struct string_ty *);
-void rpt_expr_name__declare(struct string_ty *);
-void rpt_expr_name__init(struct string_ty *, struct rpt_value_ty *);
+rpt_expr::pointer rpt_expr_name(const nstring &name);
+void rpt_expr_name__declare(const nstring &name);
+void rpt_expr_name__init(const nstring &name, const rpt_value::pointer &value);
 
 #endif // AEGIS_AER_EXPR_NAME_H

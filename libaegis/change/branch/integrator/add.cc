@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate adds
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change/branch.h>
@@ -26,17 +23,17 @@
 
 
 void
-change_branch_integrator_add(change_ty *cp, string_ty *user_name)
+change_branch_integrator_add(change::pointer cp, string_ty *usr_name)
 {
     cstate_ty       *cstate_data;
-    type_ty         *type_p;
+    meta_type         *type_p;
     string_ty       **spp;
     cstate_branch_integrator_list_ty *lp;
     size_t          j;
 
     trace(("change_branch_integrator_add(cp = %8.8lX, "
-	"user_name = \"%s\")\n{\n", (long)cp, user_name->str_text));
-    cstate_data = change_cstate_get(cp);
+	"usr_name = \"%s\")\n{\n", (long)cp, usr_name->str_text));
+    cstate_data = cp->cstate_get();
     assert(cstate_data->branch);
     if (!cstate_data->branch->integrator)
     {
@@ -51,7 +48,7 @@ change_branch_integrator_add(change_ty *cp, string_ty *user_name)
     //
     for (j = 0; j < lp->length; ++j)
     {
-	if (str_equal(user_name, lp->list[j]))
+	if (str_equal(usr_name, lp->list[j]))
 	{
     	    trace(("}\n"));
     	    return;
@@ -69,6 +66,6 @@ change_branch_integrator_add(change_ty *cp, string_ty *user_name)
     	    &type_p
 	);
     assert(type_p == &string_type);
-    *spp = str_copy(user_name);
+    *spp = str_copy(usr_name);
     trace(("}\n"));
 }

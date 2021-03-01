@@ -2,8 +2,7 @@
 
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2006 Peter Miller;
- *	All rights reserved.
+ *	Copyright (C) 1991-2007 Peter Miller
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -16,10 +15,8 @@
  *	GNU General Public License for more details.
  *
  *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: template common/config.h file
+ *	along with this program. If not, see
+ *	<http://www.gnu.org/licenses/>.
  */
 
 #ifndef COMMON_CONFIG_H
@@ -42,6 +39,12 @@
 /* Set this to a suitable argument for the getpgrp function to discover the
    process group of the current process. */
 #undef CONF_getpgrp_arg
+
+/* Define to 1 if you have the `backtrace' function. */
+#undef HAVE_BACKTRACE
+
+/* Define to 1 if you have the <boost/shared_ptr.hpp> header file. */
+#undef HAVE_BOOST_SHARED_PTR_HPP
 
 /* Define to 1 if you have the <bzlib.h> header file. */
 #undef HAVE_BZLIB_H
@@ -100,6 +103,9 @@
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
    */
 #undef HAVE_DIRENT_H
+
+/* Define to 1 if you have the <execinfo.h> header file. */
+#undef HAVE_EXECINFO_H
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
@@ -221,6 +227,9 @@
 /* Define this symbol of your system has the mbstate_t type defined. It is
    usually in <stddef.h> or <wchar.h>. */
 #undef HAVE_MBSTATE_T
+
+/* Define to 1 if you have the `memmem' function. */
+#undef HAVE_MEMMEM
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
@@ -359,6 +368,9 @@
 /* Define to 1 if you have the `tcgetpgrp' function. */
 #undef HAVE_TCGETPGRP
 
+/* Define to 1 if you have the <tr1/memory> header file. */
+#undef HAVE_TR1_MEMORY
+
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
@@ -471,6 +483,11 @@
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #undef TIME_WITH_SYS_TIME
+
+/* Enable GNU extensions on systems that have them.  */
+#ifndef _GNU_SOURCE
+# undef _GNU_SOURCE
+#endif
 
 /* Define to 1 if on MINIX. */
 #undef _MINIX

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -29,7 +28,7 @@
 static int
 yes(project_ty *pp, string_ty *name)
 {
-    return project_integrator_query(pp, name);
+    return project_integrator_query(pp, nstring(name));
 }
 
 
@@ -43,7 +42,7 @@ complete_user_integrator(project_ty *pp)
 static int
 no(project_ty *pp, string_ty *name)
 {
-    return !project_integrator_query(pp, name);
+    return !project_integrator_query(pp, nstring(name));
 }
 
 

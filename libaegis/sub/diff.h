@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -23,10 +22,10 @@
 #ifndef LIBAEGIS_SUB_DIFF_H
 #define LIBAEGIS_SUB_DIFF_H
 
-struct sub_context_ty; // forward
-struct wstring_ty; // forward
-struct wstring_list_ty; // forward
+class sub_context_ty; // forward
+class wstring; // forward
+class wstring_list; // forward
 
-wstring_ty *sub_diff(sub_context_ty *, wstring_list_ty *);
+wstring sub_diff(sub_context_ty *, const wstring_list &);
 
 #endif // LIBAEGIS_SUB_DIFF_H

@@ -2,6 +2,7 @@
 #
 #	aegis - project change supervisor
 #	Copyright (C) 2006 Walter Franzini
+#       Copyright (C) 2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -44,7 +45,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	log_file_preference = never; \
 	default_development_directory = \"$work\";"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 # This tells aeintegratq that it is being used by a test.

@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2003-2005 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 2003-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -27,11 +26,11 @@
 
 #include <common/arglex.h>
 #include <common/error.h>
-#include <common/mem.h>
 #include <common/progname.h>
-#include <aecomplete/shell/zsh.h>
-#include <aecomplete/shell/private.h>
 #include <common/str.h>
+
+#include <aecomplete/shell/private.h>
+#include <aecomplete/shell/zsh.h>
 
 
 struct shell_zsh_ty
@@ -45,9 +44,7 @@ struct shell_zsh_ty
 static char *
 copy_of(const char *s, size_t len)
 {
-    char            *result;
-
-    result = (char *)mem_alloc(len + 1);
+    char *result = new char [len + 1];
     memcpy(result, s, len);
     result[len] = 0;
     return result;
@@ -87,8 +84,8 @@ test(shell_ty *sp)
     unsigned long   n;
     char            *comp_line;
     unsigned long   comp_point;
-    int             ac;
-    int             ac_max;
+    size_t          ac;
+    size_t          ac_max;
     char            **av;
     int             inco_ac;
 
@@ -160,11 +157,12 @@ test(shell_ty *sp)
             //
             if (ac >= ac_max)
             {
-                size_t          nbytes;
-
                 ac_max = ac_max * 2 + 8;
-                nbytes = ac_max * sizeof(av[0]);
-                av = (char **)mem_change_size(av, nbytes);
+		char **new_av = new char * [ac_max];
+		for (size_t k = 0; k < ac; ++k)
+		    new_av[k] = av[k];
+		delete [] av;
+		av = new_av;
             }
             inco_ac = ac;
             av[ac++] = copy_of(cp, 0);
@@ -212,11 +210,12 @@ test(shell_ty *sp)
         //
         if (ac >= ac_max)
         {
-            size_t          nbytes;
-
             ac_max = ac_max * 2 + 8;
-            nbytes = ac_max * sizeof(av[0]);
-            av = (char **)mem_change_size(av, nbytes);
+	    char **new_av = new char * [ac_max];
+	    for (size_t k = 0; k < ac; ++k)
+		new_av[k] = av[k];
+	    delete [] av;
+	    av = new_av;
         }
         if ((unsigned long)(cp - comp_line) < comp_point &&
             comp_point <= (unsigned long)(end - comp_line))
@@ -234,15 +233,16 @@ test(shell_ty *sp)
     assert(inco_ac >= 0);
 
     //
-    // NULL terminate the list opf word pointers.
+    // NULL terminate the list of word pointers.
     //
     if (ac >= ac_max)
     {
-        size_t          nbytes;
-
         ac_max = ac_max * 2 + 8;
-        nbytes = ac_max * sizeof(av[0]);
-        av = (char **)mem_change_size(av, nbytes);
+	char **new_av = new char * [ac_max];
+	for (size_t k = 0; k < ac; ++k)
+	    new_av[k] = av[k];
+	delete [] av;
+	av = new_av;
     }
     av[ac] = 0;
 
@@ -279,7 +279,7 @@ prefix_get(shell_ty *sh)
 
 
 static void
-emit(shell_ty *sh, string_ty *s)
+emit(shell_ty *, string_ty *s)
 {
     char            *cp;
 

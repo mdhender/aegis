@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -50,7 +49,7 @@ list_main(void)
     output_ty       *usage_col;
     output_ty       *action_col;
     output_ty       *file_name_col;
-    col_ty          *colp;
+    col          *colp;
     arglex();
     nstring ifn;
     while (arglex_token != arglex_token_eoln)
@@ -112,10 +111,10 @@ list_main(void)
     //
     // Set the listing title from the change set subject line.
     //
-    colp = col_open(ofn);
-    head_col = col_create(colp, 0, 0, (const char *)0);
-    body_col = col_create(colp, INDENT_WIDTH, 0, (const char *)0);
-    col_title(colp, "Distribution Change Set", s.c_str());
+    colp = col::open(ofn);
+    head_col = colp->create(0, 0, (const char *)0);
+    body_col = colp->create(INDENT_WIDTH, 0, (const char *)0);
+    colp->title("Distribution Change Set", s.c_str());
 
     //
     // read the project name from the archive,
@@ -137,7 +136,7 @@ list_main(void)
     os_become_undo();
 
     head_col->fputs("PROJECT");
-    col_eoln(colp);
+    colp->eoln();
     body_col->fputs(pname);
 
     //
@@ -164,7 +163,7 @@ list_main(void)
 	if (!ifp.is_open())
 	    cpio_p->fatal_error("file missing");
     }
-    col_eoln(colp);
+    colp->eoln();
 
     //
     // get the change details from the input
@@ -207,47 +206,47 @@ list_main(void)
 	    cpio_p->fatal_error("bad file info");
     }
 
-    col_need(colp, 3);
+    colp->need(3);
     head_col->fputs("SUMMARY");
-    col_eoln(colp);
+    colp->eoln();
     body_col->fputs(change_set->brief_description);
-    col_eoln(colp);
+    colp->eoln();
 
-    col_need(colp, 5);
+    colp->need(5);
     head_col->fputs("DESCRIPTION");
-    col_eoln(colp);
+    colp->eoln();
     body_col->fputs(change_set->description);
-    col_eoln(colp);
+    colp->eoln();
 
     //
     // cause
     //
-    col_need(colp, 5);
+    colp->need(5);
     head_col->fputs("CAUSE");
-    col_eoln(colp);
+    colp->eoln();
     body_col->fprintf
     (
 	"This change was caused by %s.",
 	change_cause_ename(change_set->cause)
     );
-    col_eoln(colp);
+    colp->eoln();
 
     //
     // files
     //
-    col_need(colp, 5);
+    colp->need(5);
     head_col->fputs("FILES");
-    col_eoln(colp);
+    colp->eoln();
 
     left = INDENT_WIDTH;
-    usage_col = col_create(colp, left, left + USAGE_WIDTH, "Type\n-------");
+    usage_col = colp->create(left, left + USAGE_WIDTH, "Type\n-------");
     left += USAGE_WIDTH + 1;
 
     action_col =
-	col_create(colp, left, left + ACTION_WIDTH, "Action\n--------");
+	colp->create(left, left + ACTION_WIDTH, "Action\n--------");
     left += ACTION_WIDTH + 1;
 
-    file_name_col = col_create(colp, left, 0, "File Name\n-----------");
+    file_name_col = colp->create(left, 0, "File Name\n-----------");
 
     for (j = 0; j < change_set->src->length; ++j)
     {
@@ -279,10 +278,10 @@ list_main(void)
 		break;
 	    }
 	}
-	col_eoln(colp);
+	colp->eoln();
     }
 
     delete cpio_p;
-    col_close(colp);
+    delete colp;
     cstate_type.free(change_set);
 }

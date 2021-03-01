@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2000, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -71,7 +70,7 @@ change_attributes_copy(cattr_ty *a, cstate_ty *s)
 
 	for (j = 0; j < s->architecture->length; ++j)
 	{
-	    type_ty		*type_p;
+	    meta_type		*type_p;
 	    string_ty	**str_p;
 
 	    str_p =
@@ -98,7 +97,7 @@ change_attributes_copy(cattr_ty *a, cstate_ty *s)
 
 	    for (j = 0; j < s->copyright_years->length; ++j)
 	    {
-		type_ty		*type_p;
+		meta_type		*type_p;
 		long		*int_p;
 
 		int_p =

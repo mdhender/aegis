@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 2002, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,19 +13,82 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aefind/function/basename.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEFIND_FUNCTION_BASENAME_H
 #define AEFIND_FUNCTION_BASENAME_H
 
-#include <common/main.h>
+#include <aefind/tree/monadic.h>
 
-struct tree_list_ty;
+class tree_list; // forward
 
-struct tree_ty *function_basename(struct tree_list_ty *);
+/**
+  * The tree_basename class is used to rpresent an expression tree which
+  * returns the basename of its argument.
+  */
+class tree_basename:
+    public tree_monadic
+{
+public:
+    /**
+      * The destructor.
+      */
+    virtual ~tree_basename();
+
+private:
+    /**
+      * The constructor.  It is private on purpose, use the "create"
+      * clas smethod instead.
+      */
+    tree_basename(const pointer &arg);
+
+public:
+    /**
+      * The create class method is used to create new dynamically
+      * allocated instance of this class.
+      *
+      * @param arg
+      *     The singel argument to this function.
+      */
+    static pointer create(const pointer &arg);
+
+    /**
+      * The create_l class method is used to create new dynamically
+      * allocated instance of this class.
+      *
+      * @param args
+      *     The arguments to this function.
+      */
+    static pointer create_l(const tree_list &arg);
+
+protected:
+    // See base class for documentation.
+    const char *name() const;
+
+    // See base class for documentation.
+    rpt_value::pointer evaluate(string_ty *, string_ty *, string_ty *,
+        struct stat *) const;
+
+    // See base class for documentation.
+    tree::pointer optimize() const;
+
+private:
+    /**
+      * The default constructor.  Do not use.
+      */
+    tree_basename();
+
+    /**
+      * The copy constructor.  Do not use.
+      */
+    tree_basename(const tree_basename &);
+
+    /**
+      * The assignment operator.  Do not use.
+      */
+    tree_basename &operator=(const tree_basename &);
+};
 
 #endif // AEFIND_FUNCTION_BASENAME_H

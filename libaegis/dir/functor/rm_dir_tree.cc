@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -40,10 +39,10 @@ dir_functor_rm_dir_tree::dir_functor_rm_dir_tree() :
 
 void
 dir_functor_rm_dir_tree::dir_functor_rm_dir_tree::operator()(msg_t msg,
-    const nstring &path, const struct stat &st)
+    const nstring &path, const struct stat &)
 {
-    trace(("rmdir_tree_callback(msg = %d, path = \"%s\", st = %08lX)\n{\n",
-	msg, path.c_str(), (long)&st));
+    trace(("rmdir_tree_callback(msg = %d, path = \"%s\")\n{\n",
+	msg, path.c_str()));
     trace_nstring(path);
     switch (msg)
     {

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1996, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,116 +13,83 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate "in" expressions
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
 #include <libaegis/aer/expr/constant.h>
-#include <libaegis/aer/expr/rel.h>
 #include <libaegis/aer/expr/in.h>
+#include <libaegis/aer/expr/rel.h>
 #include <libaegis/aer/lex.h>
 #include <libaegis/aer/value/boolean.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/list.h>
-#include <common/error.h>
 #include <libaegis/sub.h>
 
 
-static rpt_value_ty *
-evaluate(rpt_expr_ty *this_thing)
+rpt_expr_in::~rpt_expr_in()
 {
-    rpt_value_ty    *lhs;
-    rpt_value_ty    *rhs;
-    rpt_value_ty    *result;
-    long	    n;
-    long	    j;
-    rpt_expr_ty     *e1;
-    rpt_expr_ty     *e2;
-    rpt_expr_ty     *e3;
-
-    lhs = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (lhs->method->type == rpt_value_type_error)
-	return lhs;
-
-    rhs = rpt_expr_evaluate(this_thing->child[1], 1);
-    if (rhs->method->type == rpt_value_type_error)
-    {
-	rpt_value_free(lhs);
-	return rhs;
-    }
-    if (rhs->method->type != rpt_value_type_list)
-    {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", rhs->method->name);
-	rpt_value_free(lhs);
-	rpt_value_free(rhs);
-	s = subst_intl(scp, i18n("list value required (was given $name)"));
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->child[1]->pos, s);
-	str_free(s);
-	return result;
-    }
-
-    e1 = rpt_expr_constant(lhs);
-    assert(!e1->pos);
-    e1->pos = rpt_pos_copy(this_thing->child[0]->pos);
-    n = rpt_value_list_length(rhs);
-    for (j = 0; j < n; ++j)
-    {
-	rpt_value_ty	*vp;
-
-	vp = rpt_value_list_nth(rhs, j);
-	e2 = rpt_expr_constant(vp);
-	assert(!e2->pos);
-	e2->pos = rpt_pos_copy(this_thing->child[1]->pos);
-	e3 = rpt_expr_eq(e1, e2);
-	rpt_expr_free(e2);
-	result = rpt_expr_evaluate(e3, 1);
-	rpt_expr_free(e3);
-	if
-	(
-	    result->method->type == rpt_value_type_error
-	||
-	    (
-	       	result->method->type == rpt_value_type_boolean
-	    &&
-	       	rpt_value_boolean_query(result)
-	    )
-	)
-	    goto done;
-	rpt_value_free(result);
-    }
-
-    result = rpt_value_boolean(0);
-    done:
-    rpt_expr_free(e1);
-    return result;
 }
 
 
-static rpt_expr_method_ty method =
+rpt_expr_in::rpt_expr_in(const rpt_expr::pointer &a, const rpt_expr::pointer &b)
 {
-    sizeof(rpt_expr_ty),
-    "in",
-    0, // construct
-    0, // destruct
-    evaluate,
-    0, // lvalue
-};
+    append(a);
+    append(b);
+}
 
 
-rpt_expr_ty *
-rpt_expr_in(rpt_expr_ty *a, rpt_expr_ty *b)
+rpt_expr::pointer
+rpt_expr_in::create(const rpt_expr::pointer &a, const rpt_expr::pointer &b)
 {
-    rpt_expr_ty     *result;
+    return pointer(new rpt_expr_in(a, b));
+}
 
-    result = rpt_expr_alloc(&method);
-    rpt_expr_append(result, a);
-    rpt_expr_append(result, b);
-    return result;
+
+rpt_value::pointer
+rpt_expr_in::evaluate()
+    const
+{
+    rpt_value::pointer lhs = nth_child(0)->evaluate(true, true);
+    if (lhs->is_an_error())
+	return lhs;
+
+    rpt_value::pointer rhs = nth_child(1)->evaluate(true, true);
+    if (rhs->is_an_error())
+    {
+	return rhs;
+    }
+    rpt_value_list *rvlp = dynamic_cast<rpt_value_list *>(rhs.get());
+    if (!rvlp)
+    {
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", rhs->name());
+	nstring s(sc.subst_intl(i18n("list value required (was given $name)")));
+        return rpt_value_error::create(nth_child(1)->get_pos(), s);
+    }
+
+    rpt_expr::pointer e1 = rpt_expr_constant::create(lhs);
+    assert(!e1->get_pos());
+    e1->pos_from(nth_child(0));
+    size_t n = rvlp->size();
+    for (size_t j = 0; j < n; ++j)
+    {
+	rpt_value::pointer vp = rvlp->nth(j);
+        rpt_expr::pointer e2 = rpt_expr_constant::create(vp);
+	assert(!e2->get_pos());
+	e2->pos_from(nth_child(1));
+        rpt_expr::pointer e3 = rpt_expr_eq::create(e1, e2);
+        assert(e3->get_pos());
+        rpt_value::pointer result = e3->evaluate(true, true);
+	if (result->is_an_error())
+            return result;
+
+        rpt_value_boolean *rvbp =
+            dynamic_cast<rpt_value_boolean *>(result.get());
+	if (rvbp && rvbp->query())
+            return result;
+    }
+
+    return rpt_value_boolean::create(false);
 }

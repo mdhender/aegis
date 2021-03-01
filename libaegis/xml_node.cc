@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -33,26 +32,26 @@ xml_node::xml_node()
 }
 
 
-xml_node::xml_node(const xml_node &arg)
+xml_node::xml_node(const xml_node &)
 {
 }
 
 
 xml_node &
-xml_node::operator=(const xml_node &arg)
+xml_node::operator=(const xml_node &)
 {
     return *this;
 }
 
 
 void
-xml_node::none(const nstring &name, const nstring &value)
+xml_node::none(const nstring &, const nstring &)
 {
 }
 
 
 void
-xml_node::attribute(const nstring &name, const nstring &value)
+xml_node::attribute(const nstring &, const nstring &)
 {
 }
 
@@ -65,67 +64,67 @@ xml_node::cdata(const nstring &value)
 
 
 void
-xml_node::comment(const nstring &value)
+xml_node::comment(const nstring &)
 {
 }
 
 
 void
-xml_node::document(const nstring &value)
+xml_node::document(const nstring &)
 {
 }
 
 
 void
-xml_node::document_fragment(const nstring &value)
+xml_node::document_fragment(const nstring &)
 {
 }
 
 
 void
-xml_node::document_type(const nstring &name, const nstring &value)
+xml_node::document_type(const nstring &, const nstring &)
 {
 }
 
 
 void
-xml_node::element_begin(const nstring &name)
+xml_node::element_begin(const nstring &)
 {
 }
 
 
 void
-xml_node::element_end(const nstring &name)
+xml_node::element_end(const nstring &)
 {
 }
 
 
 void
-xml_node::entity_begin(const nstring &name, const nstring &value)
+xml_node::entity_begin(const nstring &, const nstring &)
 {
 }
 
 
 void
-xml_node::entity_end(const nstring &name, const nstring &value)
+xml_node::entity_end(const nstring &, const nstring &)
 {
 }
 
 
 void
-xml_node::entity_reference(const nstring &name, const nstring &value)
+xml_node::entity_reference(const nstring &, const nstring &)
 {
 }
 
 
 void
-xml_node::notation(const nstring &name, const nstring &value)
+xml_node::notation(const nstring &, const nstring &)
 {
 }
 
 
 void
-xml_node::processing_instruction(const nstring &name, const nstring &value)
+xml_node::processing_instruction(const nstring &, const nstring &)
 {
 }
 
@@ -138,18 +137,18 @@ xml_node::significant_whitespace(const nstring &value)
 
 
 void
-xml_node::text(const nstring &value)
+xml_node::text(const nstring &)
 {
 }
 
 
 void
-xml_node::whitespace(const nstring &value)
+xml_node::whitespace(const nstring &)
 {
 }
 
 
 void
-xml_node::xml_declaration(const nstring &name, const nstring &value)
+xml_node::xml_declaration(const nstring &, const nstring &)
 {
 }

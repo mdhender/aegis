@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate mains
 //
@@ -139,8 +138,8 @@ main(int argc, char **argv)
     long	    change_number;
     string_ty	    *project_name;
     project_ty	    *pp;
-    change_ty	    *cp;
-    user_ty	    *up;
+    change::pointer cp;
+    user_ty::pointer up;
     size_t	    j;
     view_path_ty    vp;
     int             usage_mask;
@@ -217,7 +216,10 @@ main(int argc, char **argv)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring pn = user_ty::create()->default_project();
+	project_name = str_copy(pn.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -225,13 +227,13 @@ main(int argc, char **argv)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 

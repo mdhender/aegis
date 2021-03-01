@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -58,6 +57,12 @@ void now_unclearable(void);
   * positive value a time_t variable may assume.
   */
 time_t time_max(void);
+
+/**
+  * The dtime function may be used to obtain the current time, to
+  * sub-second precision.
+  */
+double dtime();
 
 /** @} */
 #endif // COMMON_NOW_H

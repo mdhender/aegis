@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2002, 2004-2006 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 2002, 2004-2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -105,7 +104,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	persevere_preference = all; \
 	log_file_preference = never;"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 worklib=$work/lib
@@ -339,6 +338,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
+workchan=$work/foo.C002
 $bin/aegis -db 2 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -423,15 +423,16 @@ if test $? -ne 0 ; then fail; fi
 #
 # receive the patch
 #
+workchan3=$work/foo.C003
 activity="aepatch receive 426"
-$bin/aepatch -receive -dir ${workchan}3 -f the.patch -trojan > log 2>&1
+$bin/aepatch -receive -dir $workchan3 -f the.patch -trojan > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # Make sure the patch is applied properly.
 #
 activity="verify 433"
-diff -b $workchan/main.c ${workchan}3/main.c
+diff -b $workchan/main.c $workchan3/main.c
 if test $? -ne 0 ; then fail; fi
 
 #

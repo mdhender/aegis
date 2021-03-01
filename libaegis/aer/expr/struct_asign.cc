@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994, 1996, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,76 +13,62 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate struct member assignment expressions
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h> // for assert
+#include <common/symtab.h>
+#include <libaegis/aer/expr/constant.h>
 #include <libaegis/aer/expr/struct.h>
 #include <libaegis/aer/expr/struct_asign.h>
+#include <libaegis/aer/value/string.h>
+#include <libaegis/aer/value/struct.h>
 #include <libaegis/aer/value/ref.h>
 #include <libaegis/aer/value/void.h>
-#include <common/symtab.h>
 
 
-struct rpt_expr_struct_assign_ty
+rpt_expr_struct_assign::~rpt_expr_struct_assign()
 {
-    RPT_EXPR
-    string_ty       *name;
-    rpt_expr_ty     *value;
-};
-
-
-static void
-destruct(rpt_expr_ty *ep)
-{
-    rpt_expr_struct_assign_ty *this_thing;
-
-    this_thing = (rpt_expr_struct_assign_ty *)ep;
-    str_free(this_thing->name);
-    rpt_expr_free(this_thing->value);
 }
 
 
-static rpt_value_ty *
-evaluate(rpt_expr_ty *ep)
+rpt_expr_struct_assign::rpt_expr_struct_assign(const nstring &a_name,
+    const rpt_expr::pointer &a_value)
 {
-    rpt_expr_struct_assign_ty *this_thing;
-    rpt_value_ty    *vp;
-    rpt_value_ty    *rvp;
-    symtab_ty       *stp;
+    rpt_expr::pointer lhs =
+        rpt_expr_constant::create(rpt_value_string::create(a_name));
+    lhs->pos_from(a_value);
+    append(lhs);
+    append(a_value);
+}
 
-    this_thing = (rpt_expr_struct_assign_ty *)ep;
-    vp = rpt_expr_evaluate(this_thing->value, 0);
-    if (vp->method->type == rpt_value_type_error)
+
+rpt_expr::pointer
+rpt_expr_struct_assign::create(const nstring &a_name,
+    const rpt_expr::pointer &a_value)
+{
+    return pointer(new rpt_expr_struct_assign(a_name, a_value));
+}
+
+
+rpt_value::pointer
+rpt_expr_struct_assign::evaluate()
+    const
+{
+    assert(nth_child(0));
+    rpt_value::pointer nvp = nth_child(0)->evaluate(true, true);
+    rpt_value_string *p = dynamic_cast<rpt_value_string *>(nvp.get());
+    assert(p);
+    nstring nsp(p->query());
+
+    assert(nth_child(1));
+    rpt_value::pointer vp = nth_child(1)->evaluate(true, true);
+    if (vp->is_an_error())
 	return vp;
-    rvp = rpt_value_reference(vp);
-    rpt_value_free(vp);
-    stp = rpt_expr_struct__symtab_query();
-    symtab_assign(stp, this_thing->name, rvp);
-    return rpt_value_void();
-}
 
+    rpt_value::pointer rvp = rpt_value_reference::create(vp);
 
-static rpt_expr_method_ty method =
-{
-    sizeof(rpt_expr_struct_assign_ty),
-    "struct assign",
-    0, // construct
-    destruct,
-    evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_struct_assign(string_ty *name, rpt_expr_ty *ep)
-{
-    rpt_expr_struct_assign_ty *this_thing;
-
-    this_thing = (rpt_expr_struct_assign_ty *)rpt_expr_alloc(&method);
-    this_thing->name = str_copy(name);
-    this_thing->value = rpt_expr_copy(ep);
-    return (rpt_expr_ty *)this_thing;
+    rpt_expr_struct::symtab_query()->assign(nsp, rvp);
+    return rpt_value_void::create();
 }

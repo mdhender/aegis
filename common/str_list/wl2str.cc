@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -22,8 +21,9 @@
 
 #include <common/ac/string.h>
 
-#include <common/mem.h>
+#include <common/stracc.h>
 #include <common/str_list.h>
+#include <common/trace.h>
 
 
 string_ty *
@@ -38,46 +38,25 @@ string_ty *
 string_list_ty::unsplit(size_t start, size_t stop, const char *sep)
     const
 {
-    static char *tmp;
-    static size_t tmplen;
-
     if (!sep)
 	sep = " ";
+    trace(("string_list_ty::unsplit(start = %d, stop = %d, sep = \"%s\")\n",
+	(int)start, (int)stop, sep));
     size_t seplen = strlen(sep);
-    size_t length = 0;
-    size_t j;
-    for (j = start; j <= stop && j < nstrings; j++)
+
+    static stracc_t tmp;
+    tmp.clear();
+
+    for (size_t j = start; j <= stop && j < nstrings; j++)
     {
 	string_ty *s = string[j];
 	if (s->str_length)
 	{
-	    if (length)
-		length += seplen;
-	    length += s->str_length;
+	    if (!tmp.empty())
+		tmp.push_back(sep, seplen);
+	    tmp.push_back(s->str_text, s->str_length);
 	}
     }
 
-    if (tmplen < length)
-    {
-	tmplen = length;
-	tmp = (char *)mem_change_size(tmp, tmplen);
-    }
-
-    char *pos = tmp;
-    for (j = start; j <= stop && j < nstrings; j++)
-    {
-	string_ty *s = string[j];
-	if (s->str_length)
-	{
-	    if (pos != tmp)
-	    {
-		memcpy(pos, sep, seplen);
-		pos += seplen;
-	    }
-	    memcpy(pos, s->str_text, s->str_length);
-	    pos += s->str_length;
-	}
-    }
-
-    return str_n_from_c(tmp, length);
+    return tmp.mkstr();
 }

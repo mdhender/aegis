@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2003-2005 Peter Miller.
-//	All rights reserved.
+//	Copyright (C) 1994, 2003-2007 Peter Miller.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,92 +13,76 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate statements
-//
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 
 #include <libaegis/aer/stmt.h>
 #include <common/error.h>
 #include <common/mem.h>
 
 
-rpt_stmt_ty *
-rpt_stmt_alloc(rpt_stmt_method_ty *method)
+rpt_stmt::rpt_stmt() :
+    child(0),
+    nchild(0),
+    nchild_max(0)
 {
-	rpt_stmt_ty	*this_thing;
-
-	this_thing = (rpt_stmt_ty *)mem_alloc(method->size);
-	this_thing->method = method;
-	this_thing->reference_count = 1;
-	this_thing->child = 0;
-	this_thing->nchild = 0;
-	this_thing->nchild_max = 0;
-	if (method->construct)
-		method->construct(this_thing);
-	return this_thing;
 }
 
 
-rpt_stmt_ty *
-rpt_stmt_copy(rpt_stmt_ty *this_thing)
+rpt_stmt::~rpt_stmt()
 {
-	this_thing->reference_count++;
-	return this_thing;
+    delete [] child;
+    child = 0;
+    nchild = 0;
+    nchild_max = 0;
 }
 
 
 void
-rpt_stmt_free(rpt_stmt_ty *this_thing)
+rpt_stmt::append(const pointer &sp)
 {
-	size_t		j;
-
-	this_thing->reference_count--;
-	if (this_thing->reference_count > 0)
-		return;
-	assert(this_thing->reference_count == 0);
-	if (this_thing->method->destruct)
-		this_thing->method->destruct(this_thing);
-	for (j = 0; j < this_thing->nchild; ++j)
-		rpt_stmt_free(this_thing->child[j]);
-	if (this_thing->child)
-		mem_free(this_thing->child);
-	mem_free(this_thing);
+    if (nchild >= nchild_max)
+    {
+	size_t new_nchild_max = nchild_max * 2 + 4;
+	pointer *new_child = new pointer [new_nchild_max];
+	for (size_t j = 0; j < nchild; ++j)
+	    new_child[j] = child[j];
+	delete [] child;
+	child = new_child;
+	nchild_max = new_nchild_max;
+    }
+    child[nchild++] = sp;
 }
 
 
 void
-rpt_stmt_append(rpt_stmt_ty *parent, rpt_stmt_ty *child)
+rpt_stmt::prepend(const pointer &sp)
 {
-	size_t		nbytes;
-
-	if (parent->nchild >= parent->nchild_max)
-	{
-		parent->nchild_max = parent->nchild_max * 2 + 4;
-		nbytes = parent->nchild_max * sizeof(parent->child[0]);
-		parent->child =
-                    (rpt_stmt_ty **)mem_change_size(parent->child, nbytes);
-	}
-	parent->child[parent->nchild++] = rpt_stmt_copy(child);
+    if (nchild >= nchild_max)
+    {
+	size_t new_nchild_max = nchild_max * 2 + 4;
+	pointer *new_child = new pointer [new_nchild_max];
+	for (size_t j = 0; j < nchild; ++j)
+	    new_child[j + 1] = child[j];
+	delete [] child;
+	child = new_child;
+	nchild_max = new_nchild_max;
+    }
+    else
+    {
+	for (size_t j = nchild; j > 0; --j)
+	    child[j] = child[j - 1];
+    }
+    nchild++;
+    child[0] = sp;
 }
 
 
-void
-rpt_stmt_prepend(rpt_stmt_ty *parent, rpt_stmt_ty *child)
+rpt_stmt::pointer
+rpt_stmt::nth_child(size_t n)
+    const
 {
-	size_t		nbytes;
-	size_t		j;
-
-	if (parent->nchild >= parent->nchild_max)
-	{
-		parent->nchild_max = parent->nchild_max * 2 + 4;
-		nbytes = parent->nchild_max * sizeof(parent->child[0]);
-		parent->child =
-                    (rpt_stmt_ty **)mem_change_size(parent->child, nbytes);
-	}
-	for (j = parent->nchild; j > 0; --j)
-		parent->child[j] = parent->child[j - 1];
-	parent->nchild++;
-	parent->child[0] = rpt_stmt_copy(child);
+    if (n >= nchild)
+        return pointer();
+    return child[n];
 }

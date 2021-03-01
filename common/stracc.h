@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 2001, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1998, 2001, 2004-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -115,6 +114,12 @@ public:
     void push_back(const stracc_t &data);
 
     /**
+      * The back method is used to obtain the last character in the
+      * buffer.  The result is undefined if the buffer is empty.
+      */
+    char back() { return buffer[length - 1]; }
+
+    /**
       * The clear method is used to reset the length of the accumulated
       * string to zero.
       */
@@ -158,6 +163,8 @@ public:
       *     No array bounds checking is performed.  Caveat emptor.
       */
     char operator[](size_t n) { return buffer[n]; }
+
+    size_t count_nul_characters() const;
 
 private:
     /**

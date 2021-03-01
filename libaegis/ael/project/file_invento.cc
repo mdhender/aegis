@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: implementation of the ael_project_file_invento class
 //
@@ -34,14 +33,17 @@
 
 void
 list_project_file_inventory(string_ty *project_name, long change_number,
-    string_list_ty *args)
+    string_list_ty *)
 {
     //
     // locate project data
     //
     trace(("list_project_file_inventory()\n{\n"));
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     else
 	project_name = str_copy(project_name);
     project_ty *pp = project_alloc(project_name);
@@ -51,12 +53,12 @@ list_project_file_inventory(string_ty *project_name, long change_number,
     //
     // locate user data
     //
-    user_ty *up = user_executing(pp);
+    user_ty::pointer up = user_ty::create();
 
     //
     // locate change data
     //
-    change_ty *cp = 0;
+    change::pointer cp = 0;
     if (change_number)
     {
 	cp = change_alloc(pp, change_number);
@@ -66,7 +68,7 @@ list_project_file_inventory(string_ty *project_name, long change_number,
     //
     // create the columns
     //
-    col_ty *colp = col_open((string_ty *)0);
+    col *colp = col::open((string_ty *)0);
     string_ty *line1 = 0;
     if (change_number)
     {
@@ -80,15 +82,15 @@ list_project_file_inventory(string_ty *project_name, long change_number,
     }
     else
 	line1 = str_format("Project \"%s\"", project_name_get(pp)->str_text);
-    col_title(colp, line1->str_text, "List of Project's File Inventory");
+    colp->title(line1->str_text, "List of Project's File Inventory");
     str_free(line1);
 
     int left = 0;
     output_ty *file_name_col =
-	col_create(colp, left, left + FILENAME_WIDTH, "File Name\n-----------");
+	colp->create(left, left + FILENAME_WIDTH, "File Name\n-----------");
     left += FILENAME_WIDTH + 1;
     output_ty *uuid_col =
-	col_create(colp, left, left + UUID_WIDTH, "UUID\n------");
+	colp->create(left, left + UUID_WIDTH, "UUID\n------");
     left += UUID_WIDTH + 1;
 
     //
@@ -106,16 +108,15 @@ list_project_file_inventory(string_ty *project_name, long change_number,
 	    uuid_col->fputs(src_data->uuid);
 	else
 	    uuid_col->fputs(src_data->file_name);
-	col_eoln(colp);
+	colp->eoln();
     }
 
     //
     // clean up and go home
     //
-    col_close(colp);
+    delete colp;
     project_free(pp);
     if (cp)
 	change_free(cp);
-    user_free(up);
     trace(("}\n"));
 }

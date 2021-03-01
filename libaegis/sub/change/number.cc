@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate changes
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
@@ -25,22 +22,21 @@
 
 #include <common/error.h> // for assert
 #include <common/language.h>
-#include <common/str.h>
+#include <common/nstring.h>
 #include <common/symtab.h>
 #include <common/trace.h>
-#include <common/wstr.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
 #include <libaegis/change/attributes.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/cstate.h>
-#include <libaegis/sub/change/number.h>
 #include <libaegis/sub.h>
+#include <libaegis/sub/change/number.h>
 
 
 #define ONE_OR_MORE (-1)
 
 
-typedef string_ty *(*func_ptr)(change_ty *, wstring_list_ty *);
+typedef nstring (*func_ptr)(change::pointer , const wstring_list &);
 struct table_ty
 {
     const char      *name;
@@ -49,50 +45,44 @@ struct table_ty
 };
 
 
-static string_ty *
-change_number_get(change_ty *cp, wstring_list_ty *arg)
+static nstring
+change_number_get(change::pointer cp, const wstring_list &)
 {
-    return str_format("%ld", magic_zero_decode(cp->number));
+    return nstring::format("%ld", magic_zero_decode(cp->number));
 }
 
 
-static string_ty *
-change_attribute_get(change_ty *cp, wstring_list_ty *arg)
+static nstring
+change_attribute_get(change::pointer cp, const wstring_list &arg)
 {
-    assert(arg->size() >= 3);
-    string_ty *name = wstr_to_str(arg->get(2));
-    string_ty *value = change_attributes_find(cp, name);
-    str_free(name);
-    return (value ? str_copy(value) : str_from_c(""));
+    assert(arg.size() >= 3);
+    nstring name = arg[2].to_nstring();
+    nstring value(change_attributes_find(cp, name.get_ref()));
+    return value;
 }
 
 
-static string_ty *
-change_description_get(change_ty *cp, wstring_list_ty *arg)
+static nstring
+change_description_get(change::pointer cp, const wstring_list &)
 {
-    cstate_ty       *cstate_data;
-    string_ty	    *s;
-    size_t	    len;
-
     //
     // We don't actually return the whole brief description, just the
     // first line, or the first 80 characters, whichever is shortest.
     //
-    cstate_data = change_cstate_get(cp);
-    s = cstate_data->brief_description;
-    for (len = 0; len < s->str_length && len < 80; ++len)
-	if (s->str_text[len] == '\n')
+    cstate_ty *cstate_data = cp->cstate_get();
+    nstring s(cstate_data->brief_description);
+    size_t len = 0;
+    for (; len < s.size() && len < 80; ++len)
+	if (s[len] == '\n')
 	    break;
-    return str_n_from_c(s->str_text, len);
+    return s.substring(0, len);
 }
 
 
-static string_ty *
-get_delta(change_ty *cp, wstring_list_ty *arg)
+static nstring
+get_delta(change::pointer cp, const wstring_list &)
 {
-    cstate_ty       *cstate_data;
-
-    cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
     switch (cstate_data->state)
     {
     case cstate_state_awaiting_development:
@@ -100,27 +90,25 @@ get_delta(change_ty *cp, wstring_list_ty *arg)
     case cstate_state_awaiting_review:
     case cstate_state_being_reviewed:
     case cstate_state_awaiting_integration:
-	return 0;
+	return "";
 
     case cstate_state_being_integrated:
     case cstate_state_completed:
 	break;
     }
-    return str_format("%ld", cstate_data->delta_number);
+    return nstring::format("%ld", cstate_data->delta_number);
 }
 
 
-static string_ty *
-get_delta_uuid(change_ty *cp, wstring_list_ty *arg)
+static nstring
+get_delta_uuid(change::pointer cp, const wstring_list &)
 {
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
     switch (cstate_data->state)
     {
     case cstate_state_being_integrated:
     case cstate_state_completed:
-	if (!cstate_data->delta_uuid)
-	    return 0;
-	return str_copy(cstate_data->delta_uuid);
+	return nstring(cstate_data->delta_uuid);
 
     case cstate_state_awaiting_development:
     case cstate_state_being_developed:
@@ -129,21 +117,19 @@ get_delta_uuid(change_ty *cp, wstring_list_ty *arg)
     case cstate_state_awaiting_integration:
 	break;
     }
-    return 0;
+    return "";
 }
 
 
-static string_ty *
-get_development_directory(change_ty *cp, wstring_list_ty *arg)
+static nstring
+get_development_directory(change::pointer cp, const wstring_list &)
 {
-    cstate_ty       *cstate_data;
-
-    cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
     switch (cstate_data->state)
     {
     case cstate_state_awaiting_development:
     case cstate_state_completed:
-	return 0;
+	return "";
 
     case cstate_state_being_developed:
     case cstate_state_awaiting_review:
@@ -152,20 +138,18 @@ get_development_directory(change_ty *cp, wstring_list_ty *arg)
     case cstate_state_being_integrated:
 	break;
     }
-    return str_copy(change_development_directory_get(cp, 0));
+    return nstring(change_development_directory_get(cp, 0));
 }
 
 
-static string_ty *
-get_developer(change_ty *cp, wstring_list_ty *arg)
+static nstring
+get_developer(change::pointer cp, const wstring_list &)
 {
-    cstate_ty       *cstate_data;
-
-    cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
     switch (cstate_data->state)
     {
     case cstate_state_awaiting_development:
-	return 0;
+	return "";
 
     case cstate_state_being_developed:
     case cstate_state_awaiting_review:
@@ -175,71 +159,53 @@ get_developer(change_ty *cp, wstring_list_ty *arg)
     case cstate_state_completed:
 	break;
     }
-    return str_copy(change_developer_name(cp));
+    return nstring(change_developer_name(cp));
 }
 
 
-static string_ty *
-get_integration_directory(change_ty *cp, wstring_list_ty *arg)
+static nstring
+get_integration_directory(change::pointer cp, const wstring_list &)
 {
-    cstate_ty       *cstate_data;
-
-    cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
     if (cstate_data->state != cstate_state_being_integrated)
-	return 0;
-    return str_copy(change_integration_directory_get(cp, 0));
+	return "";
+    return nstring(change_integration_directory_get(cp, 0));
 }
 
 
-static string_ty *
-calc_date_string(time_t when, wstring_list_ty *arg)
+static nstring
+calc_date_string(time_t when, const wstring_list &arg)
 {
-    struct tm	    *the_time;
-    char	    buf[1000];
-    size_t	    nbytes;
-    wstring_ty	    *wfmt;
-    string_ty	    *fmt;
-    string_ty	    *result;
-
-    wfmt = arg->unsplit(2, arg->size());
-    fmt = wstr_to_str(wfmt);
-    wstr_free(wfmt);
-    the_time = localtime(&when);
+    nstring fmt = arg.unsplit(2, arg.size()).to_nstring();
+    struct tm *the_time = localtime(&when);
 
     //
     // The strftime is locale dependent.
     //
     language_human();
-    nbytes = strftime(buf, sizeof(buf) - 1, fmt->str_text, the_time);
+    char buf[1000];
+    strftime(buf, sizeof(buf), fmt.c_str(), the_time);
     language_C();
 
-    result = str_n_from_c(buf, nbytes);
-    str_free(fmt);
-    return result;
+    return nstring(buf);
 }
 
 
-static string_ty *
-get_integrate_pass_date(change_ty *cp, wstring_list_ty *arg)
+static nstring
+get_integrate_pass_date(change::pointer cp, const wstring_list &arg)
 {
-    cstate_ty       *cstate_data;
-    time_t	    when;
-
-    cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
     if (cstate_data->state != cstate_state_completed)
-	return 0;
-
-    when = change_completion_timestamp(cp);
+	return "";
+    time_t when = change_completion_timestamp(cp);
     return calc_date_string(when, arg);
 }
 
 
-static string_ty *
-get_integrator(change_ty *cp, wstring_list_ty *arg)
+static nstring
+get_integrator(change::pointer cp, const wstring_list &)
 {
-    cstate_ty       *cstate_data;
-
-    cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
     switch (cstate_data->state)
     {
     case cstate_state_awaiting_development:
@@ -247,96 +213,90 @@ get_integrator(change_ty *cp, wstring_list_ty *arg)
     case cstate_state_awaiting_review:
     case cstate_state_being_reviewed:
     case cstate_state_awaiting_integration:
-	return 0;
+	return "";
 
     case cstate_state_being_integrated:
     case cstate_state_completed:
 	break;
     }
-    return str_copy(change_integrator_name(cp));
+    return nstring(change_integrator_name(cp));
 }
 
 
-static string_ty *
-get_reviewer(change_ty *cp, wstring_list_ty *arg)
+static nstring
+get_reviewer(change::pointer cp, const wstring_list &)
 {
     cstate_ty       *cstate_data;
 
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     switch (cstate_data->state)
     {
     case cstate_state_awaiting_development:
     case cstate_state_being_developed:
     case cstate_state_awaiting_review:
     case cstate_state_being_reviewed:
-	return 0;
+	return "";
 
     case cstate_state_awaiting_integration:
     case cstate_state_being_integrated:
     case cstate_state_completed:
 	break;
     }
-    return str_copy(change_reviewer_name(cp));
+    return nstring(change_reviewer_name(cp));
 }
 
 
-static string_ty *
-get_state(change_ty *cp, wstring_list_ty *arg)
+static nstring
+get_state(change::pointer cp, const wstring_list &)
 {
-    cstate_ty       *cstate_data;
-
-    cstate_data = change_cstate_get(cp);
-    return str_from_c(cstate_state_ename(cstate_data->state));
+    cstate_ty *cstate_data = cp->cstate_get();
+    return nstring(cstate_state_ename(cstate_data->state));
 }
 
 
-static string_ty *
-get_cause(change_ty *cp, wstring_list_ty *arg)
+static nstring
+get_cause(change::pointer cp, const wstring_list &)
 {
-    cstate_ty       *cstate_data;
-
-    cstate_data = change_cstate_get(cp);
-    return str_from_c(change_cause_ename(cstate_data->cause));
+    cstate_ty *cstate_data = cp->cstate_get();
+    return nstring(change_cause_ename(cstate_data->cause));
 }
 
 
-static string_ty *
-get_uuid(change_ty *cp, wstring_list_ty *arg)
+static nstring
+get_uuid(change::pointer cp, const wstring_list &)
 {
-    cstate_ty *cstate_data = change_cstate_get(cp);
-    if (!cstate_data->uuid)
-	return 0;
-    return str_copy(cstate_data->uuid);
+    cstate_ty *cstate_data = cp->cstate_get();
+    return nstring(cstate_data->uuid);
 }
 
 
-static string_ty *
-get_version(change_ty *cp, wstring_list_ty *arg)
+static nstring
+get_version(change::pointer cp, const wstring_list &)
 {
-    return str_copy(change_version_get(cp));
+    return nstring(change_version_get(cp));
 }
 
 
 static table_ty table[] =
 {
-    {"attribute", change_attribute_get, 1 },
-    {"brief_description", change_description_get, },
-    {"cause", get_cause, },
-    {"completion_date", get_integrate_pass_date, ONE_OR_MORE, },
-    {"date", get_integrate_pass_date, ONE_OR_MORE, },
-    {"delta", get_delta, },
-    {"delta_uuid", get_delta_uuid, },
-    {"description", change_description_get, },
-    {"developer", get_developer, },
-    {"development_directory", get_development_directory, },
-    {"integrate_pass_date", get_integrate_pass_date, ONE_OR_MORE, },
-    {"integration_directory", get_integration_directory, },
-    {"integrator", get_integrator, },
-    {"number", change_number_get, },
-    {"reviewer", get_reviewer, },
-    {"state", get_state, },
-    {"uuid", get_uuid, },
-    {"version", get_version, },
+    { "attribute", change_attribute_get, 1 },
+    { "brief_description", change_description_get, 0 },
+    { "cause", get_cause, 0 },
+    { "completion_date", get_integrate_pass_date, ONE_OR_MORE },
+    { "date", get_integrate_pass_date, ONE_OR_MORE },
+    { "delta", get_delta, 0 },
+    { "delta_uuid", get_delta_uuid, 0 },
+    { "description", change_description_get, 0 },
+    { "developer", get_developer, 0 },
+    { "development_directory", get_development_directory, 0 },
+    { "integrate_pass_date", get_integrate_pass_date, ONE_OR_MORE },
+    { "integration_directory", get_integration_directory, 0 },
+    { "integrator", get_integrator, 0 },
+    { "number", change_number_get, 0 },
+    { "reviewer", get_reviewer, 0 },
+    { "state", get_state, 0 },
+    { "uuid", get_uuid, 0 },
+    { "version", get_version, 0 },
 };
 
 
@@ -344,37 +304,31 @@ static symtab_ty *stp;
 
 
 static table_ty *
-find_func(string_ty *name)
+find_func(const nstring &name)
 {
-    table_ty	    *tp;
-    string_ty	    *s;
-    table_ty	    *result;
-
     if (!stp)
     {
 	stp = symtab_alloc(SIZEOF(table));
-	for (tp = table; tp < ENDOF(table); ++tp)
+	for (table_ty *tp = table; tp < ENDOF(table); ++tp)
 	{
-	    s = str_from_c(tp->name);
-	    symtab_assign(stp, s, tp);
-	    str_free(s);
+	    nstring s(tp->name);
+	    stp->assign(s, tp);
 	}
     }
-    result = (table_ty *)symtab_query(stp, name);
+    table_ty *result = (table_ty *)stp->query(name);
     if (!result)
     {
-	s = symtab_query_fuzzy(stp, name);
-	if (s)
+	nstring s(stp->query_fuzzy(name.downcase()));
+	if (!s.empty())
 	{
-	    sub_context_ty  *scp;
+	    sub_context_ty sc;
+	    sc.var_set_string("Name", name);
+	    sc.var_set_string("Guess", s);
+	    sc.error_intl(i18n("no \"$name\", guessing \"$guess\""));
 
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Name", name);
-	    sub_var_set_string(scp, "Guess", s);
-	    error_intl(scp, i18n("no \"$name\", guessing \"$guess\""));
-	    sub_context_delete(scp);
+            result = (table_ty *)stp->query(s);
+            assert(result);
 	}
-	return 0;
     }
     return result;
 }
@@ -435,40 +389,34 @@ requires_exactly_n_arguments(int n)
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_change_number(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_change_number(sub_context_ty *scp, const wstring_list &arg)
 {
-    string_ty	    *s;
-    table_ty	    *tp;
-
     trace(("sub_change()\n{\n"));
-    change_ty *cp = sub_context_change_get(scp);
+    change::pointer cp = sub_context_change_get(scp);
+    wstring result;
     if (!cp || cp->bogus)
     {
-	sub_context_error_set(scp, i18n("not valid in current context"));
-	trace(("return NULL;\n"));
+	scp->error_set(i18n("not valid in current context"));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
-    if (arg->size() <= 1)
+    if (arg.size() <= 1)
     {
-	s = change_number_get(cp, arg);
-	wstring_ty *result = str_to_wstr(s);
-	str_free(s);
-	trace(("return %8.8lX;\n", (long)result));
+        nstring s(change_number_get(cp, arg));
+	result = wstring(s);
+	trace(("return %8.8lX;\n", (long)result.get_ref()));
 	trace(("}\n"));
 	return result;
     }
 
-    s = wstr_to_str(arg->get(1));
-    tp = find_func(s);
-    str_free(s);
+    nstring s = arg[1].to_nstring();
+    table_ty *tp = find_func(s);
     if (!tp)
     {
-	sub_context_error_set(scp, i18n("unknown substitution variant"));
-	trace(("return NULL;\n"));
+	scp->error_set(i18n("unknown substitution variant"));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
 
     int num_args = tp->num_args;
@@ -479,33 +427,29 @@ sub_change_number(sub_context_ty *scp, wstring_list_ty *arg)
 	at_least = true;
     }
 
-    if (at_least && (arg->size() < (size_t)num_args + 2))
+    if (at_least && (arg.size() < (size_t)num_args + 2))
     {
-	sub_context_error_set(scp, requires_at_least_n_arguments(num_args));
-	trace(("return NULL;\n"));
+	scp->error_set(requires_at_least_n_arguments(num_args));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
-    else if (!at_least && (arg->size() != (size_t)num_args + 2))
+    else if (!at_least && (arg.size() != (size_t)num_args + 2))
     {
-	sub_context_error_set(scp, requires_exactly_n_arguments(num_args));
-	trace(("return NULL;\n"));
+	scp->error_set(requires_exactly_n_arguments(num_args));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
 
     s = tp->func(cp, arg);
-    if (!s)
+    if (s.empty())
     {
-	sub_context_error_set(scp, i18n("not valid in current context"));
-	trace(("return NULL;\n"));
+	scp->error_set(i18n("not valid in current context"));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
 
-    wstring_ty *result = str_to_wstr(s);
-    str_free(s);
-    trace(("return %8.8lX;\n", (long)result));
+    result = wstring(s);
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -20,48 +19,36 @@
 // MANIFEST: functions to manipulate splits
 //
 
-#include <common/str_list.h>
+#include <common/nstring/list.h>
+#include <common/trace.h>
+#include <common/wstring/list.h>
 #include <libaegis/sub.h>
 #include <libaegis/sub/split.h>
-#include <common/trace.h>
-#include <common/wstr/list.h>
 
 
-wstring_ty *
-sub_split(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_split(sub_context_ty *scp, const wstring_list &arg)
 {
-    wstring_ty      *result;
-    string_ty       *separators;
-    string_ty       *s1;
-    size_t	    j;
-
     trace(("sub_split()\n{\n"));
-    if (arg->size() < 2)
+    if (arg.size() < 2)
     {
-       	sub_context_error_set(scp, i18n("requires two arguments"));
+       	scp->error_set(i18n("requires two arguments"));
 	trace(("return NULL;\n"));
 	trace(("}\n"));
-	return 0;
+	return wstring();
     }
 
-    separators = wstr_to_str(arg->get(1));
-    string_list_ty results;
-    for (j = 2; j < arg->size(); ++j)
+    nstring separators = arg[1].to_nstring();
+    nstring_list results;
+    for (size_t j = 2; j < arg.size(); ++j)
     {
-	string_list_ty  wl;
-
-	s1 = wstr_to_str(arg->get(j));
-	wl.split(s1, separators->str_text);
-	str_free(s1);
+	nstring_list wl;
+	wl.split(arg[j].to_nstring(), separators.c_str());
 	results.push_back(wl);
     }
-    str_free(separators);
+    wstring result(results.unsplit());
 
-    s1 = results.unsplit();
-    result = str_to_wstr(s1);
-    str_free(s1);
-
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

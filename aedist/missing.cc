@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: implementation of the missing class
 //
@@ -150,11 +149,14 @@ missing_main(void)
     // locate project data
     //
     if (!project_name)
-        project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     project_ty *pp = project_alloc(project_name);
     pp->bind_existing();
 
-    symtab<change_ty> local_inventory;
+    symtab<change> local_inventory;
     bool include_branches = true;
     bool ignore_original_uuid = false;
     change_functor_inventory_builder cf(include_branches, all_changes,
@@ -190,26 +192,26 @@ missing_main(void)
     //
     // Create the output columns.
     //
-    col_ty *colp = col_open(0);
+    col *colp = col::open(0);
     string_ty *line1 =
 	str_format
 	(
 	    "Project \"%s\", Missing Change Set Inventory",
 	    project_name_get(pp)->str_text
 	);
-    col_title(colp, line1->str_text, ifn.c_str());
+    colp->title(line1->str_text, ifn.c_str());
     str_free(line1);
     line1 = 0;
 
     int left = 0;
     output_ty *vers_col =
-	col_create(colp, left, left + VERSION_WIDTH, "Change\n-------");
+	colp->create(left, left + VERSION_WIDTH, "Change\n-------");
     left += VERSION_WIDTH + 1;
     output_ty *uuid_col =
-	col_create(colp, left, left + UUID_WIDTH, "UUID\n------");
+	colp->create(left, left + UUID_WIDTH, "UUID\n------");
     left += UUID_WIDTH + 1;
     output_ty *desc_col =
-	col_create(colp, left, 0, "Description\n------------");
+	colp->create(left, 0, "Description\n------------");
 
     //
     // Fetch and list the remote change sets.
@@ -272,12 +274,12 @@ missing_main(void)
         vers_col->fputs(parts.get_version());
         uuid_col->fputs(parts.get_uuid());
         desc_col->fputs(parts.get_description());
-	col_eoln(colp);
+	colp->eoln();
 	++n;
     }
     uuid_col->fprintf("Remote change set%s: %d.", r == 1 ? "" : "s", r);
-    col_eoln(colp);
+    colp->eoln();
     uuid_col->fprintf("Missing %d change set%s.", n, (n == 1 ? "" : "s"));
-    col_eoln(colp);
-    col_close(colp);
+    colp->eoln();
+    delete colp;
 }

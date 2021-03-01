@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 2001, 2002, 2004-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -63,7 +62,7 @@ find_user(string_ty *name)
 
 
 static void
-walker(const symtab_ty *stpx, string_ty *key, void *data, void *aux)
+walker(const symtab_ty *, const nstring &, void *data, void *aux)
 {
     format_version_list_ty *fvlp =  (format_version_list_ty *)data;
     change_set_list_ty *cslp =      (change_set_list_ty *)aux;

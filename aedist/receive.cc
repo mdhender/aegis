@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2006 Peter Miller
+//	Copyright (C) 1999-2007 Peter Miller
 //	Copyright (C) 2005-2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -14,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to receive change sets
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdlib.h>
@@ -41,6 +39,7 @@
 #include <libaegis/change/file.h>
 #include <libaegis/change.h>
 #include <libaegis/fattr.h>
+#include <libaegis/file.h>
 #include <libaegis/help.h>
 #include <libaegis/input/cpio.h>
 #include <libaegis/move_list.h>
@@ -65,19 +64,17 @@
 
 
 static void
-move_xargs(string_ty *project_name, long change_number, string_list_ty *files,
-    string_ty *dd, const nstring &trace_options)
+move_xargs(const nstring &project_name, long change_number,
+    const nstring_list &files, const nstring &dd, const nstring &trace_options)
 {
-    string_ty *fmt;
-
-    if (0 != (files->nstrings % 2))
+    if (0 != (files.size() % 2))
         this_is_a_bug();
 
-    fmt =
-        str_format
+    nstring command =
+        nstring::format
         (
             "aegis --move-file --project=%s --change=%ld%s --verbose",
-            project_name->str_text,
+            project_name.c_str(),
             magic_zero_decode(change_number),
             trace_options.c_str()
         );
@@ -87,8 +84,9 @@ move_xargs(string_ty *project_name, long change_number, string_list_ty *files,
     // run the commands with, at most, 50 args.  Thus each aemv
     // invocation get an even number of file arguments.
     //
-    os_xargs(fmt, files, dd);
+    os_xargs(command, files, dd);
 }
+
 
 static void
 change_uuid_set(const nstring &project_name, long change_number,
@@ -103,44 +101,39 @@ change_uuid_set(const nstring &project_name, long change_number,
             project_name.c_str(),
             trace_options.c_str()
         );
-    nstring s2 =
-        nstring::format
-        (
-            "aegis -change-attr original-UUID=%s "
-            "-change=%ld -project=%s%s",
-            uuid.quote_shell().c_str(),
-            magic_zero_decode(change_number),
-            project_name.c_str(),
-            trace_options.c_str()
-        );
     os_become_orig();
-    int err =
-        os_execute_retcode
-        (
-            s.get_ref(),
-            OS_EXEC_FLAG_INPUT,
-            dd.get_ref()
-        );
+    int err = os_execute_retcode(s, OS_EXEC_FLAG_INPUT, dd);
+    os_become_undo();
+
     //
     // If we failed to set the change's UUID then we save its value
     // using the user defined attribute original-UUID.  It's bad to
     // throw away UUIDs.
     //
     if (err)
-        os_execute
-        (
-            s2.get_ref(),
-            OS_EXEC_FLAG_INPUT | OS_EXEC_FLAG_ERROK,
-            dd.get_ref()
-        );
-    os_become_undo();
+    {
+        nstring at = nstring::format("%s+=%s", ORIGINAL_UUID, uuid.c_str());
+        nstring s2 =
+            nstring::format
+            (
+                "aegis -change-attr %s -change=%ld -project=%s%s",
+                at.quote_shell().c_str(),
+                magic_zero_decode(change_number),
+                project_name.c_str(),
+                trace_options.c_str()
+            );
+        os_become_orig();
+        os_execute(s2, OS_EXEC_FLAG_INPUT | OS_EXEC_FLAG_ERROK, dd);
+        os_become_undo();
+    }
 }
+
 
 static long
 number_of_files(string_ty *project_name, long change_number)
 {
     project_ty      *pp;
-    change_ty       *cp;
+    change::pointer cp;
     long            result;
 
     pp = project_alloc(project_name);
@@ -290,6 +283,79 @@ missing_file(input_cpio *ifp, const nstring &expected)
 }
 
 
+static void
+build_uuid_list(cstate_ty *csp, nstring_list &uuids)
+{
+    if (csp->uuid)
+        uuids.push_back(nstring(csp->uuid));
+    attributes_list_ty *alp = csp->attribute;
+    if (!alp)
+        return;
+    for (size_t j = 0; j < alp->length; ++j)
+    {
+        attributes_ty *ap = alp->list[j];
+        assert(ap);
+        if (!ap)
+            continue;
+        assert(ap->name);
+        if (!ap->name)
+            continue;
+        assert(ap->value);
+        if (!ap->value)
+            continue;
+        if (0 == strcasecmp(ORIGINAL_UUID, ap->name->str_text))
+            uuids.push_back(nstring(ap->value));
+    }
+}
+
+
+static bool
+nothing_has_changed(change::pointer cp, user_ty::pointer up)
+{
+    //
+    // First we do a quick scan to see if the can avoid comparing any
+    // files at all.
+    //
+    for (size_t j = 0; ; ++j)
+    {
+        fstate_src_ty *src = change_file_nth(cp, j, view_path_first);
+        if (!src)
+            break;
+        if (src->action != file_action_modify)
+            return false;
+        if (src->usage == file_usage_build)
+            return false;
+    }
+
+    //
+    // Compare each file in the change set with the same file in the
+    // baseline.
+    //
+    for (size_t k = 0; ; ++k)
+    {
+        fstate_src_ty *src = change_file_nth(cp, k, view_path_first);
+        if (!src)
+            break;
+
+        nstring path1(change_file_path(cp, src));
+        assert(!path1.empty());
+        nstring path2(project_file_path(cp->pp, src));
+        assert(!path2.empty());
+
+        up->become_begin();
+        bool different = files_are_different(path1, path2);
+        up->become_end();
+        if (different)
+            return false;
+    }
+
+    //
+    // nothing has changed
+    //
+    return true;
+}
+
+
 void
 receive_main(void)
 {
@@ -297,9 +363,7 @@ receive_main(void)
     string_ty       *project_name;
     long            change_number;
     project_ty      *pp;
-    change_ty       *cp;
-    string_ty       *dd;
-    cstate_ty       *change_set;
+    change::pointer cp;
     size_t          j;
     cattr_ty        *cattr_data;
     string_ty       *attribute_file_name;
@@ -308,7 +372,6 @@ receive_main(void)
     int             config_seen;
     int             uncopy;
     int             trojan;
-    string_ty       *dot;
     string_ty       *devdir;
     int             exec_mode;
     int             non_exec_mode;
@@ -579,9 +642,12 @@ receive_main(void)
     os_become_orig();
     if (archive_name != "etc/change-set")
 	wrong_file(ifp, "etc/change-set");
-    change_set = (cstate_ty *)parse_input(ifp, &cstate_type);
+    cstate_ty *change_set = (cstate_ty *)parse_input(ifp, &cstate_type);
     ifp.close();
     os_become_undo();
+
+    nstring_list incoming_uuids;
+    build_uuid_list(change_set, incoming_uuids);
 
     //
     // Make sure we like the change set at a macro level.
@@ -625,7 +691,7 @@ receive_main(void)
     nstring branch;
     nstring original_uuid;
     time_t original_ipass_when = 0;
-    symtab<change_ty> local_inventory;
+    symtab<change> local_inventory;
     bool include_branches = true;
     bool all_changes = false;
     bool ignore_original_uuid = true;
@@ -637,7 +703,7 @@ receive_main(void)
         if (change_set->uuid)
         {
             assert(universal_unique_identifier_valid(change_set->uuid));
-            change_ty *c = local_inventory.query(change_set->uuid);
+            change::pointer c = local_inventory.query(change_set->uuid);
             if (c)
             {
                 assert(c->cstate_data->uuid);
@@ -680,8 +746,9 @@ receive_main(void)
                     continue;
                 if (!universal_unique_identifier_valid(current->value))
                     continue;
-                change_ty *ancestor = local_inventory.query(current->value);
-                if (!ancestor || !change_is_completed(ancestor))
+                change::pointer ancestor =
+                    local_inventory.query(current->value);
+                if (!ancestor || !ancestor->is_completed())
                     continue;
                 trace_string(current->value->str_text);
 
@@ -728,8 +795,8 @@ receive_main(void)
     // us pass the testing atrributes through literally, rather than
     // modulo the defaults.
     //
-    user_ty *up = user_executing(pp);
-    bool am_admin = project_administrator_query(pp, user_name(up));
+    user_ty::pointer up = user_ty::create();
+    bool am_admin = project_administrator_query(pp, up->name());
 
     //
     // construct change attributes from the change_set
@@ -802,7 +869,7 @@ receive_main(void)
     //
     nstring trace_options(trace_args());
     os_become_orig();
-    dot = os_curdir();
+    nstring dot(os_curdir());
     s =
 	nstring::format
 	(
@@ -813,7 +880,7 @@ receive_main(void)
 	    reason.c_str(),
             trace_options.c_str()
 	);
-    os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dot);
+    os_execute(s, OS_EXEC_FLAG_INPUT, dot);
     os_unlink_errok(attribute_file_name);
 
     //
@@ -828,7 +895,7 @@ receive_main(void)
 	    (devdir ? devdir->str_text : ""),
             trace_options.c_str()
 	);
-    os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dot);
+    os_execute(s, OS_EXEC_FLAG_INPUT, dot);
     os_become_undo();
 
     //
@@ -839,8 +906,7 @@ receive_main(void)
     pp->bind_existing();
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
-    dd = change_development_directory_get(cp, 0);
-    dd = str_copy(dd);	// will vanish when change_free();
+    nstring dd(change_development_directory_get(cp, 0));
     change_free(cp);
     cp = 0;
 
@@ -1286,11 +1352,11 @@ receive_main(void)
     //
     trace(("look for removed files\n"));
     move_list_constructor(&files_moved);
-    string_list_ty files_source;
-    string_list_ty files_config;
-    string_list_ty files_build;
-    string_list_ty files_test_auto;
-    string_list_ty files_test_manual;
+    nstring_list files_source;
+    nstring_list files_config;
+    nstring_list files_build;
+    nstring_list files_test_auto;
+    nstring_list files_test_manual;
 
     for (j = 0; j < change_set->src->length; ++j)
     {
@@ -1380,9 +1446,9 @@ receive_main(void)
 	    );
 	}
 	else
-	    files_source.push_back_unique(src_data->file_name);
+	    files_source.push_back_unique(nstring(src_data->file_name));
     }
-    if (files_source.nstrings)
+    if (!files_source.empty())
     {
 	s =
 	    nstring::format
@@ -1392,7 +1458,7 @@ receive_main(void)
 		magic_zero_decode(change_number),
                 trace_options.c_str()
 	    );
-	os_xargs(s.get_ref(), &files_source, dd);
+	os_xargs(s, files_source, dd);
     }
 
     //
@@ -1400,7 +1466,7 @@ receive_main(void)
     //
     trace(("look for modified files\n"));
     files_source.clear();
-    symtab<string_list_ty> files_source_by_origin;
+    symtab<nstring_list> files_source_by_origin;
     for (j = 0; j < change_set->src->length; ++j)
     {
 	cstate_src_ty   *src_data;
@@ -1440,7 +1506,8 @@ receive_main(void)
                 //
                 if (!original_uuid.empty() && !branch.empty())
                 {
-                    change_ty *ancestor = local_inventory.query(original_uuid);
+                    change::pointer ancestor =
+                        local_inventory.query(original_uuid);
                     assert(ancestor);
                     fstate_src_ty *fsrc =
                         change_file_find
@@ -1467,7 +1534,7 @@ receive_main(void)
                         );
                     if (edit_origin_UUID)
                     {
-                        change_ty *ancestor =
+                        change::pointer ancestor =
                             local_inventory.query(edit_origin_UUID->value);
 
                         if (ancestor)
@@ -1523,14 +1590,14 @@ receive_main(void)
                 // We create a hash table with origin as the key and
                 // with the list of files to be copied as the value.
                 //
-                string_list_ty *file_list =
+                nstring_list *file_list =
                     files_source_by_origin.query(origin);
                 if (!file_list)
                 {
-                    file_list = new string_list_ty;
+                    file_list = new nstring_list;
                     files_source_by_origin.assign(origin, file_list);
                 }
-                file_list->push_back_unique(src_data->file_name);
+                file_list->push_back_unique(nstring(src_data->file_name));
                 break;
 	    }
 	    break;
@@ -1569,9 +1636,9 @@ receive_main(void)
         assert(!origin.empty());
         for (size_t c = 0; c < origin.size(); ++c)
         {
-            string_list_ty *files_list =
+            nstring_list *files_list =
                 files_source_by_origin.query(origin[c]);
-            assert(files_list->nstrings);
+            assert(!files_list->empty());
             s =
                 nstring::format
                 (
@@ -1582,7 +1649,7 @@ receive_main(void)
                     trace_options.c_str(),
                     origin[c].c_str()
                 );
-            os_xargs(s.get_ref(), files_list, dd);
+            os_xargs(s, *files_list, dd);
         }
     }
 
@@ -1635,30 +1702,30 @@ receive_main(void)
 	switch (src_data->usage)
 	{
 	case file_usage_source:
-	    files_source.push_back_unique(src_data->file_name);
+	    files_source.push_back_unique(nstring(src_data->file_name));
 	    break;
 
 	case file_usage_config:
-	    files_config.push_back_unique(src_data->file_name);
+	    files_config.push_back_unique(nstring(src_data->file_name));
 	    break;
 
 	case file_usage_build:
-	    files_build.push_back_unique(src_data->file_name);
+	    files_build.push_back_unique(nstring(src_data->file_name));
 	    break;
 
 	case file_usage_test:
-	    files_test_auto.push_back_unique(src_data->file_name);
+	    files_test_auto.push_back_unique(nstring(src_data->file_name));
 	    need_to_test = true;
 	    break;
 
 	case file_usage_manual_test:
-	    files_test_manual.push_back_unique(src_data->file_name);
+	    files_test_manual.push_back_unique(nstring(src_data->file_name));
 	    need_to_test = true;
 	    break;
 	}
     }
 
-    if (files_build.nstrings)
+    if (!files_build.empty())
     {
 	s =
 	    nstring::format
@@ -1669,9 +1736,9 @@ receive_main(void)
 		magic_zero_decode(change_number),
                 trace_options.c_str()
 	    );
-	os_xargs(s.get_ref(), &files_build, dd);
+	os_xargs(s, files_build, dd);
     }
-    if (files_test_auto.nstrings)
+    if (!files_test_auto.empty())
     {
 	s =
 	    nstring::format
@@ -1682,9 +1749,9 @@ receive_main(void)
 		magic_zero_decode(change_number),
                 trace_options.c_str()
 	    );
-	os_xargs(s.get_ref(), &files_test_auto, dd);
+	os_xargs(s, files_test_auto, dd);
     }
-    if (files_test_manual.nstrings)
+    if (!files_test_manual.empty())
     {
 	s =
 	    nstring::format
@@ -1695,20 +1762,20 @@ receive_main(void)
 		magic_zero_decode(change_number),
                 trace_options.c_str()
 	    );
-	os_xargs(s.get_ref(), &files_test_manual, dd);
+	os_xargs(s, files_test_manual, dd);
     }
-    if (files_source.nstrings)
+    if (!files_source.empty())
     {
 	s = nstring(THE_CONFIG_FILE_OLD);
 	// FIXME: need to use the "is a config file" function
-	if (files_source.member(s.get_ref()))
+	if (files_source.member(s))
 	{
 	    //
 	    // The project config file must be created in the last set
 	    // of files created, so move it to the end of the list.
 	    //
-	    files_source.remove(s.get_ref());
-	    files_config.push_back(s.get_ref());
+	    files_source.remove(s);
+	    files_config.push_back(s);
 	}
 
 	s =
@@ -1720,7 +1787,7 @@ receive_main(void)
 		magic_zero_decode(change_number),
                 trace_options.c_str()
 	    );
-	os_xargs(s.get_ref(), &files_source, dd);
+	os_xargs(s, files_source, dd);
     }
 
     //
@@ -1730,7 +1797,7 @@ receive_main(void)
     // the project configuration files preventing us from sucessfully
     // unpacking the change set.
     //
-    if (files_config.nstrings)
+    if (!files_config.empty())
     {
 	s =
 	    nstring::format
@@ -1741,19 +1808,17 @@ receive_main(void)
 		magic_zero_decode(change_number),
                 trace_options.c_str()
 	    );
-	os_xargs(s.get_ref(), &files_config, dd);
+	os_xargs(s, files_config, dd);
     }
 
     //
     // Now cope with files which moved.
     // They get a command each.
     //
-    string_list_ty batch_moved;
+    nstring_list batch_moved;
     for (j = 0; j < files_moved.length; ++j)
     {
-	move_ty         *mp;
-
-	mp = files_moved.item + j;
+	move_ty *mp = files_moved.item + j;
 	trace(("from=\"%s\"\n", mp->from ? mp->from->str_text : ""));
 	trace(("remove=%d\n", mp->remove));
 	trace(("to=\"%s\"\n", mp->to ? mp->to->str_text : ""));
@@ -1762,10 +1827,17 @@ receive_main(void)
 	assert(mp->remove);
 	assert(mp->from);
 	assert(mp->to);
-	batch_moved.push_back(mp->from);
-	batch_moved.push_back(mp->to);
+	batch_moved.push_back(nstring(mp->from));
+	batch_moved.push_back(nstring(mp->to));
     }
-    move_xargs(project_name, change_number, &batch_moved, dd, trace_options);
+    move_xargs
+    (
+        nstring(project_name),
+        change_number,
+        batch_moved,
+        dd,
+        trace_options
+    );
     move_list_destructor(&files_moved);
 
     //
@@ -1910,7 +1982,7 @@ receive_main(void)
 			patch_file_name.c_str()
 		    );
 		int flags = OS_EXEC_FLAG_NO_INPUT; // + OS_EXEC_FLAG_SILENT;
-		int n = os_execute_retcode(command.get_ref(), flags, dd);
+		int n = os_execute_retcode(command, flags, dd);
 		if (n == 0)
 		{
 		    //
@@ -2015,7 +2087,7 @@ receive_main(void)
                     trace_options.c_str()
 		);
 	    str_free(s2);
-	    os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
+	    os_execute(s, OS_EXEC_FLAG_INPUT, dd);
 	    os_unlink_errok(attribute_file_name);
 	}
 
@@ -2041,7 +2113,7 @@ receive_main(void)
 			trace_options.c_str()
 		    );
 		str_free(qfn);
-		os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
+		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
 	    }
 	    break;
 
@@ -2131,7 +2203,6 @@ receive_main(void)
     change_free(cp);
     cp = 0;
 
-
     //
     // If the change could have a trojan horse in it, stop here with
     // a warning.  The user needs to look at it and check.
@@ -2155,6 +2226,45 @@ receive_main(void)
     //
     if (config_seen)
     {
+        //
+        // before we bail, see if we can throw everything away.
+        //
+        if (ignore_uuid <= 0)
+        {
+            change::pointer other_cp = local_inventory.query(incoming_uuids);
+            if (other_cp)
+            {
+                cp = change_alloc(pp, change_number);
+                change_bind_existing(cp);
+                if (nothing_has_changed(cp, up))
+                {
+                    nstring attr =
+                        nstring::format
+                        (
+                            "%s+=%s",
+                            ORIGINAL_UUID,
+                            change_set->uuid->str_text
+                        );
+                    nstring s2 =
+                        nstring::format
+                        (
+                            "aegis -change-attr %s -change=%ld -project=%s%s",
+                            attr.quote_shell().c_str(),
+                            magic_zero_decode(other_cp->number),
+                            project_name_get(other_cp->pp)->str_text,
+                            trace_options.c_str()
+                        );
+                    os_become_orig();
+                    os_execute(s2, OS_EXEC_FLAG_INPUT | OS_EXEC_FLAG_ERROK, dd);
+                    os_become_undo();
+
+                    goto cancel_the_change;
+                }
+                change_free(cp);
+                cp = 0;
+            }
+        }
+
 	error_intl
 	(
 	    0,
@@ -2166,11 +2276,11 @@ receive_main(void)
         //
         change_uuid_set
         (
-            (nstring)project_name,
+            nstring(project_name),
             change_number,
-            (nstring)change_set->uuid,
+            nstring(change_set->uuid),
             trace_options,
-            (nstring)dd
+            dd
         );
 
 	//
@@ -2186,7 +2296,7 @@ receive_main(void)
                 trace_options.c_str()
 	    );
 	os_become_orig();
-	os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
+	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
 	os_become_undo();
 	return;
     }
@@ -2202,9 +2312,8 @@ receive_main(void)
 	    project_name->str_text
         );
     os_become_orig();
-    os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
+    os_execute(s, OS_EXEC_FLAG_INPUT, dd);
     os_become_undo();
-
 
     //
     // Now that all the files have been unpacked,
@@ -2222,17 +2331,17 @@ receive_main(void)
     {
         change_uuid_set
         (
-            (nstring)project_name,
+            nstring(project_name),
             change_number,
-            (nstring)change_set->uuid,
+            nstring(change_set->uuid),
             trace_options,
-            (nstring)dd
+            dd
         );
     }
 
     //
     // If we are receiving a change set with an UUID, and the user has
-    // not used the --ignore-uuid option we avoid the uncopy files so
+    // not used the --ignore-uuid option, we avoid the uncopy files so
     // the UUID is preserved and we don't need a new one.  This should
     // reduce the UUID proliferation and some related side effects.
     //
@@ -2261,7 +2370,7 @@ receive_main(void)
                 trace_options.c_str()
 	    );
 	os_become_orig();
-	os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
+	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
 	os_become_undo();
 
 	//
@@ -2269,6 +2378,8 @@ receive_main(void)
 	//
 	if (number_of_files(project_name, change_number) == 0)
 	{
+            cancel_the_change:
+
 	    //
 	    // get out of there
 	    //
@@ -2287,7 +2398,7 @@ receive_main(void)
                     trace_options.c_str()
 		);
 	    os_become_orig();
-	    os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dot);
+	    os_execute(s, OS_EXEC_FLAG_INPUT, dot);
 
 	    //
 	    // cancel the change
@@ -2301,7 +2412,7 @@ receive_main(void)
 		    project_name->str_text,
                     trace_options.c_str()
 		);
-	    os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dot);
+	    os_execute(s, OS_EXEC_FLAG_INPUT, dot);
 	    os_become_undo();
 
 	    //
@@ -2310,6 +2421,47 @@ receive_main(void)
 	    error_intl(0, i18n("change already present"));
 	    return;
 	}
+    }
+    else if (ignore_uuid <= 0)
+    {
+        //
+        // If this change set actually changes nothing (all the file
+        // contents are already the same as in the project) and the
+        // change set UUID is already in the project, then get rid of
+        // this change set, and add the UUID to the existing change.
+        //
+        change::pointer other_cp = local_inventory.query(incoming_uuids);
+        if (other_cp)
+        {
+            cp = change_alloc(pp, change_number);
+            change_bind_existing(cp);
+            if (nothing_has_changed(cp, up))
+            {
+                nstring attr =
+                    nstring::format
+                    (
+                        "%s+=%s",
+                        ORIGINAL_UUID,
+                        change_set->uuid->str_text
+                    );
+                nstring s2 =
+                    nstring::format
+                    (
+                        "aegis -change-attr %s -change=%ld -project=%s%s",
+                        attr.quote_shell().c_str(),
+                        magic_zero_decode(other_cp->number),
+                        project_name_get(other_cp->pp)->str_text,
+                        trace_options.c_str()
+                    );
+                os_become_orig();
+                os_execute(s2, OS_EXEC_FLAG_INPUT | OS_EXEC_FLAG_ERROK, dd);
+                os_become_undo();
+
+                goto cancel_the_change;
+            }
+            change_free(cp);
+            cp = 0;
+        }
     }
 
     //
@@ -2324,7 +2476,7 @@ receive_main(void)
             trace_options.c_str()
 	);
     os_become_orig();
-    os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
+    os_execute(s, OS_EXEC_FLAG_INPUT, dd);
     os_become_undo();
 
     //
@@ -2361,7 +2513,7 @@ receive_main(void)
             trace_options.c_str()
 	);
     os_become_orig();
-    os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
+    os_execute(s, OS_EXEC_FLAG_INPUT, dd);
     os_become_undo();
 
     //
@@ -2375,7 +2527,7 @@ receive_main(void)
     //
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
 
     //
     // now test the change
@@ -2391,7 +2543,7 @@ receive_main(void)
                 trace_options.c_str()
 	    );
 	os_become_orig();
-	os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
+	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
 	os_become_undo();
     }
     if (need_to_test && !cstate_data->test_baseline_exempt)
@@ -2406,7 +2558,7 @@ receive_main(void)
                 trace_options.c_str()
 	    );
 	os_become_orig();
-	os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
+	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
 	os_become_undo();
     }
 
@@ -2423,7 +2575,7 @@ receive_main(void)
                 trace_options.c_str()
 	    );
 	os_become_orig();
-	os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
+	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
 	os_become_undo();
     }
 
@@ -2444,7 +2596,7 @@ receive_main(void)
             trace_options.c_str()
 	);
     os_become_orig();
-    os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
+    os_execute(s, OS_EXEC_FLAG_INPUT, dd);
     os_become_undo();
 
     // verbose success message here?

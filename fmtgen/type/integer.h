@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2005 Peter Miller.
-//	All rights reserved.
+//	Copyright (C) 1994, 2005-2007 Peter Miller.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -26,22 +25,22 @@
 #include <fmtgen/type.h>
 
 /**
-  * The type_integer_ty class is used to represent the type of a field
+  * The type_integer class is used to represent the type of a field
   * which is an integer.
   */
-class type_integer_ty:
-    public type_ty
+class type_integer:
+    public type
 {
 public:
     /**
       * The destructor.
       */
-    virtual ~type_integer_ty();
+    virtual ~type_integer();
 
     /**
       * The default constructor.
       */
-    type_integer_ty();
+    type_integer();
 
     // See base class for documentation.
     void gen_include_declarator(const nstring &variable_name, bool is_a_list)
@@ -75,12 +74,12 @@ private:
     /**
       * The copy constructor.  Do not use.
       */
-    type_integer_ty(const type_integer_ty &);
+    type_integer(const type_integer &);
 
     /**
       * The assignment operator.  Do not use.
       */
-    type_integer_ty &operator=(const type_integer_ty &);
+    type_integer &operator=(const type_integer &);
 };
 
 #endif // FMTGEN_TYPE_INTEGER_H

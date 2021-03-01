@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate run_diff3s
 //
@@ -30,8 +29,9 @@
 
 
 void
-change_run_diff3_command(change_ty *cp, user_ty *up, string_ty *original,
-    string_ty *most_recent, string_ty *input, string_ty *output)
+change_run_diff3_command(change::pointer cp, user_ty::pointer up,
+    string_ty *original, string_ty *most_recent, string_ty *input_file_name,
+    string_ty *output)
 {
     sub_context_ty  *scp;
     pconf_ty        *pconf_data;
@@ -62,13 +62,13 @@ change_run_diff3_command(change_ty *cp, user_ty *up, string_ty *original,
     trace
     ((
 	    "change_run_diff3_command(cp = %8.8lX, up = %8.8lX, "
-		"original = \"%s\", most_recent = \"%s\", input = \"%s\", "
-		"output = \"%s\")\n{\n",
+		"original = \"%s\", most_recent = \"%s\", "
+                "input_file_name = \"%s\", output = \"%s\")\n{\n",
 	    (long)cp,
-	    (long)up,
+	    (long)up.get(),
 	    original->str_text,
 	    most_recent->str_text,
-	    input->str_text,
+	    input_file_name->str_text,
 	    output->str_text
     ));
     assert(cp->reference_count >= 1);
@@ -77,7 +77,7 @@ change_run_diff3_command(change_ty *cp, user_ty *up, string_ty *original,
     scp = sub_context_new();
     sub_var_set_string(scp, "ORiginal", original);
     sub_var_set_string(scp, "Most_Recent", most_recent);
-    sub_var_set_string(scp, "Input", input);
+    sub_var_set_string(scp, "Input", input_file_name);
     sub_var_set_string(scp, "Output", output);
     the_command = pconf_data->diff3_command;
     if (!the_command)
@@ -101,11 +101,10 @@ change_run_diff3_command(change_ty *cp, user_ty *up, string_ty *original,
     sub_context_delete(scp);
 
     change_env_set(cp, 0);
-    user_become(up);
+    user_ty::become scoped(up);
     if (os_exists(output))
 	os_unlink(output);
     os_execute(the_command, OS_EXEC_FLAG_NO_INPUT, dd);
-    user_become_undo();
     str_free(the_command);
     trace(("}\n"));
 }

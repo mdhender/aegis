@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the symtab_query_fuzzy class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/fstrcmp.h>
@@ -28,15 +25,27 @@ string_ty *
 symtab_ty::query_fuzzy(string_ty *key)
     const
 {
-    string_ty *best_name = 0;
+    nstring result = query_fuzzy(nstring(key));
+    return (result.empty() ? 0 : result.get_ref());
+}
+
+
+nstring
+symtab_ty::query_fuzzy(const nstring &key)
+    const
+{
+    nstring best_name;
     double best_weight = 0.6;
-    for (str_hash_ty index = 0; index < hash_modulus; ++index)
+    for (str_hash_ty idx = 0; idx < hash_modulus; ++idx)
     {
-	for (row_t *p = hash_table[index]; p; p = p->overflow)
+	for (row_t *p = hash_table[idx]; p; p = p->overflow)
 	{
-	    double weight = fstrcmp(key->str_text, p->key->str_text);
+	    double weight = fstrcmp(key.c_str(), p->key.c_str());
 	    if (weight > best_weight)
+            {
 		best_name = p->key;
+                best_weight = weight;
+            }
 	}
     }
     return best_name;

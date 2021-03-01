@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -25,11 +24,9 @@
 
 
 void
-fatal_group_too_privileged(string_ty *name)
+fatal_group_too_privileged(const nstring &name)
 {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
-	sub_var_set_string(scp, "Name", name);
-	fatal_intl(scp, i18n("group $name too privileged"));
+    sub_context_ty sc;
+    sc.var_set_string("Name", name);
+    sc.fatal_intl(i18n("group $name too privileged"));
 }

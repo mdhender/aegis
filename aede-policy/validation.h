@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,16 +13,16 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface of the validation class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEDE_POLICY_VALIDATION_H
 #define AEDE_POLICY_VALIDATION_H
 
-struct change_ty; // forward
+#include <libaegis/change.h>
+
+struct fstate_src_ty; // forward
 struct validation_list; // forward
 
 /**
@@ -47,10 +46,10 @@ public:
       * @returns
       *     bool; true if no errors found, false if a problem was found.
       */
-    virtual bool run(change_ty *cp) = 0;
+    virtual bool run(change::pointer cp) = 0;
 
     /**
-      * The validation class merthod is used to produce new instances of
+      * The factory class method is used to produce new instances of
       * validations by name.
       *
       * @param name
@@ -82,6 +81,18 @@ protected:
       * The default constructor.
       */
     validation();
+
+    /**
+      * The was_downloaded class method is used to determine whether or
+      * not a change was downloaded via aedist(1).  This is determined
+      * by looking for the "Download" comment inserted by aedist.
+      *
+      * @param cp
+      *     The change in question.
+      * @returns
+      *     bool; true is was downloaded, false if not.
+      */
+    static bool was_downloaded(change::pointer cp);
 
 private:
     /**

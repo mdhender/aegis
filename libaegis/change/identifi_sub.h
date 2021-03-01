@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface of the change_identifi_sub class
 //
@@ -23,11 +22,11 @@
 #ifndef LIBAEGIS_CHANGE_IDENTIFI_SUB_H
 #define LIBAEGIS_CHANGE_IDENTIFI_SUB_H
 
+#include <libaegis/change.h>
 #include <libaegis/file_revision.h>
 #include <libaegis/project/identifi_sub/branch.h>
 
 class change_functor; // forward
-struct change_ty; // forward
 struct fstate_src_ty; // forward
 class nstring_list; // forward
 class project_file_roll_forward; // forward
@@ -180,13 +179,13 @@ public:
       * The get_up method is used to get the user pointer for the
       * change identified.
       */
-    user_ty *get_up() { return pid.get_up(); }
+    user_ty::pointer get_up() { return pid.get_up(); }
 
     /**
       * The get_cp method is used to get the change pointer for the
       * change identified.
       */
-    change_ty *get_cp();
+    change::pointer get_cp();
 
     /**
       * The get_change_number method is used to obtain the change
@@ -273,7 +272,7 @@ private:
       * The cp instance variable is used to remember which change we are
       * bound to.
       */
-    change_ty *cp;
+    change::pointer cp;
 
     /**
       * The historian_p instance variable is used to remember the

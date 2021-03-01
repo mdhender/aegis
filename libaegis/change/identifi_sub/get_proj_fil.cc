@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005, 2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -20,9 +19,10 @@
 // MANIFEST: implementation of the change_identifi_sub_get_proj_fil class
 //
 
-#include <libaegis/change/identifi_sub.h>
 #include <common/error.h> // for assert
 #include <common/nstring/list.h>
+#include <libaegis/change/identifi_sub.h>
+#include <libaegis/file/event.h>
 #include <libaegis/project/file.h>
 #include <libaegis/project/file/roll_forward.h>
 
@@ -39,15 +39,15 @@ change_identifier_subset::get_project_file_names(nstring_list &results)
 	{
 	    nstring file_name = file_name_list[j];
 	    assert(file_name.length());
-	    file_event_ty *fep = hp->get_last(file_name);
+	    file_event *fep = hp->get_last(file_name);
 	    assert(fep);
 	    if (!fep)
 		continue;
-	    assert(fep->src);
-	    switch (fep->src->usage)
+	    assert(fep->get_src());
+	    switch (fep->get_src()->usage)
 	    {
 	    case file_usage_build:
-		switch (fep->src->action)
+		switch (fep->get_src()->action)
 		{
 		case file_action_modify:
 		    continue;
@@ -64,7 +64,7 @@ change_identifier_subset::get_project_file_names(nstring_list &results)
 	    case file_usage_config:
 	    case file_usage_test:
 	    case file_usage_manual_test:
-		switch (fep->src->action)
+		switch (fep->get_src()->action)
 		{
 		case file_action_create:
 		case file_action_modify:
@@ -79,7 +79,7 @@ change_identifier_subset::get_project_file_names(nstring_list &results)
 		}
 		break;
 	    }
-	    results.push_back(nstring(str_copy(fep->src->file_name)));
+	    results.push_back(nstring(str_copy(fep->get_src()->file_name)));
 	}
     }
     else

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000, 2002, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2000, 2002, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface definition for libaegis/change/test/run_list.c
 //
@@ -27,7 +26,6 @@
 
 #include <libaegis/change/test/batch_result.h>
 
-struct change_ty;
 struct project_ty;
 struct string_list_ty;
 struct user_ty;
@@ -52,9 +50,9 @@ class nstring_list; // forward
   * \param time_limit
   *     Zero means no limit, non-zero is a time at which to stop.
   */
-batch_result_list_ty *change_test_run_list(change_ty *pp, string_list_ty *wlp,
-    user_ty *up, bool baseline, bool progress_flag, time_t time_limit,
-    const nstring_list &variable_assignments);
+batch_result_list_ty *change_test_run_list(change::pointer pp,
+    string_list_ty *wlp, user_ty::pointer up, bool baseline, bool progress_flag,
+    time_t time_limit, const nstring_list &variable_assignments);
 
 /**
   * The project_test_run_list function is used to run a list of tests.
@@ -73,7 +71,7 @@ batch_result_list_ty *change_test_run_list(change_ty *pp, string_list_ty *wlp,
   *     Zero means no limit, non-zero is a time at which to stop.
   */
 batch_result_list_ty *project_test_run_list(project_ty *pp, string_list_ty *wlp,
-    user_ty *up, bool progress_flag, time_t time_limit,
+    user_ty::pointer up, bool progress_flag, time_t time_limit,
     const nstring_list &variable_assignments);
 
 #endif // LIBAEGIS_CHANGE_TEST_RUN_LIST_H

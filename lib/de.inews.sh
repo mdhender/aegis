@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993, 1995, 1999, 2001 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 1992, 1993, 1995, 1999, 2001, 2006, 2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -15,10 +14,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: command used to notify by usenet that a change is ready for review
+#	along with this program. If not, see
+#	<http://www.gnu.org/licenses/>.
 #
 # Suggested projet attribute:
 # develop_end_notify_command = "$datadir/de.inews.sh $p $c a.local.newsgroup";

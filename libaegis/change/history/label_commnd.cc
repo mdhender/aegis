@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller
+//	Copyright (C) 2006, 2007 Peter Miller
 //	Copyright (C) 2002 John Darrington
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -14,8 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate history_labels
 //
@@ -32,7 +32,7 @@
 
 
 void
-change_run_history_label_command(change_ty *cp, fstate_src_ty *src,
+change_run_history_label_command(change::pointer cp, fstate_src_ty *src,
     string_ty *label)
 {
     pconf_ty        *pconf_data;
@@ -72,6 +72,18 @@ change_run_history_label_command(change_ty *cp, fstate_src_ty *src,
     }
 
     //
+    // Inform the user of what we are doing, just in case they can't
+    // tell from the file names.  For example, with a base-64 encoded
+    // input file and a UUID history file the user has no way of knowing
+    // which source file this concerns.
+    //
+    scp = sub_context_new();
+    scp->var_set_string("File_Name", src->file_name);
+    change_error(cp, scp, i18n("history label $filename"));
+    sub_context_delete(scp);
+    scp = 0;
+
+    //
     // Get the path of the history file.
     //
     hfn = project_history_filename_get(cp->pp, src);
@@ -88,7 +100,7 @@ change_run_history_label_command(change_ty *cp, fstate_src_ty *src,
     hp = cp->pp->history_path_get();
     project_become(cp->pp);
     os_execute(the_command, OS_EXEC_FLAG_NO_INPUT + OS_EXEC_FLAG_ERROK, hp);
-    project_become_undo();
+    project_become_undo(cp->pp);
     str_free(the_command);
     trace(("}\n"));
 }

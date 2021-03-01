@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement new change undo
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -116,8 +113,8 @@ new_change_undo_main(void)
     string_ty	    *project_name;
     long	    change_number;
     project_ty	    *pp;
-    user_ty	    *up;
-    change_ty	    *cp;
+    user_ty::pointer up;
+    change::pointer cp;
     cstate_ty	    *cstate_data;
 
     trace(("new_change_undo_main()\n{\n"));
@@ -155,7 +152,7 @@ new_change_undo_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(new_change_undo_usage);
+	    user_ty::lock_wait_argument(new_change_undo_usage);
 	    break;
 	}
 	arglex();
@@ -165,7 +162,10 @@ new_change_undo_main(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -173,7 +173,7 @@ new_change_undo_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
@@ -184,7 +184,7 @@ new_change_undo_main(void)
     // even though we could sometimes work this out for ourself.
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -195,7 +195,7 @@ new_change_undo_main(void)
     pp->pstate_lock_prepare();
     change_cstate_lock_prepare(cp);
     lock_take();
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
 
     //
     // Extract the appropriate row of the change table.
@@ -206,9 +206,9 @@ new_change_undo_main(void)
 	change_fatal(cp, 0, i18n("bad ncu state"));
     if
     (
-	!project_administrator_query(pp, user_name(up))
+	!project_administrator_query(pp, up->name())
     &&
-	!str_equal(change_creator_name(cp), user_name(up))
+	nstring(change_creator_name(cp)) != up->name()
     )
 	project_fatal(pp, 0, i18n("not an administrator"));
 
@@ -223,7 +223,7 @@ new_change_undo_main(void)
     project_become(pp);
     commit_unlink_errok(change_cstate_filename_get(cp));
     commit_unlink_errok(change_fstate_filename_get(cp));
-    project_become_undo();
+    project_become_undo(pp);
 
     //
     // Update change table row (and change history table).
@@ -240,7 +240,6 @@ new_change_undo_main(void)
     change_verbose(cp, 0, i18n("new change undo complete"));
     change_free(cp);
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -250,8 +249,8 @@ new_change_undo(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, new_change_undo_help, },
-	{arglex_token_list, new_change_undo_list, },
+	{ arglex_token_help, new_change_undo_help, 0 },
+	{ arglex_token_list, new_change_undo_list, 0 },
     };
 
     trace(("new_change_undo()\n{\n"));

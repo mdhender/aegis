@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the sub_history_path class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/trace.h>
@@ -30,24 +27,24 @@
 #include <libaegis/sub/history_path.h>
 
 
-wstring_ty *
-sub_history_path(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_history_path(sub_context_ty *scp, const wstring_list &arg)
 {
     //
     // Find the change.  If there is no change, it is also valid in
     // the baseline context.
     //
     trace(("sub_history_path()\n{\n"));
-    change_ty *cp = sub_context_change_get(scp);
+    wstring result;
+    change::pointer cp = sub_context_change_get(scp);
     if (!cp)
     {
 	project_ty *pp = sub_context_project_get(scp);
 	if (!pp)
 	{
-	    sub_context_error_set(scp, i18n("not valid in current context"));
-	    trace(("return NULL;\n"));
+	    scp->error_set(i18n("not valid in current context"));
 	    trace(("}\n"));
-	    return 0;
+	    return result;
 	}
 	cp = pp->change_get();
     }
@@ -55,56 +52,50 @@ sub_history_path(sub_context_ty *scp, wstring_list_ty *arg)
     //
     // make sure we like the arguments.
     //
-    if (arg->size() != 2)
+    if (arg.size() != 2)
     {
-	sub_context_error_set(scp, i18n("requires one argument"));
-	trace(("return NULL;\n"));
+	scp->error_set(i18n("requires one argument"));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
 
     //
     // make sure we are in an appropriate state
     //
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
     if (cstate_data->state == cstate_state_awaiting_development)
     {
-	sub_context_error_set(scp, i18n("not valid in current context"));
-	trace(("return NULL;\n"));
+	scp->error_set(i18n("not valid in current context"));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
 
     //
     // find the file's latest source record
     //
-    string_ty *fn = wstr_to_str(arg->get(1));
+    nstring fn = arg[1].to_nstring();
     fstate_src_ty *src = change_file_find(cp, fn, view_path_simple);
     if (!src)
     {
-	str_free(fn);
-	sub_context_error_set(scp, i18n("source file unknown"));
-	trace(("return NULL;\n"));
+	scp->error_set(i18n("source file unknown"));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
 
     //
     // Use the source record to find the history path.
     //
-    string_ty *hfn = project_history_filename_get(cp->pp, src);
+    nstring hfn(project_history_filename_get(cp->pp, src));
 
     //
     // build the result
     //
-    wstring_ty *result = str_to_wstr(hfn);
-    str_free(fn);
-    str_free(hfn);
+    result = wstring(hfn);
 
     //
     // here for all exits
     //
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

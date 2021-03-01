@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -29,14 +28,14 @@
 #include <common/ac/unistd.h>
 
 #include <common/error.h>
-#include <libaegis/input/curl.h>
-#include <common/mem.h>
+#include <common/format_elpsd.h>
+#include <common/itab.h>
 #include <common/nstring.h>
+#include <common/page.h>
+#include <libaegis/input/curl.h>
 #include <libaegis/option.h>
 #include <libaegis/os.h>
-#include <common/page.h>
 #include <libaegis/sub.h>
-#include <common/itab.h>
 #include <libaegis/url.h>
 
 #ifdef HAVE_LIBCURL
@@ -65,13 +64,15 @@ input_curl::~input_curl()
     eof = true;
 
     if (progress_cleanup)
+    {
 	write(2, "\n", 1);
+        progress_cleanup = 0;
+    }
 
     //
     // Release dynamic memory resources.
     //
-    if (curl_buffer)
-        mem_free(curl_buffer);
+    delete [] curl_buffer;
     curl_buffer = 0;
     curl_buffer_position = 0;
     curl_buffer_length = 0;
@@ -80,7 +81,7 @@ input_curl::~input_curl()
 
 
 static int
-progress_callback(void *p, double dt, double dc, double ut, double uc)
+progress_callback(void *p, double dt, double dc, double, double)
 {
     input_curl *icp = (input_curl *)p;
     icp->progress_callback(dt, dc);
@@ -207,7 +208,7 @@ input_curl::input_curl(const nstring &arg) :
 	progress_buflen = page_width_get(80);
 	if (progress_buflen < 40)
 	    progress_buflen = 40;
-	progress_buffer = (char *)mem_alloc(progress_buflen);
+	progress_buffer = new char [progress_buflen];
     }
 
     if (!multi_handle)
@@ -239,7 +240,7 @@ input_curl::input_curl(const nstring &arg) :
     // Build an associate table from libcurl handles to our file pointers.
     //
     if (!stp)
-	stp = itab_alloc(1);
+	stp = itab_alloc();
     itab_assign(stp, (itab_key_ty)handle, (void *)this);
 }
 
@@ -252,7 +253,8 @@ print_byte_count(char *buf, size_t len, double number)
 	snprintf(buf, len, "-----");
 	return;
     }
-    const char *units = " KMGTPE";
+    // K is Kelvin, k is kilo
+    const char *units = " kMGTPEZY";
     for (;;)
     {
 	if (*units != ' ')
@@ -279,39 +281,13 @@ print_byte_count(char *buf, size_t len, double number)
 }
 
 
-static void
-print_seconds(char *buf, size_t len, time_t secs)
-{
-    time_t mins = secs / 60;
-    secs %= 60;
-    time_t hours = mins / 60;
-    mins %= 60;
-    if (hours == 0)
-    {
-	snprintf(buf, len, "%2dm%2.2ds", (int)mins, (int)secs);
-	return;
-    }
-    time_t days = hours / 24;
-    hours %= 24;
-    if (days == 0)
-    {
-	snprintf(buf, len, "%2dh%2.2dm", (int)hours, (int)mins);
-	return;
-    }
-    if (days < 100)
-    {
-	snprintf(buf, len, "%2dd%2.2dh", (int)days, (int)hours);
-	return;
-    }
-    snprintf(buf, len, "%5.2fy", days / 365.25);
-}
-
-
 void
 input_curl::progress_callback(double down_total, double down_current)
 {
     if (down_current <= 0 || down_total <= 0)
 	return;
+    if (down_current >= down_total && !progress_cleanup)
+        return;
     time_t curtim;
     time(&curtim);
     curtim -= progress_start;
@@ -323,25 +299,31 @@ input_curl::progress_callback(double down_total, double down_current)
     time_t predict = (time_t)(frac ? (0.5 + curtim / frac) : 0);
     time_t remaining = predict - curtim;
     char buf3[7];
-    print_seconds(buf3, sizeof(buf3), remaining);
+    format_elapsed(buf3, sizeof(buf3), remaining);
 
     memset(progress_buffer, ' ', progress_buflen);
-    progress_buffer[0] = '\r';
-    memcpy(progress_buffer +  1, buf1, 6);
-    memcpy(progress_buffer +  7, " of ", 4);
-    memcpy(progress_buffer + 11, buf2, 6);
-    snprintf(progress_buffer + 18, 5, "%3d%%", (int)(100 * frac + 0.5));
+    memcpy(progress_buffer +  0, buf1, 6);
+    memcpy(progress_buffer +  6, " of ", 4);
+    memcpy(progress_buffer + 10, buf2, 6);
+    snprintf(progress_buffer + 17, 5, "%3d%%", (int)(100 * frac + 0.5));
 
-    int lhs = 24;
-    int rhs = (int)(lhs + (progress_buflen - 36) * frac);
+    int lhs = 23;
+    int rhs = (int)(lhs + (progress_buflen - 37) * frac);
     while (lhs < rhs)
 	progress_buffer[lhs++] = '=';
     progress_buffer[lhs] = '>';
 
-    memcpy(progress_buffer + progress_buflen - 10, "ETA", 3);
-    memcpy(progress_buffer + progress_buflen - 6, buf3, 6);
+    memcpy(progress_buffer + progress_buflen - 11, "ETA", 3);
+    memcpy(progress_buffer + progress_buflen - 7, buf3, 6);
+    progress_buffer[progress_buflen - 1] = '\r';
     write(2, progress_buffer, progress_buflen);
     progress_cleanup = 1;
+
+    if (down_current >= down_total)
+    {
+        write(2, "\n", 1);
+        progress_cleanup = 0;
+    }
 }
 
 
@@ -356,10 +338,18 @@ input_curl::write_callback(char *data, size_t nbytes)
     // short of a power of 2, leaving room for the malloc header, which
     // results in a nicer malloc fit on many systems.
     //
-    while (curl_buffer_length + nbytes > curl_buffer_maximum)
+    if (curl_buffer_length + nbytes > curl_buffer_maximum)
     {
-	curl_buffer_maximum = curl_buffer_maximum * 2 + 32;
-	curl_buffer = (char *)mem_change_size(curl_buffer, curl_buffer_maximum);
+	for (;;)
+	{
+	    curl_buffer_maximum = curl_buffer_maximum * 2 + 32;
+	    if (curl_buffer_length + nbytes <= curl_buffer_maximum)
+		break;
+	}
+	char *new_curl_buffer = new char [curl_buffer_maximum];
+	memcpy(new_curl_buffer, curl_buffer, curl_buffer_length);
+	delete [] curl_buffer;
+	curl_buffer = new_curl_buffer;
     }
 
     //
@@ -566,6 +556,12 @@ input_curl::read_data(void *data, size_t nbytes)
 	curl_buffer_length = size_of_buffer;
     }
 
+    if (nbytes == 0 && progress_cleanup)
+    {
+	write(2, "\n", 1);
+        progress_cleanup = 0;
+    }
+
     //
     // Return the number of bytes read.
     //
@@ -577,8 +573,6 @@ long
 input_curl::read_inner(void *data, size_t len)
 {
     os_become_must_be_active();
-    if (len < 0)
-	return 0;
 
     long result = read_data(data, len);
     assert(result >= 0);
@@ -628,7 +622,7 @@ input_curl::input_curl(const nstring &arg) :
 
 
 long
-input_curl::read_inner(void *data, size_t len)
+input_curl::read_inner(void *, size_t)
 {
     return 0;
 }
@@ -658,9 +652,9 @@ input_curl::length()
 
 
 bool
-input_curl::looks_likely(const nstring &fn)
+input_curl::looks_likely(const nstring &file_name)
 {
-    const char *cp = fn.c_str();
+    const char *cp = file_name.c_str();
     if (!isalpha((unsigned char)*cp))
 	return 0;
     for (;;)

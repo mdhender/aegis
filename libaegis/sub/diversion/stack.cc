@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -39,7 +38,7 @@ sub_diversion_stack::sub_diversion_stack() :
 
 
 void
-sub_diversion_stack::push_back(wstring_ty *s, bool resub)
+sub_diversion_stack::push_back(const wstring &s, bool resub)
 {
     if (top >= max)
     {

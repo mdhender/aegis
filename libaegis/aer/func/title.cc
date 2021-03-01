@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1996, 1999, 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,12 +13,11 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement the builtin title function
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/trace.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/func/print.h>
 #include <libaegis/aer/func/title.h>
@@ -30,92 +28,104 @@
 #include <libaegis/sub.h>
 
 
-static int
-verify(rpt_expr_ty *ep)
+rpt_func_title::~rpt_func_title()
 {
-    return (ep->nchild <= 2);
 }
 
 
-static rpt_value_ty *
-run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func_title::rpt_func_title()
 {
-    string_ty	*t1;
-    string_ty	*t2;
-    rpt_value_ty	*vp;
+}
 
+
+rpt_func::pointer
+rpt_func_title::create()
+{
+    return pointer(new rpt_func_title());
+}
+
+
+const char *
+rpt_func_title::name()
+    const
+{
+    return "title";
+}
+
+
+bool
+rpt_func_title::optimizable()
+    const
+{
+    return false;
+}
+
+
+bool
+rpt_func_title::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() <= 2);
+}
+
+
+rpt_value::pointer
+rpt_func_title::run(const rpt_expr::pointer &ep, size_t argc,
+    rpt_value::pointer *argv) const
+{
+    trace(("title::run()\n"));
+    nstring t1;
     if (argc >= 1)
     {
-	vp = rpt_value_stringize(argv[0]);
-	if (vp->method->type != rpt_value_type_string)
+        trace(("argv[0] is a %s\n", argv[0]->name()));
+	rpt_value::pointer vp = rpt_value::stringize(argv[0]);
+        trace(("vp is a %s\n", vp->name()));
+        rpt_value_string *a1sp = dynamic_cast<rpt_value_string *>(vp.get());
+	if (!a1sp)
 	{
-	    sub_context_ty  *scp;
-	    string_ty	    *s;
-
-	    scp = sub_context_new();
-	    rpt_value_free(vp);
-	    sub_var_set_charstar(scp, "Function", "title");
-	    sub_var_set_long(scp, "Number", 1);
-	    sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-	    s =
-		subst_intl
+	    sub_context_ty sc;
+	    sc.var_set_charstar("Function", "title");
+	    sc.var_set_long("Number", 1);
+	    sc.var_set_charstar("Name", argv[0]->name());
+	    nstring s
+            (
+		sc.subst_intl
 		(
-	    	    scp,
-                i18n("$function: argument $number: unable to print $name value")
-		);
-	    sub_context_delete(scp);
-	    vp = rpt_value_error(ep->pos, s);
-	    str_free(s);
-	    return vp;
+                    i18n("$function: argument $number: unable to print "
+                        "$name value")
+		)
+            );
+	    return rpt_value_error::create(ep->get_pos(), s);
 	}
-	t1 = str_copy(rpt_value_string_query(vp));
-	rpt_value_free(vp);
+	t1 = nstring(a1sp->query());
     }
-    else
-	t1 = str_from_c("");
 
+    nstring t2;
     if (argc >= 2)
     {
-	vp = rpt_value_stringize(argv[1]);
-	if (vp->method->type != rpt_value_type_string)
+        trace(("argv[1] is a %s\n", argv[1]->name()));
+	rpt_value::pointer vp = rpt_value::stringize(argv[1]);
+        trace(("vp is a %s\n", vp->name()));
+        rpt_value_string *a2sp = dynamic_cast<rpt_value_string *>(vp.get());
+        if (!a2sp)
 	{
-	    sub_context_ty  *scp;
-	    string_ty	    *s;
-
-	    scp = sub_context_new();
-	    str_free(t1);
-	    rpt_value_free(vp);
-	    sub_var_set_charstar(scp, "Function", "title");
-	    sub_var_set_long(scp, "Number", 2);
-	    sub_var_set_charstar(scp, "Name", argv[1]->method->name);
-	    s =
-		subst_intl
+	    sub_context_ty sc;
+	    sc.var_set_charstar("Function", "title");
+	    sc.var_set_long("Number", 2);
+	    sc.var_set_charstar("Name", argv[1]->name());
+	    nstring s
+            (
+		sc.subst_intl
 		(
-	    	    scp,
-                i18n("$function: argument $number: unable to print $name value")
-		);
-	    sub_context_delete(scp);
-	    vp = rpt_value_error(ep->pos, s);
-	    str_free(s);
-	    return vp;
+                    i18n("$function: argument $number: unable to print "
+                        "$name value")
+		)
+            );
+	    return rpt_value_error::create(ep->get_pos(), s);
 	}
-	t2 = str_copy(rpt_value_string_query(vp));
-	rpt_value_free(vp);
+	t2 = nstring(a2sp->query());
     }
-    else
-	t2 = str_from_c("");
 
-    col_title(rpt_func_print__colp, t1->str_text, t2->str_text);
-    str_free(t1);
-    str_free(t2);
-    return rpt_value_void();
+    rpt_func_print__colp->title(t1.c_str(), t2.c_str());
+    return rpt_value_void::create();
 }
-
-
-rpt_func_ty rpt_func_title =
-{
-    "title",
-    0, // not optimizable
-    verify,
-    run
-};

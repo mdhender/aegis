@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,253 +13,311 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate rounds
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/math.h>
 
+#include <common/error.h> // for assert
+#include <common/str.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/func/round.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/real.h>
-#include <common/error.h> // for assert
-#include <common/str.h>
 #include <libaegis/sub.h>
 
 
-static int
-round_verify(rpt_expr_ty *ep)
+rpt_func_round::~rpt_func_round()
 {
-	return (ep->nchild == 1);
 }
 
 
-static rpt_value_ty *
-round_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func_round::rpt_func_round()
 {
-	double		n;
-	rpt_value_ty	*tmp;
-	string_ty       *s;
-	rpt_value_ty	*result;
-
-	//
-	// See if it looks like a number.
-	//
-	assert(argc == 1);
-	tmp = rpt_value_realize(argv[0]);
-	if (tmp->method->type != rpt_value_type_real)
-	{
-		sub_context_ty	*scp;
-
-		rpt_value_free(tmp);
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Function", "round");
-		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-		sub_var_set_long(scp, "Number", 1);
-		s =
-			subst_intl
-			(
-				scp,
-      i18n("$function: argument $number: real value required (was given $name)")
-			);
-		sub_context_delete(scp);
-		result = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return result;
-	}
-
-	n = rpt_value_real_query(tmp);
-	rpt_value_free(tmp);
-	n = floor(n + 0.5);
-	result = rpt_value_real(n);
-	return result;
 }
 
 
-rpt_func_ty rpt_func_round =
+rpt_func::pointer
+rpt_func_round::create()
 {
-	"round",
-	1, // optimizable
-	round_verify,
-	round_run,
-};
-
-
-static int
-floor_verify(rpt_expr_ty *ep)
-{
-	return (ep->nchild == 1);
+    return pointer(new rpt_func_round());
 }
 
 
-static rpt_value_ty *
-floor_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+const char *
+rpt_func_round::name()
+    const
 {
-	double		n;
-	rpt_value_ty	*tmp;
-	string_ty       *s;
-	rpt_value_ty	*result;
-
-	//
-	// See if it looks like a number.
-	//
-	assert(argc == 1);
-	tmp = rpt_value_realize(argv[0]);
-	if (tmp->method->type != rpt_value_type_real)
-	{
-		sub_context_ty	*scp;
-
-		rpt_value_free(tmp);
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Function", "floor");
-		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-		sub_var_set_long(scp, "Number", 1);
-		s =
-			subst_intl
-			(
-				scp,
-      i18n("$function: argument $number: real value required (was given $name)")
-			);
-		sub_context_delete(scp);
-		result = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return result;
-	}
-
-	n = rpt_value_real_query(tmp);
-	rpt_value_free(tmp);
-	n = floor(n);
-	result = rpt_value_real(n);
-	return result;
+    return "round";
 }
 
 
-rpt_func_ty rpt_func_floor =
+bool
+rpt_func_round::optimizable()
+    const
 {
-	"floor",
-	1, // optimizable
-	floor_verify,
-	floor_run,
-};
-
-
-static int
-ceil_verify(rpt_expr_ty *ep)
-{
-	return (ep->nchild == 1);
+    return true;
 }
 
 
-static rpt_value_ty *
-ceil_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+bool
+rpt_func_round::verify(const rpt_expr::pointer &ep)
+    const
 {
-	double		n;
-	rpt_value_ty	*tmp;
-	string_ty       *s;
-	rpt_value_ty	*result;
-
-	//
-	// See if it looks like a number.
-	//
-	assert(argc == 1);
-	tmp = rpt_value_realize(argv[0]);
-	if (tmp->method->type != rpt_value_type_real)
-	{
-		sub_context_ty	*scp;
-
-		rpt_value_free(tmp);
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Function", "ceil");
-		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-		sub_var_set_long(scp, "Number", 1);
-		s =
-			subst_intl
-			(
-				scp,
-      i18n("$function: argument $number: real value required (was given $name)")
-			);
-		sub_context_delete(scp);
-		result = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return result;
-	}
-
-	n = rpt_value_real_query(tmp);
-	rpt_value_free(tmp);
-	n = ceil(n);
-	result = rpt_value_real(n);
-	return result;
+    return (ep->get_nchildren() == 1);
 }
 
 
-rpt_func_ty rpt_func_ceil =
+rpt_value::pointer
+rpt_func_round::run(const rpt_expr::pointer &ep, size_t,
+    rpt_value::pointer *argv) const
 {
-	"ceil",
-	1, // optimizable
-	ceil_verify,
-	ceil_run,
-};
+    //
+    // See if it looks like a number.
+    //
+    rpt_value::pointer tmp = rpt_value::realize(argv[0]);
+    rpt_value_real *rvrp = dynamic_cast<rpt_value_real *>(tmp.get());
+    if (!rvrp)
+    {
+        sub_context_ty sc;
+        sc.var_set_charstar("Function", "round");
+        sc.var_set_charstar("Name", argv[0]->name());
+        sc.var_set_long("Number", 1);
+        nstring s
+        (
+            sc.subst_intl
+            (
+                i18n("$function: argument $number: real value required "
+                    "(was given $name)")
+            )
+        );
+        return rpt_value_error::create(ep->get_pos(), s);
+    }
 
-
-static int
-trunc_verify(rpt_expr_ty *ep)
-{
-	return (ep->nchild == 1);
+    double n = rvrp->query();
+    n = floor(n + 0.5);
+    return rpt_value_real::create(n);
 }
 
 
-static rpt_value_ty *
-trunc_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func_floor::~rpt_func_floor()
 {
-	double		n;
-	rpt_value_ty	*tmp;
-	string_ty       *s;
-	rpt_value_ty	*result;
-
-	//
-	// See if it looks like a number.
-	//
-	assert(argc == 1);
-	tmp = rpt_value_realize(argv[0]);
-	if (tmp->method->type != rpt_value_type_real)
-	{
-		sub_context_ty	*scp;
-
-		rpt_value_free(tmp);
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Function", "trunc");
-		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-		sub_var_set_long(scp, "Number", 1);
-		s =
-			subst_intl
-			(
-				scp,
-      i18n("$function: argument $number: real value required (was given $name)")
-			);
-		sub_context_delete(scp);
-		result = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return result;
-	}
-
-	n = rpt_value_real_query(tmp);
-	rpt_value_free(tmp);
-	if (n >= 0)
-		n = floor(n);
-	else
-		n = ceil(n);
-	result = rpt_value_real(n);
-	return result;
 }
 
 
-rpt_func_ty rpt_func_trunc =
+rpt_func_floor::rpt_func_floor()
 {
-	"trunc",
-	1, // optimizable
-	trunc_verify,
-	trunc_run,
-};
+}
+
+
+rpt_func::pointer
+rpt_func_floor::create()
+{
+    return pointer(new rpt_func_floor());
+}
+
+
+const char *
+rpt_func_floor::name()
+    const
+{
+    return "floor";
+}
+
+
+bool
+rpt_func_floor::optimizable()
+    const
+{
+    return true;
+}
+
+
+bool
+rpt_func_floor::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 1);
+}
+
+
+rpt_value::pointer
+rpt_func_floor::run(const rpt_expr::pointer &ep, size_t,
+    rpt_value::pointer *argv) const
+{
+    //
+    // See if it looks like a number.
+    //
+    rpt_value::pointer tmp = rpt_value::realize(argv[0]);
+    rpt_value_real *rvrp = dynamic_cast<rpt_value_real *>(tmp.get());
+    if (!rvrp)
+    {
+        sub_context_ty sc;
+        sc.var_set_charstar("Function", "floor");
+        sc.var_set_charstar("Name", argv[0]->name());
+        sc.var_set_long("Number", 1);
+        nstring s
+        (
+            sc.subst_intl
+            (
+                i18n("$function: argument $number: real value required "
+                    "(was given $name)")
+            )
+        );
+        return rpt_value_error::create(ep->get_pos(), s);
+    }
+
+    double n = rvrp->query();
+    n = floor(n);
+    return rpt_value_real::create(n);
+}
+
+
+rpt_func_ceil::~rpt_func_ceil()
+{
+}
+
+
+rpt_func_ceil::rpt_func_ceil()
+{
+}
+
+
+rpt_func::pointer
+rpt_func_ceil::create()
+{
+    return pointer(new rpt_func_ceil());
+}
+
+
+const char *
+rpt_func_ceil::name()
+    const
+{
+    return "ceil";
+}
+
+
+bool
+rpt_func_ceil::optimizable()
+    const
+{
+    return true;
+}
+
+
+bool
+rpt_func_ceil::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 1);
+}
+
+
+rpt_value::pointer
+rpt_func_ceil::run(const rpt_expr::pointer &ep, size_t,
+    rpt_value::pointer *argv) const
+{
+    //
+    // See if it looks like a number.
+    //
+    rpt_value::pointer tmp = rpt_value::realize(argv[0]);
+    rpt_value_real *rvrp = dynamic_cast<rpt_value_real *>(tmp.get());
+    if (!rvrp)
+    {
+        sub_context_ty sc;
+        sc.var_set_charstar("Function", "ceil");
+        sc.var_set_charstar("Name", argv[0]->name());
+        sc.var_set_long("Number", 1);
+        nstring s
+        (
+            sc.subst_intl
+            (
+                i18n("$function: argument $number: real value required "
+                    "(was given $name)")
+            )
+        );
+        return rpt_value_error::create(ep->get_pos(), s);
+    }
+
+    double n = rvrp->query();
+    n = ceil(n);
+    return rpt_value_real::create(n);
+}
+
+
+rpt_func_trunc::~rpt_func_trunc()
+{
+}
+
+
+rpt_func_trunc::rpt_func_trunc()
+{
+}
+
+
+rpt_func::pointer
+rpt_func_trunc::create()
+{
+    return pointer(new rpt_func_trunc());
+}
+
+
+const char *
+rpt_func_trunc::name()
+    const
+{
+    return "trunc";
+}
+
+
+bool
+rpt_func_trunc::optimizable()
+    const
+{
+    return true;
+}
+
+
+bool
+rpt_func_trunc::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 1);
+}
+
+
+rpt_value::pointer
+rpt_func_trunc::run(const rpt_expr::pointer &ep, size_t,
+    rpt_value::pointer *argv) const
+{
+    //
+    // See if it looks like a number.
+    //
+    rpt_value::pointer tmp = rpt_value::realize(argv[0]);
+    rpt_value_real *rvrp = dynamic_cast<rpt_value_real *>(tmp.get());
+    if (!rvrp)
+    {
+        sub_context_ty sc;
+        sc.var_set_charstar("Function", "trunc");
+        sc.var_set_charstar("Name", argv[0]->name());
+        sc.var_set_long("Number", 1);
+        nstring s
+        (
+            sc.subst_intl
+            (
+                i18n("$function: argument $number: real value required "
+                    "(was given $name)")
+            )
+        );
+        return rpt_value_error::create(ep->get_pos(), s);
+    }
+
+    double n = rvrp->query();
+    if (n >= 0)
+        n = floor(n);
+    else
+        n = ceil(n);
+    return rpt_value_real::create(n);
+}

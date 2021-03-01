@@ -1,8 +1,8 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1998, 2005 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 1998, 2005-2007 Peter Miller
+#	Copyright (C) 2006 Walter Franzini;
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	persevere_preference = all; \
 	log_file_preference = never;"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 COLS=65
@@ -184,17 +184,23 @@ history_put_command = "exit 0";
 history_query_command = "exit 0";
 diff_command = "exit 0";
 merge_command = "exit 0";
+clean_exceptions = [ "*.keep" ];
 fubar
 if test $? -ne 0 ; then cat log; no_result; fi
 
 date > $workchan/junk
 if test $? -ne 0 ; then no_result; fi
 
+date > $workchan/garbage.keep
+if test $? -ne 0 ; then no_result; fi
+
 $bin/aegis -clean -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 test -r $workchan/junk && fail
+test ! -r $workchan/garbage.keep && fail
 test ! -r $workchan/aegis.conf && fail
+
 
 #
 # the things tested in this test, worked

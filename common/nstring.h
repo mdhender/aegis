@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,16 +13,16 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface of the nstring class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef COMMON_NSTRING_H
 #define COMMON_NSTRING_H
 
 #include <common/str.h>
+
+class nstring_list; // forward
 
 /**
   * The nstring class is used to represent a reference counted narrow string
@@ -153,14 +152,20 @@ public:
     catenate(const nstring &arg)
 	const
     {
-	return nstring(str_catenate(ref, arg.ref));
+        string_ty *tmp = str_catenate(ref, arg.ref);
+        nstring result(tmp);
+        str_free(tmp);
+        return result;
     }
 
     nstring
     operator+(const nstring &arg)
 	const
     {
-	return nstring(str_catenate(ref, arg.ref));
+        string_ty *tmp = str_catenate(ref, arg.ref);
+        nstring result(tmp);
+        str_free(tmp);
+        return result;
     }
 
     nstring &
@@ -348,6 +353,12 @@ public:
 	return (ref == arg.ref);
     }
 
+    /**
+      * The equal-to operator.
+      *
+      * @param rhs
+      *     The right hans side of the comparison.
+      */
     bool
     operator==(const nstring &arg)
 	const
@@ -355,12 +366,50 @@ public:
 	return (ref == arg.ref);
     }
 
+    /**
+      * The not-equal-to operator.
+      *
+      * @param rhs
+      *     The right hans side of the comparison.
+      */
     bool
     operator!=(const nstring &arg)
 	const
     {
 	return (ref != arg.ref);
     }
+
+    /**
+      * The less-than operator.
+      *
+      * @param rhs
+      *     The right hans side of the comparison.
+      */
+    bool operator<(const nstring &arg) const;
+
+    /**
+      * The less-than-or-equal operator.
+      *
+      * @param rhs
+      *     The right hans side of the comparison.
+      */
+    bool operator<=(const nstring &arg) const;
+
+    /**
+      * The greater-than operator.
+      *
+      * @param rhs
+      *     The right hans side of the comparison.
+      */
+    bool operator>(const nstring &arg) const;
+
+    /**
+      * The greater-than-or-equal operator.
+      *
+      * @param rhs
+      *     The right hans side of the comparison.
+      */
+    bool operator>=(const nstring &arg) const;
 
     /**
       * \brief
@@ -387,20 +436,50 @@ public:
 
     /**
       * \brief
-      *	remove excess white space
+      *    remove excess white space
       *
-      * The str_trim function is used to remove white space from the
-      * beginning and end of the string, and replace all other runs of
-      * one or more white space characters with a single space.
+      * The trim method is used to remove white space from the beginning
+      * and end of the string, and replace all other runs of one or more
+      * white space characters with a single space.
       *
       * \return
-      *     a pointer to a string in dynamic memory.  Use str_free()
-      *     when finished with.  The contents of the structure pointed
-      *     to <b>shall not</b> be altered.
+      *     another string
       */
     nstring trim() const;
 
-#ifdef DEBUG
+    /**
+      * \brief
+      *    remove excess white space
+      *
+      * The trim_lines method is used to remove white space from the
+      * beginning and end of <i>lines</i> within the string, and replace
+      * all other runs of one or more white space characters with a
+      * single space.
+      *
+      * \return
+      *     another string
+      */
+    nstring trim_lines() const;
+
+    /**
+      * The trim_extension method is used to build a new string without
+      * the file extension.  For example, the string "a/b.b" will return
+      * "a/b".
+      */
+    nstring trim_extension() const;
+
+    /**
+      * \brief
+      *    remove excess white space
+      *
+      * The snip method is used to remove white space from the beginning
+      * and end of the string.  Interior white space is left unchanged.
+      *
+      * \return
+      *     another string
+      */
+    nstring snip() const;
+
     /**
       * \brief
       *	check is valid
@@ -418,7 +497,6 @@ public:
     {
 	return str_validate(ref);
     }
-#endif
 
     /**
       * The get_ref method is used to extract the reference to the
@@ -466,10 +544,38 @@ public:
     /**
       * The gmatch function is used to match the string against a file
       * globbing pattern.
+      *
+      * @pattern
+      *     The pattern to try against the string.
+      * @returns
+      *     bool; true if matches pattern, false if does not.
       */
     bool gmatch(const char *pattern) const;
 
     /**
+     * The gmatch function is used to match the string against a file
+     * globbing pattern.
+     *
+     * @pattern
+     *     The pattern to try against the string.
+     * @returns
+     *     bool; true if matches pattern, false if does not.
+     */
+    bool gmatch(const nstring &pattern) const;
+
+    /**
+     * The gmatch function is used to match the string against a set of
+     * file globbing patterns.
+     *
+     * @patterns
+     *     The patterns to try against the string.
+     * @returns
+     *     bool; true if matches at least one pattern, false if does
+     *     not match any pattern.
+     */
+    bool gmatch(const nstring_list &pattern) const;
+
+     /**
       * The identifier method is used to convert all non-C-identifier
       * characters in the string to underscores.  The intention is to
       * create a valid C identifier from the string.
@@ -566,7 +672,7 @@ public:
     long to_long() const;
 
     /**
-      * The substrig method may be used to extract a substring from this
+      * The substring method may be used to extract a substring from this
       * string.
       *
       * @param start
@@ -579,6 +685,34 @@ public:
       *     a string, note that it could be less than nbytes long.
       */
     nstring substring(long start, long nbytes) const;
+
+    /**
+     * The dirname method is used to extract the directory part of a
+     * filename.  If there is no directory part, "." is returned.
+     */
+    nstring dirname() const;
+
+    /**
+      * The first_dirname method is used to extract the first directory
+      * part of a filename.  If there is no directory part, "." is
+      * returned.
+      */
+    nstring first_dirname() const;
+
+    /**
+     * The basename method is used to generate a new string from
+     * this one with any leading directory components removed.  If
+     * specified, also remove a trailing suffix.
+     */
+    nstring basename(const nstring &suffix = "") const;
+
+    /**
+      * The get_hash method is used to access the has value of this
+      * key.  While this is an internal implementation feature, it is
+      * often extremely handy to have a pre-calculated hash value for a
+      * string, and so it is made public.
+      */
+    str_hash_ty get_hash() const { return ref->str_hash; }
 
 private:
     /**

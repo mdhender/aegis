@@ -1,7 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1997-1999, 2001-2006 Peter Miller;
- *	All rights reserved.
+ *	Copyright (C) 1991-1994, 1997-1999, 2001-2007 Peter Miller
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -74,7 +73,7 @@ extern int yydebug;
 {
     string_ty       *lv_string;
     long            lv_integer;
-    type_ty         *lv_type;
+    type *lv_type;
 }
 
 %type <lv_string> NAME STRING_CONSTANT
@@ -88,13 +87,13 @@ struct name_ty
     name_ty         *parent;
     string_ty       *name_short;
     string_ty       *name_long;
-    type_ty         *type;
+    type *name_type;
 };
 
 static name_ty	*current;
 static size_t	emit_length;
 static size_t	emit_length_max;
-static type_ty	**emit_list;
+static type **emit_list;
 static int	time_used;
 static symtab_ty *typedef_symtab;
 static string_list_ty	initialize;
@@ -111,7 +110,7 @@ push_name(string_ty *s)
     np->name_long =
 	str_format("%s_%s", current->name_long->str_text, s->str_text);
     np->parent = current;
-    np->type = 0;
+    np->name_type = 0;
     current = np;
     trace(("}\n"));
 }
@@ -127,7 +126,7 @@ push_name_abs(string_ty *s)
     np->name_short = str_copy(s);
     np->name_long = str_copy(s);
     np->parent = current;
-    np->type = 0;
+    np->name_type = 0;
     current = np;
     trace(("}\n"));
 }
@@ -149,18 +148,20 @@ pop_name(void)
 
 
 static void
-define_type(type_ty *type)
+define_type(type *defined_type)
 {
-    size_t          nbytes;
-
-    trace(("define_type(type = %08lX)\n{\n", (long)type));
+    trace(("define_type(defined_type = %08lX)\n{\n", (long)defined_type));
     if (emit_length >= emit_length_max)
     {
-	emit_length_max += 10;
-	nbytes = emit_length_max * sizeof(emit_list[0]);
-	emit_list = (type_ty **)mem_change_size(emit_list, nbytes);
+	size_t new_emit_length_max = emit_length_max * 2 + 8;
+	type **new_emit_list = new type * [new_emit_length_max];
+	for (size_t j = 0; j < emit_length; ++j)
+	    new_emit_list[j] = emit_list[j];
+	delete [] emit_list;
+	emit_list = new_emit_list;
+	emit_length_max = new_emit_length_max;
     }
-    emit_list[emit_length++] = type;
+    emit_list[emit_length++] = defined_type;
     trace(("}\n"));
 }
 
@@ -403,7 +404,7 @@ generate_code_file(const char *code_file, const char *include_file,
     const char *cp1 = base_name(code_file);
     for (j = 0; j < emit_length; ++j)
     {
-	type_ty *tp = emit_list[j];
+	type *tp = emit_list[j];
 	if (!tp->is_in_include_file())
 	    tp->gen_code();
     }
@@ -539,8 +540,8 @@ parse(const char *definition_file, const char *code_file,
     /*
      * remember to emit a structure containing its fields
      */
-    current->type->toplevel();
-    define_type(current->type);
+    current->name_type->toplevel();
+    define_type(current->name_type);
 
     /*
      * generate the files
@@ -591,7 +592,7 @@ type_name
 field
     : field_name '=' type attributes ';'
 	{
-	    current->parent->type->member_add
+	    current->parent->name_type->member_add
 	    (
 		nstring(current->name_short),
 		$3,
@@ -616,7 +617,7 @@ field_name
 type
     : STRING
 	{
-	    $$ = new type_string_ty();
+	    $$ = new type_string();
 	}
     | BOOLEAN
 	{
@@ -624,28 +625,26 @@ type
 	}
     | INTEGER
 	{
-	    $$ = new type_integer_ty();
+	    $$ = new type_integer();
 	}
     | REAL
 	{
-	    $$ = new type_real_ty();
+	    $$ = new type_real();
 	}
     | TIME
 	{
 	    time_used = 1;
-	    $$ = new type_time_ty();
+	    $$ = new type_time();
 	}
     | NAME
 	{
-	    type_ty         *data;
-
-	    data = (type_ty *)symtab_query(typedef_symtab, $1);
+	    type *data = (type *)symtab_query(typedef_symtab, $1);
 	    if (data)
 		$$ = data;
 	    else
 	    {
 		yyerror("type \"%s\" undefined", $1->str_text);
-		$$ = new type_integer_ty();
+		$$ = new type_integer();
 	    }
 	    str_free($1);
 	}
@@ -669,14 +668,15 @@ type
 structure
     : '{' field_list '}'
 	{
-	    $$ = current->type;
+	    $$ = current->name_type;
 	}
     ;
 
 field_list
     : /* empty */
 	{
-	    current->type = new type_structure_ty(nstring(current->name_long));
+	    current->name_type =
+                new type_structure(nstring(current->name_long));
 	}
     | field_list field
     ;
@@ -689,7 +689,7 @@ list
 	    if (!list)
 		list = str_from_c("list");
 	    push_name(list);
-	    $$ = new type_list_ty(nstring(current->name_long), $2);
+	    $$ = new type_list(nstring(current->name_long), $2);
 	    pop_name();
 	}
     ;
@@ -704,8 +704,8 @@ enumeration
 enum_list_begin
     : /* empty */
 	{
-	    $$ = new type_enumeration_ty(nstring(current->name_long));
-	    current->type = $$;
+	    $$ = new type_enumeration(nstring(current->name_long));
+	    current->name_type = $$;
 	}
     ;
 
@@ -719,10 +719,10 @@ enum_name
 	{
 	    push_name($1);
 	    str_free($1);
-	    current->parent->type->member_add
+	    current->parent->name_type->member_add
 	    (
 		nstring(current->name_short),
-		(type_ty *)0,
+		(type *)0,
 		1
 	    );
 	    pop_name();

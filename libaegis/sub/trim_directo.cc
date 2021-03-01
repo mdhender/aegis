@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1998, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -20,66 +19,62 @@
 // MANIFEST: functions to manipulate trim_directos
 //
 
-#include <common/mem.h>
+#include <common/nstring.h>
+#include <common/trace.h>
+#include <common/wstring/list.h>
 #include <libaegis/sub.h>
 #include <libaegis/sub/trim_directo.h>
-#include <common/trace.h>
-#include <common/wstr/list.h>
 
 
-wstring_ty *
-sub_trim_directory(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_trim_directory(sub_context_ty *scp, const wstring_list &arg)
 {
-	wstring_ty	*dir;
-	wchar_t		*wcp;
-	wstring_ty	*result;
-	string_ty	*s;
-	long		n;
+    trace(("sub_trim_directory()\n{\n"));
+    wstring dir;
+    long n = 1;
+    switch (arg.size())
+    {
+    default:
+        scp->error_set(i18n("requires one argument"));
+        trace(("return NULL;\n"));
+        trace(("}\n"));
+        return wstring();
 
-	trace(("sub_trim_directory()\n{\n"));
-	n = 1;
-	switch (arg->size())
-	{
-	default:
-		sub_context_error_set(scp, i18n("requires one argument"));
-		trace(("return NULL;\n"));
-		trace(("}\n"));
-		return 0;
+    case 2:
+        n = 1;
+        dir = arg[1];
+        break;
 
-	case 2:
-		n = 1;
-		dir = arg->get(1);
-		break;
+    case 3:
+        {
+            nstring s = arg[1].to_nstring();
+            n = atol(s.c_str());
+            trace(("n = %ld;\n", n));
+            dir = arg[2];
+        }
+        break;
+    }
 
-	case 3:
-		s = wstr_to_str(arg->get(1));
-		n = atol(s->str_text);
-		trace(("n = %ld;\n", n));
-		str_free(s);
+    //
+    // Skip the given number of leading directory components.
+    //
+    const wchar_t *wcp = dir.c_str();
+    const wchar_t *wep = wcp + dir.size();
+    while (n-- > 0)
+    {
+        const wchar_t *ep = wcp;
+        while (ep < wep && *ep != '/')
+            ++ep;
+        if (ep >= wep)
+            break;
+        wcp = ep + 1;
+    }
 
-		dir = arg->get(2);
-		break;
-	}
-
-	//
-	// Skip the given number of leading directory components.
-	//
-	wcp = dir->wstr_text;
-	while (n-- > 0)
-	{
-		wchar_t *ep = wcp;
-		while (*ep && *ep != '/')
-			++ep;
-		if (!*ep)
-			break;
-		wcp = ep + 1;
-	}
-
-	//
-	// Build the result.
-	//
-	result = wstr_from_wc(wcp);
-	trace(("return %8.8lX;\n", (long)result));
-	trace(("}\n"));
-	return result;
+    //
+    // Build the result.
+    //
+    wstring result(wcp, wep - wcp);
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
+    trace(("}\n"));
+    return result;
 }

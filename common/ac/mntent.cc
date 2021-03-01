@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -26,7 +25,7 @@
 #ifndef HAVE_MNTENT_H
 
 FILE *
-setmntent(const char *filename, const char *mode)
+setmntent(const char *, const char *)
 {
     //
     // This is a bogus value.  All that is necessary is that it not be
@@ -38,7 +37,7 @@ setmntent(const char *filename, const char *mode)
 
 
 struct mntent *
-getmntent(FILE *fp)
+getmntent(FILE *)
 {
     // do nothing
     return 0;
@@ -46,7 +45,7 @@ getmntent(FILE *fp)
 
 
 int
-endmntent(FILE *fp)
+endmntent(FILE *)
 {
     return 0;
 }

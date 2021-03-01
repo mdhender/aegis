@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -22,14 +21,12 @@
 
 #include <common/ac/errno.h>
 #include <common/ac/stddef.h>
-
 #include <common/ac/sys/types.h>
 #include <sys/wait.h>
 
 #include <common/error.h> // for assert
-#include <common/mem.h>
-#include <libaegis/os.h>
 #include <common/trace.h>
+#include <libaegis/os.h>
 
 
 int
@@ -41,12 +38,11 @@ os_waitpid(int child, int *status_p)
 	int             status;
     };
 
-    static long     nret;
-    static long     nret_max;
+    static size_t   nret;
+    static size_t   nret_max;
     static ret_ty   *ret;
     int             pid;
     int             status;
-    int             j;
     int             result;
 
     //
@@ -55,7 +51,7 @@ os_waitpid(int child, int *status_p)
     trace(("os_waitpid(child = %d)\n{\n", child));
     assert(child > 0);
     result = 0;
-    for (j = 0; j < nret; ++j)
+    for (size_t j = 0; j < nret; ++j)
     {
 	if (ret[j].pid != child)
 	    continue;
@@ -97,14 +93,12 @@ os_waitpid(int child, int *status_p)
 	//
 	if (nret >= nret_max)
 	{
-	    long            nbytes;
-
-	    nret_max += 11;
-	    nbytes = nret_max * sizeof(ret_ty);
-	    if (!ret)
-		ret = (ret_ty *)mem_alloc(nbytes);
-	    else
-		ret = (ret_ty *)mem_change_size(ret, nbytes);
+	    nret_max = nret_max * 2 + 8;
+	    ret_ty *new_ret  = new ret_ty [nret_max];
+	    for (size_t k = 0; k < nret; ++k)
+		new_ret[k] = ret[k];
+	    delete [] ret;
+	    ret = new_ret;
 	}
 	ret[nret].pid = pid;
 	ret[nret].status = status;

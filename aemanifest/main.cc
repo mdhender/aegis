@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -25,16 +24,17 @@
 #include <common/ac/stdlib.h>
 #include <common/ac/string.h>
 
-#include <libaegis/arglex2.h>
-#include <libaegis/dir_stack.h>
 #include <common/env.h>
 #include <common/error.h>
-#include <libaegis/help.h>
 #include <common/language.h>
-#include <libaegis/os.h>
-#include <common/quit.h>
 #include <common/progname.h>
+#include <common/quit.h>
+#include <common/rsrc_limits.h>
 #include <common/str_list.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/dir_stack.h>
+#include <libaegis/help.h>
+#include <libaegis/os.h>
 
 
 static void
@@ -116,6 +116,7 @@ main(int argc, char **argv)
     FILE            *ofp;
 
     os_become_init_mortal();
+    resource_limits_init();
     arglex2_init(argc, argv);
     env_initialize();
     language_init();

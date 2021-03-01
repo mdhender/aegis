@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate names
 //
@@ -29,7 +28,7 @@
 
 
 string_ty *
-change_architecture_name(change_ty *cp, int with_arch)
+change_architecture_name(change::pointer cp, int with_arch)
 {
     trace(("change_architecture_name(cp = %8.8lX)\n{\n", (long)cp));
     assert(cp->reference_count >= 1);

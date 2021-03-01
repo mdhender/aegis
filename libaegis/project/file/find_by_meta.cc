@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2006 Peter Miller
+//	Copyright (C) 2006, 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -15,18 +15,20 @@
 //
 //	You should have received a copy of the GNU General Public License
 //	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//	MA 02110-1301 USA.
 //
-// MANIFEST: functions to manipulate find_by_metas
+// MANIFEST: functions to find files using metadata
 //
 
 #include <common/error.h> // for assert
-#include <libaegis/project/file.h>
+#include <common/itab.h>
+#include <common/symtab/template.h>
 #include <common/trace.h>
-
+#include <libaegis/project/file.h>
 
 fstate_src_ty *
-project_file_find_by_meta(project_ty *pp, fstate_src_ty *c_src_data,
+project_file_find(project_ty *pp, fstate_src_ty *c_src_data,
     view_path_ty vp)
 {
     fstate_src_ty   *p_src_data;
@@ -54,8 +56,9 @@ project_file_find_by_meta(project_ty *pp, fstate_src_ty *c_src_data,
     //
     if (c_src_data->uuid)
     {
+        itab_ty *found = itab_alloc();
 	p_src_data = pp->file_find_by_uuid(c_src_data->uuid, vp);
-	while (p_src_data)
+	while (p_src_data && !itab_query(found, (itab_key_ty)p_src_data))
 	{
 	    if (p_src_data->action != file_action_remove || !p_src_data->move)
 	    {
@@ -70,13 +73,16 @@ project_file_find_by_meta(project_ty *pp, fstate_src_ty *c_src_data,
 		    (p_src_data->edit ?
 			p_src_data->edit->revision->str_text : "")
 		));
+                itab_free(found);
 		trace(("return %08lX;\n", (long)p_src_data));
 		trace(("}\n"));
 		return p_src_data;
 	    }
 	    name = p_src_data->move;
 	    p_src_data = project_file_find(pp, name, vp);
+            itab_assign(found, (itab_key_ty)p_src_data, p_src_data);
 	}
+        itab_free(found);
     }
 
     //
@@ -86,15 +92,31 @@ project_file_find_by_meta(project_ty *pp, fstate_src_ty *c_src_data,
 	name = c_src_data->move;
     else
 	name = c_src_data->file_name;
+
+    itab_ty *found = itab_alloc();
     for (;;)
     {
 	p_src_data = project_file_find(pp, name, vp);
 	if (!p_src_data)
 	{
+            itab_free(found);
 	    trace(("return NULL;\n"));
 	    trace(("}\n"));
 	    return 0;
 	}
+
+        //
+        // A loop has been detected go away.
+        //
+        if (itab_query(found, (itab_key_ty)p_src_data))
+        {
+            itab_free(found);
+	    trace(("return NULL;\n"));
+	    trace(("}\n"));
+	    return 0;
+        }
+        itab_assign(found, (itab_key_ty)p_src_data, p_src_data);
+
 	if (p_src_data->action != file_action_remove || !p_src_data->move)
 	{
 	    trace
@@ -108,6 +130,7 @@ project_file_find_by_meta(project_ty *pp, fstate_src_ty *c_src_data,
 		(p_src_data->edit ?
 		    p_src_data->edit->revision->str_text : "")
 	    ));
+            itab_free(found);
 	    trace(("return %08lX;\n", (long)p_src_data));
 	    trace(("}\n"));
 	    return p_src_data;

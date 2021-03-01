@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997-2006 Peter Miller
+#	Copyright (C) 1997-2007 Peter Miller
 #	Copyright (C) 2007 Walter Franzini
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	default_project_directory = \"$work\"; \
 	default_development_directory = \"$work\";"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 here=`pwd`

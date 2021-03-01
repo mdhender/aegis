@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-1999, 2001-2006 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 1991-1999, 2001-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement develop begin undo
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -123,12 +120,11 @@ develop_begin_undo_main(void)
     string_ty       *project_name;
     long            change_number;
     project_ty      *pp;
-    user_ty         *admin_up;
-    user_ty         *up;
-    change_ty       *cp;
+    user_ty::pointer admin_up;
+    user_ty::pointer up;
+    change::pointer cp;
     cstate_ty       *cstate_data;
     cstate_history_ty *history_data;
-    string_ty       *dd;
     string_ty       *usr_name;
 
     trace(("develop_begin_undo_main()\n{\n"));
@@ -148,7 +144,7 @@ develop_begin_undo_main(void)
         case arglex_token_keep:
         case arglex_token_interactive:
         case arglex_token_keep_not:
-            user_delete_file_argument(develop_begin_undo_usage);
+            user_ty::delete_file_argument(develop_begin_undo_usage);
             break;
 
         case arglex_token_change:
@@ -188,7 +184,7 @@ develop_begin_undo_main(void)
 
         case arglex_token_wait:
         case arglex_token_wait_not:
-            user_lock_wait_argument(develop_begin_undo_usage);
+            user_ty::lock_wait_argument(develop_begin_undo_usage);
             break;
 
 	case arglex_token_reason:
@@ -218,7 +214,10 @@ develop_begin_undo_main(void)
     // locate project data
     //
     if (!project_name)
-        project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -228,17 +227,16 @@ develop_begin_undo_main(void)
     //
     if (usr_name)
     {
-        admin_up = user_executing(pp);
-        up = user_symbolic(pp, usr_name);
-        if (str_equal(user_name(up), user_name(admin_up)))
+        admin_up = user_ty::create();
+        up = user_ty::create(nstring(usr_name));
+        if (up->name() == admin_up->name())
         {
             //
             // If the user specified themselves, silently
             // ignore such sillyness.
             //
-            user_free(up);
             up = admin_up;
-            admin_up = 0;
+            admin_up.reset();
         }
 
         //
@@ -246,20 +244,20 @@ develop_begin_undo_main(void)
         // check that the executing user is a project
         // administrator.
         //
-        if (admin_up && !project_administrator_query(pp, user_name(admin_up)))
+        if (admin_up && !project_administrator_query(pp, admin_up->name()))
             project_fatal(pp, 0, i18n("not an administrator"));
     }
     else
     {
-        admin_up = 0;
-        up = user_executing(pp);
+        admin_up.reset();
+        up = user_ty::create();
     }
 
     //
     // locate change data
     //
     if (!change_number)
-        change_number = user_default_change(up);
+        change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -276,15 +274,20 @@ develop_begin_undo_main(void)
     //
     pp->pstate_lock_prepare();
     change_cstate_lock_prepare(cp);
-    user_ustate_lock_prepare(up);
+    up->ustate_lock_prepare();
     lock_take();
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
 
     //
     // Race condition: check that the admin_up is still a project
     // administrator now that we have the project lock.
     //
-    if (admin_up && !project_administrator_query(pp, user_name(admin_up)))
+    if
+    (
+        admin_up
+    &&
+        !project_administrator_query(pp, admin_up->name())
+    )
         project_fatal(pp, 0, i18n("not an administrator"));
 
     //
@@ -293,7 +296,7 @@ develop_begin_undo_main(void)
     //
     if (cstate_data->state != cstate_state_being_developed)
         change_fatal(cp, 0, i18n("bad dbu state"));
-    if (!str_equal(change_developer_name(cp), user_name(up)))
+    if (nstring(change_developer_name(cp)) != up->name())
         change_fatal(cp, 0, i18n("not developer"));
 
     //
@@ -314,8 +317,8 @@ develop_begin_undo_main(void)
         string_ty *r2 =
             str_format
             (
-                "Forced by administrator \"%s\".",
-                user_name(admin_up)->str_text
+                "Forced by administrator %s.",
+                admin_up->name().quote_c().c_str()
             );
 	if (reason)
 	{
@@ -344,18 +347,17 @@ develop_begin_undo_main(void)
     // Remove the change from the list of assigned changes in the user
     // change table (in the user row).
     //
-    user_own_remove(up, project_name_get(pp), change_number);
+    up->own_remove(pp, change_number);
 
     //
     // remove the development directory
     //
-    dd = change_development_directory_get(cp, 1);
-    if (user_delete_file_query(up, dd, true, -1))
+    nstring dd(change_development_directory_get(cp, 1));
+    if (up->delete_file_query(dd, true, -1))
     {
         change_verbose(cp, 0, i18n("remove development directory"));
-        user_become(up);
+        user_ty::become scoped(up);
         commit_rmdir_tree_errok(dd);
-        user_become_undo();
     }
 
     //
@@ -370,7 +372,7 @@ develop_begin_undo_main(void)
     //
     change_cstate_write(cp);
     pp->pstate_write();
-    user_ustate_write(up);
+    up->ustate_write();
     commit();
     lock_release();
 
@@ -390,9 +392,6 @@ develop_begin_undo_main(void)
     change_verbose(cp, 0, i18n("develop begin undo complete"));
     change_free(cp);
     project_free(pp);
-    user_free(up);
-    if (admin_up)
-        user_free(admin_up);
     trace(("}\n"));
 }
 
@@ -402,8 +401,8 @@ develop_begin_undo(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-        {arglex_token_help, develop_begin_undo_help, },
-        {arglex_token_list, develop_begin_undo_list, },
+        { arglex_token_help, develop_begin_undo_help, 0 },
+        { arglex_token_list, develop_begin_undo_list, 0 },
     };
 
     trace(("develop_begin_undo()\n{\n"));

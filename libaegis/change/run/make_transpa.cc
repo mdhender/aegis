@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,55 +13,51 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate make_transpas
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h> // for assert
+#include <common/str_list.h>
+#include <common/trace.h>
 #include <libaegis/change.h>
 #include <libaegis/change/env_set.h>
-#include <common/error.h> // for assert
+#include <libaegis/lock.h>
 #include <libaegis/os.h>
-#include <common/str_list.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/user.h>
 
 
 void
-change_run_make_transparent_command(change_ty *cp, string_list_ty *wlp,
-    user_ty *up)
+change::run_make_transparent_command(string_list_ty *wlp,
+    const user_ty::pointer &up)
 {
-    sub_context_ty  *scp;
-    pconf_ty        *pconf_data;
-    string_ty       *the_command;
-    string_ty       *the_files;
-    string_ty       *dd;
+    trace(("change::run_make_transparent_command(this = %08lX)\n{\n",
+        (long)this));
 
-    trace(("change_run_make_transparent_command(cp = %08lX)\n{\n", (long)cp));
-    assert(cp->reference_count >= 1);
-    pconf_data = change_pconf_get(cp, 0);
-    the_command = pconf_data->make_transparent_command;
+    assert(!lock_active());
+    assert(reference_count >= 1);
+    pconf_ty *pcp = change_pconf_get(this, 0);
+    string_ty *the_command = pcp->make_transparent_command;
     if (!the_command)
-	the_command = pconf_data->change_file_command;
+	the_command = pcp->change_file_command;
     if (!the_command || !the_command->str_length)
-	goto ret;
+    {
+        trace(("}\n"));
+        return;
+    }
 
-    scp = sub_context_new();
-    the_files = wlp->unsplit();
-    sub_var_set_string(scp, "File_List", the_files);
-    sub_var_optional(scp, "File_List");
+    sub_context_ty sc;
+    string_ty *the_files = wlp->unsplit();
+    sc.var_set_string("File_List", the_files);
+    sc.var_optional("File_List");
     str_free(the_files);
-    the_command = substitute(scp, cp, the_command);
-    sub_context_delete(scp);
+    the_command = sc.substitute(this, the_command);
 
-    dd = change_development_directory_get(cp, 0);
-    change_env_set(cp, 0);
-    user_become(up);
+    string_ty *dd = change_development_directory_get(this, 0);
+    change_env_set(this, 0);
+    user_ty::become scoped(up);
     os_execute(the_command, OS_EXEC_FLAG_NO_INPUT | OS_EXEC_FLAG_ERROK, dd);
-    user_become_undo();
     str_free(the_command);
-    ret:
     trace(("}\n"));
 }

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -98,6 +97,14 @@ repository_cvs::checkout(const nstring &a_mod, const nstring &a_dir)
     int flags = 0;
     os_execute(command, flags, os_dirname_relative(directory));
     trace(("}\n"));
+}
+
+
+nstring
+repository_cvs::get_directory()
+    const
+{
+    return directory;
 }
 
 

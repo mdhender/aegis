@@ -1,8 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
+//	Copyright (C) 2004-2007 Peter Miller
 //	Copyright (C) 2006 Walter Franzini;
-//	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -54,6 +53,40 @@ attributes_ty *attributes_list_find(attributes_list_ty *alp, const char *name);
   */
 bool attributes_list_find_boolean(attributes_list_ty *alp, const char *name,
     bool default_value = false);
+
+/**
+  * The attributes_list_find_read function is used to find a specific
+  * attribute in an attribute list.
+  *
+  * \param alp
+  *     The attribute list to be searched.
+  * \param name
+  *     The name of the attribute to search for; not case sensitive.
+  * \param default_value
+  *     The value to use of the attribute is not present.
+  * \returns
+  *     double; the value of the attribute as a floating point(real)
+  *     number, or the default value if not present or indecipherable.
+  */
+double attributes_list_find_real(attributes_list_ty *alp, const char *name,
+    double default_value = 0);
+
+/**
+  * The attributes_list_find_integer function is used to find a specific
+  * attribute in an attribute list.
+  *
+  * \param alp
+  *     The attribute list to be searched.
+  * \param name
+  *     The name of the attribute to search for; not case sensitive.
+  * \param default_value
+  *     The value to use of the attribute is not present.
+  * \returns
+  *     long; the value of the attribute as an integer number, or the
+  *     default value if not present or indecipherable.
+  */
+long attributes_list_find_integer(attributes_list_ty *alp, const char *name,
+    long default_value = 0);
 
 /**
   * The attributes_list_extract function is used to find a specific

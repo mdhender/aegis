@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -43,7 +42,7 @@ static const char *const month_name[] =
 
 
 void
-get_project_integration_histogram(project_ty *pp, string_ty *fn,
+get_project_integration_histogram(project_ty *pp, string_ty *,
     string_list_ty *modifier_p)
 {
     string_list_ty &modifier = *modifier_p;

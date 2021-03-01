@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000-2003, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2000-2003, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface definition for libaegis/change/attributes.c
 //
@@ -23,10 +22,9 @@
 #ifndef LIBAEGIS_CHANGE_ATTRIBUTES_H
 #define LIBAEGIS_CHANGE_ATTRIBUTES_H
 
-#include <common/main.h>
+#include <libaegis/change.h>
 
 struct cattr_ty;
-struct change_ty;
 struct cstate_ty;
 struct pconf_ty;
 struct project_ty;
@@ -65,7 +63,7 @@ void change_attributes_append(cstate_ty *cs, const char *name,
   * \returns
   *     The value of the given attribute, or NULL if not found.
   */
-string_ty *change_attributes_find(change_ty *cp, string_ty *name);
+string_ty *change_attributes_find(change::pointer cp, string_ty *name);
 
 /**
   * The change_attributes_find_boolean function is used to find a
@@ -83,7 +81,7 @@ string_ty *change_attributes_find(change_ty *cp, string_ty *name);
   *     understands, "yes", "no", "true" and "false"), or the default
   *     value if not set or undeciperable.
   */
-bool change_attributes_find_boolean(change_ty *cp, const char *name,
+bool change_attributes_find_boolean(change::pointer cp, const char *name,
     bool default_value = false);
 
 /**

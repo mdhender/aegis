@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994, 1996, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,35 +13,34 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate null statements
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/aer/stmt/null.h>
 
 
-static void
-run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
+rpt_stmt_null::~rpt_stmt_null()
 {
-	rp->status = rpt_stmt_status_normal;
-	rp->thrown = 0;
 }
 
 
-static rpt_stmt_method_ty method =
+rpt_stmt_null::rpt_stmt_null()
 {
-	sizeof(rpt_stmt_ty),
-	"null",
-	0,	// construct
-	0,	// destruct
-	run
-};
+}
 
 
-rpt_stmt_ty *
-rpt_stmt_null()
+rpt_stmt::pointer
+rpt_stmt_null::create()
 {
-	return rpt_stmt_alloc(&method);
+    return pointer(new rpt_stmt_null());
+}
+
+
+void
+rpt_stmt_null::run(rpt_stmt_result_ty *rp)
+    const
+{
+    rp->status = rpt_stmt_status_normal;
+    rp->thrown.reset();
 }

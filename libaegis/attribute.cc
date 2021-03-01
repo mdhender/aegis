@@ -1,8 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	Copyright (C) 2006 Walter Franzini;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
+//	Copyright (C) 2006 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -22,6 +21,7 @@
 //
 
 #include <common/ac/string.h>
+#include <common/ac/stdlib.h>
 
 #include <libaegis/attribute.h>
 #include <libaegis/boolean.h>
@@ -54,6 +54,36 @@ attributes_list_find_boolean(attributes_list_ty *alp, const char *name,
     if (!ap || !ap->value)
 	return default_value;
     return string_to_bool(nstring(ap->value), default_value);
+}
+
+
+double
+attributes_list_find_real(attributes_list_ty *alp, const char *name,
+    double default_value)
+{
+    attributes_ty *ap = attributes_list_find(alp, name);
+    if (!ap || !ap->value)
+	return default_value;
+    char *ep = 0;
+    double result = strtod(ap->value->str_text, &ep);
+    if (ep == ap->value->str_text || *ep)
+        return default_value;
+    return result;
+}
+
+
+long
+attributes_list_find_integer(attributes_list_ty *alp, const char *name,
+    long default_value)
+{
+    attributes_ty *ap = attributes_list_find(alp, name);
+    if (!ap || !ap->value)
+	return default_value;
+    char *ep = 0;
+    long result = strtol(ap->value->str_text, &ep, 0);
+    if (ep == ap->value->str_text || *ep)
+        return default_value;
+    return result;
 }
 
 
@@ -112,7 +142,7 @@ attributes_list_append(attributes_list_ty *alp, const char *name,
     assert(alp);
     if (!alp)
 	return;
-    type_ty *type;
+    meta_type *type;
     attributes_ty **app =
 	(attributes_ty **)attributes_list_type.list_parse(alp, &type);
     assert(type == &attributes_type);
@@ -182,7 +212,7 @@ attributes_list_append_unique(attributes_list_ty *alp, const char *name,
 	(
 	    0 == strcasecmp(ap->name->str_text, name)
 	&&
-	    strcmp(ap->value->str_text, value)
+	    0 == strcmp(ap->value->str_text, value)
 	)
 	{
 	    return;

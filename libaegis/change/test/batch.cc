@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2000-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,13 +13,13 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate batchs
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h> // for assert
+#include <common/format_elpsd.h>
+#include <common/now.h>
 #include <common/nstring/list.h>
 #include <common/str_list.h>
 #include <common/trace.h>
@@ -41,11 +40,10 @@
 
 
 batch_result_list_ty *
-change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
+change_test_batch(change::pointer cp, string_list_ty *wlp, user_ty::pointer up,
     bool baseline_flag, int current, int total,
-    const nstring_list &variable_assignments)
+    const nstring_list &variable_assignments, const long *remaining)
 {
-    sub_context_ty  *scp;
     int		    flags;
     batch_result_list_ty *result;
     tstrslt_ty	    *tstrslt_data;
@@ -59,7 +57,7 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
 
     trace(("change_test_batch(cp = %08lX, wlp = %08lX, up = %08lX, "
 	"baseline_flag = %d, current = %d, total = %d)\n{\n", (long)cp,
-	(long)wlp, (long)up, baseline_flag, current, total));
+	(long)wlp, (long)up.get(), baseline_flag, current, total));
     pconf_data = change_pconf_get(cp, 1);
     the_command = pconf_data->batch_test_command;
     assert(the_command);
@@ -67,7 +65,6 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
     //
     // resolve the file names
     //
-    trace(("mark\n"));
     string_list_ty wl2;
     for (j = 0; j < wlp->nstrings; ++j)
     {
@@ -92,47 +89,45 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
 	str_free(fn_abs);
     }
 
-    trace(("mark\n"));
     assert(cp->reference_count>=1);
-    scp = sub_context_new();
     s = wl2.unsplit();
-    sub_var_set_string(scp, "File_Names", s);
+    sub_context_ty sc;
+    sc.var_set_string("File_Names", s);
     str_free(s);
-    trace(("mark\n"));
     output_file_name = os_edit_filename(0);
-    sub_var_set_string(scp, "Output", output_file_name);
+    sc.var_set_string("Output", output_file_name);
     if (baseline_flag && !cp->bogus)
     {
 	string_list_ty spbl;
 	project_search_path_get(cp->pp, &spbl, 0);
 	s = spbl.unsplit(":");
-	sub_var_set_string(scp, "Search_Path_Executable", s);
+	sc.var_set_string("Search_Path_Executable", s);
 	str_free(s);
-	sub_var_override(scp, "Search_Path_Executable");
-	sub_var_optional(scp, "Search_Path_Executable");
+	sc.var_override("Search_Path_Executable");
+	sc.var_optional("Search_Path_Executable");
     }
-    sub_var_set_long(scp, "Current", current);
-    sub_var_optional(scp, "Current");
-    sub_var_set_long(scp, "Total", total);
-    sub_var_optional(scp, "Total");
+    sc.var_set_long("Current", current);
+    sc.var_optional("Current");
+    sc.var_set_long("Total", total);
+    sc.var_optional("Total");
+    sc.var_set_string("REMaining", format_elapsed(remaining[0]));
+    sc.var_optional("REMaining");
 
     // Quote the variable assignments
     nstring_list var;
     for (size_t jj = 0; jj < variable_assignments.size(); ++jj)
 	var.push_back(variable_assignments[jj].quote_shell());
-    sub_var_set_string(scp, "VARiables", var.unsplit());
-    sub_var_append_if_unused(scp, "VARiables");
+    sc.var_set_string("VARiables", var.unsplit());
+    sc.var_append_if_unused("VARiables");
 
-    user_become(up);
+    up->become_begin();
     undo_unlink_errok(output_file_name);
-    user_become_undo();
-    the_command = substitute(scp, cp, the_command);
-    sub_context_delete(scp);
+    up->become_end();
+    the_command = sc.substitute(cp, the_command);
 
     //
     // we need input if any of the tests are manual
     //
-    trace(("mark\n"));
     flags = OS_EXEC_FLAG_NO_INPUT;
     for (j = 0; j < wlp->nstrings; ++j)
     {
@@ -172,14 +167,13 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
     // To minimize this, it is essential that they are
     // unresolved, and thus always trigger the automounter.
     //
-    trace(("mark\n"));
     dir = cp->pp->baseline_path_get();
     trace(("dir = \"%s\";\n", dir->str_text));
     if (!baseline_flag && !cp->bogus)
     {
 	cstate_ty       *cstate_data;
 
-	cstate_data = change_cstate_get(cp);
+	cstate_data = cp->cstate_get();
 	switch (cstate_data->state)
 	{
 	case cstate_state_awaiting_development:
@@ -208,7 +202,6 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
     //
     if (total > 0)
     {
-	sub_context_ty sc;
 	sc.var_set_long("Current", current + 1);
 	sc.var_set_long("Total", total);
 	if (wlp->nstrings == 1)
@@ -229,19 +222,24 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
     // run the command
     //	    This tests all of the files at once.
     //
-    trace(("mark\n"));
+    // we average the elapsed time over all tests
+    //
     change_env_set(cp, 1);
-    user_become(up);
+    up->become_begin();
+    double t_begin = dtime();
     os_execute(the_command, flags, dir);
+    double t_end = dtime();
     str_free(the_command);
+    double elapsed = t_end - t_begin;
+    elapsed /= wlp->nstrings;
+    trace(("elapsed = %g\n", elapsed));
 
     //
     // read the output
     //
-    trace(("mark\n"));
     tstrslt_data = tstrslt_read_file(output_file_name);
     os_unlink_errok(output_file_name);
-    os_become_undo();
+    up->become_end();
     if (!tstrslt_data->test_result)
     {
 	tstrslt_data->test_result =
@@ -252,7 +250,6 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
     //
     // transcribe the result structure
     //
-    trace(("mark\n"));
     result = batch_result_list_new();
     for (j = 0; j < tstrslt_data->test_result->length; ++j)
     {
@@ -264,7 +261,6 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
 	p = tstrslt_data->test_result->list[j];
 	if (!p->file_name)
 	{
-	    sub_context_ty sc;
 	    sc.var_set_string("File_Name", output_file_name);
 	    sc.var_set_charstar("FieLD_Name", "test_result.file_name");
 	    sc.var_set_charstar("REASON", " (no file_name field)");
@@ -291,7 +287,6 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
 	}
 	if (!wlp->member(p->file_name))
 	{
-	    sub_context_ty sc;
 	    sc.var_set_string("File_Name", output_file_name);
 	    sc.var_set_charstar("FieLD_Name", "test_result.file_name");
 	    sc.var_set_string
@@ -311,7 +306,6 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
 
 	if (batch_result_list_member(result, p->file_name, p->architecture))
 	{
-	    sub_context_ty sc;
 	    sc.var_set_string("File_Name", output_file_name);
 	    sc.var_set_charstar("FieLD_Name", "test_result.file_name");
 	    sc.var_set_string
@@ -343,7 +337,8 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
 	    result,
 	    p->file_name,
 	    p->exit_status,
-	    p->architecture
+	    p->architecture,
+            elapsed
 	);
 
 	//
@@ -354,7 +349,6 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
 	case 1:
 	    if (baseline_flag)
 	    {
-		sub_context_ty sc;
 		sc.var_set_string("File_Name", p->file_name);
 		if (p->architecture)
 		{
@@ -383,7 +377,6 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
 	    }
 	    else
 	    {
-		sub_context_ty sc;
 		sc.var_set_string("File_Name", p->file_name);
 		if (p->architecture)
 		{
@@ -405,7 +398,6 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
 	case 0:
 	    if (baseline_flag)
 	    {
-		sub_context_ty sc;
 		sc.var_set_string("File_Name", p->file_name);
 		if (p->architecture)
 		{
@@ -434,7 +426,6 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
 	    }
 	    else
 	    {
-		sub_context_ty sc;
 		sc.var_set_string("File_Name", p->file_name);
 		if (p->architecture)
 		{
@@ -453,9 +444,30 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
 	    }
 	    break;
 
+	case 77:
+	    {
+                // Note: the value 77 was chosen to be compatible with
+                // other test systems.
+		sc.var_set_string("File_Name", p->file_name);
+		if (p->architecture)
+		{
+		    sc.var_set_string("ARCHitecture", p->architecture);
+		    sc.var_override("ARCHitecture");
+		    change_verbose
+	    	    (
+			cp,
+			&sc,
+			i18n("$filename skipped, architecture $architecture")
+		    );
+		}
+		else
+		    change_verbose(cp, &sc, i18n("$filename skipped"));
+		result->skip_count++;
+	    }
+	    break;
+
 	default:
 	    {
-		sub_context_ty sc;
 		sc.var_set_string("File_Name", p->file_name);
 		if (p->architecture)
 		{

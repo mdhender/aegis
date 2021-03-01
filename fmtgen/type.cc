@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1998, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1994, 1998, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -26,12 +25,12 @@
 #include <fmtgen/type.h>
 
 
-type_ty::~type_ty()
+type::~type()
 {
 }
 
 
-type_ty::type_ty(const nstring &a_name) :
+type::type(const nstring &a_name) :
     name(a_name),
     is_a_typedef(false),
     included_flag(false)
@@ -42,50 +41,49 @@ type_ty::type_ty(const nstring &a_name) :
 
 
 void
-type_ty::gen_include_declarator(const nstring &a_name, bool is_a_list)
+type::gen_include_declarator(const nstring &, bool)
     const
 {
 }
 
 
 void
-type_ty::gen_include()
+type::gen_include()
     const
 {
 }
 
 
 void
-type_ty::gen_code_declarator(const nstring &a_name, bool is_a_list,
-    int attributes) const
-{
-}
-
-
-void
-type_ty::gen_code_call_xml(const nstring &form_name, const nstring &member_name,
-    int show) const
-{
-}
-
-
-void
-type_ty::gen_code()
+type::gen_code_declarator(const nstring &, bool, int)
     const
 {
 }
 
 
 void
-type_ty::gen_free_declarator(const nstring &a_name, bool is_a_list)
+type::gen_code_call_xml(const nstring &, const nstring &, int)
     const
 {
 }
 
 
 void
-type_ty::member_add(const nstring &member_name, type_ty *member_type,
-    int attributes)
+type::gen_code()
+    const
+{
+}
+
+
+void
+type::gen_free_declarator(const nstring &, bool)
+    const
+{
+}
+
+
+void
+type::member_add(const nstring &, type *, int)
 {
     //
     // This should only be called for structure members, and
@@ -96,20 +94,20 @@ type_ty::member_add(const nstring &member_name, type_ty *member_type,
 
 
 void
-type_ty::in_include_file()
+type::in_include_file()
 {
     included_flag = true;
 }
 
 
 void
-type_ty::toplevel()
+type::toplevel()
 {
 }
 
 
 void
-type_ty::gen_code_copy(const nstring &member_name)
+type::gen_code_copy(const nstring &)
     const
 {
 }

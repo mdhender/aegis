@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 1997, 1999, 2000, 2003-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994, 1996, 1997, 1999, 2000, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,14 +13,15 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate gstate values
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h> // for strerror()
 
+#include <common/error.h>
+#include <common/str_list.h>
+#include <common/trace.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/gstate.h>
 #include <libaegis/aer/value/integer.h>
@@ -30,85 +30,52 @@
 #include <libaegis/aer/value/string.h>
 #include <libaegis/aer/value/struct.h>
 #include <libaegis/change.h>
-#include <common/error.h>
 #include <libaegis/project.h>
-#include <common/str_list.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 
 
-struct rpt_value_gstate_ty
+
+
+rpt_value_gstate::~rpt_value_gstate()
 {
-    RPT_VALUE
-    string_list_ty  *keys;
-};
-
-
-static void
-construct(rpt_value_ty *vp)
-{
-    rpt_value_gstate_ty *this_thing;
-
-    trace(("rpt_value_gstate::construct(vp = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_gstate_ty *)vp;
-    this_thing->keys = 0;
-    trace(("}\n"));
 }
 
 
-static void
-destruct(rpt_value_ty *vp)
+rpt_value_gstate::rpt_value_gstate()
 {
-    rpt_value_gstate_ty *this_thing;
-
-    trace(("rpt_value_gstate::destruct(vp = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_gstate_ty *)vp;
-    if (this_thing->keys)
-    {
-	delete this_thing->keys;
-	this_thing->keys = 0;
-    }
-    trace(("}\n"));
 }
 
 
-static rpt_value_ty *
-grab_one(string_ty *project_name)
+rpt_value::pointer
+rpt_value_gstate::create()
 {
-    project_ty      *pp;
-    rpt_value_ty    *vp;
-    string_ty       *name;
-    rpt_value_ty    *value;
-    change_ty       *cp;
-    string_ty       *dd;
-    int             err;
+    static rpt_value::pointer vp;
+    if (!vp)
+	vp = pointer(new rpt_value_gstate());
+    return vp;
+}
 
+
+rpt_value::pointer
+grab_one(const nstring &project_name)
+{
     //
     // get details of the project
     // to put in the structure
     //
-    pp = project_alloc(project_name);
+    project_ty *pp = project_alloc(project_name.get_ref());
     pp->bind_existing();
-    vp = rpt_value_struct((struct symtab_ty *)0);
+    rpt_value_struct *rsp = new rpt_value_struct();
+    rpt_value::pointer result(rsp);
 
-    name = str_from_c("name");
-    value = rpt_value_string(project_name_get(pp));
-    rpt_value_struct__set(vp, name, value);
-    str_free(name);
-    rpt_value_free(value);
+    nstring pn(project_name_get(pp));
+    rpt_value::pointer value = rpt_value_string::create(pn);
+    rsp->assign("name", value);
 
-    err = project_is_readable(pp);
+    int err = project_is_readable(pp);
     if (err)
     {
-	string_ty	*s;
-
-	name = str_from_c("error");
-	s = str_from_c(strerror(err));
-	value = rpt_value_string(s);
-	str_free(s);
-	rpt_value_struct__set(vp, name, value);
-	str_free(name);
-	rpt_value_free(value);
+	rsp->assign("error", rpt_value_string::create(strerror(err)));
     }
     else
     {
@@ -116,22 +83,15 @@ grab_one(string_ty *project_name)
 	// The development directory of the project change is
 	// the one which contains the trunk or branch baseline.
 	//
-	cp = pp->change_get();
-	if (change_is_being_developed(cp))
+	change::pointer cp = pp->change_get();
+	if (cp->is_being_developed())
 	{
-	    dd = change_development_directory_get(cp, 0);
-	    name = str_from_c("directory");
-	    value = rpt_value_string(dd);
-	    rpt_value_struct__set(vp, name, value);
-	    str_free(name);
-	    rpt_value_free(value);
+	    nstring dd(change_development_directory_get(cp, 0));
+	    rsp->assign("directory", rpt_value_string::create(dd));
 	}
 
-	name = str_from_c("state");
-	value = rpt_value_pstate(project_name_get(pp));
-	rpt_value_struct__set(vp, name, value);
-	str_free(name);
-	rpt_value_free(value);
+	value = rpt_value_pstate::create(project_name_get(pp));
+	rsp->assign("state", value);
     }
 
     project_free(pp);
@@ -139,144 +99,99 @@ grab_one(string_ty *project_name)
     //
     // all done
     //
-    return vp;
+    return result;
 }
 
 
-static void
-grab(rpt_value_gstate_ty *this_thing)
+rpt_value::pointer
+rpt_value_gstate::lookup(const rpt_value::pointer &rhs, bool)
+    const
 {
+    trace(("rpt_value_gstate::lookup()\n"));
+    rpt_value::pointer rhs2 = rpt_value::stringize(rhs);
+    trace(("rhs2 is a \"%s\"\n", rhs->name()));
+    rpt_value_string *rhs2sp = dynamic_cast<rpt_value_string *>(rhs2.get());
+    if (!rhs2sp)
+    {
+        trace(("keys is not a string\n"));
+	sub_context_ty sc;
+	sc.var_set_charstar("Name1", "project");
+	sc.var_set_charstar("Name2", rhs->name());
+	nstring s(sc.subst_intl(i18n("illegal lookup ($name1[$name2])")));
+	return rpt_value_error::create(s);
+    }
+
+    return grab_one(rhs2sp->query());
+}
+
+
+void
+rpt_value_gstate::grab()
+    const
+{
+    if (vkeys)
+        return;
+
     //
     // create a structure/array to hold the thing
     //
-    trace(("rpt_value_gstate::grab(this = %08lX)\n{\n", (long)this_thing));
-    assert(!this_thing->keys);
-    this_thing->keys = new string_list_ty();
+    trace(("rpt_value_gstate::grab(this = %08lX)\n{\n", (long)this));
 
     //
     // ask gonzo for the list of project names
     //
-    project_list_get(this_thing->keys);
-    trace(("}\n"));
-}
-
-
-static rpt_value_ty *
-lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lval)
-{
-    rpt_value_ty    *rhs2;
-    rpt_value_ty    *result;
-
-    trace(("rpt_value_gstate::lookup(this = %08lX)\n{\n", (long)vp));
-
-    rhs2 = rpt_value_stringize(rhs);
-    if (rhs2->method->type == rpt_value_type_string)
+    string_list_ty names;
+    project_list_get(&names);
+    rpt_value_list *p = new rpt_value_list();
+    vkeys = rpt_value::pointer(p);
+    for (size_t j = 0; j < names.size(); ++j)
     {
-	string_ty	*name;
-
-	name = rpt_value_string_query(rhs);
-	result = grab_one(name);
+        nstring s(names[j]);
+	p->append(rpt_value_string::create(s));
     }
-    else
-    {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name1", "project");
-	sub_var_set_charstar(scp, "Name2", rhs->method->name);
-	s = subst_intl(scp, i18n("illegal lookup ($name1[$name2])"));
-	sub_context_delete(scp);
-	result = rpt_value_error((struct rpt_pos_ty *)0, s);
-	str_free(s);
-    }
-    rpt_value_free(rhs2);
-
-    trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
-    return result;
 }
 
 
-static rpt_value_ty *
-keys(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_gstate::keys()
+    const
 {
-    rpt_value_gstate_ty *this_thing;
-    rpt_value_ty    *result;
-    size_t          j;
-    string_ty       *s;
-    rpt_value_ty    *ep;
-
-    trace(("rpt_value_gstate::keys(this = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_gstate_ty *)vp;
-    if (!this_thing->keys)
-	grab(this_thing);
-    assert(this_thing->keys);
-
-    result = rpt_value_list();
-    for (j = 0; j < this_thing->keys->nstrings; ++j)
-    {
-	s = this_thing->keys->string[j];
-	ep = rpt_value_string(s);
-	rpt_value_list_append(result, ep);
-	rpt_value_free(ep);
-    }
-
-    trace(("return %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
+    trace(("rpt_value_gstate::keys(this = %08lX)\n{\n", (long)this));
+    grab();
+    return vkeys;
 }
 
 
-static rpt_value_ty *
-count(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_gstate::count()
+    const
 {
-    rpt_value_gstate_ty *this_thing;
-    rpt_value_ty    *result;
-
-    trace(("rpt_value_gstate::count(this = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_gstate_ty *)vp;
-    if (!this_thing->keys)
-	grab(this_thing);
-    assert(this_thing->keys);
-    result = rpt_value_integer((long)this_thing->keys->nstrings);
-    trace(("return %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
+    trace(("rpt_value_gstate::count(this = %08lX)\n", (long)this));
+    grab();
+    return vkeys->count();
 }
 
 
-static const char *
-type_of(rpt_value_ty *vp)
+const char *
+rpt_value_gstate::type_of()
+    const
 {
     return "struct";
 }
 
 
-static rpt_value_method_ty method =
+const char *
+rpt_value_gstate::name()
+    const
 {
-    sizeof(rpt_value_gstate_ty),
-    "gstate",
-    rpt_value_type_structure,
-    construct,
-    destruct,
-    0, // arithmetic
-    0, // stringize
-    0, // booleanize
-    lookup,
-    keys,
-    count,
-    type_of,
-    0, // undefer
-};
+    return "gstate";
+}
 
 
-rpt_value_ty *
-rpt_value_gstate()
+bool
+rpt_value_gstate::is_a_struct()
+    const
 {
-    static rpt_value_ty *vp;
-
-    if (!vp)
-	vp = rpt_value_alloc(&method);
-    return vp;
+    return true;
 }

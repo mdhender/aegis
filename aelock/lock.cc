@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2006, 2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -101,7 +100,7 @@ lock_main()
     //
     // Only project adminstrators are allowed to do this.
     //
-    if (!project_administrator_query(pid.get_pp(), user_name(pid.get_up())))
+    if (!project_administrator_query(pid.get_pp(), pid.get_up()->name()))
     {
 	project_fatal(pid.get_pp(), 0, i18n("not an administrator"));
     }
@@ -114,6 +113,6 @@ lock_main()
     lock_take();
     project_become(trunk);
     os_execute(command, 0, trunk->home_path_get());
-    project_become_undo();
+    project_become_undo(trunk);
     lock_release();
 }

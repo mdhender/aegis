@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate cur_int_sets
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change/branch.h>
@@ -26,7 +23,7 @@
 
 
 void
-change_current_integration_set(change_ty *cp, long change_number)
+change_current_integration_set(change::pointer cp, long change_number)
 {
     cstate_ty       *cstate_data;
     cstate_branch_ty *bp;
@@ -34,7 +31,7 @@ change_current_integration_set(change_ty *cp, long change_number)
     trace(("change_current_integration_set(cp = %8.8lX, "
 	"change_number = %ld)\n{\n", (long)cp, change_number));
     assert(change_number >= 0 || change_number == MAGIC_ZERO);
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     bp = cstate_data->branch;
     assert(bp);
     if (change_number)

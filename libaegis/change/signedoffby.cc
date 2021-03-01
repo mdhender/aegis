@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the change_signedoffby class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
@@ -42,13 +39,13 @@ trim_right(string_ty *s)
 
 
 void
-change_signed_off_by(change_ty *cp, user_ty *up)
+change_signed_off_by(change::pointer cp, user_ty::pointer up)
 {
     //
     // If the email address is already present, don't do anything else.
     //
-    string_ty *email_address = user_email_address(up);
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    nstring email_address = up->get_email_address();
+    cstate_ty *cstate_data = cp->cstate_get();
     string_ty *desc = trim_right(cstate_data->description);
     string_list_ty wl;
     wl.split(desc, "\n", true);
@@ -62,7 +59,7 @@ change_signed_off_by(change_ty *cp, user_ty *up)
 	const char *sp = s->str_text + 14;
 	while (*sp && isspace((unsigned char)*sp))
 	    ++sp;
-	if (0 == strcasecmp(sp, email_address->str_text))
+	if (0 == strcasecmp(sp, email_address.c_str()))
 	    return;
     }
 
@@ -76,14 +73,14 @@ change_signed_off_by(change_ty *cp, user_ty *up)
 	    "%s\n%sSigned-off-by: %s",
 	    desc->str_text,
 	    (last_was_sob ? "" : "\n"),
-	    email_address->str_text
+	    email_address.c_str()
 	);
     str_free(desc);
 }
 
 
 bool
-change_signed_off_by_get(change_ty *cp)
+change_signed_off_by_get(change::pointer cp)
 {
     pconf_ty *pconf_data = change_pconf_get(cp, 0);
     return (option_signed_off_by_get(pconf_data->signed_off_by));

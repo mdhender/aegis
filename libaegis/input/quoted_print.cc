@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -176,7 +175,6 @@
 #include <common/ac/string.h>
 
 #include <libaegis/input/quoted_print.h>
-#include <common/mem.h>
 
 
 input_quoted_printable::~input_quoted_printable()
@@ -269,7 +267,10 @@ input_quoted_printable::read_inner(void *data, size_t len)
 		if (bufpos >= bufmax)
 		{
 		    bufmax = bufmax * 2 + 8;
-		    buf = (char *)mem_change_size(buf, bufmax);
+		    char *new_buf = new char [bufmax];
+		    memcpy(new_buf, buf, bufpos);
+		    delete [] buf;
+		    buf = new_buf;
 		}
 		buf[bufpos++] = c;
 

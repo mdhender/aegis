@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -22,8 +21,8 @@
 
 #include <common/ac/string.h>
 
+#include <common/wstring.h>
 #include <libaegis/collect.h>
-#include <common/wstr.h>
 
 
 collect::~collect()
@@ -89,10 +88,17 @@ collect::append(const wchar_t *s, size_t n)
 }
 
 
-wstring_ty *
+void
+collect::push_back(const wstring &s)
+{
+    append(s.c_str(), s.size());
+}
+
+
+wstring
 collect::end()
 {
-    wstring_ty *result = wstr_n_from_wc(buf, pos);
+    wstring result(buf, pos);
     pos = 0;
     return result;
 }

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -34,7 +33,7 @@ output_cpio_ty::~output_cpio_ty()
     // (An empty file with a magic name.)
     //
     nstring trailer("TRAILER!!!");
-    delete new output_cpio_child_ty(deeper, trailer, false);
+    delete new output_cpio_child_ty(deeper, trailer, false, mtime);
 
     //
     // Finish writing the archive file.
@@ -44,8 +43,9 @@ output_cpio_ty::~output_cpio_ty()
 }
 
 
-output_cpio_ty::output_cpio_ty(output_ty *arg1) :
-    deeper(arg1)
+output_cpio_ty::output_cpio_ty(output_ty *arg1, time_t a_mtime) :
+    deeper(arg1),
+    mtime(a_mtime)
 {
 }
 
@@ -67,7 +67,7 @@ output_cpio_ty::ftell_inner()
 
 
 void
-output_cpio_ty::write_inner(const void *data, size_t len)
+output_cpio_ty::write_inner(const void *, size_t)
 {
     this_is_a_bug();
 }
@@ -98,7 +98,7 @@ output_cpio_ty::child(const nstring &name, long len)
         // version, which stashes the data in memory until the end, and
         // then we can write it out with the length in the header.
 	//
-	return new output_cpio_child2_ty(deeper, name);
+	return new output_cpio_child2_ty(deeper, name, mtime);
     }
-    return new output_cpio_child_ty(deeper, name, len);
+    return new output_cpio_child_ty(deeper, name, len, mtime);
 }

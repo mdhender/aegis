@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2006, 2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -19,6 +18,8 @@
 //
 // MANIFEST: implementation of the repository_factory class
 //
+
+#include <common/ac/stdio.h>
 
 #include <common/error.h>
 #include <common/fstrcmp.h>
@@ -45,15 +46,28 @@ struct table_t
 {
     const char *type;
     repository *(*alloc)(void);
+    const char *description;
+    bool hide;
 };
 
 
 static const table_t table[] =
 {
-    { "cvs", new_repository_cvs },
-    { "svn", new_repository_subversion },
-    { "subversion", new_repository_subversion },
+    { "cvs", new_repository_cvs, "Concurrent Version System", false },
+    { "svn", new_repository_subversion, "Subversion", false },
+    { "subversion", new_repository_subversion, "svn", true },
 };
+
+
+void
+repository::list()
+{
+    for (const table_t *tp = table; tp < ENDOF(table); ++tp)
+    {
+	if (!tp->hide)
+	    printf("%.7s\t%s\n", tp->type, tp->description);
+    }
+}
 
 
 repository *

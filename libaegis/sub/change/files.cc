@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,23 +13,22 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate filess
 //
 
 #include <common/ac/string.h>
 
+#include <common/nstring/list.h>
+#include <common/trace.h>
+#include <common/wstring/list.h>
 #include <libaegis/change.h>
 #include <libaegis/change/file.h>
 #include <libaegis/common.h>
-#include <common/str_list.h>
 #include <libaegis/sub.h>
 #include <libaegis/sub/change/files.h>
-#include <common/trace.h>
-#include <common/wstr.h>
-#include <common/wstr/list.h>
 
 
 //
@@ -54,36 +52,33 @@
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_change_files(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_change_files(sub_context_ty *scp, const wstring_list &arg)
 {
-    change_ty       *cp;
-    unsigned        action_mask = 0;
-    unsigned        usage_mask = 0;
-    bool            not_var = false;
-    bool            quote = false;
-    string_ty       *s;
-    wstring_ty	    *result;
-
     trace(("sub_change_files()\n{\n"));
-    cp = sub_context_change_get(scp);
+    wstring result;
+    change::pointer cp = sub_context_change_get(scp);
     if (!cp)
     {
-	sub_context_error_set(scp, i18n("not valid in current context"));
+	scp->error_set(i18n("not valid in current context"));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
 
     //
     // See if we recognize any of these words.
     //
-    for (size_t n = 1; n < arg->size(); ++n)
+    bool not_var = false;
+    bool quote = false;
+    unsigned action_mask = 0;
+    unsigned usage_mask = 0;
+    for (size_t n = 1; n < arg.size(); ++n)
     {
 	bool ok = false;
-	s = wstr_to_str(arg->get(n));
+	nstring s = arg[n].to_nstring();
 	for (unsigned k = 0; k < file_action_max; ++k)
 	{
-	    if (0 == strcmp(s->str_text, file_action_ename((file_action_ty)k)))
+	    if (0 == strcmp(s.c_str(), file_action_ename((file_action_ty)k)))
 	    {
 		action_mask |= 1 << k;
 		ok = true;
@@ -91,29 +86,28 @@ sub_change_files(sub_context_ty *scp, wstring_list_ty *arg)
 	}
 	for (size_t j = 0; j < file_usage_max; ++j)
 	{
-	    if (0 == strcmp(s->str_text, file_usage_ename((file_usage_ty)j)))
+	    if (0 == strcmp(s.c_str(), file_usage_ename((file_usage_ty)j)))
 	    {
 		usage_mask |= 1 << j;
 		ok = true;
 	    }
 	}
-	if (0 == strcmp(s->str_text, "not") || 0 == strcmp(s->str_text, "!"))
+	if (0 == strcmp(s.c_str(), "not") || 0 == strcmp(s.c_str(), "!"))
 	{
 	    not_var = !not_var;
 	    ok = true;
 	}
-	if (0 == strcmp(s->str_text, "quote"))
+	if (0 == strcmp(s.c_str(), "quote"))
 	{
 	    quote = true;
 	    ok = true;
 	}
 	if (!ok)
 	{
-	    sub_context_error_set(scp, i18n("file qualifier unknown"));
+	    scp->error_set(i18n("file qualifier unknown"));
 	    trace(("}\n"));
-	    return 0;
+	    return result;
 	}
-	str_free(s);
     }
 
     //
@@ -132,7 +126,7 @@ sub_change_files(sub_context_ty *scp, wstring_list_ty *arg)
     //
     // Look for files matching what they asked for.
     //
-    string_list_ty sl;
+    nstring_list sl;
     for (size_t m = 0; ; ++m)
     {
 	fstate_src_ty *src = change_file_nth(cp, m, view_path_first);
@@ -145,24 +139,18 @@ sub_change_files(sub_context_ty *scp, wstring_list_ty *arg)
 	    (usage_mask & (1 << src->usage))
 	)
 	{
+            nstring fn(src->file_name);
 	    if (quote)
-	    {
-		s = str_quote_shell(src->file_name);
-		sl.push_back(s);
-		str_free(s);
-	    }
-	    else
-		sl.push_back(src->file_name);
+                fn = fn.quote_shell();
+            sl.push_back(fn);
 	}
     }
 
     //
     // Turn it into a space-separated string.
     //
-    s = sl.unsplit();
-    result = str_to_wstr(s);
-    str_free(s);
-    trace(("return %8.8lX;\n", (long)result));
+    result = wstring(sl.unsplit());
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate cstates
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/trace.h>
@@ -34,7 +31,7 @@
 void
 xml_project_cstate(string_ty *project_name, long change_number, output_ty *op)
 {
-    change_ty       *cp;
+    change::pointer cp;
     project_ty      *pp;
     cstate_ty       *cstate_data;
 
@@ -46,7 +43,10 @@ xml_project_cstate(string_ty *project_name, long change_number, output_ty *op)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     else
 	project_name = str_copy(project_name);
     pp = project_alloc(project_name);
@@ -54,7 +54,7 @@ xml_project_cstate(string_ty *project_name, long change_number, output_ty *op)
     pp->bind_existing();
 
     cp = pp->change_get();
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     cstate_write_xml(op, cstate_data);
     project_free(pp);
     trace(("}\n"));

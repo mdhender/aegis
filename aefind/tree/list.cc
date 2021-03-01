@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,70 +13,93 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate tree node lists
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
-#include <common/mem.h>
-#include <aefind/tree.h>
 #include <aefind/tree/list.h>
+#include <aefind/tree/this.h>
 
 
-static void
-tree_list_constructor(tree_list_ty *tlp)
+tree_list::~tree_list()
 {
-    tlp->length = 0;
-    tlp->maximum = 0;
-    tlp->item = 0;
+    delete [] item;
+    item = 0;
+    length = 0;
+    maximum = 0;
 }
 
 
-tree_list_ty *
-tree_list_new(void)
+tree_list::tree_list() :
+    item(0),
+    length(0),
+    maximum(0)
 {
-    tree_list_ty    *tlp;
-
-    tlp = (tree_list_ty *)mem_alloc(sizeof(tree_list_ty));
-    tree_list_constructor(tlp);
-    return tlp;
 }
 
 
-static void
-tree_list_destructor(tree_list_ty *tlp)
+tree_list::tree_list(const tree_list &arg) :
+    item(0),
+    length(0),
+    maximum(0)
 {
-    size_t	    j;
-
-    for (j = 0; j < tlp->length; ++j)
-	tree_delete(tlp->item[j]);
-    if (tlp->item)
-	mem_free(tlp->item);
-    tlp->length = 0;
-    tlp->maximum = 0;
-    tlp->item = 0;
+    append(arg);
 }
 
 
-void
-tree_list_delete(tree_list_ty *tlp)
+tree_list &
+tree_list::operator=(const tree_list &arg)
 {
-    tree_list_destructor(tlp);
-    mem_free(tlp);
-}
-
-
-void
-tree_list_append(tree_list_ty *tlp, tree_ty *tp)
-{
-    if (tlp->length >= tlp->maximum)
+    if (this != &arg)
     {
-	size_t		nbytes;
-
-	tlp->maximum = tlp->maximum * 2 + 4;
-	nbytes = tlp->maximum * sizeof(tlp->item[0]);
-	tlp->item = (tree_ty **)mem_change_size(tlp->item, nbytes);
+        clear();
+        append(arg);
     }
-    tlp->item[tlp->length++] = tree_copy(tp);
+    return *this;
+}
+
+
+void
+tree_list::clear()
+{
+    while (length > 0)
+    {
+        --length;
+	item[length].reset();
+    }
+}
+
+
+void
+tree_list::append(const tree_list &arg)
+{
+    for (size_t j = 0; j < arg.size(); ++j)
+        append(arg[j]);
+}
+
+
+void
+tree_list::append(const tree::pointer &tp)
+{
+    if (length >= maximum)
+    {
+	size_t new_maximum = maximum * 2 + 4;
+	tree::pointer *new_item = new tree::pointer [new_maximum];
+	for (size_t k = 0; k < length; ++k)
+	    new_item[k] = item[k];
+	delete [] item;
+	item = new_item;
+        maximum = new_maximum;
+    }
+    item[length++] = tp;
+}
+
+
+tree::pointer
+tree_list::get(size_t n)
+    const
+{
+    if (n >= length)
+        return tree_this::create();
+    return item[n];
 }

@@ -1,7 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
- *	All rights reserved.
+ *	Copyright (C) 2001, 2006, 2007 Peter Miller
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
  *	GNU General Public License for more details.
  *
  *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: report the lib/wish/proj_conf.rpt
+ *	along with this program. If not, see
+ *	<http://www.gnu.org/licenses/>.
  */
 columns({ width = 1000; });
 auto cs;
@@ -31,6 +28,8 @@ print("set build_time_adjust_notify_command \"" ##
 	quote_tcl(cs.config.build_time_adjust_notify_command) ## "\"");
 print("set build_covers_all_architectures " ## (0 +
 	cs.config.build_covers_all_architectures));
+print("set test_covers_all_architectures " ## (0 +
+	cs.config.test_covers_all_architectures));
 print("set change_file_command \"" ##
 	quote_tcl(cs.config.change_file_command) ## "\"");
 print("set change_file_undo_command \"" ##

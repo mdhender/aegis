@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -20,11 +19,10 @@
 // MANIFEST: functions to manipulate perls
 //
 
+#include <common/trace.h>
+#include <common/wstring/list.h>
 #include <libaegis/sub.h>
 #include <libaegis/sub/perl.h>
-#include <common/trace.h>
-#include <common/wstr.h>
-#include <common/wstr/list.h>
 
 
 //
@@ -49,18 +47,16 @@
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_perl(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_perl(sub_context_ty *scp, const wstring_list &arg)
 {
-    wstring_ty	    *result;
-
     trace(("sub_perl()\n{\n"));
-    result = 0;
-    if (arg->size() != 1)
-	sub_context_error_set(scp, i18n("requires zero arguments"));
+    wstring result;
+    if (arg.size() != 1)
+	scp->error_set(i18n("requires zero arguments"));
     else
-	result = wstr_from_c(CONF_PERL);
-    trace(("return %8.8lX;\n", (long)result));
+	result = wstring(CONF_PERL);
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

@@ -1,7 +1,7 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2000, 2002, 2004 Peter Miller and Pieter Nagel;
-.\"	All rights reserved.
+.\"	Copyright (C) 2000-2007 Peter Miller
+.\"	Copyright (C) 2005 Pieter Nagel
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -14,10 +14,8 @@
 .\"	GNU General Public License for more details.
 .\"
 .\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: document describing lib/en/howto/python
+.\"	along with this program. If not, see
+.\"	<http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "How to use Aegis with Python"
 .LP

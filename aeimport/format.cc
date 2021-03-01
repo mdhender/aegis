@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 2001, 2002, 2004-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -51,7 +50,7 @@ struct context_ty
 
 static void
 searcher(void *arg, dir_walk_message_ty msg, string_ty *filename,
-    const struct stat *st)
+    const struct stat *)
 {
     static string_ty *the_config_file;
 
@@ -72,7 +71,7 @@ searcher(void *arg, dir_walk_message_ty msg, string_ty *filename,
             format_version_ty *fvp;
 
             relative = os_below_dir(context->base, filename);
-            sanitized = fp->vptr->sanitize(fp, relative);
+            sanitized = format_sanitize(fp, relative, 1);
             str_free(relative);
             if (str_equal(sanitized, the_config_file))
                 fvp = 0;
@@ -162,4 +161,14 @@ format_unlock(format_ty *fp, string_ty *filename)
     assert(fp->vptr);
     assert(fp->vptr->unlock);
     fp->vptr->unlock(fp, filename);
+}
+
+
+string_ty *
+format_sanitize(format_ty *fp, string_ty *filename, int last_part)
+{
+    assert(fp);
+    assert(fp->vptr);
+    assert(fp->vptr->sanitize);
+    return fp->vptr->sanitize(fp, filename, last_part);
 }

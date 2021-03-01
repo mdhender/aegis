@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -29,17 +28,6 @@
 
 
 nstring_list process_body::search_path;
-
-
-static nstring
-dirname(const nstring &path)
-{
-    const char *cp = path.c_str();
-    const char *ep = strrchr(cp, '/');
-    if (!ep)
-	return ".";
-    return nstring(cp, ep - cp);
-}
 
 
 static nstring
@@ -157,7 +145,7 @@ process_body::per_file(const nstring &filename)
     {
 	nstring stem(file.c_str(), file.size() - 2);
 	nstring root = basename(stem);
-	nstring dir(dirname(file));
+	nstring dir(file.dirname());
 	nstring yy = trim_dir(stem).identifier();
 
 	nstring numconf("no");
@@ -220,13 +208,13 @@ process_body::per_file(const nstring &filename)
         print << "\tbin/test_base64 -uu -i -nh " << file << " $@\n";
         print << "\n";
         print << "$(RPM_BUILD_ROOT)$(datadir)/icon/" << rest << ": " << tmp
-	      << " " << dirname(tmp) << "/.mkdir.datadir\n";
+	      << " " << tmp.dirname() << "/.mkdir.datadir\n";
         print << "\t$(INSTALL_DATA) " << tmp << " $@\n";
     }
     else if (file.gmatch("lib/icon/*.uue"))
     {
         nstring rest(file.c_str() + 9, file.size() - 13);
-        nstring dir(dirname(file));
+        nstring dir(file.dirname());
         print << "\n";
         print << "lib/icon/" << rest << ": " << file << " bin/test_base64\n";
         print << "\tbin/test_base64 -uu -i -nh " << file << " $@\n";
@@ -244,7 +232,7 @@ process_body::per_file(const nstring &filename)
 	// should only be setting ${sharedstatedir}
 	// so be inconsistent and install them in share
 	nstring rest(basename(file));
-	nstring dir(dirname(file));
+	nstring dir(file.dirname());
 	print << "\n";
 	print << "$(RPM_BUILD_ROOT)$(datadir)/" << rest << ": " << file << " "
 	    << dir << "/.mkdir.datadir\n";
@@ -270,7 +258,7 @@ process_body::per_file(const nstring &filename)
     else if (file.gmatch("lib/*.sh"))
     {
 	nstring rest(trim_dir(file));
-	nstring dir(dirname(file));
+	nstring dir(file.dirname());
 	print << "\n";
 	print << "$(RPM_BUILD_ROOT)$(datadir)/" << rest << ": " << file << " "
 	    << dir << "/.mkdir.datadir\n";
@@ -287,7 +275,7 @@ process_body::per_file(const nstring &filename)
 	// will fail, because they do not have the -o option.
 	//
 	nstring stem(file.c_str() + 4, file.size() - 7);
-	nstring dir(dirname(file));
+	nstring dir(file.dirname());
 	print << "\n";
 	print << "lib/" << stem << ".mo: etc/msgfmt.sh " << file << "\n";
 	print << "\t$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) "
@@ -299,7 +287,7 @@ process_body::per_file(const nstring &filename)
     }
     else if (file.gmatch("lib/*/man[1-9]/*.[1-9]"))
     {
-	nstring dir(dirname(file));
+	nstring dir(file.dirname());
 	nstring base(basename(file));
 	nstring stem(trim_dir(file));
 	nstring part(trim_dir(stem));
@@ -344,8 +332,8 @@ process_body::per_file(const nstring &filename)
 	const char *cp = strrchr(file.c_str(), '.');
 	nstring macros(cp ? cp + 1 : "");
 	nstring stem(trim_dir(file));
-	nstring dir(dirname(file));
-	nstring dirdir(dirname(dir));
+	nstring dir(file.dirname());
+	nstring dirdir(dir.dirname());
 
 	nstring_list dep;
 	read_dependency_file(file, dep);
@@ -358,8 +346,8 @@ process_body::per_file(const nstring &filename)
 	    macros = "$(MS)";
 	else
 	    macros = "-" + macros;
-	nstring stem2(dirname(stem));
-	nstring stem3(dirname(stem2));
+	nstring stem2(stem.dirname());
+	nstring stem3(stem2.dirname());
 
 	print << "\n";
 	print << "lib/" << stem2 << ".ps: " << file << " " << dep << "\n";
@@ -397,7 +385,7 @@ process_body::per_file(const nstring &filename)
     else if (file.starts_with("lib/"))
     {
 	nstring stem(file.c_str() + 4, file.size() - 4);
-	nstring dir(dirname(file));
+	nstring dir(file.dirname());
 	print << "\n";
 	print << "$(RPM_BUILD_ROOT)$(datadir)/" << stem << ": " << file << " "
 	    << dir << "/.mkdir.datadir\n";
@@ -407,7 +395,7 @@ process_body::per_file(const nstring &filename)
     {
 	nstring stem(file.c_str(), file.size() - 4);
 	nstring root(basename(file));
-	nstring dir(dirname(file));
+	nstring dir(file.dirname());
 
 	nstring_list dep;
 	read_dependency_file(file, dep);

@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2003-2006 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 2003-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate gets
 //
@@ -23,7 +22,12 @@
 #include <common/ac/stdlib.h>
 #include <common/ac/string.h>
 
+#include <common/nstring/list.h>
+#include <common/str.h>
 #include <libaegis/change.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+
 #include <aeget/get.h>
 #include <aeget/get/change.h>
 #include <aeget/get/icon.h>
@@ -31,9 +35,6 @@
 #include <aeget/get/project/list.h>
 #include <aeget/get/rect.h>
 #include <aeget/http.h>
-#include <libaegis/project.h>
-#include <common/str.h>
-#include <common/nstring/list.h>
 
 
 static int
@@ -63,6 +64,33 @@ extract_change_number(string_ty **project_name_p, long *change_number_p)
 }
 
 
+static int
+extract_delta_number(string_ty **project_name_p, long *delta_number_p)
+{
+    string_ty       *project_name;
+    const char      *cp;
+    char            *end;
+    long            delta_number;
+    string_ty       *new_project_name;
+
+    project_name = *project_name_p;
+    cp = strstr(project_name->str_text, ".D");
+    if (!cp)
+        cp = strstr(project_name->str_text, ".d");
+    if (!cp)
+        return 0;
+    delta_number = strtol(cp + 2, &end, 10);
+    if (end == cp + 2 || *end)
+        return 0;
+    *delta_number_p = delta_number;
+    new_project_name =
+        str_n_from_c(project_name->str_text, cp - project_name->str_text);
+    str_free(project_name);
+    *project_name_p = new_project_name;
+    return 1;
+}
+
+
 static string_ty *
 path_info(void)
 {
@@ -80,24 +108,18 @@ path_info(void)
 void
 get(void)
 {
-    string_ty       *path;
-    char            *end;
-    string_ty       *project_name;
-    project_ty      *pp;
-    long            change_number;
-
     //
     // Get the path being accessed.
     // The web server has already decoded the % escapes for us.
     //
-    path = path_info();
+    string_ty *path = path_info();
 
     //
     // Pull out the @@ modifier.
     // It may have several parts, e.g. @@changes@being_developed
     //
     string_list_ty modifier;
-    end = strstr(path->str_text, "@@");
+    const char *end = strstr(path->str_text, "@@");
     if (end)
     {
         string_ty *s = str_from_c(end + 2);
@@ -190,6 +212,7 @@ get(void)
     // The first component is "project" or "project.Cnnn"
     //
     end = strchr(path->str_text, '/');
+    string_ty *project_name = 0;
     if (!end)
     {
         project_name = path;
@@ -210,14 +233,13 @@ get(void)
     //
     // Figure out if there is a .Cnnn suffix.
     //
+    long change_number = 0;
     if (extract_change_number(&project_name, &change_number))
     {
-        change_ty       *cp;
-
-        pp = project_alloc(project_name);
+        project_ty *pp = project_alloc(project_name);
         pp->bind_existing();
 
-        cp = change_alloc(pp, change_number);
+        change::pointer cp = change_alloc(pp, change_number);
         change_bind_existing(cp);
 
         //
@@ -229,14 +251,36 @@ get(void)
     }
     else
     {
-        pp = project_alloc(project_name);
-        pp->bind_existing();
+        long delta_number = 0;
+        if (extract_delta_number(&project_name, &delta_number))
+        {
+            project_ty *pp = project_alloc(project_name);
+            pp->bind_existing();
 
-        //
-        // From this point, fetch a file from the project.
-        //
-        get_project(pp, path, &modifier);
-        project_free(pp);
+            change_number =
+                project_history_change_by_delta(pp, delta_number);
+
+            change::pointer cp = change_alloc(pp, change_number);
+            change_bind_existing(cp);
+
+            //
+            // From this point, fetch a file from the change.
+            //
+            get_change(cp, path, &modifier);
+            change_free(cp);
+            project_free(pp);
+        }
+        else
+        {
+            project_ty *pp = project_alloc(project_name);
+            pp->bind_existing();
+
+            //
+            // From this point, fetch a file from the project.
+            //
+            get_project(pp, path, &modifier);
+            project_free(pp);
+        }
     }
     str_free(project_name);
     str_free(path);

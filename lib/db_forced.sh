@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994, 1995, 1999-2004, 2006 Peter Miller
+#	Copyright (C) 1994, 1995, 1999-2004, 2006, 2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -14,10 +14,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: shell script to notify 'aedb -User' events
+#	along with this program. If not, see
+#	<http://www.gnu.org/licenses/>.
 #
 # Suggested project attribute:
 # forced_develop_begin_notify_command =
@@ -55,6 +53,11 @@ then
    aliases=" ["`echo $aliases | tr ' ' ','`"]"
 fi
 
+#
+# Note the double quotes: the ${email_address} is acted on by aesub BUT
+# the $developer is a shell environment variable set earlier in this
+# script.
+#
 to=`aesub "\\\${email_address -comma $developer}" `
 
 #

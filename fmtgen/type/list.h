@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2005 Peter Miller.
-//	All rights reserved.
+//	Copyright (C) 1994, 2005-2007 Peter Miller.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -26,22 +25,22 @@
 #include <fmtgen/type.h>
 
 /**
-  * The type_list_ty class is used to represent a type which is a list
+  * The type_list class is used to represent a type which is a list
   * of come other type.
   */
-class type_list_ty:
-    public type_ty
+class type_list:
+    public type
 {
 public:
     /**
       * The destructor.
       */
-    virtual ~type_list_ty();
+    virtual ~type_list();
 
     /**
       * The constructor.
       */
-    type_list_ty(const nstring &a_name, type_ty *a_type);
+    type_list(const nstring &a_name, type *a_type);
 
     // See base class for documentation.
     void gen_include() const;
@@ -85,22 +84,22 @@ private:
       * The subtype instance variable is used to remember the type of the
       * list members.
       */
-    type_ty *subtype;
+    type *subtype;
 
     /**
       * The default constructor.  Do not use.
       */
-    type_list_ty();
+    type_list();
 
     /**
       * The copy constructor.  Do not use.
       */
-    type_list_ty(const type_list_ty &);
+    type_list(const type_list &);
 
     /**
       * The assignment operator.  Do not use.
       */
-    type_list_ty &operator=(const type_list_ty &);
+    type_list &operator=(const type_list &);
 };
 
 #endif // FMTGEN_TYPE_LIST_H

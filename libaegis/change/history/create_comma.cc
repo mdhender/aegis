@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate create_commas
 //
@@ -33,7 +32,7 @@
 
 
 void
-change_run_history_create_command(change_ty *cp, fstate_src_ty *src)
+change_run_history_create_command(change::pointer cp, fstate_src_ty *src)
 {
     sub_context_ty  *scp;
     string_ty	    *hp;
@@ -71,6 +70,18 @@ change_run_history_create_command(change_ty *cp, fstate_src_ty *src)
     trace(("change_run_history_create_command(cp = %8.8lX, "
         "filename = \"%s\")\n{\n", (long)cp, src->file_name->str_text));
     assert(cp->reference_count >= 1);
+
+    //
+    // Inform the user of what we are doing, just in case they can't
+    // tell from the file names.  For example, with a base-64 encoded
+    // input file and a UUID history file the user has no way of knowing
+    // which source file this concerns.
+    //
+    scp = sub_context_new();
+    scp->var_set_string("File_Name", src->file_name);
+    change_error(cp, scp, i18n("history create $filename"));
+    sub_context_delete(scp);
+    scp = 0;
 
     //
     // See if the file is binary, and if we need to encode it in any way.
@@ -163,7 +174,7 @@ change_run_history_create_command(change_ty *cp, fstate_src_ty *src)
     assert(src->edit);
     if (unlink_encoded_file)
 	os_unlink(name_of_encoded_file);
-    project_become_undo();
+    project_become_undo(cp->pp);
     str_free(name_of_encoded_file);
 
     //

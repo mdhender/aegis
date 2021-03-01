@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2002-2005 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 2002-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -20,39 +19,37 @@
 // MANIFEST: functions to manipulate switchs
 //
 
-#include <common/str.h>
+#include <common/trace.h>
+#include <common/wstring/list.h>
+#include <libaegis/os.h>
 #include <libaegis/sub.h>
 #include <libaegis/sub/switch.h>
-#include <libaegis/os.h>
-#include <common/trace.h>
-#include <common/wstr/list.h>
 
 
-wstring_ty *
-sub_switch(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_switch(sub_context_ty *scp, const wstring_list &arg)
 {
     trace(("sub_switch()\n{\n"));
-    if (arg->size() < 2)
+    trace(("arg.size() => %d\n", int(arg.size())));
+    if (arg.size() < 2)
     {
-	sub_context_error_set(scp, i18n("requires two or more arguments"));
-	trace(("return NULL;\n"));
+	scp->error_set(i18n("requires two or more arguments"));
 	trace(("}\n"));
-	return 0;
+	return wstring();
     }
 
-    string_ty *s = wstr_to_str(arg->get(1));
-    long n = atol(s->str_text) + 2;
-    str_free(s);
-    wstring_ty *result = 0;
-    if (n < 2 || (size_t)n >= arg->size())
+    long n = 2 + arg[1].to_nstring().to_long();
+    trace(("n = %ld\n", n));
+    wstring result;
+    if (n < 2 || (size_t)n >= arg.size())
     {
-	result = wstr_copy(arg->get(arg->size() - 1));
+	result = arg.back();
     }
     else
     {
-	result = wstr_copy(arg->get(n));
+	result = arg[n];
     }
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

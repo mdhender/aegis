@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate filess
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -37,7 +34,7 @@
 
 
 void
-get_change_files(change_ty *cp, string_ty *filename, string_list_ty *modifier)
+get_change_files(change::pointer cp, string_ty *, string_list_ty *)
 {
     string_list_ty  attr_name;
     for (size_t j = 0; ; ++j)
@@ -192,7 +189,7 @@ get_change_files(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 
     if (!cp->bogus)
     {
-	cstate_ty *cstate_data = change_cstate_get(cp);
+	cstate_ty *cstate_data = cp->cstate_get();
 	if (cstate_data->state >= cstate_state_being_developed)
 	{
 	    printf("<p>\n");

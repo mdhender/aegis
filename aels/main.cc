@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate mains
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -115,9 +112,9 @@ main(int argc, char **argv)
     string_ty	    *project_name;
     string_ty	    *s;
     project_ty	    *pp;
-    change_ty	    *cp;
+    change::pointer cp;
     int		    baseline;
-    user_ty	    *up;
+    user_ty::pointer up;
     int		    based;
     size_t	    j;
 
@@ -171,7 +168,7 @@ main(int argc, char **argv)
 
         case arglex_token_base_relative:
         case arglex_token_current_relative:
-	    user_relative_filename_preference_argument(list_usage);
+	    user_ty::relative_filename_preference_argument(list_usage);
 	    break;
 
         case arglex_token_baseline:
@@ -255,7 +252,10 @@ main(int argc, char **argv)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -274,7 +274,7 @@ main(int argc, char **argv)
 
 	stack_from_project(pp);
 
-	up = 0;
+	up.reset();
 	cp = 0;
     }
     else
@@ -284,16 +284,16 @@ main(int argc, char **argv)
 	//
 	// locate user data
 	//
-	up = user_executing(pp);
+	up = user_ty::create();
 
 	//
 	// locate change data
 	//
 	if (!change_number)
-	    change_number = user_default_change(up);
+	    change_number = up->default_change(pp);
 	cp = change_alloc(pp, change_number);
 	change_bind_existing(cp);
-	cstate_data = change_cstate_get(cp);
+	cstate_data = cp->cstate_get();
 
 	if (cstate_data->state == cstate_state_completed)
 	{
@@ -302,7 +302,7 @@ main(int argc, char **argv)
 	    //
 	    stack_from_project(pp);
 
-	    up = 0;
+	    up.reset();
 	    cp = 0;
 	}
 	else
@@ -330,15 +330,14 @@ main(int argc, char **argv)
     // 4. if neither, error
     //
     if (!up)
-	up = user_executing(pp);
+	up = user_ty::create();
     based =
 	(
 	    up != 0
 	&&
 	    (
-		user_relative_filename_preference
+		up->relative_filename_preference
 		(
-		    up,
 		    uconf_relative_filename_preference_current
 		)
 	    ==

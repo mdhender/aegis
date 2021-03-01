@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1994, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aegis/meta_type.cc
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_META_TYPE_H
@@ -27,59 +24,72 @@
 
 #include <common/main.h>
 #include <common/str.h>
+#include <libaegis/aer/value.h>
+
+class meta_type; // forward
 
 struct type_table_ty
 {
     const char      *name;
     size_t          offset;
-    struct type_ty  *type;
+    meta_type       *type;
     unsigned long   mask;
     int             redefinition_ok;
     string_ty       *fast_name;
 };
 
-struct type_ty
+/**
+  * The meta_type class is used to represent a generic interface to
+  * reflection data, used to read and write Aegis meta-data files.
+  */
+class meta_type
 {
+public:
     const char      *name;
 
     void *(*alloc)(void);
     void (*free)(void *this_thing);
     bool (*enum_parse)(string_ty *name, void *);
-    void *(*list_parse)(void *this_thing, type_ty **type_pp);
-    void *(*struct_parse)(void *this_thing, string_ty *name, type_ty **type_pp,
-	unsigned long *maskp, int *redefinition_ok_p);
+    void *(*list_parse)(void *this_thing, meta_type **type_pp);
+    void *(*struct_parse)(void *this_thing, string_ty *name,
+        meta_type **type_pp, unsigned long *maskp, int *redefinition_ok_p);
     string_ty *(*fuzzy)(string_ty *name);
-    struct rpt_value_ty *(*convert)(void *this_thing);
+    rpt_value::pointer (*convert)(void *this_thing);
     bool (*is_set)(void *);
 };
 
-struct generic_struct_ty
+/**
+  * The generic_struct class is used to represent a set of attributes
+  * common to all meta-data structures.
+  */
+class generic_struct
 {
+public:
     long            reference_count;
     unsigned long   mask;
     string_ty       *errpos;
 };
 
-extern type_ty boolean_type;
+extern meta_type boolean_type;
 #define boolean_copy(x) (x)
 const char *boolean_ename(bool);
-extern type_ty integer_type;
+extern meta_type integer_type;
 #define integer_copy(x) (x)
-extern type_ty real_type;
+extern meta_type real_type;
 #define real_copy(x) (x)
-extern type_ty string_type;
+extern meta_type string_type;
 #define string_copy(x) str_copy(x)
-extern type_ty time_type;
+extern meta_type time_type;
 #define time_copy(x) (x)
 
-void *generic_struct_parse(void *, string_ty *, type_ty **, unsigned long *,
+void *generic_struct_parse(void *, string_ty *, meta_type **, unsigned long *,
     int *, type_table_ty *, size_t);
 string_ty *generic_struct_fuzzy(string_ty *, type_table_ty *, size_t);
 bool generic_struct_is_set(void *);
 string_ty *generic_enum_fuzzy(string_ty *, string_ty **, size_t);
-struct rpt_value_ty *generic_struct_convert(void *, type_table_ty *,
+rpt_value::pointer generic_struct_convert(void *, type_table_ty *,
     size_t);
-struct rpt_value_ty *generic_enum_convert(int, string_ty **, size_t);
+rpt_value::pointer generic_enum_convert(int, string_ty **, size_t);
 void generic_enum__init(const char *const *, size_t);
 
 void type_enum_option_set(void);

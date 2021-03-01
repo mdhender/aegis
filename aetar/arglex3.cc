@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -29,6 +28,7 @@ static arglex_table_ty argtab[] =
     { "-Partial_Source", arglex_token_entire_source_not, },
     { "-EXCLude", arglex_token_exclude, },
     { "-Exclude_Auto_Tools", arglex_token_exclude_auto_tools, },
+    { "-Exclude_Concurrent_Version_System", arglex_token_exclude_cvs, },
     { "-Include_BUild", arglex_token_include_build, },
     { "-Not_Include_BUild", arglex_token_include_build_not, },
     { "-Add_Path_Prefix", arglex_token_path_prefix_add, },

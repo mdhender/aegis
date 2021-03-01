@@ -1,8 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2006 Peter Miller;
+//	Copyright (C) 1999-2007 Peter Miller
 //	Copyright (C) 2004, 2005, 2007 Walter Franzini;
-//	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -15,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate sends
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
@@ -43,6 +40,8 @@
 #include <libaegis/change.h>
 #include <libaegis/change/signedoffby.h>
 #include <libaegis/compres_algo.h>
+#include <libaegis/file/event.h>
+#include <libaegis/file/event/list.h>
 #include <libaegis/help.h>
 #include <libaegis/input/file.h>
 #include <libaegis/option.h>
@@ -68,6 +67,7 @@
 
 
 #define NO_TIME_SET ((time_t)(-1))
+static bool use_uuid;
 
 
 static bool
@@ -118,7 +118,7 @@ one_more_src(project_file_roll_forward &historian, cstate_ty *change_set,
 {
     cstate_src_ty   **dst_data_p;
     cstate_src_ty   *dst_data;
-    type_ty         *type_p;
+    meta_type *type_p = 0;
 
     trace(("add \"%s\" %s %s\n", src_data->file_name->str_text,
 	file_action_ename(src_data->action),
@@ -141,7 +141,7 @@ one_more_src(project_file_roll_forward &historian, cstate_ty *change_set,
     {
 	if (src_data->attribute)
 	    dst_data->attribute = attributes_list_copy(src_data->attribute);
-        if (src_data->uuid)
+        if (use_uuid && src_data->uuid)
 	    dst_data->uuid = str_copy(src_data->uuid);
 
         //
@@ -185,7 +185,7 @@ one_more_src(project_file_roll_forward &historian, cstate_ty *change_set,
                src_data->file_name->str_text,
                file_action_ename(src_data->action)));
 	assert(historian.is_set());
-        file_event_ty *fep = historian.get_older(src_data->file_name);
+        file_event *fep = historian.get_older(src_data->file_name);
 
         //
         // The fep *can* be NULL if the change is not completed
@@ -196,21 +196,21 @@ one_more_src(project_file_roll_forward &historian, cstate_ty *change_set,
             return;
 
         assert(fep);
-        if (!fep->cp->cstate_data->uuid)
+        if (!fep->get_change()->cstate_data->uuid || !use_uuid)
             return;
         if (!src_data->edit_origin)
             return;
         assert(src_data->edit_origin->revision);
-        assert(fep->src);
-        if (!fep->src->edit->revision)
+        assert(fep->get_src());
+        if (!fep->get_src()->edit->revision)
             return;
-        trace_string(fep->cp->cstate_data->uuid->str_text);
+        trace_string(fep->get_change()->cstate_data->uuid->str_text);
         if
         (
             !str_equal
             (
                 src_data->edit_origin->revision,
-                fep->src->edit->revision
+                fep->get_src()->edit->revision
             )
         )
         {
@@ -231,7 +231,7 @@ one_more_src(project_file_roll_forward &historian, cstate_ty *change_set,
         (
             dst_data->attribute,
             EDIT_ORIGIN_UUID,
-            fep->cp->cstate_data->uuid->str_text
+            fep->get_change()->cstate_data->uuid->str_text
         );
     }
 }
@@ -282,8 +282,8 @@ send_main(void)
     int             trunk;
     output_ty       *ofp;
     project_ty      *pp;
-    change_ty       *cp;
-    user_ty         *up;
+    change::pointer cp;
+    user_ty::pointer up;
     cstate_ty       *cstate_data;
     string_ty       *output;
     cstate_ty       *change_set;
@@ -299,6 +299,7 @@ send_main(void)
     time_t          delta_date;
     const char      *delta_name;
     const char      *compatibility;
+    bool undocumented_testing_flag = false;
 
     arglex();
     compatibility = 0;
@@ -317,6 +318,7 @@ send_main(void)
     delta_number = -1;
     delta_name = 0;
     int use_mime_header = -1;
+    int ignore_uuid = -1;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -680,6 +682,38 @@ send_main(void)
 	case arglex_token_signed_off_by_not:
 	    option_signed_off_by_argument(usage);
 	    break;
+
+        case arglex_token_ignore_uuid:
+            if (ignore_uuid > 0)
+                duplicate_option(usage);
+            if (ignore_uuid >= 0)
+            {
+                too_many_ignore_uuid:
+                mutually_exclusive_options
+                (
+                    arglex_token_ignore_uuid,
+                    arglex_token_ignore_uuid_not,
+                    usage
+                );
+            }
+            ignore_uuid = 1;
+            break;
+
+        case arglex_token_ignore_uuid_not:
+            if (ignore_uuid == 0)
+                duplicate_option(usage);
+            if (ignore_uuid >= 0)
+                goto too_many_ignore_uuid;
+            ignore_uuid = 0;
+            break;
+
+	case arglex_token_test:
+            // This option may be used by the test suite to insert
+            // zero-valued timestamps into the .ae file, so that
+            // automated tests don't get false negatives just because
+            // the timestamp has changed.
+	    undocumented_testing_flag = true;
+	    break;
 	}
 	arglex();
     }
@@ -729,6 +763,8 @@ send_main(void)
 	// aedist -send in Peter's 4.16.D089, publicly in 4.17
 	//
 	use_attributes = use_config;
+	if (!use_attributes && ignore_uuid < 0)
+	    ignore_uuid = 1;
 
         //
         // The patch for renamed files were added to aedist -send in
@@ -830,12 +866,16 @@ send_main(void)
     	    usage
 	);
     }
+    use_uuid = (ignore_uuid <= 0);
 
     //
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -849,7 +889,7 @@ send_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // it is an error if the delta does not exist
@@ -896,7 +936,7 @@ send_main(void)
     else
     {
 	if (!change_number)
-	    change_number = user_default_change(up);
+	    change_number = up->default_change(pp);
 	cp = change_alloc(pp, change_number);
 	change_bind_existing(cp);
     }
@@ -912,7 +952,7 @@ send_main(void)
     //
     // Check the change state.
     //
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     project_file_roll_forward historian;
     switch (cstate_data->state)
     {
@@ -1065,7 +1105,10 @@ send_main(void)
 	ofp = new output_bzip2(ofp, true);
 	break;
     }
-    output_cpio_ty *cpio_p = new output_cpio_ty(ofp);
+    time_t archive_mtime = 0;
+    if (!undocumented_testing_flag)
+	archive_mtime = change_completion_timestamp(cp);
+    output_cpio_ty *cpio_p = new output_cpio_ty(ofp, archive_mtime);
 
     //
     // Add the project name to the archive.
@@ -1142,7 +1185,7 @@ send_main(void)
 	    str_format
 	    (
 		"From: %s\nDate: %.24s\n%s\n%s",
-		user_email_address(up)->str_text,
+		up->get_email_address().c_str(),
 		ctime(&when),
 		(warning ? warning->str_text : ""),
 		cstate_data->description->str_text
@@ -1168,27 +1211,45 @@ send_main(void)
 	    :
 		(attributes_list_ty *)attributes_list_type.alloc()
 	    );
-	change_functor_attribute_list result(false, change_set->attribute);
-	if (change_was_a_branch(cp))
+	if (use_uuid)
 	{
-	    //
-            // For branches, add all of the constituent change sets'
-            // UUIDs.  That way, if you resynch by grabbing a whole
-            // branch as one change set, you still grab all of the
-            // constituent change set UUIDs.
-	    //
-	    project_inventory_walk(pp, result);
+	    change_functor_attribute_list result(false, change_set->attribute);
+	    if (change_was_a_branch(cp))
+	    {
+		//
+		// For branches, add all of the constituent change sets'
+		// UUIDs.  That way, if you resynch by grabbing a whole
+		// branch as one change set, you still grab all of the
+		// constituent change set UUIDs.
+		//
+		project_inventory_walk(pp, result);
+	    }
+	    if (entire_source)
+	    {
+		//
+		// If they said --entire-source, add all of the accumulated
+		// change set UUIDs.  That way, if you resynch by grabbing
+		// a whole project as one change set, you still grab all of
+		// the constituent change set UUIDs.
+		//
+		time_t limit = change_completion_timestamp(cp);
+		project_inventory_walk(pp, result, limit);
+	    }
 	}
-	if (entire_source)
+	else
 	{
-	    //
-            // If they said --entire-source, add all of the accumulated
-            // change set UUIDs.  That way, if you resynch by grabbing
-            // a whole project as one change set, you still grab all of
-            // the constituent change set UUIDs.
-	    //
-	    time_t limit = change_completion_timestamp(cp);
-	    project_inventory_walk(pp, result, limit);
+	    for (;;)
+	    {
+		attributes_ty *ap =
+		    attributes_list_extract
+		    (
+			change_set->attribute,
+			ORIGINAL_UUID
+		    );
+		if (!ap)
+		    break;
+		attributes_type.free(ap);
+	    }
 	}
 	if (change_set->attribute->length == 0)
 	{
@@ -1196,10 +1257,10 @@ send_main(void)
 	    change_set->attribute = 0;
 	}
     }
-    if (use_attributes && cstate_data->uuid)
+    if (use_attributes && use_uuid && cstate_data->uuid)
 	change_set->uuid = str_copy(cstate_data->uuid);
-    // architecture
-    // copyright years
+    // FIXME: architecture
+    // FIXME: copyright years
 
     //
     // Scan for files to be added to the output.
@@ -1281,26 +1342,26 @@ send_main(void)
 	    {
 		nstring file_name = file_name_list[j];
 		assert(file_name.length());
-		file_event_ty *fep = historian.get_last(file_name);
+		file_event *fep = historian.get_last(file_name);
 		assert(fep);
 		if (!fep)
 		    continue;
-		assert(fep->src);
+		assert(fep->get_src());
 		if
 		(
 		    attributes_list_find_boolean
 		    (
-			fep->src->attribute,
+			fep->get_src()->attribute,
 			"entire-source-hide"
 		    )
 		)
 		{
 		    continue;
 		}
-		switch (fep->src->usage)
+		switch (fep->get_src()->usage)
 		{
 		case file_usage_build:
-		    switch (fep->src->action)
+		    switch (fep->get_src()->action)
 		    {
 		    case file_action_modify:
 			continue;
@@ -1317,7 +1378,7 @@ send_main(void)
 		case file_usage_config:
 		case file_usage_test:
 		case file_usage_manual_test:
-		    switch (fep->src->action)
+		    switch (fep->get_src()->action)
 		    {
 		    case file_action_create:
 		    case file_action_modify:
@@ -1332,15 +1393,22 @@ send_main(void)
 		    }
 		    break;
 		}
-		if (!have_it_already(change_set, fep->src))
+		if (!have_it_already(change_set, fep->get_src()))
 		{
-		    if (!use_config && fep->src->usage == file_usage_config)
-			fep->src->usage = file_usage_source;
+		    if
+		    (
+			!use_config
+		    &&
+			fep->get_src()->usage == file_usage_config
+		    )
+		    {
+			fep->get_src()->usage = file_usage_source;
+		    }
 		    one_more_src
                     (
                         historian,
                         change_set,
-                        fep->src,
+                        fep->get_src(),
                         use_attributes
                     );
 		}
@@ -1643,6 +1711,8 @@ send_main(void)
 	    //
 	    // Get the orginal file.
 	    //
+            trace(("%s %s \"%s\"\n", file_usage_ename(csrc->usage),
+                file_action_ename(csrc->action), csrc->file_name->str_text));
 	    switch (csrc->action)
 	    {
 	    case file_action_create:
@@ -1657,7 +1727,8 @@ send_main(void)
 		    if (historian.is_set())
 		    {
 			trace(("using historian, by uuid\n"));
-			file_event_list_ty *orig_felp = historian.get(csrc);
+			file_event_list::pointer orig_felp =
+                            historian.get(csrc);
 
 			//
 			// It's tempting to say
@@ -1666,18 +1737,18 @@ send_main(void)
 			// time, so there is no need (or ability) to create a
 			// patch for it.
 			//
-			if (!orig_felp || orig_felp->length < 2)
+			if (!orig_felp || orig_felp->size() < 2)
 			{
 			    original_filename = str_copy(dev_null);
+                            trace(("original filename /dev/null\n"));
 			    break;
 			}
 
-			file_event_ty *orig_fep =
-			    &orig_felp->item[orig_felp->length - 1];
+			file_event *orig_fep = orig_felp->back();
 			fstate_src_ty *orig_src =
 			    change_file_find
 			    (
-				orig_fep->cp,
+				orig_fep->get_change(),
 				csrc->move,
 				view_path_first
 			    );
@@ -1697,6 +1768,7 @@ send_main(void)
 			if (!orig_src)
 			{
 			    original_filename = str_copy(dev_null);
+                            trace(("original filename /dev/null\n"));
 			    break;
 			}
 			original_filename =
@@ -1709,7 +1781,10 @@ send_main(void)
 		    }
 		}
 		else
+                {
 		    original_filename = str_copy(dev_null);
+                    trace(("original filename /dev/null\n"));
+                }
 		break;
 
 	    case file_action_modify:
@@ -1731,6 +1806,7 @@ send_main(void)
 	    {
 	    case file_action_remove:
 		input_filename = str_copy(dev_null);
+                trace(("input filename /dev/null\n"));
 		break;
 
 	    case file_action_transparent:
@@ -1756,207 +1832,239 @@ send_main(void)
 	    // Both the versions to be diffed come out
 	    // of history.
 	    //
+            trace(("%s %s \"%s\"\n", file_usage_ename(csrc->usage),
+                file_action_ename(csrc->action), csrc->file_name->str_text));
             switch (csrc->action)
 	    {
-		file_event_list_ty *felp;
-		file_event_ty  *fep;
-		fstate_src_ty  *old_src;
+                // file_event_list::pointer felp;
+		// file_event *fep;
+		// fstate_src_ty *old_src;
 
 	    case file_action_create:
-		assert(historian.is_set());
-		felp = historian.get(csrc);
-
-		//
-		// It's tempting to say
-		//	assert(felp);
-		// but file file may not yet exist at this point in
-		// time, so there is no need (or ability) to create a
-		// patch for it.
-		//
-		if (!felp)
-		{
-		    original_filename = str_copy(dev_null);
-		    input_filename = str_copy(dev_null);
-		    break;
-		}
-
-		assert(felp->length >= 1);
-
-		//
-		// Get the orginal file.  We handle the creation half
-		// of a file rename.
-		//
-                // We include the need for a uuid because otherwise the
-                // rename chain can be an arbitrarily long one (and
-                // could possibly loop).  If we only deal with UUIDs, we
-                // simplify the problem immensely.
-		//
-                if
-	       	(
-		    use_rename_patch
-		&&
-		    csrc->move
-		&&
-		    csrc->uuid
-		&&
-		    felp->length >= 2
-		)
                 {
-		    //
-		    // Do the same as modify.
-		    //
-		    fep = &felp->item[felp->length - 2];
-		    old_src = change_file_find(fep->cp, csrc, view_path_first);
-		    assert(old_src);
-		    original_filename =
-			project_file_version_path
-			(
-			    pp,
-			    old_src,
-			    &original_filename_unlink
-			);
-                }
-                else
-                    original_filename = str_copy(dev_null);
+                    assert(historian.is_set());
+                    file_event_list::pointer felp = historian.get(csrc);
 
-		//
-		// Get the input file.
-		//
-		fep = &felp->item[felp->length - 1];
-		old_src = change_file_find(fep->cp, csrc, view_path_first);
-		assert(old_src);
-		input_filename =
-		    project_file_version_path
-		    (
-			pp,
-			old_src,
-			&input_filename_unlink
-		    );
-		assert(original_filename);
-		assert(input_filename);
+                    //
+                    // It's tempting to say
+                    //    assert(felp);
+                    // but file file may not yet exist at this point in
+                    // time, so there is no need (or ability) to create a
+                    // patch for it.
+                    //
+                    if (!felp)
+                    {
+                        original_filename = str_copy(dev_null);
+                        trace(("original filename /dev/null\n"));
+                        input_filename = str_copy(dev_null);
+                        trace(("input filename /dev/null\n"));
+                        break;
+                    }
+
+                    assert(!felp->empty());
+
+                    //
+                    // Get the orginal file.  We handle the creation half
+                    // of a file rename.
+                    //
+                    // We include the need for a uuid because otherwise the
+                    // rename chain can be an arbitrarily long one (and
+                    // could possibly loop).  If we only deal with UUIDs, we
+                    // simplify the problem immensely.
+                    //
+                    if
+                    (
+                        use_rename_patch
+                    &&
+                        csrc->move
+                    &&
+                        csrc->uuid
+                    &&
+                        felp->size() >= 2
+                    )
+                    {
+                        //
+                        // Do the same as modify.
+                        //
+                        file_event *fep = felp->get(felp->size() - 2);
+                        fstate_src_ty *old_src =
+                            change_file_find
+                            (
+                                fep->get_change(),
+                                csrc,
+                                view_path_first
+                            );
+                        assert(old_src);
+                        original_filename =
+                            project_file_version_path
+                            (
+                                pp,
+                                old_src,
+                                &original_filename_unlink
+                            );
+                    }
+                    else
+                        original_filename = str_copy(dev_null);
+
+                    //
+                    // Get the input file.
+                    //
+                    file_event *fep = felp->back();
+                    fstate_src_ty *old_src =
+                        change_file_find
+                        (
+                            fep->get_change(),
+                            csrc,
+                            view_path_first
+                        );
+                    assert(old_src);
+                    input_filename =
+                        project_file_version_path
+                        (
+                            pp,
+                            old_src,
+                            &input_filename_unlink
+                        );
+                    assert(original_filename);
+                    assert(input_filename);
+                }
 		break;
 
 	    case file_action_remove:
-                //
-                // We ignore the remove half or a file rename.
-                //
-                if (use_rename_patch && csrc->move)
                 {
+                    //
+                    // We ignore the remove half or a file rename.
+                    //
+                    if (use_rename_patch && csrc->move)
+                    {
+                        input_filename = str_copy(dev_null);
+                        trace(("original filename /dev/null\n"));
+                        original_filename = str_copy(dev_null);
+                        trace(("input filename /dev/null\n"));
+                        break;
+                    }
+
+                    assert(historian.is_set());
+                    file_event_list::pointer felp = historian.get(csrc);
+
+                    //
+                    // It's tempting to say
+                    //	assert(felp);
+                    // but file file may not yet exist at this point in
+                    // time, so there is no need (or ability) to create a
+                    // patch for it.
+                    //
+                    // It is also tempting to say
+                    //	assert(felp->length >= 2);
+                    // except that a file which is created and removed in
+                    // the same branch, will result in only a remove record
+                    // in its parent branch when integrated.
+                    //
+                    assert(!felp || !felp->empty());
+                    if (!felp || felp->size() < 2)
+                    {
+                        original_filename = str_copy(dev_null);
+                    }
+                    else
+                    {
+                        //
+                        // Get the orginal file.
+                        //
+                        file_event *fep = felp->get(felp->size() - 2);
+                        fstate_src_ty *old_src =
+                            change_file_find
+                            (
+                                fep->get_change(),
+                                csrc->file_name,
+                                view_path_first
+                            );
+                        assert(old_src);
+                        original_filename =
+                            project_file_version_path
+                            (
+                                pp,
+                                old_src,
+                                &original_filename_unlink
+                            );
+                    }
+
+                    //
+                    // Get the input file.
+                    //
                     input_filename = str_copy(dev_null);
-                    original_filename = str_copy(dev_null);
-                    break;
+                    trace(("input filename /dev/null\n"));
                 }
-
-		assert(historian.is_set());
-		felp = historian.get(csrc);
-
-		//
-		// It's tempting to say
-		//	assert(felp);
-		// but file file may not yet exist at this point in
-		// time, so there is no need (or ability) to create a
-		// patch for it.
-		//
-		// It is also tempting to say
-		//	assert(felp->length >= 2);
-		// except that a file which is created and removed in
-		// the same branch, will result in only a remove record
-		// in its parent branch when integrated.
-		//
-		assert(!felp || felp->length >= 1);
-		if (!felp || felp->length < 2)
-		{
-		    original_filename = str_copy(dev_null);
-		}
-		else
-		{
-		    //
-		    // Get the orginal file.
-		    //
-		    fep = &felp->item[felp->length - 2];
-		    old_src =
-			change_file_find
-			(
-			    fep->cp,
-			    csrc->file_name,
-			    view_path_first
-			);
-		    assert(old_src);
-		    original_filename =
-			project_file_version_path
-			(
-			    pp,
-			    old_src,
-			    &original_filename_unlink
-			);
-		}
-
-		//
-		// Get the input file.
-		//
-		input_filename = str_copy(dev_null);
 		break;
 
 	    case file_action_modify:
-		assert(historian.is_set());
-		felp = historian.get(csrc);
+                {
+                    assert(historian.is_set());
+                    file_event_list::pointer felp = historian.get(csrc);
 
-		//
-		// It's tempting to say
-		//	assert(felp);
-		// but file file may not yet exist at this point in
-		// time, so there is no need (or ability) to create a
-		// patch for it.
-		//
-		assert(!felp || felp->length >= 1);
-		if (!felp)
-		{
-		    original_filename = str_copy(dev_null);
-		    input_filename = str_copy(dev_null);
-		    break;
-		}
+                    //
+                    // It's tempting to say
+                    //	assert(felp);
+                    // but file file may not yet exist at this point in
+                    // time, so there is no need (or ability) to create a
+                    // patch for it.
+                    //
+                    assert(!felp || !felp->empty());
+                    if (!felp)
+                    {
+                        original_filename = str_copy(dev_null);
+                        trace(("original filename /dev/null\n"));
+                        input_filename = str_copy(dev_null);
+                        trace(("input filename /dev/null\n"));
+                        break;
+                    }
 
-		//
-		// Get the orginal file.
-		//
-		if (felp->length < 2)
-		{
-		    original_filename = str_copy(dev_null);
-		}
-		else
-		{
-		    fep = &felp->item[felp->length - 2];
-		    old_src =
-			change_file_find
-			(
-			    fep->cp,
-			    csrc->file_name,
-			    view_path_first
-			);
-		    assert(old_src);
-		    original_filename =
-			project_file_version_path
-			(
-			    pp,
-			    old_src,
-			    &original_filename_unlink
-			);
-		}
+                    //
+                    // Get the orginal file.
+                    //
+                    if (felp->size() < 2)
+                    {
+                        original_filename = str_copy(dev_null);
+                    }
+                    else
+                    {
+                        file_event *fep = felp->get(felp->size() - 2);
+                        fstate_src_ty *old_src =
+                            change_file_find
+                            (
+                                fep->get_change(),
+                                csrc->file_name,
+                                view_path_first
+                            );
+                        assert(old_src);
+                        original_filename =
+                            project_file_version_path
+                            (
+                                pp,
+                                old_src,
+                                &original_filename_unlink
+                            );
+                    }
 
-		//
-		// Get the input file.
-		//
-		fep = &felp->item[felp->length - 1];
-		old_src =
-		    change_file_find(fep->cp, csrc->file_name, view_path_first);
-		assert(old_src);
-		input_filename =
-		    project_file_version_path
-		    (
-			pp,
-			old_src,
-			&input_filename_unlink
-		    );
+                    //
+                    // Get the input file.
+                    //
+                    file_event *fep = felp->back();
+                    fstate_src_ty *old_src =
+                        change_file_find
+                        (
+                            fep->get_change(),
+                            csrc->file_name,
+                            view_path_first
+                        );
+                    assert(old_src);
+                    input_filename =
+                        project_file_version_path
+                        (
+                            pp,
+                            old_src,
+                            &input_filename_unlink
+                        );
+                }
 		break;
 
 	    case file_action_insulate:
@@ -1964,14 +2072,18 @@ send_main(void)
 		trace(("insulate = \"%s\"\n", csrc->file_name->str_text));
 		assert(0);
 		original_filename = str_copy(dev_null);
+                trace(("original filename /dev/null\n"));
 		input_filename = str_copy(dev_null);
+                trace(("input filename /dev/null\n"));
 		break;
 
 	    case file_action_transparent:
 		// no file content appears in the output
 		trace(("transparent = \"%s\"\n", csrc->file_name->str_text));
 		original_filename = str_copy(dev_null);
+                trace(("original filename /dev/null\n"));
 		input_filename = str_copy(dev_null);
+                trace(("input filename /dev/null\n"));
 		break;
 	    }
 	    assert(original_filename);

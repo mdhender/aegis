@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -20,26 +19,53 @@
 // MANIFEST: functions to manipulate users
 //
 
-#include <libaegis/sub.h>
-#include <libaegis/sub/user.h>
 #include <common/symtab.h>
 #include <common/trace.h>
+#include <common/wstring/list.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/user.h>
 #include <libaegis/user.h>
-#include <common/wstr.h>
-#include <common/wstr/list.h>
 
 
-static string_ty *
-qemail(user_ty *up)
+static nstring
+qemail(user_ty::pointer up)
 {
-    static string_ty *result;
-    string_ty	    *s;
+    return up->get_email_address().quote_shell();
+}
 
-    s = user_email_address(up);
-    if (result)
-	str_free(result);
-    result = str_quote_shell(s);
-    return result;
+
+static nstring
+get_user_name(user_ty::pointer up)
+{
+    return up->name();
+}
+
+
+static nstring
+get_user_full_name(user_ty::pointer up)
+{
+    return up->full_name();
+}
+
+
+static nstring
+get_user_group_name(user_ty::pointer up)
+{
+    return up->get_group_name();
+}
+
+
+static nstring
+get_user_home(user_ty::pointer up)
+{
+    return up->get_home();
+}
+
+
+static nstring
+get_user_email_address(user_ty::pointer up)
+{
+    return up->get_email_address();
 }
 
 
@@ -51,42 +77,38 @@ struct table_ty
 
 static table_ty table[] =
 {
-    {"quoted_email", qemail, },
-    {"email", user_email_address, },
-    {"group", user_group, },
-    {"home", user_home, },
-    {"login", user_name, },
-    {"name", user_name2, },
+    { "quoted_email", qemail },
+    { "email", get_user_email_address },
+    { "group", get_user_group_name },
+    { "home", get_user_home },
+    { "login", get_user_name },
+    { "name", get_user_full_name },
 };
 
 static symtab_ty *stp;
 
 
 sub_user_func_ptr
-sub_user_func(string_ty *name)
+sub_user_func(const nstring &name)
 {
-    table_ty	    *tp;
-    string_ty	    *s;
-    sub_user_func_ptr result;
-    sub_context_ty  *scp;
-
     if (!stp)
     {
 	stp = symtab_alloc(SIZEOF(table));
-	for (tp = table; tp < ENDOF(table); ++tp)
+	for (table_ty *tp = table; tp < ENDOF(table); ++tp)
 	{
-	    s = str_from_c(tp->name);
+	    string_ty *s = str_from_c(tp->name);
 	    symtab_assign(stp, s, (void *)tp->func);
 	    str_free(s);
 	}
     }
-    result = (sub_user_func_ptr)symtab_query(stp, name);
+    sub_user_func_ptr result =
+        (sub_user_func_ptr)symtab_query(stp, name.get_ref());
     if (!result)
     {
-	s = symtab_query_fuzzy(stp, name);
+	string_ty *s = symtab_query_fuzzy(stp, name.get_ref());
 	if (s)
 	{
-	    scp = sub_context_new();
+            sub_context_ty *scp = sub_context_new();
 	    sub_var_set_string(scp, "Name", name);
 	    sub_var_set_string(scp, "Guess", s);
 	    error_intl(scp, i18n("no \"$name\", guessing \"$guess\""));
@@ -118,46 +140,36 @@ sub_user_func(string_ty *name)
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_user(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_user(sub_context_ty *scp, const wstring_list &arg)
 {
-    string_ty	    *s;
-    wstring_ty	    *result;
-    user_ty	    *up;
-    sub_user_func_ptr func;
-
     trace(("sub_user()\n{\n"));
-    if (arg->size() == 1)
+    wstring result;
+    if (arg.size() == 1)
     {
-	up = user_executing(0);
-	result = str_to_wstr(user_name(up));
-	user_free(up);
+	user_ty::pointer up = user_ty::create();
+	result = wstring(up->name());
     }
-    else if (arg->size() == 2)
+    else if (arg.size() == 2)
     {
-	s = wstr_to_str(arg->get(1));
-	func = sub_user_func(s);
-	str_free(s);
+	nstring s = arg[1].to_nstring();
+        sub_user_func_ptr func = sub_user_func(s);
 	if (!func)
 	{
-	    sub_context_error_set(scp, i18n("unknown substitution variant"));
-	    result = 0;
+	    scp->error_set(i18n("unknown substitution variant"));
 	}
 	else
 	{
-	    up = user_executing(0);
+	    user_ty::pointer up = user_ty::create();
 	    s = func(up);
-	    result = str_to_wstr(s);
-	    user_free(up);
-	    // do not str_free(s)
+	    result = wstring(s);
 	}
     }
     else
     {
-	sub_context_error_set(scp, i18n("requires one argument"));
-	result = 0;
+	scp->error_set(i18n("requires one argument"));
     }
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

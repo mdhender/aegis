@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate channuminuses
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change/branch.h>
@@ -26,7 +23,7 @@
 
 
 int
-change_branch_change_number_in_use(change_ty *cp, long cn)
+change_branch_change_number_in_use(change::pointer cp, long cn)
 {
     int             result;
     cstate_ty       *cstate_data;
@@ -36,7 +33,7 @@ change_branch_change_number_in_use(change_ty *cp, long cn)
     trace(("change_branch_change_number_in_use(cp = %8.8lX, cn = %ld)\n{\n",
 	(long)cp, cn));
     result = 0;
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     assert(cstate_data->branch);
     lp = cstate_data->branch->change;
     if (lp)

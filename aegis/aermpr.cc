@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1993-1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1993-1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -83,7 +82,7 @@ remove_project_main(void)
     long	    nerr;
     string_ty	    *project_name;
     project_ty	    *pp;
-    user_ty	    *up;
+    user_ty::pointer up;
     int		    still_exists;
 
     trace(("remove_project_main()\n{\n"));
@@ -100,7 +99,7 @@ remove_project_main(void)
 	case arglex_token_keep:
 	case arglex_token_interactive:
 	case arglex_token_keep_not:
-	    user_delete_file_argument(remove_project_usage);
+	    user_ty::delete_file_argument(remove_project_usage);
 	    break;
 
 	case arglex_token_project:
@@ -113,7 +112,7 @@ remove_project_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(remove_project_usage);
+	    user_ty::lock_wait_argument(remove_project_usage);
 	    break;
 	}
 	arglex();
@@ -154,7 +153,7 @@ remove_project_main(void)
     //
     // locate user data
     //
-    up = user_executing(still_exists ? pp : (project_ty *)0);
+    up = user_ty::create();
 
     //
     // lock the project
@@ -181,7 +180,7 @@ remove_project_main(void)
     // it is an error if the current user is not an administrator
     //
     nerr = 0;
-    if (!project_administrator_query(pp, user_name(up)))
+    if (!project_administrator_query(pp, up->name()))
     {
 	project_error(pp, 0, i18n("not an administrator"));
 	nerr++;
@@ -192,12 +191,14 @@ remove_project_main(void)
     //
     // remove the project directory
     //
-    if (user_delete_file_query(up, pp->home_path_get(), true, -1))
     {
-	project_verbose(pp, 0, i18n("remove project directory"));
-	project_become(pp);
-	commit_rmdir_tree_errok(pp->home_path_get());
-	project_become_undo();
+        nstring projdir(pp->home_path_get());
+        if (up->delete_file_query(projdir, true, -1))
+        {
+            project_verbose(pp, 0, i18n("remove project directory"));
+            user_ty::become scoped(pp->get_user());
+            commit_rmdir_tree_errok(projdir);
+        }
     }
 
     //
@@ -222,7 +223,6 @@ remove_project_main(void)
     // clean up and go home
     //
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -232,8 +232,8 @@ remove_project(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, remove_project_help, },
-	{arglex_token_list, remove_project_list, },
+	{ arglex_token_help, remove_project_help, 0 },
+	{ arglex_token_list, remove_project_list, 0 },
     };
 
     trace(("remove_project()\n{\n"));

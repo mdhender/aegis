@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -25,7 +24,7 @@
 
 #include <common/ac/stddef.h>
 
-struct wstring_ty; // forward
+#include <common/wstring.h>
 
 /**
   * The sub_diversion class is used to represent the state of a
@@ -53,7 +52,7 @@ public:
       *     Wether or not to rescan the text of this diversion for more
       *     substitutions.
       */
-    sub_diversion(wstring_ty *arg1, bool arg2 = false);
+    sub_diversion(const wstring &arg1, bool arg2 = false);
 
     /**
       * The copy constructor.
@@ -97,7 +96,7 @@ private:
       * The text instance variable is used to remember text of this
       * diversion.
       */
-    wstring_ty *text;
+    wstring text;
 
     /**
       * The resubstitute instance variable is used to remember whether

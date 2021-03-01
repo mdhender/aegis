@@ -41,7 +41,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	persevere_preference = all; \
 	log_file_preference = never;"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 COLS=65

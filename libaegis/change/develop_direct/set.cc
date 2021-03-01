@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2000, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2000, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate sets
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/arglex2.h>
@@ -30,7 +27,7 @@
 
 
 void
-change_development_directory_set(change_ty *cp, string_ty *s)
+change_development_directory_set(change::pointer cp, string_ty *s)
 {
     cstate_ty       *cstate_data;
 
@@ -74,7 +71,7 @@ change_development_directory_set(change_ty *cp, string_ty *s)
     //
     // Now set the change appropriately.
     //
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     if (!cstate_data->development_directory)
     {
 	string_ty	*dir;

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -41,7 +40,7 @@ input_cpio::input_cpio(input &arg) :
 
 
 long
-input_cpio::read_inner(void *data, size_t len)
+input_cpio::read_inner(void *, size_t)
 {
     assert(0);
     return -1;

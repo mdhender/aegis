@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2002-2005 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 2002-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -196,11 +195,12 @@ test(shell_ty *sp)
             //
             if (ac >= ac_max)
             {
-                size_t          nbytes;
-
                 ac_max = ac_max * 2 + 8;
-                nbytes = ac_max * sizeof(av[0]);
-                av = (char **)mem_change_size(av, nbytes);
+		char **new_av = new char * [ac_max];
+		for (int k = 0; k < ac; ++k)
+		    new_av[k] = av[k];
+		delete [] av;
+		av = new_av;
             }
             inco_ac = ac;
             av[ac++] = copy_of(cp, 0);
@@ -248,11 +248,12 @@ test(shell_ty *sp)
         //
         if (ac >= ac_max)
         {
-            size_t          nbytes;
-
             ac_max = ac_max * 2 + 8;
-            nbytes = ac_max * sizeof(av[0]);
-            av = (char **)mem_change_size(av, nbytes);
+	    char **new_av = new char * [ac_max];
+	    for (int j = 0; j < ac; ++j)
+		new_av[j] = av[j];
+	    delete [] av;
+	    av = new_av;
         }
         if
         (
@@ -278,11 +279,12 @@ test(shell_ty *sp)
     //
     if (ac >= ac_max)
     {
-        size_t          nbytes;
-
         ac_max = ac_max * 2 + 8;
-        nbytes = ac_max * sizeof(av[0]);
-        av = (char **)mem_change_size(av, nbytes);
+	char **new_av = new char * [ac_max];
+	for (int j = 0; j < ac; ++j)
+	    new_av[j] = av[j];
+	delete [] av;
+	av = new_av;
     }
     av[ac] = 0;
 
@@ -319,7 +321,7 @@ prefix_get(shell_ty *sh)
 
 
 static void
-emit(shell_ty *sh, string_ty *s)
+emit(shell_ty *, string_ty *s)
 {
     char            *cp;
 

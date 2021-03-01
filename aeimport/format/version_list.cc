@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 2001, 2002, 2004-2006 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -23,7 +22,6 @@
 #include <common/ac/stdlib.h>
 
 #include <aeimport/format/version_list.h>
-#include <common/mem.h>
 
 
 format_version_list_ty *
@@ -31,7 +29,7 @@ format_version_list_new(void)
 {
     format_version_list_ty *fvlp;
 
-    fvlp = (format_version_list_ty *)mem_alloc(sizeof(format_version_list_ty));
+    fvlp = new format_version_list_ty;
     fvlp->item = 0;
     fvlp->length = 0;
     fvlp->maximum = 0;
@@ -49,12 +47,11 @@ format_version_list_delete(format_version_list_ty *fvlp, int delmore)
         for (j = 0; j < fvlp->length; ++j)
             delete(fvlp->item[j]);
     }
-    if (fvlp->item)
-        mem_free(fvlp->item);
+    delete [] fvlp->item;
     fvlp->item = 0;
     fvlp->length = 0;
     fvlp->maximum = 0;
-    mem_free(fvlp);
+    delete fvlp;
 }
 
 
@@ -77,11 +74,12 @@ format_version_list_append(format_version_list_ty *fvlp, format_version_ty *fvp)
 {
     if (fvlp->length >= fvlp->maximum)
     {
-        size_t          nbytes;
-
         fvlp->maximum = fvlp->maximum * 2 + 8;
-        nbytes = fvlp->maximum * sizeof(fvlp->item[0]);
-        fvlp->item = (format_version_ty **)mem_change_size(fvlp->item, nbytes);
+	format_version_ty **new_item = new format_version_ty * [fvlp->maximum];
+	for (size_t j = 0; j < fvlp->length; ++j)
+	    new_item[j] = fvlp->item[j];
+	delete [] fvlp->item;
+	fvlp->item = new_item;
     }
     fvlp->item[fvlp->length++] = fvp;
 }

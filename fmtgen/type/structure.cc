@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1998, 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1994, 1998, 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipluate structure types
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h>
@@ -26,7 +23,7 @@
 #include <fmtgen/type/structure.h>
 
 
-type_structure_ty::~type_structure_ty()
+type_structure::~type_structure()
 {
     delete [] element;
     nelements = 0;
@@ -36,8 +33,8 @@ type_structure_ty::~type_structure_ty()
 }
 
 
-type_structure_ty::type_structure_ty(const nstring &a_name) :
-    type_ty(a_name),
+type_structure::type_structure(const nstring &a_name) :
+    type(a_name),
     nelements(0),
     nelements_max(0),
     element(0),
@@ -48,7 +45,7 @@ type_structure_ty::type_structure_ty(const nstring &a_name) :
 
 
 void
-type_structure_ty::gen_include()
+type_structure::gen_include()
     const
 {
     indent_putchar('\n');
@@ -65,7 +62,7 @@ type_structure_ty::gen_include()
 	    def_name().c_str(),
 	    element[j].name.c_str()
 	);
-	if (element[j].type->has_a_mask())
+	if (element[j].etype->has_a_mask())
 	    indent_printf("((unsigned long)1 << %d)", bit++);
 	else
 	    indent_printf("((unsigned long)0)");
@@ -86,13 +83,13 @@ type_structure_ty::gen_include()
     for (j = 0; j < nelements; ++j)
     {
 	element_ty *ep = &element[j];
-	ep->type->gen_include_declarator(ep->name, false);
+	ep->etype->gen_include_declarator(ep->name, false);
     }
     indent_printf("};\n");
     indent_printf("#endif // %s_DEF\n", def_name().c_str());
 
     indent_putchar('\n');
-    indent_printf("extern type_ty %s_type;\n", def_name().c_str());
+    indent_printf("extern meta_type %s_type;\n", def_name().c_str());
 
     indent_putchar('\n');
     if (toplevel_flag)
@@ -160,7 +157,7 @@ type_structure_ty::gen_include()
 
 
 void
-type_structure_ty::gen_include_declarator(const nstring &variable_name,
+type_structure::gen_include_declarator(const nstring &variable_name,
     bool is_a_list) const
 {
     const char *deref = (is_a_list ? "*" : "");
@@ -175,7 +172,7 @@ type_structure_ty::gen_include_declarator(const nstring &variable_name,
 
 
 void
-type_structure_ty::gen_code()
+type_structure::gen_code()
     const
 {
     size_t j;
@@ -244,7 +241,7 @@ type_structure_ty::gen_code()
     for (j = 0; j < nelements; ++j)
     {
 	element_ty *ep = &element[j];
-	ep->type->gen_code_declarator(ep->name, false, ep->attributes);
+	ep->etype->gen_code_declarator(ep->name, false, ep->attributes);
     }
     if (!toplevel_flag)
     {
@@ -253,6 +250,11 @@ type_structure_ty::gen_code()
 	indent_more();
 	indent_printf("fp->fputs(\";\\n\");\n");
 	indent_less();
+    }
+    else if (!nelements)
+    {
+        // To silence "fp unused" warning
+        indent_printf("(void)fp;\n");
     }
     indent_printf("trace((\"}\\n\"));\n");
     indent_printf("}\n");
@@ -324,7 +326,7 @@ type_structure_ty::gen_code()
     for (j = 0; j < nelements; ++j)
     {
 	element_ty *ep = &element[j];
-	ep->type->gen_code_call_xml(ep->name, ep->name, ep->attributes);
+	ep->etype->gen_code_call_xml(ep->name, ep->name, ep->attributes);
     }
     if (!toplevel_flag)
     {
@@ -380,7 +382,7 @@ type_structure_ty::gen_code()
 	(
 	    "this_thing->%s = (%s)0;\n",
 	    ep->name.c_str(),
-	    ep->type->c_name().c_str()
+	    ep->etype->c_name().c_str()
 	);
     }
     indent_printf("trace((\"return %%08lX;\\n\", (long)this_thing));\n");
@@ -437,7 +439,7 @@ type_structure_ty::gen_code()
     for (j = 0; j < nelements; ++j)
     {
 	element_ty *ep = &element[j];
-	ep->type->gen_code_copy(ep->name);
+	ep->etype->gen_code_copy(ep->name);
     }
 
     indent_printf("trace((\"return %%08lX;\\n\", (long)result));\n");
@@ -468,7 +470,7 @@ type_structure_ty::gen_code()
     for (j = 0; j < nelements; ++j)
     {
 	element_ty *ep = &element[j];
-	ep->type->gen_code_trace(ep->name, "value->" + ep->name);
+	ep->etype->gen_code_trace(ep->name, "value->" + ep->name);
     }
     indent_printf("trace_printf(\"}\");\n");
     indent_printf("}\n");
@@ -507,7 +509,7 @@ type_structure_ty::gen_code()
     for (j = 0; j < nelements; ++j)
     {
 	element_ty *ep = &element[j];
-	ep->type->gen_free_declarator(ep->name, false);
+	ep->etype->gen_free_declarator(ep->name, false);
     }
     indent_printf("mem_free(this_thing);\n");
     indent_printf("trace((\"}\\n\"));\n");
@@ -531,7 +533,7 @@ type_structure_ty::gen_code()
 	    def_name().c_str(),
 	    ep->name.c_str()
 	);
-	indent_printf("&%s_type,\n", ep->type->def_name().c_str());
+	indent_printf("&%s_type,\n", ep->etype->def_name().c_str());
 	indent_printf
 	(
 	    "%s_%s_mask,\n",
@@ -545,17 +547,18 @@ type_structure_ty::gen_code()
 	    redef,
 	    (redef ? "is" : "not")
 	);
+	indent_printf("0, // fast_name\n");
 	indent_printf("},\n");
     }
     if (!nelements)
-	    indent_printf("{ \"\", },\n");
+	    indent_printf("{ \"\", 0, 0, 0, 0, 0 },\n");
     indent_printf("};\n");
 
     indent_putchar('\n');
     indent_printf("static void *\n");
     indent_printf
     (
-	"%s_parse(void *this_thing, string_ty *name, type_ty **type_pp, "
+	"%s_parse(void *this_thing, string_ty *name, meta_type **type_pp, "
 	    "unsigned long *mask_p, int *redef_p)\n",
 	def_name().c_str()
     );
@@ -572,11 +575,6 @@ type_structure_ty::gen_code()
     indent_printf
     (
 	"assert(((%s_ty *)this_thing)->reference_count > 0);\n",
-	def_name().c_str()
-    );
-    indent_printf
-    (
-	"assert(sizeof(%s_ty *) == sizeof(generic_struct_ty *));\n",
 	def_name().c_str()
     );
     indent_printf("addr =\n");
@@ -620,11 +618,9 @@ type_structure_ty::gen_code()
     indent_printf("}\n");
 
     indent_putchar('\n');
-    indent_printf("static struct rpt_value_ty *\n");
+    indent_printf("static rpt_value::pointer\n");
     indent_printf("%s_convert(void *this_thing)\n", def_name().c_str());
     indent_printf("{\n");
-    indent_printf("struct rpt_value_ty\1*result;\n");
-    indent_putchar('\n');
     indent_printf
     (
 	"trace((\"%s_convert(name = %%08lX)\\n{\\n\", (long)this_thing));\n",
@@ -635,7 +631,7 @@ type_structure_ty::gen_code()
 	"assert(((%s_ty *)this_thing)->reference_count > 0);\n",
 	def_name().c_str()
     );
-    indent_printf("result =\n");
+    indent_printf("rpt_value::pointer result =\n");
     indent_more();
     indent_printf("generic_struct_convert\n(\n");
     indent_printf("this_thing,\n");
@@ -643,13 +639,13 @@ type_structure_ty::gen_code()
     indent_printf("SIZEOF(%s_table)\n", def_name().c_str());
     indent_printf(");\n");
     indent_less();
-    indent_printf("trace((\"return %%08lX;\\n\", (long)result));\n");
+    indent_printf("trace((\"return %%08lX;\\n\", (long)result.get()));\n");
     indent_printf("trace((\"}\\n\"));\n");
     indent_printf("return result;\n");
     indent_printf("}\n");
 
     indent_putchar('\n');
-    indent_printf("type_ty %s_type =\n", def_name().c_str());
+    indent_printf("meta_type %s_type =\n", def_name().c_str());
     indent_printf("{\n");
     indent_printf("\"%s\",\n", def_name().c_str());
     indent_printf("%s_alloc,\n", def_name().c_str());
@@ -665,8 +661,8 @@ type_structure_ty::gen_code()
 
 
 void
-type_structure_ty::gen_code_declarator(const nstring &variable_name,
-    bool is_a_list, int attributes) const
+type_structure::gen_code_declarator(const nstring &variable_name,
+    bool is_a_list, int) const
 {
     indent_printf("%s_write(fp, ", def_name().c_str());
     if (is_a_list)
@@ -678,8 +674,8 @@ type_structure_ty::gen_code_declarator(const nstring &variable_name,
 
 
 void
-type_structure_ty::gen_code_call_xml(const nstring &form_name,
-    const nstring &member_name, int attributes) const
+type_structure::gen_code_call_xml(const nstring &form_name,
+    const nstring &member_name, int) const
 {
     indent_printf
     (
@@ -692,7 +688,7 @@ type_structure_ty::gen_code_call_xml(const nstring &form_name,
 
 
 void
-type_structure_ty::gen_code_copy(const nstring &member_name)
+type_structure::gen_code_copy(const nstring &member_name)
     const
 {
     indent_printf
@@ -706,8 +702,8 @@ type_structure_ty::gen_code_copy(const nstring &member_name)
 
 
 void
-type_structure_ty::gen_free_declarator(const nstring &variable_name,
-    bool is_a_list) const
+type_structure::gen_free_declarator(const nstring &variable_name, bool)
+    const
 {
     if (is_in_include_file())
     {
@@ -731,7 +727,7 @@ type_structure_ty::gen_free_declarator(const nstring &variable_name,
 
 
 void
-type_structure_ty::member_add(const nstring &member_name, type_ty *member_type,
+type_structure::member_add(const nstring &member_name, type *member_type,
     int attributes)
 {
     if (nelements >= nelements_max)
@@ -745,25 +741,25 @@ type_structure_ty::member_add(const nstring &member_name, type_ty *member_type,
 	element = new_element;
     }
     element_ty *ep = element + nelements++;
-    ep->type = member_type;
+    ep->etype = member_type;
     ep->name = member_name;
     ep->attributes = attributes;
 }
 
 
 void
-type_structure_ty::in_include_file()
+type_structure::in_include_file()
 {
-    type_ty::in_include_file();
+    type::in_include_file();
     for (size_t j = 0; j < nelements; ++j)
     {
-	element[j].type->in_include_file();
+	element[j].etype->in_include_file();
     }
 }
 
 
 nstring
-type_structure_ty::c_name_inner()
+type_structure::c_name_inner()
     const
 {
     return (def_name() + "_ty *");
@@ -771,7 +767,7 @@ type_structure_ty::c_name_inner()
 
 
 bool
-type_structure_ty::has_a_mask()
+type_structure::has_a_mask()
     const
 {
     return false;
@@ -779,14 +775,14 @@ type_structure_ty::has_a_mask()
 
 
 void
-type_structure_ty::toplevel()
+type_structure::toplevel()
 {
     toplevel_flag = true;
 }
 
 
 void
-type_structure_ty::gen_code_trace(const nstring &vname, const nstring &value)
+type_structure::gen_code_trace(const nstring &vname, const nstring &value)
     const
 {
     indent_printf

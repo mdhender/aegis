@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate changes
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
@@ -55,17 +52,15 @@ module_change::~module_change()
 {
     change_free(cp);
     cp = 0;
-    user_free(up);
-    up = 0;
     project_free(pp);
     pp = 0;
 }
 
 
-module_change::module_change(change_ty *arg) :
+module_change::module_change(change::pointer arg) :
     cp(arg),
     pp(arg->pp),
-    up(user_executing(arg->pp))
+    up(user_ty::create())
 {
 }
 
@@ -77,7 +72,7 @@ module_change::modified(server_ty *sp, string_ty *file_name, file_info_ty *fip,
     //
     // It is an error if the change is not in the "being developed" state.
     //
-    if (!change_is_being_developed(cp))
+    if (!cp->is_being_developed())
     {
 	server_error
 	(
@@ -109,7 +104,7 @@ module_change::modified(server_ty *sp, string_ty *file_name, file_info_ty *fip,
     //
     // It is an error if the change is not assigned to the current user.
     //
-    if (!str_equal(change_developer_name(cp), user_name(up)))
+    if (nstring(change_developer_name(cp)) != up->name())
     {
 	server_error
 	(
@@ -119,7 +114,7 @@ module_change::modified(server_ty *sp, string_ty *file_name, file_info_ty *fip,
 	    project_name_get(pp)->str_text,
 	    cp->number,
 	    change_developer_name(cp)->str_text,
-	    user_name(up)->str_text
+	    up->name().c_str()
 	);
     }
 
@@ -246,8 +241,8 @@ module_change::calculate_canonical_name()
 
 
 bool
-module_change::update(server_ty *sp, string_ty *client_side_0,
-    string_ty *server_side_0, const options &opt)
+module_change::update(server_ty *sp, string_ty *, string_ty *server_side_0,
+    const options &opt)
 {
     size_t          j;
     static string_ty *minus;
@@ -262,7 +257,7 @@ module_change::update(server_ty *sp, string_ty *client_side_0,
     // FIXME: what about changes in the completed state, we will need
     // to use project_file_roll_forward instead.
     //
-    if (!change_is_being_developed(cp))
+    if (!cp->is_being_developed())
     {
 	server_error
 	(
@@ -580,7 +575,7 @@ module_change::checkin(server_ty *sp, string_ty *client_side,
     //
     // It is an error if the change is not in the "being developed" state.
     //
-    if (!change_is_being_developed(cp))
+    if (!cp->is_being_developed())
     {
 	server_error
 	(
@@ -742,7 +737,7 @@ module_change::checkin(server_ty *sp, string_ty *client_side,
 
 bool
 module_change::add(server_ty *sp, string_ty *client_side,
-    string_ty *server_side, const options &opt)
+    string_ty *server_side, const options &)
 {
     fstate_src_ty   *src;
     int             mode;
@@ -753,7 +748,7 @@ module_change::add(server_ty *sp, string_ty *client_side,
     //
     // It is an error if the change is not in the "being developed" state.
     //
-    if (!change_is_being_developed(cp))
+    if (!cp->is_being_developed())
     {
 	server_error
 	(
@@ -966,7 +961,7 @@ module_change::add(server_ty *sp, string_ty *client_side,
 
 bool
 module_change::remove(server_ty *sp, string_ty *client_side,
-    string_ty *server_side, const options &opt)
+    string_ty *server_side, const options &)
 {
     fstate_src_ty   *src;
     int             mode;
@@ -977,7 +972,7 @@ module_change::remove(server_ty *sp, string_ty *client_side,
     //
     // It is an error if the change is not in the "being developed" state.
     //
-    if (!change_is_being_developed(cp))
+    if (!cp->is_being_developed())
     {
 	server_error
 	(
@@ -1156,7 +1151,7 @@ module_change_new(string_ty *project_name, long change_number)
     //
     // Make sure the change makes sense.
     //
-    change_ty *cp = change_alloc(pp, change_number);
+    change::pointer cp = change_alloc(pp, change_number);
     if (!change_bind_existing_errok(cp))
     {
 	change_free(cp);

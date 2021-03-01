@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface definition for aeannotate/line_list.c
 //
@@ -39,7 +38,7 @@ void line_list_constructor(line_list_t *);
 void line_list_destructor(line_list_t *);
 void line_list_clear(line_list_t *);
 void line_list_delete(line_list_t *, size_t, size_t);
-void line_list_insert(line_list_t *, size_t, struct change_ty *,
+void line_list_insert(line_list_t *, size_t, change::pointer ,
     struct string_ty *);
 
 #endif // AEANNOTATE_LINE_LIST_H

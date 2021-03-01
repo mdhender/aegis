@@ -2,8 +2,6 @@
 #	aegis - project change supervisor
 #	This file is in the Public Domain 2004 Peter Miller
 #
-# MANIFEST: example makefile
-#
 # This is an example makefile for use when importing existing projexcts
 # into Aegis.  Note that it assumes you are using GNU Automake and GNU
 # Autoconf.  If you are not, this file is not use to you.

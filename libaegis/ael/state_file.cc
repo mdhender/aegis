@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to list state file names
 //
@@ -30,18 +29,20 @@
 
 
 void
-list_state_file_name(string_ty *project_name,
-                     long change_number,
-                     string_list_ty *args)
+list_state_file_name(string_ty *project_name, long change_number,
+    string_list_ty *)
 {
 	project_ty	*pp;
-	change_ty	*cp;
+	change::pointer cp;
 
 	//
 	// locate project data
 	//
 	if (!project_name)
-		project_name = user_default_project();
+        {
+                nstring n = user_ty::create()->default_project();
+                project_name = str_copy(n.get_ref());
+        }
 	else
 		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);

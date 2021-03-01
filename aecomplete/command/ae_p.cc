@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -27,12 +26,12 @@
 
 
 static void
-destructor(command_ty *this_thing)
+destructor(command_ty *)
 {
 }
 
 static complete_ty *
-completion_get(command_ty *cmd)
+completion_get(command_ty *)
 {
     return complete_project_name();
 }

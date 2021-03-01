@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,50 +13,66 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate arithmetics
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/math.h>
 
+#include <common/error.h> // for assert
+#include <common/str.h>
+#include <common/trace.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/integer.h>
 #include <libaegis/aer/value/real.h>
 #include <libaegis/aer/value/string.h>
-#include <common/error.h> // for assert
-#include <common/str.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
+
+#include <aefind/function/needs.h>
 #include <aefind/tree/arithmetic.h>
-#include <aefind/tree/diadic.h>
-#include <aefind/tree/monadic.h>
+#include <aefind/tree/list.h>
 
 
 #define PAIR(a, b)	((a) * rpt_value_type_MAX + (b))
 
 
-static rpt_value_ty *
-mul_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
-    string_ty *path_res, struct stat *st)
+tree_mul::~tree_mul()
 {
-    tree_diadic_ty  *this_thing;
-    sub_context_ty  *scp;
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v1a;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *v2a;
-    rpt_value_ty    *vp;
-    string_ty       *s;
+}
 
+
+tree_mul::tree_mul(const tree::pointer &a1, const tree::pointer &a2) :
+    tree_diadic(a1, a2)
+{
+}
+
+
+tree::pointer
+tree_mul::create(const tree::pointer &a1, const tree::pointer &a2)
+{
+    return pointer(new tree_mul(a1, a2));
+}
+
+
+tree::pointer
+tree_mul::create_l(const tree_list &args)
+{
+    function_needs_two("*", args);
+    return create(args[0], args[1]);
+}
+
+
+rpt_value::pointer
+tree_mul::evaluate(string_ty *path_unres, string_ty *path, string_ty *path_res,
+    struct stat *st) const
+{
     //
     // evaluate the left hand side
     //
-    trace(("mul::evaluate()\n{\n"));
-    this_thing = (tree_diadic_ty *)tp;
-    v1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
-    if (v1->method->type == rpt_value_type_error)
+    trace(("tree_mul::evaluate()\n"));
+    rpt_value::pointer v1 =
+        get_left()->evaluate(path_unres, path, path_res, st);
+    if (v1->is_an_error())
     {
 	trace(("}\n"));
 	return v1;
@@ -67,16 +82,15 @@ mul_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
     // coerce the left hand side to an arithmetic type
     // (will not give error if can't, will copy instead)
     //
-    v1a = rpt_value_arithmetic(v1);
-    rpt_value_free(v1);
+    rpt_value::pointer v1a = rpt_value::arithmetic(v1);
 
     //
     // evaluate the right hand side
     //
-    v2 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
-    if (v2->method->type == rpt_value_type_error)
+    rpt_value::pointer v2 =
+        get_right()->evaluate(path_unres, path, path_res, st);
+    if (v2->is_an_error())
     {
-	rpt_value_free(v1a);
 	trace(("}\n"));
 	return v2;
     }
@@ -85,111 +99,142 @@ mul_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
     // coerce the right hand side to an arithmetic type
     // (will not give error if can't, will copy instead)
     //
-    v2a = rpt_value_arithmetic(v2);
-    rpt_value_free(v2);
+    rpt_value::pointer v2a = rpt_value::arithmetic(v2);
 
     //
     // the type of the result depends on
     // the types of the operands
     //
-    switch (PAIR(v1a->method->type, v2a->method->type))
     {
-    case PAIR(rpt_value_type_real, rpt_value_type_real):
-	vp =
-	    rpt_value_real
-	    (
-	       	rpt_value_real_query(v1a) * rpt_value_real_query(v2a)
-	    );
-	trace(("vp = %g real\n", rpt_value_real_query(vp)));
-	break;
+        rpt_value_integer *v1a_ip =
+            dynamic_cast<rpt_value_integer *>(v1a.get());
+        if (v1a_ip)
+        {
+            long v1n = v1a_ip->query();
 
-    case PAIR(rpt_value_type_real, rpt_value_type_integer):
-	vp =
-	    rpt_value_real
-	    (
-	       	rpt_value_real_query(v1a) * rpt_value_integer_query(v2a)
-	    );
-	trace(("vp = %g real\n", rpt_value_real_query(vp)));
-	break;
+            {
+                rpt_value_integer *v2a_ip =
+                    dynamic_cast<rpt_value_integer *>(v2a.get());
+                if (v2a_ip)
+                {
+                    long v2n = v2a_ip->query();
+                    return rpt_value_integer::create(v1n * v2n);
+                }
+            }
 
-    case PAIR(rpt_value_type_integer, rpt_value_type_real):
-	vp =
-	    rpt_value_real
-	    (
-	       	rpt_value_integer_query(v1a) * rpt_value_real_query(v2a)
-	    );
-	trace(("vp = %g real\n", rpt_value_real_query(vp)));
-	break;
-
-    case PAIR(rpt_value_type_integer, rpt_value_type_integer):
-	vp =
-	    rpt_value_integer
-	    (
-	       	rpt_value_integer_query(v1a) * rpt_value_integer_query(v2a)
-	    );
-	trace(("vp = %ld integer\n", rpt_value_integer_query(vp)));
-	break;
-
-    default:
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name1", v1a->method->name);
-	sub_var_set_charstar(scp, "Name2", v2a->method->name);
-	s = subst_intl(scp, i18n("illegal multiplication ($name1 * $name2)"));
-	sub_context_delete(scp);
-	vp = rpt_value_error(0, s);
-	str_free(s);
-	break;
+            {
+                rpt_value_real *v2a_rp =
+                    dynamic_cast<rpt_value_real *>(v2a.get());
+                if (v2a_rp)
+                {
+                    double v2n = v2a_rp->query();
+                    return rpt_value_real::create(v1n * v2n);
+                }
+            }
+        }
     }
-    rpt_value_free(v1a);
-    rpt_value_free(v2a);
-    trace(("return %08lX;\n", (long)vp));
-    trace(("}\n"));
-    return vp;
+
+    {
+        rpt_value_real *v1a_rp = dynamic_cast<rpt_value_real *>(v1a.get());
+        if (v1a_rp)
+        {
+            double v1n = v1a_rp->query();
+
+            {
+                rpt_value_integer *v2a_ip =
+                    dynamic_cast<rpt_value_integer *>(v2a.get());
+                if (v2a_ip)
+                {
+                    long v2n = v2a_ip->query();
+                    return rpt_value_real::create(v1n * v2n);
+                }
+            }
+
+            {
+                rpt_value_real *v2a_rp =
+                    dynamic_cast<rpt_value_real *>(v2a.get());
+                if (v2a_rp)
+                {
+                    double v2n = v2a_rp->query();
+                    return rpt_value_real::create(v1n * v2n);
+                }
+            }
+        }
+    }
+
+    sub_context_ty sc;
+    sc.var_set_charstar("Name1", v1->name());
+    sc.var_set_charstar("Name2", v2->name());
+    nstring s(sc.subst_intl(i18n("illegal multiplication ($name1 * $name2)")));
+    return rpt_value_error::create(s);
 }
 
 
-static tree_method_ty mul_method =
+tree::pointer
+tree_mul::optimize()
+    const
 {
-    sizeof(tree_diadic_ty),
-    "*",
-    tree_diadic_destructor,
-    tree_diadic_print,
-    mul_evaluate,
-    tree_diadic_useful,
-    tree_diadic_constant,
-    tree_diadic_optimize,
-};
-
-
-tree_ty *
-tree_mul_new(tree_ty *left, tree_ty *right)
-{
-    return tree_diadic_new(&mul_method, left, right);
+    tree::pointer tp = create(get_left()->optimize(), get_right()->optimize());
+    if (tp->constant())
+        tp = tp->optimize_constant();
+    return tp;
 }
 
 
-static rpt_value_ty *
-divide_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
-    string_ty *path_res, struct stat *st)
+const char *
+tree_mul::name()
+    const
 {
-    tree_diadic_ty  *this_thing;
-    sub_context_ty  *scp;
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v1a;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *v2a;
-    double	    den;
-    long	    lden;
-    rpt_value_ty    *result;
-    string_ty       *s;
+    return "*";
+}
 
+
+tree_divide::~tree_divide()
+{
+}
+
+
+tree_divide::tree_divide(const tree::pointer &a1, const tree::pointer &a2) :
+    tree_diadic(a1, a2)
+{
+}
+
+
+tree::pointer
+tree_divide::create(const tree::pointer &a1, const tree::pointer &a2)
+{
+    return pointer(new tree_divide(a1, a2));
+}
+
+
+tree::pointer
+tree_divide::create_l(const tree_list &args)
+{
+    function_needs_two("/", args);
+    return create(args[0], args[1]);
+}
+
+
+static rpt_value::pointer
+divide_by_zero_error()
+{
+    sub_context_ty sc;
+    nstring s(sc.subst_intl(i18n("division by zero")));
+    return rpt_value_error::create(s);
+}
+
+
+rpt_value::pointer
+tree_divide::evaluate(string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st) const
+{
     //
     // evaluate the left hand side
     //
-    trace(("divide::evaluate()\n{\n"));
-    this_thing = (tree_diadic_ty *)tp;
-    v1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
-    if (v1->method->type == rpt_value_type_error)
+    trace(("divide::evaluate()\n"));
+    rpt_value::pointer v1 =
+        get_left()->evaluate(path_unres, path, path_res, st);
+    if (v1->is_an_error())
     {
 	trace(("}\n"));
 	return v1;
@@ -199,16 +244,15 @@ divide_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
     // coerce the left hand side to an arithmetic type
     // (will not give error if can't, will copy instead)
     //
-    v1a = rpt_value_arithmetic(v1);
-    rpt_value_free(v1);
+    rpt_value::pointer v1a = rpt_value::arithmetic(v1);
 
     //
     // evaluate the right hand side
     //
-    v2 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
-    if (v2->method->type == rpt_value_type_error)
+    rpt_value::pointer v2 =
+        get_right()->evaluate(path_unres, path, path_res, st);
+    if (v2->is_an_error())
     {
-	rpt_value_free(v1a);
 	trace(("}\n"));
 	return v2;
     }
@@ -217,116 +261,135 @@ divide_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
     // coerce the right hand side to an arithmetic type
     // (will not give error if can't, will copy instead)
     //
-    v2a = rpt_value_arithmetic(v2);
-    rpt_value_free(v2);
+    rpt_value::pointer v2a = rpt_value::arithmetic(v2);
 
     //
     // the type of the result depends on
     // the types of the operands
     //
-    switch (PAIR(v1a->method->type, v2a->method->type))
+    rpt_value_integer *v1a_ip = dynamic_cast<rpt_value_integer *>(v1a.get());
+    if (v1a_ip)
     {
-    case PAIR(rpt_value_type_real, rpt_value_type_real):
-	den = rpt_value_real_query(v2a);
-	if (den == 0)
-	{
-	    div_by_zero:
-	    scp = sub_context_new();
-	    s = subst_intl(scp, i18n("division by zero"));
-	    sub_context_delete(scp);
-	    result = rpt_value_error(0, s);
-	    str_free(s);
-	    break;
-	}
-	result = rpt_value_real(rpt_value_real_query(v1a) / den);
-	trace(("result = %g real\n", rpt_value_real_query(result)));
-	break;
+        long num = v1a_ip->query();
 
-    case PAIR(rpt_value_type_real, rpt_value_type_integer):
-	lden = rpt_value_integer_query(v2a);
-	if (lden == 0)
-	    goto div_by_zero;
-	result = rpt_value_real(rpt_value_real_query(v1a) / lden);
-	trace(("result = %g real\n", rpt_value_real_query(result)));
-	break;
+        rpt_value_integer *v2a_ip =
+            dynamic_cast<rpt_value_integer *>(v2a.get());
+        if (v2a_ip)
+        {
+            long den = v2a_ip->query();
+            if (den == 0)
+                return divide_by_zero_error();
+            return rpt_value_integer::create(num / den);
+        }
 
-    case PAIR(rpt_value_type_integer, rpt_value_type_real):
-	den = rpt_value_real_query(v2a);
-	if (den == 0)
-	    goto div_by_zero;
-	result = rpt_value_real(rpt_value_integer_query(v1a) / den);
-	trace(("result = %g real\n", rpt_value_real_query(result)));
-	break;
-
-    case PAIR(rpt_value_type_integer, rpt_value_type_integer):
-	lden = rpt_value_integer_query(v2a);
-	if (lden == 0)
-	    goto div_by_zero;
-	result = rpt_value_integer(rpt_value_integer_query(v1a) / lden);
-	trace(("result = %ld integer\n",
-		rpt_value_integer_query(result)));
-	break;
-
-    default:
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name1", v1a->method->name);
-	sub_var_set_charstar(scp, "Name2", v2a->method->name);
-	s = subst_intl(scp, i18n("illegal division ($name1 / $name2)"));
-	sub_context_delete(scp);
-	result = rpt_value_error(0, s);
-	str_free(s);
-	break;
+        rpt_value_real *v2a_rp = dynamic_cast<rpt_value_real *>(v2a.get());
+        if (v2a_rp)
+        {
+            double den = v2a_rp->query();
+            if (den == 0)
+                return divide_by_zero_error();
+            return rpt_value_real::create(num / den);
+        }
     }
-    rpt_value_free(v1a);
-    rpt_value_free(v2a);
-    trace(("return %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
+
+    rpt_value_real *v1a_rp = dynamic_cast<rpt_value_real *>(v1a.get());
+    if (v1a_rp)
+    {
+        double num = v1a_rp->query();
+
+        rpt_value_integer *v2a_ip =
+            dynamic_cast<rpt_value_integer *>(v2a.get());
+        if (v2a_ip)
+        {
+            long den = v2a_ip->query();
+            if (den == 0)
+                return divide_by_zero_error();
+            return rpt_value_real::create(num / den);
+        }
+
+        rpt_value_real *v2a_rp = dynamic_cast<rpt_value_real *>(v2a.get());
+        if (v2a_rp)
+        {
+            double den = v2a_rp->query();
+            if (den == 0)
+                return divide_by_zero_error();
+            return rpt_value_real::create(num / den);
+        }
+    }
+
+    sub_context_ty sc;
+    sc.var_set_charstar("Name1", v1a->name());
+    sc.var_set_charstar("Name2", v2a->name());
+    nstring s(sc.subst_intl(i18n("illegal division ($name1 / $name2)")));
+    return rpt_value_error::create(s);
 }
 
 
-static tree_method_ty divide_method =
+tree::pointer
+tree_divide::optimize()
+    const
 {
-    sizeof(tree_diadic_ty),
-    "/",
-    tree_diadic_destructor,
-    tree_diadic_print,
-    divide_evaluate,
-    tree_diadic_useful,
-    tree_diadic_constant,
-    tree_diadic_optimize,
-};
-
-
-tree_ty *
-tree_divide_new(tree_ty *left, tree_ty *right)
-{
-    return tree_diadic_new(&divide_method, left, right);
+    tree::pointer tp = create(get_left()->optimize(), get_right()->optimize());
+    if (tp->constant())
+        tp = tp->optimize_constant();
+    return tp;
 }
 
 
-static rpt_value_ty *
-mod_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
-    string_ty *path_res, struct stat *st)
+const char *
+tree_divide::name()
+    const
 {
-    tree_diadic_ty  *this_thing;
-    sub_context_ty  *scp;
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v1a;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *v2a;
-    double	    den;
-    long	    lden;
-    rpt_value_ty    *result;
-    string_ty       *s;
+    return "/";
+}
 
+
+tree_mod::~tree_mod()
+{
+}
+
+
+tree_mod::tree_mod(const tree::pointer &a1, const tree::pointer &a2) :
+    tree_diadic(a1, a2)
+{
+}
+
+
+tree::pointer
+tree_mod::create(const tree::pointer &a1, const tree::pointer &a2)
+{
+    return pointer(new tree_mod(a1, a2));
+}
+
+
+tree::pointer
+tree_mod::create_l(const tree_list &args)
+{
+    function_needs_two("%", args);
+    return create(args[0], args[1]);
+}
+
+
+static rpt_value::pointer
+modulo_by_zero_error()
+{
+    sub_context_ty sc;
+    nstring s(sc.subst_intl(i18n("modulo by zero")));
+    return rpt_value_error::create(s);
+}
+
+
+rpt_value::pointer
+tree_mod::evaluate(string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st) const
+{
     //
     // evaluate the left hand side
     //
-    trace(("mod::evaluate()\n{\n"));
-    this_thing = (tree_diadic_ty *)tp;
-    v1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
-    if (v1->method->type == rpt_value_type_error)
+    trace(("mod::evaluate()\n"));
+    rpt_value::pointer v1 =
+        get_left()->evaluate(path_unres, path, path_res, st);
+    if (v1->is_an_error())
     {
 	trace(("}\n"));
 	return v1;
@@ -336,16 +399,15 @@ mod_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
     // coerce the left hand side to an arithmetic type
     // (will not give error if can't, will copy instead)
     //
-    v1a = rpt_value_arithmetic(v1);
-    rpt_value_free(v1);
+    rpt_value::pointer v1a = rpt_value::arithmetic(v1);
 
     //
     // evaluate the right hand side
     //
-    v2 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
-    if (v2->method->type == rpt_value_type_error)
+    rpt_value::pointer v2 =
+        get_right()->evaluate(path_unres, path, path_res, st);
+    if (v2->is_an_error())
     {
-	rpt_value_free(v1a);
 	trace(("}\n"));
 	return v2;
     }
@@ -354,113 +416,126 @@ mod_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
     // coerce the right hand side to an arithmetic type
     // (will not give error if can't, will copy instead)
     //
-    v2a = rpt_value_arithmetic(v2);
-    rpt_value_free(v2);
+    rpt_value::pointer v2a = rpt_value::arithmetic(v2);
 
     //
     // the type of the result depends on
     // the types of the operands
     //
-    switch (PAIR(v1a->method->type, v2a->method->type))
+    rpt_value_integer *v1a_ip = dynamic_cast<rpt_value_integer *>(v1a.get());
+    if (v1a_ip)
     {
-    case PAIR(rpt_value_type_real, rpt_value_type_real):
-	den = rpt_value_real_query(v2a);
-	if (den == 0)
-	{
-	    mod_by_zero:
-	    scp = sub_context_new();
-	    s = subst_intl(scp, i18n("modulo by zero"));
-	    sub_context_delete(scp);
-	    result = rpt_value_error(0, s);
-	    str_free(s);
-	    break;
-	}
-	result = rpt_value_real(fmod(rpt_value_real_query(v1a), den));
-	trace(("result = %g real\n", rpt_value_real_query(result)));
-	break;
+        long num = v1a_ip->query();
 
-    case PAIR(rpt_value_type_real, rpt_value_type_integer):
-	den = rpt_value_integer_query(v2a);
-	if (den == 0)
-	    goto mod_by_zero;
-	result = rpt_value_real(fmod(rpt_value_real_query(v1a), den));
-	trace(("result = %g real\n", rpt_value_real_query(result)));
-	break;
+        rpt_value_integer *v2a_ip =
+            dynamic_cast<rpt_value_integer *>(v2a.get());
+        if (v2a_ip)
+        {
+            long den = v2a_ip->query();
+            if (den == 0)
+                return modulo_by_zero_error();
+            return rpt_value_integer::create(num % den);
+        }
 
-    case PAIR(rpt_value_type_integer, rpt_value_type_real):
-	den = rpt_value_real_query(v2a);
-	if (den == 0)
-	    goto mod_by_zero;
-	result =
-	    rpt_value_real(fmod((double)rpt_value_integer_query(v1a), den));
-	trace(("result = %g real\n", rpt_value_real_query(result)));
-	break;
-
-    case PAIR(rpt_value_type_integer, rpt_value_type_integer):
-	lden = rpt_value_integer_query(v2a);
-	if (lden == 0)
-	    goto mod_by_zero;
-	result = rpt_value_integer(rpt_value_integer_query(v1a) % lden);
-	trace(("result = %ld integer\n", rpt_value_integer_query(result)));
-	break;
-
-    default:
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name1", v1a->method->name);
-	sub_var_set_charstar(scp, "Name2", v2a->method->name);
-	// xgettext:no-c-format
-	s = subst_intl(scp, i18n("illegal modulo ($name1 % $name2)"));
-	sub_context_delete(scp);
-	result = rpt_value_error(0, s);
-	str_free(s);
-	break;
+        rpt_value_real *v2a_rp = dynamic_cast<rpt_value_real *>(v2a.get());
+        if (v2a_rp)
+        {
+            double den = v2a_rp->query();
+            if (den == 0)
+                return modulo_by_zero_error();
+            return rpt_value_real::create(fmod(num, den));
+        }
     }
-    rpt_value_free(v1a);
-    rpt_value_free(v2a);
-    trace(("return %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
+
+    rpt_value_real *v1a_rp = dynamic_cast<rpt_value_real *>(v1a.get());
+    if (v1a_rp)
+    {
+        double num = v1a_rp->query();
+
+        rpt_value_integer *v2a_ip =
+            dynamic_cast<rpt_value_integer *>(v2a.get());
+        if (v2a_ip)
+        {
+            long den = v2a_ip->query();
+            if (den == 0)
+                return modulo_by_zero_error();
+            return rpt_value_real::create(fmod(num, den));
+        }
+
+        rpt_value_real *v2a_rp = dynamic_cast<rpt_value_real *>(v2a.get());
+        if (v2a_rp)
+        {
+            double den = v2a_rp->query();
+            if (den == 0)
+                return modulo_by_zero_error();
+            return rpt_value_real::create(fmod(num, den));
+        }
+    }
+
+    sub_context_ty sc;
+    sc.var_set_charstar("Name1", v1a->name());
+    sc.var_set_charstar("Name2", v2a->name());
+    // xgettext:no-c-format
+    nstring s(sc.subst_intl(i18n("illegal modulo ($name1 % $name2)")));
+    return rpt_value_error::create(s);
 }
 
 
-static tree_method_ty mod_method =
+tree::pointer
+tree_mod::optimize()
+    const
 {
-    sizeof(tree_diadic_ty),
-    "%",
-    tree_diadic_destructor,
-    tree_diadic_print,
-    mod_evaluate,
-    tree_diadic_useful,
-    tree_diadic_constant,
-    tree_diadic_optimize,
-};
-
-
-tree_ty *
-tree_mod_new(tree_ty *left, tree_ty *right)
-{
-    return tree_diadic_new(&mod_method, left, right);
+    tree::pointer tp = create(get_left()->optimize(), get_right()->optimize());
+    if (tp->constant())
+        tp = tp->optimize_constant();
+    return tp;
 }
 
 
-static rpt_value_ty *
-neg_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
-    string_ty *path_res, struct stat *st)
+const char *
+tree_mod::name()
+    const
 {
-    tree_monadic_ty *this_thing;
-    sub_context_ty  *scp;
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *vp;
-    string_ty       *s;
+    return "%";
+}
 
+
+tree_neg::~tree_neg()
+{
+}
+
+
+tree_neg::tree_neg(const tree::pointer &a_arg) :
+    tree_monadic(a_arg)
+{
+}
+
+
+tree::pointer
+tree_neg::create(const tree::pointer &a_arg)
+{
+    return pointer(new tree_neg(a_arg));
+}
+
+
+tree::pointer
+tree_neg::create_l(const tree_list &args)
+{
+    function_needs_one("-", args);
+    return create(args[0]);
+}
+
+
+rpt_value::pointer
+tree_neg::evaluate(string_ty *path_unres, string_ty *path, string_ty *path_res,
+    struct stat *st) const
+{
     //
     // evaluate the argument
     //
-    trace(("neg::evaluate()\n{\n"));
-    this_thing = (tree_monadic_ty *)tp;
-    v1 = tree_evaluate(this_thing->arg, path_unres, path, path_res, st);
-    if (v1->method->type == rpt_value_type_error)
+    trace(("neg::evaluate()\n"));
+    rpt_value::pointer v1 = get_arg()->evaluate(path_unres, path, path_res, st);
+    if (v1->is_an_error())
     {
 	trace(("}\n"));
 	return v1;
@@ -470,496 +545,519 @@ neg_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
     // coerce the argument to an arithmetic type
     // (will not give error if can't, will copy instead)
     //
-    v2 = rpt_value_arithmetic(v1);
-    rpt_value_free(v1);
+    rpt_value::pointer v2 = rpt_value::arithmetic(v1);
 
     //
     // the type of the result depends on
     // the types of the argument
     //
-    switch (v2->method->type)
+    rpt_value_integer *v2_ip = dynamic_cast<rpt_value_integer *>(v2.get());
+    if (v2_ip)
     {
-    case rpt_value_type_real:
-	vp = rpt_value_real(-rpt_value_real_query(v2));
-	trace(("vp = %g real\n", rpt_value_real_query(vp)));
-	break;
-
-    case rpt_value_type_integer:
-	vp = rpt_value_integer(-rpt_value_integer_query(v2));
-	trace(("vp = %ld integer\n", rpt_value_integer_query(vp)));
-	break;
-
-    default:
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", v2->method->name);
-	s = subst_intl(scp, i18n("illegal negative ($name)"));
-	sub_context_delete(scp);
-	vp = rpt_value_error(0, s);
-	str_free(s);
-	break;
+        long n = v2_ip->query();
+        return rpt_value_integer::create(-n);
     }
-    rpt_value_free(v2);
-    trace(("return %08lX;\n", (long)vp));
-    trace(("}\n"));
-    return vp;
+
+    rpt_value_real *v2_rp = dynamic_cast<rpt_value_real *>(v2.get());
+    if (v2_rp)
+    {
+        double n = v2_rp->query();
+        return rpt_value_real::create(-n);
+    }
+
+    sub_context_ty sc;
+    sc.var_set_charstar("Name", v2->name());
+    nstring s(sc.subst_intl(i18n("illegal negative ($name)")));
+    return rpt_value_error::create(s);
 }
 
 
-static tree_method_ty neg_method =
+tree::pointer
+tree_neg::optimize()
+    const
 {
-    sizeof(tree_monadic_ty),
-    "-",
-    tree_monadic_destructor,
-    tree_monadic_print,
-    neg_evaluate,
-    tree_monadic_useful,
-    tree_monadic_constant,
-    tree_monadic_optimize,
-};
-
-
-tree_ty *
-tree_neg_new(tree_ty *arg)
-{
-    return tree_monadic_new(&neg_method, arg);
+    tree::pointer tp = create(get_arg()->optimize());
+    if (tp->constant())
+        tp = tp->optimize_constant();
+    return tp;
 }
 
 
-static rpt_value_ty *
-pos_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
-    string_ty *path_res, struct stat *st)
+const char *
+tree_neg::name()
+    const
 {
-    tree_monadic_ty *this_thing;
-    sub_context_ty  *scp;
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *vp;
-    string_ty       *s;
+    return "-";
+}
 
+
+tree_pos::~tree_pos()
+{
+}
+
+
+tree_pos::tree_pos(const tree::pointer &a_arg) :
+    tree_monadic(a_arg)
+{
+}
+
+
+tree::pointer
+tree_pos::create(const tree::pointer &a_arg)
+{
+    return pointer(new tree_pos(a_arg));
+}
+
+
+tree::pointer
+tree_pos::create_l(const tree_list &args)
+{
+    function_needs_one("+", args);
+    return create(args[0]);
+}
+
+
+rpt_value::pointer
+tree_pos::evaluate(string_ty *path_unres, string_ty *path, string_ty *path_res,
+    struct stat *st) const
+{
     //
     // evaluate the argument
     //
-    trace(("pos::evaluate()\n{\n"));
-    this_thing = (tree_monadic_ty *)tp;
-    v1 = tree_evaluate(this_thing->arg, path_unres, path, path_res, st);
-    if (v1->method->type == rpt_value_type_error)
-    {
-	trace(("}\n"));
+    trace(("pos::evaluate()\n"));
+    rpt_value::pointer v1 = get_arg()->evaluate(path_unres, path, path_res, st);
+    if (v1->is_an_error())
 	return v1;
-    }
 
     //
     // coerce the argument to an arithmetic type
     // (will not give error if can't, will copy instead)
     //
-    v2 = rpt_value_arithmetic(v1);
-    rpt_value_free(v1);
+    rpt_value::pointer v2 = rpt_value::arithmetic(v1);
 
     //
     // the type of the result depends on
     // the types of the argument
     //
-    switch (v2->method->type)
+    if
+    (
+        !dynamic_cast<rpt_value_integer *>(v2.get())
+    &&
+        !dynamic_cast<rpt_value_real *>(v2.get())
+    )
     {
-    case rpt_value_type_real:
-    case rpt_value_type_integer:
-	vp = rpt_value_copy(v2);
-	break;
-
-    default:
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", v2->method->name);
-	s = subst_intl(scp, i18n("illegal positive ($name)"));
-	sub_context_delete(scp);
-	vp = rpt_value_error(0, s);
-	str_free(s);
-	break;
+        sub_context_ty sc;
+        sc.var_set_charstar("Name", v2->name());
+        nstring s(sc.subst_intl(i18n("illegal positive ($name)")));
+        return rpt_value_error::create(s);
     }
-    rpt_value_free(v2);
-    trace(("return %08lX;\n", (long)vp));
-    trace(("}\n"));
-    return vp;
+
+    return v2;
 }
 
 
-static tree_method_ty pos_method =
+tree::pointer
+tree_pos::optimize()
+    const
 {
-    sizeof(tree_monadic_ty),
-    "+",
-    tree_monadic_destructor,
-    tree_monadic_print,
-    pos_evaluate,
-    tree_monadic_useful,
-    tree_monadic_constant,
-    tree_monadic_optimize,
-};
-
-
-tree_ty *
-tree_pos_new(tree_ty *arg)
-{
-    return tree_monadic_new(&pos_method, arg);
+    tree::pointer tp = create(get_arg()->optimize());
+    if (tp->constant())
+        tp = tp->optimize_constant();
+    return tp;
 }
 
 
-static rpt_value_ty *
-plus_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
-    string_ty *path_res, struct stat *st)
+const char *
+tree_pos::name()
+    const
 {
-    tree_diadic_ty  *this_thing;
-    sub_context_ty  *scp;
-    rpt_value_ty    *lv1;
-    rpt_value_ty    *lv2;
-    rpt_value_ty    *rv1;
-    rpt_value_ty    *rv2;
-    rpt_value_ty    *vp;
-    string_ty       *s;
+    return "+";
+}
 
+
+tree_plus::~tree_plus()
+{
+}
+
+
+tree_plus::tree_plus(const tree::pointer &a1, const tree::pointer &a2) :
+    tree_diadic(a1, a2)
+{
+}
+
+
+tree::pointer
+tree_plus::create(const tree::pointer &a1, const tree::pointer &a2)
+{
+    return pointer(new tree_plus(a1, a2));
+}
+
+
+tree::pointer
+tree_plus::create_l(const tree_list &args)
+{
+    function_needs_two("+", args);
+    return create(args[0], args[1]);
+}
+
+
+rpt_value::pointer
+tree_plus::evaluate(string_ty *path_unres, string_ty *path, string_ty *path_res,
+    struct stat *st) const
+{
     //
     // evaluate the left hand side
     //
-    trace(("plus::evaluate()\n{\n"));
-    this_thing = (tree_diadic_ty *)tp;
-    lv1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
-    if (lv1->method->type == rpt_value_type_error)
-    {
-	trace(("}\n"));
+    trace(("plus::evaluate()\n"));
+    rpt_value::pointer lv1 =
+        get_left()->evaluate(path_unres, path, path_res, st);
+    if (lv1->is_an_error())
 	return lv1;
-    }
 
     //
     // coerce the left hand side to an arithmetic type
     // (will not give error if can't, will copy instead)
     //
-    lv2 = rpt_value_arithmetic(lv1);
-    rpt_value_free(lv1);
+    rpt_value::pointer lv2 = rpt_value::arithmetic(lv1);
 
     //
     // evaluate the right hand side
     //
-    rv1 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
-    if (rv1->method->type == rpt_value_type_error)
-    {
-	rpt_value_free(lv2);
-	trace(("}\n"));
+    rpt_value::pointer rv1 =
+        get_right()->evaluate(path_unres, path, path_res, st);
+    if (rv1->is_an_error())
 	return rv1;
-    }
 
     //
     // coerce the right hand side to an arithmetic type
     // (will not give error if can't, will copy instead)
     //
-    rv2 = rpt_value_arithmetic(rv1);
-    rpt_value_free(rv1);
+    rpt_value::pointer rv2 = rpt_value::arithmetic(rv1);
 
     //
     // the type of the result depends on
     // the types of the operands
     //
-    switch (PAIR(lv2->method->type, rv2->method->type))
     {
-    case PAIR(rpt_value_type_real, rpt_value_type_real):
-	vp =
-	    rpt_value_real
-	    (
-	       	rpt_value_real_query(lv2) + rpt_value_real_query(rv2)
-	    );
-	trace(("vp = %g real\n", rpt_value_real_query(vp)));
-	break;
+        rpt_value_integer *lv2_ip =
+            dynamic_cast<rpt_value_integer *>(lv2.get());
+        if (lv2_ip)
+        {
+            long v1n = lv2_ip->query();
 
-    case PAIR(rpt_value_type_real, rpt_value_type_integer):
-	vp =
-	    rpt_value_real
-	    (
-	       	rpt_value_real_query(lv2) + rpt_value_integer_query(rv2)
-	    );
-	trace(("vp = %g real\n", rpt_value_real_query(vp)));
-	break;
+            {
+                rpt_value_integer *rv2_ip =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2_ip)
+                {
+                    long v2n = rv2_ip->query();
+                    return rpt_value_integer::create(v1n + v2n);
+                }
+            }
 
-    case PAIR(rpt_value_type_integer, rpt_value_type_real):
-	vp =
-	    rpt_value_real
-	    (
-	       	rpt_value_integer_query(lv2) + rpt_value_real_query(rv2)
-	    );
-	trace(("vp = %g real\n", rpt_value_real_query(vp)));
-	break;
-
-    case PAIR(rpt_value_type_integer, rpt_value_type_integer):
-	vp =
-	    rpt_value_integer
-	    (
-	       	rpt_value_integer_query(lv2) + rpt_value_integer_query(rv2)
-	    );
-	trace(("vp = %ld integer\n", rpt_value_integer_query(vp)));
-	break;
-
-    default:
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name1", lv2->method->name);
-	sub_var_set_charstar(scp, "Name2", rv2->method->name);
-	s = subst_intl(scp, i18n("illegal addition ($name1 + $name2)"));
-	sub_context_delete(scp);
-	vp = rpt_value_error(0, s);
-	str_free(s);
-	break;
+            {
+                rpt_value_real *rv2_rp =
+                    dynamic_cast<rpt_value_real *>(rv2.get());
+                if (rv2_rp)
+                {
+                    double v2n = rv2_rp->query();
+                    return rpt_value_real::create(v1n + v2n);
+                }
+            }
+        }
     }
-    rpt_value_free(lv2);
-    rpt_value_free(rv2);
-    trace(("return %08lX;\n", (long)vp));
-    trace(("}\n"));
-    return vp;
+
+    {
+        rpt_value_real *lv2_rp = dynamic_cast<rpt_value_real *>(lv2.get());
+        if (lv2_rp)
+        {
+            double v1n = lv2_rp->query();
+
+            {
+                rpt_value_integer *rv2_ip =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2_ip)
+                {
+                    long v2n = rv2_ip->query();
+                    return rpt_value_real::create(v1n + v2n);
+                }
+            }
+
+            {
+                rpt_value_real *rv2_rp =
+                    dynamic_cast<rpt_value_real *>(rv2.get());
+                if (rv2_rp)
+                {
+                    double v2n = rv2_rp->query();
+                    return rpt_value_real::create(v1n + v2n);
+                }
+            }
+        }
+    }
+
+    sub_context_ty sc;
+    sc.var_set_charstar("Name1", lv2->name());
+    sc.var_set_charstar("Name2", rv2->name());
+    nstring s(sc.subst_intl(i18n("illegal addition ($name1 + $name2)")));
+    return rpt_value_error::create(s);
 }
 
 
-static tree_method_ty plus_method =
+tree::pointer
+tree_plus::optimize()
+    const
 {
-    sizeof(tree_diadic_ty),
-    "+",
-    tree_diadic_destructor,
-    tree_diadic_print,
-    plus_evaluate,
-    tree_diadic_useful,
-    tree_diadic_constant,
-    tree_diadic_optimize,
-};
-
-
-tree_ty *
-tree_plus_new(tree_ty *left, tree_ty *right)
-{
-    return tree_diadic_new(&plus_method, left, right);
+    tree::pointer tp = create(get_left()->optimize(), get_right()->optimize());
+    if (tp->constant())
+        tp = tp->optimize_constant();
+    return tp;
 }
 
 
-static rpt_value_ty *
-subtract_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
-    string_ty *path_res, struct stat *st)
+const char *
+tree_plus::name()
+    const
 {
-    tree_diadic_ty  *this_thing;
-    sub_context_ty  *scp;
-    rpt_value_ty    *lv1;
-    rpt_value_ty    *lv2;
-    rpt_value_ty    *rv1;
-    rpt_value_ty    *rv2;
-    rpt_value_ty    *vp;
-    string_ty       *s;
+    return "+";
+}
 
+
+tree_subtract::~tree_subtract()
+{
+}
+
+
+tree_subtract::tree_subtract(const tree::pointer &a1, const tree::pointer &a2) :
+    tree_diadic(a1, a2)
+{
+}
+
+
+tree::pointer
+tree_subtract::create(const tree::pointer &a1, const tree::pointer &a2)
+{
+    return pointer(new tree_subtract(a1, a2));
+}
+
+
+tree::pointer
+tree_subtract::create_l(const tree_list &args)
+{
+    function_needs_two("-", args);
+    return create(args[0], args[1]);
+}
+
+
+rpt_value::pointer
+tree_subtract::evaluate(string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st) const
+{
     //
     // evaluate the left hand side
     //
-    trace(("subtract::evaluate()\n{\n"));
-    this_thing = (tree_diadic_ty *)tp;
-    lv1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
-    if (lv1->method->type == rpt_value_type_error)
-    {
-	trace(("}\n"));
+    trace(("subtract::evaluate()\n"));
+    rpt_value::pointer lv1 =
+        get_left()->evaluate(path_unres, path, path_res, st);
+    if (lv1->is_an_error())
 	return lv1;
-    }
 
     //
     // coerce the left hand side to an arithmetic type
     // (will not give error if can't, will copy instead)
     //
-    lv2 = rpt_value_arithmetic(lv1);
-    rpt_value_free(lv1);
+    rpt_value::pointer lv2 = rpt_value::arithmetic(lv1);
 
     //
     // evaluate the right hand side
     //
-    rv1 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
-    if (rv1->method->type == rpt_value_type_error)
-    {
-	rpt_value_free(lv2);
-	trace(("}\n"));
+    rpt_value::pointer rv1 =
+        get_right()->evaluate(path_unres, path, path_res, st);
+    if (rv1->is_an_error())
 	return rv1;
-    }
 
     //
     // coerce the right hand side to an arithmetic type
     // (will not give error if can't, will copy instead)
     //
-    rv2 = rpt_value_arithmetic(rv1);
-    rpt_value_free(rv1);
+    rpt_value::pointer rv2 = rpt_value::arithmetic(rv1);
 
     //
     // the type of the result depends on
     // the types of the operands
     //
-    switch (PAIR(lv2->method->type, rv2->method->type))
     {
-    case PAIR(rpt_value_type_real, rpt_value_type_real):
-	vp =
-	    rpt_value_real
-	    (
-	       	rpt_value_real_query(lv2) - rpt_value_real_query(rv2)
-	    );
-	trace(("vp = %g real\n", rpt_value_real_query(vp)));
-	break;
+        rpt_value_integer *lv2_ip =
+            dynamic_cast<rpt_value_integer *>(lv2.get());
+        if (lv2_ip)
+        {
+            long v1n = lv2_ip->query();
 
-    case PAIR(rpt_value_type_real, rpt_value_type_integer):
-	vp =
-	    rpt_value_real
-	    (
-	       	rpt_value_real_query(lv2) - rpt_value_integer_query(rv2)
-	    );
-	trace(("vp = %g real\n", rpt_value_real_query(vp)));
-	break;
+            {
+                rpt_value_integer *rv2_ip =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2_ip)
+                {
+                    long v2n = rv2_ip->query();
+                    return rpt_value_integer::create(v1n - v2n);
+                }
+            }
 
-    case PAIR(rpt_value_type_integer, rpt_value_type_real):
-	vp =
-	    rpt_value_real
-	    (
-	       	rpt_value_integer_query(lv2) - rpt_value_real_query(rv2)
-	    );
-	trace(("vp = %g real\n", rpt_value_real_query(vp)));
-	break;
-
-    case PAIR(rpt_value_type_integer, rpt_value_type_integer):
-	vp =
-	    rpt_value_integer
-	    (
-	       	rpt_value_integer_query(lv2) - rpt_value_integer_query(rv2)
-	    );
-	trace(("vp = %ld integer\n", rpt_value_integer_query(vp)));
-	break;
-
-    default:
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name1", lv2->method->name);
-	sub_var_set_charstar(scp, "Name2", rv2->method->name);
-	s = subst_intl(scp, i18n("illegal subtraction ($name1 - $name2)"));
-	sub_context_delete(scp);
-	vp = rpt_value_error(0, s);
-	str_free(s);
-	break;
+            {
+                rpt_value_real *rv2_rp =
+                    dynamic_cast<rpt_value_real *>(rv2.get());
+                if (rv2_rp)
+                {
+                    double v2n = rv2_rp->query();
+                    return rpt_value_real::create(v1n - v2n);
+                }
+            }
+        }
     }
-    rpt_value_free(lv2);
-    rpt_value_free(rv2);
-    trace(("return %08lX;\n", (long)vp));
-    trace(("}\n"));
-    return vp;
+
+    {
+        rpt_value_real *lv2_rp = dynamic_cast<rpt_value_real *>(lv2.get());
+        if (lv2_rp)
+        {
+            double v1n = lv2_rp->query();
+
+            {
+                rpt_value_integer *rv2_ip =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2_ip)
+                {
+                    long v2n = rv2_ip->query();
+                    return rpt_value_real::create(v1n - v2n);
+                }
+            }
+
+            {
+                rpt_value_real *rv2_rp =
+                    dynamic_cast<rpt_value_real *>(rv2.get());
+                if (rv2_rp)
+                {
+                    double v2n = rv2_rp->query();
+                    return rpt_value_real::create(v1n - v2n);
+                }
+            }
+        }
+    }
+
+    sub_context_ty sc;
+    sc.var_set_charstar("Name1", lv2->name());
+    sc.var_set_charstar("Name2", rv2->name());
+    nstring s(sc.subst_intl(i18n("illegal subtraction ($name1 - $name2)")));
+    return rpt_value_error::create(s);
 }
 
 
-static tree_method_ty subtract_method =
+tree::pointer
+tree_subtract::optimize()
+    const
 {
-    sizeof(tree_diadic_ty),
-    "-",
-    tree_diadic_destructor,
-    tree_diadic_print,
-    subtract_evaluate,
-    tree_diadic_useful,
-    tree_diadic_constant,
-    tree_diadic_optimize,
-};
-
-
-tree_ty *
-tree_subtract_new(tree_ty *left, tree_ty *right)
-{
-    return tree_diadic_new(&subtract_method, left, right);
+    tree::pointer tp = create(get_left()->optimize(), get_right()->optimize());
+    if (tp->constant())
+        tp = tp->optimize_constant();
+    return tp;
 }
 
 
-static rpt_value_ty *
-join_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
-    string_ty *path_res, struct stat *st)
+const char *
+tree_subtract::name()
+    const
 {
-    tree_diadic_ty  *this_thing;
-    sub_context_ty  *scp;
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *result;
-    string_ty       *s;
-    rpt_value_ty    *v1s;
-    rpt_value_ty    *v2s;
+    return "-";
+}
 
+
+tree_join::~tree_join()
+{
+}
+
+
+tree_join::tree_join(const tree::pointer &a1, const tree::pointer &a2) :
+    tree_diadic(a1, a2)
+{
+}
+
+
+tree::pointer
+tree_join::create(const tree::pointer &a1, const tree::pointer &a2)
+{
+    return pointer(new tree_join(a1, a2));
+}
+
+
+tree::pointer
+tree_join::create_l(const tree_list &args)
+{
+    function_needs_two(":", args);
+    return create(args[0], args[1]);
+}
+
+
+rpt_value::pointer
+tree_join::evaluate(string_ty *path_unres, string_ty *path, string_ty *path_res,
+    struct stat *st) const
+{
     //
     // evaluate the left hand side
     //
-    trace(("join::evaluate()\n{\n"));
-    this_thing = (tree_diadic_ty *)tp;
-    v1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
-    if (v1->method->type == rpt_value_type_error)
+    trace(("join::evaluate()\n"));
+    rpt_value::pointer v1 =
+        get_left()->evaluate(path_unres, path, path_res, st);
+    if (v1->is_an_error())
     {
 	trace(("}\n"));
 	return v1;
     }
-    assert(v1->method->type != rpt_value_type_reference);
 
     //
     // evaluate the right hand side
     //
-    v2 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
-    if (v2->method->type == rpt_value_type_error)
+    rpt_value::pointer v2 =
+        get_right()->evaluate(path_unres, path, path_res, st);
+    if (v2->is_an_error())
     {
-	rpt_value_free(v1);
 	trace(("}\n"));
 	return v2;
     }
-    assert(v2->method->type != rpt_value_type_reference);
 
     //
     // must be a string join
     //
-    v1s = rpt_value_stringize(v1);
-    v2s = rpt_value_stringize(v2);
-    if
-    (
-	v1s->method->type == rpt_value_type_string
-    &&
-	v2s->method->type == rpt_value_type_string
-    )
-    {
-	s =
-	    str_catenate
-	    (
-	       	rpt_value_string_query(v1s),
-	       	rpt_value_string_query(v2s)
-	    );
-	result = rpt_value_string(s);
-	str_free(s);
-    }
-    else
-    {
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name1", v1s->method->name);
-	sub_var_set_charstar(scp, "Name2", v2s->method->name);
-	s = subst_intl(scp, i18n("illegal join ($name1 ## $name2)"));
-	sub_context_delete(scp);
-	result = rpt_value_error(0, s);
-	str_free(s);
-    }
-    rpt_value_free(v1s);
-    rpt_value_free(v2s);
+    rpt_value::pointer v1s = rpt_value::stringize(v1);
+    rpt_value_string *v1sp = dynamic_cast<rpt_value_string *>(v1s.get());
+    rpt_value::pointer v2s = rpt_value::stringize(v2);
+    rpt_value_string *v2sp = dynamic_cast<rpt_value_string *>(v2s.get());
 
-    //
-    // clean up and go home
-    //
-    rpt_value_free(v1);
-    rpt_value_free(v2);
-    trace(("return %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
+    if (v1sp && v2sp)
+    {
+	nstring s = v1sp->query() + v2sp->query();
+	return rpt_value_string::create(s);
+    }
+
+    sub_context_ty sc;
+    sc.var_set_charstar("Name1", v1s->name());
+    sc.var_set_charstar("Name2", v2s->name());
+    nstring s(sc.subst_intl(i18n("illegal join ($name1 ## $name2)")));
+    return rpt_value_error::create(s);
 }
 
 
-static tree_method_ty join_method =
+tree::pointer
+tree_join::optimize()
+    const
 {
-    sizeof(tree_diadic_ty),
-    ":",
-    tree_diadic_destructor,
-    tree_diadic_print,
-    join_evaluate,
-    tree_diadic_useful,
-    tree_diadic_constant,
-    tree_diadic_optimize,
-};
+    tree::pointer tp = create(get_left()->optimize(), get_right()->optimize());
+    if (tp->constant())
+        tp = tp->optimize_constant();
+    return tp;
+}
 
 
-tree_ty *
-tree_join_new(tree_ty *left, tree_ty *right)
+const char *
+tree_join::name()
+    const
 {
-    return tree_diadic_new(&join_method, left, right);
+    return ":";
 }

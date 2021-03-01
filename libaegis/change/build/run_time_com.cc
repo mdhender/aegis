@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to run the build_time_adjust_notify_command
 //
@@ -29,7 +28,7 @@
 
 
 void
-change_run_build_time_adjust_notify_command(change_ty *cp)
+change_run_build_time_adjust_notify_command(change::pointer cp)
 {
     sub_context_ty  *scp;
     pconf_ty        *pconf_data;
@@ -54,6 +53,6 @@ change_run_build_time_adjust_notify_command(change_ty *cp)
     change_env_set(cp, 1);
     project_become(cp->pp);
     os_execute(the_command, OS_EXEC_FLAG_NO_INPUT, id);
-    project_become_undo();
+    project_become_undo(cp->pp);
     str_free(the_command);
 }

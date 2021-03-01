@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994, 1996, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,46 +13,68 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement the builtin count function
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/func/count.h>
 #include <libaegis/aer/value.h>
 #include <libaegis/aer/value/error.h>
-#include <common/error.h>
 
 
-static int
-verify(rpt_expr_ty *ep)
+rpt_func_count::~rpt_func_count()
 {
-    return (ep->nchild == 1);
 }
 
 
-static rpt_value_ty *
-run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func_count::rpt_func_count()
 {
-    rpt_value_ty    *result;
+}
 
-    assert(argc == 1);
-    result = rpt_value_count(argv[0]);
-    if (result->method->type == rpt_value_type_error)
+
+rpt_func::pointer
+rpt_func_count::create()
+{
+    return pointer(new rpt_func_count());
+}
+
+
+const char *
+rpt_func_count::name()
+    const
+{
+    return "count";
+}
+
+
+bool
+rpt_func_count::optimizable()
+    const
+{
+    return true;
+}
+
+
+bool
+rpt_func_count::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 1);
+}
+
+
+rpt_value::pointer
+rpt_func_count::run(const rpt_expr::pointer &ep, size_t,
+    rpt_value::pointer *argv) const
+{
+    rpt_value::pointer result = argv[0]->count();
+    rpt_value_error *rve = dynamic_cast<rpt_value_error *>(result.get());
+    if (rve)
     {
-	assert(ep->pos);
-	rpt_value_error_setpos(result, ep->pos);
+	assert(ep->get_pos());
+	rve->setpos(ep->get_pos());
     }
     return result;
 }
-
-
-rpt_func_ty rpt_func_count =
-{
-    "count",
-    1, // optimizable
-    verify,
-    run,
-};

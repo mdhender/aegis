@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2006 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 2006, 2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -45,7 +44,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	log_file_preference = never; \
 	default_development_directory = \"$work\";"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 # This tells aeintegratq that it is being used by a test.
@@ -250,9 +249,9 @@ $bin/aegis -ca -c 1 -f tmp -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # now fix the files to have a copyright
-aesub 'Copyright (C) ${date %Y} ${user name}' >> $workchan/bogus1
+$bin/aesub 'Copyright (C) ${date %Y} ${user name}' >> $workchan/bogus1
 test $? -eq 0 || no_result
-aesub '/* Copyright (C) ${date %Y} ${user name} */' >> $workchan/aegis.conf
+$bin/aesub '/* Copyright (C) ${date %Y} ${user name} */' >> $workchan/aegis.conf
 test $? -eq 0 || no_result
 
 $bin/aede-policy -p $AEGIS_PROJECT -c 1 all

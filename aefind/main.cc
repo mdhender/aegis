@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -23,12 +22,14 @@
 #include <common/ac/stdlib.h>
 
 #include <common/env.h>
-#include <aefind/cmdline.h>
 #include <common/language.h>
-#include <libaegis/os.h>
-#include <common/quit.h>
 #include <common/progname.h>
+#include <common/quit.h>
+#include <common/rsrc_limits.h>
+#include <libaegis/os.h>
 #include <libaegis/sub.h>
+
+#include <aefind/cmdline.h>
 
 
 int
@@ -41,6 +42,7 @@ main(int argc, char **argv)
     os_become_init_mortal();
     env_initialize();
     language_init();
+    resource_limits_init();
 
     //
     // parse the command line

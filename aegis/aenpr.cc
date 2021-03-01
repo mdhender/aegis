@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2006 Peter Miller
+//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
 //      Copyright (C) 2006 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -89,19 +89,19 @@ new_project_list(void)
 
 
 static void
-new_administrator_add(project_ty *pp, user_ty *candidate)
+new_administrator_add(project_ty *pp, user_ty::pointer candidate)
 {
     assert(pp);
     assert(candidate);
 
-    trace(("new_administrator_add(\"%s\", \"%s\")\n{\n",
-           pp->name_get()->str_text, user_name(candidate)->str_text));
+    trace(("new_administrator_add(\"%s\", %s)\n{\n",
+           pp->name_get()->str_text, candidate->name().quote_c().c_str()));
 
     //
     // make sure user exists
     //
-    if (!user_uid_check(user_name(candidate)))
-        fatal_user_too_privileged(user_name(candidate));
+    if (!candidate->check_uid())
+        fatal_user_too_privileged(candidate->name());
 
     string_list_ty wlp;
     pp->list_inner(wlp);
@@ -115,9 +115,9 @@ new_administrator_add(project_ty *pp, user_ty *candidate)
         //
         // Add the administrator to the current project.
         //
-        if (!project_administrator_query(branch, user_name(candidate)))
+        if (!project_administrator_query(branch, candidate->name()))
         {
-            project_administrator_add(branch, user_name(candidate));
+            project_administrator_add(branch, candidate->name());
 
             //
             // write the project state
@@ -137,11 +137,10 @@ new_project_main(void)
     string_ty	    *s;
     sub_context_ty  *scp;
     string_ty	    *home;
-    string_ty	    *s1;
     string_ty	    *project_name;
     project_ty	    *pp;
     project_ty	    *ppp;
-    user_ty	    *up;
+    user_ty::pointer up;
     string_ty	    *bl;
     string_ty	    *hp;
     string_ty	    *ip;
@@ -330,7 +329,7 @@ new_project_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(new_project_usage);
+	    user_ty::lock_wait_argument(new_project_usage);
 	    break;
 
 	case arglex_token_keep:
@@ -515,7 +514,7 @@ new_project_main(void)
     //
     // locate user data
     //
-    up = user_executing((project_ty *)0);
+    up = user_ty::create();
 
     //
     // read in the project table
@@ -526,10 +525,10 @@ new_project_main(void)
     //
     // make sure not too privileged
     //
-    if (!user_uid_check(up->name))
-	fatal_user_too_privileged(user_name(up));
-    if (!user_gid_check(up->group))
-	fatal_group_too_privileged(user_group(up));
+    if (!up->check_uid())
+	fatal_user_too_privileged(up->name());
+    if (!up->check_gid())
+	fatal_group_too_privileged(up->get_group_name());
 
     //
     // it is an error if the name is already in use
@@ -540,21 +539,13 @@ new_project_main(void)
     str_free(project_name);
     if (keep)
     {
-	if (gonzo_project_home_path_from_name(project_name))
-	{
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Name", pp->name_get());
-	    fatal_intl(scp, i18n("project $name exists"));
-	    // NOTREACHED
-	    sub_context_delete(scp);
-	}
 	if (!home)
 	{
 	    error_intl(0, i18n("aenpr -keep needs -dir"));
 	    new_project_usage();
 	    // NOTREACHED
 	}
-	pp->home_path_set(os_canonify_dirname(home));
+        pp->bind_keep(nstring(home));
     }
     else
 	pp->bind_new();
@@ -563,7 +554,7 @@ new_project_main(void)
     // the user who ran the command is the project administrator.
     // no other staff are defined at this time.
     //
-    project_administrator_add(pp, user_name(up));
+    project_administrator_add(pp, up->name());
 
     //
     // if no project directory was specified
@@ -571,17 +562,14 @@ new_project_main(void)
     //
     if (!home)
     {
-	int		max;
-
-	s1 = user_default_project_directory(up);
-	assert(s1);
+	nstring s2 = up->default_project_directory();
+	assert(s2);
 	os_become_orig();
-	max = os_pathconf_name_max(s1);
+	int max = os_pathconf_name_max(s2);
 	os_become_undo();
 	if (project_name_get(pp)->str_length > (size_t)max)
 	    fatal_project_name_too_long(project_name_get(pp), max);
-	home = os_path_join(s1, project_name_get(pp));
-	str_free(s1);
+	home = os_path_join(s2.get_ref(), project_name_get(pp));
 
 	project_verbose_directory(pp, home);
     }
@@ -599,7 +587,7 @@ new_project_main(void)
     ip = pp->info_path_get();
     if (!keep)
     {
-	project_become(pp);
+        user_ty::become scoped(pp->get_user());
 	os_mkdir(home, 02755);
 	undo_rmdir_errok(home);
 	os_mkdir(bl, 02755);
@@ -608,7 +596,6 @@ new_project_main(void)
 	undo_rmdir_errok(hp);
 	os_mkdir(ip, 02755);
 	undo_rmdir_errok(ip);
-	project_become_undo();
     }
 
     //
@@ -670,7 +657,6 @@ new_project_main(void)
 	project_verbose_new_branch_complete(version_pp[j]);
 
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -680,8 +666,8 @@ new_project(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, new_project_help, },
-	{arglex_token_list, new_project_list, },
+	{ arglex_token_help, new_project_help, 0 },
+	{ arglex_token_list, new_project_list, 0 },
     };
 
     trace(("new_project()\n{\n"));

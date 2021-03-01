@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,41 +13,63 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement the builtin getuid function
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/func/getuid.h>
 #include <libaegis/aer/value/integer.h>
 #include <libaegis/os.h>
-#include <common/error.h>
 
 
-static int
-getuid_verify(rpt_expr_ty *ep)
+rpt_func_getuid::~rpt_func_getuid()
 {
-    return (ep->nchild == 0);
 }
 
 
-static rpt_value_ty *
-getuid_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func_getuid::rpt_func_getuid()
 {
-    int             uid;
+}
 
-    assert(argc == 0);
+
+rpt_func::pointer
+rpt_func_getuid::create()
+{
+    return pointer(new rpt_func_getuid());
+}
+
+
+const char *
+rpt_func_getuid::name()
+    const
+{
+    return "getuid";
+}
+
+
+bool
+rpt_func_getuid::optimizable()
+    const
+{
+    return true;
+}
+
+
+bool
+rpt_func_getuid::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 0);
+}
+
+
+rpt_value::pointer
+rpt_func_getuid::run(const rpt_expr::pointer &, size_t, rpt_value::pointer *)
+    const
+{
+    int uid = -1;
     os_become_orig_query(&uid, (int *)0, (int *)0);
-    return rpt_value_integer(uid);
+    return rpt_value_integer::create(uid);
 }
-
-
-rpt_func_ty rpt_func_getuid =
-{
-    "getuid",
-    0, // optimizable
-    getuid_verify,
-    getuid_run,
-};

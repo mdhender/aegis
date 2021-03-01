@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate adds
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change.h>
@@ -25,21 +22,28 @@
 
 
 void
-change_architecture_add(change_ty *cp, string_ty *name)
+change_architecture_add(change::pointer cp, string_ty *name)
 {
-    cstate_ty       *cstate_data;
-    type_ty         *type_p;
-    string_ty       **who_p;
-
     assert(cp->reference_count >= 1);
-    cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
     if (!cstate_data->architecture)
     {
 	cstate_data->architecture =
 	    (cstate_architecture_list_ty *)
 	    cstate_architecture_list_type.alloc();
     }
-    who_p =
+
+    //
+    // We must be careful to suppress duplicates, otherwise the
+    // architecture prerequisites for state transitions are
+    // unsatifiable.
+    //
+    for (size_t j = 0; j < cstate_data->architecture->length; ++j)
+	if (str_equal(name, cstate_data->architecture->list[j]))
+	    return;
+
+    meta_type *type_p = 0;
+    string_ty **who_p =
 	(string_ty **)
 	cstate_architecture_list_type.list_parse
 	(

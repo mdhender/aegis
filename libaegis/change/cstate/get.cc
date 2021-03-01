@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate gets
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change.h>
@@ -30,7 +27,7 @@
 
 
 static void
-cstate_to_fstate(change_ty *cp)
+cstate_to_fstate(change::pointer cp)
 {
     trace(("cstate_to_fstate(cp = %08lX)\n{\n", (long)cp));
     assert(cp->reference_count >= 1);
@@ -51,7 +48,7 @@ cstate_to_fstate(change_ty *cp)
 	cstate_src_ty	*src1;
 	fstate_src_ty	*src2;
 	fstate_src_ty	**addr_p;
-	type_ty		*type_p;
+	meta_type		*type_p;
 
 	src1 = cp->cstate_data->src->list[j];
 	if
@@ -134,149 +131,129 @@ cstate_to_fstate(change_ty *cp)
 
 
 cstate_ty *
-change_cstate_get(change_ty *cp)
+change::cstate_get()
 {
-    string_ty	    *fn;
-
-    trace(("change_cstate_get(cp = %08lX)\n{\n", (long)cp));
-    assert(cp->reference_count >= 1);
-    change_lock_sync(cp);
-    if (!cp->cstate_data)
+    trace(("change::cstate_get(this = %08lX)\n{\n", (long)this));
+    assert(reference_count >= 1);
+    change_lock_sync(this);
+    if (!cstate_data)
     {
-	fn = change_cstate_filename_get(cp);
-	change_become(cp);
-	cp->cstate_data = cstate_read_file(fn);
-	change_become_undo();
-	if (!cp->cstate_data->brief_description)
+        string_ty *fn = change_cstate_filename_get(this);
+	change_become(this);
+	cstate_data = cstate_read_file(fn);
+	change_become_undo(this);
+	if (!cstate_data->brief_description)
 	{
-	    sub_context_ty  *scp;
-
-	    assert(cp->cstate_data->errpos);
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", cp->cstate_data->errpos);
-	    sub_var_set_charstar(scp, "FieLD_Name", "brief_description");
+	    assert(cstate_data->errpos);
+	    sub_context_ty sc;
+	    sc.var_set_string("File_Name", cstate_data->errpos);
+	    sc.var_set_charstar("FieLD_Name", "brief_description");
 	    change_fatal
 	    (
-		cp,
-		scp,
+		this,
+		&sc,
 		i18n("$filename: corrupted \"$field_name\" field")
 	    );
 	    // NOTREACHED
-	    sub_context_delete(scp);
 	}
-	if (!cp->cstate_data->description)
+	if (!cstate_data->description)
 	{
-	    sub_context_ty  *scp;
-
-	    assert(cp->cstate_data->errpos);
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", cp->cstate_data->errpos);
-	    sub_var_set_charstar(scp, "FieLD_Name", "description");
+	    assert(cstate_data->errpos);
+	    sub_context_ty sc;
+	    sc.var_set_string("File_Name", cstate_data->errpos);
+	    sc.var_set_charstar("FieLD_Name", "description");
 	    change_fatal
 	    (
-		cp,
-		scp,
+		this,
+		&sc,
 		i18n("$filename: corrupted \"$field_name\" field")
 	    );
 	    // NOTREACHED
-	    sub_context_delete(scp);
 	}
-	if (!(cp->cstate_data->mask & cstate_state_mask))
+	if (!(cstate_data->mask & cstate_state_mask))
 	{
-	    sub_context_ty  *scp;
-
-	    assert(cp->cstate_data->errpos);
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", cp->cstate_data->errpos);
-	    sub_var_set_charstar(scp, "FieLD_Name", "state");
+	    assert(cstate_data->errpos);
+	    sub_context_ty sc;
+	    sc.var_set_string("File_Name", cstate_data->errpos);
+	    sc.var_set_charstar("FieLD_Name", "state");
 	    change_fatal
 	    (
-		cp,
-		scp,
+		this,
+		&sc,
 		i18n("$filename: corrupted \"$field_name\" field")
 	    );
 	    // NOTREACHED
-	    sub_context_delete(scp);
 	}
 	if
 	(
-	    cp->cstate_data->state >= cstate_state_being_developed
+	    cstate_data->state >= cstate_state_being_developed
 	&&
-	    cp->cstate_data->state <= cstate_state_being_integrated
+	    cstate_data->state <= cstate_state_being_integrated
 	&&
-	    !cp->cstate_data->development_directory
+	    !cstate_data->development_directory
 	)
 	{
-	    sub_context_ty  *scp;
-
-	    assert(cp->cstate_data->errpos);
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", cp->cstate_data->errpos);
-	    sub_var_set_charstar(scp, "FieLD_Name", "development_directory");
+	    assert(cstate_data->errpos);
+	    sub_context_ty sc;
+	    sc.var_set_string("File_Name", cstate_data->errpos);
+	    sc.var_set_charstar("FieLD_Name", "development_directory");
 	    change_fatal
 	    (
-		cp,
-		scp,
+		this,
+		&sc,
 		i18n("$filename: contains no \"$field_name\" field")
 	    );
 	    // NOTREACHED
-	    sub_context_delete(scp);
 	}
 	if
 	(
-	    cp->cstate_data->state == cstate_state_being_integrated
+	    cstate_data->state == cstate_state_being_integrated
 	&&
-	    !cp->cstate_data->integration_directory
+	    !cstate_data->integration_directory
 	)
 	{
-	    sub_context_ty  *scp;
-
-	    assert(cp->cstate_data->errpos);
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", cp->cstate_data->errpos);
-	    sub_var_set_charstar(scp, "FieLD_Name", "integration_directory");
+	    assert(cstate_data->errpos);
+	    sub_context_ty sc;
+	    sc.var_set_string("File_Name", cstate_data->errpos);
+	    sc.var_set_charstar("FieLD_Name", "integration_directory");
 	    change_fatal
 	    (
-		cp,
-		scp,
+		this,
+		&sc,
 		i18n("$filename: contains no \"$field_name\" field")
 	    );
 	    // NOTREACHED
-	    sub_context_delete(scp);
 	}
 	if
 	(
-	    cp->cstate_data->state == cstate_state_completed
+	    cstate_data->state == cstate_state_completed
 	&&
-	    !cp->cstate_data->delta_number
+	    !cstate_data->delta_number
 	)
 	{
-	    sub_context_ty  *scp;
-
-	    assert(cp->cstate_data->errpos);
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", cp->cstate_data->errpos);
-	    sub_var_set_charstar(scp, "FieLD_Name", "delta_number");
+	    assert(cstate_data->errpos);
+	    sub_context_ty sc;
+	    sc.var_set_string("File_Name", cstate_data->errpos);
+	    sc.var_set_charstar("FieLD_Name", "delta_number");
 	    change_fatal
 	    (
-		cp,
-		scp,
+		this,
+		&sc,
 		i18n("$filename: contains no \"$field_name\" field")
 	    );
 	    // NOTREACHED
-	    sub_context_delete(scp);
 	}
-	if (cp->cstate_data->src)
+	if (cstate_data->src)
 	{
 	    //
 	    // convert from old format to new fstate format
 	    //
-	    assert(!cp->fstate_data);
-	    cstate_to_fstate(cp);
+	    assert(!fstate_data);
+	    cstate_to_fstate(this);
 	}
-	change_cstate_improve(cp->cstate_data);
+	change_cstate_improve(cstate_data);
     }
-    trace(("return %08lX;\n", (long)cp->cstate_data));
+    trace(("return %08lX;\n", (long)cstate_data));
     trace(("}\n"));
-    return cp->cstate_data;
+    return cstate_data;
 }

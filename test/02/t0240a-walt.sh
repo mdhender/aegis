@@ -1,7 +1,8 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2006 Walter Franzini;
+#	Copyright (C) 2006 Walter Franzini
+#       Copyright (C) 2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -14,10 +15,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: Test the aeannotate functionality
+#	along with this program. If not, see
+#	<http://www.gnu.org/licenses/>.
 #
 
 unset AEGIS_PROJECT
@@ -44,7 +43,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	log_file_preference = never; \
 	default_development_directory = \"$work\";"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 # This tells aeintegratq that it is being used by a test.
@@ -220,8 +219,10 @@ history_query_command = "aesvt -query -history ${quote $history}";
 history_content_limitation = binary_capable;
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 merge_command = "exit 0 # $input $output $orig $most_recent";
-patch_diff_command = "set +e; diff -C0 -L $index -L $index $orig $i > $out; \
-test $$? -le 1";
+patch_diff_command = "set +e; "
+    "diff -C0 -L ${quote $index} -L ${quote $index} "
+        "${quote $orig} ${quote $input} > ${quote $output}; "
+    "test $$? -le 1";
 end
 if test $? -ne 0 ; then no_result; fi
 

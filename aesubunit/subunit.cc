@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -146,7 +145,7 @@ run_batch(const nstring_list &filename, const nstring &outfile)
 	mp->file_name = str_copy(file_name.get_ref());
 	mp->exit_status = es;
 
-	type_ty *bogus;
+	meta_type *bogus = 0;
 	tstrslt_test_result_ty **mpp =
 	    (tstrslt_test_result_ty **)
 	    tstrslt_test_result_type.list_parse(result->test_result, &bogus);

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the ael_change_file_invento class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/ael/change/file_invento.h>
@@ -35,14 +32,17 @@
 
 void
 list_change_file_inventory(string_ty *project_name, long change_number,
-    string_list_ty *args)
+    string_list_ty *)
 {
     //
     // locate project data
     //
     trace(("list_change_files()\n{\n"));
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     else
 	project_name = str_copy(project_name);
     project_ty *pp = project_alloc(project_name);
@@ -52,20 +52,20 @@ list_change_file_inventory(string_ty *project_name, long change_number,
     //
     // locate user data
     //
-    user_ty *up = user_executing(pp);
+    user_ty::pointer up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
-    change_ty *cp = change_alloc(pp, change_number);
+	change_number = up->default_change(pp);
+    change::pointer cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
     //
     // create the columns
     //
-    col_ty *colp = col_open((string_ty *)0);
+    col *colp = col::open((string_ty *)0);
     string_ty *line1 =
 	str_format
 	(
@@ -73,21 +73,21 @@ list_change_file_inventory(string_ty *project_name, long change_number,
 	    project_name_get(pp)->str_text,
 	    magic_zero_decode(change_number)
 	);
-    col_title(colp, line1->str_text, "List of Change's File Inventory");
+    colp->title(line1->str_text, "List of Change's File Inventory");
     str_free(line1);
 
     int left = 0;
     output_ty *file_name_col =
-	col_create(colp, left, left + FILENAME_WIDTH, "File Name\n-----------");
+	colp->create(left, left + FILENAME_WIDTH, "File Name\n-----------");
     left += FILENAME_WIDTH + 1;
     output_ty *uuid_col =
-	col_create(colp, left, left + UUID_WIDTH, "UUID\n------");
+	colp->create(left, left + UUID_WIDTH, "UUID\n------");
     left += UUID_WIDTH + 1;
 
     //
     // list the change's files
     //
-    bool indev = !change_is_completed(cp) && !change_was_a_branch(cp);
+    bool indev = !cp->is_completed() && !change_was_a_branch(cp);
     for (size_t j = 0;; ++j)
     {
 	fstate_src_ty *src_data = change_file_nth(cp, j, view_path_first);
@@ -100,15 +100,14 @@ list_change_file_inventory(string_ty *project_name, long change_number,
 	    uuid_col->fputs("# uuid to be set by integrate pass");
 	else
 	    uuid_col->fputs(src_data->file_name);
-	col_eoln(colp);
+	colp->eoln();
     }
 
     //
     // clean up and go home
     //
-    col_close(colp);
+    delete colp;
     project_free(pp);
     change_free(cp);
-    user_free(up);
     trace(("}\n"));
 }

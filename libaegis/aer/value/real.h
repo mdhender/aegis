@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2002, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994, 1996, 2002, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aegis/aer/value/real.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEGIS_AER_VALUE_REAL_H
@@ -25,8 +22,72 @@
 
 #include <libaegis/aer/value.h>
 
-rpt_value_ty *rpt_value_real(double);
-double rpt_value_real_query(rpt_value_ty *);
-rpt_value_ty *rpt_value_realize(rpt_value_ty *);
+/**
+  * The rpt_value_real class is used to represent a value which is a
+  * floating point value (at least 64 bits).
+  */
+class rpt_value_real:
+    public rpt_value
+{
+public:
+    /**
+      * The destructor.
+      */
+    virtual ~rpt_value_real();
+
+private:
+    /**
+      * The constructor.  It is private on purpose, use the "create"
+      * class method nstead.
+      */
+    rpt_value_real(double value);
+
+public:
+    /**
+      * The create class method is used to create new dynamically
+      * allocated instances of this class.
+      */
+    static rpt_value::pointer create(double value);
+
+    /**
+      * The query method may be used to obtain the value of this class.
+      */
+    double query() const;
+
+protected:
+    // See base class for documentation.
+    rpt_value::pointer integerize_or_null() const;
+
+    // See base class for documentation.
+    rpt_value::pointer stringize_or_null() const;
+
+    // See base class for documentation.
+    rpt_value::pointer booleanize_or_null() const;
+
+    // See base class for documentation.
+    const char *name() const;
+
+private:
+    /**
+      * The value instance variable is used to remember the value of
+      * this object.
+      */
+    double value;
+
+    /**
+      * The default constructor.  Do not use.
+      */
+    rpt_value_real();
+
+    /**
+      * The copy constructor.  Do not use.
+      */
+    rpt_value_real(const rpt_value_real &);
+
+    /**
+      * The assignment operator.  Do not use.
+      */
+    rpt_value_real &operator=(const rpt_value_real &);
+};
 
 #endif // AEGIS_AER_VALUE_REAL_H

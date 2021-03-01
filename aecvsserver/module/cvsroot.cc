@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate cvsroots
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
@@ -50,8 +47,8 @@ module_cvsroot::module_cvsroot()
 
 
 void
-module_cvsroot::modified(server_ty *sp, string_ty *file_name, file_info_ty *fip,
-    input &ip)
+module_cvsroot::modified(server_ty *sp, string_ty *file_name, file_info_ty *,
+    input &)
 {
     //
     // Throw away the file contents the client is sending to us.  We only
@@ -129,7 +126,7 @@ checkout_modules_inner(string_list_ty *modules, project_ty *pp)
     for (k = 0; ; ++k)
     {
 	long		cn;
-	change_ty	*cp2;
+	change::pointer cp2;
 
 	if (!project_change_nth(pp, k, &cn))
     	    break;
@@ -144,7 +141,7 @@ checkout_modules_inner(string_list_ty *modules, project_ty *pp)
 	}
 	else
 	{
-	    if (change_is_being_developed(cp2))
+	    if (cp2->is_being_developed())
 	    {
 		string_ty       *s2;
 
@@ -502,8 +499,7 @@ module_cvsroot::checkout_modules(server_ty *sp)
 
 
 bool
-module_cvsroot::update(server_ty *sp, string_ty *client_side,
-    string_ty *server_side, const options &opt)
+module_cvsroot::update(server_ty *sp, string_ty *, string_ty *, const options &)
 {
     //
     // FIXME: the client_side and serve_side COULD be refering to
@@ -543,8 +539,7 @@ module_cvsroot::groan(server_ty *sp, const char *request_name)
 
 
 bool
-module_cvsroot::checkin(server_ty *sp, string_ty *client_side,
-    string_ty *server_side)
+module_cvsroot::checkin(server_ty *sp, string_ty *, string_ty *)
 {
     groan(sp, "ci");
     return false;
@@ -552,8 +547,7 @@ module_cvsroot::checkin(server_ty *sp, string_ty *client_side,
 
 
 bool
-module_cvsroot::add(server_ty *sp, string_ty *client_side,
-    string_ty *server_side, const options &opt)
+module_cvsroot::add(server_ty *sp, string_ty *, string_ty *, const options &)
 {
     groan(sp, "add");
     return false;
@@ -561,8 +555,7 @@ module_cvsroot::add(server_ty *sp, string_ty *client_side,
 
 
 bool
-module_cvsroot::remove(server_ty *sp, string_ty *client_side,
-    string_ty *server_side, const options &opt)
+module_cvsroot::remove(server_ty *sp, string_ty *, string_ty *, const options &)
 {
     groan(sp, "remove");
     return false;

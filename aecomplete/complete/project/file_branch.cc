@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate file_branchs
 //
@@ -33,7 +32,7 @@
 struct complete_project_file_ty
 {
     complete_ty     inherited;
-    change_ty       *cp;
+    change::pointer cp;
     int             baserel;
     int             usage_mask;
     int             action_mask;
@@ -57,7 +56,7 @@ perform(complete_ty *cp, shell_ty *sh)
     string_ty       *prefix;
     size_t          j;
     string_ty       *base = 0;
-    change_ty       *pcp;
+    change::pointer pcp;
 
     //
     // We need to figure the base of the file names, in case the user
@@ -171,7 +170,7 @@ static complete_vtbl_ty vtbl =
 
 
 complete_ty *
-complete_branch_file(change_ty *cp, int baserel, int usage_mask,
+complete_branch_file(change::pointer cp, int baserel, int usage_mask,
     int action_mask)
 {
     complete_ty     *result;

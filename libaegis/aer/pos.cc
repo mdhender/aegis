@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1996, 1999, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1996, 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,112 +13,113 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate file positions
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
-#include <libaegis/aer/pos.h>
+#include <common/ac/string.h>
+
 #include <common/error.h>
-#include <common/mem.h>
-#include <common/str.h>
+#include <libaegis/aer/pos.h>
 #include <libaegis/sub.h>
 
 
-rpt_pos_ty *
-rpt_pos_alloc(string_ty *file_name, long line_number)
+rpt_position::~rpt_position()
 {
-    rpt_pos_ty      *pp;
-
-    pp = (rpt_pos_ty *)mem_alloc(sizeof(rpt_pos_ty));
-    pp->reference_count = 1;
-    pp->file_name = str_copy(file_name);
-    pp->line_number1 = line_number;
-    pp->line_number2 = line_number;
-    return pp;
 }
 
 
-rpt_pos_ty *
-rpt_pos_copy(rpt_pos_ty *pp)
+rpt_position::rpt_position(const nstring &a1, long a2, long a3) :
+    file_name(a1)
 {
-    pp->reference_count++;
-    return pp;
+    line_number[0] = a2;
+    line_number[1] = a3;
 }
 
 
-void
-rpt_pos_free(rpt_pos_ty *pp)
+rpt_position::pointer
+rpt_position::create(const nstring &a_file_name)
 {
-    assert(pp->reference_count >= 1);
-    pp->reference_count--;
-    if (pp->reference_count <= 0)
+    return create(a_file_name, 0);
+}
+
+
+rpt_position::pointer
+rpt_position::create(const nstring &a1, long a2, long a3)
+{
+    return pointer(new rpt_position(a1, a2, a3));
+}
+
+
+rpt_position::pointer
+rpt_position::create(const nstring &a_file_name, long a_line_number)
+{
+    const char *s = a_file_name.c_str();
+    const char *colon = strstr(s, ": ");
+    if (colon)
     {
-	str_free(pp->file_name);
-	mem_free(pp);
+        assert(a_line_number == 0);
+        nstring fn = nstring(s, colon - s);
+        int ln = atoi(colon + 2);
+        return create(fn, ln, ln);
     }
+
+    return create(a_file_name, a_line_number, a_line_number);
 }
 
 
-rpt_pos_ty *
-rpt_pos_union(rpt_pos_ty *p1, rpt_pos_ty *p2)
+nstring
+rpt_position::representation()
+    const
 {
-    rpt_pos_ty      *result;
-    long            min;
-    long            max;
+    return nstring::format("%s: %ld", file_name.c_str(), line_number[0]);
+}
 
+
+rpt_position::pointer
+rpt_position::join(const rpt_position::pointer &p1,
+    const rpt_position::pointer &p2)
+{
     assert(p1);
     assert(p2);
-    // assert(str_equal(p1->file_name, p2->file_name));
-    min = p1->line_number1;
-    max = p1->line_number2;
-    if (min > p2->line_number1)
-	min = p2->line_number1;
-    if (max > p2->line_number2)
-	max = p2->line_number2;
-    if (p1->line_number1 == min && p1->line_number2 == max)
-	return rpt_pos_copy(p1);
-    if (p2->line_number1 == min && p2->line_number2 == max)
-	return rpt_pos_copy(p2);
+    if (p1->get_file_name() != p2->get_file_name())
+        return p1;
+    long min = p1->line_number[0];
+    long max = p1->line_number[1];
+    if (min > p2->line_number[0])
+	min = p2->line_number[0];
+    if (max < p2->line_number[1])
+	max = p2->line_number[1];
+    if (p1->line_number[0] == min && p1->line_number[1] == max)
+	return p1;
+    if (p2->line_number[0] == min && p2->line_number[1] == max)
+	return p2;
 
-    result = (rpt_pos_ty *)mem_alloc(sizeof(rpt_pos_ty));
-    result->reference_count = 1;
-    result->file_name = str_copy(p1->file_name);
-    result->line_number1 = min;
-    result->line_number2 = max;
-    return result;
+    return create(p1->get_file_name(), min, max);
 }
 
 
 void
-rpt_pos_error(sub_context_ty *scp, rpt_pos_ty *pp, const char *fmt)
+rpt_position::print_error(sub_context_ty &sc, const char *fmt)
+    const
 {
-    string_ty       *s;
-    int             need_to_delete;
-
-    if (!scp)
-    {
-	scp = sub_context_new();
-	need_to_delete = 1;
-    }
-    else
-	need_to_delete = 0;
-
-    s = subst_intl(scp, fmt);
+    string_ty *s = sc.subst_intl(fmt);
 
     // re-use substitution context
-    sub_var_set_string(scp, "Message", s);
+    sc.var_set_string("Message", s);
     str_free(s);
 
-    if (!pp)
-	error_intl(scp, i18n("$message"));
-    else
+    if (line_number[0])
     {
-	sub_var_set_string(scp, "File_Name", pp->file_name);
-	error_intl(scp, i18n("$filename: $message"));
+        sc.var_set_format
+        (
+            "File_Name",
+            "%s: %ld",
+            file_name.c_str(),
+            line_number[0]
+        );
     }
-
-    if (need_to_delete)
-	sub_context_delete(scp);
+    else
+        sc.var_set_string("File_Name", file_name);
+    sc.error_intl(i18n("$filename: $message"));
 }

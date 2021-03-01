@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -36,7 +35,7 @@ quit_action_log::quit_action_log()
 
 
 void
-quit_action_log::operator()(int exit_status)
+quit_action_log::operator()(int)
 {
     //
     // Skip the close (and the wait) if we were interrupted.

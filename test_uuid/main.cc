@@ -1,8 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 2004 Walter Franzini;
-//	Copyright (C) 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2006, 2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -60,7 +59,7 @@ usage(void)
 
 
 static int
-generate_uuid(string_ty *ifn, string_ty *ofn)
+generate_uuid(string_ty *, string_ty *ofn)
 {
     output_ty	    *ofp;
     string_ty	    *uuid;
@@ -81,7 +80,7 @@ generate_uuid(string_ty *ifn, string_ty *ofn)
 
 
 static int
-check_uuid(string_ty *ifn, string_ty *ofn)
+check_uuid(string_ty *ifn, string_ty *)
 {
     os_become_orig();
     input ifp = input_file_open(ifn);

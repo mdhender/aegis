@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,96 +13,84 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate constant tree nodes
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
 
-#include <libaegis/aer/value/string.h>
 #include <common/str.h>
+#include <libaegis/aer/value/string.h>
+
 #include <aefind/tree/constant.h>
-#include <aefind/tree/private.h>
 
 
-struct tree_constant_ty
+tree_constant::~tree_constant()
 {
-    tree_ty         inherited;
-    rpt_value_ty    *value;
-};
-
-
-static void
-destructor(tree_ty *tp)
-{
-    tree_constant_ty *this_thing;
-
-    this_thing = (tree_constant_ty *)tp;
-    rpt_value_free(this_thing->value);
 }
 
 
-static void
-print(tree_ty *tp)
+tree_constant::tree_constant(rpt_value::pointer a_value) :
+    value(a_value)
 {
-    tree_constant_ty *this_thing;
-    rpt_value_ty    *vp;
-
-    this_thing = (tree_constant_ty *)tp;
-    vp = rpt_value_stringize(this_thing->value);
-    printf("'%s'", rpt_value_string_query(vp)->str_text);
-    rpt_value_free(vp);
 }
 
 
-static rpt_value_ty *
-evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
-    string_ty *path_res, struct stat *st)
+tree::pointer
+tree_constant::create(rpt_value::pointer a_value)
 {
-    tree_constant_ty *this_thing;
-
-    this_thing = (tree_constant_ty *)tp;
-    return rpt_value_copy(this_thing->value);
+    return pointer(new tree_constant(a_value));
 }
 
 
-static int
-useful(tree_ty *tp)
+void
+tree_constant::print()
+    const
 {
-    return 0;
+    rpt_value::pointer vp = rpt_value::stringize(value);
+    rpt_value_string *ss = dynamic_cast<rpt_value_string *>(vp.get());
+    if (ss)
+        printf("'%s'", ss->query().c_str());
+    else
+        printf("''");
 }
 
 
-static int
-constant(tree_ty *tp)
+rpt_value::pointer
+tree_constant::evaluate(string_ty *, string_ty *, string_ty *, struct stat *)
+    const
 {
-    return 1;
+    return value;
 }
 
 
-static tree_method_ty method =
+bool
+tree_constant::useful()
+    const
 {
-    sizeof(tree_constant_ty),
-    "constant",
-    destructor,
-    print,
-    evaluate,
-    useful,
-    constant,
-    0, // optimize
-};
+    return false;
+}
 
 
-tree_ty *
-tree_constant_new(rpt_value_ty *value)
+bool
+tree_constant::constant()
+    const
 {
-    tree_ty         *tp;
-    tree_constant_ty *this_thing;
+    return true;
+}
 
-    tp = tree_new(&method);
-    this_thing = (tree_constant_ty *)tp;
-    this_thing->value = rpt_value_copy(value);
-    return tp;
+
+const char *
+tree_constant::name()
+    const
+{
+    return "constant";
+}
+
+
+tree::pointer
+tree_constant::optimize()
+    const
+{
+    return create(value);
 }

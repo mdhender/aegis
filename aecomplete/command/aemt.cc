@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate aemts
 //
@@ -36,7 +35,7 @@
 
 
 static void
-destructor(command_ty *this_thing)
+destructor(command_ty *)
 {
 }
 
@@ -48,7 +47,7 @@ do_nothing(void)
 
 
 static complete_ty *
-completion_get(command_ty *cmd)
+completion_get(command_ty *)
 {
     string_ty       *project_name;
     int             baserel;
@@ -56,8 +55,8 @@ completion_get(command_ty *cmd)
     int             incomplete_change_number;
     int             change_number;
     project_ty      *pp;
-    user_ty         *up;
-    change_ty       *cp;
+    user_ty::pointer up;
+    change::pointer cp;
 
     arglex2_retable(0);
     arglex();
@@ -136,7 +135,7 @@ completion_get(command_ty *cmd)
 
 	case arglex_token_base_relative:
 	case arglex_token_current_relative:
-	    user_relative_filename_preference_argument(do_nothing);
+	    user_ty::relative_filename_preference_argument(do_nothing);
 	    break;
 	}
 	arglex();
@@ -146,7 +145,10 @@ completion_get(command_ty *cmd)
     // Work out which project to use.
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     pp->bind_existing();
 
@@ -159,13 +161,13 @@ completion_get(command_ty *cmd)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -175,9 +177,8 @@ completion_get(command_ty *cmd)
     //
     baserel =
 	(
-	    user_relative_filename_preference
+	    up->relative_filename_preference
 	    (
-		up,
 		uconf_relative_filename_preference_current
 	    )
 	==

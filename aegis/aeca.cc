@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to list and modify change attributes
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -133,7 +130,7 @@ change_attributes_list(void)
     //
     // build the cattr data
     //
-    cstate_data = change_cstate_get(cid.get_cp());
+    cstate_data = cid.get_cp()->cstate_get();
     cattr_data = (cattr_ty *)cattr_type.alloc();
     change_attributes_copy(cattr_data, cstate_data);
 
@@ -167,26 +164,22 @@ change_attributes_list(void)
 static void
 check_permissions(change_identifier &cid)
 {
-    if (project_administrator_query(cid.get_pp(), user_name(cid.get_up())))
+    if (project_administrator_query(cid.get_pp(), cid.get_up()->name()))
 	return;
     if
     (
-	change_is_being_developed(cid.get_cp())
+	cid.get_cp()->is_being_developed()
     &&
-	str_equal
-	(
-	    change_developer_name(cid.get_cp()),
-	    user_name(cid.get_up())
-	)
+	nstring(change_developer_name(cid.get_cp())) == cid.get_up()->name()
     )
 	return;
     if
     (
 	project_developers_may_create_changes_get(cid.get_pp())
     &&
-	change_is_awaiting_development(cid.get_cp())
+	cid.get_cp()->is_awaiting_development()
     &&
-	project_developer_query(cid.get_pp(), user_name(cid.get_up()))
+	project_developer_query(cid.get_pp(), cid.get_up()->name())
     )
 	return;
 
@@ -206,7 +199,7 @@ cattr_fix_arch(change_identifier &cid)
     //
     // Extract current change attributes.
     //
-    cstate_data = change_cstate_get(cid.get_cp());
+    cstate_data = cid.get_cp()->cstate_get();
     cattr_data = (cattr_ty *)cattr_type.alloc();
     change_attributes_copy(cattr_data, cstate_data);
 
@@ -227,9 +220,7 @@ cattr_fix_arch(change_identifier &cid)
     un = uname_variant_get();
     for (j = 0; j < pconf_data->architecture->length; ++j)
     {
-	pconf_architecture_ty *pca;
-
-	pca = pconf_data->architecture->list[j];
+	pconf_architecture_ty *pca = pconf_data->architecture->list[j];
 	if (!pca)
 	    continue;
 	if (!pca->name)
@@ -247,18 +238,28 @@ cattr_fix_arch(change_identifier &cid)
 	    )
 	)
 	{
-	    type_ty         *type_p;
-	    string_ty       **sp;
-
-	    sp =
-		(string_ty **)
-		cattr_architecture_list_type.list_parse
-		(
-		    cattr_data->architecture,
-		    &type_p
-		);
-	    assert(type_p == &string_type);
-	    *sp = str_copy(pca->name);
+	    //
+            // We must be careful to suppress duplicates, otherwise the
+            // architecture prerequisites for state transitions are
+            // unsatifiable.
+	    //
+	    size_t k = 0;
+	    for (k = 0; k < cattr_data->architecture->length; ++k)
+		if (str_equal(pca->name, cattr_data->architecture->list[k]))
+		    break;
+	    if (k < cattr_data->architecture->length)
+	    {
+		meta_type *type_p = 0;
+		string_ty **sp =
+		    (string_ty **)
+		    cattr_architecture_list_type.list_parse
+		    (
+			cattr_data->architecture,
+			&type_p
+		    );
+		assert(type_p == &string_type);
+		*sp = str_copy(pca->name);
+	    }
 
 	    //
 	    // Only the first match is used.  This is consistent with
@@ -274,10 +275,8 @@ cattr_fix_arch(change_identifier &cid)
     //
     if (cattr_data->architecture->length == 0)
     {
-	type_ty		*type_p;
-	string_ty	**sp;
-
-	sp =
+	meta_type *type_p = 0;
+	string_ty **sp =
 	    (string_ty **)
 	    cattr_architecture_list_type.list_parse
 	    (
@@ -332,7 +331,7 @@ change_attributes_uuid(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(change_attributes_usage);
+	    user_ty::lock_wait_argument(change_attributes_usage);
 	    break;
 	}
 	arglex();
@@ -351,7 +350,7 @@ change_attributes_uuid(void)
     //
     change_cstate_lock_prepare(cid.get_cp());
     lock_take();
-    cstate_data = change_cstate_get(cid.get_cp());
+    cstate_data = cid.get_cp()->cstate_get();
 
     //
     // Unlike other change attributes, the UUID may *only* be edited by
@@ -361,9 +360,9 @@ change_attributes_uuid(void)
     //
     if
     (
-	!change_is_being_developed(cid.get_cp())
+	!cid.get_cp()->is_being_developed()
     ||
-	!str_equal(change_developer_name(cid.get_cp()), user_name(cid.get_up()))
+	nstring(change_developer_name(cid.get_cp())) != cid.get_up()->name()
     )
     {
 	change_fatal(cid.get_cp(), 0, i18n("bad ca, not auth"));
@@ -384,7 +383,7 @@ change_attributes_uuid(void)
     // to do silly things at times, so this expensive check will be
     // necessary.
     //
-    change_ty *cp2 = project_uuid_find(cid.get_pp(), uuid);
+    change::pointer cp2 = project_uuid_find(cid.get_pp(), uuid);
     if (cp2)
     {
 	sub_context_ty *scp = sub_context_new();
@@ -445,7 +444,7 @@ change_attributes_main(void)
     pconf_ty        *pconf_data;
     edit_ty	    edit;
     int		    description_only;
-    string_ty	    *input;
+    string_ty	    *input_file_name;
     int		    fix_architecture;
 
     trace(("change_attributes_main()\n{\n"));
@@ -454,7 +453,7 @@ change_attributes_main(void)
     edit = edit_not_set;
     description_only = 0;
     cattr_data = 0;
-    input = 0;
+    input_file_name = 0;
     fix_architecture = 0;
     nstring_list name_value_pairs;
     while (arglex_token != arglex_token_eoln)
@@ -480,12 +479,12 @@ change_attributes_main(void)
 	    );
 	    error_intl(scp, i18n("warning: use $name option"));
 	    sub_context_delete(scp);
-	    if (input)
+	    if (input_file_name)
 		fatal_too_many_files();
 	    goto read_attr_file;
 
 	case arglex_token_file:
-	    if (input)
+	    if (input_file_name)
 		duplicate_option(change_attributes_usage);
 	    switch (arglex())
 	    {
@@ -495,11 +494,11 @@ change_attributes_main(void)
 
 	    case arglex_token_string:
 		read_attr_file:
-		input = str_from_c(arglex_value.alv_string);
+		input_file_name = str_from_c(arglex_value.alv_string);
 		break;
 
 	    case arglex_token_stdio:
-		input = str_from_c("");
+		input_file_name = str_from_c("");
 		break;
 	    }
 	    break;
@@ -536,7 +535,7 @@ change_attributes_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(change_attributes_usage);
+	    user_ty::lock_wait_argument(change_attributes_usage);
 	    break;
 
 	case arglex_token_description_only:
@@ -574,7 +573,7 @@ change_attributes_main(void)
 		change_attributes_usage
 	    );
 	}
-	if (input)
+	if (input_file_name)
 	{
 	    mutually_exclusive_options
 	    (
@@ -586,16 +585,16 @@ change_attributes_main(void)
     }
     if (!name_value_pairs.empty())
     {
-	if (fix_architecture || edit != edit_not_set || input)
+	if (fix_architecture || edit != edit_not_set || input_file_name)
 	    change_attributes_usage();
     }
-    if (input)
+    if (input_file_name)
     {
 	if (description_only)
 	{
 	    cattr_data = (cattr_ty *)cattr_type.alloc();
 	    os_become_orig();
-	    nstring desc = read_whole_file(nstring(input));
+	    nstring desc = read_whole_file(nstring(input_file_name));
 	    if (desc.empty())
 		cattr_data->description = 0;
 	    else
@@ -605,7 +604,7 @@ change_attributes_main(void)
 	else
 	{
 	    os_become_orig();
-	    cattr_data = cattr_read_file(input);
+	    cattr_data = cattr_read_file(input_file_name);
 	    os_become_undo();
 	}
 	assert(cattr_data);
@@ -660,7 +659,7 @@ change_attributes_main(void)
 	//
 	// fill in any other fields
 	//
-	cstate_data = change_cstate_get(cid.get_cp());
+	cstate_data = cid.get_cp()->cstate_get();
 	change_attributes_copy(cattr_data, cstate_data);
 
 	//
@@ -692,7 +691,7 @@ change_attributes_main(void)
     //
     change_cstate_lock_prepare(cid.get_cp());
     lock_take();
-    cstate_data = change_cstate_get(cid.get_cp());
+    cstate_data = cid.get_cp()->cstate_get();
     pconf_data = change_pconf_get(cid.get_cp(), 0);
 
     if (fix_architecture)
@@ -718,24 +717,44 @@ change_attributes_main(void)
 	    nstring pair = name_value_pairs[j];
 	    const char *eqp = strchr(pair.c_str(), '=');
 	    assert(eqp);
-	    if (eqp)
-	    {
-		nstring name(pair.c_str(), eqp - pair.c_str());
-		nstring value(eqp + 1);
+	    if (!eqp)
+                continue;
+            bool append = (eqp > pair.c_str() && eqp[-1] == '+');
+            const char *name_end = eqp;
+            if (append)
+                --name_end;
+            nstring name(pair.c_str(), name_end - pair.c_str());
+            nstring value(eqp + 1);
 
-		//
-		// Note that this will replace the first attribute with
-		// that name.  If there is more than one of that name,
-		// the second and subsequent attributes are unchanged.
-		// If there is no attribute of that name, it will be
-		// appended.
-		//
-		attributes_list_insert
-		(
-		    cattr_data->attribute,
-		    name.c_str(),
-		    value.c_str()
-		);
+            if (append)
+            {
+                //
+                // This will add the attribute to the end of the
+                // list, unless this exact name and value are
+                // already present.
+                //
+                attributes_list_append_unique
+                (
+                    cattr_data->attribute,
+                    name.c_str(),
+                    value.c_str()
+                );
+            }
+            else
+            {
+                //
+                // This will replace the first attribute with
+                // that name.  If there is more than one of that name,
+                // the second and subsequent attributes are unchanged.
+                // If there is no attribute of that name, it will be
+                // appended.
+                //
+                attributes_list_insert
+                (
+                    cattr_data->attribute,
+                    name.c_str(),
+                    value.c_str()
+                );
 	    }
 	}
     }
@@ -764,7 +783,7 @@ change_attributes_main(void)
     }
     if (cattr_data->mask & cattr_cause_mask)
 	cstate_data->cause = cattr_data->cause;
-    if (project_administrator_query(cid.get_pp(), user_name(cid.get_up())))
+    if (project_administrator_query(cid.get_pp(), cid.get_up()->name()))
     {
 	if (cattr_data->mask & cattr_test_exempt_mask)
 	{
@@ -846,14 +865,14 @@ change_attributes_main(void)
 	//
 	string_list_ty caarch;
 	for (size_t j = 0; j < cattr_data->architecture->length; ++j)
-	    caarch.push_back(cattr_data->architecture->list[j]);
+	    caarch.push_back_unique(cattr_data->architecture->list[j]);
 
 	string_list_ty pcarch;
 	assert(pconf_data->architecture);
 	assert(pconf_data->architecture->length);
 	for (size_t k = 0; k < pconf_data->architecture->length; ++k)
 	{
-	    pcarch.push_back(pconf_data->architecture->list[k]->name);
+	    pcarch.push_back_unique(pconf_data->architecture->list[k]->name);
 	}
 
 	if (!caarch.subset(pcarch))
@@ -863,12 +882,12 @@ change_attributes_main(void)
 	// developers may remove architecture exemptions
 	// but may not grant them
 	//
-	if (!project_administrator_query(cid.get_pp(), user_name(cid.get_up())))
+	if (!project_administrator_query(cid.get_pp(), cid.get_up()->name()))
 	{
 	    string_list_ty csarch;
 	    for (size_t m = 0; m < cstate_data->architecture->length; ++m)
 	    {
-		csarch.push_back(cstate_data->architecture->list[m]);
+		csarch.push_back_unique(cstate_data->architecture->list[m]);
 	    }
 
 	    if (!csarch.subset(caarch))
@@ -903,10 +922,8 @@ change_attributes_main(void)
             cstate_copyright_years_list_type.alloc();
 	for (j = 0; j < cattr_data->copyright_years->length; ++j)
 	{
-	    type_ty	    *type_p;
-	    long	    *int_p;
-
-	    int_p =
+	    meta_type *type_p = 0;
+	    long *int_p =
 		(long int *)
 		cstate_copyright_years_list_type.list_parse
 		(
@@ -959,9 +976,9 @@ change_attributes(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, change_attributes_help, },
-	{arglex_token_list, change_attributes_list, },
-	{arglex_token_uuid, change_attributes_uuid, },
+	{ arglex_token_help, change_attributes_help, 0 },
+	{ arglex_token_list, change_attributes_list, 0 },
+	{ arglex_token_uuid, change_attributes_uuid, 0 },
     };
 
     trace(("change_attributes()\n{\n"));

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate name_checks
 //
@@ -35,7 +34,7 @@
 
 
 static int
-change_maximum_filename_length(change_ty *cp)
+change_maximum_filename_length(change::pointer cp)
 {
     pconf_ty        *pconf_data;
 
@@ -70,7 +69,7 @@ contains_moronic_ms_restrictions(string_ty *fn)
 
 
 static int
-is_a_dos_filename(change_ty *cp, string_ty *fn)
+is_a_dos_filename(change::pointer cp, string_ty *fn)
 {
     pconf_ty        *pconf_data;
     string_list_ty  wl;
@@ -131,7 +130,7 @@ is_a_dos_filename(change_ty *cp, string_ty *fn)
 
 
 static int
-is_a_windows_filename(change_ty *cp, string_ty *fn)
+is_a_windows_filename(change::pointer cp, string_ty *fn)
 {
     pconf_ty        *pconf_data;
     char            *s;
@@ -163,7 +162,7 @@ is_a_windows_filename(change_ty *cp, string_ty *fn)
 
 
 static int
-filename_pattern_test(change_ty *cp, string_ty *fn)
+filename_pattern_test(change::pointer cp, string_ty *fn)
 {
     pconf_ty        *pconf_data;
     size_t          j;
@@ -207,7 +206,7 @@ filename_pattern_test(change_ty *cp, string_ty *fn)
 
 
 static int
-change_filename_in_charset(change_ty *cp, string_ty *fn)
+change_filename_in_charset(change::pointer cp, string_ty *fn)
 {
     pconf_ty        *pconf_data;
     char            *s;
@@ -317,7 +316,7 @@ change_filename_in_charset(change_ty *cp, string_ty *fn)
 
 
 static int
-change_filename_shell_safe(change_ty *cp, string_ty *fn)
+change_filename_shell_safe(change::pointer cp, string_ty *fn)
 {
     pconf_ty        *pconf_data;
     char            *s;
@@ -392,7 +391,7 @@ change_filename_shell_safe(change_ty *cp, string_ty *fn)
 //	change_filename_check
 //
 // SYNOPSIS
-//	string_ty *change_filename_check(change_ty *cp, string_ty *fn);
+//	string_ty *change_filename_check(change::pointer cp, string_ty *fn);
 //
 // DESCRIPTION
 //      The change_filename_check function is used to determine if a
@@ -414,7 +413,7 @@ change_filename_shell_safe(change_ty *cp, string_ty *fn)
 //
 
 string_ty *
-change_filename_check(change_ty *cp, string_ty *filename)
+change_filename_check(change::pointer cp, string_ty *filename)
 {
     int             name_max1;
     int             name_max2;

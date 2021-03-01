@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2000-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,12 +13,12 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate uconf values
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h> // for assert
+#include <common/trace.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/integer.h>
 #include <libaegis/aer/value/list.h>
@@ -29,202 +28,155 @@
 #include <libaegis/getpw_cache.h>
 #include <libaegis/os.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/user.h>
 
 
-static rpt_value_ty *
+rpt_value_uconf::~rpt_value_uconf()
+{
+}
+
+
+rpt_value_uconf::rpt_value_uconf()
+{
+}
+
+
+rpt_value::pointer
+rpt_value_uconf::create()
+{
+    static rpt_value::pointer vp;
+    if (!vp)
+	vp = pointer(new rpt_value_uconf());
+    return vp;
+}
+
+
+static rpt_value::pointer
 build_result(struct passwd *pw)
 {
-    uconf_ty	    *tmp;
-    rpt_value_ty    *result;
-    string_ty	    *name;
-    rpt_value_ty    *value;
-    string_ty	    *s;
-    user_ty         *up;
-
-    trace(("build_struct()\n{\n"));
+    trace(("build_struct()\n"));
 
     //
     // Use the same method as other portions of Aegis to establish
     // the user's attributes.  It is *not* as simple as reading the
     // $HOME/.aegisrc file.
     //
-    // The side-effect of the aparrently-useless user_email_address()
-    // function call is to establish the tmp->email_address field
+    // The side-effect of the aparrently-useless up->get_email_address()
+    // method call is to establish the tmp->email_address field
     // correctly.
     //
-    up = user_numeric(0, pw->pw_uid);
-    user_email_address(up);
-    tmp = user_uconf_get(up);
+    user_ty::pointer up = user_ty::create(pw->pw_uid);
+    up->get_email_address();
+    uconf_ty *tmp = up->uconf_get();
 
     //
     // Convert the data
     //
-    result = uconf_type.convert(&tmp);
+    rpt_value::pointer result = uconf_type.convert(&tmp);
+    rpt_value_struct *rvsp = dynamic_cast<rpt_value_struct *>(result.get());
+    assert(rvsp);
 
     //
     // Insert the user name into the result.
     //
     trace(("name\n"));
-    name = str_from_c("name");
-    s = str_from_c(pw->pw_name);
-    value = rpt_value_string(s);
-    str_free(s);
-    rpt_value_struct__set(result, name, value);
-    str_free(name);
-    rpt_value_free(value);
+    rvsp->assign("name", rpt_value_string::create(pw->pw_name));
 
     //
     // All done.
     //
-    trace(("return %08lX;\n", (long)result));
+    trace(("return %08lX;\n", (long)result.get()));
     trace(("}\n"));
     return result;
 }
 
 
-static rpt_value_ty *
-lookup(rpt_value_ty *lhs, rpt_value_ty *rhs, int lvalue)
+rpt_value::pointer
+rpt_value_uconf::lookup(const rpt_value::pointer &rhs, bool)
+    const
 {
-    rpt_value_ty    *rhs2;
-    rpt_value_ty    *result;
-    struct passwd   *pw;
-    string_ty	    *s;
-
-    trace(("value_uconf::lookup()\n{\n"));
-    rhs2 = rpt_value_arithmetic(rhs);
-    if (rhs2->method->type == rpt_value_type_integer)
+    trace(("value_uconf::lookup()\n"));
+    rpt_value::pointer rhs2 = rpt_value::arithmetic(rhs);
+    rpt_value_integer *rhs2ip = dynamic_cast<rpt_value_integer *>(rhs2.get());
+    if (rhs2ip)
     {
-	int		uid;
-
-	uid = rpt_value_integer_query(rhs2);
-	pw = getpwuid_cached(uid);
+	int uid = rhs2ip->query();
+	struct passwd *pw = getpwuid_cached(uid);
 	if (pw)
-	    result = build_result(pw);
-	else
-	{
-	    sub_context_ty  *scp;
+	    return build_result(pw);
 
-	    scp = sub_context_new();
-	    sub_var_set_long(scp, "Number", uid);
-	    s = subst_intl(scp, i18n("uid $number unknown"));
-	    sub_context_delete(scp);
-	    result = rpt_value_error((struct rpt_pos_ty *)0, s);
-	    str_free(s);
-	}
+        sub_context_ty sc;
+        sc.var_set_long("Number", uid);
+        nstring s(sc.subst_intl(i18n("uid $number unknown")));
+        return rpt_value_error::create(s);
     }
-    else
+
+    rhs2 = rpt_value::stringize(rhs);
+    rpt_value_string *rhs2sp = dynamic_cast<rpt_value_string *>(rhs2.get());
+    if (rhs2sp)
     {
-	rpt_value_free(rhs2);
-	rhs2 = rpt_value_stringize(rhs);
-	if (rhs2->method->type == rpt_value_type_string)
-	{
-	    string_ty	    *name;
+        struct passwd *pw = getpwnam_cached(rhs2sp->query());
+        if (pw)
+            return build_result(pw);
 
-	    name = rpt_value_string_query(rhs2);
-	    pw = getpwnam_cached(name);
-	    if (pw)
-		result = build_result(pw);
-	    else
-	    {
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		sub_var_set_string(scp, "Name", name);
-		s = subst_intl(scp, i18n("user $name unknown"));
-		sub_context_delete(scp);
-		result = rpt_value_error((struct rpt_pos_ty *)0, s);
-		str_free(s);
-	    }
-	}
-	else
-	{
-	    sub_context_ty  *scp;
-
-	    scp = sub_context_new();
-	    sub_var_set_charstar(scp, "Name1", "user");
-	    sub_var_set_charstar(scp, "Name2", rhs->method->name);
-	    s = subst_intl(scp, i18n("illegal lookup ($name1[$name2])"));
-	    sub_context_delete(scp);
-	    result = rpt_value_error((struct rpt_pos_ty *)0, s);
-	    str_free(s);
-	}
-	rpt_value_free(rhs2);
+        sub_context_ty sc;
+        sc.var_set_string("Name", rhs2sp->query());
+        nstring s(sc.subst_intl(i18n("user $name unknown")));
+        return rpt_value_error::create(s);
     }
-    trace(("return %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
+
+    sub_context_ty sc;
+    sc.var_set_charstar("Name1", name());
+    sc.var_set_charstar("Name2", rhs->name());
+    nstring s(sc.subst_intl(i18n("illegal lookup ($name1[$name2])")));
+    return rpt_value_error::create(s);
 }
 
 
-static rpt_value_ty *
-keys(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_uconf::keys()
+    const
 {
-    rpt_value_ty    *result;
-
-    result = rpt_value_list();
+    rpt_value_list *p = new rpt_value_list();
+    rpt_value::pointer result(p);
     for (;;)
     {
-	struct passwd   *pw;
-	string_ty       *s;
-	rpt_value_ty    *ep;
-
-	pw = getpwent();
+	struct passwd *pw = getpwent();
 	if (!pw)
     	    break;
-	s = str_from_c(pw->pw_name);
-	ep = rpt_value_string(s);
-	str_free(s);
-	rpt_value_list_append(result, ep);
-	rpt_value_free(ep);
+        p->append(rpt_value_string::create(pw->pw_name));
     }
     return result;
 }
 
 
-static rpt_value_ty *
-count(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_uconf::count()
+    const
 {
-    //
-    // See rpt_value_uconf::keys comment.
-    // If you change that function, change this function too.
-    //
-    return rpt_value_integer(0);
+    return rpt_value_integer::create(0);
 }
 
 
-static const char *
-type_of(rpt_value_ty *this_thing)
+const char *
+rpt_value_uconf::type_of()
+    const
 {
     return "struct";
 }
 
 
-static rpt_value_method_ty method =
+const char *
+rpt_value_uconf::name()
+    const
 {
-    sizeof(rpt_value_ty),
-    "user",
-    rpt_value_type_structure,
-    0, // construct
-    0, // destruct
-    0, // arithmetic
-    0, // stringize
-    0, // booleanize
-    lookup,
-    keys,
-    count,
-    type_of,
-    0, // undefer
-};
+    return "user";
+}
 
 
-rpt_value_ty *
-rpt_value_uconf()
+bool
+rpt_value_uconf::is_a_struct()
+    const
 {
-    static rpt_value_ty *vp;
-
-    if (!vp)
-	vp = rpt_value_alloc(&method);
-    return rpt_value_copy(vp);
+    return true;
 }

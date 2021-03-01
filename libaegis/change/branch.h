@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995-1999, 2001, 2002, 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1995-1999, 2001, 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface definition for aegis/change_bran.c
 //
@@ -28,100 +27,103 @@
 struct string_list_ty; // forward
 struct change_list_ty; // forward
 
-bool change_is_a_branch(change_ty *);
-bool change_was_a_branch(change_ty *);
+bool change_is_a_branch(change::pointer );
+bool change_was_a_branch(change::pointer );
 
-void change_branch_new(change_ty *);
-bool change_history_delta_validate(change_ty *, long);
+void change_branch_new(change::pointer );
+bool change_history_delta_validate(change::pointer , long);
 time_t change_history_delta_to_timestamp(struct project_ty *, long);
 long change_history_timestamp_to_delta(struct project_ty *, time_t);
-long change_history_delta_latest(change_ty *);
-long change_history_delta_by_name(change_ty *, string_ty *, int);
-long change_history_change_by_name(change_ty *, string_ty *, int);
-long change_history_change_by_delta(change_ty *, long);
+long change_history_delta_latest(change::pointer );
+long change_history_delta_by_name(change::pointer , string_ty *, int);
+long change_history_change_by_name(change::pointer , string_ty *, int);
+long change_history_change_by_delta(change::pointer , long);
 long change_history_change_by_timestamp(struct project_ty *, time_t);
-void change_history_delta_name_delete(change_ty *, string_ty *);
-void change_history_delta_name_add(change_ty *, long, string_ty *);
-long change_history_last_change_integrated(change_ty *);
-long change_current_integration_get(change_ty *);
-void change_current_integration_set(change_ty *, long);
-long change_branch_next_delta_number(change_ty *);
-void change_copyright_years_now(change_ty *);
-void change_copyright_year_append(change_ty *, int);
-void change_copyright_years_merge(change_ty *, change_ty *);
-void change_copyright_years_slurp(change_ty *cp, int *ary, int ary_len_max,
+void change_history_delta_name_delete(change::pointer , string_ty *);
+void change_history_delta_name_add(change::pointer , long, string_ty *);
+long change_history_last_change_integrated(change::pointer );
+long change_current_integration_get(change::pointer );
+void change_current_integration_set(change::pointer , long);
+long change_branch_next_delta_number(change::pointer );
+void change_copyright_years_now(change::pointer );
+void change_copyright_year_append(change::pointer , int);
+void change_copyright_years_merge(change::pointer , change::pointer );
+void change_copyright_years_slurp(change::pointer cp, int *ary, int ary_len_max,
 	int *ary_len);
-void change_copyright_years_get(change_ty *cp, int *ary, int ary_len_max,
+void change_copyright_years_get(change::pointer cp, int *ary, int ary_len_max,
 	int *ary_len);
-void change_branch_history_new(change_ty *cp, long dn, long cn);
-int change_branch_history_nth(change_ty *cp, long n, long *cnp, long *dnp,
+void change_branch_history_new(change::pointer cp, long dn, long cn);
+int change_branch_history_nth(change::pointer cp, long n, long *cnp, long *dnp,
 	struct string_list_ty *name);
 
-bool change_branch_administrator_query(change_ty *, string_ty *);
-void change_branch_administrator_add(change_ty *, string_ty *);
-void change_branch_administrator_remove(change_ty *, string_ty *);
-string_ty *change_branch_administrator_nth(change_ty *, long);
-bool change_branch_developer_query(change_ty *, string_ty *);
-void change_branch_developer_add(change_ty *, string_ty *);
-void change_branch_developer_remove(change_ty *, string_ty *);
-string_ty *change_branch_developer_nth(change_ty *, long);
-bool change_branch_reviewer_query(change_ty *, string_ty *);
-void change_branch_reviewer_add(change_ty *, string_ty *);
-void change_branch_reviewer_remove(change_ty *, string_ty *);
-string_ty *change_branch_reviewer_nth(change_ty *, long);
-bool change_branch_integrator_query(change_ty *, string_ty *);
-void change_branch_integrator_add(change_ty *, string_ty *);
-void change_branch_integrator_remove(change_ty *, string_ty *);
-string_ty *change_branch_integrator_nth(change_ty *, long);
+bool change_branch_administrator_query(change::pointer , string_ty *);
+void change_branch_administrator_add(change::pointer , string_ty *);
+void change_branch_administrator_remove(change::pointer , string_ty *);
+string_ty *change_branch_administrator_nth(change::pointer , long);
+bool change_branch_developer_query(change::pointer , string_ty *);
+void change_branch_developer_add(change::pointer , string_ty *);
+void change_branch_developer_remove(change::pointer , string_ty *);
+string_ty *change_branch_developer_nth(change::pointer , long);
+bool change_branch_reviewer_query(change::pointer , string_ty *);
+void change_branch_reviewer_add(change::pointer , string_ty *);
+void change_branch_reviewer_remove(change::pointer , string_ty *);
+string_ty *change_branch_reviewer_nth(change::pointer , long);
+bool change_branch_integrator_query(change::pointer , string_ty *);
+void change_branch_integrator_add(change::pointer , string_ty *);
+void change_branch_integrator_remove(change::pointer , string_ty *);
+string_ty *change_branch_integrator_nth(change::pointer , long);
 
-void change_branch_change_add(change_ty *, long, int);
-void change_branch_change_remove(change_ty *, long);
-void change_branch_sub_branch_list_get(change_ty *, long **, size_t *);
-int change_branch_change_nth(change_ty *, long, long *);
-long change_branch_next_change_number(change_ty *cp, int skip);
-int change_branch_change_number_in_use(change_ty *, long);
+void change_branch_change_add(change::pointer , long, int);
+void change_branch_change_remove(change::pointer , long);
+void change_branch_sub_branch_list_get(change::pointer , long **, size_t *);
+int change_branch_change_nth(change::pointer , long, long *);
+long change_branch_next_change_number(change::pointer cp, int skip);
+int change_branch_change_number_in_use(change::pointer , long);
 
-void change_branch_umask_set(change_ty *, int);
-int change_branch_umask_get(change_ty *);
-void change_branch_developer_may_review_set(change_ty *, bool);
-bool change_branch_developer_may_review_get(change_ty *);
-void change_branch_developer_may_integrate_set(change_ty *, bool);
-bool change_branch_developer_may_integrate_get(change_ty *);
-void change_branch_reviewer_may_integrate_set(change_ty *, bool);
-bool change_branch_reviewer_may_integrate_get(change_ty *);
-void change_branch_developers_may_create_changes_set(change_ty *, bool);
-bool change_branch_developers_may_create_changes_get(change_ty *);
-void change_branch_forced_develop_begin_notify_command_set(change_ty *,
+void change_branch_umask_set(change::pointer , int);
+int change_branch_umask_get(change::pointer );
+void change_branch_developer_may_review_set(change::pointer , bool);
+bool change_branch_developer_may_review_get(change::pointer );
+void change_branch_developer_may_integrate_set(change::pointer , bool);
+bool change_branch_developer_may_integrate_get(change::pointer );
+void change_branch_reviewer_may_integrate_set(change::pointer , bool);
+bool change_branch_reviewer_may_integrate_get(change::pointer );
+void change_branch_developers_may_create_changes_set(change::pointer , bool);
+bool change_branch_developers_may_create_changes_get(change::pointer );
+void change_branch_forced_develop_begin_notify_command_set(change::pointer ,
 	string_ty *);
 string_ty *change_branch_forced_develop_begin_notify_command_get
-   (change_ty *);
-void change_branch_develop_end_notify_command_set(change_ty *, string_ty *);
-string_ty *change_branch_develop_end_notify_command_get(change_ty *);
-void change_branch_develop_end_undo_notify_command_set(change_ty *,
+   (change::pointer );
+void change_branch_develop_end_notify_command_set(change::pointer cp,
+    string_ty *command);
+string_ty *change_branch_develop_end_notify_command_get(change::pointer );
+void change_branch_develop_end_undo_notify_command_set(change::pointer ,
 	string_ty *);
-string_ty *change_branch_develop_end_undo_notify_command_get(change_ty *);
-void change_branch_review_begin_notify_command_set(change_ty *,
+string_ty *change_branch_develop_end_undo_notify_command_get(change::pointer );
+void change_branch_review_begin_notify_command_set(change::pointer ,
 	string_ty *);
-string_ty *change_branch_review_begin_notify_command_get(change_ty *);
-void change_branch_review_begin_undo_notify_command_set(change_ty *,
+string_ty *change_branch_review_begin_notify_command_get(change::pointer );
+void change_branch_review_begin_undo_notify_command_set(change::pointer ,
 	string_ty *);
-string_ty *change_branch_review_begin_undo_notify_command_get(change_ty *);
-void change_branch_review_pass_notify_command_set(change_ty *, string_ty *);
-string_ty *change_branch_review_pass_notify_command_get(change_ty *);
-void change_branch_review_pass_undo_notify_command_set(change_ty *,
+string_ty *change_branch_review_begin_undo_notify_command_get(change::pointer );
+void change_branch_review_pass_notify_command_set(change::pointer cp,
+    string_ty *command);
+string_ty *change_branch_review_pass_notify_command_get(change::pointer );
+void change_branch_review_pass_undo_notify_command_set(change::pointer ,
 	string_ty *);
-string_ty *change_branch_review_pass_undo_notify_command_get(change_ty *);
-void change_branch_review_fail_notify_command_set(change_ty *, string_ty *);
-string_ty *change_branch_review_fail_notify_command_get(change_ty *);
-void change_branch_integrate_pass_notify_command_set(change_ty *,
+string_ty *change_branch_review_pass_undo_notify_command_get(change::pointer );
+void change_branch_review_fail_notify_command_set(change::pointer cp,
+    string_ty *command);
+string_ty *change_branch_review_fail_notify_command_get(change::pointer );
+void change_branch_integrate_pass_notify_command_set(change::pointer ,
 	string_ty *);
-string_ty *change_branch_integrate_pass_notify_command_get(change_ty *);
-void change_branch_integrate_fail_notify_command_set(change_ty *,
+string_ty *change_branch_integrate_pass_notify_command_get(change::pointer );
+void change_branch_integrate_fail_notify_command_set(change::pointer ,
 	string_ty *);
-string_ty *change_branch_integrate_fail_notify_command_get(change_ty *);
-void change_branch_default_development_directory_set(change_ty *,
+string_ty *change_branch_integrate_fail_notify_command_get(change::pointer );
+void change_branch_default_development_directory_set(change::pointer ,
 	string_ty *);
-string_ty *change_branch_default_development_directory_get(change_ty *);
+string_ty *change_branch_default_development_directory_get(change::pointer );
 
 /**
   * The change_branch_default_test_exemption_set function is used to set
@@ -132,7 +134,7 @@ string_ty *change_branch_default_development_directory_get(change_ty *);
   * @param yesno
   *     The state to set the attribute.
   */
-void change_branch_default_test_exemption_set(change_ty *cp, bool yesno);
+void change_branch_default_test_exemption_set(change::pointer cp, bool yesno);
 
 /**
   * The change_branch_default_test_exemption_get function is used to
@@ -144,7 +146,7 @@ void change_branch_default_test_exemption_set(change_ty *cp, bool yesno);
   * @returns
   *     The state of the attribute.
   */
-bool change_branch_default_test_exemption_get(change_ty *);
+bool change_branch_default_test_exemption_get(change::pointer );
 
 /**
   * The change_branch_default_test_regression_exemption_set function is
@@ -156,7 +158,7 @@ bool change_branch_default_test_exemption_get(change_ty *);
   * @param yesno
   *     The state to set the attribute.
   */
-void change_branch_default_test_regression_exemption_set(change_ty *cp,
+void change_branch_default_test_regression_exemption_set(change::pointer cp,
     bool yesno);
 
 /**
@@ -169,24 +171,24 @@ void change_branch_default_test_regression_exemption_set(change_ty *cp,
   * @returns
   *     The state of the attribute.
   */
-bool change_branch_default_test_regression_exemption_get(change_ty *);
+bool change_branch_default_test_regression_exemption_get(change::pointer );
 
-long change_branch_minimum_change_number_get(change_ty *);
-void change_branch_minimum_change_number_set(change_ty *, long);
-bool change_branch_reuse_change_numbers_get(change_ty *);
-long change_branch_minimum_branch_number_get(change_ty *);
-void change_branch_minimum_branch_number_set(change_ty *, long);
-void change_branch_reuse_change_numbers_set(change_ty *, bool);
-bool change_branch_skip_unlucky_get(change_ty *);
-void change_branch_skip_unlucky_set(change_ty *, bool);
-bool change_branch_compress_database_get(change_ty *);
-void change_branch_compress_database_set(change_ty *, bool);
-string_ty *change_version_get(change_ty *);
-int change_branch_develop_end_action_get(change_ty *);
-void change_branch_develop_end_action_set(change_ty *, int);
-bool change_branch_protect_development_directory_get(change_ty *);
-void change_branch_protect_development_directory_set(change_ty *, bool);
-time_t change_completion_timestamp(change_ty *);
+long change_branch_minimum_change_number_get(change::pointer );
+void change_branch_minimum_change_number_set(change::pointer , long);
+bool change_branch_reuse_change_numbers_get(change::pointer );
+long change_branch_minimum_branch_number_get(change::pointer );
+void change_branch_minimum_branch_number_set(change::pointer , long);
+void change_branch_reuse_change_numbers_set(change::pointer , bool);
+bool change_branch_skip_unlucky_get(change::pointer );
+void change_branch_skip_unlucky_set(change::pointer , bool);
+bool change_branch_compress_database_get(change::pointer );
+void change_branch_compress_database_set(change::pointer , bool);
+string_ty *change_version_get(change::pointer );
+int change_branch_develop_end_action_get(change::pointer );
+void change_branch_develop_end_action_set(change::pointer , int);
+bool change_branch_protect_development_directory_get(change::pointer );
+void change_branch_protect_development_directory_set(change::pointer , bool);
+time_t change_completion_timestamp(change::pointer );
 
 /**
   * The change_branch_uuid_find function is used to locate a change by
@@ -202,7 +204,7 @@ time_t change_completion_timestamp(change_ty *);
   * @param result
   *     This is the list of changes which match this (partial) UUID specified.
   */
-void change_branch_uuid_find(change_ty *pp, string_ty *uuid,
+void change_branch_uuid_find(change::pointer pp, string_ty *uuid,
     change_list_ty &result);
 
 #endif // AEGIS_CHANGE_BRANCH_H

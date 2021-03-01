@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2006, 2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -45,7 +44,7 @@ input_null::length()
 }
 
 long
-input_null::read_inner(void *data, size_t nbytes)
+input_null::read_inner(void *, size_t)
 {
     return 0;
 }

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -118,4 +117,14 @@ time_max(void)
     if (!result)
 	result = time_max_find();
     return result;
+}
+
+
+double
+dtime()
+{
+    struct timeval t;
+    if (gettimeofday(&t, 0) < 0)
+    nfatal("gettimeofday");
+    return (t.tv_usec * 1e-6 + t.tv_sec);
 }

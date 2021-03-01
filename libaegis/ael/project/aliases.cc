@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2003-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -34,12 +33,12 @@
 
 void
 list_project_aliases(string_ty *project_name, long change_number,
-    string_list_ty *args)
+    string_list_ty *)
 {
     string_list_ty  name;
     output_ty       *name_col = 0;
     output_ty       *desc_col = 0;
-    col_ty          *colp;
+    col          *colp;
     int             nprinted = 0;
 
     trace(("list_project_aliases()\n{\n"));
@@ -69,17 +68,17 @@ list_project_aliases(string_ty *project_name, long change_number,
     //
     // create the columns
     //
-    colp = col_open((string_ty *)0);
-    col_title(colp, "List of Project Aliases", (char *)0);
+    colp = col::open((string_ty *)0);
+    colp->title("List of Project Aliases", (char *)0);
 
     int left = 0;
-    name_col = col_create(colp, 0, longest, "Alias\n---------");
+    name_col = colp->create(0, longest, "Alias\n---------");
     left += longest + 1;
 
     if (!option_terse_get())
     {
 	desc_col =
-	    col_create(colp, left, 0, "Project\n-----------");
+	    colp->create(left, 0, "Project\n-----------");
     }
 
     //
@@ -108,7 +107,7 @@ list_project_aliases(string_ty *project_name, long change_number,
 		name_col->fputs(name.string[j]);
 		if (desc_col)
 	    	    desc_col->fputs(other);
-		col_eoln(colp);
+		colp->eoln();
 		++nprinted;
 	    }
 	}
@@ -125,7 +124,7 @@ list_project_aliases(string_ty *project_name, long change_number,
 		if (other)
 	    	    desc_col->fputs(other);
 	    }
-	    col_eoln(colp);
+	    colp->eoln();
 	    ++nprinted;
 	}
     }
@@ -136,14 +135,14 @@ list_project_aliases(string_ty *project_name, long change_number,
 	delete name_col;
 	if (desc_col)
 	    delete desc_col;
-	fp = col_create(colp, 0, 0, (const char *)0);
+	fp = colp->create(0, 0, (const char *)0);
 	fp->fputs("No project aliases.\n");
-	col_eoln(colp);
+	colp->eoln();
     }
 
     //
     // clean up and go home
     //
-    col_close(colp);
+    delete colp;
     trace(("}\n"));
 }

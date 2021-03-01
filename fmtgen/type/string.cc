@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1998, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1994, 1998, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -25,19 +24,19 @@
 #include <fmtgen/type/string.h>
 
 
-type_string_ty::~type_string_ty()
+type_string::~type_string()
 {
 }
 
 
-type_string_ty::type_string_ty() :
-    type_ty("string")
+type_string::type_string() :
+    type("string")
 {
 }
 
 
 void
-type_string_ty::gen_include_declarator(const nstring &variable_name,
+type_string::gen_include_declarator(const nstring &variable_name,
     bool is_a_list) const
 {
     const char *deref = (is_a_list ? "*" : "");
@@ -46,8 +45,8 @@ type_string_ty::gen_include_declarator(const nstring &variable_name,
 
 
 void
-type_string_ty::gen_code_declarator(const nstring &variable_name,
-    bool is_a_list, int attributes) const
+type_string::gen_code_declarator(const nstring &variable_name,
+    bool is_a_list, int) const
 {
     indent_printf("string_write(fp, ");
     if (is_a_list)
@@ -59,8 +58,8 @@ type_string_ty::gen_code_declarator(const nstring &variable_name,
 
 
 void
-type_string_ty::gen_code_call_xml(const nstring &form_name,
-    const nstring &member_name, int attributes) const
+type_string::gen_code_call_xml(const nstring &form_name,
+    const nstring &member_name, int) const
 {
     indent_printf
     (
@@ -72,7 +71,7 @@ type_string_ty::gen_code_call_xml(const nstring &form_name,
 
 
 void
-type_string_ty::gen_code_copy(const nstring &member_name)
+type_string::gen_code_copy(const nstring &member_name)
     const
 {
     indent_printf
@@ -85,15 +84,15 @@ type_string_ty::gen_code_copy(const nstring &member_name)
 
 
 void
-type_string_ty::gen_free_declarator(const nstring &variable_name,
-    bool is_a_list) const
+type_string::gen_free_declarator(const nstring &variable_name, bool)
+    const
 {
     indent_printf("str_free(this_thing->%s);\n", variable_name.c_str());
 }
 
 
 nstring
-type_string_ty::c_name_inner()
+type_string::c_name_inner()
     const
 {
     return "string_ty *";
@@ -101,7 +100,7 @@ type_string_ty::c_name_inner()
 
 
 bool
-type_string_ty::has_a_mask()
+type_string::has_a_mask()
     const
 {
     return false;
@@ -109,7 +108,7 @@ type_string_ty::has_a_mask()
 
 
 void
-type_string_ty::gen_code_trace(const nstring &vname, const nstring &value)
+type_string::gen_code_trace(const nstring &vname, const nstring &value)
     const
 {
     indent_printf

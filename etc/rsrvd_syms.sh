@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2004 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 2004, 2006, 2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -15,31 +14,29 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: shell script to manipulate rsrvd_symss
+#	along with this program. If not, see
+#	<http://www.gnu.org/licenses/>.
 #
 LANG=C
 export LANG
 
 LIBC=/usr/lib/libc.a
 LIBM=/usr/lib/libm.a
-tmp=${TMP_DIR-/tmp}/$$
-obj="$*"
-nm $LIBC $LIBM 2>/dev/null |
-    grep -e ' [A-TXYZ] ' | awk '{print $3}' | sort -u > ${tmp}.a
-nm $obj 2>/dev/null |
-    grep -e ' [A-TXYZ] ' | awk '{print $3}' | sort -u > ${tmp}.b
-common=`comm -12 ${tmp}.a ${tmp}.b`
-rm ${tmp}.a ${tmp}.b
-if test -n "$common"
+ tmp=${TMP_DIR-/tmp}/$$
+ obj="$*"
+ nm $LIBC $LIBM 2>/dev/null |
+    egrep ' [A-TXYZ] ' | awk '{print $3}' | sort -u > ${tmp}.a
+ nm $obj 2>/dev/null |
+    egrep ' [A-TXYZ] ' | awk '{print $3}' | sort -u > ${tmp}.b
+ common=`comm -12 ${tmp}.a ${tmp}.b`
+ rm ${tmp}.a ${tmp}.b
+ if test -n "$common"
 then
-    echo "The following reserved symbols have been used:" $common
-    for sym in $common
-    do
-	nm -A $obj 2>/dev/null | grep -e " [A-TV-Z] $sym"
-    done
-    exit 1
-fi
+     echo "The following reserved symbols have been used:" $common
+     for sym in $common
+     do
+      nm -A $obj 2>/dev/null | egrep " [A-TV-Z] $sym"
+     done
+     exit 1
+ fi
 exit 0

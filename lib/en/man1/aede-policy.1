@@ -1,23 +1,20 @@
 '\" t
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2005, 2006 Peter Miller;
-.\"	All rights reserved.
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2005-2007 Peter Miller
 .\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 2 of the License, or
-.\"	(at your option) any later version.
+.\"     This program is free software; you can redistribute it and/or
+.\"     modify it under the terms of the GNU General Public License as
+.\"     published by the Free Software Foundation; either version 2 of
+.\"     the License, or (at your option) any later version.
 .\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
 .\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: manual page describing the lib/en/man1/aede-policy command.
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program. If not, see
+.\"     <http://www.gnu.org/licenses/>.
 .\"
 .so z_name.so
 .ds n) aede-policy
@@ -57,8 +54,20 @@ to leave the change in the \fIbeing developed\fP state.
 Note that the \fIaede\fP(1) command sets the appropriate environment
 variables, so the \fB\-Project\fP and \fB\-Change\fP options are rarely
 necessary.
+.PP
+If no policies appear on the command line, the \fIaede-policy\fP project
+specific attribute will be checked.  If it exists, it contains a list of
+space separated policy names.
 .SS POLICIES
 There are a range of policies that can be selected.
+.TP 8n
+all
+Check all of the
+\fIcopyright\fP,
+\fIcrlf\fP,
+\fIdescription\fP and
+\fIprintable\fP
+policies.
 .TP 8n
 copyright
 .RS
@@ -85,6 +94,49 @@ This policy checks that the change set \fIbrief_description\fP and
 \fIdescription\fP attributes have been updated to something other than
 the defaults.
 .TP 8n
+fsf-address
+This policy checks that the FSF address, if present in source files, is
+up-to-date.  This is useful for Free Software projects.
+.TP 8n
+gpl-version
+.TP 8n
+gpl-version=\fInn\fP
+This policy checks files that cite the GNU GPL in their file headers, to
+be sure they contain the correct version of the GNU GPL.  Defaults to
+version 3 if no version number specified.
+.TP 8n
+line-length
+.TP 8n
+line-length=\fInn\fP
+This policy checks that files have this maximum line length.
+Defaults to 80 if no width is specified.
+.TP 8n
+merge-fhist
+This policy requires that there be no \f[I]fmerge\fP(1) conflict lines
+present in any source files.  The name comes from the name of the
+package containing this tool: \f[I]fhist\fP.
+.TP 8n
+merge-rcs
+This policy requires that there be no \f[I]merge\fP(1) conflict lines
+present in any source files.  The name comes from the name of the
+package containing this tool: \f[I]rcs\fP.
+.TP 8n
+no-tabs
+.RS
+This policy checks that files have no tabs characters in them.  This
+is useful when a team of developers all use different editors and
+differnt tab stops.  By only using spaces, the code is presented to all
+developers the same way.
+.PP
+This check is not applied to change sets with a
+\Iforeign-copyright=true\fP attribute, because you have little control
+over them (change the tabs in a later change set, if at all).
+.PP
+This check is not applied to files which are called \f[CW]Makefile\fP
+or similar, and it is not applied to files carrying a
+\fIaede-policy-tabs-allowed=true\fP attribute.
+.RE
+.TP 8n
 printable
 This policy checks that each file in the change set contains only
 printable text characters and white space.  The \fIcontent-type\fP file
@@ -98,10 +150,9 @@ although international character sets are acceptable.  This is basically
 a test for NUL characters, because everything else could be part of a
 valid character encoding of some international character set.
 .TP 8n
-text
-.TP 8n
-all
-Check all of the above policies.
+white-space
+This policy checks that there is no white space on the ends of lines,
+that there are no blank lines at the ends of files.
 .PP
 If no policy is specified,
 only the \fIdescription\fP policy will be checked.

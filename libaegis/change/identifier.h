@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface of the change_identifier class
 //
@@ -30,12 +29,12 @@
 
 /**
   * The change_identifier class is used to represent a change and its
-  * context, as identified by all the diffent command line options used
+  * context, as identified by all the different command line options used
   * to specify a change set.
   *
   * This class is a compound of the change_identifier_subset class and
   * the project_identifier_subset class, because they are most commonly
-  * used together.  The various methods are poxied to the appropriate
+  * used together.  The various methods are proxied to the appropriate
   * instance variables.
   */
 class change_identifier
@@ -53,14 +52,20 @@ public:
     change_identifier();
 
     /**
-      * The set method is used to determine if this chaneg ID has been
+      * The set method is used to determine if this change ID has been
       * set yet (via any of several command line options).
       */
     bool set() const { return change_id.set(); }
 
     /**
+      * The project_set method is used to determine if the project name
+      * has been set yet (via any of several command line options).
+      */
+    bool project_set() const { return project_id.set(); }
+
+    /**
       * The command_line_parse method is used to parse command line
-      * options (via the arglex() fucntion) to set the change ID.  The
+      * options (via the arglex() function) to set the change ID.  The
       * current token is expected to be meaningful for identifying a
       * change.  The position will be advanced past all relevant tokens.
       *
@@ -79,7 +84,7 @@ public:
       * \note
       *     There is no need to pass all of these command line options to
       *     this function for processing.  Only pass those options which
-      *     make sense.  If is often the case that threr are actually
+      *     make sense.  If is often the case that there are actually
       *     *two* changes being identified, and they will split the
       *     arguments between them.
       */
@@ -92,7 +97,7 @@ public:
     bool get_devdir() { return change_id.get_devdir(); }
 
     /**
-      * The command_line_check method is used to verify that sensable
+      * The command_line_check method is used to verify that sensible
       * command line options have been specified, once the parse has
       * completed.
       */
@@ -115,7 +120,7 @@ public:
     bool get_baseline() { return change_id.get_baseline(); }
 
     /**
-      * The get_file_revision is used to determine the path to the gioven
+      * The get_file_revision is used to determine the path to the given
       * file at the time specified by the change ID.  It must be called
       * <i>after</i> the set_change method has been called.
       */
@@ -151,7 +156,7 @@ public:
     }
 
     /**
-      * The get_historian method is used to obtain the location fo the
+      * The get_historian method is used to obtain the location of the
       * historical file records reconstruction.
       *
       * \note
@@ -166,7 +171,7 @@ public:
     }
 
     /**
-      * The get_change_version_string methof is used to get the version
+      * The get_change_version_string method is used to get the version
       * string for the change.
       */
     nstring
@@ -189,7 +194,7 @@ public:
       * The get_up method is used to get the user pointer for the
       * change identified.
       */
-    user_ty *
+    user_ty::pointer
     get_up()
     {
 	return branch_id.get_up();
@@ -199,7 +204,7 @@ public:
       * The get_cp method is used to get the change pointer for the
       * change identified.
       */
-    change_ty *
+    change::pointer
     get_cp()
     {
 	return change_id.get_cp();
@@ -239,19 +244,19 @@ public:
 
 private:
     /**
-      * The branch_id istance variable is used to remember the project subset
+      * The branch_id instance variable is used to remember the project subset
       * of identifying a change.
       */
     project_identifier_subset_plain project_id;
 
     /**
-      * The branch_id istance variable is used to remember the branch subset
+      * The branch_id instance variable is used to remember the branch subset
       * of identifying a change.
       */
     project_identifier_subset_branch branch_id;
 
     /**
-      * The change_id istance variable is used to remember the change subset
+      * The change_id instance variable is used to remember the change subset
       * of identifying a change.
       */
     change_identifier_subset change_id;

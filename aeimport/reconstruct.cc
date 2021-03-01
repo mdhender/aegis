@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate reconstructs
 //
@@ -38,7 +37,7 @@
 
 
 static void
-process(change_ty *cp, fstate_src_ty *src, user_ty *up)
+process(change::pointer cp, fstate_src_ty *src, user_ty::pointer up)
 {
     project_ty	    *pp;
     string_ty	    *bl;
@@ -57,7 +56,7 @@ process(change_ty *cp, fstate_src_ty *src, user_ty *up)
     mode = 0755 & ~project_umask_get(pp);
     project_become(pp);
     os_mkdir_between(bl, src->file_name, mode);
-    project_become_undo();
+    project_become_undo(pp);
 
     path = os_path_cat(bl, src->file_name);
     trace(("src->action = %s;\n", file_action_ename(src->action)));
@@ -87,9 +86,8 @@ process(change_ty *cp, fstate_src_ty *src, user_ty *up)
 	// Fingerprint the file.
 	//
 	src->file_fp = (fingerprint_ty *)fingerprint_type.alloc();
-	project_become(pp);
+        user_ty::become scoped(pp->get_user());
 	change_fingerprint_same(src->file_fp, path, 0);
-	project_become_undo();
     }
 
     if (!pp->is_a_trunk())
@@ -130,9 +128,8 @@ process(change_ty *cp, fstate_src_ty *src, user_ty *up)
 	// Fingerprint the difference file.
 	//
 	src->diff_file_fp = (fingerprint_ty *)fingerprint_type.alloc();
-	project_become(pp);
+        user_ty::become scoped(pp->get_user());
 	change_fingerprint_same(src->diff_file_fp, path_d, 0);
-	project_become_undo();
 	str_free(path_d);
     }
 
@@ -146,9 +143,9 @@ reconstruct(string_ty *project_name)
 {
     project_ty	    *pp;
     size_t	    j;
-    change_ty       *cp_bogus;
+    change::pointer cp_bogus;
     string_ty	    *bl;
-    user_ty	    *up;
+    user_ty::pointer up;
 
     //
     // Take some locks.

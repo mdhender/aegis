@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2000, 2002-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2000, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate sources
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change/file.h>
@@ -29,7 +26,7 @@
 
 
 string_ty *
-change_file_source(change_ty *cp, string_ty *file_name)
+change_file_source(change::pointer cp, string_ty *file_name)
 {
     string_ty       *result;
     cstate_ty       *cstate_data;
@@ -41,7 +38,7 @@ change_file_source(change_ty *cp, string_ty *file_name)
     //
     trace(("change_file_source(cp = %08lX, file_name = \"%s\")\n{\n",
 	(long)cp, file_name->str_text));
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     if
     (
 	cstate_data->state == cstate_state_awaiting_development
@@ -70,7 +67,7 @@ change_file_source(change_ty *cp, string_ty *file_name)
     //
     if (cstate_data->state == cstate_state_being_integrated)
     {
-	change_ty *pcp = cp->pp->change_get();
+	change::pointer pcp = cp->pp->change_get();
 	src = change_file_find(pcp, file_name, view_path_first);
 	if (src && !src->about_to_be_copied_by)
 	{

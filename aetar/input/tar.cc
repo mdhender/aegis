@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -41,7 +40,7 @@ input_tar::input_tar(input &arg) :
 
 
 long
-input_tar::read_inner(void *data, size_t len)
+input_tar::read_inner(void *, size_t)
 {
     trace(("input_tar::read_inner()\n"));
     assert(0);
@@ -86,7 +85,7 @@ all_zero(const char *buf, size_t len)
 
 
 input
-input_tar::child(nstring &archive_name)
+input_tar::child(nstring &archive_name, bool &executable)
 {
     //
     // Wade through the garbage until we find something interesting.
@@ -111,6 +110,12 @@ input_tar::child(nstring &archive_name)
 	    return 0;
 	}
 	header_ty *hp = (header_ty *)header;
+
+        //
+        // Get file mode
+        //
+        int mode = header_mode_get(hp);
+        executable = ((mode & 0111) != 0);
 
 	//
 	// Verify checksum.
@@ -154,7 +159,7 @@ input_tar::child(nstring &archive_name)
 	    deeper->fatal_error("tar: corrupted size field");
 
 	//
-	// Work out that to do with it.
+	// Work out what to do with it.
 	//
 	switch (header_linkflag_get(hp))
 	{

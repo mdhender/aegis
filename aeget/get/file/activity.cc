@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate activitys
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -41,7 +38,7 @@
 
 
 void
-get_file_activity(change_ty *master_cp, string_ty *filename,
+get_file_activity(change::pointer master_cp, string_ty *filename,
     string_list_ty *modifier)
 {
     size_t          j;
@@ -96,7 +93,7 @@ get_file_activity(change_ty *master_cp, string_ty *filename,
     {
 	cstate_ty       *cstate_data;
 	long            change_number;
-	change_ty       *cp;
+	change::pointer cp;
 	int             used;
 	size_t          file_num;
 
@@ -104,7 +101,7 @@ get_file_activity(change_ty *master_cp, string_ty *filename,
     	    break;
 	cp = change_alloc(pp, change_number);
 	change_bind_existing(cp);
-	cstate_data = change_cstate_get(cp);
+	cstate_data = cp->cstate_get();
 	switch (cstate_data->state)
 	{
 	case cstate_state_awaiting_development:
@@ -212,7 +209,7 @@ get_file_activity(change_ty *master_cp, string_ty *filename,
 	for (k = 0; k < clp->length; ++k)
 	{
 	    cstate_ty       *cstate_data;
-	    change_ty       *cp;
+	    change::pointer cp;
 	    fstate_src_ty   *src;
 	    const char      *html_class;
 
@@ -221,7 +218,7 @@ get_file_activity(change_ty *master_cp, string_ty *filename,
 	    assert(src);
 	    if (!src)
 		continue;
-	    cstate_data = change_cstate_get(cp);
+	    cstate_data = cp->cstate_get();
 	    html_class = (((num / 3) & 1) ?  "even-group" : "odd-group");
 	    ++num;
 

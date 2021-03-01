@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1996, 2002, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1996, 2002, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -23,11 +22,9 @@
 #ifndef AEGIS_SUB_EXPR_GRAM_H
 #define AEGIS_SUB_EXPR_GRAM_H
 
-#include <common/main.h>
-
 struct sub_context_ty; // existence
+class nstring; // forward
 
-struct string_ty *sub_expr_gram(struct sub_context_ty *,
-	struct string_ty *);
+nstring sub_expr_gram(sub_context_ty *, const nstring &);
 
 #endif // AEGIS_SUB_EXPR_GRAM_H

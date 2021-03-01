@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate adds
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change/branch.h>
@@ -26,7 +23,7 @@
 
 
 void
-change_history_delta_name_add(change_ty *cp, long delta_number,
+change_history_delta_name_add(change::pointer cp, long delta_number,
     string_ty *delta_name)
 {
     cstate_ty       *cstate_data;
@@ -37,14 +34,14 @@ change_history_delta_name_add(change_ty *cp, long delta_number,
     trace(("change_history_delta_name_add(cp = %8.8lX, delta_number = %ld, "
 	"delta_name = \"%s\")\n{\n", (long)cp, delta_number,
 	delta_name->str_text));
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     assert(cstate_data->branch);
     h = cstate_data->branch->history;
     assert(h);
     assert(h->length);
     for (j = 0; j < h->length; ++j)
     {
-	type_ty         *type_p;
+	meta_type *type_p = 0;
 	string_ty       **addr_p;
 
 	he = h->list[j];

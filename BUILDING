@@ -2,7 +2,8 @@ Build(Aegis)							  Build(Aegis)
 
 NAME
 	aegis -	project	change supervisor
-	Copyright (C) 2004, 2005, 2006 Peter Miller; All rights	reserved.
+	Copyright (C) 1991, 1992, 1993,	1994, 1995, 1996, 1997,	1998, 1999,
+	2000, 2001, 2002, 2003,	2004, 2005, 2006, 2007 Peter Miller
 
 	The aegis program is distributed under the terms of the	GNU General
 	Public License.	 See the LICENSE section, below, for more details.
@@ -32,6 +33,12 @@ SITE CONFIGURATION
 	To disable looking for an existing installation	(maybe because you
 	want to	change the prefix), use	the ./configure	--with-no-aegis-
 	configured option.
+
+	To change the AEGIS_UID	and AEGIS_GID values (these control the
+	ownership of Aegis' system files) you need to set environment
+	variables of these names before	running	the ./configure	script.	 You
+	almost never need to do	this, so if you	have no	idea what this is
+	about, don't try to change them.
 
    Before You Start
 	Before you start configuring, it is worth reading the OTHER USEFUL
@@ -782,8 +789,8 @@ LICENSE
 	It should be in	the LICENSE file included in this distribution.
 
 AUTHOR
-	Peter Miller   E-Mail:	 millerp@canb.auug.org.au
-	/\/\*		  WWW:	 http://www.canb.auug.org.au/~millerp/
+	Peter MillerE-Mail:   millerp@canb.auug.org.au
+	/\/\*					  WWW:	 http://www.canb.auug.org.au/~millerp/
 
 WINDOWS-NT
 	It is possible to build	Aegis for Windows-NT.  I have only done	this
@@ -874,7 +881,7 @@ WINDOWS-NT
 	Do not use WinZip to unpack the	tarball.  It has a nasty habit of
 		turning	all of the newlines into CRLFs.	 This will confuse
 		lots of	utilities, especially GNU Groff.  Use the "tar xzf
-		aegis-4.tar.gz"	command	from within Cygwin.
+		aegis-4.23.tar.gz" command from	within Cygwin.
 
 	Make sure the Cygwin you are using has GNU Groff 1.15 or later
 		(use a "groff -v" command).  Grab and install the latest from

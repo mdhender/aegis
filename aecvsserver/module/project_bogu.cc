@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -53,8 +52,8 @@ module_project_bogus::groan(server_ty *sp, const char *caption)
 
 
 void
-module_project_bogus::modified(server_ty *sp, string_ty *file_name,
-    file_info_ty *fip, input &ip)
+module_project_bogus::modified(server_ty *sp, string_ty *, file_info_ty *,
+    input &)
 {
     groan(sp, "Modified");
 }
@@ -70,8 +69,8 @@ module_project_bogus::calculate_canonical_name()
 
 
 bool
-module_project_bogus::update(server_ty *sp, string_ty *client_side,
-    string_ty *server_side, const options &opt)
+module_project_bogus::update(server_ty *sp, string_ty *, string_ty *,
+    const options &)
 {
     groan(sp, "update");
     return false;
@@ -79,8 +78,7 @@ module_project_bogus::update(server_ty *sp, string_ty *client_side,
 
 
 bool
-module_project_bogus::checkin(server_ty *sp, string_ty *client_side,
-    string_ty *server_side)
+module_project_bogus::checkin(server_ty *sp, string_ty *, string_ty *)
 {
     groan(sp, "ci");
     return false;
@@ -88,8 +86,8 @@ module_project_bogus::checkin(server_ty *sp, string_ty *client_side,
 
 
 bool
-module_project_bogus::add(server_ty *sp, string_ty *client_side,
-    string_ty *server_side, const options &opt)
+module_project_bogus::add(server_ty *sp, string_ty *, string_ty *,
+    const options &)
 {
     groan(sp, "add");
     return false;
@@ -97,8 +95,8 @@ module_project_bogus::add(server_ty *sp, string_ty *client_side,
 
 
 bool
-module_project_bogus::remove(server_ty *sp, string_ty *client_side,
-    string_ty *server_side, const options &opt)
+module_project_bogus::remove(server_ty *sp, string_ty *, string_ty *,
+    const options &)
 {
     groan(sp, "remove");
     return 0;

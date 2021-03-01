@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate query_commans
 //
@@ -30,7 +29,7 @@
 
 
 string_ty *
-change_run_history_query_command(change_ty *cp, fstate_src_ty *src)
+change_run_history_query_command(change::pointer cp, fstate_src_ty *src)
 {
     sub_context_ty  *scp;
     string_ty	    *hp;
@@ -84,7 +83,7 @@ change_run_history_query_command(change_ty *cp, fstate_src_ty *src)
     hp = cp->pp->history_path_get();
     project_become(cp->pp);
     result = os_execute_slurp(the_command, OS_EXEC_FLAG_NO_INPUT, hp);
-    project_become_undo();
+    project_become_undo(cp->pp);
     str_free(the_command);
     if (!result->str_length)
 	fatal_intl(0, i18n("history_query_command return empty"));

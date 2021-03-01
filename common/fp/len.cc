@@ -1,7 +1,6 @@
 //
 //	cook - file construction tool
-//	Copyright (C) 1994, 1999, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994, 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -43,13 +42,13 @@ len_constructor(fingerprint_ty *p)
 
 
 static void
-len_destructor(fingerprint_ty *p)
+len_destructor(fingerprint_ty *)
 {
 }
 
 
 static void
-len_addn(fingerprint_ty *p, unsigned char *s, size_t n)
+len_addn(fingerprint_ty *p, unsigned char *, size_t n)
 {
     len_ty	    *f;
 

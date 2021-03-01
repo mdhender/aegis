@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -52,7 +51,7 @@ change_cstate_improve(cstate_ty *d)
     }
     if (!d->architecture->length)
     {
-	type_ty		*type_p;
+	meta_type		*type_p;
 	string_ty	**str_p;
 
 	str_p =

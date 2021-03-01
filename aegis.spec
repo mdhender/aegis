@@ -5,11 +5,11 @@
 #
 Summary: project change supervisor
 Name: aegis
-Version: 4.22.2
+Version: 4.23
 Release: 1
 License: GPL
 Group: Development/Version Control
-Source: http://www.canb.auug.org.au/~millerp/aegis-4.22.2.tar.gz
+Source: http://www.canb.auug.org.au/~millerp/aegis-4.23.tar.gz
 URL: http://www.canb.auug.org.au/~millerp/aegis.html
 BuildRoot: /tmp/aegis-build-root
 Icon: aegis.xpm
@@ -91,6 +91,8 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0755,root,bin) %dir /usr/lib/aegis/ro/LC_MESSAGES
 %attr(0755,root,bin) %dir /usr/lib/aegis/ru
 %attr(0755,root,bin) %dir /usr/lib/aegis/ru/LC_MESSAGES
+%attr(0755,root,bin) %dir /usr/lib/aegis/vi
+%attr(0755,root,bin) %dir /usr/lib/aegis/vi/LC_MESSAGES
 %attr(0755,root,bin) %dir /usr/share/aegis/wish
 %attr(0755,root,bin) /usr/bin/ae-repo-ci
 %attr(0755,root,bin) /usr/bin/aeannotate
@@ -105,9 +107,10 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(4755,root,bin) /usr/bin/aegis
 %attr(4755,root,bin) /usr/bin/aeimport
 %attr(0755,root,bin) /usr/bin/aelcf
-%attr(4755,root,bin) /usr/bin/aelock
+%attr(0755,root,bin) /usr/bin/aelock
 %attr(0755,root,bin) /usr/bin/aelpf
 %attr(0755,root,bin) /usr/bin/aels
+%attr(0755,root,bin) /usr/bin/aemakegen
 %attr(0755,root,bin) /usr/bin/aemeasure
 %attr(0755,root,bin) /usr/bin/aepatch
 %attr(0755,root,bin) /usr/bin/aepromptcmd
@@ -302,6 +305,8 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/share/man/man1/aelpf.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aels.1*
 %attr(0644,root,bin) /usr/share/man/man1/aels.1*
+%attr(0644,root,bin) /usr/share/aegis/en/man1/aemakegen.1*
+%attr(0644,root,bin) /usr/share/man/man1/aemakegen.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aemeasure.1*
 %attr(0644,root,bin) /usr/share/man/man1/aemeasure.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aemt.1*
@@ -483,6 +488,7 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/share/aegis/report/user_recurs.rpt
 %attr(0644,root,bin) /usr/lib/aegis/ro/LC_MESSAGES/aegis.mo
 %attr(0644,root,bin) /usr/lib/aegis/ru/LC_MESSAGES/aegis.mo
+%attr(0644,root,bin) /usr/lib/aegis/vi/LC_MESSAGES/aegis.mo
 %attr(0644,root,bin) /usr/share/aegis/wish/aebuffy.rpt
 %attr(0644,root,bin) /usr/share/aegis/wish/aecomp.rpt
 %attr(0644,root,bin) /usr/share/aegis/wish/chan_attr.rpt

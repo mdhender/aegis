@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2006, 2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -32,6 +31,8 @@
 
 #include <ae-repo-ci/arglex3.h>
 #include <ae-repo-ci/checkin.h>
+#include <ae-repo-ci/repository.h>
+
 
 static void
 main_help(void)
@@ -45,8 +46,9 @@ main(int argc, char **argv)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{ arglex_token_help, main_help, },
-	{ arglex_token_version, version, },
+	{ arglex_token_list, repository::list, 0 },
+	{ arglex_token_help, main_help, 0 },
+	{ arglex_token_version, version, 0 },
     };
 
     //

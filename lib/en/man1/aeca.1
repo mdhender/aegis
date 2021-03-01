@@ -1,7 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-2006 Peter Miller;
-.\"	All rights reserved.
+.\"	Copyright (C) 1991-2007 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 .\"	GNU General Public License for more details.
 .\"
 .\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: manual entry for 'aegis -Change_Attributes' command
+.\"	along with this program. If not, see
+.\"	<http://www.gnu.org/licenses/>.
 .\"
 .so z_name.so
 .TH "\*(n) -Change_Attributes" 1 \*(N) "Reference Manual"
@@ -46,7 +43,7 @@
 .br
 .B \*(n)
 .B -Change_Attributes
-\fIname\fP\fB=\fP\fIvalue\fP
+\f[I]name\fP\fB=\fP\f[I]value\fP
 .br
 .B \*(n)
 .B -Change_Attributes
@@ -61,8 +58,8 @@
 .br
 .B \*(n)
 .B -Change_Attributes
-\fB\-UUID\fP \fIstring\fP
-[ \fIoption\fP... ]
+\fB\-UUID\fP \f[I]string\fP
+[ \f[I]option\fP... ]
 .SH DESCRIPTION
 The
 .I \*(n)
@@ -77,10 +74,11 @@ See
 .IR aecattr (5)
 for a description of the file format.
 .PP
-The \fIname\fP\fB=\fP\fIvalue\fP form of the command may be used when
+The \f[I]name\fP\fB=\fP\f[I]value\fP form of the command may be used when
 you wish to add or modify change set attributes.  If an attribute
 is already present, it will be modified; if there is more than one
 attribute with the same name, only the first will be modified.
+The \f[I]name\fP\fB+=\fP\f[I]value\fP form will always append the pair.
 .SS Example
 When you edit the file, you will see something like this:
 .RS
@@ -125,48 +123,48 @@ uses some attributes for its own purposes (and arguably, should always
 have done so to maximize forwards compatibility across Aegis upgrades).
 .TP 8n
 aeget:inventory:hide
-boolean.  If true, this change set does not appear in \fIaeget\fP(1)'s
-change set inventory pages, used by \fIaedist -replay\fP to decide what
+boolean.  If true, this change set does not appear in \f[I]aeget\fP(1)'s
+change set inventory pages, used by \f[I]aedist -replay\fP to decide what
 to download and apply.  Think of it as a "local only" flag.
 .TP 8n
 foreign-copyright
 boolean.  If true, none of the files in this change set will not be
-checked by the \fIaede-policy\fP(1) \f[CW]copyright\fP validation.
+checked by the \f[I]aede-policy\fP(1) \f[CW]copyright\fP validation.
 .TP 8n
 original-uuid
-This is set by \fIaedist -receive\fP when an incoming change set
+This is set by \f[I]aedist -receive\fP when an incoming change set
 is changed before it can end development.
 There may be more than one.
-The \fIaeget\fP(1) inventory "all" page will show these
-additional UUIDs, used by the \fIaedist \-pending\fP command..
+The \f[I]aeget\fP(1) inventory "all" page will show these
+additional UUIDs, used by the \f[I]aedist \-pending\fP command..
 .SS Universal Unique Identifier
 Each change set is assigned a unique universal identifier (UUID) at
-\fIintegrate pass\fP time.  This serves to identify the change across
+\f[I]integrate pass\fP time.  This serves to identify the change across
 all sites when a geographically distributed development model is being
 used.  This may be exploited to rapidly determine which change sets need
 to be downloaded.
 .PP
 The \fB\-Universal_Unique_IDentifier\fP option is used by the
-\fIaedist\fP(1) and \fIaepatch\fP(1) commands to set the UUID of a
+\f[I]aedist\fP(1) and \f[I]aepatch\fP(1) commands to set the UUID of a
 change set.  It should not be used by developers.
 .SS Using Change Attributes in Scripts
 There are several ways you can use the attributes of an Aegis change in
 a shell script:
 .TP 8n
-\fIaereport\fP(1)
+\f[I]aereport\fP(1)
 The report generator is able to access change attributes.
 You can then have the report generator print the necessary data.
 .TP 8n
-\fIaesub\fP(1)
-Many change attributes can be accessed via the \fIaesub\fP(5) command
-substitutions, and printed using the \fIaesub\fP(1) command.
+\f[I]aesub\fP(1)
+Many change attributes can be accessed via the \f[I]aesub\fP(5) command
+substitutions, and printed using the \f[I]aesub\fP(1) command.
 .TP 8n
 aeca -l
-The list option of the \fIaeca\fP(1) command may be used to print the
+The list option of the \f[I]aeca\fP(1) command may be used to print the
 values of all editable change attributes.  It can be groped using
-\fIgrep\fP(1) or \fIawk\fP(1), or similar.
+\f[I]grep\fP(1) or \f[I]awk\fP(1), or similar.
 .TP 8n
-\fIaexml\fP(1)
+\f[I]aexml\fP(1)
 It is possible to get a great deal of information in XML format,
 including change attributes.  This format can be parsed by a variety of
 packages.
@@ -194,7 +192,7 @@ May not be used with \-file or \-edit options.
 .so o_terse.so
 .so o_verbose.so
 .TP 8n
-\fB\-Universal_Unique_IDentifier\fP \fIstring\fP
+\fB\-Universal_Unique_IDentifier\fP \f[I]string\fP
 This option may be used to set the UUID of change change.
 .so o_wait.so
 .so o__rules.so
@@ -214,7 +212,7 @@ the current user is not an administrator of the specified project.
 .SH SEE ALSO
 .TP 8n
 .IR tkaeca (1)
-GUI interface to the \fIaeca\fP(1) command.
+GUI interface to the \f[I]aeca\fP(1) command.
 .TP 8n
 .IR aecattr (5)
 change attributes file format

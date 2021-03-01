@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 1999, 2001, 2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1998, 1999, 2001, 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,111 +13,157 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate quotes
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
 #include <common/ac/string.h>
 
+#include <common/nstring.h>
+#include <common/nstring/accumulator.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/func/quote.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/string.h>
-#include <common/nstring.h>
-#include <common/stracc.h>
 #include <libaegis/sub.h>
 
 
-static int
-quote_url_verify(rpt_expr_ty *ep)
+rpt_func_quote_url::~rpt_func_quote_url()
 {
-    return (ep->nchild == 1);
 }
 
 
-static rpt_value_ty *
-quote_url_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func_quote_url::rpt_func_quote_url()
 {
-    rpt_value_ty *a1 = rpt_value_stringize(argv[0]);
-    if (a1->method->type != rpt_value_type_string)
+}
+
+
+rpt_func::pointer
+rpt_func_quote_url::create()
+{
+    return pointer(new rpt_func_quote_url());
+}
+
+
+const char *
+rpt_func_quote_url::name()
+    const
+{
+    return "quote_url";
+}
+
+
+bool
+rpt_func_quote_url::optimizable()
+    const
+{
+    return true;
+}
+
+
+bool
+rpt_func_quote_url::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 1);
+}
+
+
+rpt_value::pointer
+rpt_func_quote_url::run(const rpt_expr::pointer &ep, size_t,
+    rpt_value::pointer *argv) const
+{
+    rpt_value::pointer a1 = rpt_value::stringize(argv[0]);
+    rpt_value_string *rvsp = dynamic_cast<rpt_value_string *>(a1.get());
+    if (!rvsp)
     {
-	sub_context_ty *scp = sub_context_new();
-	rpt_value_free(a1);
-	sub_var_set_charstar(scp, "Function", "quote_url");
-	sub_var_set_long(scp, "Number", 1);
-	sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-	string_ty *s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "quote_url");
+	sc.var_set_long("Number", 1);
+	sc.var_set_charstar("Name", argv[0]->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-		scp,
-    i18n("$function: argument $number: string value required (was given $name)")
-	    );
-	sub_context_delete(scp);
-	rpt_value_ty *result = rpt_value_error(ep->pos, s);
-	str_free(s);
-	return result;
+                i18n("$function: argument $number: string value required "
+                    "(was given $name)")
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
-    nstring a1s(rpt_value_string_query(a1));
-    rpt_value_free(a1);
 
-    nstring rs = a1s.url_quote();
-    rpt_value_ty *result = rpt_value_string(rs.get_ref());
-
-    //
-    // clean up and go home
-    //
-    return result;
+    return rpt_value_string::create(rvsp->query().url_quote());
 }
 
 
-rpt_func_ty rpt_func_quote_url =
+rpt_func_unquote_url::~rpt_func_unquote_url()
 {
-    "quote_url",
-    1, // optimizable
-    quote_url_verify,
-    quote_url_run
-};
-
-
-static int
-unquote_url_verify(rpt_expr_ty *ep)
-{
-    return (ep->nchild == 1);
 }
 
 
-static rpt_value_ty *
-unquote_url_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func_unquote_url::rpt_func_unquote_url()
 {
-    rpt_value_ty *a1 = rpt_value_stringize(argv[0]);
-    if (a1->method->type != rpt_value_type_string)
+}
+
+
+rpt_func::pointer
+rpt_func_unquote_url::create()
+{
+    return pointer(new rpt_func_unquote_url());
+}
+
+
+const char *
+rpt_func_unquote_url::name()
+    const
+{
+    return "unquote_url";
+}
+
+
+bool
+rpt_func_unquote_url::optimizable()
+    const
+{
+    return true;
+}
+
+
+bool
+rpt_func_unquote_url::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 1);
+}
+
+
+rpt_value::pointer
+rpt_func_unquote_url::run(const rpt_expr::pointer &ep, size_t,
+    rpt_value::pointer *argv) const
+{
+    rpt_value::pointer a1 = rpt_value::stringize(argv[0]);
+    rpt_value_string *rvsp = dynamic_cast<rpt_value_string *>(a1.get());
+    if (!rvsp)
     {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
-	rpt_value_free(a1);
-	sub_var_set_charstar(scp, "Function", "unquote_url");
-	sub_var_set_long(scp, "Number", 1);
-	sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-	string_ty *s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "unquote_url");
+	sc.var_set_long("Number", 1);
+	sc.var_set_charstar("Name", argv[0]->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-		scp,
-    i18n("$function: argument $number: string value required (was given $name)")
-	    );
-	sub_context_delete(scp);
-	rpt_value_ty *result = rpt_value_error(ep->pos, s);
-	str_free(s);
-	return result;
+                i18n("$function: argument $number: string value required "
+                    "(was given $name)")
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
-    nstring a1s(rpt_value_string_query(a1));
-    rpt_value_free(a1);
+    nstring a1s(rvsp->query());
 
     nstring rs = a1s.url_unquote();
-    rpt_value_ty *result = rpt_value_string(rs.get_ref());
+    rpt_value::pointer result = rpt_value_string::create(rs);
 
     //
     // clean up and go home
@@ -127,49 +172,73 @@ unquote_url_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 }
 
 
-rpt_func_ty rpt_func_unquote_url =
+rpt_func_quote_html::~rpt_func_quote_html()
 {
-    "unquote_url",
-    1, // optimizable
-    unquote_url_verify,
-    unquote_url_run
-};
-
-
-static int
-quote_html_verify(rpt_expr_ty *ep)
-{
-    return (ep->nchild == 1);
 }
 
 
-static rpt_value_ty *
-quote_html_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func_quote_html::rpt_func_quote_html()
 {
-    rpt_value_ty *a1 = rpt_value_stringize(argv[0]);
-    if (a1->method->type != rpt_value_type_string)
+}
+
+
+rpt_func::pointer
+rpt_func_quote_html::create()
+{
+    return pointer(new rpt_func_quote_html());
+}
+
+
+const char *
+rpt_func_quote_html::name()
+    const
+{
+    return "quote_html";
+}
+
+
+bool
+rpt_func_quote_html::optimizable()
+    const
+{
+    return true;
+}
+
+
+bool
+rpt_func_quote_html::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 1);
+}
+
+
+rpt_value::pointer
+rpt_func_quote_html::run(const rpt_expr::pointer &ep, size_t,
+    rpt_value::pointer *argv) const
+{
+    rpt_value::pointer a1 = rpt_value::stringize(argv[0]);
+    rpt_value_string *rvsp = dynamic_cast<rpt_value_string *>(a1.get());
+    if (!rvsp)
     {
-	sub_context_ty *scp = sub_context_new();
-	rpt_value_free(a1);
-	sub_var_set_charstar(scp, "Function", "quote_html");
-	sub_var_set_long(scp, "Number", 1);
-	sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-	string_ty *s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "quote_html");
+	sc.var_set_long("Number", 1);
+	sc.var_set_charstar("Name", argv[0]->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-		scp,
-    i18n("$function: argument $number: string value required (was given $name)")
-	    );
-	sub_context_delete(scp);
-	rpt_value_ty *result = rpt_value_error(ep->pos, s);
-	str_free(s);
-	return result;
+                i18n("$function: argument $number: string value required "
+                    "(was given $name)")
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
-    nstring a1s(rpt_value_string_query(a1));
-    rpt_value_free(a1);
+    nstring a1s(rvsp->query());
 
     nstring rs = a1s.html_quote();
-    rpt_value_ty *result = rpt_value_string(rs.get_ref());
+    rpt_value::pointer result = rpt_value_string::create(rs);
 
     //
     // clean up and go home
@@ -178,51 +247,73 @@ quote_html_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 }
 
 
-rpt_func_ty rpt_func_quote_html =
+rpt_func_quote_tcl::~rpt_func_quote_tcl()
 {
-    "quote_html",
-    1, // optimizable
-    quote_html_verify,
-    quote_html_run
-};
-
-
-static int
-quote_tcl_verify(rpt_expr_ty *ep)
-{
-    return (ep->nchild == 1);
 }
 
 
-static rpt_value_ty *
-quote_tcl_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func_quote_tcl::rpt_func_quote_tcl()
 {
-    rpt_value_ty *a1 = rpt_value_stringize(argv[0]);
-    if (a1->method->type != rpt_value_type_string)
+}
+
+
+rpt_func::pointer
+rpt_func_quote_tcl::create()
+{
+    return pointer(new rpt_func_quote_tcl());
+}
+
+
+const char *
+rpt_func_quote_tcl::name()
+    const
+{
+    return "quote_tcl";
+}
+
+
+bool
+rpt_func_quote_tcl::optimizable()
+    const
+{
+    return true;
+}
+
+
+bool
+rpt_func_quote_tcl::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 1);
+}
+
+
+rpt_value::pointer
+rpt_func_quote_tcl::run(const rpt_expr::pointer &ep, size_t,
+    rpt_value::pointer *argv) const
+{
+    rpt_value::pointer a1 = rpt_value::stringize(argv[0]);
+    rpt_value_string *rvsp = dynamic_cast<rpt_value_string *>(a1.get());
+    if (!rvsp)
     {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
-	rpt_value_free(a1);
-	sub_var_set_charstar(scp, "Function", "quote_tcl");
-	sub_var_set_long(scp, "Number", 1);
-	sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-	string_ty *s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "quote_tcl");
+	sc.var_set_long("Number", 1);
+	sc.var_set_charstar("Name", argv[0]->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-		scp,
-    i18n("$function: argument $number: string value required (was given $name)")
-	    );
-	sub_context_delete(scp);
-	rpt_value_ty *result = rpt_value_error(ep->pos, s);
-	str_free(s);
-	return result;
+                i18n("$function: argument $number: string value required "
+                    "(was given $name)")
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
-    string_ty *s = str_copy(rpt_value_string_query(a1));
-    rpt_value_free(a1);
+    nstring s(rvsp->query());
 
-    stracc_t sa;
-    const char *sp = s->str_text;
+    nstring_accumulator sa;
+    const char *sp = s.c_str();
     for (;;)
     {
 	unsigned char c = *sp++;
@@ -244,22 +335,5 @@ quote_tcl_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 	else
 	    sa.push_back(c);
     }
-    str_free(s);
-    s = sa.mkstr();
-    rpt_value_ty *result = rpt_value_string(s);
-    str_free(s);
-
-    //
-    // clean up and go home
-    //
-    return result;
+    return rpt_value_string::create(sa.mkstr());
 }
-
-
-rpt_func_ty rpt_func_quote_tcl =
-{
-    "quote_tcl",
-    1, // optimizable
-    quote_tcl_verify,
-    quote_tcl_run
-};

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate boguss
 //
@@ -25,10 +24,10 @@
 #include <libaegis/project/history.h>
 
 
-change_ty *
+change::pointer
 change_bogus(project_ty *pp)
 {
-    change_ty       *cp;
+    change::pointer cp;
 
     cp = change_alloc(pp, project_next_change_number(pp, 1));
     change_bind_new(cp);

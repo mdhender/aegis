@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996-1998, 2000, 2001, 2004, 2005 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 1996-1998, 2000, 2001, 2004-2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -43,7 +42,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	default_project_directory = \"$work\"; \
 	default_development_directory = \"$work\";"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 AEGIS_PROJECT=test.1.0

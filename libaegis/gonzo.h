@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -26,8 +25,10 @@
 #include <common/main.h>
 #include <libaegis/gstate.h>
 
-struct string_list_ty; // existence
-struct project_ty; // existence
+class nstring; // forward
+class nstring_list; // forward
+class project_ty; // forward
+class string_list_ty; // forward
 
 void gonzo_gstate_write(void);
 
@@ -35,14 +36,15 @@ void gonzo_library_append(const char *path);
 
 struct string_ty *gonzo_project_home_path_from_name(struct string_ty *);
 void gonzo_project_list(struct string_list_ty *result);
-void gonzo_project_list_user(string_ty *, struct string_list_ty *result);
+void gonzo_project_list_user(const nstring &, nstring_list &result);
 void gonzo_project_add(struct project_ty *);
 void gonzo_project_delete(struct project_ty *);
 void gonzo_gstate_write(void);
 void gonzo_gstate_lock_prepare_new(void);
 
 string_ty *gonzo_lockpath_get(void);
-string_ty *gonzo_ustate_path(string_ty *project_name, string_ty *user_name);
+nstring gonzo_ustate_path(const nstring &project_name,
+    const nstring &user_name);
 
 void gonzo_become(void);
 void gonzo_become_undo(void);

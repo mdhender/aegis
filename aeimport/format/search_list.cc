@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 2001, 2002, 2004-2006 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -21,7 +20,6 @@
 //
 
 #include <aeimport/format/search_list.h>
-#include <common/mem.h>
 #include <common/str_list.h>
 
 
@@ -30,7 +28,7 @@ format_search_list_new(void)
 {
     format_search_list_ty *fslp;
 
-    fslp = (format_search_list_ty *)mem_alloc(sizeof(format_search_list_ty));
+    fslp = new format_search_list_ty;
     fslp->item = 0;
     fslp->length = 0;
     fslp->maximum = 0;
@@ -45,12 +43,11 @@ format_search_list_delete(format_search_list_ty *fslp)
 
     for (j = 0; j < fslp->length; ++j)
         format_search_delete(fslp->item[j]);
-    if (fslp->item)
-        mem_free(fslp->item);
+    delete [] fslp->item;
     fslp->item = 0;
     fslp->length = 0;
     fslp->maximum = 0;
-    mem_free(fslp);
+    delete fslp;
 }
 
 
@@ -59,11 +56,12 @@ format_search_list_append(format_search_list_ty *fslp, format_search_ty *fsp)
 {
     if (fslp->length >= fslp->maximum)
     {
-        size_t          nbytes;
-
         fslp->maximum = fslp->maximum * 2 + 8;
-        nbytes = fslp->maximum * sizeof(fslp->item[0]);
-        fslp->item = (format_search_ty **)mem_change_size(fslp->item, nbytes);
+	format_search_ty **new_item = new format_search_ty * [fslp->maximum];
+	for (size_t j = 0; j < fslp->length; ++j)
+	    new_item[j] = fslp->item[j];
+	delete [] fslp->item;
+	fslp->item = new_item;
     }
     fslp->item[fslp->length++] = fsp;
 }

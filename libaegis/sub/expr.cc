@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1996, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1996, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -25,53 +24,43 @@
 #include <libaegis/sub/expr_gram.h>
 #include <common/str.h>
 #include <common/trace.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
 
 
-wstring_ty *
-sub_expression(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_expression(sub_context_ty *scp, const wstring_list &arg)
 {
-    wstring_ty	    *ws;
-    string_ty	    *s1;
-    string_ty	    *s2;
-    wstring_ty	    *result;
-
     //
     // Check the number of arguments
     //
     trace(("sub_expression()\n{\n" ));
-    if (arg->size() < 2)
+    wstring result;
+    if (arg.size() < 2)
     {
-	sub_context_error_set(scp, i18n("requires at least one argument"));
-	trace(("return NULL;\n"));
+	scp->error_set(i18n("requires at least one argument"));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
 
     //
     // Fold all of the arguments into a single string,
     // and parse that string for an expression.
     //
-    ws = arg->unsplit(1, arg->size());
-    s1 = wstr_to_str(ws);
-    trace(("s1 = \"%s\";\n", s1->str_text));
-    wstr_free(ws);
-    s2 = sub_expr_gram(scp, s1);
-    str_free(s1);
-    if (!s2)
+    nstring s1 = arg.unsplit(1, arg.size()).to_nstring();
+    trace(("s1 = %s;\n", s1.quote_c().c_str()));
+    nstring s2 = sub_expr_gram(scp, s1);
+    if (s2.empty())
     {
-	trace(("return NULL;\n"));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
 
     //
     // Turns the result of the parse into a wide string.
     //
-    trace(("result = \"%s\";\n", s2->str_text));
-    result = str_to_wstr(s2);
-    str_free(s2);
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("result = %s;\n", s2.quote_c().c_str()));
+    result = wstring(s2);
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

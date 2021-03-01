@@ -323,6 +323,13 @@ T}	T{
 .ad l
 aelpf - list project files
 T}
+aemakegen(1)	\*[Page*Of*aemakegen(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aemakegen - generate a Makefile.in from file manifest
+T}
 aemeasure(1)	\*[Page*Of*aemeasure(1)]	T{
 .ad r
 
@@ -1856,6 +1863,13 @@ T}	T{
 .ad l
 file listing
 T}
+aemakegen(1)	\*[Page*Of*aemakegen(1)]	T{
+.ad r
+aemakegen - generate a Makefile.in from
+T}	T{
+.ad l
+file manifest
+T}
 aemeasure(1)	\*[Page*Of*aemeasure(1)]	T{
 .ad r
 aemeasure - simple
@@ -2185,12 +2199,26 @@ T}	T{
 .ad l
 from development directory
 T}
+aemakegen(1)	\*[Page*Of*aemakegen(1)]	T{
+.ad r
+aemakegen - generate a Makefile.in
+T}	T{
+.ad l
+from file manifest
+T}
 aedeu(1)	\*[Page*Of*aedeu(1)]	T{
 .ad r
 aegis -Develop End Undo - recall a change for
 T}	T{
 .ad l
 further development
+T}
+aemakegen(1)	\*[Page*Of*aemakegen(1)]	T{
+.ad r
+aemakegen -
+T}	T{
+.ad l
+generate a Makefile.in from file manifest
 T}
 aer(1)	\*[Page*Of*aer(1)]	T{
 .ad r
@@ -2296,6 +2324,13 @@ aegis -VERSion - give version
 T}	T{
 .ad l
 information
+T}
+aemakegen(1)	\*[Page*Of*aemakegen(1)]	T{
+.ad r
+aemakegen - generate a Makefile.
+T}	T{
+.ad l
+in from file manifest
 T}
 aeib(1)	\*[Page*Of*aeib(1)]	T{
 .ad r
@@ -2549,6 +2584,13 @@ T}	T{
 .ad l
 make branch file transparent
 T}
+aemakegen(1)	\*[Page*Of*aemakegen(1)]	T{
+.ad r
+aemakegen - generate a
+T}	T{
+.ad l
+Makefile.in from file manifest
+T}
 aemt(1)	\*[Page*Of*aemt(1)]	T{
 .ad r
 aegis -
@@ -2562,6 +2604,13 @@ aegis -
 T}	T{
 .ad l
 Make Transparent Undo - no longer make branch file transparent
+T}
+aemakegen(1)	\*[Page*Of*aemakegen(1)]	T{
+.ad r
+aemakegen - generate a Makefile.in from file
+T}	T{
+.ad l
+manifest
 T}
 aemeasure(1)	\*[Page*Of*aemeasure(1)]	T{
 .ad r

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate becomes
 //
@@ -28,7 +27,7 @@
 
 
 void
-change_become(change_ty *cp)
+change_become(change::pointer cp)
 {
     trace(("change_become(cp = %08lX)\n{\n", (long)cp));
     assert(cp->reference_count >= 1);
@@ -38,32 +37,33 @@ change_become(change_ty *cp)
 
 
 void
-change_become_undo()
+change_become_undo(change::pointer cp)
 {
-    trace(("change_become_undo()\n{\n"));
-    project_become_undo();
+    trace(("change_become_undo(cp)\n{\n"));
+    project_become_undo(cp->pp);
     trace(("}\n"));
 }
 
 
 void
-change_developer_become(change_ty *cp)
+change_developer_become(change::pointer cp)
 {
-    string_ty       *name;
-    user_ty         *up;
-
     trace(("change_become(cp = %08lX)\n{\n", (long)cp));
-    name = change_developer_name(cp);
-    up = user_symbolic(cp->pp, name);
-    user_become(up);
+    nstring name(change_developer_name(cp));
+    user_ty::pointer up = user_ty::create(name);
+    up->set_gid(cp->gid_get());
+    up->umask_set(change_umask(cp));
+    up->become_begin();
     trace(("}\n"));
 }
 
 
 void
-change_developer_become_undo()
+change_developer_become_undo(change::pointer cp)
 {
-    trace(("change_become_undo()\n{\n"));
-    user_become_undo();
+    trace(("change_become_undo(cp)\n{\n"));
+    nstring name(change_developer_name(cp));
+    user_ty::pointer up = user_ty::create(name);
+    up->become_end();
     trace(("}\n"));
 }

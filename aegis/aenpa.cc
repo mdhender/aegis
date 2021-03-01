@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -85,7 +84,7 @@ project_alias_create_main(void)
     string_ty	    *project_name[2];
     int		    project_name_count;
     project_ty	    *pp;
-    user_ty	    *up;
+    user_ty::pointer up;
 
     trace(("project_alias_create_main()\n{\n"));
     arglex();
@@ -118,7 +117,7 @@ project_alias_create_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(project_alias_create_usage);
+	    user_ty::lock_wait_argument(project_alias_create_usage);
 	    break;
 	}
 	arglex();
@@ -135,13 +134,13 @@ project_alias_create_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // it is an error if the current user is not an administrator
     // of the old project.
     //
-    if (!project_administrator_query(pp, user_name(up)))
+    if (!project_administrator_query(pp, up->name()))
 	project_fatal(pp, 0, i18n("not an administrator"));
 
     //
@@ -195,7 +194,6 @@ project_alias_create_main(void)
     str_free(project_name[0]);
     project_free(pp);
     str_free(project_name[1]);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -205,8 +203,8 @@ project_alias_create(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, project_alias_create_help, },
-	{arglex_token_list, project_alias_create_list, },
+	{ arglex_token_help, project_alias_create_help, 0 },
+	{ arglex_token_list, project_alias_create_list, 0 },
     };
 
     trace(("project_alias_create()\n{\n"));

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -20,15 +19,22 @@
 // MANIFEST: functions to manipulate adminis_lists
 //
 
-#include <libaegis/project/history.h>
+#include <common/nstring/list.h>
 #include <common/str_list.h>
+#include <common/trace.h>
+#include <common/wstring/list.h>
+#include <libaegis/project/history.h>
 #include <libaegis/sub.h>
 #include <libaegis/sub/project/adminis_list.h>
 #include <libaegis/sub/user.h>
-#include <common/trace.h>
 #include <libaegis/user.h>
-#include <common/wstr.h>
-#include <common/wstr/list.h>
+
+
+static nstring
+get_user_name(user_ty::pointer up)
+{
+    return up->name();
+}
 
 
 //
@@ -51,68 +57,60 @@
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_administrator_list(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_administrator_list(sub_context_ty *scp, const wstring_list &arg)
 {
-    long j;
-    string_ty *s;
-    project_ty *pp;
-    sub_user_func_ptr func;
-    user_ty *up;
-
     trace(("sub_administrator_list()\n{\n"));
-    pp = sub_context_project_get(scp);
+    wstring result;
+    project_ty *pp = sub_context_project_get(scp);
     if (!pp)
     {
-	sub_context_error_set(scp, i18n("not valid in current context"));
-	trace(("return NULL;\n"));
+	scp->error_set(i18n("not valid in current context"));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
-    func = user_name;
-    switch (arg->size())
+    sub_user_func_ptr func = get_user_name;
+    switch (arg.size())
     {
     default:
-	sub_context_error_set(scp, i18n("requires one argument"));
-	trace(("return NULL;\n"));
+	scp->error_set(i18n("requires one argument"));
 	trace(("}\n"));
-	return 0;
+	return result;
 
     case 1:
 	break;
 
     case 2:
-	s = wstr_to_str(arg->get(1));
-	func = sub_user_func(s);
-	str_free(s);
-	if (!func)
-	{
-	    sub_context_error_set(scp, i18n("unknown substitution variant"));
-	    trace(("return NULL;\n"));
-	    trace(("}\n"));
-	    return 0;
-	}
+        {
+            nstring s = arg[1].to_nstring();
+            func = sub_user_func(s);
+            if (!func)
+            {
+                scp->error_set(i18n("unknown substitution variant"));
+                trace(("}\n"));
+                return result;
+            }
+        }
 	break;
     }
 
     //
     // build a string containing all of the project administrators
     //
-    string_list_ty wl;
-    for (j = 0; ; ++j)
+    nstring_list wl;
+    for (size_t j = 0; ; ++j)
     {
-	s = project_administrator_nth(pp, j);
-	if (!s)
+	nstring s(project_administrator_nth(pp, j));
+	if (s.empty())
 	    break;
-	up = user_symbolic(pp, s);
+	user_ty::pointer up = user_ty::create(s);
 	s = func(up);
 	wl.push_back(s);
     }
-    s = wl.unsplit();
-    wstring_ty *result = str_to_wstr(s);
-    str_free(s);
+    nstring s = wl.unsplit();
+    result = wstring(s);
 
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

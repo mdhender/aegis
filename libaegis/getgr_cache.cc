@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -22,187 +21,176 @@
 
 #include <common/ac/string.h>
 
-#include <libaegis/getgr_cache.h>
 #include <common/itab.h>
 #include <common/mem.h>
 #include <common/symtab.h>
+#include <libaegis/getgr_cache.h>
 
 static symtab_ty *name_table;
 static itab_ty *gid_table;
 
 
-static struct group *
+static group *
 group_null(void)
 {
-	struct group	*result;
+    group *result = new group;
 
-	result = (struct group *)mem_alloc(sizeof(struct group));
-
-	//
-	// This isn't portable, it assumes that NULL pointers are
-	// all-bits-zero, but this is only to cover all the fields we
-	// don't care about.  We set the ones we -do- care about to
-	// NULL explicitly.
-	//
-	memset(result, 0, sizeof(*result));
+    //
+    // This isn't portable, it assumes that NULL pointers are
+    // all-bits-zero, but this is only to cover all the fields we
+    // don't care about.  We set the ones we -do- care about to
+    // NULL explicitly.
+    //
+    memset(result, 0, sizeof(*result));
 
 #ifndef SOURCE_FORGE_HACK
-	result->gr_name = 0;
-	result->gr_passwd = 0;
-	result->gr_gid = ~0;
-	result->gr_mem = 0;
+    result->gr_name = 0;
+    result->gr_passwd = 0;
+    result->gr_gid = ~0;
+    result->gr_mem = 0;
 #else
-	//
-	// This is used to fake a group, because on SourceForge.net
-	// the Apache servers don't have access to /etc/group.  The fake
-	// information will be further taylored below.
-	//
-	result->gr_name = "nogroup";
-	result->gr_passwd = "*";
-	result->gr_gid = AEGIS_MIN_GID;
-	result->gr_mem = 0;
+    //
+    // This is used to fake a group, because on SourceForge.net
+    // the Apache servers don't have access to /etc/group.  The fake
+    // information will be further taylored below.
+    //
+    result->gr_name = "nogroup";
+    result->gr_passwd = "*";
+    result->gr_gid = AEGIS_MIN_GID;
+    result->gr_mem = 0;
 #endif
 
-	//
-	// All done.
-	//
-	return result;
+    //
+    // All done.
+    //
+    return result;
 }
 
 
-static struct group *
-group_copy(struct group *gr)
+static group *
+group_copy(group *gr)
 {
-	struct group	*result;
+    group *result = group_null();
 
-	result = group_null();
+    //
+    // Copy values onto the heap, because the next call to getgrnam
+    // will trash the ones in *gr.
+    //
+    result->gr_name = mem_copy_string(gr->gr_name);
+    result->gr_gid = gr->gr_gid;
 
-	//
-	// Copy values onto the heap, because the next call to getgrnam
-	// will trash the ones in *gr.
-	//
-	result->gr_name = mem_copy_string(gr->gr_name);
-	result->gr_gid = gr->gr_gid;
-
-	//
-	// All done.
-	//
-	return result;
+    //
+    // All done.
+    //
+    return result;
 }
 
 
-struct group *
+group *
 getgrnam_cached(string_ty *name)
 {
-	struct group	*data;
-
-	//
-	// Create the tables if they don't exist already.
-	//
-	if (!name_table)
-	{
-		name_table = symtab_alloc(5);
-		gid_table = itab_alloc(5);
-	}
-
-	//
-	// Look for the data in the name table.
-	//
-	data = (struct group *)symtab_query(name_table, name);
-
-	//
-	// If the data isn't there, ask the system for it.
-	//
-	if (!data)
-	{
-		struct group	*gr;
-
-		gr = getgrnam(name->str_text);
-		if (gr)
-		{
-			data = group_copy(gr);
-			itab_assign(gid_table, data->gr_gid, data);
-		}
-		else
-		{
-			data = group_null();
-#ifdef SOURCE_FORGE_HACK
-			data->gr_name = mem_copy_string(name->str_text);
-#endif
-		}
-		symtab_assign(name_table, name, data);
-	}
-
-	//
-	// Negative search results are also cached.
-	// They have NULL pointers for all the fields.
-	//
-	if (!data->gr_name)
-		return 0;
-
-	//
-	// Success.
-	//
-	return data;
+    return getgrnam_cached(nstring(name));
 }
 
 
-struct group *
+group *
+getgrnam_cached(const nstring &name)
+{
+    //
+    // Create the tables if they don't exist already.
+    //
+    if (!name_table)
+    {
+        name_table = symtab_alloc(5);
+        gid_table = itab_alloc();
+    }
+
+    //
+    // Look for the data in the name table.
+    //
+    group *data = (group *)name_table->query(name);
+
+    //
+    // If the data isn't there, ask the system for it.
+    //
+    if (!data)
+    {
+        group *gr = getgrnam(name.c_str());
+        if (gr)
+        {
+            data = group_copy(gr);
+            itab_assign(gid_table, data->gr_gid, data);
+        }
+        else
+        {
+            data = group_null();
+#ifdef SOURCE_FORGE_HACK
+            data->gr_name = mem_copy_string(name.c_str());
+#endif
+        }
+        name_table->assign(name, data);
+    }
+
+    //
+    // Negative search results are also cached.
+    // They have NULL pointers for all the fields.
+    //
+    if (!data->gr_name)
+        return 0;
+
+    //
+    // Success.
+    //
+    return data;
+}
+
+
+group *
 getgrgid_cached(int gid)
 {
-	struct group	*data;
+    //
+    // Create the tables if they don't exist already.
+    //
+    if (!name_table)
+    {
+        name_table = symtab_alloc(5);
+        gid_table = itab_alloc();
+    }
 
-	//
-	// Create the tables if they don't exist already.
-	//
-	if (!name_table)
-	{
-		name_table = symtab_alloc(5);
-		gid_table = itab_alloc(5);
-	}
+    //
+    // Look for the data in the name table.
+    //
+    group *data = (group *)itab_query(gid_table, gid);
 
-	//
-	// Look for the data in the name table.
-	//
-	data = (struct group *)itab_query(gid_table, gid);
+    //
+    // If the data isn't there, ask the system for it.
+    //
+    if (!data)
+    {
+        group *gr = getgrgid(gid);
+        if (gr)
+        {
+            nstring name(gr->gr_name);
+            data = group_copy(gr);
+            name_table->assign(name, data);
+        }
+        else
+        {
+            data = group_null();
+            data->gr_gid = gid;
+        }
+        itab_assign(gid_table, gid, data);
+    }
 
-	//
-	// If the data isn't there, ask the system for it.
-	//
-	if (!data)
-	{
-		struct group	*gr;
+    //
+    // Negative search results are also cached.
+    // They have NULL pointers for all the fields.
+    //
+    if (!data->gr_name)
+        return 0;
 
-		gr = getgrgid(gid);
-		if (gr)
-		{
-			string_ty	*name;
-
-			data = group_copy(gr);
-
-			name = str_from_c(gr->gr_name);
-			symtab_assign(name_table, name, data);
-			str_free(name);
-		}
-		else
-		{
-			data = group_null();
-#ifdef SOURCE_FORGE_HACK
-			data->gr_gid = gid;
-#endif
-		}
-		itab_assign(gid_table, gid, data);
-	}
-
-	//
-	// Negative search results are also cached.
-	// They have NULL pointers for all the fields.
-	//
-	if (!data->gr_name)
-		return 0;
-
-	//
-	// Success.
-	//
-	return data;
+    //
+    // Success.
+    //
+    return data;
 }

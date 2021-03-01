@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2002, 2005 Peter Miller.
-//	All rights reserved.
+//	Copyright (C) 1994, 2002, 2005-2007 Peter Miller.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -26,22 +25,22 @@
 #include <fmtgen/type.h>
 
 /**
-  * The type_string_ty class is used to represent the type of a valied
+  * The type_string class is used to represent the type of a valied
   * with a string value.
   */
-class type_string_ty:
-    public type_ty
+class type_string:
+    public type
 {
 public:
     /**
       * The destructor.
       */
-    virtual ~type_string_ty();
+    virtual ~type_string();
 
     /**
       * The default constructor.
       */
-    type_string_ty();
+    type_string();
 
     // See base class for documentation.
     void gen_include_declarator(const nstring &variable_name, bool is_a_list)
@@ -75,12 +74,12 @@ private:
     /**
       * The copy constructor.  Do not use.
       */
-    type_string_ty(const type_string_ty &);
+    type_string(const type_string &);
 
     /**
       * The assignment operator.  Do not use.
       */
-    type_string_ty &operator=(const type_string_ty &);
+    type_string &operator=(const type_string &);
 };
 
 #endif // FMTGEN_TYPE_STRING_H

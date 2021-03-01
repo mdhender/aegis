@@ -72,7 +72,7 @@ output_tar_ty::ftell_inner()
 
 
 void
-output_tar_ty::write_inner(const void *data, size_t len)
+output_tar_ty::write_inner(const void *, size_t)
 {
     this_is_a_bug();
 }

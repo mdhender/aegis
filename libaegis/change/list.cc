@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate lists
 //
@@ -23,7 +22,6 @@
 #include <libaegis/change.h>
 #include <libaegis/change/list.h>
 #include <common/error.h>
-#include <common/mem.h>
 #include <libaegis/project.h>
 #include <common/trace.h>
 
@@ -41,8 +39,7 @@ change_list_ty::change_list_ty()
 change_list_ty::~change_list_ty()
 {
     trace(("change_list_ty::~change_list_ty(this = %08lX)\n{\n", (long)this));
-    if (item)
-	mem_free(item);
+    delete [] item;
     length = 0;
     maximum = 0;
     item = 0;
@@ -60,7 +57,7 @@ change_list_ty::clear()
 
 
 void
-change_list_ty::append(change_ty *cp)
+change_list_ty::append(change::pointer cp)
 {
     trace(("change_list_ty::append(this = %08lX, cp = %08lX)\n{\n", (long)this,
 	(long)cp));
@@ -71,8 +68,11 @@ change_list_ty::append(change_ty *cp)
     if (length >= maximum)
     {
 	maximum = maximum * 2 + 8;
-	size_t nbytes = maximum * sizeof(item[0]);
-	item = (change_ty **)mem_change_size(item, nbytes);
+	change::pointer *new_item = new change::pointer  [maximum];
+	for (size_t k = 0; k < length; ++k)
+	    new_item[k] = item[k];
+	delete [] item;
+	item = new_item;
     }
     item[length++] = cp;
     trace(("}\n"));
@@ -80,14 +80,14 @@ change_list_ty::append(change_ty *cp)
 
 
 bool
-change_list_ty::member_p(change_ty *cp1)
+change_list_ty::member_p(change::pointer cp1)
     const
 {
     size_t          j;
 
     for (j = 0; j < length; ++j)
     {
-	change_ty *cp2 = item[j];
+	change::pointer cp2 = item[j];
 	if (cp1 == cp2)
 	    return true;
 	if

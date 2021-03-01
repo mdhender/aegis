@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996-1998, 2001, 2002, 2004, 2005 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 1996-1998, 2001, 2002, 2004-2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -103,7 +102,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	persevere_preference = all; \
 	log_file_preference = never;"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=1
 export AEGIS_THROTTLE
 
 worklib=$work/lib
@@ -382,7 +381,6 @@ if test $? -ne 0 ; then no_result; fi
 # copy a file into the change
 #
 activity="copy file 370"
-sleep 2
 $bin/aegis -cp $workchan/h.h -nl -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
 
@@ -440,7 +438,6 @@ if test $? -ne 0 ; then no_result; fi
 # copy a file into change 3
 #
 activity="copy file 428"
-sleep 2
 $bin/aegis -cp 3 $workchan.3/b.cc -nl -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
 cat >> $workchan.3/b.cc << 'fubar'

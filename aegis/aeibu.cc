@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-1999, 2001-2006 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 1991-1999, 2001-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions for implementing integrate begin undo
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -127,8 +124,8 @@ integrate_begin_undo_main(void)
     string_ty       *project_name;
     project_ty      *pp;
     long            change_number;
-    change_ty       *cp;
-    user_ty         *up;
+    change::pointer cp;
+    user_ty::pointer up;
     size_t          j;
 
     trace(("integrate_begin_main()\n{\n"));
@@ -168,12 +165,12 @@ integrate_begin_undo_main(void)
         case arglex_token_keep:
         case arglex_token_interactive:
         case arglex_token_keep_not:
-            user_delete_file_argument(integrate_begin_undo_usage);
+            user_ty::delete_file_argument(integrate_begin_undo_usage);
             break;
 
         case arglex_token_wait:
         case arglex_token_wait_not:
-            user_lock_wait_argument(integrate_begin_undo_usage);
+            user_ty::lock_wait_argument(integrate_begin_undo_usage);
             break;
 
 	case arglex_token_reason:
@@ -203,7 +200,10 @@ integrate_begin_undo_main(void)
     // locate project data
     //
     if (!project_name)
-        project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -211,13 +211,13 @@ integrate_begin_undo_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-        change_number = user_default_change(up);
+        change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -226,9 +226,9 @@ integrate_begin_undo_main(void)
     //
     pp->pstate_lock_prepare();
     change_cstate_lock_prepare(cp);
-    user_ustate_lock_prepare(up);
+    up->ustate_lock_prepare();
     lock_take();
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
 
     //
     // it is an error if the change is not in the 'being_integrated' state.
@@ -238,9 +238,9 @@ integrate_begin_undo_main(void)
         change_fatal(cp, 0, i18n("bad ibu state"));
     if
     (
-        !str_equal(change_integrator_name(cp), user_name(up))
+        nstring(change_integrator_name(cp)) != up->name()
     &&
-        !project_administrator_query(pp, user_name(up))
+        !project_administrator_query(pp, up->name())
     )
         change_fatal(cp, 0, i18n("not integrator"));
 
@@ -281,7 +281,7 @@ integrate_begin_undo_main(void)
     //
     // remove it from the user's change list
     //
-    user_own_remove(up, project_name_get(pp), change_number);
+    up->own_remove(pp, change_number);
 
     //
     // Note that the project has no current integration
@@ -309,19 +309,18 @@ integrate_begin_undo_main(void)
     //
     // remove the integration directory on success
     //
-    if (user_delete_file_query(up, dir, true, true))
+    if (up->delete_file_query(nstring(dir), true, true))
     {
         change_verbose(cp, 0, i18n("remove integration directory"));
-        project_become(pp);
+        user_ty::become scoped(pp->get_user());
         commit_rmdir_tree_errok(dir);
-        project_become_undo();
     }
 
     //
     // write out the data and release the locks
     //
     change_cstate_write(cp);
-    user_ustate_write(up);
+    up->ustate_write();
     pp->pstate_write();
     str_free(dir);
     commit();
@@ -343,7 +342,6 @@ integrate_begin_undo_main(void)
     change_verbose(cp, 0, i18n("integrate begin undo complete"));
     change_free(cp);
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -353,8 +351,8 @@ integrate_begin_undo(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-        {arglex_token_help, integrate_begin_undo_help, },
-        {arglex_token_list, integrate_begin_undo_list, },
+        { arglex_token_help, integrate_begin_undo_help, 0, },
+        { arglex_token_list, integrate_begin_undo_list, 0, },
     };
 
     trace(("integrate_begin_undo()\n{\n"));

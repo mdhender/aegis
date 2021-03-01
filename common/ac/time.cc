@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2002, 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994, 1996, 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -90,12 +89,15 @@
 
 #ifndef HAVE_STRFTIME
 
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
+
 #ifndef HAVE_tm_zone
-extern char    *tzname[2];
+extern char *tzname[2];
 #endif
 
 size_t
-strftime(char *buf, size_t max, char *fmt, struct tm *tm)
+strftime(char *buf, size_t max, const char *fmt, struct tm *tm)
 {
     char            *cp;
     char            *end;
@@ -103,7 +105,7 @@ strftime(char *buf, size_t max, char *fmt, struct tm *tm)
     int             n;
     size_t          len;
 
-    static char     *weekday[] =
+    static const char *weekday[] =
     {
 	"Sunday",
 	"Monday",
@@ -114,7 +116,7 @@ strftime(char *buf, size_t max, char *fmt, struct tm *tm)
 	"Saturday",
     };
 
-    static char     *month[] =
+    static const char *month[] =
     {
 	"January",
 	"February",

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: implementation of the change_history_tran_abt_com class
 //
@@ -30,7 +29,7 @@
 
 
 void
-change_run_history_transaction_abort_command(change_ty *cp)
+change_run_history_transaction_abort_command(change::pointer cp)
 {
     trace(("change_run_history_transaction_abort_command(cp = %8.8lX)\n{\n",
 	(long)cp));
@@ -45,7 +44,7 @@ change_run_history_transaction_abort_command(change_ty *cp)
 	change_env_set(cp, 0);
 	project_become(cp->pp);
 	os_execute(the_command, flags, dir);
-	project_become_undo();
+	project_become_undo(cp->pp);
 	str_free(the_command);
     }
     trace(("}\n"));

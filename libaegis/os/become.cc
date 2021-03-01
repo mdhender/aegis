@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -39,7 +38,17 @@ static int      become_orig_umask;
 #ifdef DEBUG
 static int      become_inited;
 #endif
+
+/**
+  * The become_testing variable is used to remember the testing state of
+  * the program.  It assumes one of three values:
+  *
+  * -1 means we are one of the non-set-uid-root programs (e.g. aereport)
+  *  0 means set-uid-root program (e.g. aegis or aeimport)
+  *  1 means Aegis is in testing (not set-uid-root) mode.
+  */
 static int      become_testing;
+
 static int      become_active;
 static int      become_active_uid;
 static int      become_active_gid;
@@ -369,6 +378,38 @@ os_become_undo_atexit(void)
 	    become_active_uid = 0;
 	    become_active_gid = 0;
 	}
+    }
+    trace(("}\n"));
+}
+
+
+void
+os_become_undo(int uid, int gid)
+{
+    trace(("os_become_undo(uid = %d, gid = %d)\n{\n", uid, gid));
+    assert(become_inited);
+    assert(become_active);
+    become_active = 0;
+    if (!become_testing)
+    {
+        assert(become_active_uid == uid);
+        assert(become_active_gid == gid);
+        (void)uid;
+        (void)gid;
+#ifndef CONF_NO_seteuid
+        if (seteuid(0))
+            nfatal("seteuid(0)");
+        if (setegid(0))
+            nfatal("setegid(0)");
+#if defined(DEBUG) && defined(__linux__)
+        if (!prctl(PR_GET_DUMPABLE, 0, 0, 0, 0))
+        {
+            prctl(PR_SET_DUMPABLE, 1, 0, 0, 0);
+        }
+#endif
+#endif
+        become_active_uid = 0;
+        become_active_gid = 0;
     }
     trace(("}\n"));
 }

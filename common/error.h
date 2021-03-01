@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1993, 1995, 1999, 2002, 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1993, 1995, 1999, 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -38,10 +37,12 @@ void nfatal(const char *, ...) NORETURN;
 
 void assert_failed(const char *condition, const char *file, int line)
     NORETURN;
-#ifdef DEBUG
-# define assert(c) ((c) ? (void)0 : assert_failed(#c, __FILE__, __LINE__))
-#else
-# define assert(c)
+#ifndef assert
+# ifdef DEBUG
+#  define assert(c) ((c) ? (void)0 : assert_failed(#c, __FILE__, __LINE__))
+# else
+#  define assert(c)
+# endif
 #endif
 
 #define this_is_a_bug() \

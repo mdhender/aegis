@@ -1,7 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1996, 1999, 2002, 2003, 2005 Peter Miller;
- *	All rights reserved.
+ *	Copyright (C) 1996, 1999, 2002, 2003, 2005-2007 Peter Miller
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -77,10 +76,9 @@ static long result;
 static sub_context_ty *scp;
 
 
-string_ty *
-sub_expr_gram(sub_context_ty *scp_arg, string_ty *s)
+nstring
+sub_expr_gram(sub_context_ty *scp_arg, const nstring &s)
 {
-    int             bad;
     extern int yyparse(void);
 #ifdef DEBUG
     extern int      yydebug;
@@ -92,14 +90,14 @@ sub_expr_gram(sub_context_ty *scp_arg, string_ty *s)
 #endif
     scp = scp_arg;
     sub_expr_lex_open(s);
-    bad = yyparse();
+    int bad = yyparse();
     sub_expr_lex_close();
     trace(("bad = %d\n", bad));
 
     trace(("}\n"));
     if (bad)
-	return 0;
-    return str_format("%ld", result);
+	return "";
+    return nstring::format("%ld", result);
 }
 
 
@@ -107,7 +105,7 @@ static void
 yyerror(const char *s)
 {
     trace(("yyerror(\"%s\")\n{\n", s));
-    sub_context_error_set(scp, s);
+    scp->error_set(s);
     trace(("}\n"));
 }
 
@@ -135,7 +133,7 @@ yyerror(const char *s)
 #define fprintf trace_where_, yydebugger
 
 static void
-yydebugger(void *junk, const char *fmt, ...)
+yydebugger(void *, const char *fmt, ...)
 {
     va_list         ap;
     string_ty       *s;

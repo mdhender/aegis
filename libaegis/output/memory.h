@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2002, 2005, 2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -69,6 +68,12 @@ public:
 
     // See base class for documentation.
     void end_of_line_inner();
+
+    /**
+      * The mkstr method is used to turn the accumulated data into a
+      * string.
+      */
+    nstring mkstr() const;
 
 private:
     /**

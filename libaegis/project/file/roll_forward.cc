@@ -1,8 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2006 Peter Miller;
-//      Copyright (C) 2006 Walter Franzini;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
+//      Copyright (C) 2006 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -15,23 +14,22 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate roll_forwards
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h> // for assert
-#include <common/mem.h>
 #include <common/now.h>
 #include <common/str_list.h>
-#include <common/trace.h>
 #include <common/uuidentifier.h>
+#include <common/trace.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
 #include <libaegis/change.h>
 #include <libaegis/change/list.h>
 #include <libaegis/cstate.h>
+#include <libaegis/file/event.h>
+#include <libaegis/file/event/list.h>
 #include <libaegis/project/file/roll_forward.h>
 #include <libaegis/sub.h>
 #include <libaegis/zero.h>
@@ -39,84 +37,12 @@
 
 project_file_roll_forward::~project_file_roll_forward()
 {
-}
-
-
-static file_event_list_ty *
-file_event_list_new(void)
-{
-    file_event_list_ty *felp;
-
-    trace(("file_event_list_new()\n{\n"));
-    felp = (file_event_list_ty *)mem_alloc(sizeof(file_event_list_ty));
-    felp->length = 0;
-    felp->maximum = 0;
-    felp->item = 0;
-    trace(("return %08lX;\n", (long)felp));
-    trace(("}\n"));
-    return felp;
-}
-
-static void
-file_event_list_append(file_event_list_ty *felp, time_t when, change_ty	*cp,
-    fstate_src_ty *src)
-{
-    file_event_ty	*fep;
-
-    //
-    // The event should be the last on the list.  If it isn't,
-    // then a child branch supercedes the sequence.
-    //
-    trace(("file_event_list_append(felp = %08lX, when = %ld \"%.24s\", "
-	"cp = %08lX)\n{\n", (long)felp, (long)when, ctime(&when), (long)cp));
-    while (felp->length > 0 && felp->item[felp->length - 1].when >= when)
-	felp->length--;
-
-    //
-    // Drop the event onto the end of the list.
-    //
-    if (felp->length >= felp->maximum)
-    {
-	size_t		nbytes;
-
-	felp->maximum = felp->maximum * 2 + 4;
-	nbytes = felp->maximum * sizeof(felp->item[0]);
-	felp->item = (file_event_ty *)mem_change_size(felp->item, nbytes);
-    }
-    fep = felp->item + felp->length++;
-    fep->when = when;
-    fep->cp = cp;
-    fep->src = src;
-    trace(("}\n"));
-}
-
-static void
-file_event_list_append(file_event_list_ty *head, file_event_list_ty *tail)
-{
-    assert(head);
-    if (!head)
-        return;
-
-    assert(tail);
-    if (!tail)
-        return;
-
-    for (size_t j = 0; j < tail->length; ++j)
-    {
-
-        file_event_list_append
-        (
-            head,
-            tail->item[j].when,
-            change_copy(tail->item[j].cp),
-            fstate_src_copy(tail->item[j].src)
-        );
-    }
+    trace(("project_file_roll_forward::~project_file_roll_forward()\n"));
 }
 
 
 static int
-possibly_broken_by_aeimport(change_ty *cp)
+possibly_broken_by_aeimport(change::pointer cp)
 {
     fstate_src_ty   *src;
     cstate_ty       *cstate_data;
@@ -156,7 +82,7 @@ possibly_broken_by_aeimport(change_ty *cp)
     //
     // Check that the history is the shape we expect.
     //
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     if(!cstate_data->history)
 	return 0;
     if (cstate_data->history->length < 4)
@@ -184,7 +110,7 @@ static change_list_ty walk_these_branches;
 static change_list_ty *
 change_list_get(project_ty *pp, time_t limit)
 {
-    change_ty       *pcp;
+    change::pointer pcp;
     cstate_ty       *cstate_data;
     cstate_branch_ty *bp;
     size_t	    j;
@@ -196,7 +122,7 @@ change_list_get(project_ty *pp, time_t limit)
     clp = new change_list_ty();
 
     pcp = pp->change_get();
-    cstate_data = change_cstate_get(pcp);
+    cstate_data = pcp->cstate_get();
     bp = cstate_data->branch;
     assert(bp);
     if (!bp)
@@ -214,7 +140,7 @@ change_list_get(project_ty *pp, time_t limit)
 	for (j = 0; j < bp->history->length; ++j)
 	{
 	    long            change_number;
-	    change_ty       *cp;
+	    change::pointer cp;
 	    cstate_branch_history_ty *hp;
 	    cstate_history_ty *chp;
 
@@ -224,7 +150,7 @@ change_list_get(project_ty *pp, time_t limit)
 	    cp = change_alloc(pp, change_number);
 	    trace(("cp = %08lX;\n", (long)cp));
 	    change_bind_existing(cp);
-	    cstate_data = change_cstate_get(cp);
+	    cstate_data = cp->cstate_get();
 
 	    //
 	    // If the change hasn't been completed yet, don't put
@@ -299,7 +225,7 @@ change_list_get(project_ty *pp, time_t limit)
     //
     for (j = 0; j < walk_these_branches.length; ++j)
     {
-	change_ty       *cp;
+	change::pointer cp;
 
 	cp = walk_these_branches.item[j];
 	trace(("pp = %08lX\n", (long)pp));
@@ -364,7 +290,7 @@ playback_when(playback_ty *pbp)
 	return time_max();
     if (pbp->position >= pbp->clp->length)
     {
-	change_ty *cp = pbp->pp->change_get();
+	change::pointer cp = pbp->pp->change_get();
 	return change_completion_timestamp(cp);
     }
     return change_completion_timestamp(pbp->clp->item[pbp->position]);
@@ -400,7 +326,7 @@ playback_list_destructor(playback_list_ty *pblp)
 
 	for (j = 0; j < pblp->length; ++j)
 	    playback_destructor(pblp->item + j);
-	mem_free(pblp->item);
+	delete [] pblp->item;
     }
     pblp->length = 0;
     pblp->maximum = 0;
@@ -419,11 +345,12 @@ playback_list_push(playback_list_ty *pblp, time_t limit, project_ty *pp)
     trace(("project \"%s\"\n", project_name_get(pp)->str_text));
     if (pblp->length >= pblp->maximum)
     {
-	size_t          nbytes;
-
 	pblp->maximum = pblp->maximum * 2 + 8;
-	nbytes = pblp->maximum * sizeof(pblp->item[0]);
-	pblp->item = (playback_ty *)mem_change_size(pblp->item, nbytes);
+	playback_ty *new_item = new playback_ty [pblp->maximum];
+	for (size_t j = 0; j < pblp->length; ++j)
+	    new_item[j] = pblp->item[j];
+	delete [] pblp->item;
+	pblp->item = new_item;
     }
     pbp = pblp->item + pblp->length++;
     trace(("pbp = %08lX\n", (long)pbp));
@@ -456,7 +383,7 @@ playback_list_recinit(playback_list_ty *pblp, time_t limit, project_ty *pp)
 	"pp = %08lX)\n{\n", (long)pblp, (long)limit, ctime(&limit), (long)pp));
     while (!pp->is_a_trunk())
     {
-	change_ty       *cp;
+	change::pointer cp;
 
 	//
         // Completed changes will always be placed on the list by
@@ -483,7 +410,7 @@ playback_list_recinit(playback_list_ty *pblp, time_t limit, project_ty *pp)
 static void
 playback_trace_real(const char *file, int line, playback_ty *pbp)
 {
-    change_ty       *cp;
+    change::pointer cp;
     time_t          when;
 
     trace_where(file, line);
@@ -577,12 +504,12 @@ playback_list_next(playback_list_ty *pblp, size_t *index_p)
 static time_t
 branch_start_time(project_ty *pp)
 {
-    change_ty       *cp;
+    change::pointer cp;
     cstate_ty       *cstate_data;
     cstate_history_ty *hp;
 
     cp = pp->change_get();
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     if (!cstate_data)
 	return 1;
     if (!cstate_data->history)
@@ -599,19 +526,19 @@ branch_start_time(project_ty *pp)
 static int
 branch_is_completed(project_ty *pp)
 {
-    return change_is_completed(pp->change_get());
+    return pp->change_get()->is_completed();
 }
 
 
 static time_t
 branch_finish_time(project_ty *pp)
 {
-    change_ty       *cp;
+    change::pointer cp;
     cstate_ty       *cstate_data;
     cstate_history_ty *hp;
 
     cp = pp->change_get();
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     if (!cstate_data)
     {
 	barf:
@@ -697,7 +624,7 @@ project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
     for (;;)
     {
 	playback_ty     *pbp;
-	change_ty       *cp;
+	change::pointer cp;
 	time_t          pb_when;
 
 	//
@@ -725,7 +652,7 @@ project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
 		    change_delta_number_get(cp)));
 		if
 		(
-		    (detailed && change_is_completed(cp))
+		    (detailed && cp->is_completed())
 		||
 		    walk_these_branches.member_p(cp)
 		)
@@ -739,7 +666,7 @@ project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
 		// in an infinite loop, because it keeps reappearing
 		// on the top of the stack.
 		//
-		if (detailed || !change_is_completed(cp))
+		if (detailed || !cp->is_completed())
 		    pbp->position++;
 		else
 		    pbp->pushed = pbp->position + 1;
@@ -803,7 +730,7 @@ project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
 	    for (j = 0; ; ++j)
 	    {
 		fstate_src_ty   *src;
-		change_ty       *vp_cp;
+		change::pointer vp_cp;
 		fstate_src_ty   *vp_src;
 		size_t          vp_idx;
 
@@ -920,13 +847,21 @@ project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
                 // Locate the file events we are tracking for this file.
                 // Create one if we haven't seen it before.
 		//
-		string_ty *uuid = uuid_or_filename(vp_src);
-		file_event_list_ty *felp = uuid_to_felp.query(uuid);
+		nstring uuid(uuid_or_filename(vp_src));
+		file_event_list::pointer felp = uuid_to_felp.get(uuid);
 		if (!felp)
 		{
-		    felp = file_event_list_new();
-		    uuid_to_felp.assign(uuid, felp);
-		    uuid_to_felp.set_reaper();
+		    felp = file_event_list::create();
+		    uuid_to_felp.assign(nstring(vp_src->file_name), felp);
+                    trace(("uuid_to_felp[\"%s\"] = %08lX\n",
+                        vp_src->file_name->str_text, (long)felp.get()));
+
+                    if (vp_src->uuid)
+                    {
+                        uuid_to_felp.assign(nstring(vp_src->uuid), felp);
+                        trace(("uuid_to_felp[\"%s\"] = %08lX\n",
+                            vp_src->uuid->str_text, (long)felp.get()));
+                    }
 		}
 
 		//
@@ -942,11 +877,13 @@ project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
 		    !vp_src->move
 		)
 		{
-		    filename_to_uuid.assign(vp_src->file_name, uuid);
+		    filename_to_uuid.assign(vp_src->file_name, uuid.get_ref());
+                    trace(("filename_to_uuid[\"%s\"] = \"%s\"\n",
+                        vp_src->file_name->str_text, uuid.c_str()));
 		}
 
 		//
-		// Note that we insert vp_cp, not cp.  This is because
+		// Note that we insert vp_src, not src.  This is because
 		// the file entry pointed to by src may be transparent,
 		// whereas the file entry pointed to by vp_src will
 		// be concrete.
@@ -985,24 +922,18 @@ project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
 		    case file_action_modify:
 		    case file_action_transparent:
 		    case file_action_insulate:
-			file_event_list_append
+			felp->push_back
 			(
-			    felp,
-			    playback_when(pbp),
-			    vp_cp,
-			    vp_src
+			    new file_event(playback_when(pbp), vp_cp, vp_src)
 			);
 			break;
 		    }
 		}
 		else
 		{
-		    file_event_list_append
+		    felp->push_back
 		    (
-			felp,
-			playback_when(pbp),
-			vp_cp,
-			vp_src
+			new file_event(playback_when(pbp), vp_cp, vp_src)
 		    );
 		}
 	    }
@@ -1036,6 +967,7 @@ project_file_roll_forward::project_file_roll_forward() :
     stp_time(0),
     last_change(0)
 {
+    uuid_to_felp.set_reaper();
 }
 
 
@@ -1061,110 +993,170 @@ project_file_roll_forward::set(project_ty *pp, time_t limit, int detailed)
 }
 
 
-file_event_list_ty *
+file_event_list::pointer
 project_file_roll_forward::get(const nstring &filename)
 {
-    trace(("project_file_roll_forward_get(\"%s\")\n{\n", filename.c_str()));
+    trace(("project_file_roll_forward::get(\"%s\")\n{\n", filename.c_str()));
     assert(!filename_to_uuid.empty());
-    string_ty *uuid = filename_to_uuid.query(filename);
+    nstring uuid(filename_to_uuid.query(filename));
     if (!uuid)
     {
 	trace(("return NULL;\n"));
 	trace(("}\n"));
-	return 0;
+	return file_event_list::pointer();
     }
     assert(!uuid_to_felp.empty());
-    file_event_list_ty *result = uuid_to_felp.query(uuid);
+    file_event_list::pointer result = uuid_to_felp.get(uuid);
 
     //
-    // Due to a bug in the aeipass code it is possible for the file
-    // event list to miss a creation event.  We need to detect this
-    // condition and fix it.
+    // Due to a (now fixed) bug in the aeipass code it is possible for
+    // the file event list to miss a creation event.  We need to detect
+    // this condition and fix it.
     //
-    bool file_action_create_missing = true;
-    for (size_t j = 0; j < result->length; ++j)
-    {
-        file_event_ty *fep = &result->item[j];
-        assert(fep);
-        fstate_src_ty *fstate_src = fep->src;
-        assert(fstate_src);
-        if (fstate_src->action != file_action_create)
-            continue;
-
-        file_action_create_missing = false;
-        break;
-    }
-
-    if (result->length > 0 && file_action_create_missing)
-    {
-        //
-        // If the uuid string really contain an UUID we need to look
-        // for the event list bound to the file_name.
-        //
-        if (universal_unique_identifier_valid(uuid))
-        {
-            file_event_list_ty *felp2 = uuid_to_felp.query(filename);
-            assert(felp2);
-
-            file_event_list_append(felp2, result);
-
-            file_event_list_ty *tmp1 = file_event_list_new();
-            file_event_list_append(tmp1, felp2);
-            file_event_list_ty *tmp2 = file_event_list_new();
-            file_event_list_append(tmp2, felp2);
-            uuid_to_felp.assign(uuid, tmp1);
-            uuid_to_felp.assign(filename, tmp2);
-            result = uuid_to_felp.query(uuid);
-        }
-    }
-
-#ifdef DEBUG
     if (result)
     {
-	for (size_t j = 0; j < result->length; ++j)
+        bool file_action_create_missing = true;
+        for (size_t j = 0; j < result->size(); ++j)
+        {
+            file_event *fep = result->get(j);
+            assert(fep);
+            fstate_src_ty *fstate_src = fep->get_src();
+            assert(fstate_src);
+            if (fstate_src->action == file_action_create)
+            {
+                file_action_create_missing = false;
+                break;
+            }
+        }
+
+        if (!result->empty() && file_action_create_missing)
+        {
+            //
+            // If the uuid string really contains a UUID we need to look
+            // for the event list bound to the file_name, because that
+            // will be where the missing create action was stored.
+            //
+            assert(uuid);
+            if (universal_unique_identifier_valid(uuid))
+            {
+                //
+                // add the by-uuid list to the end of the by-filename list,
+                // to build the complete event list
+                //
+                file_event_list::pointer felp2 =
+                    uuid_to_felp.get(nstring(filename));
+                assert(felp2);
+                felp2->push_back(*result);
+
+                //
+                // Make sure the by-uuid and by-filename lookups will
+                // both be the same from now on.
+                //
+                uuid_to_felp.assign(uuid, felp2);
+                result = uuid_to_felp.get(uuid);
+                assert(result);
+                assert(result == felp2);
+            }
+        }
+
+#ifdef DEBUG
+	for (size_t j = 0; j < result->size(); ++j)
 	{
-	    file_event_ty *fep = &result->item[j];
-	    change_ty *cp = fep->cp;
+	    file_event *fep = result->get(j);
+	    change::pointer cp = fep->get_change();
+            time_t when = fep->get_when();
 	    trace(("%s, %ld, %.24s\n", project_name_get(cp->pp)->str_text,
-		cp->number, ctime(&fep->when)));
+		cp->number, ctime(&when)));
 	}
-    }
 #endif
-    trace(("return %08lX\n", (long)result));
+    }
+
+    trace(("return %08lX\n", (long)result.get()));
     trace(("}\n"));
     return result;
 }
 
 
-file_event_list_ty *
+file_event_list::pointer
 project_file_roll_forward::get(string_ty *filename)
 {
     return get(nstring(str_copy(filename)));
 }
 
 
-file_event_list_ty *
+file_event_list::pointer
 project_file_roll_forward::get(fstate_src_ty *src)
 {
     trace(("project_file_roll_forward::get(%08lX)\n{\n", (long)src));
     trace(("src->file_name = \"%s\";\n", src->file_name->str_text));
-    string_ty *uuid = uuid_or_filename(src);
-    trace(("uuid = \"%s\";\n", uuid->str_text));
-    assert(!uuid_to_felp.empty());
-    file_event_list_ty *result = uuid_to_felp.query(uuid);
-#ifdef DEBUG
+    nstring uuid(uuid_or_filename(src));
+    trace(("uuid = %s\n", uuid.quote_c().c_str()));
+    file_event_list::pointer result = uuid_to_felp.get(uuid);
+    trace(("result = %08lX;\n", (long)result.get()));
+
+    //
+    // Due to a (now fixed) bug in the aeipass code it is possible for
+    // the file event list to miss a creation event.  We need to detect
+    // this condition and fix it.
+    //
     if (result)
     {
-	for (size_t j = 0; j < result->length; ++j)
+        bool file_action_create_missing = true;
+        for (size_t j = 0; j < result->size(); ++j)
+        {
+            file_event *fep = result->get(j);
+            assert(fep);
+            fstate_src_ty *fstate_src = fep->get_src();
+            assert(fstate_src);
+            if (fstate_src->action == file_action_create)
+            {
+                file_action_create_missing = false;
+                break;
+            }
+        }
+
+        if (!result->empty() && file_action_create_missing)
+        {
+            //
+            // If the uuid string really contains a UUID we need to look
+            // for the event list bound to the file_name, because that
+            // will be where the missing create action was stored.
+            //
+            if (universal_unique_identifier_valid(uuid))
+            {
+                //
+                // add the by-uuid list to the end of the by-filename list,
+                // to build the complete event list
+                //
+                file_event_list::pointer felp2 =
+                    uuid_to_felp.get(nstring(src->file_name));
+                assert(felp2);
+                felp2->push_back(*result);
+
+                //
+                // make sure the by-uuid and by-filename lookups will
+                // both be the same from now on.
+                //
+                uuid_to_felp.assign(uuid, felp2);
+                result = uuid_to_felp.get(uuid);
+                assert(result);
+                assert(result == felp2);
+            }
+        }
+
+#ifdef DEBUG
+	for (size_t j = 0; j < result->size(); ++j)
 	{
-	    file_event_ty *fep = &result->item[j];
-	    change_ty *cp = fep->cp;
+	    file_event *fep = result->get(j);
+	    change::pointer cp = fep->get_change();
+	    time_t when = fep->get_when();
 	    trace(("%s, %ld, %.24s\n", project_name_get(cp->pp)->str_text,
-		cp->number, ctime(&fep->when)));
+		cp->number, ctime(&when)));
 	}
-    }
 #endif
-    trace(("return %08lX\n", (long)result));
+    }
+
+    trace(("return %08lX\n", (long)result.get()));
     trace(("}\n"));
     return result;
 }
@@ -1179,75 +1171,139 @@ uuid_or_filename(cstate_src_ty *src)
 }
 
 
-file_event_list_ty *
+file_event_list::pointer
 project_file_roll_forward::get(cstate_src_ty *src)
 {
     trace(("project_file_roll_forward::get(%08lX)\n{\n", (long)src));
     trace(("src->file_name = \"%s\";\n", src->file_name->str_text));
-    string_ty *uuid = uuid_or_filename(src);
-    trace(("uuid = \"%s\";\n", uuid->str_text));
+    nstring uuid(uuid_or_filename(src));
+    trace(("uuid = %s;\n", uuid.quote_c().c_str()));
     assert(!uuid_to_felp.empty());
-    file_event_list_ty *result = uuid_to_felp.query(uuid);
-    trace(("return %08lX\n", (long)result));
+    file_event_list::pointer result = uuid_to_felp.get(uuid);
+    trace(("result = %08lX;\n", (long)result.get()));
+
+    //
+    // Due to a (now fixed) bug in the aeipass code it is possible for
+    // the file event list to miss a creation event.  We need to detect
+    // this condition and fix it.
+    //
+    if (result)
+    {
+        bool file_action_create_missing = true;
+        for (size_t j = 0; j < result->size(); ++j)
+        {
+            file_event *fep = result->get(j);
+            assert(fep);
+            fstate_src_ty *fstate_src = fep->get_src();
+            assert(fstate_src);
+            if (fstate_src->action == file_action_create)
+            {
+                file_action_create_missing = false;
+                break;
+            }
+        }
+
+        if (!result->empty() && file_action_create_missing)
+        {
+            //
+            // If the uuid string really contains a UUID we need to look
+            // for the event list bound to the file_name, because that
+            // will be where the missing create action was stored.
+            //
+            if (universal_unique_identifier_valid(uuid))
+            {
+                //
+                // add the by-uuid list to the end of the by-filename list,
+                // to build the complete event list
+                //
+                file_event_list::pointer felp2 =
+                    uuid_to_felp.get(nstring(src->file_name));
+                assert(felp2);
+                felp2->push_back(*result);
+
+                //
+                // make sure the by-uuid and by-filename lookups will
+                // both be the same from now on.
+                //
+                uuid_to_felp.assign(uuid, felp2);
+                result = uuid_to_felp.get(uuid);
+                assert(result);
+                assert(result == felp2);
+            }
+        }
+
+#ifdef DEBUG
+	for (size_t j = 0; j < result->size(); ++j)
+	{
+	    file_event *fep = result->get(j);
+	    change::pointer cp = fep->get_change();
+            time_t when = fep->get_when();
+	    trace(("%s, %ld, %.24s\n", project_name_get(cp->pp)->str_text,
+		cp->number, ctime(&when)));
+	}
+#endif
+    }
+
+    trace(("return %08lX\n", (long)result.get()));
     trace(("}\n"));
     return result;
 }
 
 
-file_event_ty *
+file_event *
 project_file_roll_forward::get_last(const nstring &filename)
 {
-    trace(("project_file_roll_forward_get_last(%s)\n{\n", filename.c_str()));
-    string_ty *uuid = filename_to_uuid.query(filename);
-    if (uuid == 0)
-    {
-	trace(("return NULL;\n"));
-	trace(("}\n"));
-	return 0;
-    }
-    file_event_list_ty *felp = uuid_to_felp.query(uuid);
-    if (!felp || !felp->length)
-    {
-	trace(("return NULL;\n"));
-	trace(("}\n"));
-	return 0;
-    }
-
-    file_event_ty *result = &felp->item[felp->length - 1];
-    trace(("return %08lX\n", (long)result));
-    trace(("}\n"));
-    return result;
-}
-
-
-file_event_ty *
-project_file_roll_forward::get_last(string_ty *filename)
-{
-    return get_last(nstring(str_copy(filename)));
-}
-
-
-file_event_ty *
-project_file_roll_forward::get_older(const nstring &filename)
-{
-    trace(("project_file_roll_forward_get_older(%s)\n{\n", filename.c_str()));
-    assert(!filename_to_uuid.empty());
-    string_ty *uuid = filename_to_uuid.query(filename);
+    trace(("project_file_roll_forward::get_last(%s)\n{\n", filename.c_str()));
+    nstring uuid(filename_to_uuid.query(filename));
     if (!uuid)
     {
 	trace(("return NULL;\n"));
 	trace(("}\n"));
 	return 0;
     }
-    file_event_list_ty *felp = uuid_to_felp.query(uuid);
-    if (!felp || !felp->length)
+    file_event_list::pointer felp = uuid_to_felp.get(uuid);
+    if (!felp || felp->empty())
     {
 	trace(("return NULL;\n"));
 	trace(("}\n"));
 	return 0;
     }
-    file_event_ty *result = 0;
-    for (size_t j = felp->length; j > 0; --j)
+
+    file_event *result = felp->back();
+    trace(("return %08lX (%08lX)\n", (long)result, (long)result->get_src()));
+    trace(("}\n"));
+    return result;
+}
+
+
+file_event *
+project_file_roll_forward::get_last(string_ty *filename)
+{
+    return get_last(nstring(str_copy(filename)));
+}
+
+
+file_event *
+project_file_roll_forward::get_older(const nstring &filename)
+{
+    trace(("project_file_roll_forward::get_older(%s)\n{\n", filename.c_str()));
+    assert(!filename_to_uuid.empty());
+    nstring uuid(filename_to_uuid.query(filename));
+    if (!uuid)
+    {
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
+    }
+    file_event_list::pointer felp = uuid_to_felp.get(uuid);
+    if (!felp || felp->empty())
+    {
+	trace(("return NULL;\n"));
+	trace(("}\n"));
+	return 0;
+    }
+    file_event *result = 0;
+    for (size_t j = felp->size(); j > 0; --j)
     {
 	//
 	// We don't simply want the second last entry, we want the
@@ -1256,21 +1312,21 @@ project_file_roll_forward::get_older(const nstring &filename)
 	// file version.  For some files this will be the last entry,
 	// and other files this will be the second last entry.
 	//
-	file_event_ty *fep = &felp->item[j - 1];
-	time_t when = change_completion_timestamp(fep->cp);
+	file_event *fep = felp->get(j - 1);
+	time_t when = change_completion_timestamp(fep->get_change());
 	if (when < stp_time)
 	{
 	    result = fep;
 	    break;
 	}
     }
-    trace(("return %08lX\n", (long)result));
+    trace(("return %08lX (%08lX)\n", (long)result, (long)result->get_src()));
     trace(("}\n"));
     return result;
 }
 
 
-file_event_ty *
+file_event *
 project_file_roll_forward::get_older(string_ty *filename)
 {
     return get_older(nstring(str_copy(filename)));
@@ -1286,7 +1342,7 @@ project_file_roll_forward::keys(nstring_list &result)
 }
 
 
-change_ty *
+change::pointer
 project_file_roll_forward::get_last_change()
     const
 {

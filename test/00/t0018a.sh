@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1993-1998, 2002, 2004, 2005 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 1993-1998, 2002, 2004-2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -96,7 +95,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	persevere_preference = all; \
 	log_file_preference = never;"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 worklib=$work/lib
@@ -286,11 +285,6 @@ pass
 end
 
 #
-# make sure the time stamps are different
-#
-sleep 1
-
-#
 # build the change
 #
 activity="development build 282"
@@ -411,11 +405,6 @@ if test $? -ne 0 ; then cat test.out; no_result; fi
 cat >> $workchan/main.cc << 'end'
 /* almost nothing */
 end
-
-#
-# Make sure the time stamps are different.
-#
-sleep 1
 
 #
 # build the change

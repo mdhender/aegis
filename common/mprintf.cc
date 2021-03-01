@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1997, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1994, 1997, 1999, 2002-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -538,6 +537,41 @@ vmprintf_errok(const char *fmt, va_list ap)
 		build_fake(fake, sizeof(fake), flag, width, prec, 'l', c);
 		snprintf(num, sizeof(num), fake, a);
 		len = strlen(num);
+		assert(len < QUANTUM);
+		if (length + len > tmplen && !bigger())
+		    return 0;
+		memcpy(tmp + length, num, len);
+		length += len;
+	    }
+	    break;
+
+	case 'z':
+	    {
+                size_t a = va_arg(ap, size_t);
+		if (!prec_set)
+		    prec = 1;
+		if (prec > MAX_WIDTH)
+		    prec = MAX_WIDTH;
+		if (width > MAX_WIDTH)
+		    width = MAX_WIDTH;
+		build_fake(fake, sizeof(fake), flag, width, prec, 'l', 'u');
+		char num[MAX_WIDTH + 1];
+		snprintf(num, sizeof(num), fake, (unsigned long)a);
+		size_t len = strlen(num);
+		assert(len < QUANTUM);
+		if (length + len > tmplen && !bigger())
+		    return 0;
+		memcpy(tmp + length, num, len);
+		length += len;
+	    }
+	    break;
+
+	case 'p':
+	    {
+                void *a = va_arg(ap, void *);
+		char num[MAX_WIDTH + 1];
+		snprintf(num, sizeof(num), "%08lX", (long)a);
+		size_t len = strlen(num);
 		assert(len < QUANTUM);
 		if (length + len > tmplen && !bigger())
 		    return 0;

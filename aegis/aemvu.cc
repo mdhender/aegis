@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate aemvus
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -138,9 +135,9 @@ move_file_undo_main(void)
     string_ty	    *project_name;
     project_ty	    *pp;
     long	    change_number;
-    change_ty	    *cp;
+    change::pointer cp;
     log_style_ty    log_style;
-    user_ty	    *up;
+    user_ty::pointer up;
     int		    config_seen;
     int		    number_of_errors;
     string_list_ty  search_path;
@@ -180,7 +177,7 @@ move_file_undo_main(void)
 	case arglex_token_keep:
 	case arglex_token_interactive:
 	case arglex_token_keep_not:
-	    user_delete_file_argument(move_file_undo_usage);
+	    user_ty::delete_file_argument(move_file_undo_usage);
 	    break;
 
 	case arglex_token_change:
@@ -209,17 +206,20 @@ move_file_undo_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(move_file_undo_usage);
+	    user_ty::lock_wait_argument(move_file_undo_usage);
 	    break;
 
 	case arglex_token_base_relative:
 	case arglex_token_current_relative:
-	    user_relative_filename_preference_argument(move_file_undo_usage);
+	    user_ty::relative_filename_preference_argument
+            (
+                move_file_undo_usage
+            );
 	    break;
 
 	case arglex_token_symbolic_links:
 	case arglex_token_symbolic_links_not:
-	    user_symlink_pref_argument(move_file_undo_usage);
+	    user_ty::symlink_pref_argument(move_file_undo_usage);
 	    break;
 	}
 	arglex();
@@ -231,7 +231,10 @@ move_file_undo_main(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -239,13 +242,13 @@ move_file_undo_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -261,11 +264,11 @@ move_file_undo_main(void)
     // It is an error if the change is not in the in_development state.
     // It is an error if the change is not assigned to the current user.
     //
-    if (!change_is_being_developed(cp))
+    if (!cp->is_being_developed())
 	change_fatal(cp, 0, i18n("bad cp undo state"));
     if (change_is_a_branch(cp))
 	change_fatal(cp, 0, i18n("bad cp undo branch"));
-    if (!str_equal(change_developer_name(cp), user_name(up)))
+    if (nstring(change_developer_name(cp)) != up->name())
 	change_fatal(cp, 0, i18n("not developer"));
 
     //
@@ -286,9 +289,8 @@ move_file_undo_main(void)
 	    search_path.nstrings >= 1
 	&&
 	    (
-		user_relative_filename_preference
+		up->relative_filename_preference
 		(
-		    up,
 		    uconf_relative_filename_preference_current
 		)
 	    ==
@@ -315,9 +317,9 @@ move_file_undo_main(void)
 	    s2 = str_copy(s1);
 	else
 	    s2 = os_path_join(base, s1);
-	user_become(up);
+	up->become_begin();
 	s1 = os_pathname(s2, 1);
-	user_become_undo();
+	up->become_end();
 	str_free(s2);
 	s2 = 0;
 	for (k = 0; k < search_path.nstrings; ++k)
@@ -487,15 +489,15 @@ move_file_undo_main(void)
 	s1 = wl.string[j];
 	s2 = change_file_path(cp, s1);
 	assert(s2);
-	user_become(up);
+	up->become_begin();
 	exists = os_exists(s2);
-	user_become_undo();
+	up->become_end();
 
 	//
 	// delete the file if it exists
 	// and the user wants us to
 	//
-	if (exists && user_delete_file_query(up, s1, false, -1))
+	if (exists && up->delete_file_query(nstring(s1), false, -1))
 	{
 	    //
 	    // This is not as robust in the face of
@@ -509,16 +511,15 @@ move_file_undo_main(void)
 	    // take a long time over NFS, and users
 	    // expect this to be fast.
 	    //
-	    user_become(up);
+            user_ty::become scoped(up);
 	    os_unlink(s2);
-	    user_become_undo();
 	}
 
 	//
 	// always delete the difference file
 	// and the merge backup file
 	//
-	user_become(up);
+        user_ty::become scoped(up);
 	s1 = str_format("%s,D", s2->str_text);
 	if (os_exists(s1))
 	    commit_unlink_errok(s1);
@@ -531,7 +532,6 @@ move_file_undo_main(void)
 	if (os_exists(s1))
 	    commit_unlink_errok(s1);
 	str_free(s1);
-	user_become_undo();
 	str_free(s2);
     }
 
@@ -602,17 +602,10 @@ move_file_undo_main(void)
     //
     change_maintain_symlinks_to_baseline(cp, up);
 
-    //
-    // run the change file command
-    // and the project file command if necessary
-    //
-    if (wl_nfu.nstrings)
-	change_run_new_file_undo_command(cp, &wl_nfu, up);
-    if (wl_ntu.nstrings)
-	change_run_new_file_undo_command(cp, &wl_ntu, up);
-    if (wl_rmu.nstrings)
-	change_run_remove_file_undo_command(cp, &wl_rmu, up);
-    change_run_project_file_command(cp, up);
+    // remember we are about to
+    bool recent_integration = cp->run_project_file_command_needed();
+    if (recent_integration)
+        cp->run_project_file_command_done();
 
     //
     // release the locks
@@ -620,6 +613,19 @@ move_file_undo_main(void)
     change_cstate_write(cp);
     commit();
     lock_release();
+
+    //
+    // run the change file command
+    // and the project file command if necessary
+    //
+    if (wl_nfu.nstrings)
+	cp->run_new_file_undo_command(&wl_nfu, up);
+    if (wl_ntu.nstrings)
+	cp->run_new_file_undo_command(&wl_ntu, up);
+    if (wl_rmu.nstrings)
+	cp->run_remove_file_undo_command(&wl_rmu, up);
+    if (recent_integration)
+        cp->run_project_file_command(up);
 
     //
     // verbose success message
@@ -634,7 +640,6 @@ move_file_undo_main(void)
 
     project_free(pp);
     change_free(cp);
-    user_free(up);
     trace(("}\n"));
 }
 

@@ -2,7 +2,6 @@
 //	aegis - project change supervisor
 //	Copyright (C) 2006 Peter Miller
 //	Copyright (C) 2005 Walter Franzini;
-//	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -160,7 +159,7 @@ cpio_create(const nstring &cwd, const nstring &archive_name,
     output_ty   *ofp;
     os_become_orig();
     ofp = output_file_binary_open(archive_name.get_ref());
-    output_cpio_ty *cpio_p = new output_cpio_ty(ofp);
+    output_cpio_ty *cpio_p = new output_cpio_ty(ofp, (time_t)0);
     for (size_t n = 0; n < file_list.size(); ++n)
     {
         nstring abs_path = os_path_join(cwd, file_list[n]);

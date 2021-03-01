@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -21,27 +20,25 @@
 //
 
 #include <common/arglex.h>
-#include <common/nstring.h>
-#include <common/str_list.h>
+#include <common/nstring/list.h>
+#include <common/trace.h>
+#include <common/wstring/list.h>
 #include <libaegis/sub.h>
 #include <libaegis/sub/email_addres.h>
-#include <common/trace.h>
 #include <libaegis/user.h>
-#include <common/wstr/list.h>
 
 
-wstring_ty *
-sub_email_address(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_email_address(sub_context_ty *, const wstring_list &arg)
 {
     trace(("sub_email_address()\n{\n"));
-    project_ty *pp = sub_context_project_get(scp);
-    string_list_ty words;
+    nstring_list words;
     bool quote = false;
     const char *separator = 0;
     size_t j = 1;
-    for (; j < arg->size(); ++j)
+    for (; j < arg.size(); ++j)
     {
-	nstring option(wstr_to_str(arg->get(j)));
+	nstring option = arg[j].to_nstring();
 	if (arglex_compare("-Comma", option.c_str(), 0))
 	    separator = ", ";
 	else if (arglex_compare("-Quote", option.c_str(), 0))
@@ -49,33 +46,26 @@ sub_email_address(sub_context_ty *scp, wstring_list_ty *arg)
 	else
 	    break;
     }
-    for (; j < arg->size(); ++j)
+    for (; j < arg.size(); ++j)
     {
-	nstring login(wstr_to_str(arg->get(j)));
-	user_ty *up = user_symbolic(pp, login.get_ref());
-	string_ty *s = user_email_address(up);
+	nstring login = arg[j].to_nstring();
+	user_ty::pointer up = user_ty::create(login);
+	nstring s = up->get_email_address();
 	if (quote)
-	{
-	    string_ty *s2 = str_quote_shell(s);
-	    words.push_back_unique(s2);
-	    str_free(s2);
-	}
-	else
-	    words.push_back_unique(s);
-	// do not str_free(s) it's cached
-	user_free(up);
+            s = s.quote_shell();
+        words.push_back_unique(s);
     }
 
     //
     // Convert the work list to a single string.
     //
-    nstring rs(words.unsplit(separator));
-    wstring_ty *result = str_to_wstr(rs.get_ref());
+    nstring rs = words.unsplit(separator);
+    wstring result(rs);
 
     //
     // all done
     //
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate whiteo_writes
 //
@@ -31,7 +30,7 @@
 
 
 static bool
-source_file_whiteout(change_ty *cp)
+source_file_whiteout(change::pointer cp)
 {
     pconf_ty *pconf_data = change_pconf_get(cp, 0);
     work_area_style_ty *s = pconf_data->development_directory_style;
@@ -41,7 +40,8 @@ source_file_whiteout(change_ty *cp)
 
 
 void
-change_file_whiteout_write(change_ty *cp, string_ty *filename, user_ty *up)
+change_file_whiteout_write(change::pointer cp, string_ty *filename,
+    user_ty::pointer up)
 {
     string_ty       *dd;
     string_ty       *s2;
@@ -53,17 +53,17 @@ change_file_whiteout_write(change_ty *cp, string_ty *filename, user_ty *up)
     // breaks the link if we are using symlink trees).
     //
     s2 = os_path_join(dd, filename);
-    user_become(up);
+    up->become_begin();
     if (os_exists(s2))
 	os_unlink(s2);
-    user_become_undo();
+    up->become_end();
 
     //
     // The whiteout is controlled by the development_directory_style's
     // source_file_whiteout field, except if overridden by the command line.
     //
     int whiteout_default = source_file_whiteout(cp);
-    if (user_whiteout(up, whiteout_default))
+    if (up->whiteout(whiteout_default))
     {
 	string_ty	*content;
 
@@ -78,13 +78,13 @@ change_file_whiteout_write(change_ty *cp, string_ty *filename, user_ty *up)
 	    // create a junk file in the change
 	    //
 	    umask = ~change_umask(cp);
-	    user_become(up);
+	    up->become_begin();
 	    os_mkdir_between(dd, filename, 02755);
 	    undo_unlink_errok(s2);
 	    mode = 0644 & ~umask;
 	    file_from_string(s2, content, mode);
 	    str_free(content);
-	    user_become_undo();
+	    up->become_end();
 
 	    //
 	    // update the mod-time to match the project
@@ -108,7 +108,7 @@ change_file_whiteout_write(change_ty *cp, string_ty *filename, user_ty *up)
 		when = now();
 		s3 = project_file_path(cp->pp, filename);
 		assert(s3);
-		user_become(up);
+		user_ty::become scoped(up);
 		os_mtime_range(s3, &mtime_old, &mtime_young);
 		str_free(s3);
 		if (when <= mtime_old)
@@ -116,7 +116,6 @@ change_file_whiteout_write(change_ty *cp, string_ty *filename, user_ty *up)
 		if (when <= mtime_young)
 		    when = mtime_young + 60;
 		os_mtime_set_errok(s2, when);
-		user_become_undo();
 	    }
 	}
     }

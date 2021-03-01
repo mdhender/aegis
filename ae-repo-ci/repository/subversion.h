@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2006, 2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface of the repository_subversion class
 //
@@ -48,6 +47,9 @@ public:
     void checkout(const nstring &module, const nstring &directory);
 
     // See base class for documentation.
+    nstring get_directory() const;
+
+    // See base class for documentation.
     void remove_file(const nstring &file_name);
 
     // See base class for documentation.
@@ -55,13 +57,20 @@ public:
 
     // See base class for documentation.
     void modify_file(const nstring &filename, const nstring &content_path);
-    //
+
     // See base class for documentation.
     void rename_file(const nstring &old_filename, const nstring &new_file_name,
 	const nstring &content_path);
 
     // See base class for documentation.
     void commit(const nstring &comment);
+
+    // See base class for documentation.
+    void change_specific_attributes(change::pointer cp);
+
+    // See base class for documentation.
+    void file_attribute(const nstring &filename, const nstring &attribute_name,
+        const nstring &attribute_value);
 
 private:
     /**
@@ -75,6 +84,14 @@ private:
       * temporary directory containing the subversion work area.
       */
     nstring directory;
+
+    /**
+      * The auth instance variable is used to remember the
+      * authentication command line options (if any) to be passed to
+      * svn(1) commands.  If it isn't empty, it always starts with a
+      * space.
+      */
+    nstring auth;
 
     /**
       * The copy constructor.

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate metricss
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -93,7 +90,7 @@ row_alloc(size_t n)
 
 
 void
-get_file_metrics(change_ty *cp, string_ty *filename, string_list_ty *modifier)
+get_file_metrics(change::pointer cp, string_ty *, string_list_ty *modifier)
 {
     project_ty      *pp;
     row_ty          **row;
@@ -137,7 +134,7 @@ get_file_metrics(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	fstate_src_ty   *src;
 	metric_list_ty  *mlp;
 
-	if (cp->bogus || !change_is_completed(cp))
+	if (cp->bogus || !cp->is_completed())
 	    src = pp->file_nth(j, view_path_extreme);
 	else
 	    src = change_file_nth(cp, j, view_path_first);
@@ -183,7 +180,7 @@ get_file_metrics(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	fstate_src_ty   *src;
 	metric_list_ty  *mlp;
 
-	if (cp->bogus || !change_is_completed(cp))
+	if (cp->bogus || !cp->is_completed())
 	    src = pp->file_nth(j, view_path_extreme);
 	else
 	    src = change_file_nth(cp, j, view_path_first);
@@ -277,7 +274,7 @@ get_file_metrics(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	size_t          k;
 
 	rp = row[j];
-	if (cp->bogus || !change_is_completed(cp))
+	if (cp->bogus || !cp->is_completed())
 	    src = project_file_find(pp, rp->filename, view_path_extreme);
 	else
 	    src = change_file_find(cp, rp->filename, view_path_first);

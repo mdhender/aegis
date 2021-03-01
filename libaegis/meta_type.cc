@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-1994, 1996, 2002-2005 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 1991-1994, 1996, 2002-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate types in aegis' data files
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/aer/expr/name.h>
@@ -73,10 +70,10 @@ boolean_fuzzy(string_ty *name)
 }
 
 
-static rpt_value_ty *
+static rpt_value::pointer
 boolean_convert(void *this_thing)
 {
-    return rpt_value_boolean(*(bool *)this_thing);
+    return rpt_value_boolean::create(*(bool *)this_thing);
 }
 
 
@@ -87,7 +84,7 @@ boolean_is_set(void *this_thing)
 }
 
 
-type_ty boolean_type =
+meta_type boolean_type =
 {
     "boolean",
     0, // alloc
@@ -101,10 +98,10 @@ type_ty boolean_type =
 };
 
 
-static rpt_value_ty *
+static rpt_value::pointer
 integer_convert(void *this_thing)
 {
-    return rpt_value_integer(magic_zero_decode(*(long *)this_thing));
+    return rpt_value_integer::create(magic_zero_decode(*(long *)this_thing));
 }
 
 
@@ -115,7 +112,7 @@ integer_is_set(void *this_thing)
 }
 
 
-type_ty integer_type =
+meta_type integer_type =
 {
     "integer",
     0, // alloc
@@ -129,10 +126,10 @@ type_ty integer_type =
 };
 
 
-static rpt_value_ty *
+static rpt_value::pointer
 time_convert(void *this_thing)
 {
-    return rpt_value_time(*(time_t *)this_thing);
+    return rpt_value_time::create(*(time_t *)this_thing);
 }
 
 
@@ -143,7 +140,7 @@ time_is_set(void *this_thing)
 }
 
 
-type_ty time_type =
+meta_type time_type =
 {
     "time",
     0, // alloc
@@ -157,10 +154,10 @@ type_ty time_type =
 };
 
 
-static rpt_value_ty *
+static rpt_value::pointer
 real_convert(void *this_thing)
 {
-    return rpt_value_real(*(double *)this_thing);
+    return rpt_value_real::create(*(double *)this_thing);
 }
 
 
@@ -171,7 +168,7 @@ real_is_set(void *this_thing)
 }
 
 
-type_ty real_type =
+meta_type real_type =
 {
     "real",
     0, // alloc
@@ -185,10 +182,10 @@ type_ty real_type =
 };
 
 
-static rpt_value_ty *
+static rpt_value::pointer
 string_convert(void *this_thing)
 {
-    return rpt_value_string(*(string_ty **)this_thing);
+    return rpt_value_string::create(nstring(*(string_ty **)this_thing));
 }
 
 
@@ -199,7 +196,7 @@ string_is_set(void *this_thing)
 }
 
 
-type_ty string_type =
+meta_type string_type =
 {
     "string",
     0, // alloc
@@ -214,7 +211,7 @@ type_ty string_type =
 
 
 void *
-generic_struct_parse(void *this_thing, string_ty *name, type_ty **type_pp,
+generic_struct_parse(void *this_thing, string_ty *name, meta_type **type_pp,
     unsigned long *mask_p, int *redefinition_ok_p, type_table_ty *table,
     size_t table_length)
 {
@@ -277,41 +274,36 @@ generic_struct_fuzzy(string_ty *name, type_table_ty *table, size_t table_length)
 }
 
 
-rpt_value_ty *
+rpt_value::pointer
 generic_struct_convert(void *that, type_table_ty *table, size_t table_length)
 {
-    generic_struct_ty *this_thing;
+    generic_struct *this_thing;
     type_table_ty   *tp;
     type_table_ty   *table_end;
-    rpt_value_ty    *result;
 
-    this_thing = *(generic_struct_ty **)that;
+    this_thing = *(generic_struct **)that;
     if (!this_thing)
-        return 0;
+        return rpt_value::pointer();
     trace(("generic_struct_convert(this_thing = %08lX)\n{\n",
            (long)this_thing));
     table_end = table + table_length;
-    result = rpt_value_struct((struct symtab_ty *)0);
+    rpt_value_struct *rvs = new rpt_value_struct();
+    rpt_value::pointer result(rvs);
     for (tp = table; tp < table_end; ++tp)
     {
-        void            *addr;
-
         if (!tp->fast_name)
             tp->fast_name = str_from_c(tp->name);
-        addr = (char *)this_thing + tp->offset;
+        void *addr = (char *)this_thing + tp->offset;
         if (tp->mask ? (this_thing->mask & tp->mask) : tp->type->is_set(addr))
         {
-            rpt_value_ty    *vp;
-
-            vp = tp->type->convert(addr);
+            rpt_value::pointer vp = tp->type->convert(addr);
             if (vp)
             {
-                rpt_value_struct__set(result, tp->fast_name, vp);
-                rpt_value_free(vp);
+                rvs->assign(tp->name, vp);
             }
         }
     }
-    trace(("return %08lX;\n}\n", (long)result));
+    trace(("return %08lX;\n}\n", (long)result.get()));
     return result;
 }
 
@@ -319,7 +311,7 @@ generic_struct_convert(void *that, type_table_ty *table, size_t table_length)
 bool
 generic_struct_is_set(void *this_thing)
 {
-    return (*(generic_struct_ty **)this_thing != 0);
+    return (*(generic_struct **)this_thing != 0);
 }
 
 
@@ -348,13 +340,13 @@ generic_enum_fuzzy(string_ty *name, string_ty **table, size_t table_length)
 }
 
 
-rpt_value_ty *
+rpt_value::pointer
 generic_enum_convert(int n, string_ty **table, size_t table_length)
 {
     if (n < 0 || n >= (int)table_length)
-        return rpt_value_integer(n);
+        return rpt_value_integer::create(n);
     assert(table[n]);
-    return rpt_value_enumeration(n, table[n]);
+    return rpt_value_enumeration::create(n, nstring(table[n]));
 }
 
 
@@ -363,10 +355,9 @@ generic_enum__init(const char *const *table, size_t table_length)
 {
     for (size_t j = 0; j < table_length; ++j)
     {
-        string_ty *name = str_from_c(table[j]);
-        rpt_value_ty *value = rpt_value_enumeration(j, name);
+        nstring name(table[j]);
+        rpt_value::pointer value = rpt_value_enumeration::create(j, name);
         rpt_expr_name__init(name, value);
-        str_free(name);
     }
 }
 

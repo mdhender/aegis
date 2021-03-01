@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2000-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,15 +13,15 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate batch_fakes
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
 
 #include <common/error.h> // for assert
+#include <common/format_elpsd.h>
+#include <common/now.h>
 #include <common/nstring/list.h>
 #include <common/str_list.h>
 #include <common/trace.h>
@@ -37,13 +36,14 @@
 
 
 batch_result_list_ty *
-change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up,
-    bool baseline_flag, int current, int total, time_t time_limit,
-    const nstring_list &variable_assignments)
+change_test_batch_fake(change::pointer cp, string_list_ty *wlp,
+    user_ty::pointer up, bool baseline_flag, int current, int total,
+    time_t time_limit, const nstring_list &variable_assignments,
+    const long *remaining)
 {
     size_t	    j;
     string_ty	    *dir;
-    int		    (*run_test_command)(change_ty *, user_ty *, string_ty *,
+    int (*run_test_command)(change::pointer , user_ty::pointer , string_ty *,
 			string_ty *, int, int, const nstring_list &vars);
     cstate_ty       *cstate_data;
     batch_result_list_ty *result;
@@ -53,14 +53,14 @@ change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up,
     // which command
     //
     trace(("change_test_batch_fake(cp = %08lX, wlp = %08lX, up = %08lX, "
-	"baseline_flag = %d, current = %d, total = %d, time_limit = %ld)\n{\n",
-	(long)cp, (long)wlp, (long)up, baseline_flag, current, total,
-	(long)time_limit));
-    cstate_data = change_cstate_get(cp);
+	"baseline_flag = %d, current = %d, total = %d, time_limit = %ld, "
+        "remaining = %08lX)\n{\n", (long)cp, (long)wlp, (long)up.get(),
+        baseline_flag, current, total, (long)time_limit, (long)remaining));
+    cstate_data = cp->cstate_get();
     run_test_command = change_run_test_command;
     if (cstate_data->state != cstate_state_being_integrated)
 	run_test_command = change_run_development_test_command;
-    persevere = user_persevere_preference(up, 1);
+    persevere = up->persevere_preference(true);
 
     //
     // directory depends on the state of the change
@@ -109,18 +109,19 @@ change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up,
 	fstate_src_ty   *src_data;
 	int		inp;
 	int		exit_status;
-	sub_context_ty	*scp;
 
 	//
 	// display progress message if requested
 	//
 	if (total > 0)
 	{
-	    scp = sub_context_new();
-	    sub_var_set_long(scp, "Current", current + j + 1);
-	    sub_var_set_long(scp, "Total", total);
-	    change_error(cp, scp, i18n("test $current of $total"));
-	    sub_context_delete(scp);
+	    sub_context_ty sc;
+	    sc.var_set_long("Current", current + j + 1);
+	    sc.var_set_long("Total", total);
+            trace(("remaining = %ld\n", remaining[j]));
+            sc.var_set_string("REMaining", format_elapsed(remaining[j]));
+            sc.var_optional("REMaining");
+	    change_error(cp, &sc, i18n("test $current of $total"));
 	}
 
 	//
@@ -160,6 +161,7 @@ change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up,
 	//
 	// run the command
 	//
+        double t_begin = dtime();
 	exit_status =
 	    run_test_command
 	    (
@@ -171,11 +173,15 @@ change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up,
 		baseline_flag,
 		variable_assignments
 	    );
+        trace(("exit_status = %d\n", exit_status));
+        double t_end = dtime();
+        double elapsed = t_end - t_begin;
+        trace(("elapsed = %g\n", elapsed));
 
 	//
 	// remember what happened
 	//
-	batch_result_list_append(result, fn, exit_status, 0);
+	batch_result_list_append(result, fn, exit_status, 0, elapsed);
 
 	//
 	// verbose progress message
@@ -185,18 +191,16 @@ change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up,
 	case 1:
 	    if (baseline_flag)
 	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", fn);
-		change_verbose(cp, scp, i18n("$filename baseline fail, good"));
-		sub_context_delete(scp);
+                sub_context_ty sc;
+		sc.var_set_string("File_Name", fn);
+		change_verbose(cp, &sc, i18n("$filename baseline fail, good"));
 		result->pass_count++;
 	    }
 	    else
 	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", fn);
-		change_verbose(cp, scp, i18n("$filename fail"));
-		sub_context_delete(scp);
+                sub_context_ty sc;
+		sc.var_set_string("File_Name", fn);
+		change_verbose(cp, &sc, i18n("$filename fail"));
 		result->fail_count++;
 	    }
 	    break;
@@ -204,33 +208,43 @@ change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up,
 	case 0:
 	    if (baseline_flag)
 	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", fn);
+                sub_context_ty sc;
+		sc.var_set_string("File_Name", fn);
 		change_verbose
 		(
 		    cp,
-		    scp,
+		    &sc,
 		    i18n("$filename baseline pass, not good")
 		);
-		sub_context_delete(scp);
 		result->fail_count++;
 	    }
 	    else
 	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", fn);
-		change_verbose(cp, scp, i18n("$filename pass"));
-		sub_context_delete(scp);
+                sub_context_ty sc;
+		sc.var_set_string("File_Name", fn);
+		change_verbose(cp, &sc, i18n("$filename pass"));
 		result->pass_count++;
 	    }
 	    break;
 
+	case 77:
+            {
+                // Note: the value 77 was chosen to be compatible with
+                // other test systems.
+                sub_context_ty sc;
+                sc.var_set_string("File_Name", fn);
+                change_verbose(cp, &sc, i18n("$filename skipped"));
+                result->skip_count++;
+            }
+	    break;
+
 	default:
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", fn);
-	    change_verbose(cp, scp, i18n("$filename no result"));
-	    sub_context_delete(scp);
-	    result->no_result_count++;
+            {
+                sub_context_ty sc;
+                sc.var_set_string("File_Name", fn);
+                change_verbose(cp, &sc, i18n("$filename no result"));
+                result->no_result_count++;
+            }
 	    break;
 	}
 	str_free(fn_abs);

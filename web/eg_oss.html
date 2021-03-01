@@ -1,7 +1,6 @@
 .\"
 .\"     aegis - project change supervisor
-.\"     Copyright (C) 2006 Peter Miller;
-.\"     All rights reserved.
+.\"     Copyright (C) 2006, 2007 Peter Miller
 .\"
 .\"     This program is free software; you can redistribute it and/or modify
 .\"     it under the terms of the GNU General Public License as published by
@@ -38,7 +37,7 @@ This worked example shows you how to get an existing OSS project managed
 by Aegis in less than 30 minutes.
 
 <h2> Requirements </h2>
-There are a number assumptions mode by this example.
+There are a number assumptions made by this example:
 <ul><li>
     You have already downloaded, built and installed Aegis; or you
     installed the <tt>aegis</tt> package using your operating system's
@@ -70,7 +69,7 @@ trying to achieve.  I recommend you read on, and keep notes of where you
 will have to change things.
 <p>
 These instructions do not assume you are the primary maintainer of this
-OSS project, you just want "a local branch" for hacking on.  These
+OSS project, you just want &ldquo;a local branch&rdquo; for hacking on.  These
 instructions will work just as well for a maintainer, but they do not
 cover migrating from the present version control tool to Aegis.
 
@@ -99,7 +98,7 @@ repos$</pre>
 .fi
 </blockquote>
 
-The &ldquo;<i>&ndash;version &ndash;</i>&rdquo; tells Aegis you don't
+The &ldquo;<tt>&ndash;version &ndash;</tt>&rdquo; tells Aegis you don't
 want it to create a branch hierarchy just yet.
 <p>
 The project directory tree will be established in the
@@ -203,7 +202,8 @@ The following command will download the change set and apply it to the project:
 <blockquote>
 .nf
 <tt>user$ <b>aedist -rec -f
-    <a href="eg_oss_begin.ae">http://aegis.sourceforge.net/eg_oss_begin.ae</a>
+    <a href="eg_oss_begin.ae">
+    http://aegis.sourceforge.net/eg_oss_begin.ae</a>
     -p vgrabbj -c 900 -v</b><br>
 user$</tt>
 .fi
@@ -230,7 +230,7 @@ established by this change set consists of five files:
     This file sets RCS Merge as the file difference tool.
     It won't be used in this example, but at some point all projects
     will need it.
-<dt><tt>aegis.cnonf.d/history</tt><dd>
+<dt><tt>aegis.conf.d/history</tt><dd>
     This file sets the history tool to be used.  For this example, the
     <i>aesvt</i>(1) program, which comes with Aegis, is used.  There
     are example configurations included with the Aegis distribution for
@@ -258,7 +258,7 @@ user$</pre>
 .fi
 </blockquote>
 
-It will take about a minute, and it won't say much, if nothing went wrong.
+It will take about a minute, and it won't say much if nothing went wrong.
 <p>
 At this point, many Aegis commands are available, and you may like to
 try some if them out.
@@ -278,6 +278,31 @@ The Aegis <a href="refman.pdf">Reference Manual</a> would be very useful
 to you at this point, because you can look up each of these commands,
 and discover the wealth of command line options not mentioned in the
 above examples.
+
+<h2>Creating a New Project from Scratch</h2>
+
+I know this example is about an existing project, but if you are
+creating a new project from scratch, you will probably be interested in
+the GNU Auto Tools change set, which establishes the build system for an
+empty project.
+
+<blockquote>
+.nf
+<tt>user$ <b>aedist -rec -f
+    <a href="eg_oss_aemak.ae">
+    http://aegis.sourceforge.net/eg_oss_aemak.ae</a>
+    -p vgrabbj -c 6 -v</b><br>
+user$</tt>
+.fi
+</blockquote>
+
+This project uses Automake, Autoconf and Libtool to do all the work.
+All you have to do is conform to the pretty relaxed expectations in
+<i>aemakegen</i>(1) of the project directory layout.
+<p>
+Skip this section if you are working with an existing project.  Skip
+down to section &ldquo;<i> Template Contents for New Files</i>&rdquo; if
+you are starting from scratch.
 
 <h2>Unpacking the Tarball into a Change Set</h2>
 
@@ -390,6 +415,7 @@ will go by very quickly in this example.
 <blockquote>
 .nf
 <pre>user$ <b>aefinish</b>
+<i>...lots of output...</i>
 user$ <b>cd</b>
 user$ <b>aeintegratq vgrabbj-0.9</b>
 user$</pre>
@@ -481,13 +507,20 @@ the development directory automatically before running the configured
 build command.  After this change set is integrated, the next time you
 start a new change set, the development directory will be populated
 immediately.
-
+<p>
+If there are any problems with the build, it is going to be with how the
+project uses GNU Autoconf and GNU Automake to bootstrap itself.  You
+may need to edit the <tt>aegis.supplementary/makefile</tt> file to fix
+the problem.  Once the &ldquo;real&rdquo; <tt>Makefile</tt> has been
+produced, the supplementary file will do nothing.
+<p>
 We will finish this change set the same way as before, using the
 <i>aefinish</i>(1) command, and then integrate it:
 
 <blockquote>
 .nf
 <pre>user$ <b>aefinish</b>
+<i>...lots of output...</i>
 user$ <b>cd</b>
 user$ <b>aeintegratq vgrabbj-0.9</b>
 user$</pre>
@@ -537,14 +570,16 @@ A couple of tips:
 <ul><li>
     One bug, one change set.  Aegis keeps track of what source files are
     associated with what tests, this is how the <i>aet --suggest</i> command
-    know what to suggest.  If you fix lots of things in a single change set,
+    knows what to suggest.  If you fix lots of things in a single change set,
     the suggestions aren't as good.
 <li>
     New change sets and their work areas are cheap to produce.  You can
-    have more than one going at a time, which makes the "one bug, cone
-    change set" suggestion practical.
+    have more than one going at a time, which makes the &ldquo;one bug, cone
+    change set&rdquo; suggestion practical.
 <li>
-    Consider writing the tests first (Test Driven Development).
+    Consider writing the tests first (<a
+    href="http://en.wikipedia.org/wiki/Test_driven_development"
+    >Test Driven Development</a>).
     The new file templates do most of the hard work, you just have to
     fill in the gap where something is actually tested.
 </ul>

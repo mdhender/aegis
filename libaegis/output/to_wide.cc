@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999, 2001-2005 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -39,7 +38,7 @@ static mbstate_t initial_state;
 void
 output_to_wide_ty::flush_inner()
 {
-    trace(("output_to_wide::flush(this = %08lX)\n{\n", (long)this));
+    trace(("output_to_wide::flush_inner(this = %08lX)\n{\n", (long)this));
     if (output_len > 0)
     {
         wide_output_write(deeper, output_buf, output_len);
@@ -197,16 +196,16 @@ output_to_wide_ty::write_inner(const void *input_p, size_t len)
     trace(("output_to_wide_ty::write_inner(this = %08lX, data = %08lX, "
 	"len = %ld)\n{\n", (long)this, (long)input_p, (long)len));
     language_human();
-    const char *input = (const char *)input_p;
+    const char *ip = (const char *)input_p;
     while (len > 0)
     {
-        unsigned char c = *input++;
+        unsigned char c = *ip++;
         --len;
 	trace(("c = %s\n", unctrl(c)));
 
         //
         // Track whether we are at the start of a line.
-        // (This makes the assumption that \n will no be part
+        // (This makes the assumption that \n will not be part
         // of any multi-byte sequence.)
         //
         input_bol = (c == '\n');
@@ -247,7 +246,7 @@ output_to_wide_ty::write_inner(const void *input_p, size_t len)
         {
             //
             // This only happens if there is a NUL in
-            // the input stream.  It shouldn't happen,
+            // the ip stream.  It shouldn't happen,
             // so ignore it.
             //
             n = 1;

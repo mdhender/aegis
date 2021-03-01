@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: implementation of the change_file_resolve_name class
 //
@@ -30,10 +29,11 @@
 
 
 void
-change_file_resolve_names(change_ty *cp, user_ty *up, string_list_ty &names)
+change_file_resolve_names(change::pointer cp, user_ty::pointer up,
+    string_list_ty &names)
 {
     trace(("change_file_resolve_names(cp = %08lX, up = %08lX)\n{\n",
-	(long)cp, (long)up));
+	(long)cp, (long)up.get()));
 
     //
     // Get the change's search path.  We will be looking along this to
@@ -50,9 +50,8 @@ change_file_resolve_names(change_ty *cp, user_ty *up, string_list_ty &names)
             search_path.nstrings >= 1
         &&
             (
-                user_relative_filename_preference
+                up->relative_filename_preference
                 (
-                    up,
                     uconf_relative_filename_preference_current
                 )
             ==
@@ -92,9 +91,9 @@ change_file_resolve_names(change_ty *cp, user_ty *up, string_list_ty &names)
         // Resolve the absolute file name to get rid of symlinks and "."
         // or ".." components that would otherwise confuse the process.
 	//
-	user_become(up);
-	string_ty *s1 = os_pathname(s2, 1);
-	user_become_undo();
+        up->become_begin();
+        string_ty *s1 = os_pathname(s2, 1);
+        up->become_end();
 	str_free(s2);
 	s2 = 0;
 
@@ -129,7 +128,8 @@ change_file_resolve_names(change_ty *cp, user_ty *up, string_list_ty &names)
 
 
 string_ty *
-change_file_resolve_name(change_ty *cp, user_ty *up, string_ty *filename)
+change_file_resolve_name(change::pointer cp, user_ty::pointer up,
+    string_ty *filename)
 {
     //
     // The single file is handled as a special case of one file, rather

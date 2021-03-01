@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -30,20 +29,20 @@
 
 
 magic_t
-magic_open(int flags)
+magic_open(int)
 {
     return (magic_t)1;
 }
 
 
 void
-magic_close(magic_t cookie)
+magic_close(magic_t)
 {
 }
 
 
 const char *
-magic_file(magic_t cookie, const char *filename)
+magic_file(magic_t, const char *filename)
 {
     struct table_t
     {
@@ -110,13 +109,13 @@ magic_file(magic_t cookie, const char *filename)
 
 
 const char *
-magic_error(magic_t cookie)
+magic_error(magic_t)
 {
     return "no error";
 }
 
 int
-magic_load(magic_t cookie, const char *filename)
+magic_load(magic_t, const char *)
 {
     return 0;
 }

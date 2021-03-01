@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2006 Peter Miller;
-//      All rights reserved.
+//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement new change
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -116,7 +113,7 @@ new_change_list(void)
 
 
 void
-new_change_check_permission(project_ty *pp, user_ty *up)
+new_change_check_permission(project_ty *pp, user_ty::pointer up)
 {
     //
     // it is an error if
@@ -124,12 +121,12 @@ new_change_check_permission(project_ty *pp, user_ty *up)
     //
     if
     (
-        !project_administrator_query(pp, user_name(up))
+        !project_administrator_query(pp, up->name())
     &&
         (
             !project_developers_may_create_changes_get(pp)
         ||
-            !project_developer_query(pp, user_name(up))
+            !project_developer_query(pp, up->name())
         )
     )
     {
@@ -148,8 +145,8 @@ new_change_main(void)
     string_ty       *project_name;
     project_ty      *pp;
     long            change_number;
-    change_ty       *cp;
-    user_ty         *up;
+    change::pointer cp;
+    user_ty::pointer up;
     edit_ty         edit;
     size_t          j;
     pconf_ty        *pconf_data;
@@ -257,7 +254,7 @@ new_change_main(void)
 
         case arglex_token_wait:
         case arglex_token_wait_not:
-            user_lock_wait_argument(new_change_usage);
+            user_ty::lock_wait_argument(new_change_usage);
             break;
 
         case arglex_token_output:
@@ -359,7 +356,7 @@ new_change_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // see if must invoke editor
@@ -393,7 +390,7 @@ new_change_main(void)
         //
         cp = change_alloc(pp, TRUNK_CHANGE_NUMBER - 1);
         change_bind_new(cp);
-        cstate_data = change_cstate_get(cp);
+        cstate_data = cp->cstate_get();
         cstate_data->state = cstate_state_awaiting_development;
         pconf_data = change_pconf_get(cp, 0);
         change_attributes_default(cattr_data, pp, pconf_data);
@@ -441,7 +438,7 @@ new_change_main(void)
     }
     cp = change_alloc(pp, change_number);
     change_bind_new(cp);
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     cstate_data->state = cstate_state_awaiting_development;
     pconf_data = change_pconf_get(cp, 0);
     if (!pconf_data->build_command)
@@ -485,7 +482,7 @@ new_change_main(void)
     (
         pconf_data->build_command
     &&
-        !project_administrator_query(pp, user_name(up))
+        !project_administrator_query(pp, up->name())
     )
     {
         cattr_ty        *dflt;
@@ -618,11 +615,10 @@ new_change_main(void)
         {
             string_ty       *fn;
 
-            user_become(up);
+            user_ty::become scoped(up);
             fn = str_from_c(output);
             file_from_string(fn, content, 0644);
             str_free(fn);
-            user_become_undo();
         }
         else
             cat_string_to_stdout(content);
@@ -647,7 +643,6 @@ new_change_main(void)
     change_verbose_new_change_complete(cp);
     project_free(pp);
     change_free(cp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -657,8 +652,8 @@ new_change(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-        {arglex_token_help, new_change_help, },
-        {arglex_token_list, new_change_list, },
+        { arglex_token_help, new_change_help, 0 },
+        { arglex_token_list, new_change_list, 0 },
     };
 
     trace(("new_change()\n{\n"));

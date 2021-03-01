@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 2002, 2003, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1996, 2002, 2003, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface definition for aegis/aer/lex.c
 //
@@ -25,7 +24,7 @@
 
 #include <libaegis/aer/pos.h>
 
-struct sub_context_ty; // existence
+class sub_context_ty; // forward
 
 void rpt_lex_open(struct string_ty *);
 void rpt_lex_close(void);
@@ -33,9 +32,11 @@ void rpt_lex_close(void);
 int aer_report_lex(void);
 
 void aer_report_error(const char *);
-void rpt_lex_error(rpt_pos_ty *, const char *);
-void aer_lex_error(struct sub_context_ty *, rpt_pos_ty *, const char *);
+void rpt_lex_error(const rpt_position::pointer &, const char *);
+void aer_lex_error(sub_context_ty &, const rpt_position::pointer &,
+    const char *);
+void aer_lex_error(sub_context_ty &, const char *);
 
-rpt_pos_ty *rpt_lex_pos_get(void);
+rpt_position::pointer rpt_lex_pos_get(void);
 
 #endif // AEGIS_AER_LEX_H

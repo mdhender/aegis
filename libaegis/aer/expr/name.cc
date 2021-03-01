@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1997, 1999, 2000, 2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1997, 1999, 2000, 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,14 +13,13 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate name expressions
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h>
-#include <common/symtab.h>
+#include <common/symtab/template.h>
+#include <common/trace.h>
 #include <libaegis/aer/expr/constant.h>
 #include <libaegis/aer/expr/name.h>
 #include <libaegis/aer/func.h>
@@ -48,33 +46,20 @@
 #include <libaegis/ustate.h>
 
 
-static symtab_ty *stp;
-
-
-static void
-reap(void *p)
-{
-    rpt_value_ty    *vp;
-
-    vp = (rpt_value_ty *)p;
-    rpt_value_free(vp);
-}
+static symtab<rpt_value::pointer> symbol_table;
 
 
 static void
 init(void)
 {
-    string_ty	    *name;
-
-    if (stp)
+    if (!symbol_table.empty())
 	return;
-    stp = new symtab_ty(100);
-    stp->set_reap(reap);
+    trace(("%s\n", __PRETTY_FUNCTION__));
 
     //
     // initialize the names of the builtin functions
     //
-    rpt_func_init(stp);
+    rpt_func::init(symbol_table);
 
     //
     // pull values from fmtgen
@@ -93,29 +78,17 @@ init(void)
     //
     // some constants
     //
-    name = str_from_c("true");
-    stp->assign(name, rpt_value_boolean(1));
-    str_free(name);
-    name = str_from_c("false");
-    stp->assign(name, rpt_value_boolean(0));
-    str_free(name);
+    symbol_table.assign("true", rpt_value_boolean::create(true));
+    symbol_table.assign("false", rpt_value_boolean::create(false));
 
     //
     // This one is so you can get at .aegisrc files.
     //
-    name = str_from_c("user");
-    stp->assign(name, rpt_value_uconf());
-    str_free(name);
+    symbol_table.assign("user", rpt_value_uconf::create());
 
-    name = str_from_c("passwd");
-    stp->assign(name, rpt_value_passwd());
-    str_free(name);
-    name = str_from_c("group");
-    stp->assign(name, rpt_value_group());
-    str_free(name);
-    name = str_from_c("project");
-    stp->assign(name, rpt_value_gstate());
-    str_free(name);
+    symbol_table.assign("passwd", rpt_value_passwd::create());
+    symbol_table.assign("group", rpt_value_group::create());
+    symbol_table.assign("project", rpt_value_gstate::create());
 
     //
     // the "arg" variable, containing the
@@ -126,74 +99,61 @@ init(void)
 
 
 void
-rpt_expr_name__init(string_ty *name, rpt_value_ty *value)
+rpt_expr_name__init(const nstring &name, const rpt_value::pointer &value)
 {
-    assert(stp);
-    stp->assign(name, value);
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    symbol_table.assign(name, value);
 }
 
 
-rpt_expr_ty *
-rpt_expr_name(string_ty *name)
+rpt_expr::pointer
+rpt_expr_name(const nstring &name)
 {
-    rpt_value_ty    *data;
-    string_ty	    *name2;
-
-    if (!stp)
+    if (symbol_table.empty())
 	init();
 
-    data = (rpt_value_ty *)stp->query(name);
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    rpt_value::pointer data = symbol_table.get(name);
     if (!data)
     {
-	name2 = stp->query_fuzzy(name);
-	if (!name2)
+        nstring name2 = symbol_table.query_fuzzy(name);
+	if (name2.empty())
 	{
-	    sub_context_ty  *scp;
-
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Name", name);
-	    aer_lex_error(scp, 0, i18n("the name \"$name\" is undefined"));
-	    sub_context_delete(scp);
-	    data = rpt_value_nul();
+	    sub_context_ty sc;
+	    sc.var_set_string("Name", name);
+	    aer_lex_error(sc, i18n("the name \"$name\" is undefined"));
+	    data = rpt_value_null::create();
 	}
 	else
 	{
-	    sub_context_ty  *scp;
-
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Name", name);
-	    sub_var_set_string(scp, "Guess", name2);
-	    aer_lex_error(scp, 0, i18n("no \"$name\", guessing \"$guess\""));
-	    sub_context_delete(scp);
-	    data = (rpt_value_ty *)stp->query(name2);
+	    sub_context_ty sc;
+	    sc.var_set_string("Name", name);
+	    sc.var_set_string("Guess", name2);
+	    aer_lex_error(sc, i18n("no \"$name\", guessing \"$guess\""));
+	    data = symbol_table.get(name2);
 	    assert(data);
 	}
     }
-    assert(data);
 
-    return rpt_expr_constant(data);
+    return rpt_expr_constant::create(data);
 }
 
 
 void
-rpt_expr_name__declare(string_ty *name)
+rpt_expr_name__declare(const nstring &name)
 {
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v2;
-
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    trace(("name = \"%s\"\n", name.c_str()));
     //
     // make sure the name is unique
     //
-    if (!stp)
+    if (symbol_table.empty())
 	init();
-    if (stp->query(name))
+    if (symbol_table.query(name))
     {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
-	sub_var_set_string(scp, "Name", name);
-	aer_lex_error(scp, 0, i18n("the name \"$name\" has already been used"));
-	sub_context_delete(scp);
+	sub_context_ty sc;
+	sc.var_set_string("Name", name);
+	aer_lex_error(sc, i18n("the name \"$name\" has already been used"));
 	return;
     }
 
@@ -201,8 +161,9 @@ rpt_expr_name__declare(string_ty *name)
     // create the value to be a reference to nul
     //	(it is a variable, it must be a reference to something)
     //
-    v1 = rpt_value_nul();
-    v2 = rpt_value_reference(v1);
-    rpt_value_free(v1);
-    stp->assign(name, v2);
+    trace(("name is new\n"));
+    rpt_value::pointer v1 = rpt_value_null::create();
+    rpt_value::pointer v2 = rpt_value_reference::create(v1);
+    symbol_table.assign(name, v2);
+    trace(("assigned nul\n"));
 }

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1998, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1994, 1998, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -34,19 +33,19 @@
   * The class type is used to represent the type of a field.  This is an
   * abstract base class.
   */
-class type_ty
+class type
 {
 public:
     /**
       * The destructor.
       */
-    virtual ~type_ty();
+    virtual ~type();
 
 protected:
     /**
       * The constructor.
       */
-    type_ty(const nstring &name);
+    type(const nstring &name);
 
 public:
     virtual void gen_include() const;
@@ -72,7 +71,7 @@ public:
 	const = 0;
 
     virtual void gen_free_declarator(const nstring &name, bool is_a_list) const;
-    virtual void member_add(const nstring &member_name, type_ty *member_type,
+    virtual void member_add(const nstring &member_name, type *member_type,
 	int attributes);
 
     /**
@@ -139,17 +138,17 @@ private:
     /**
       * The default constructor.  Do not use.
       */
-    type_ty();
+    type();
 
     /**
       * The copy constructor.  Do not use.
       */
-    type_ty(const type_ty &);
+    type(const type &);
 
     /**
       * The assignment operator.  Do not use.
       */
-    type_ty &operator=(const type_ty &);
+    type &operator=(const type &);
 };
 
 #endif // TYPE_H

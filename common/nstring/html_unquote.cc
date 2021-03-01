@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -51,7 +50,7 @@ static const table_t table[] =
     { "Aacute", "A" },
     { "Acirc", "A" },
     { "Agrave", "A" },
-    { "Aring" "A" },
+    { "Aring", "A" },
     { "Atilde", "A" },
     { "Auml", "AE" },
     { "Ccedil", "C" },
@@ -107,7 +106,7 @@ static const table_t table[] =
     { "frac14", " 1/4 " },
     { "frac34", " 3/4 " },
     { "gt", ">" },
-    { "iacute" "i" },
+    { "iacute", "i" },
     { "icirc", "i" },
     { "iexcl", "!" },
     { "igrave", "i" },
@@ -115,7 +114,7 @@ static const table_t table[] =
     { "iuml", "ie" },
     { "laquo", "<" },
     { "ldquo", "\"" },
-    { "lsaquo" "<" },
+    { "lsaquo", "<" },
     { "lsquo", "'" },
     { "lt", "<" },
     { "mdash", "-" },
@@ -153,7 +152,7 @@ static const table_t table[] =
     { "uacute", "u" },
     { "ucirc", "u" },
     { "ugrave", "u" },
-    { "uuml" "ue" },
+    { "uuml", "ue" },
     { "yacute", "y" },
     { "yuml", "ye" },
     { "zwj", "" },

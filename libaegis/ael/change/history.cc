@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2003-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate historys
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/ael/change/history.h>
@@ -35,12 +32,12 @@
 
 void
 list_change_history(string_ty *project_name, long change_number,
-    string_list_ty *args)
+    string_list_ty *)
 {
     cstate_ty       *cstate_data;
     project_ty      *pp;
-    change_ty       *cp;
-    user_ty         *up;
+    change::pointer cp;
+    user_ty::pointer up;
     output_ty       *what_col;
     output_ty       *when_col;
     output_ty       *who_col;
@@ -48,14 +45,17 @@ list_change_history(string_ty *project_name, long change_number,
     size_t          j;
     string_ty       *line1;
     int             left;
-    col_ty          *colp;
+    col          *colp;
 
     //
     // locate project data
     //
     trace(("list_change_history()\n{\n"));
     if (!project_name)
-	    project_name = user_default_project();
+    {
+            nstring n = user_ty::create()->default_project();
+            project_name = str_copy(n.get_ref());
+    }
     else
 	    project_name = str_copy(project_name);
     pp = project_alloc(project_name);
@@ -65,22 +65,22 @@ list_change_history(string_ty *project_name, long change_number,
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	    change_number = user_default_change(up);
+	    change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
 
     //
     // create the columns
     //
-    colp = col_open((string_ty *)0);
+    colp = col::open((string_ty *)0);
     line1 =
 	    str_format
 	    (
@@ -88,20 +88,20 @@ list_change_history(string_ty *project_name, long change_number,
 		    project_name_get(pp)->str_text,
 		    magic_zero_decode(change_number)
 	    );
-    col_title(colp, line1->str_text, "History");
+    colp->title(line1->str_text, "History");
     str_free(line1);
 
     left = 0;
-    what_col = col_create(colp, left, left + WHAT_WIDTH, "What\n------");
+    what_col = colp->create(left, left + WHAT_WIDTH, "What\n------");
     left += WHAT_WIDTH + 1;
 
-    when_col = col_create(colp, left, left + WHEN_WIDTH, "When\n------");
+    when_col = colp->create(left, left + WHEN_WIDTH, "When\n------");
     left += WHEN_WIDTH + 1;
 
-    who_col = col_create(colp, left, left + WHO_WIDTH, "Who\n-----");
+    who_col = colp->create(left, left + WHO_WIDTH, "Who\n-----");
     left += WHO_WIDTH + 1;
 
-    why_col = col_create(colp, left, 0, "Comment\n---------");
+    why_col = colp->create(left, 0, "Comment\n---------");
 
     //
     // list the history
@@ -136,15 +136,14 @@ list_change_history(string_ty *project_name, long change_number,
 		);
 	    }
 	}
-	col_eoln(colp);
+	colp->eoln();
     }
 
     //
     // clean up and go home
     //
-    col_close(colp);
+    delete colp;
     change_free(cp);
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }

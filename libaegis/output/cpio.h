@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2002, 2005, 2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -23,6 +22,8 @@
 #ifndef AEDIST_OUTPUT_CPIO_H
 #define AEDIST_OUTPUT_CPIO_H
 
+#include <common/ac/time.h>
+
 #include <libaegis/output.h>
 
 struct string_ty; // forward
@@ -42,8 +43,10 @@ public:
       * \param deeper
       *     The underlying output to which the CPIO archive is to be
       *     written.
+      * \param mtime
+      *     The time stamp to attach to all archive members
       */
-    output_cpio_ty(output_ty *deeper);
+    output_cpio_ty(output_ty *deeper, time_t mtime);
 
     /**
       * The child method is used to create a child archive.
@@ -79,6 +82,12 @@ private:
     output_ty *deeper;
 
     /**
+      * The mtime instance variable is used to remember the time to
+      * attach to all archive members.
+      */
+    time_t mtime;
+
+    /**
       * The default constructor.
       */
     output_cpio_ty();
@@ -93,17 +102,5 @@ private:
       */
     output_cpio_ty &operator=(const output_cpio_ty &);
 };
-
-inline DEPRECATED output_ty *
-output_cpio(output_ty *deeper)
-{
-    return new output_cpio_ty(deeper);
-}
-
-inline DEPRECATED output_ty *
-output_cpio_child(output_cpio_ty *op, const nstring &name, long len)
-{
-    return op->child(name, len);
-}
 
 #endif // AEDIST_OUTPUT_CPIO_H

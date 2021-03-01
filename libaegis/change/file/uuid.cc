@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,21 +13,52 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate uuids
 //
 
+#include <common/error.h> // for assert
+#include <common/symtab.h>
 #include <libaegis/change/file.h>
 
 
 fstate_src_ty *
-change_file_find_uuid(change_ty *cp, string_ty *uuid, view_path_ty view_path)
+change_file_find_uuid(change::pointer cp, string_ty *uuid,
+    view_path_ty view_path)
 {
-    size_t          j;
+    //
+    // See if we can do a fast lookup first.
+    //
+    assert(uuid);
+    assert(cp);
+    if (view_path == view_path_first)
+    {
+        //
+        // Make sure fstate has been read in and the symbol tables used
+        // to speed up lookups have been initialised.
+        //
+        change_fstate_get(cp);
+        assert(cp->fstate_uuid_stp);
+        if (cp->fstate_uuid_stp)
+        {
+            fstate_src_ty *src =
+                (fstate_src_ty *)symtab_query(cp->fstate_uuid_stp, uuid);
+            if (src)
+            {
+                assert(src->action != file_action_remove || !src->move);
+            }
+            return src;
+        }
+    }
 
-    for (j = 0; ; ++j)
+    //
+    // Do it the slow way.
+    //
+    // FIXME: why not keep and index for each view path type?
+    //
+    for (size_t j = 0; ; ++j)
     {
 	fstate_src_ty   *src;
 

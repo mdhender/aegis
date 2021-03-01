@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2002-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -52,12 +51,13 @@ output_cpio_child_ty::~output_cpio_child_ty()
 
 
 output_cpio_child_ty::output_cpio_child_ty(output_ty *arg1, const nstring &arg2,
-	long arg3) :
+	long arg3, time_t a_mtime) :
     deeper(arg1),
     name(arg2),
     length(arg3),
     pos(0),
-    bol(true)
+    bol(true),
+    mtime(a_mtime)
 {
     assert(length >= 0);
     header();
@@ -115,7 +115,7 @@ output_cpio_child_ty::header()
     hex8(0); // uid
     hex8(0); // gid
     hex8(1); // nlinks
-    hex8(0); // mtime
+    hex8(mtime); // mtime
     hex8(length); // size
     hex8(0); // dev_major
     hex8(0); // dev_minor

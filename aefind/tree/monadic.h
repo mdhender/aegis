@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,28 +13,69 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aefind/tree/monadic.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEFIND_TREE_MONADIC_H
 #define AEFIND_TREE_MONADIC_H
 
-#include <aefind/tree/private.h>
+#include <aefind/tree.h>
 
-struct tree_monadic_ty
+/**
+  * The tree_monadic class is used to represent an abstract tree one with
+  * a single argument.
+  */
+class tree_monadic:
+    public tree
 {
-    tree_ty         inherited;
-    tree_ty	    *arg;
-};
+public:
+    /**
+      * The destructor.
+      */
+    virtual ~tree_monadic();
 
-tree_ty *tree_monadic_new(tree_method_ty *, tree_ty *);
-void tree_monadic_destructor(tree_ty *);
-void tree_monadic_print(tree_ty *);
-int tree_monadic_useful(tree_ty *);
-int tree_monadic_constant(tree_ty *);
-tree_ty *tree_monadic_optimize(tree_ty *);
+protected:
+    /**
+      * The constructor.
+      *
+      * @param arg
+      *     The single argument to the function.
+      */
+    tree_monadic(const pointer &arg);
+
+    // See base class for documentation.
+    void print() const;
+
+    // See base class for documentation.
+    bool useful() const;
+
+    // See base class for documentation.
+    bool constant() const;
+
+    tree::pointer get_arg() const { return arg; }
+
+private:
+    /**
+      * The arg instance variable is used to remember the argument to
+      * this single-argument function.
+      */
+    tree::pointer arg;
+
+    /**
+      * The default constructor.  Do not use.
+      */
+    tree_monadic();
+
+    /**
+      * The copy constructor.  Do not use.
+      */
+    tree_monadic(const tree_monadic &);
+
+    /**
+      * The assignment operator.  Do not use.
+      */
+    tree_monadic &operator=(const tree_monadic &);
+};
 
 #endif // AEFIND_TREE_MONADIC_H

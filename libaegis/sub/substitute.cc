@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -25,32 +24,32 @@
 #include <libaegis/sub.h>
 #include <libaegis/sub/substitute.h>
 #include <common/trace.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
 #include <common/wstring.h>
 
 
-wstring_ty *
-sub_substitute(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_substitute(sub_context_ty *scp, const wstring_list &arg)
 {
+    trace(("sub_substitute()\n{\n"));
+
     //
     // make sure there are enough arguments
     //
-    trace(("sub_substitute()\n{\n"));
-    if (arg->size() < 3)
+    if (arg.size() < 3)
     {
-	sub_context_error_set(scp, i18n("requires two or more arguments"));
+	scp->error_set(i18n("requires two or more arguments"));
 	trace(("return NULL;\n"));
 	trace(("}\n"));
-	return 0;
+	return wstring();
     }
-    nstring lhs(wstr_to_str(arg->get(1)));
-    nstring rhs(wstr_to_str(arg->get(2)));
+    nstring lhs(arg[1].to_nstring());
+    nstring rhs(arg[2].to_nstring());
 
     //
     // turn it into one big string to be substituted within
     //
-    wstring ws = arg->unsplit(3, arg->size());
-    nstring s(wstr_to_str(ws.get_ref()));
+    nstring s = arg.unsplit(3, arg.size()).to_nstring();
 
     //
     // do the substitution
@@ -59,17 +58,17 @@ sub_substitute(sub_context_ty *scp, wstring_list_ty *arg)
     nstring output;
     if (!re.match_and_substitute(rhs, s, 0, output))
     {
-	sub_context_error_set(scp, re.strerror());
+	scp->error_set(re.strerror());
 	trace(("return NULL;\n"));
 	trace(("}\n"));
-	return 0;
+	return wstring();
     }
 
     //
     // clean up and return
     //
-    wstring_ty *result = str_to_wstr(output.get_ref());
-    trace(("return %8.8lX;\n", (long)result));
+    wstring result(output);
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

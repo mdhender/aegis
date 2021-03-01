@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993, 1995, 1999-2004 Peter Miller
+#	Copyright (C) 1992, 1993, 1995, 1999-2004, 2006, 2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -14,10 +14,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: command used to notify by email that a change has passed review
+#	along with this program. If not, see
+#	<http://www.gnu.org/licenses/>.
 #
 # Suggested project attribute:
 # review_pass_notify_command = "$datadir/rp.sh $p $c $developer $reviewer";
@@ -70,7 +68,12 @@ state=`$aesub '$state' -c $change -p $project `
 case $state in
 awaiting_integration)
     coda="It is now awaiting integration."
-    to=`$aesub -p $project "\${email_address -comma $developer $integrators}"`
+    #
+    # Note the double quotes: the ${email_address} is acted on by aesub
+    # BUT the $developer and $integrators are a shell environment
+    # variables set earlier in this script.
+    #
+    to=`$aesub -p $project "\\\${email_address -comma $developer $integrators}"`
     ;;
 awaiting_review | being_reviewed)
     coda="It is still awaiting further review."

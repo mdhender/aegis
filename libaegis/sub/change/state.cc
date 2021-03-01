@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate states
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change.h>
@@ -50,25 +47,20 @@
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_state(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_state(sub_context_ty *scp, const wstring_list &)
 {
-    change_ty	    *cp;
-    wstring_ty	    *result;
-
     trace(("sub_state()\n{\n"));
-    result = 0;
-    cp = sub_context_change_get(scp);
+    wstring result;
+    change::pointer cp = sub_context_change_get(scp);
     if (!cp)
-	sub_context_error_set(scp, i18n("not valid in current context"));
+	scp->error_set(i18n("not valid in current context"));
     else
     {
-	cstate_ty       *cstate_data;
-
-	cstate_data = change_cstate_get(cp);
-	result = wstr_from_c(cstate_state_ename(cstate_data->state));
+	cstate_ty *cstate_data = cp->cstate_get();
+	result = wstring(cstate_state_ename(cstate_data->state));
     }
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

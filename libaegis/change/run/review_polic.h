@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004, 2006, 2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface of the change_run_review_polic class
 //
@@ -23,7 +22,6 @@
 #ifndef LIBAEGIS_CHANGE_RUN_REVIEW_POLIC_H
 #define LIBAEGIS_CHANGE_RUN_REVIEW_POLIC_H
 
-struct change_ty; // forward
 struct user_ty; // forward
 
 /**
@@ -42,6 +40,6 @@ struct user_ty; // forward
   *     The exit status of the command:  0 for "advance to awaiting
   *     integration" and non-zero for "do not change state".
   */
-int change_run_review_policy_command(change_ty *cp, user_ty *up);
+int change_run_review_policy_command(change::pointer cp, user_ty::pointer up);
 
 #endif // LIBAEGIS_CHANGE_RUN_REVIEW_POLIC_H

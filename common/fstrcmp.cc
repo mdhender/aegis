@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991, 1993, 1994, 2002-2005 Peter Miller.
-//	All rights reserved.
+//	Copyright (C) 1991, 1993, 1994, 2002-2007 Peter Miller.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -43,7 +42,6 @@
 
 #include <common/error.h>
 #include <common/fstrcmp.h>
-#include <common/mem.h>
 #include <common/trace.h>
 
 
@@ -92,7 +90,7 @@ static fc_t     fc;
 //
 
 static long
-midsnake(int depth, long A, long N, long B, long M, long *ulx, long *uly,
+midsnake(long A, long N, long B, long M, long *ulx, long *uly,
     long *lrx, long *lry)
 {
     long            x;
@@ -107,8 +105,7 @@ midsnake(int depth, long A, long N, long B, long M, long *ulx, long *uly,
     long            changes;
     long            D;
 
-    trace(("midsnake(depth = %d, A = %ld, N = %ld, B = %ld, M = %ld)\n{\n",
-	depth, A, N, B, M));
+    trace(("midsnake(A = %ld, N = %ld, B = %ld, M = %ld)\n{\n", A, N, B, M));
     trace(("searching: %ld,%ld to %ld,%ld\n", A, B, A + N, B + M));
 
     DELTA = N - M;
@@ -256,7 +253,7 @@ findsnake(int depth, long A, long N, long B, long M)
     //
     // If more than one change needed, then call ourself for each part.
     //
-    D = midsnake(depth, A, N, B, M, &ulx, &uly, &lrx, &lry);
+    D = midsnake(A, N, B, M, &ulx, &uly, &lrx, &lry);
 
     if (D > 1)
     {
@@ -342,13 +339,12 @@ fstrcmp(const char *s1, const char *s2)
     if (tablesize > tablesize_max)
     {
 	tablesize_max = tablesize;
-	V1_table =
-            (long int *)mem_change_size(V1_table, sizeof(long) * tablesize_max);
-	V2_table =
-            (long int *)mem_change_size(V2_table, sizeof(long) * tablesize_max);
-	snake_table =
-	    (snake_t *)
-	    mem_change_size(snake_table, sizeof(snake_t) * tablesize_max);
+	delete [] V1_table;
+	V1_table = new long [tablesize_max];
+	delete [] V2_table;
+	V2_table = new long [tablesize_max];
+	delete [] snake_table;
+	snake_table = new snake_t [tablesize_max];
     }
 
     V1 = V1_table + fc.maxlines;

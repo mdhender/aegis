@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1997-1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1995, 1997-1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -107,13 +106,13 @@ new_reviewer_list(void)
 static void
 new_reviewer_inner(project_ty *pp, string_list_ty *wlp, int strict)
 {
-    user_ty         *up;
+    user_ty::pointer up;
     size_t          j;
 
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // lock the project for change
@@ -124,7 +123,7 @@ new_reviewer_inner(project_ty *pp, string_list_ty *wlp, int strict)
     //
     // check they are allowed to do this
     //
-    if (!project_administrator_query(pp, user_name(up)))
+    if (!project_administrator_query(pp, up->name()))
 	project_fatal(pp, 0, i18n("not an administrator"));
 
     //
@@ -132,26 +131,20 @@ new_reviewer_inner(project_ty *pp, string_list_ty *wlp, int strict)
     //
     for (j = 0; j < wlp->nstrings; ++j)
     {
-	user_ty		*candidate;
+	user_ty::pointer candidate;
 
 	//
 	// make sure the user isn't already there
 	//
-	candidate = user_symbolic(pp, wlp->string[j]);
-	if (project_reviewer_query(pp, user_name(candidate)))
+	candidate = user_ty::create(nstring(wlp->string[j]));
+	if (project_reviewer_query(pp, candidate->name()))
 	{
-	    sub_context_ty  *scp;
-
 	    if (!strict)
-	    {
-		user_free(candidate);
 		continue;
-	    }
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Name", user_name(candidate));
-	    project_fatal(pp, scp, i18n("$name already reviewer"));
+	    sub_context_ty sc;
+	    sc.var_set_string("Name", candidate->name());
+	    project_fatal(pp, &sc, i18n("$name already reviewer"));
 	    // NOTREACHED
-	    sub_context_delete(scp);
 	}
 
 	//
@@ -159,14 +152,13 @@ new_reviewer_inner(project_ty *pp, string_list_ty *wlp, int strict)
 	//	(should we check s/he is in the project's group?)
 	// this is to avoid security holes
 	//
-	if (!user_uid_check(user_name(candidate)))
-	    fatal_user_too_privileged(user_name(candidate));
+	if (!candidate->check_uid())
+	    fatal_user_too_privileged(candidate->name());
 
 	//
 	// add them to the list
 	//
-	project_reviewer_add(pp, user_name(candidate));
-	user_free(candidate);
+	project_reviewer_add(pp, candidate->name());
     }
 
     //
@@ -188,7 +180,6 @@ new_reviewer_inner(project_ty *pp, string_list_ty *wlp, int strict)
 	project_verbose(pp, scp, i18n("new reviewer $name complete"));
 	sub_context_delete(scp);
     }
-    user_free(up);
 }
 
 
@@ -254,7 +245,7 @@ new_reviewer_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(new_reviewer_usage);
+	    user_ty::lock_wait_argument(new_reviewer_usage);
 	    break;
 	}
 	arglex();
@@ -269,7 +260,10 @@ new_reviewer_main(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     pp->bind_existing();
     str_free(project_name);
@@ -302,8 +296,8 @@ new_reviewer(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, new_reviewer_help, },
-	{arglex_token_list, new_reviewer_list, },
+	{ arglex_token_help, new_reviewer_help, 0 },
+	{ arglex_token_list, new_reviewer_list, 0 },
     };
 
     trace(("new_reviewer()\n{\n"));

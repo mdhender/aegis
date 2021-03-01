@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -27,7 +26,6 @@
 #include <common/ac/errno.h>
 #include <common/ac/stdlib.h>
 #include <common/ac/string.h>
-
 #include <common/ac/sys/types.h>
 #include <sys/stat.h>
 #include <common/ac/unistd.h>
@@ -35,14 +33,13 @@
 #include <common/ac/sys/clu.h>
 
 #include <common/error.h>
-#include <libaegis/glue.h>
-#include <common/mem.h>
-#include <libaegis/os.h>
 #include <common/str.h>
-#include <common/stracc.h>
 #include <common/str_list.h>
-#include <libaegis/sub.h>
+#include <common/stracc.h>
 #include <common/trace.h>
+#include <libaegis/glue.h>
+#include <libaegis/os.h>
+#include <libaegis/sub.h>
 
 
 //
@@ -630,15 +627,7 @@ magic_memb_replace(string_ty *s)
 string_ty *
 os_pathname(string_ty *path, int resolve)
 {
-    static char     *tmp;
-    static size_t   tmplen;
-    static size_t   ipos;
-    static size_t   opos;
-    int             c;
     int             found;
-#ifdef S_IFLNK
-    int             loop;
-#endif
     string_ty       *result;
 
     //
@@ -658,18 +647,19 @@ os_pathname(string_ty *path, int resolve)
     //
     // Take kinks out of the pathname
     //
-    ipos = 0;
-    opos = 0;
+    static stracc_t ac;
+    ac.clear();
+    size_t ipos = 0;
     found = 0;
 #ifdef S_IFLNK
-    loop = 0;
+    int loop = 0;
 #endif
     while (!found)
     {
 	//
 	// get the next character
 	//
-	c = path->str_text[ipos];
+	unsigned char c = path->str_text[ipos];
 	if (c)
 	    ipos++;
 	else
@@ -683,35 +673,42 @@ os_pathname(string_ty *path, int resolve)
 	// until get to slash
 	//
 	if (c != '/')
-	    goto remember;
+	{
+	    ac.push_back(c);
+	    continue;
+	}
 
 	//
 	// leave root alone
 	//
-	if (!opos)
-	    goto remember;
+	if (ac.empty())
+	{
+	    ac.push_back(c);
+	    continue;
+	}
 
 	//
 	// "/.." -> "/"
 	//
-	if (opos == 3 && tmp[1] == '.' && tmp[2] == '.')
+	if (ac.size() == 3 && ac[1] == '.' && ac[2] == '.')
 	{
-	    opos = 1;
+	    ac.pop_back();
+	    ac.pop_back();
 	    continue;
 	}
 
 	//
 	// "a//" -> "a/"
 	//
-	if (tmp[opos - 1] == '/')
+	if (ac.back() == '/')
 	    continue;
 
 	//
 	// "a/./" -> "a/"
 	//
-	if (opos >= 2 && tmp[opos - 1] == '.' && tmp[opos - 2] == '/')
+	if (ac.size() >= 2 && ac.back() == '.' && ac[ac.size() - 2] == '/')
 	{
-	    opos--;
+	    ac.pop_back();
 	    continue;
 	}
 
@@ -720,19 +717,22 @@ os_pathname(string_ty *path, int resolve)
 	//
 	if
 	(
-	    opos > 3
+	    ac.size() > 3
 	&&
-	    tmp[opos - 1] == '.'
+	    ac[ac.size() - 1] == '.'
 	&&
-	    tmp[opos - 2] == '.'
+	    ac[ac.size() - 2] == '.'
 	&&
-	    tmp[opos - 3] == '/'
+	    ac[ac.size() - 3] == '/'
 	)
 	{
-	    opos -= 4;
-	    assert(opos > 0);
-	    while (tmp[opos - 1] != '/')
-		opos--;
+	    ac.pop_back();
+	    ac.pop_back();
+	    ac.pop_back();
+	    ac.pop_back();
+	    assert(!ac.empty());
+	    while (!ac.empty() && ac.back() != '/')
+		ac.pop_back();
 	    continue;
 	}
 
@@ -742,17 +742,13 @@ os_pathname(string_ty *path, int resolve)
 #ifdef S_IFLNK
 	if (resolve)
 	{
-	    char            pointer[2000];
-	    int             nbytes;
-	    string_ty       *s;
-
-	    s = str_n_from_c(tmp, opos);
-	    nbytes = glue_readlink(s->str_text, pointer, sizeof(pointer) - 1);
+	    string_ty *s = ac.mkstr();
+	    char pointer[2000];
+	    int nbytes =
+		glue_readlink(s->str_text, pointer, sizeof(pointer) - 1);
 	    if (nbytes < 0)
 	    {
-		int             errno_old;
-
-		errno_old = errno;
+		int errno_old = errno;
 
 		//
 		// probably not a symbolic link
@@ -852,15 +848,15 @@ os_pathname(string_ty *path, int resolve)
 		}
 		else
 		{
-		    while (tmp[opos - 1] != '/')
-			opos--;
-		    tmp[opos] = 0;
+		    while (ac.back() != '/')
+			ac.pop_back();
 
 		    newpath =
 			str_format
 			(
-			    "%s/%s/%s",
-			    tmp,
+			    "%.*s/%s/%s",
+			    int(ac.size()),
+			    ac.get_data(),
 			    link1->str_text,
 			    path->str_text + ipos
 			);
@@ -869,7 +865,7 @@ os_pathname(string_ty *path, int resolve)
 		str_free(path);
 		path = newpath;
 		ipos = 0;
-		opos = 0;
+		ac.clear();
 		found = 0;
 		continue;
 	    }
@@ -879,21 +875,15 @@ os_pathname(string_ty *path, int resolve)
 	//
 	// keep the slash
 	//
-        remember:
-	if (opos >= tmplen)
-	{
-	    tmplen = tmplen * 2 + 8;
-	    tmp = (char *)mem_change_size(tmp, tmplen);
-	}
-	tmp[opos++] = c;
+	ac.push_back(c);
     }
     str_free(path);
-    assert(opos >= 1);
-    assert(tmp[0] == '/');
-    assert(tmp[opos - 1] == '/');
-    if (opos >= 2)
-	opos--;
-    path = str_n_from_c(tmp, opos);
+    assert(!ac.empty());
+    assert(ac[0] == '/');
+    assert(ac.back() == '/');
+    if (ac.size() >= 2)
+	ac.pop_back();
+    path = ac.mkstr();
     trace_string(path->str_text);
 
     //

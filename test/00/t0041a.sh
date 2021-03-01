@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996-1998, 2000, 2001, 2004, 2005 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 1996-1998, 2000, 2001, 2004-2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -41,7 +40,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	persevere_preference = all; \
 	log_file_preference = never;"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 here=`pwd`
@@ -216,6 +215,7 @@ activity="integrate pass 215"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
+workchan=$work/chan.C11
 activity="develop begin 219"
 $bin/aegis -db 11 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface of the symtab_template class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef COMMON_SYMTAB_TEMPLATE_H
@@ -27,9 +24,9 @@
 #include <common/nstring/list.h>
 #include <common/symtab.h>
 
-/** \addtogroup Symtab
-  * \brief Symbols table interface
-  * \ingroup Common
+/** @addtogroup Symtab
+  * @brief Symbols table interface
+  * @ingroup Common
   * @{
   */
 
@@ -100,10 +97,49 @@ public:
     }
 
     /**
+      * The get method is used to look for a particular key in the
+      * symbol table.  If the value is not present, a default instance
+      * of the value type is returned.
+      *
+      * @param key
+      *     The symbol table entry to look for.
+      */
+    value_type_t
+    get(const nstring &key)
+        const
+    {
+        value_type_t *vp = query(key);
+        return (vp ? *vp : value_type_t());
+    }
+
+    /**
+      * The query_fuzzy method may be used to search for a variable.
+      *
+      * @param key
+      *     The row name to search for.
+      *
+      * @returns
+      *     The NULL pointer if there is no row of that name and no row
+      *     with a similar name, otherwise returns a pointer to the most
+      *     similar name.
+      *
+      * @note
+      *     This method has O(n) execution time.
+      */
+    nstring
+    query_fuzzy(const nstring &key)
+        const
+    {
+        return (stp ? stp->query_fuzzy(key) : nstring());
+    }
+
+    /**
       * The query method is used to locate the given key in the symbol table.
       *
       * @param key
       *     The symbol table entry to look for.
+      * @note
+      *     This method will be DEPRECATED as soon as possible
       */
     value_type_t *
     query(string_ty *key)
@@ -126,7 +162,23 @@ public:
     {
 	if (!stp)
 	    return 0;
-	return (value_type_t *)stp->query(key.get_ref());
+	return (value_type_t *)stp->query(key);
+    }
+
+    /**
+      * The query method is used to locate the given key in the symbol table.
+      *
+      * @param key_list
+      *     The symbol table entries to look for.
+      *     The first found is returned.
+      */
+    value_type_t *
+    query(const nstring_list &key_list)
+	const
+    {
+	if (!stp)
+	    return 0;
+	return (value_type_t *)stp->query(key_list);
     }
 
     /**
@@ -139,6 +191,8 @@ public:
       *     If you have called the set_reaper method, it will have
       *     operator delete called on it (non array) when the symbol
       *     table destructor is run.
+      * @note
+      *     This method will be DEPRECATED as soon as possible
       */
     void
     assign(string_ty *key, value_type_t *value)
@@ -164,7 +218,7 @@ public:
     {
 	if (!stp)
 	    stp = new symtab_ty(5);
-	stp->assign(key.get_ref(), (void *)value);
+	stp->assign(key, (void *)value);
     }
 
     /**
@@ -198,7 +252,7 @@ public:
     remove(const nstring &key)
     {
 	if (stp)
-	    stp->remove(key.get_ref());
+	    stp->remove(key);
     }
 
     /**
@@ -255,14 +309,14 @@ public:
       * The keys method may be used to extract the list of row names
       * from the symbol table.
       *
-      * \param result
+      * @param result
       *     Where to put the row names.  It is cleared before any row
       *     names are placed in it.  It is not sorted.
       *
-      * \note
+      * @note
       *     If you have used assign_push method, it is possible to have
       *     duplicates in the list of keys.
-      * \note
+      * @note
       *     This method has O(n) execution time.
       */
     void

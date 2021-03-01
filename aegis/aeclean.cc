@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1998-2007 Peter Miller
+//	Copyright (C) 2006 Walter Franzini;
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: clean a change development directory
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/errno.h>
@@ -36,6 +34,7 @@
 #include <libaegis/commit.h>
 #include <libaegis/dir.h>
 #include <common/error.h>
+#include <common/gmatch.h>
 #include <libaegis/glue.h>
 #include <libaegis/help.h>
 #include <libaegis/lock.h>
@@ -115,16 +114,21 @@ clean_list(void)
 struct clean_info_ty
 {
     string_ty       *dd;
-    change_ty       *cp;
+    change::pointer cp;
     bool            minimum;
-    user_ty         *up;
+    user_ty::pointer up;
     bool            verbose;
     bool            touch;
     const work_area_style_ty *style;
+    pconf_clean_exceptions_list_ty  *exceptions;
 
     clean_info_ty() :
-	dd(0), cp(0), minimum(false), up(0),
-	verbose(false), touch(false), style(0)
+	dd(0),
+        cp(0),
+        minimum(false),
+	verbose(false),
+        touch(false),
+        style(0)
     {
     }
 };
@@ -132,7 +136,7 @@ struct clean_info_ty
 
 static void
 clean_out_the_garbage(void *p, dir_walk_message_ty msg, string_ty *path,
-    const struct stat *st)
+    const struct stat *)
 {
     clean_info_ty   *sip;
     string_ty	    *s1;
@@ -194,7 +198,7 @@ clean_out_the_garbage(void *p, dir_walk_message_ty msg, string_ty *path,
         // style wants to keep around.
 	//
 	delete_me = true;
-	user_become_undo();
+	sip->up->become_end();
 	if
 	(
 	    !sip->style->during_build_only
@@ -216,8 +220,8 @@ clean_out_the_garbage(void *p, dir_walk_message_ty msg, string_ty *path,
 	if (sip->verbose)
 	    error_raw("rm %S", s1);
 	if (delete_me)
-	    delete_me = user_delete_file_query(sip->up, s1, false, true);
-	user_become(sip->up);
+	    delete_me = sip->up->delete_file_query(nstring(s1), false, true);
+	sip->up->become_begin();
 	if (delete_me)
 	    os_unlink_errok(path);
 	str_free(s1);
@@ -250,7 +254,7 @@ clean_out_the_garbage(void *p, dir_walk_message_ty msg, string_ty *path,
 	//
 	delete_me = true;
 	touch_me = false;
-	user_become_undo();
+	sip->up->become_end();
 	if (change_file_find(sip->cp, s1, view_path_first))
 	{
 	    delete_me = false;
@@ -295,15 +299,31 @@ clean_out_the_garbage(void *p, dir_walk_message_ty msg, string_ty *path,
 	    delete_me = false;
 
 	//
+	// Take into account clean_exceptions;
+	//
+	if (delete_me && sip->exceptions)
+	{
+	    for (size_t i = 0; i < sip->exceptions->length; ++i)
+	    {
+		if (!gmatch(sip->exceptions->list[i]->str_text,
+			    path->str_text))
+		    continue;
+
+		delete_me = false;
+		break;
+	    }
+	}
+
+	//
 	// Take notice of their delete file preference.
 	//
 	if (delete_me)
 	{
 	    if (sip->verbose)
 		error_raw("rm %S", s1);
-	    delete_me = user_delete_file_query(sip->up, s1, false, true);
+	    delete_me = sip->up->delete_file_query(nstring(s1), false, true);
 	}
-	user_become(sip->up);
+	sip->up->become_begin();
 
 	//
 	// delete the file
@@ -327,9 +347,9 @@ clean_main(void)
     string_ty	    *project_name;
     project_ty	    *pp;
     long	    change_number;
-    change_ty	    *cp;
+    change::pointer cp;
     log_style_ty    log_style;
-    user_ty	    *up;
+    user_ty::pointer up;
     int		    mergeable_files;
     int		    diffable_files;
     fstate_src_ty   *p_src_data;
@@ -374,7 +394,7 @@ clean_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(clean_usage);
+	    user_ty::lock_wait_argument(clean_usage);
 	    break;
 
 	case arglex_token_minimum:
@@ -389,7 +409,7 @@ clean_main(void)
 
 	case arglex_token_interactive:
 	case arglex_token_keep_not:
-	    user_delete_file_argument(clean_usage);
+	    user_ty::delete_file_argument(clean_usage);
 	    break;
 
 	case arglex_token_touch:
@@ -411,7 +431,10 @@ clean_main(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -419,13 +442,13 @@ clean_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -439,10 +462,10 @@ clean_main(void)
     // It is an error if the change is not in the being_developed state.
     // It is an error if the change is not assigned to the current user.
     //
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     if (cstate_data->state != cstate_state_being_developed)
 	change_fatal(cp, 0, i18n("bad clean state"));
-    if (!str_equal(change_developer_name(cp), user_name(up)))
+    if (nstring(change_developer_name(cp)) != up->name())
 	change_fatal(cp, 0, i18n("not developer"));
 
     os_throttle();
@@ -569,9 +592,9 @@ clean_main(void)
 	//
 	// make sure the change source file even exists
 	//
-	user_become(up);
+	up->become_begin();
 	exists = os_exists(path);
-	user_become_undo();
+	up->become_end();
 	if (!exists)
 	{
 	    scp = sub_context_new();
@@ -611,10 +634,10 @@ clean_main(void)
 	{
 	    path_d = str_format("%s,D", path->str_text);
 	    trace_string(path_d->str_text);
-	    user_become(up);
+	    up->become_begin();
 	    ignore =
 		change_fingerprint_same(c_src_data->diff_file_fp, path_d, 0);
-	    user_become_undo();
+	    up->become_end();
 	    if (!ignore)
 	    {
 		scp = sub_context_new();
@@ -668,9 +691,10 @@ clean_main(void)
     info.up = up;
     info.dd = change_development_directory_get(cp, 1);
     info.style = &style;
-    user_become(up);
+    info.exceptions = pconf_data->clean_exceptions;
+    up->become_begin();
     dir_walk(info.dd, clean_out_the_garbage, &info);
-    user_become_undo();
+    up->become_end();
 
     //
     // Nuke the build time stamps.  This lets aepromptcmd and aefinish
@@ -737,18 +761,9 @@ clean_main(void)
 	    break;
 	}
     }
-    if (wl_nf.nstrings)
-	change_run_new_file_command(cp, &wl_nf, up);
-    if (wl_nt.nstrings)
-	change_run_new_test_command(cp, &wl_nt, up);
-    if (wl_cp.nstrings)
-	change_run_copy_file_command(cp, &wl_cp, up);
-    if (wl_rm.nstrings)
-	change_run_remove_file_command(cp, &wl_rm, up);
-    if (wl_mt.nstrings)
-	change_run_make_transparent_command(cp, &wl_mt, up);
-    cstate_data->project_file_command_sync = 0;
-    change_run_project_file_command(cp, up);
+
+    // remember that we are about to do it
+    cp->run_project_file_command_done();
 
     //
     // If the change row (or change file table) changed,
@@ -758,6 +773,18 @@ clean_main(void)
     change_cstate_write(cp);
     commit();
     lock_release();
+
+    if (wl_nf.nstrings)
+	cp->run_new_file_command(&wl_nf, up);
+    if (wl_nt.nstrings)
+	cp->run_new_test_command(&wl_nt, up);
+    if (wl_cp.nstrings)
+	cp->run_copy_file_command(&wl_cp, up);
+    if (wl_rm.nstrings)
+	cp->run_remove_file_command(&wl_rm, up);
+    if (wl_mt.nstrings)
+	cp->run_make_transparent_command(&wl_mt, up);
+    cp->run_project_file_command(up);
 
     //
     // Run the develop begin command, because we have probably
@@ -773,7 +800,6 @@ clean_main(void)
 
     change_free(cp);
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -783,8 +809,8 @@ clean(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, clean_help, },
-	{arglex_token_list, clean_list, },
+	{ arglex_token_help, clean_help, 0 },
+	{ arglex_token_list, clean_list, 0 },
     };
 
     trace(("clean()\n{\n"));

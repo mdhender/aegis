@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 2002, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,17 +13,70 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aefind/tree/match.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEFIND_TREE_MATCH_H
 #define AEFIND_TREE_MATCH_H
 
-#include <common/main.h>
+#include <aefind/tree/diadic.h>
 
-struct tree_ty *tree_match_new(struct tree_ty *, struct tree_ty *);
+/**
+  * The tree_match class is used to represent an expression tree node
+  * for compareing a file globbing pattern with a string (usually a file
+  * name).
+  */
+class tree_match:
+    public tree_diadic
+{
+public:
+    /**
+      * The destructor.
+      */
+    virtual ~tree_match();
+
+private:
+    /**
+      * The constructor.  It is private on purpose, use the "create"
+      * class method instead.
+      */
+    tree_match(const tree::pointer &lhs, const tree::pointer &rhs);
+
+public:
+    /**
+      * The create class method is used to create new dynamically
+      * allocated instances of this class.
+      */
+    static pointer create(const tree::pointer &lhs, const tree::pointer &rhs);
+
+protected:
+    // See base class for documentation.
+    const char *name() const;
+
+    // See base class for documentation.
+    rpt_value::pointer evaluate(string_ty *, string_ty *, string_ty *,
+        struct stat *) const;
+
+    // See base class for documentation.
+    tree::pointer optimize() const;
+
+private:
+    /**
+      * The default constructor.  Do not use.
+      */
+    tree_match();
+
+    /**
+      * The copy constructor.  Do not use.
+      */
+    tree_match(const tree_match &);
+
+    /**
+      * The assignment operator.  Do not use.
+      */
+    tree_match &operator=(const tree_match &);
+};
+
 
 #endif // AEFIND_TREE_MATCH_H

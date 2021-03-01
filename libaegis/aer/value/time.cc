@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994, 1996, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,89 +13,80 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate time values
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
 #include <libaegis/aer/value/boolean.h>
 #include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/real.h>
 #include <libaegis/aer/value/string.h>
 #include <libaegis/aer/value/time.h>
-#include <common/error.h>
-#include <common/str.h>
 
 
-struct rpt_value_time_ty
+rpt_value_time::~rpt_value_time()
 {
-	RPT_VALUE
-	time_t		value;
-};
-
-
-static rpt_value_ty *
-stringize(rpt_value_ty *vp)
-{
-	rpt_value_time_ty *this_thing;
-	string_ty	*s;
-	rpt_value_ty	*result;
-
-	this_thing = (rpt_value_time_ty *)vp;
-	assert(this_thing->method->type == rpt_value_type_time);
-	s = str_format("%.24s", ctime(&this_thing->value));
-	result = rpt_value_string(s);
-	str_free(s);
-	return result;
 }
 
 
-static rpt_value_ty *
-arithmetic(rpt_value_ty *vp)
+rpt_value_time::rpt_value_time(time_t arg) :
+    value(arg)
 {
-	rpt_value_time_ty *this_thing;
-
-	this_thing = (rpt_value_time_ty *)vp;
-	assert(this_thing->method->type == rpt_value_type_time);
-	return rpt_value_integer((long)this_thing->value);
 }
 
 
-static rpt_value_ty *
-booleanize(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_time::create(long t)
 {
-	rpt_value_time_ty *this_thing;
-
-	this_thing = (rpt_value_time_ty *)vp;
-	assert(this_thing->method->type == rpt_value_type_time);
-	return rpt_value_boolean((long)this_thing->value != 0);
+    return pointer(new rpt_value_time(t));
 }
 
 
-static rpt_value_method_ty method =
+rpt_value::pointer
+rpt_value_time::stringize_or_null()
+    const
 {
-	sizeof(rpt_value_time_ty),
-	"time",
-	rpt_value_type_time,
-	0, // construct
-	0, // destruct
-	arithmetic,
-	stringize,
-	booleanize,
-	0, // lookup
-	0, // keys
-	0, // count
-	0, // type_of
-	0, // undefer
-};
+    nstring s(ctime(&value), 24);
+    return rpt_value_string::create(s);
+}
 
 
-rpt_value_ty *
-rpt_value_time(time_t n)
+rpt_value::pointer
+rpt_value_time::arithmetic_or_null()
+    const
 {
-	rpt_value_time_ty *this_thing;
+    return rpt_value_integer::create(long(value));
+}
 
-	this_thing = (rpt_value_time_ty *)rpt_value_alloc(&method);
-	this_thing->value = n;
-	return (rpt_value_ty *)this_thing;
+
+rpt_value::pointer
+rpt_value_time::integerize_or_null()
+    const
+{
+    return rpt_value_integer::create(long(value));
+}
+
+
+rpt_value::pointer
+rpt_value_time::realize_or_null()
+    const
+{
+    return rpt_value_real::create(double(value));
+}
+
+
+rpt_value::pointer
+rpt_value_time::booleanize_or_null()
+    const
+{
+    return rpt_value_boolean::create(value != 0);
+}
+
+
+const char *
+rpt_value_time::name()
+    const
+{
+    return "time";
 }

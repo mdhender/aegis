@@ -1,9 +1,8 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2006 Peter Miller
+#	Copyright (C) 2006, 2007 Peter Miller
 #	Copyright (C) 2005 Jerry Pendergraft
-#	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -46,7 +45,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	log_file_preference = never; \
 	default_development_directory = \"$work\";"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 # This tells aeintegratq that it is being used by a test.
@@ -159,7 +158,7 @@ shift
 EOF
  done
  echo '];'
-) > $workchan/res.dat
+) > $work/res.dat
 if test $? -ne 0 ; then echo "failed to make res.dat"; no_result; fi
 
 }
@@ -321,7 +320,7 @@ shift
 echo "This is Mtest.sh"
 echo "running tests: \$*"
 echo "curdir: \`pwd\`"
-cp $workchan/res.dat \$out
+cp $work/res.dat \$out
 exit \$?
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -435,6 +434,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # begin development of the change
 #
+workchan=$work/example.chan.2
 activity="develop begin 438"
 $bin/aegis -devbeg -p example -c 2 -dir $workchan -lib $worklib -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi

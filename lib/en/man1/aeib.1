@@ -1,7 +1,6 @@
 '\" tp
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-2005 Peter Miller;
-.\"	All rights reserved.
+.\"	Copyright (C) 1991-2007 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 .\"	GNU General Public License for more details.
 .\"
 .\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: manual entry for 'aegis -Integrate_Begin' command
+.\"	along with this program. If not, see
+.\"	<http://www.gnu.org/licenses/>.
 .\"
 .so z_name.so
 .TH "\*(n) -Integrate_Begin" 1 \*(N) "Reference Manual"
@@ -174,6 +171,15 @@ where a file upon which everything depends is changed, everything will
 be built anyway so the copy of the already built files is a waste of
 time.  This means that sometimes a minimum can be as cheap as a normal
 integration.
+.SS Change Set Attributes
+The follwoing user-defined change set attributes are understood:
+.TP 8n
+integrate-begin-hint
+If this is set to "minimum" or "maximum", it is as if these options
+appeared on the command line.  Only consulted if neither \-minimum nor
+\-maximum appear on the command line.
+.PP
+All other user defined change set attributes are ignored.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so

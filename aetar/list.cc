@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -130,8 +129,9 @@ list(void)
     ofp = output_file_text_open(ofn);
     for (;;)
     {
+        bool executable;
 	nstring archive_name;
-	input ip = itp->child(archive_name);
+	input ip = itp->child(archive_name, executable);
 	if (!ip.is_open())
 	    break;
 	ofp->fputs(archive_name);

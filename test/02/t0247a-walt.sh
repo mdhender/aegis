@@ -44,8 +44,12 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	persevere_preference = all; \
 	log_file_preference = never;"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
+
+# This tells aeintegratq that it is being used by a test.
+AEGIS_TEST_DIR=$work
+export AEGIS_TEST_DIR
 
 here=`pwd`
 if test $? -ne 0 ; then exit 2; fi

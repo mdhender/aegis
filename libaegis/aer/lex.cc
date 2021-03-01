@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1996, 1998, 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1996, 1998, 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to perform lexical analysis on report scripts
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
@@ -27,10 +24,12 @@
 
 #include <common/error.h>
 #include <common/mem.h>
-#include <common/stracc.h>
+#include <common/nstring/accumulator.h>
 #include <common/symtab.h>
+#include <libaegis/aer/expr.h>
 #include <libaegis/aer/lex.h>
 #include <libaegis/aer/pos.h>
+#include <libaegis/aer/stmt.h>
 #include <libaegis/aer/value/integer.h>
 #include <libaegis/aer/value/real.h>
 #include <libaegis/aer/value/string.h>
@@ -42,7 +41,7 @@
 static input ip;
 static int	error_count;
 extern aer_report_STYPE aer_report_lval;
-static stracc_t buffer;
+static nstring_accumulator buffer;
 static symtab_ty *stp;
 
 
@@ -131,29 +130,23 @@ static table_ty table[] =
 static void
 reserved_init(void)
 {
-    table_ty        *tp;
-    string_ty	    *s;
-
     if (!stp)
     {
 	stp = symtab_alloc(SIZEOF(table));
-	for (tp = table; tp < ENDOF(table); ++tp)
+	for (table_ty *tp = table; tp < ENDOF(table); ++tp)
 	{
-	    s = str_from_c(tp->name);
-	    symtab_assign(stp, s, &tp->token);
-	    str_free(s);
+	    nstring s(tp->name);
+	    stp->assign(s, &tp->token);
 	}
     }
 }
 
 
 static int
-reserved(string_ty *name)
+reserved(const nstring &name)
 {
-    const int       *data;
-
     assert(stp);
-    data = (int *)symtab_query(stp, name);
+    const int *data = (int *)stp->query(name);
     return (data ? *data : 0);
 }
 
@@ -197,10 +190,9 @@ lex_getc_undo(int c)
 int
 aer_report_lex(void)
 {
-    sub_context_ty  *scp;
     int		    c;
     long	    n;
-    string_ty	    *s;
+    nstring s;
     int		    term;
     int		    tok;
 
@@ -281,7 +273,8 @@ aer_report_lex(void)
 		    aer_report_error(i18n("malformed hex constant"));
 		    n = 0;
 		}
-		aer_report_lval.lv_value = rpt_value_integer(n);
+		aer_report_lval.lv_value =
+                    new rpt_value::pointer(rpt_value_integer::create(n));
 		return CONSTANT;
 	    }
 	    for (;;)
@@ -306,7 +299,8 @@ aer_report_lex(void)
 		break;
 	    }
 	    lex_getc_undo(c);
-	    aer_report_lval.lv_value = rpt_value_integer(n);
+	    aer_report_lval.lv_value =
+                new rpt_value::pointer(rpt_value_integer::create(n));
 	    return CONSTANT;
 
 	case '1':
@@ -332,8 +326,9 @@ aer_report_lex(void)
 	    {
 		lex_getc_undo(c);
 		s = buffer.mkstr();
-		aer_report_lval.lv_value = rpt_value_integer(atol(s->str_text));
-		str_free(s);
+                rpt_value::pointer vp =
+                    rpt_value_integer::create(atol(s.c_str()));
+		aer_report_lval.lv_value = new rpt_value::pointer(vp);
 		return CONSTANT;
 	    }
 	    if (c == '.')
@@ -378,8 +373,11 @@ aer_report_lex(void)
 	    }
 	    lex_getc_undo(c);
 	    s = buffer.mkstr();
-	    aer_report_lval.lv_value = rpt_value_real(atof(s->str_text));
-	    str_free(s);
+	    aer_report_lval.lv_value =
+                new rpt_value::pointer
+                (
+                    rpt_value_real::create(atof(s.c_str()))
+                );
 	    return CONSTANT;
 
 	case '"':
@@ -408,10 +406,11 @@ aer_report_lex(void)
 		    switch (c)
 		    {
 		    default:
-			scp = sub_context_new();
-			sub_var_set_format(scp, "Name", "\\%c", c);
-			aer_lex_error(scp, 0, i18n("unknown '$name' escape"));
-			sub_context_delete(scp);
+                        {
+                            sub_context_ty sc;
+                            sc.var_set_format("Name", "\\%c", c);
+                            aer_lex_error(sc, i18n("unknown '$name' escape"));
+                        }
 			break;
 
 		    case -1:
@@ -487,8 +486,8 @@ aer_report_lex(void)
 		    buffer.push_back(c);
 	    }
 	    s = buffer.mkstr();
-	    aer_report_lval.lv_value = rpt_value_string(s);
-	    str_free(s);
+	    aer_report_lval.lv_value =
+                new rpt_value::pointer(rpt_value_string::create(s));
 	    return CONSTANT;
 
 	case 'A':
@@ -625,11 +624,8 @@ aer_report_lex(void)
 	    s = buffer.mkstr();
 	    tok = reserved(s);
 	    if (tok)
-	    {
-		str_free(s);
 		return tok;
-	    }
-	    aer_report_lval.lv_string = s;
+	    aer_report_lval.lv_string = new nstring(s);
 	    return NAME;
 
 	case '/':
@@ -708,22 +704,19 @@ aer_report_lex(void)
 	    {
 		buffer.push_back(c);
 		s = buffer.mkstr();
-		if (!symtab_query(stp, s))
+		if (!stp->query(s))
 		{
 		    if (buffer.size() > 1)
 		    {
 			buffer.pop_back();
 			lex_getc_undo(c);
 		    }
-		    str_free(s);
 		    break;
 		}
-		str_free(s);
 		c = ip->getch();
 	    }
 	    s = buffer.mkstr();
 	    tok = reserved(s);
-	    str_free(s);
 	    return (tok ? tok : JUNK);
 	}
     }
@@ -733,81 +726,88 @@ aer_report_lex(void)
 void
 aer_report_error(const char *fmt)
 {
-    aer_lex_error(0, 0, fmt);
+    sub_context_ty sc;
+    aer_lex_error(sc, fmt);
 }
 
 
-rpt_pos_ty *
+void
+aer_report_error(sub_context_ty &sc, const char *fmt)
+{
+    aer_lex_error(sc, rpt_lex_pos_get(), fmt);
+}
+
+
+rpt_position::pointer
 rpt_lex_pos_get(void)
 {
-    static rpt_pos_ty *curpos;
+    static rpt_position::pointer curpos;
     nstring s = ip->name();
     if (curpos)
     {
 	//
 	// The file name includes the line number.
 	//
-	if (str_equal(curpos->file_name, s.get_ref()))
-	    return rpt_pos_copy(curpos);
-	rpt_pos_free(curpos);
-	curpos = 0;
+	if (curpos->get_file_name() == s)
+	    return curpos;
+        curpos.reset();
     }
-    curpos = rpt_pos_alloc(s.get_ref(), 0);
-    return rpt_pos_copy(curpos);
+    curpos = rpt_position::create(s, 0);
+    return curpos;
 }
 
 
 void
-aer_lex_error(sub_context_ty *scp, rpt_pos_ty *p, const char *fmt)
+aer_lex_error(sub_context_ty &sc, const char *fmt)
 {
-    int		    need_to_delete;
-
-    if (!scp)
-    {
-	scp = sub_context_new();
-	need_to_delete = 1;
-    }
-    else
-	need_to_delete = 0;
-
-    if (!p)
-	p = rpt_lex_pos_get();
-    rpt_pos_error(scp, p, fmt);
-
-    if (!ip.is_open())
-	fatal_intl(0, i18n("report aborted"));
-
-    ++error_count;
-    if (error_count >= 20)
-    {
-	sub_var_set_string(scp, "File_Name", ip->name());
-	fatal_intl(scp, i18n("$filename: too many errors"));
-	// NOTREACHED
-    }
-
-    if (need_to_delete)
-	sub_context_delete(scp);
+    aer_lex_error(sc, rpt_lex_pos_get(), fmt);
 }
 
 
 void
-rpt_lex_error(rpt_pos_ty *p, const char *fmt)
+aer_lex_error(rpt_position::pointer &pp, const char *fmt)
 {
-    rpt_pos_error(0, 0, fmt);
+    sub_context_ty sc;
+    aer_lex_error(sc, pp, fmt);
+}
+
+
+void
+aer_lex_error(sub_context_ty &sc, const rpt_position::pointer &pp,
+    const char *fmt)
+{
+    assert(pp);
+    pp->print_error(sc, fmt);
 
     if (!ip.is_open())
-	fatal_intl(0, i18n("report aborted"));
+	sc.fatal_intl(i18n("report aborted"));
 
     ++error_count;
     if (error_count >= 20)
     {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", ip->name());
-	fatal_intl(scp, i18n("$filename: too many errors"));
+	sc.var_set_string("File_Name", ip->name());
+	sc.fatal_intl(i18n("$filename: too many errors"));
 	// NOTREACHED
-	sub_context_delete(scp);
+    }
+}
+
+
+void
+rpt_lex_error(const rpt_position::pointer &pp, const char *fmt)
+{
+    sub_context_ty sc;
+    assert(pp);
+    pp->print_error(sc, fmt);
+
+    if (!ip.is_open())
+	fatal_intl(&sc, i18n("report aborted"));
+
+    ++error_count;
+    if (error_count >= 20)
+    {
+	sc.var_set_string("File_Name", ip->name());
+	sc.fatal_intl(i18n("$filename: too many errors"));
+	// NOTREACHED
     }
 }
 

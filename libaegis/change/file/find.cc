@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2002-2007 Peter Miller
+//	Copyright (C) 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate finds
 //
@@ -30,19 +30,15 @@
 
 
 fstate_src_ty *
-change_file_find(change_ty *cp, const nstring &file_name,
+change_file_find(change::pointer cp, const nstring &file_name,
     view_path_ty as_view_path)
 {
-    fstate_src_ty   *result;
-    int             xpar;
-    int             top_level;
-
     trace(("change_file_find(cp = %8.8lX, file_name = \"%s\", "
 	"as_view_path = %s)\n{\n", (long)cp, file_name.c_str(),
 	view_path_ename(as_view_path)));
-    result = 0;
-    xpar = 0;
-    top_level = !change_is_a_branch(cp);
+    fstate_src_ty *result = 0;
+    bool xpar = false;
+    bool top_level = !change_is_a_branch(cp);
     for (;;)
     {
 	fstate_src_ty   *fsp;
@@ -69,7 +65,7 @@ change_file_find(change_ty *cp, const nstring &file_name,
 	    if (xpar)
 	    {
 		result = 0;
-		xpar = 0;
+		xpar = false;
 		goto next;
 	    }
 
@@ -107,7 +103,7 @@ change_file_find(change_ty *cp, const nstring &file_name,
 		    // are resolved (the underlying file is shown).
 		    //
 		    if (top_level)
-			xpar = 1;
+			xpar = true;
 		    goto next;
 
 		case file_action_remove:
@@ -147,7 +143,7 @@ change_file_find(change_ty *cp, const nstring &file_name,
 	if (cp->number == TRUNK_CHANGE_NUMBER)
 	    break;
 	cp = cp->pp->change_get();
-	top_level = 0;
+	top_level = false;
     }
 
     if
@@ -167,7 +163,8 @@ change_file_find(change_ty *cp, const nstring &file_name,
 
 
 fstate_src_ty *
-change_file_find(change_ty *cp, string_ty *file_name, view_path_ty as_view_path)
+change_file_find(change::pointer cp, string_ty *file_name,
+    view_path_ty as_view_path)
 {
     return change_file_find(cp, nstring(str_copy(file_name)), as_view_path);
 }

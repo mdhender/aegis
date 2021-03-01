@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,75 +13,53 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate project_files
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h> // for assert
+#include <common/trace.h>
 #include <libaegis/change.h>
 #include <libaegis/change/env_set.h>
-#include <common/error.h> // for assert
+#include <libaegis/lock.h>
 #include <libaegis/os.h>
 #include <libaegis/project/history.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/user.h>
 
 
 void
-change_run_project_file_command(change_ty *cp, user_ty *up)
+change::run_project_file_command(const user_ty::pointer &up)
 {
-    sub_context_ty  *scp;
-    cstate_ty       *cstate_data;
-    pconf_ty        *pconf_data;
-    string_ty       *the_command;
-    string_ty       *dd;
-
-    //
-    // make sure are sync'ed with project
-    //
-    trace(("change_run_project_file_command(cp = %08lX)\n{\n", (long)cp));
-    assert(cp->reference_count >= 1);
-    cstate_data = change_cstate_get(cp);
-    if
-    (
-	cstate_data->project_file_command_sync
-    ==
-	project_last_change_integrated(cp->pp)
-    )
-	goto done;
-    cstate_data->project_file_command_sync =
-	project_last_change_integrated(cp->pp);
+    trace(("change::run_project_file_command(this = %08lX)\n{\n",
+        (long)this));
+    assert(!lock_active());
+    assert(reference_count >= 1);
 
     //
     // make sure there is a project_file command
     //
-    pconf_data = change_pconf_get(cp, 0);
-    if (!pconf_data->project_file_command)
-	goto done;
+    pconf_ty *pcp = change_pconf_get(this, 0);
+    if (!pcp->project_file_command)
+    {
+        trace(("}\n"));
+        return;
+    }
 
     //
     // All of the substitutions described in aesub(5) are available.
     //
-    scp = sub_context_new();
-    the_command = pconf_data->project_file_command;
-    the_command = substitute(scp,cp, the_command);
-    sub_context_delete(scp);
+    sub_context_ty sc;
+    string_ty *the_command = pcp->project_file_command;
+    the_command = sc.substitute(this, the_command);
 
     //
     // execute the command
     //
-    dd = change_development_directory_get(cp, 0);
-    change_env_set(cp, 0);
-    user_become(up);
+    string_ty *dd = change_development_directory_get(this, 0);
+    change_env_set(this, 0);
+    user_ty::become scoped(up);
     os_execute(the_command, OS_EXEC_FLAG_NO_INPUT | OS_EXEC_FLAG_ERROK, dd);
-    user_become_undo();
     str_free(the_command);
-
-    //
-    // here for all exits
-    //
-    done:
     trace(("}\n"));
 }

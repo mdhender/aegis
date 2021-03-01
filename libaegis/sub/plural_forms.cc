@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -24,13 +23,12 @@
 #include <common/ac/string.h>
 
 #include <common/language.h>
-#include <common/stracc.h>
+#include <common/nstring/accumulator.h>
+#include <common/trace.h>
+#include <common/wstring/list.h>
 #include <libaegis/sub.h>
 #include <libaegis/sub/plural_forms.h>
 #include <libaegis/sub/plural_gram.h>
-#include <common/trace.h>
-#include <common/wstr.h>
-#include <common/wstr/list.h>
 
 
 static char *header_begin;
@@ -56,21 +54,18 @@ header_ungetc(int c)
 }
 
 
-static string_ty *
+static nstring
 header_get_line(void)
 {
-    static stracc_t sa;
-
+    static nstring_accumulator sa;
     sa.clear();
     for (;;)
     {
-	int             c;
-
-	c = header_getc();
+	int c = header_getc();
 	if (!c)
 	{
 	    if (sa.empty())
-		return 0;
+		return "";
 	    break;
 	}
 	if (c == '\n')
@@ -88,7 +83,7 @@ header_get_line(void)
 }
 
 
-static string_ty *
+static nstring
 find_plural_forms(void)
 {
     //
@@ -104,20 +99,13 @@ find_plural_forms(void)
     //
     for (;;)
     {
-	string_ty       *s;
-
-	s = header_get_line();
+	nstring s = header_get_line();
 	if (!s)
 	    break;
-	if (0 == strncasecmp(s->str_text, "plural-forms:", 13))
+	if (0 == strncasecmp(s.c_str(), "plural-forms:", 13))
 	{
-	    string_ty       *result;
-
-	    result = str_n_from_c(s->str_text + 13, s->str_length - 13);
-	    str_free(s);
-	    return result;
+	    return nstring(s.c_str() + 13, s.size() - 13);
 	}
-	str_free(s);
     }
 
     //
@@ -127,24 +115,24 @@ find_plural_forms(void)
     // the Latin/Greek family (Greek), the Semitic family (Hebrew),
     // the Romanic family (Italian, Portugese and Spanish) and Esperanto.
     //
-    return str_from_c("nplurals=2; plural=n!=1");
+    return "nplurals=2; plural=n!=1";
 }
 
 
-static string_ty *plural_forms;
+static nstring plural_forms;
 
 
-wstring_ty *
-sub_plural_forms(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_plural_forms(sub_context_ty *scp, const wstring_list &arg)
 {
     trace(("sub_plural()\n{\n"));
-    if (arg->size() < 2)
+    wstring result;
+    if (arg.size() < 2)
     {
 	oh_dear:
-	sub_context_error_set(scp, i18n("requires two or three arguments"));
-	trace(("return NULL;\n"));
+	scp->error_set(i18n("requires two or three arguments"));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
 
     //
@@ -153,13 +141,10 @@ sub_plural_forms(sub_context_ty *scp, wstring_list_ty *arg)
     // It is used for testing via aesub(1).
     //
     size_t argpos = 1;
-    if (arg->get(argpos)->wstr_text[0] == '@')
+    if (arg[argpos][0] == '@')
     {
-	string_ty *s = wstr_to_str(arg->get(1));
-	if (plural_forms)
-	    str_free(plural_forms);
-	plural_forms = str_n_from_c(s->str_text + 1, s->str_length - 1);
-	str_free(s);
+	nstring s = arg[1].to_nstring();
+	plural_forms = s.substring(1, s.size());
 	++argpos;
     }
     else
@@ -171,11 +156,10 @@ sub_plural_forms(sub_context_ty *scp, wstring_list_ty *arg)
     //
     // Get the number of items that the plural form is for.
     //
-    if (argpos >= arg->size())
+    if (argpos >= arg.size())
 	goto oh_dear;
-    string_ty *s = wstr_to_str(arg->get(argpos++));
-    unsigned n = atoi(s->str_text);
-    str_free(s);
+    nstring s = arg[argpos++].to_nstring();
+    unsigned n = s.to_long();
 
     //
     // Run the expression tree extracted from the PO file header,
@@ -187,13 +171,13 @@ sub_plural_forms(sub_context_ty *scp, wstring_list_ty *arg)
     // If the appropriately numbered argument is not present,
     // return the singular form.
     //
-    if (argpos >= arg->size())
+    if (argpos >= arg.size())
 	goto oh_dear;
-    if (argpos + n > arg->size())
+    if (argpos + n > arg.size())
 	n = 0;
-    wstring_ty *result = wstr_copy(arg->get(argpos + n));
+    result = arg[argpos + n];
 
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

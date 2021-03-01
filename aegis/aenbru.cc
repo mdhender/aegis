@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995, 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1995, 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to perform new branch undo
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -118,7 +115,7 @@ new_branch_undo_list(void)
 
 
 static string_ty *
-branch_changes_path_get(change_ty *cp)
+branch_changes_path_get(change::pointer cp)
 {
     project_ty	    *pp;
     string_ty	    *result;
@@ -137,9 +134,8 @@ new_branch_undo_main(void)
     string_ty	    *project_name;
     long	    change_number;
     project_ty	    *pp;
-    user_ty	    *up;
-    change_ty	    *cp;
-    string_ty	    *dd;
+    user_ty::pointer up;
+    change::pointer cp;
     string_ty	    *s;
 
     trace(("new_branch_undo_main()\n{\n"));
@@ -157,7 +153,7 @@ new_branch_undo_main(void)
 	case arglex_token_keep:
 	case arglex_token_interactive:
 	case arglex_token_keep_not:
-	    user_delete_file_argument(new_branch_undo_usage);
+	    user_ty::delete_file_argument(new_branch_undo_usage);
 	    break;
 
 	case arglex_token_change:
@@ -184,7 +180,7 @@ new_branch_undo_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(new_branch_undo_usage);
+	    user_ty::lock_wait_argument(new_branch_undo_usage);
 	    break;
 	}
 	arglex();
@@ -194,7 +190,10 @@ new_branch_undo_main(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -202,15 +201,15 @@ new_branch_undo_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
-    if (!project_administrator_query(pp, user_name(up)))
+    up = user_ty::create();
+    if (!project_administrator_query(pp, up->name()))
 	project_fatal(pp, 0, i18n("not an administrator"));
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -234,39 +233,38 @@ new_branch_undo_main(void)
     gonzo_gstate_lock_prepare_new();
     pp->pstate_lock_prepare();
     change_cstate_lock_prepare(cp);
-    user_ustate_lock_prepare(up);
+    up->ustate_lock_prepare();
     lock_take();
 
     //
     // Race condition: check that the up is still a project
     // administrator now that we have the project lock.
     //
-    if (!project_administrator_query(pp, user_name(up)))
+    if (!project_administrator_query(pp, up->name()))
 	project_fatal(pp, 0, i18n("not an administrator"));
 
     //
     // It is an error if the change is not in the being developed state.
     // It is an error if the change is not assigned to the current user.
     //
-    if (!change_is_being_developed(cp))
+    if (!cp->is_being_developed())
 	change_fatal(cp, 0, i18n("bad dbu state"));
 
     //
     // Remove the change from the list of assigned changes in the user
     // change table (in the user row).
     //
-    user_own_remove(up, project_name_get(pp), change_number);
+    up->own_remove(pp, change_number);
 
     //
     // remove the development directory
     //
-    dd = change_top_path_get(cp, 1);
-    if (user_delete_file_query(up, dd, true, true))
+    nstring dd(change_top_path_get(cp, 1));
+    if (up->delete_file_query(dd, true, true))
     {
 	change_verbose(cp, 0, i18n("remove development directory"));
-	project_become(pp);
+        user_ty::become scoped(pp->get_user());
 	commit_rmdir_tree_errok(dd);
-	user_become_undo();
     }
 
     //
@@ -282,7 +280,7 @@ new_branch_undo_main(void)
     commit_unlink_errok(change_cstate_filename_get(cp));
     commit_unlink_errok(change_fstate_filename_get(cp));
     commit_rmdir_tree_errok(branch_changes_path_get(cp));
-    project_become_undo();
+    project_become_undo(pp);
 
     //
     // Remove aliases of this branch.
@@ -308,7 +306,6 @@ new_branch_undo_main(void)
     change_verbose(cp, 0, i18n("new branch undo complete"));
     change_free(cp);
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -318,8 +315,8 @@ new_branch_undo(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, new_branch_undo_help, },
-	{arglex_token_list, new_branch_undo_list, },
+	{ arglex_token_help, new_branch_undo_help, 0 },
+	{ arglex_token_list, new_branch_undo_list, 0 },
     };
 
     trace(("new_branch_undo()\n{\n"));

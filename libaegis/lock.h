@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1993, 1996, 2001, 2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1993, 1996, 2001, 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -86,5 +85,16 @@ void lock_release_child(void);
   * only be called by the quit_action_lock class.
   */
 void lock_quitter(void);
+
+/**
+  * The lock_active function is used to determine wherther or not a lock
+  * is active (i.e. with lock_take/lock_release pair) or not.  Ideally,
+  * it will be used in assert statements.
+  *
+  * @returns
+  *     true when between lock_take/lock_release, false if outside.
+  */
+bool lock_active(void);
+
 
 #endif // LOCK_H

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -24,7 +23,7 @@
 #include <libaegis/sub/identifier.h>
 #include <common/trace.h>
 #include <common/wstr.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
 
 
 //
@@ -50,29 +49,25 @@
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_identifier(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_identifier(sub_context_ty *scp, const wstring_list &arg)
 {
-    wstring_ty	    *result;
-
     trace(("sub_identifier()\n{\n"));
-    if (arg->size() < 2)
+    wstring result;
+    if (arg.size() < 2)
     {
-	sub_context_error_set(scp, i18n("requires one argument"));
-	result = 0;
+	scp->error_set(i18n("requires one argument"));
     }
     else
     {
-	wstring_list_ty	results;
-	for (size_t j = 1; j < arg->size(); ++j)
+	wstring_list results;
+	for (size_t j = 1; j < arg.size(); ++j)
 	{
-	    wstring_ty *ws = wstr_to_ident(arg->get(j));
-	    results.push_back(ws);
-	    wstr_free(ws);
+	    results.push_back(arg[j].identifier());
 	}
 	result = results.unsplit();
     }
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

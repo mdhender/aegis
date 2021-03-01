@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1996, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1996, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -20,45 +19,42 @@
 // MANIFEST: functions to manipulate namemaxs
 //
 
+#include <common/nstring/list.h>
+#include <common/trace.h>
+#include <common/wstring/list.h>
 #include <libaegis/os.h>
-#include <common/str_list.h>
 #include <libaegis/sub.h>
 #include <libaegis/sub/namemax.h>
-#include <common/trace.h>
-#include <common/wstr/list.h>
 
 
-wstring_ty *
-sub_namemax(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_namemax(sub_context_ty *scp, const wstring_list &arg)
 {
     trace(("sub_namemax()\n{\n"));
-    if (arg->size() < 2)
+    wstring result;
+    if (arg.size() < 2)
     {
-       	sub_context_error_set(scp, i18n("requires one argument"));
-	trace(("return NULL;\n"));
+       	scp->error_set(i18n("requires one argument"));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
 
-    string_list_ty results;
+    nstring_list results;
     os_become_orig();
-    for (size_t j = 1; j < arg->size(); ++j)
+    for (size_t j = 1; j < arg.size(); ++j)
     {
-	string_ty *s = wstr_to_str(arg->get(j));
-	trace(("s = \"%s\";\n", s->str_text));
+	nstring s = arg[j].to_nstring();
+	trace(("s = %s;\n", s.quote_c().c_str()));
 	int n = os_pathconf_name_max(s);
-	str_free(s);
-	s = str_format("%d", n);
-	trace(("result = \"%s\";\n", s->str_text));
+	s = nstring::format("%d", n);
+	trace(("result = %s;\n", s.quote_c().c_str()));
 	results.push_back(s);
-	str_free(s);
     }
     os_become_undo();
 
-    string_ty *s = results.unsplit();
-    wstring_ty *result = str_to_wstr(s);
-    str_free(s);
-    trace(("return %8.8lX;\n", (long)result));
+    nstring s = results.unsplit();
+    result = wstring(s);
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

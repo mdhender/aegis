@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1996, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1996, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -20,43 +19,37 @@
 // MANIFEST: functions to manipulate rights
 //
 
+#include <common/nstring.h>
+#include <common/trace.h>
+#include <common/wstring/list.h>
 #include <libaegis/sub.h>
 #include <libaegis/sub/right.h>
-#include <common/trace.h>
-#include <common/wstr/list.h>
 
 
-wstring_ty *
-sub_right(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_right(sub_context_ty *scp, const wstring_list &arg)
 {
     trace(("sub_right()\n{\n"));
-    if (arg->size() != 3)
+    if (arg.size() != 3)
     {
-	sub_context_error_set(scp, i18n("requires two arguments"));
+	scp->error_set(i18n("requires two arguments"));
 	trace(("return NULL;\n"));
 	trace(("}\n"));
-	return 0;
+	return wstring();
     }
-    string_ty *s = wstr_to_str(arg->get(2));
-    long n = atol(s->str_text);
-    str_free(s);
+    long n = arg[2].to_nstring().to_long();
 
-    wstring_ty *result = 0;
+    wstring result;
     if (n <= 0)
-	result = wstr_from_c("");
-    else if (n >= (long)arg->get(1)->wstr_length)
-	result = wstr_copy(arg->get(1));
+	;
+    else if (n >= (long)arg[1].size())
+	result = arg[1];
     else
     {
-	wstring_ty *ws = arg->get(1);
-	result =
-	    wstr_n_from_wc
-	    (
-		    ws->wstr_text + ws->wstr_length - n,
-		    (size_t)n
-	    );
+	wstring ws = arg[1];
+	result = wstring(ws.c_str() + ws.size() - n, (size_t)n);
     }
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

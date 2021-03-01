@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 2002, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aefind/shorthand/stat.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEFIND_SHORTHAND_STAT_H
@@ -25,26 +22,20 @@
 
 #include <common/main.h>
 
-struct string_ty; // existence
+class nstring; // forward
 
-struct tree_ty *shorthand_atime(struct tree_ty *(*)(struct tree_ty *,
-    struct tree_ty *), int, int);
-struct tree_ty *shorthand_ctime(struct tree_ty *(*)(struct tree_ty *,
-    struct tree_ty *), int, int);
-struct tree_ty *shorthand_gid(struct tree_ty *(*)(struct tree_ty *,
-    struct tree_ty *), int);
-struct tree_ty *shorthand_ino(struct tree_ty *(*)(struct tree_ty *,
-    struct tree_ty *), int);
-struct tree_ty *shorthand_mode(int);
-struct tree_ty *shorthand_mtime(struct tree_ty *(*)(struct tree_ty *,
-    struct tree_ty *), int, int);
-struct tree_ty *shorthand_newer(struct string_ty *);
-struct tree_ty *shorthand_nlink(struct tree_ty *(*)(struct tree_ty *,
-    struct tree_ty *), int);
-struct tree_ty *shorthand_size(struct tree_ty *(*)(struct tree_ty *,
-    struct tree_ty *), int);
-struct tree_ty *shorthand_uid(struct tree_ty *(*)(struct tree_ty *,
-    struct tree_ty *), int);
-struct tree_ty *shorthand_type(struct string_ty *);
+typedef tree::pointer (*diadic_t)(const tree::pointer &, const tree::pointer &);
+
+tree::pointer shorthand_atime(diadic_t, int, int);
+tree::pointer shorthand_ctime(diadic_t, int, int);
+tree::pointer shorthand_gid(diadic_t, int);
+tree::pointer shorthand_ino(diadic_t, int);
+tree::pointer shorthand_mode(int);
+tree::pointer shorthand_mtime(diadic_t, int, int);
+tree::pointer shorthand_newer(const nstring &filename);
+tree::pointer shorthand_nlink(diadic_t, int);
+tree::pointer shorthand_size(diadic_t, int);
+tree::pointer shorthand_uid(diadic_t, int);
+tree::pointer shorthand_type(const nstring &abbrev);
 
 #endif // AEFIND_SHORTHAND_STAT_H

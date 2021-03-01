@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2006, 2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,15 +13,15 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: implementation of the $copyright_owner substitution
 //
 
 #include <common/nstring.h>
 #include <common/trace.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
 #include <libaegis/change.h>
 #include <libaegis/change/attributes.h>
 #include <libaegis/sub/copyri_owner.h>
@@ -30,29 +29,28 @@
 #include <libaegis/user.h>
 
 
-wstring_ty *
-sub_copyright_owner(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_copyright_owner(sub_context_ty *scp, const wstring_list &arg)
 {
     trace(("sub_copyright_owner()\n{\n"));
-    change_ty *cp = sub_context_change_get(scp);
+    wstring result;
+    change::pointer cp = sub_context_change_get(scp);
     if (!cp)
     {
-	sub_context_error_set(scp, i18n("not valid in current context"));
-	trace(("return NULL;\n"));
+	scp->error_set(i18n("not valid in current context"));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
-    if (arg->size() != 1)
+    if (arg.size() != 1)
     {
-	sub_context_error_set(scp, i18n("requires zero arguments"));
-	trace(("return NULL;\n"));
+	scp->error_set(i18n("requires zero arguments"));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
 
-    nstring value = cp->pconf_copyright_owner_get();
-    wstring_ty *result = str_to_wstr(value.get_ref());
-    trace(("return %8.8lX;\n", (long)result));
+    nstring value(cp->pconf_copyright_owner_get());
+    result = wstring(value);
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

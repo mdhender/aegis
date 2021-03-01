@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -31,7 +30,7 @@ type_boolean::~type_boolean()
 
 
 type_boolean::type_boolean() :
-    type_ty("boolean")
+    type("boolean")
 {
 }
 
@@ -83,8 +82,8 @@ type_boolean::gen_code_call_xml(const nstring &form_name,
 
 
 void
-type_boolean::gen_free_declarator(const nstring &variable_name,
-    bool is_a_list) const
+type_boolean::gen_free_declarator(const nstring &, bool is_a_list)
+    const
 {
     if (is_a_list)
        	indent_printf(";\n");

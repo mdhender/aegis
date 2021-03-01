@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate news
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change.h>
@@ -28,16 +25,16 @@
 
 
 cstate_history_ty *
-change_history_new(change_ty *cp, user_ty *up)
+change_history_new(change::pointer cp, user_ty::pointer up)
 {
     cstate_ty       *cstate_data;
     cstate_history_ty *history_data;
     cstate_history_ty **history_data_p;
-    type_ty         *type_p;
+    meta_type *type_p = 0;
 
     trace(("change_history_new(cp = %08lX)\n{\n", (long)cp));
     assert(cp->reference_count >= 1);
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     assert(cstate_data->history);
     history_data_p =
 	(cstate_history_ty **)
@@ -46,7 +43,7 @@ change_history_new(change_ty *cp, user_ty *up)
     history_data = (cstate_history_ty *)cstate_history_type.alloc();
     *history_data_p = history_data;
     history_data->when = now();
-    history_data->who = str_copy(user_name(up));
+    history_data->who = str_copy(up->name().get_ref());
     trace(("return %08lX;\n", (long)history_data));
     trace(("}\n"));
     return history_data;

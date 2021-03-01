@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -31,14 +30,14 @@
 void
 xml_user_uconf(string_ty *project_name, long change_number, output_ty *op)
 {
-    user_ty         *up;
+    user_ty::pointer up;
 
     trace(("xml_user_uconf()\n{\n"));
     if (project_name)
 	list_project_inappropriate();
     if (change_number)
 	list_change_inappropriate();
-    up = user_executing(0);
-    user_uconf_write_xml(up, op);
+    up = user_ty::create();
+    up->uconf_write_xml(op);
     trace(("}\n"));
 }

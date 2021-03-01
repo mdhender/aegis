@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -29,13 +28,13 @@
 
 
 static void
-destructor(complete_ty *cp)
+destructor(complete_ty *)
 {
 }
 
 
 static void
-perform(complete_ty *cp, shell_ty *sh)
+perform(complete_ty *, shell_ty *sh)
 {
     string_list_ty  list;
     string_ty       *prefix;

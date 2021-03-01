@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995, 1996, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1995, 1996, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,151 +13,152 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement the substr builtin function
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
+#include <common/mem.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/func/substr.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/integer.h>
 #include <libaegis/aer/value/string.h>
-#include <common/error.h>
-#include <common/mem.h>
 #include <libaegis/sub.h>
 
 
-static int
-verify(rpt_expr_ty *ep)
+rpt_func_substr::~rpt_func_substr()
 {
-	return (ep->nchild == 3);
 }
 
 
-static rpt_value_ty *
-run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func_substr::rpt_func_substr()
 {
-	rpt_value_ty	*arg;
-	rpt_value_ty	*result;
-	string_ty	*subject;
-	long		start;
-	long		length;
-	long		end;
-	string_ty	*s;
-
-	arg = argv[0];
-	assert(arg->method->type != rpt_value_type_error);
-	arg = rpt_value_stringize(arg);
-	if (arg->method->type != rpt_value_type_string)
-	{
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		rpt_value_free(arg);
-		sub_var_set_charstar(scp, "Function", "substr");
-		sub_var_set_long(scp, "Number", 1);
-		sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-		s =
-			subst_intl
-			(
-				scp,
-    i18n("$function: argument $number: string value required (was given $name)")
-			);
-		sub_context_delete(scp);
-		result = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return result;
-	}
-	subject = str_copy(rpt_value_string_query(arg));
-	rpt_value_free(arg);
-
-	arg = argv[1];
-	assert(arg->method->type != rpt_value_type_error);
-	arg = rpt_value_integerize(arg);
-	if (arg->method->type != rpt_value_type_integer)
-	{
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		rpt_value_free(arg);
-		sub_var_set_charstar(scp, "Function", "substr");
-		sub_var_set_long(scp, "Number", 2);
-		sub_var_set_charstar(scp, "Name", argv[1]->method->name);
-		s =
-			subst_intl
-			(
-				scp,
-   i18n("$function: argument $number: integer value required (was given $name)")
-			);
-		sub_context_delete(scp);
-		result = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return result;
-	}
-	start = rpt_value_integer_query(arg);
-	rpt_value_free(arg);
-
-	arg = argv[2];
-	assert(arg->method->type != rpt_value_type_error);
-	arg = rpt_value_integerize(arg);
-	if (arg->method->type != rpt_value_type_integer)
-	{
-		sub_context_ty	*scp;
-
-		scp = sub_context_new();
-		rpt_value_free(arg);
-		sub_var_set_charstar(scp, "Function", "substr");
-		sub_var_set_long(scp, "Number", 3);
-		sub_var_set_charstar(scp, "Name", argv[2]->method->name);
-		s =
-			subst_intl
-			(
-				scp,
-   i18n("$function: argument $number: integer value required (was given $name)")
-			);
-		sub_context_delete(scp);
-		result = rpt_value_error(ep->pos, s);
-		str_free(s);
-		return result;
-	}
-	length = rpt_value_integer_query(arg);
-	rpt_value_free(arg);
-
-	//
-	// clip the start and end to conform to the string
-	//
-	end = start + length;
-	if (start < 0)
-		start = 0;
-	if (end < 0)
-		end = 0;
-	if (start > (long)subject->str_length)
-		start = subject->str_length;
-	if (end > (long)subject->str_length)
-		end = subject->str_length;
-	if (end < start)
-	{
-		start = 0;
-		end = 0;
-	}
-
-	//
-	// build the result
-	//
-	s = str_n_from_c(subject->str_text + start, end - start);
-	str_free(subject);
-	result = rpt_value_string(s);
-	str_free(s);
-	return result;
 }
 
 
-rpt_func_ty rpt_func_substr =
+rpt_func::pointer
+rpt_func_substr::create()
 {
-	"substr",
-	1, // optimizable
-	verify,
-	run
-};
+    return pointer(new rpt_func_substr());
+}
+
+
+const char *
+rpt_func_substr::name()
+    const
+{
+    return "substr";
+}
+
+
+bool
+rpt_func_substr::optimizable()
+    const
+{
+    return true;
+}
+
+
+bool
+rpt_func_substr::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 3);
+}
+
+
+rpt_value::pointer
+rpt_func_substr::run(const rpt_expr::pointer &ep, size_t,
+    rpt_value::pointer *argv) const
+{
+    rpt_value::pointer arg = argv[0];
+    assert(!arg->is_an_error());
+    arg = rpt_value::stringize(arg);
+    rpt_value_string *a1sp = dynamic_cast<rpt_value_string *>(arg.get());
+    if (!a1sp)
+    {
+        sub_context_ty sc;
+        sc.var_set_charstar("Function", "substr");
+        sc.var_set_long("Number", 1);
+        sc.var_set_charstar("Name", argv[0]->name());
+        nstring s
+        (
+            sc.subst_intl
+            (
+                i18n("$function: argument $number: string value required "
+                    "(was given $name)")
+            )
+        );
+        return rpt_value_error::create(ep->get_pos(), s);
+    }
+    nstring subject(a1sp->query());
+
+    arg = argv[1];
+    assert(!arg->is_an_error());
+    arg = rpt_value::integerize(arg);
+    rpt_value_integer *a2ip = dynamic_cast<rpt_value_integer *>(arg.get());
+    if (!a2ip)
+    {
+        sub_context_ty sc;
+        sc.var_set_charstar("Function", "substr");
+        sc.var_set_long("Number", 2);
+        sc.var_set_charstar("Name", argv[1]->name());
+        nstring s
+        (
+            sc.subst_intl
+            (
+                i18n("$function: argument $number: integer value "
+                    "required (was given $name)")
+            )
+        );
+        return rpt_value_error::create(ep->get_pos(), s);
+    }
+    long start = a2ip->query();
+
+    arg = argv[2];
+    assert(!arg->is_an_error());
+    arg = rpt_value::integerize(arg);
+    rpt_value_integer *a3ip = dynamic_cast<rpt_value_integer *>(arg.get());
+    if (!a3ip)
+    {
+        sub_context_ty sc;
+        sc.var_set_charstar("Function", "substr");
+        sc.var_set_long("Number", 3);
+        sc.var_set_charstar("Name", argv[2]->name());
+        nstring s
+        (
+            sc.subst_intl
+            (
+                i18n("$function: argument $number: integer value "
+                    "required (was given $name)")
+            )
+        );
+        return rpt_value_error::create(ep->get_pos(), s);
+    }
+    long length = a3ip->query();
+
+    //
+    // clip the start and end to conform to the string
+    //
+    long end = start + length;
+    if (start < 0)
+        start = 0;
+    if (end < 0)
+        end = 0;
+    if (start > (long)subject.size())
+        start = subject.size();
+    if (end > (long)subject.size())
+        end = subject.size();
+    if (end < start)
+    {
+        start = 0;
+        end = 0;
+    }
+
+    //
+    // build the result
+    //
+    nstring s(subject.c_str() + start, end - start);
+    return rpt_value_string::create(s);
+}

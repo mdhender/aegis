@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate encodes
 //
@@ -54,7 +53,7 @@ dir_and_base(string_ty *dir, string_ty *other)
 
 
 string_ty *
-change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
+change_history_encode(change::pointer cp, fstate_src_ty *src, int *unlink_p)
 {
     pconf_ty        *pconf_data;
     int             min_qp_enc;
@@ -106,7 +105,7 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
 		os_mkdir(nenc_dir, 0755);
 		undo_rmdir_bg(nenc_dir);
 		commit_rmdir_tree_errok(nenc_dir);
-		change_become_undo();
+		change_become_undo(cp);
 	    }
 	    relname = project_history_uuid_translate(src);
 	    ofn3 = dir_and_base(nenc_dir, relname);
@@ -115,7 +114,7 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
 	    filename = change_file_path(cp, src->file_name);
 	    change_become(cp);
 	    os_symlink_or_copy(filename, ofn3);
-	    change_become_undo();
+	    change_become_undo(cp);
 	    str_free(filename);
 
 	    trace(("return \"%s\"\n", ofn3->str_text));
@@ -166,7 +165,7 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
 	undo_rmdir_bg(nenc_dir);
 	commit_rmdir_tree_errok(nenc_dir);
     }
-    change_become_undo();
+    change_become_undo(cp);
 
     filename = change_file_path(cp, src->file_name);
 
@@ -257,7 +256,7 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
     ip.close();
     delete op;
     op = 0;
-    change_become_undo();
+    change_become_undo(cp);
 
     encoding_required = 1;
     switch (pconf_data->history_content_limitation)
@@ -282,7 +281,7 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
 	str_free(ofn1);
 	os_unlink(ofn2);
 	str_free(ofn2);
-	change_become_undo();
+	change_become_undo(cp);
 	*unlink_p = !str_equal(ofn3, filename);
 	trace(("}\n"));
 	return ofn3;
@@ -312,7 +311,7 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
 	str_free(ofn1);
 	filename = ofn2;
     }
-    change_become_undo();
+    change_become_undo(cp);
     trace(("}\n"));
     return filename;
 }

@@ -1,7 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002-2005 Peter Miller;
- *	All rights reserved.
+ *	Copyright (C) 2002-2007 Peter Miller
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -16,8 +15,6 @@
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: functions to manipulate plural_gram.ys
  */
 
 %{
@@ -27,10 +24,10 @@
 #include <common/ac/stdlib.h>
 
 #include <common/str.h>
+#include <common/trace.h>
 #include <libaegis/sub.h>
 #include <libaegis/sub/plural_gram.h>
 #include <libaegis/sub/plural_lex.h>
-#include <common/trace.h>
 
 #ifdef DEBUG
 #define YYDEBUG 1
@@ -98,9 +95,8 @@ static unsigned plural;
 
 
 unsigned
-sub_plural_gram(string_ty *s, unsigned n)
+sub_plural_gram(const nstring &s, unsigned n)
 {
-    int		bad;
     extern int yyparse(void);
 #ifdef DEBUG
     extern int  yydebug;
@@ -112,7 +108,7 @@ sub_plural_gram(string_ty *s, unsigned n)
     yydebug = trace_pretest_;
 #endif
     sub_plural_lex_open(s);
-    bad = yyparse();
+    int bad = yyparse();
     sub_plural_lex_close();
     trace(("bad = %d\n", bad));
 
@@ -126,7 +122,7 @@ sub_plural_gram(string_ty *s, unsigned n)
 
 
 static void
-yyerror(const char *s)
+yyerror(const char *)
 {
     /* do nothing */
 }
@@ -155,7 +151,7 @@ yyerror(const char *s)
 #define fprintf trace_where_, yydebugger
 
 static void
-yydebugger(void *junk, const char *fmt, ...)
+yydebugger(void *, const char *fmt, ...)
 {
 	va_list		ap;
 	string_ty	*s;

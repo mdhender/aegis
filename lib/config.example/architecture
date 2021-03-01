@@ -2,8 +2,6 @@
  *	aegis - project change supervisor
  *	This file is in the Public Domain, 1995, 1998 Peter Miller.
  *
- * MANIFEST: example architecture definitions for the project config file
- *
  * Delete those entries which you do not want to enforce.
  * Additions to this file are most welcome.
  *

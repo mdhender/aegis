@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-2006 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 1991-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions for implementing integrate begin
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -28,34 +25,37 @@
 #include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <aegis/aeib.h>
+#include <common/error.h>
+#include <common/gmatch.h>
+#include <common/nstring.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/trace.h>
+#include <common/uuidentifier.h>
 #include <libaegis/ael/change/by_state.h>
-#include <libaegis/arglex2.h>
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
-#include <libaegis/commit.h>
+#include <libaegis/arglex2.h>
 #include <libaegis/change.h>
+#include <libaegis/change/attributes.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
+#include <libaegis/commit.h>
 #include <libaegis/dir.h>
-#include <common/error.h>
 #include <libaegis/file.h>
-#include <common/gmatch.h>
 #include <libaegis/help.h>
 #include <libaegis/lock.h>
 #include <libaegis/log.h>
-#include <common/progname.h>
 #include <libaegis/os.h>
 #include <libaegis/project.h>
 #include <libaegis/project/file.h>
 #include <libaegis/project/history.h>
-#include <common/quit.h>
 #include <libaegis/rss.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/undo.h>
 #include <libaegis/user.h>
-#include <common/uuidentifier.h>
+
+#include <aegis/aeib.h>
 
 
 static void
@@ -135,7 +135,7 @@ remove_comma_d_if_present(string_ty *s)
 
 
 static int
-isa_suppressed_filename(change_ty *cp, string_ty *fn)
+isa_suppressed_filename(change::pointer cp, string_ty *fn)
 {
     pconf_ty        *pconf_data;
     pconf_integrate_begin_exceptions_list_ty *p;
@@ -156,7 +156,7 @@ isa_suppressed_filename(change_ty *cp, string_ty *fn)
 
 static void
 chmod_common(string_ty *filename, const struct stat *st, int rdwr,
-    change_ty *cp)
+    change::pointer )
 {
     int             mode;
 
@@ -195,7 +195,7 @@ link_tree_callback_minimum(void *arg, dir_walk_message_ty message,
     string_ty       *s1;
     string_ty       *s1short;
     string_ty       *s2;
-    change_ty       *cp;
+    change::pointer cp;
     fstate_src_ty   *src;
     int             exists;
     int             remove_the_file;
@@ -203,7 +203,7 @@ link_tree_callback_minimum(void *arg, dir_walk_message_ty message,
     trace(("link_tree_callback_minimum(message = %d, path = %08lX, "
         "st = %08lX)\n{\n", message, (long)path, (long)st));
     os_interrupt_cope();
-    cp = (change_ty *)arg;
+    cp = (change::pointer )arg;
     assert(cp);
     trace_string(path->str_text);
     s1 = os_below_dir(cp->pp->baseline_path_get(true), path);
@@ -231,7 +231,7 @@ link_tree_callback_minimum(void *arg, dir_walk_message_ty message,
             // Don't link files with horrible modes.
             // They shouldn't be source, anyway.
             //
-            project_become_undo();
+            project_become_undo(cp->pp);
             exists = !!project_file_find(cp->pp, s1, view_path_extreme);
             project_become(cp->pp);
             if (!exists)
@@ -251,7 +251,7 @@ link_tree_callback_minimum(void *arg, dir_walk_message_ty message,
         // Don't link it if it's not a source file, or a
         // relevant ,D file.
         //
-        project_become_undo();
+        project_become_undo(cp->pp);
         src = project_file_find(cp->pp, s1short, view_path_simple);
         project_become(cp->pp);
         if
@@ -284,7 +284,7 @@ link_tree_callback_minimum(void *arg, dir_walk_message_ty message,
         // Don't link a suppressed file.
         // BUT keep primary source files and their diff files.
         //
-        project_become_undo();
+        project_become_undo(cp->pp);
         remove_the_file =
             (
                 !project_file_find(cp->pp, s1short, view_path_simple)
@@ -304,7 +304,7 @@ link_tree_callback_minimum(void *arg, dir_walk_message_ty message,
         //
         trace(("ln %s %s\n", path->str_text, s2->str_text));
         os_link(path, s2);
-        project_become_undo();
+        project_become_undo(cp->pp);
         exists = !!project_file_find(cp->pp, s1, view_path_simple);
         project_become(cp->pp);
         chmod_common(s2, st, !exists, cp);
@@ -345,7 +345,7 @@ link_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
     string_ty       *s1;
     string_ty       *s1short;
     string_ty       *s2;
-    change_ty       *cp;
+    change::pointer cp;
     fstate_src_ty   *src;
     string_ty       *contents;
     int             remove_the_file;
@@ -353,7 +353,7 @@ link_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
     trace(("link_tree_callback(message = %d, path = %08lX, st = %08lX)\n{\n",
         message, (long)path, (long)st));
     os_interrupt_cope();
-    cp = (change_ty *)arg;
+    cp = (change::pointer )arg;
     assert(cp);
     trace_string(path->str_text);
     s1 = os_below_dir(cp->pp->baseline_path_get(true), path);
@@ -372,7 +372,7 @@ link_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
         break;
 
     case dir_walk_file:
-        project_become_undo();
+        project_become_undo(cp->pp);
         src = project_file_find(cp->pp, s1, view_path_extreme);
         project_become(cp->pp);
         if (st->st_mode & 07000)
@@ -400,7 +400,7 @@ link_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
         // Don't link a suppressed file.
         // BUT keep primary source files and their diff files.
         //
-        project_become_undo();
+        project_become_undo(cp->pp);
         remove_the_file =
             (
                 !project_file_find(cp->pp, s1short, view_path_simple)
@@ -462,7 +462,7 @@ copy_tree_callback_minimum(void *arg, dir_walk_message_ty message,
     string_ty       *s1;
     string_ty       *s1short;
     string_ty       *s2;
-    change_ty       *cp;
+    change::pointer cp;
     fstate_src_ty   *src;
     int             uid;
     int             exists;
@@ -471,7 +471,7 @@ copy_tree_callback_minimum(void *arg, dir_walk_message_ty message,
     trace(("copy_tree_callback_minimum(message = %d, path = %08lX, "
         "st = %08lX)\n{\n", message, (long)path, (long)st));
     os_interrupt_cope();
-    cp = (change_ty *)arg;
+    cp = (change::pointer )arg;
     assert(cp);
     trace_string(path->str_text);
     s1 = os_below_dir(cp->pp->baseline_path_get(true), path);
@@ -501,7 +501,7 @@ copy_tree_callback_minimum(void *arg, dir_walk_message_ty message,
         os_become_query(&uid, (int *)0, (int *)0);
         if ((st->st_uid != (unsigned)uid) || (st->st_mode & 07000))
         {
-            project_become_undo();
+            project_become_undo(cp->pp);
             exists = !!project_file_find(cp->pp, s1, view_path_extreme);
             project_become(cp->pp);
             if (!exists)
@@ -522,7 +522,7 @@ copy_tree_callback_minimum(void *arg, dir_walk_message_ty message,
         // Don't copy it if it's not a source file, or a
         // relevant ,D file.
         //
-        project_become_undo();
+        project_become_undo(cp->pp);
         src = project_file_find(cp->pp, s1short, view_path_simple);
         remove_the_file =
             (
@@ -556,7 +556,7 @@ copy_tree_callback_minimum(void *arg, dir_walk_message_ty message,
         // Don't copy a suppressed file.
         // BUT keep primary source files and their diff files.
         //
-        project_become_undo();
+        project_become_undo(cp->pp);
         remove_the_file =
             (
                 !project_file_find(cp->pp, s1short, view_path_extreme)
@@ -576,7 +576,7 @@ copy_tree_callback_minimum(void *arg, dir_walk_message_ty message,
         //
         trace(("cp %s %s\n", path->str_text, s2->str_text));
         copy_whole_file(path, s2, 1);
-        project_become_undo();
+        project_become_undo(cp->pp);
         exists = !!project_file_find(cp->pp, s1, view_path_extreme);
         project_become(cp->pp);
         chmod_common(s2, st, !exists, cp);
@@ -609,7 +609,7 @@ copy_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
     string_ty       *s1;
     string_ty       *s1short;
     string_ty       *s2;
-    change_ty       *cp;
+    change::pointer cp;
     int             uid;
     string_ty       *contents;
     int             exists;
@@ -618,7 +618,7 @@ copy_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
     trace(("copy_tree_callback(message = %d, path = %08lX, st = %08lX)\n{\n",
         message, (long)path, (long)st));
     os_interrupt_cope();
-    cp = (change_ty *)arg;
+    cp = (change::pointer )arg;
     assert(cp);
     trace_string(path->str_text);
     s1 = os_below_dir(cp->pp->baseline_path_get(true), path);
@@ -645,7 +645,7 @@ copy_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
         os_become_query(&uid, (int *)0, (int *)0);
         if ((st->st_uid != (unsigned)uid) || (st->st_mode & 07000))
         {
-            project_become_undo();
+            project_become_undo(cp->pp);
             exists = !!project_file_find(cp->pp, s1, view_path_extreme);
             project_become(cp->pp);
             if (!exists)
@@ -676,7 +676,7 @@ copy_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
         // Don't copy a suppressed file.
         // BUT keep primary source files and their diff files.
         //
-        project_become_undo();
+        project_become_undo(cp->pp);
         remove_the_file =
             (
                 !project_file_find(cp->pp, s1short, view_path_extreme)
@@ -695,7 +695,7 @@ copy_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
         // copy the file
         //
         copy_whole_file(path, s2, 1);
-        project_become_undo();
+        project_become_undo(cp->pp);
         exists = !!project_file_find(cp->pp, s1, view_path_extreme);
         project_become(cp->pp);
         chmod_common(s2, st, !exists, cp);
@@ -741,9 +741,9 @@ integrate_begin_main(void)
     string_ty       *project_name;
     project_ty      *pp;
     long            change_number;
-    change_ty       *cp;
-    user_ty         *up;
-    user_ty         *pup;
+    change::pointer cp;
+    user_ty::pointer up;
+    user_ty::pointer pup;
     int             errs;
     string_ty       *s;
     long            other;
@@ -810,7 +810,7 @@ integrate_begin_main(void)
 
         case arglex_token_wait:
         case arglex_token_wait_not:
-            user_lock_wait_argument(integrate_begin_usage);
+            user_ty::lock_wait_argument(integrate_begin_usage);
             break;
 
 	case arglex_token_reason:
@@ -836,7 +836,10 @@ integrate_begin_main(void)
     // locate project data
     //
     if (!project_name)
-        project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -844,13 +847,13 @@ integrate_begin_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-        change_number = user_default_change(up);
+        change_number = up->default_change(pp);
     trace_long(change_number);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
@@ -860,15 +863,15 @@ integrate_begin_main(void)
     //
     pp->pstate_lock_prepare();
     change_cstate_lock_prepare(cp);
-    user_ustate_lock_prepare(up);
+    up->ustate_lock_prepare();
     lock_take();
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     pconf_data = change_pconf_get(cp, 1);
 
     //
     // make sure they are allowed to
     //
-    if (!project_integrator_query(pp, user_name(up)))
+    if (!project_integrator_query(pp, up->name()))
         project_fatal(pp, 0, i18n("not an integrator"));
     if (cstate_data->state != cstate_state_awaiting_integration)
         change_fatal(cp, 0, i18n("bad ib state"));
@@ -876,14 +879,14 @@ integrate_begin_main(void)
     (
         !project_developer_may_integrate_get(pp)
     &&
-        str_equal(change_developer_name(cp), user_name(up))
+        nstring(change_developer_name(cp)) == up->name()
     )
         change_fatal(cp, 0, i18n("developer may not integrate"));
     if
     (
         !project_reviewer_may_integrate_get(pp)
     &&
-        str_equal(change_reviewer_name(cp), user_name(up))
+        nstring(change_reviewer_name(cp)) == up->name()
     )
         change_fatal(cp, 0, i18n("reviewer may not integrate"));
 
@@ -904,6 +907,25 @@ integrate_begin_main(void)
     }
     trace_long(change_number);
     project_current_integration_set(pp, change_number);
+
+    //
+    // Look for additional integration hints from the change set.
+    //
+    if (!minimum && !maximum)
+    {
+	static string_ty *integrate_begin_hint;
+	if (!integrate_begin_hint)
+	    integrate_begin_hint = str_from_c("integrate-begin-hint");
+	string_ty *vp = change_attributes_find(cp, integrate_begin_hint);
+	if (vp)
+	{
+	    nstring value(vp);
+	    if (value == "minimum")
+		minimum = true;
+	    if (value == "maximum")
+		maximum = true;
+	}
+    }
 
     //
     // grab a delta number
@@ -1052,7 +1074,7 @@ integrate_begin_main(void)
         s1 = change_file_path(cp, src_data->file_name);
         project_become(pp);
         ok = change_fingerprint_same(src_data->file_fp, s1, 0);
-        project_become_undo();
+        project_become_undo(pp);
         if (!ok)
         {
             sub_context_ty  *scp;
@@ -1076,7 +1098,7 @@ integrate_begin_main(void)
 	    s2 = str_format("%s,D", s1->str_text);
 	    project_become(pp);
 	    ok = change_fingerprint_same(src_data->diff_file_fp, s2, 0);
-	    project_become_undo();
+	    project_become_undo(pp);
 	    if (!ok)
 	    {
 		sub_context_ty  *scp;
@@ -1255,13 +1277,13 @@ integrate_begin_main(void)
             src_data->idiff_file_fp = 0;
         }
     }
-    project_become_undo();
+    project_become_undo(pp);
 
     //
     // add the change to the user's list
     //
     trace_long(change_number);
-    user_own_add(up, project_name_get(pp), change_number);
+    up->own_add(pp, change_number);
     cstate_data->state = cstate_state_being_integrated;
 
     //
@@ -1276,7 +1298,7 @@ integrate_begin_main(void)
     //
     pp->pstate_write();
     change_cstate_write(cp);
-    user_ustate_write(up);
+    up->ustate_write();
     commit();
     lock_release();
 
@@ -1285,7 +1307,6 @@ integrate_begin_main(void)
     //
     pup = project_user(pp);
     log_open(change_logfile_get(cp), pup, log_style);
-    user_free(pup);
     change_run_integrate_begin_command(cp);
 
     //
@@ -1299,7 +1320,6 @@ integrate_begin_main(void)
     change_verbose(cp, 0, i18n("integrate begin complete"));
     change_free(cp);
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -1309,8 +1329,8 @@ integrate_begin()
 {
     static arglex_dispatch_ty dispatch[] =
     {
-        {arglex_token_help, integrate_begin_help, },
-        {arglex_token_list, integrate_begin_list, },
+        { arglex_token_help, integrate_begin_help, 0 },
+        { arglex_token_list, integrate_begin_list, 0 },
     };
 
     trace(("integrate_begin()\n{\n"));

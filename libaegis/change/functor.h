@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface of the change_functor class
 //
@@ -30,7 +29,7 @@
 /**
   * The change_functor class is used to represent an abstract base class
   * used to present object which <i>look like</i> callable functions
-  * which take a singe change_ty * argument.
+  * which take a singe change::pointer  argument.
   *
   * Typically, this is used with the ... class to walk the changes of
   * branch trees.
@@ -49,7 +48,7 @@ public:
       * \param cp
       *     The change to be operated upon.
       */
-    virtual void operator()(change_ty *cp) = 0;
+    virtual void operator()(change::pointer cp) = 0;
 
     /**
       * The include_branches method is sued to determine whether or not

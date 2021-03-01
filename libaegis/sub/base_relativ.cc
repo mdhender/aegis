@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,16 +13,14 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate base_relativs
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/arglex.h>
-#include <common/str_list.h>
+#include <common/nstring/list.h>
 #include <common/trace.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
 #include <libaegis/change/file.h>
 #include <libaegis/change.h>
 #include <libaegis/cstate.h>
@@ -56,24 +53,24 @@
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_base_relative(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_base_relative(sub_context_ty *scp, const wstring_list &arg)
 {
     //
     // Find the change.	 If there is no change, it is also valid in
     // the baseline context.
     //
     trace(("sub_base_relative()\n{\n"));
-    change_ty *cp = sub_context_change_get(scp);
+    wstring result;
+    change::pointer cp = sub_context_change_get(scp);
     if (!cp)
     {
 	project_ty *pp = sub_context_project_get(scp);
 	if (!pp)
 	{
-	    sub_context_error_set(scp, i18n("not valid in current context"));
-	    trace(("return NULL;\n"));
+	    scp->error_set(i18n("not valid in current context"));
 	    trace(("}\n"));
-	    return 0;
+	    return result;
 	}
 	cp = pp->change_get();
     }
@@ -81,24 +78,22 @@ sub_base_relative(sub_context_ty *scp, wstring_list_ty *arg)
     //
     // make sure we like the arguments.
     //
-    if (arg->size() < 2)
+    if (arg.size() < 2)
     {
-	sub_context_error_set(scp, i18n("requires one argument"));
-	trace(("return NULL;\n"));
+	scp->error_set(i18n("requires one argument"));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
 
     //
     // make sure we are in an appropriate state
     //
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
     if (cstate_data->state == cstate_state_awaiting_development)
     {
-	sub_context_error_set(scp, i18n("not valid in current context"));
-	trace(("return NULL;\n"));
+	scp->error_set(i18n("not valid in current context"));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
 
     //
@@ -113,14 +108,13 @@ sub_base_relative(sub_context_ty *scp, wstring_list_ty *arg)
     //
     // Turn the file name into an absolute path.
     //
-    string_list_ty results;
-    for (size_t k = 1; k < arg->size(); ++k)
+    nstring_list results;
+    for (size_t k = 1; k < arg.size(); ++k)
     {
-	string_ty *fn = wstr_to_str(arg->get(k));
+	nstring fn = arg[k].to_nstring();
 	change_become(cp);
-	string_ty *s = os_pathname(fn, 1);
-	change_become_undo();
-	str_free(fn);
+	nstring s = os_pathname(fn, true);
+	change_become_undo(cp);
 	fn = s;
 
 	//
@@ -129,35 +123,26 @@ sub_base_relative(sub_context_ty *scp, wstring_list_ty *arg)
 	//
 	for (size_t j = 0; j < search_path.nstrings; ++j)
 	{
-	    s = os_below_dir(search_path.string[j], fn);
-	    if (s)
+	    s = os_below_dir(nstring(search_path.string[j]), fn);
+	    if (!s.empty())
 	    {
-		str_free(fn);
-		if (s->str_length)
-		    fn = s;
-		else
-		{
-		    fn = str_from_c(".");
-		    str_free(s);
-		}
+                fn = s;
 		break;
 	    }
 	}
 	results.push_back(fn);
-	str_free(fn);
     }
 
     //
     // build the result
     //
-    string_ty *s = results.unsplit();
-    wstring_ty *result = str_to_wstr(s);
-    str_free(s);
+    nstring s = results.unsplit();
+    result = wstring(s);
 
     //
     // here for all exits
     //
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

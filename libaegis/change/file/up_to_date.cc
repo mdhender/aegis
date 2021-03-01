@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2006 Peter Miller
+//	Copyright (C) 2006 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ change_file_up_to_date(project_ty *pp, fstate_src_ty *c_src_data)
     // Look for the file in the project.  If it is not there, it
     // implies a new file, which is always up-to-date.
     //
-    p_src_data = project_file_find_by_meta(pp, c_src_data, view_path_extreme);
+    p_src_data = project_file_find(pp, c_src_data, view_path_extreme);
     if (!p_src_data || !p_src_data->edit)
     {
 	trace(("return 1;\n"));

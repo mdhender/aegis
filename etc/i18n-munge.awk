@@ -1,7 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2004 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 2004, 2006, 2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: i18n-munge.awk
+#	along with this program. If not, see
+#	<http://www.gnu.org/licenses/>.
 #
 # This awk script munges the POT file into something that the
 # Translation Project's tools can cope with.  Aparrently it isn't enough
@@ -46,9 +43,9 @@ function process()
 	}
 	else
 	{
-	    print "#. For consistent translation, here is the English text:"
+	    print "# For consistent translation, here is the English text:"
 	    print hash_msgstr_value
-	    print "#. Please translate the English msgstr, not the msgid."
+	    print "# Please translate the English msgstr, not the msgid."
 	    print msgid_value
 	    print "msgstr \"\""
 	}
@@ -69,7 +66,7 @@ function process()
     msgid = 0
     msgstr = 1
     msgstr_value = $0
-    hash_msgstr_value = "#. " $0
+    hash_msgstr_value = "#  " $0
     next
 }
 /^[ 	]*".*"$/ {
@@ -78,7 +75,7 @@ function process()
     if (msgstr)
     {
 	msgstr_value = msgstr_value "\n" $0
-	hash_msgstr_value = hash_msgstr_value "\n#. " $0
+	hash_msgstr_value = hash_msgstr_value "\n#  " $0
     }
     next
 }

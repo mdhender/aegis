@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate version_paths
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h>
@@ -37,7 +34,7 @@ project_file_version_path(project_ty *pp, fstate_src_ty *src, int *unlink_p)
 {
     fstate_src_ty   *old_src;
     project_ty      *ppp;
-    change_ty       *cp;
+    change::pointer cp;
     string_ty       *filename;
     history_version_ty *ed;
     fstate_src_ty   *reconstruct;
@@ -56,7 +53,7 @@ project_file_version_path(project_ty *pp, fstate_src_ty *src, int *unlink_p)
     for (ppp = pp; ppp; ppp = (ppp->is_a_trunk() ? 0 : ppp->parent_get()))
     {
 	cp = ppp->change_get();
-        if (change_is_completed(cp))
+        if (cp->is_completed())
 	    continue;
 	old_src = change_file_find(cp, src->file_name, view_path_first);
 	if (!old_src)
@@ -128,7 +125,7 @@ project_file_version_path(project_ty *pp, fstate_src_ty *src, int *unlink_p)
 	cp,
 	reconstruct,
 	filename,
-	user_executing(pp)
+	user_ty::create()
     );
     history_version_type.free(reconstruct);
     trace(("return \"%s\";\n", filename->str_text));

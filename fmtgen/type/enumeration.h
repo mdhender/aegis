@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2005 Peter Miller.
-//	All rights reserved.
+//	Copyright (C) 1994, 2005-2007 Peter Miller.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -27,22 +26,22 @@
 #include <common/nstring/list.h>
 
 /**
-  * The type_enumeration_ty class is used to represent the type of a
+  * The type_enumeration class is used to represent the type of a
   * field with an enumerated value.
   */
-class type_enumeration_ty:
-    public type_ty
+class type_enumeration:
+    public type
 {
 public:
     /**
       * The destructor.
       */
-    virtual ~type_enumeration_ty();
+    virtual ~type_enumeration();
 
     /**
       * The constructor.
       */
-    type_enumeration_ty(const nstring &name);
+    type_enumeration(const nstring &name);
 
     // See base class for documentation.
     void gen_include() const;
@@ -73,7 +72,7 @@ public:
 	const;
 
     // See base class for documentation.
-    void member_add(const nstring &member_name, type_ty *member_type,
+    void member_add(const nstring &member_name, type *member_type,
 	int attributes);
 
     // See base class for documentation.
@@ -88,17 +87,17 @@ private:
     /**
       * The default constructor.   Do not use.
       */
-    type_enumeration_ty();
+    type_enumeration();
 
     /**
       * The copy constructor.   Do not use.
       */
-    type_enumeration_ty(const type_enumeration_ty &);
+    type_enumeration(const type_enumeration &);
 
     /**
       * The assignment operator.   Do not use.
       */
-    type_enumeration_ty &operator=(const type_enumeration_ty &);
+    type_enumeration &operator=(const type_enumeration &);
 };
 
 #endif // FMTGEN_TYPE_ENUMERATION_H

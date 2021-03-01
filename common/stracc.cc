@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 2001, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1998, 2001, 2003-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -125,4 +124,21 @@ void
 stracc_t::push_back(const char *s)
 {
     push_back(s, strlen(s));
+}
+
+
+size_t
+stracc_t::count_nul_characters()
+    const
+{
+    size_t result = 0;
+    const char *cp = buffer;
+    const char *ep = cp + length;
+    while (cp < ep)
+    {
+	if (!*cp)
+	    ++result;
+	++cp;
+    }
+    return result;
 }

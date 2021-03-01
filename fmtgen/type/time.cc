@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1993, 1994, 1998, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1993, 1994, 1998, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -25,19 +24,19 @@
 #include <fmtgen/type/time.h>
 
 
-type_time_ty::~type_time_ty()
+type_time::~type_time()
 {
 }
 
 
-type_time_ty::type_time_ty() :
-    type_ty("time")
+type_time::type_time() :
+    type("time")
 {
 }
 
 
 void
-type_time_ty::gen_include_declarator(const nstring &variable_name,
+type_time::gen_include_declarator(const nstring &variable_name,
     bool is_a_list) const
 {
     const char *deref = (is_a_list ? "*" : "");
@@ -46,7 +45,7 @@ type_time_ty::gen_include_declarator(const nstring &variable_name,
 
 
 void
-type_time_ty::gen_code_declarator(const nstring &variable_name, bool is_a_list,
+type_time::gen_code_declarator(const nstring &variable_name, bool is_a_list,
     int attributes) const
 {
     int show = !!(attributes & ATTRIBUTE_SHOW_IF_DEFAULT);
@@ -66,7 +65,7 @@ type_time_ty::gen_code_declarator(const nstring &variable_name, bool is_a_list,
 
 
 void
-type_time_ty::gen_code_call_xml(const nstring &form_name,
+type_time::gen_code_call_xml(const nstring &form_name,
     const nstring &member_name, int attributes) const
 {
     int show = !!(attributes & ATTRIBUTE_SHOW_IF_DEFAULT);
@@ -81,7 +80,7 @@ type_time_ty::gen_code_call_xml(const nstring &form_name,
 
 
 void
-type_time_ty::gen_free_declarator(const nstring &variable_name, bool is_a_list)
+type_time::gen_free_declarator(const nstring &, bool is_a_list)
     const
 {
     if (is_a_list)
@@ -90,7 +89,7 @@ type_time_ty::gen_free_declarator(const nstring &variable_name, bool is_a_list)
 
 
 nstring
-type_time_ty::c_name_inner()
+type_time::c_name_inner()
     const
 {
     return "time_t";
@@ -98,7 +97,7 @@ type_time_ty::c_name_inner()
 
 
 bool
-type_time_ty::has_a_mask()
+type_time::has_a_mask()
     const
 {
     return true;
@@ -106,7 +105,7 @@ type_time_ty::has_a_mask()
 
 
 void
-type_time_ty::gen_code_copy(const nstring &member_name)
+type_time::gen_code_copy(const nstring &member_name)
     const
 {
     indent_printf
@@ -119,7 +118,7 @@ type_time_ty::gen_code_copy(const nstring &member_name)
 
 
 void
-type_time_ty::gen_code_trace(const nstring &vname, const nstring &value)
+type_time::gen_code_trace(const nstring &vname, const nstring &value)
     const
 {
     indent_printf

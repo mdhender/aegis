@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -26,6 +25,7 @@
 #include <common/ac/stdio.h>
 
 #include <aegis/ael.h>
+#include <libaegis/ael/branch/files.h>
 #include <libaegis/ael/change/changes.h>
 #include <libaegis/ael/change/default.h>
 #include <libaegis/ael/change/details.h>
@@ -89,6 +89,12 @@ static table_ty table[] =
 	"Administrators",
 	"List the administrators of a project",
 	list_administrators,
+        0,
+    },
+    {
+	"Branch_Files",
+	"List the files in a branch",
+	list_branch_files,
         0,
     },
     {
@@ -418,8 +424,8 @@ list(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, list_help, },
-	{arglex_token_list, list_list, },
+	{ arglex_token_help, list_help, 0 },
+	{ arglex_token_list, list_list, 0 },
     };
 
     trace(("list()\n{\n"));
@@ -429,13 +435,12 @@ list(void)
 
 
 static void
-list_list_list(string_ty *project_name, long change_number,
-    string_list_ty *args)
+list_list_list(string_ty *project_name, long change_number, string_list_ty *)
 {
     output_ty	    *name_col =	    0;
     output_ty	    *desc_col =	    0;
     table_ty	    *tp;
-    col_ty	    *colp;
+    col	    *colp;
 
     trace(("list_list_list()\n{\n"));
     if (project_name)
@@ -446,12 +451,12 @@ list_list_list(string_ty *project_name, long change_number,
     //
     // create the columns
     //
-    colp = col_open((string_ty *)0);
-    col_title(colp, "List of Lists", (const char *)0);
-    name_col = col_create(colp, 0, 15, "Name\n------");
+    colp = col::open((string_ty *)0);
+    colp->title("List of Lists", (const char *)0);
+    name_col = colp->create(0, 15, "Name\n------");
     if (!option_terse_get())
     {
-	desc_col = col_create(colp, 16, 0, "Description\n-------------");
+	desc_col = colp->create(16, 0, "Description\n-------------");
     }
 
     //
@@ -462,12 +467,12 @@ list_list_list(string_ty *project_name, long change_number,
 	name_col->fputs(tp->name);
 	if (desc_col)
 	    desc_col->fputs(tp->description);
-	col_eoln(colp);
+	colp->eoln();
     }
 
     //
     // clean up and go home
     //
-    col_close(colp);
+    delete colp;
     trace(("}\n"));
 }

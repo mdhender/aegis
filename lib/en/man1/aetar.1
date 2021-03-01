@@ -1,8 +1,7 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2002-2004, 2006 Peter Miller;
+.\"	Copyright (C) 2002-2004, 2006, 2007 Peter Miller
 .\"	Copyright (C) 2006 Walter Franzini;
-.\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -15,10 +14,8 @@
 .\"	GNU General Public License for more details.
 .\"
 .\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: manual page describing the aetar command.
+.\"	along with this program. If not, see
+.\"	<http://www.gnu.org/licenses/>.
 .\"
 .so z_name.so
 .ds n) aetar
@@ -153,18 +150,40 @@ You may also use a delta name instead of a delta number.
 .so o_dir.so
 .TP 8n
 \fB\-EXCLude\fP
+.RS
 This option may be used to exclude certain files in the tarball
-from consideration.  You can also get the same effect using the
+from consideration.
+.PP
+You can also add more exclusions using the
 \fIproject_\%specific\fP field of the project configuration, using the
-\f[CW]aetar:exclude\fP attribute listing file names to exclude sparated
+\f[CW]aetar:exclude\fP attribute listing file names to exclude separated
 by spaces.
+.RE
 .TP 8n
 \fB\-Exclude_Auto_Tools\fP
+.RS
 This option may be used to exclude files common to tarballs of open
 source projects which used GNU Autoconf or GNU Automake.  This is
 triggered by the presence of \fIconfigure.ac\fP, \fIconfigure.in\fP or
 \fIMakefile.am\fP files.  This only works for simple projects, more
 complex projects will need to use the project exclude attributes.
+.PP
+You can set this automatically using the boolean
+\f[CW]aetar:exclude-auto-tools\fP attribute in the
+\fIproject_\%specific\fP field of the project configuration file.
+.RE
+.TP 8n
+\fB\-Exclude_CVS\fP
+.RS
+This option may be used to exclude files common to CVS repositories,
+which implement the repository functions, rather than contain source
+code.  It will also look inside \f[CW].cvsignore\fP files for additional
+files to ignore.
+.PP
+You can set this automatically using the boolean
+\f[CW]aetar:exclude-cvs\fP attribute in the \fIproject_\%specific\fP
+field of the project configuration file.
+.RE
 .so o_file_cs.so
 .so o_project.so
 .so o_trojan.so

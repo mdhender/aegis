@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,91 +13,101 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement the builtin getenv function
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdlib.h>
 
+#include <common/error.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/func/getenv.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/integer.h>
 #include <libaegis/aer/value/string.h>
 #include <libaegis/aer/value/time.h>
-#include <common/error.h>
 #include <libaegis/sub.h>
 
 
-static int
-verify(rpt_expr_ty *ep)
+rpt_func_getenv::~rpt_func_getenv()
 {
-    return (ep->nchild == 1);
 }
 
 
-static rpt_value_ty *
-run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func_getenv::rpt_func_getenv()
 {
-    const char      *cp;
-    rpt_value_ty    *tmp;
-    string_ty       *s;
-    rpt_value_ty    *result;
+}
 
-    assert(argc == 1);
 
+rpt_func::pointer
+rpt_func_getenv::create()
+{
+    return pointer(new rpt_func_getenv());
+}
+
+
+const char *
+rpt_func_getenv::name()
+    const
+{
+    return "getenv";
+}
+
+
+bool
+rpt_func_getenv::optimizable()
+    const
+{
+    return true;
+}
+
+
+bool
+rpt_func_getenv::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 1);
+}
+
+
+rpt_value::pointer
+rpt_func_getenv::run(const rpt_expr::pointer &ep, size_t,
+    rpt_value::pointer *argv) const
+{
     //
     // Coerce the argument to a string.
     // It is an error if it can't be.
     //
-    tmp = rpt_value_stringize(argv[0]);
-    if (tmp->method->type != rpt_value_type_string)
+    rpt_value::pointer tmp = rpt_value::stringize(argv[0]);
+    rpt_value_string *rvsp = dynamic_cast<rpt_value_string *>(tmp.get());
+    if (!rvsp)
     {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
-	rpt_value_free(tmp);
-	sub_var_set_charstar(scp, "Function", "getenv");
-	sub_var_set_long(scp, "Number", 1);
-	sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-	s =
-		subst_intl
-		(
-			scp,
-    i18n("$function: argument $number: string value required (was given $name)")
-		);
-	sub_context_delete(scp);
-	result = rpt_value_error(ep->pos, s);
-	str_free(s);
-	return result;
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "getenv");
+	sc.var_set_long("Number", 1);
+	sc.var_set_charstar("Name", argv[0]->name());
+	nstring s
+        (
+            sc.subst_intl
+            (
+                i18n("$function: argument $number: string value required "
+                    "(was given $name)")
+            )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
 
     //
     // Scan the string and try to make a time out of it.
     // It is an error if this can't be done.
     //
-    s = rpt_value_string_query(tmp);
-    cp = getenv(s->str_text);
+    nstring s(rvsp->query());
+    const char *cp = getenv(s.c_str());
     if (!cp)
 	cp = "";
-    rpt_value_free(tmp);
 
     //
     // build the return value
     //
-    s = str_from_c(cp);
-    result = rpt_value_string(s);
-    str_free(s);
-    return result;
+    return rpt_value_string::create(s);
 }
-
-
-rpt_func_ty rpt_func_getenv =
-{
-    "getenv",
-    1, // optimizable
-    verify,
-    run,
-};

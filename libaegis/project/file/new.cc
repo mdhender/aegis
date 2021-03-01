@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -26,15 +25,23 @@
 
 
 fstate_src_ty *
-project_file_new(project_ty *pp, string_ty *file_name)
+project_ty::file_new(string_ty *file_name)
 {
-    change_ty       *cp;
-    fstate_src_ty   *src_data;
+    trace(("project_ty::file_new(this = %8.8lX, file_name = \"%s\")\n{\n",
+	(long)this, file_name->str_text));
+    fstate_src_ty *src_data = change_get()->file_new(file_name);
+    trace(("return %8.8lX;\n", (long)src_data));
+    trace(("}\n"));
+    return src_data;
+}
 
-    trace(("project_file_new(pp = %8.8lX, file_name = \"%s\")\n{\n",
-	(long)pp, file_name->str_text));
-    cp = pp->change_get();
-    src_data = change_file_new(cp, file_name);
+
+fstate_src_ty *
+project_ty::file_new(fstate_src_ty *meta)
+{
+    trace(("project_ty::file_new(this = %8.8lX, meta->file_name = \"%s\")\n{\n",
+	(long)this, meta->file_name->str_text));
+    fstate_src_ty *src_data = change_get()->file_new(meta);
     trace(("return %8.8lX;\n", (long)src_data));
     trace(("}\n"));
     return src_data;

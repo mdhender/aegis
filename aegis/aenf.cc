@@ -1,8 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2006 Peter Miller;
+//	Copyright (C) 1991-2007 Peter Miller
 //	Copyright (C) 2006 Walter Franzini;
-//	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -15,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement new file
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -125,8 +122,8 @@ new_file_list(void)
 
 struct walker_ty
 {
-    user_ty	    *up;
-    change_ty	    *cp;
+    user_ty::pointer up;
+    change::pointer cp;
     string_list_ty  *slp;
     string_ty	    *dd;
     int		    found;
@@ -135,8 +132,7 @@ struct walker_ty
 
 
 static void
-walker(void *p, dir_walk_message_ty msg, string_ty *path,
-    const struct stat *st)
+walker(void *p, dir_walk_message_ty msg, string_ty *path, const struct stat *)
 {
     walker_ty	    *aux;
     string_ty	    *s;
@@ -165,7 +161,7 @@ walker(void *p, dir_walk_message_ty msg, string_ty *path,
 	//
 	aux->found++;
 	s = os_below_dir(aux->dd, path);
-	user_become_undo();
+	aux->up->become_end();
 	if
 	(
 	    !aux->slp->member(s)
@@ -184,7 +180,7 @@ walker(void *p, dir_walk_message_ty msg, string_ty *path,
             else
                 str_free(check_msg);
         }
-	user_become(aux->up);
+	aux->up->become_begin();
 	str_free(s);
 	break;
     }
@@ -202,9 +198,9 @@ new_file_main(void)
     string_ty	    *project_name;
     project_ty	    *pp;
     long	    change_number;
-    change_ty	    *cp;
+    change::pointer cp;
     log_style_ty    log_style;
-    user_ty	    *up;
+    user_ty::pointer up;
     file_usage_ty   file_usage_value;
     int             auto_config_allowed;
     int		    nerrs;
@@ -286,12 +282,12 @@ new_file_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(new_file_usage);
+	    user_ty::lock_wait_argument(new_file_usage);
 	    break;
 
 	case arglex_token_base_relative:
 	case arglex_token_current_relative:
-	    user_relative_filename_preference_argument(new_file_usage);
+	    user_ty::relative_filename_preference_argument(new_file_usage);
 	    break;
 
 	case arglex_token_template:
@@ -317,7 +313,7 @@ new_file_main(void)
 	case arglex_token_keep:
 	case arglex_token_interactive:
 	case arglex_token_keep_not:
-	    user_delete_file_argument(new_file_usage);
+	    user_ty::delete_file_argument(new_file_usage);
 	    break;
 	}
 	arglex();
@@ -353,7 +349,10 @@ new_file_main(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -361,13 +360,13 @@ new_file_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -400,11 +399,11 @@ new_file_main(void)
     // It is an error if the change is not in the being_developed state.
     // It is an error if the change is not assigned to the current user.
     //
-    if (!change_is_being_developed(cp))
+    if (!cp->is_being_developed())
 	change_fatal(cp, 0, i18n("bad nf state"));
     if (change_is_a_branch(cp))
 	change_fatal(cp, 0, i18n("bad nf branch"));
-    if (!str_equal(change_developer_name(cp), user_name(up)))
+    if (nstring(change_developer_name(cp)) != up->name())
 	change_fatal(cp, 0, i18n("not developer"));
 
     //
@@ -440,9 +439,8 @@ new_file_main(void)
 	    search_path.nstrings >= 1
 	&&
 	    (
-		user_relative_filename_preference
+		up->relative_filename_preference
 		(
-		    up,
 		    uconf_relative_filename_preference_current
 		)
 	    ==
@@ -473,9 +471,9 @@ new_file_main(void)
 	    s2 = str_copy(s1);
 	else
 	    s2 = os_path_join(base, s1);
-	user_become(up);
+	up->become_begin();
 	s1 = os_pathname(s2, 1);
-	user_become_undo();
+	up->become_end();
 	str_free(s2);
 	s2 = 0;
 	for (k = 0; k < search_path.nstrings; ++k)
@@ -526,7 +524,7 @@ new_file_main(void)
 	string_ty	*e;
 
 	fn = wl.string[j];
-	user_become(up);
+	up->become_begin();
 	ffn = os_path_cat(dd, fn);
 	if (os_isa_directory(ffn))
 	{
@@ -564,7 +562,7 @@ new_file_main(void)
 		sub_context_delete(scp);
 		++nerrs;
 	    }
-	    user_become_undo();
+	    up->become_end();
 	    str_free(ffn);
 	    continue;
 	}
@@ -591,12 +589,12 @@ new_file_main(void)
 	    change_error(cp, scp, i18n("$filename bad nf type"));
 	    sub_context_delete(scp);
 	    ++nerrs;
-	    user_become_undo();
+	    up->become_end();
 	    str_free(ffn);
 	    continue;
 	}
 	str_free(ffn);
-	user_become_undo();
+	up->become_end();
 	e = change_filename_check(cp, fn);
 	if (e)
 	{
@@ -808,7 +806,7 @@ new_file_main(void)
 	    usage = file_usage_config;
 	}
 
-	src_data = change_file_new(cp, s1);
+	src_data = cp->file_new(s1);
 	src_data->action = file_action_create;
 	src_data->usage = usage;
         if (uuid)
@@ -838,12 +836,10 @@ new_file_main(void)
     //
     change_uuid_clear(cp);
 
-    //
-    // run the change file command
-    // and the project file command if necessary
-    //
-    change_run_new_file_command(cp, &wl, up);
-    change_run_project_file_command(cp, up);
+    // remember we are about to
+    bool recent_integration = cp->run_project_file_command_needed();
+    if (recent_integration)
+        cp->run_project_file_command_done();
 
     //
     // release the locks
@@ -851,6 +847,14 @@ new_file_main(void)
     change_cstate_write(cp);
     commit();
     lock_release();
+
+    //
+    // run the change file command
+    // and the project file command if necessary
+    //
+    cp->run_new_file_command(&wl, up);
+    if (recent_integration)
+        cp->run_project_file_command(up);
 
     //
     // verbose success message
@@ -866,7 +870,6 @@ new_file_main(void)
     }
     change_free(cp);
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -876,8 +879,8 @@ new_file(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, new_file_help, },
-	{arglex_token_list, new_file_list, },
+	{ arglex_token_help, new_file_help, 0 },
+	{ arglex_token_list, new_file_list, 0 },
     };
 
     trace(("new_file()\n{\n"));

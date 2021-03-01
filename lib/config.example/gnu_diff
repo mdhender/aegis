@@ -2,8 +2,6 @@
  *	aegis - project change supervisor
  *	This file is in the Public Domain, 2006, Peter Miller.
  *
- * MANIFEST: example use of diff in the project config file
- *
  * The ${quote ...} construct is used to quote filenames which contain
  * shell special characters.  A minimum of quoting is performed, so if
  * the filenames do not contain shell special characters, no quotes will

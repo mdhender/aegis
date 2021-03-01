@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1996, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,12 +13,13 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate struct values
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
+#include <common/symtab.h>
+#include <common/trace.h>
 #include <libaegis/aer/pos.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/integer.h>
@@ -28,247 +28,145 @@
 #include <libaegis/aer/value/ref.h>
 #include <libaegis/aer/value/string.h>
 #include <libaegis/aer/value/struct.h>
-#include <common/error.h>
 #include <libaegis/sub.h>
-#include <common/symtab.h>
-#include <common/trace.h>
 
 
-struct rpt_value_struct_ty
+rpt_value_struct::~rpt_value_struct()
 {
-    RPT_VALUE
-    symtab_ty       *value;
-};
-
-
-static void
-reap(void *p)
-{
-    rpt_value_ty    *vp;
-
-    trace(("reap(%08lX);\n", (long)p));
-    vp = (rpt_value_ty *)p;
-    rpt_value_free(vp);
+    trace(("rpt_value_struct::~rpt_value_struct(this = %08lX)\n", (long)this));
 }
 
 
-#ifdef DEBUG
-
-static void
-func(const symtab_ty *stp, string_ty *key, void *data, void *arg)
+rpt_value_struct::rpt_value_struct()
 {
-    trace(("key=\"%s\", data=%08lX\n", key->str_text, (long)data));
-}
-
-#endif
-
-
-static void
-destruct(rpt_value_ty *vp)
-{
-    rpt_value_struct_ty *this_thing;
-
-    trace(("value_struct::destruct(this_thing = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_struct_ty *)vp;
-    assert(this_thing->method->type == rpt_value_type_structure);
-#ifdef DEBUG
-    this_thing->value->walk(func, (void *)0);
-#endif
-    delete this_thing->value;
-    this_thing->value = 0;
-    trace(("}\n"));
+    trace(("rpt_value_struct::rpt_value_struct(this = %08lX)\n", (long)this));
 }
 
 
-static rpt_value_ty *
-lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lvalue)
+rpt_value::pointer
+rpt_value_struct::create()
 {
-    rpt_value_struct_ty *this_thing;
-    rpt_value_ty    *rhs2;
-    rpt_value_ty    *data;
-    rpt_value_ty    *result = 0;
+    return pointer(new rpt_value_struct());
+}
 
-    trace(("value_struct::lookup(lhs = %08lX, rhs = %08lX, lvalue = %d)\n{\n",
-	(long)vp, (long)rhs, lvalue));
-    this_thing = (rpt_value_struct_ty *)vp;
-    assert(this_thing->reference_count >= 1);
-    assert(this_thing->method->type == rpt_value_type_structure);
-    rhs2 = rpt_value_stringize(rhs);
-    if (rhs2->method->type != rpt_value_type_string)
+
+rpt_value::pointer
+rpt_value_struct::lookup(const rpt_value::pointer &rhs, bool lvalue)
+    const
+{
+    trace(("value_struct::lookup(this = %08lX, rhs = %08lX, lvalue = %d)\n",
+	(long)this, (long)rhs.get(), lvalue));
+    rpt_value::pointer rhs2 = rpt_value::stringize(rhs);
+    rpt_value_string *rhs2sp = dynamic_cast<rpt_value_string *>(rhs2.get());
+    if (!rhs2sp)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	rpt_value_free(rhs2);
-	trace(("}\n"));
-	sub_var_set_charstar(scp, "Name1", vp->method->name);
-	sub_var_set_charstar(scp, "Name2", rhs->method->name);
-	s = subst_intl(scp, i18n("illegal lookup ($name1[$name2])"));
-	sub_context_delete(scp);
-	result = (rpt_value_ty *)rpt_value_error((rpt_pos_ty *)0, s);
-	str_free(s);
-	return result;
+	sub_context_ty sc;
+	sc.var_set_charstar("Name1", name());
+	sc.var_set_charstar("Name2", rhs->name());
+	nstring s(sc.subst_intl(i18n("illegal lookup ($name1[$name2])")));
+	return rpt_value_error::create(s);
     }
-    trace(("find the datum\n"));
-    data =
-	(rpt_value_ty *)this_thing->value->query(rpt_value_string_query(rhs2));
-    trace(("data = %08lX;\n", (long)data));
+    nstring key(rhs2sp->query());
+    trace(("find the \"%s\" datum\n", key.c_str()));
+    rpt_value::pointer data = members.get(key);
+    trace(("data = %08lX;\n", (long)data.get()));
     if (!data)
     {
-	result = rpt_value_nul();
+	rpt_value::pointer result = rpt_value_null::create();
+        trace(("result = %08lX\n", (long)result.get()));
 	if (lvalue)
 	{
 	    trace(("create new element\n"));
-	    data = rpt_value_reference(result);
-	    // reference takes a copy
-	    rpt_value_free(result);
-	    this_thing->value->assign(rpt_value_string_query(rhs2), data);
-	    result = rpt_value_copy(data);
+            result = rpt_value_reference::create(result);
+	    members.assign(key, result);
 	}
-	else
-	{
-	    //
-	    // Note: a nul value will always have ref count
-	    // >= 2 (see the assert below) because there is
-	    // only ever one allocated.  It is OK for the
-	    // nul returned from this function to be
-	    // rpt_value_free()ed later, because it is not
-	    // anywhere attached.
-	    //
-	    trace(("element not found, and none created\n"));
-	}
+	return result;
     }
-    else
+
+    rpt_value_reference *rvrp = dynamic_cast<rpt_value_reference *>(data.get());
+    assert(rvrp);
+    if (rvrp && !lvalue)
     {
-	if (data->method->type == rpt_value_type_reference && !lvalue)
-	{
-	    //
-	    // this returns a copy of the referenced value
-	    //
-	    trace(("resolve the reference\n"));
-	    result = rpt_value_reference_get(data);
-	}
-	else
-	{
-	    trace(("copy the data\n"));
-	    result = rpt_value_copy(data);
-	}
+        //
+        // this returns a copy of the referenced value
+        //
+        trace(("resolve the reference\n"));
+        return rvrp->get();
     }
-    assert(rhs2->reference_count >= 1);
-    rpt_value_free(rhs2);
-    assert(result->reference_count >= 2);
-    trace(("return %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
+
+    return data;
 }
 
 
-static void
-keys_callback(const symtab_ty *stp, string_ty *key, void *data, void *arg)
+rpt_value::pointer
+rpt_value_struct::lookup(const char *key)
+    const
 {
-    rpt_value_ty    *vlp;
-    rpt_value_ty    *s;
-
-    vlp = (rpt_value_ty *)arg;
-    s = rpt_value_string(key);
-    rpt_value_list_append(vlp, s);
-    rpt_value_free(s);
+    return lookup(nstring(key));
 }
 
 
-static rpt_value_ty *
-keys(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_struct::lookup(string_ty *key)
+    const
 {
-    rpt_value_struct_ty *this_thing;
-    rpt_value_ty    *result;
-
-    this_thing = (rpt_value_struct_ty *)vp;
-    assert(this_thing->method->type == rpt_value_type_structure);
-    result = rpt_value_list();
-    this_thing->value->walk(keys_callback, result);
-    return result;
+    return lookup(nstring(key));
 }
 
 
-static rpt_value_ty *
-count(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_struct::lookup(const nstring &key)
+    const
 {
-    rpt_value_struct_ty *this_thing;
-
-    this_thing = (rpt_value_struct_ty *)vp;
-    assert(this_thing->method->type == rpt_value_type_structure);
-    return rpt_value_integer(this_thing->value->size());
+    return lookup(rpt_value_string::create(key), false);
 }
 
 
-static rpt_value_method_ty method =
+rpt_value::pointer
+rpt_value_struct::keys()
+    const
 {
-    sizeof(rpt_value_struct_ty),
-    "struct",
-    rpt_value_type_structure,
-    0, // construct
-    destruct,
-    0, // arithmetic
-    0, // stringize
-    0, // booleanize
-    lookup,
-    keys,
-    count,
-    0, // type_of
-    0, // undefer
-};
-
-
-rpt_value_ty *
-rpt_value_struct(symtab_ty *stp)
-{
-    rpt_value_struct_ty *this_thing;
-
-    this_thing = (rpt_value_struct_ty *)rpt_value_alloc(&method);
-    if (!stp)
-	stp = new symtab_ty(5);
-    stp->set_reap(reap);
-    this_thing->value = stp;
-    return (rpt_value_ty *)this_thing;
+    nstring_list k;
+    members.keys(k);
+    rpt_value_list *p = new rpt_value_list();
+    for (size_t j = 0; j < k.size(); ++j)
+        p->append(rpt_value_string::create(k[j]));
+    return pointer(p);
 }
 
 
-symtab_ty *
-rpt_value_struct_query(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_struct::count()
+    const
 {
-    rpt_value_struct_ty *this_thing;
-
-    this_thing = (rpt_value_struct_ty *)vp;
-    assert(this_thing->method == &method);
-    return this_thing->value;
+    return rpt_value_integer::create(members.size());
 }
 
 
-rpt_value_ty *
-rpt_value_struct_lookup(rpt_value_ty *vp, string_ty *name)
+const char *
+rpt_value_struct::name()
+    const
 {
-    rpt_value_struct_ty *this_thing;
+    return "struct";
+}
 
-    this_thing = (rpt_value_struct_ty *)vp;
-    assert(this_thing->method == &method);
-    return (rpt_value_ty *)this_thing->value->query(name);
+
+bool
+rpt_value_struct::is_a_struct()
+    const
+{
+    return true;
 }
 
 
 void
-rpt_value_struct__set(rpt_value_ty *vp, string_ty *name, rpt_value_ty *value)
+rpt_value_struct::assign(const nstring &key, const rpt_value::pointer &value)
 {
-    rpt_value_struct_ty *this_thing;
-
-    trace(("rpt_value_struct__set(this_thing = %08lX, name = \"%s\", "
-	"value = %08lX)\n{\n", (long)vp, name->str_text, (long)value));
-    this_thing = (rpt_value_struct_ty *)vp;
-    assert(this_thing->method == &method);
-    if (value->method->type == rpt_value_type_reference)
-	value = rpt_value_copy(value);
+    trace(("rpt_value_struct::set(this = %08lX, key = \"%s\", "
+	"value = %08lX %s)\n", (long)this, key.c_str(), (long)value.get(),
+        value->name()));
+    if (dynamic_cast<const rpt_value_reference *>(value.get()))
+	members.assign(key, value);
     else
-	value = rpt_value_reference(value);
-    this_thing->value->assign(name, value);
-    trace(("}\n"));
+	members.assign(key, rpt_value_reference::create(value));
 }

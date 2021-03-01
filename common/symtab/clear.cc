@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -34,11 +33,9 @@ symtab_ty::clear()
 	{
 	    row_t *rp = *rpp;
 	    assert(rp->data);
-	    assert(rp->key);
 	    *rpp = rp->overflow;
 	    if (reap)
 		reap(rp->data);
-	    str_free(rp->key);
 	    delete rp;
 	}
     }

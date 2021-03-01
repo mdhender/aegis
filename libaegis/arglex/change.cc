@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate changes
 //
@@ -193,7 +192,7 @@ no_such_uuid(project_ty *pp, string_ty *uuid)
 
 /**
   * The arglex_parse_change_tok is used to parse a complete --change
-  * command line option and any cucceeding arguments.  When finished,
+  * command line option and any succeeding arguments.  When finished,
   * the parse point will be placed at the begining of the next command
   * line option.
   */
@@ -242,10 +241,13 @@ arglex_parse_change_tok(string_ty **project_name_p, long *change_number_p,
             // match, or too many matches, for a partial (prefix) UUID.
 	    //
 	    if (!project_name)
-		project_name = user_default_project();
+            {
+                nstring n = user_ty::create()->default_project();
+                project_name = str_copy(n.get_ref());
+            }
 	    project_ty *pp = project_alloc(project_name);
 	    pp->bind_existing();
-	    change_ty *cp = project_uuid_find(pp, s);
+	    change::pointer cp = project_uuid_find(pp, s);
 	    if (!cp)
 	    {
 		if (s->str_length == 36)
@@ -277,7 +279,8 @@ arglex_parse_change_tok(string_ty **project_name_p, long *change_number_p,
 		project_ty      *pp;
 		project_ty      *pp2;
 
-		project_name = user_default_project();
+                nstring n = user_ty::create()->default_project();
+                project_name = str_copy(n.get_ref());
 		pp = project_alloc(project_name);
 		pp->bind_existing();
 		pp2 = pp->find_branch(s->str_text);
@@ -301,7 +304,8 @@ arglex_parse_change_tok(string_ty **project_name_p, long *change_number_p,
 		project_ty      *pp;
 		project_ty      *pp2;
 
-		project_name = user_default_project();
+                nstring n = user_ty::create()->default_project();
+                project_name = str_copy(n.get_ref());
 		pp = project_alloc(project_name);
 		pp->bind_existing();
 		pp2 = pp->find_branch(s->str_text);
@@ -406,6 +410,49 @@ arglex_parse_change_with_branch(string_ty **project_name_p,
 
     case arglex_token_string:
 	s = str_from_c(arglex_value.alv_string);
+	if (universal_unique_identifier_valid_partial(s))
+	{
+	    //
+            // Hunt for the change set with the given UUID within the
+            // project.  Complain if there is no change set with the
+            // given UUID if the UUID is exact.  Move on if there is no
+            // match, or too many matches, for a partial (prefix) UUID.
+	    //
+	    if (!project_name)
+            {
+                nstring n = user_ty::create()->default_project();
+                project_name = str_copy(n.get_ref());
+            }
+	    project_ty *pp = project_alloc(project_name);
+	    pp->bind_existing();
+	    change::pointer cp = project_uuid_find(pp, s);
+	    if (!cp)
+	    {
+		if (s->str_length == 36)
+		{
+		    no_such_uuid(pp, s);
+		    // NOTREACHED
+		}
+		project_free(pp);
+                pp = 0;
+	    }
+	    else
+	    {
+		if (!*project_name_p)
+		    *project_name_p = str_copy(project_name_get(cp->pp));
+		else if (!str_equal(project_name, project_name_get(cp->pp)))
+		    duplicate_option_by_name(arglex_token_project, usage);
+		change_number = cp->number;
+		if (change_number == 0)
+		    change_number = MAGIC_ZERO;
+		change_free(cp);
+                cp = 0;
+		project_free(pp);
+                pp = 0;
+		project_name = *project_name_p;
+		break;
+	    }
+	}
         if (extract_change_number(&s, &change_number))
 	{
 	    if (is_a_branch_number(s))
@@ -439,7 +486,10 @@ arglex_parse_change_with_branch(string_ty **project_name_p,
 		// Bind to the project.
 		//
 		if (!project_name)
-		    project_name = user_default_project();
+                {
+                    nstring n = user_ty::create()->default_project();
+                    project_name = str_copy(n.get_ref());
+                }
 		pp = project_alloc(project_name);
 		pp->bind_existing();
 		pp2 = pp->find_branch(branch);

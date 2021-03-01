@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,37 +13,37 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate review_begins
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h> // for assert
+#include <common/trace.h>
 #include <libaegis/change.h>
 #include <libaegis/change/env_set.h>
-#include <common/error.h> // for assert
+#include <libaegis/lock.h>
 #include <libaegis/os.h>
 #include <libaegis/project/history.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 
 
 void
-change_run_review_begin_notify_command(change_ty *cp)
+change::run_review_begin_notify_command()
 {
-    sub_context_ty  *scp;
-    string_ty       *the_command;
-    string_ty       *dd;
+    trace(("change::run_review_begin_notify_command(this = %08lX)\n{\n",
+	(long)this));
 
     //
     // make sure there is one
     //
-    trace(("change_run_review_begin_notify_command(cp = %08lX)\n{\n",
-	(long)cp));
-    assert(cp->reference_count >= 1);
-    the_command = project_review_begin_notify_command_get(cp->pp);
+    assert(!lock_active());
+    assert(reference_count >= 1);
+    string_ty *the_command = project_review_begin_notify_command_get(pp);
     if (!the_command || !the_command->str_length)
-	goto done;
+    {
+        trace(("}\n"));
+        return;
+    }
 
     //
     // notify the review has begun
@@ -57,23 +56,17 @@ change_run_review_begin_notify_command(change_ty *cp)
     //
     // All of the substitutions described in aesub(5) are available.
     //
-    scp = sub_context_new();
-    the_command = substitute(scp, cp, the_command);
-    sub_context_delete(scp);
+    sub_context_ty sc;
+    the_command = sc.substitute(this, the_command);
 
     //
     // execute the command
     //
-    dd = change_development_directory_get(cp, 0);
-    change_env_set(cp, 0);
-    change_become(cp);
+    string_ty *dd = change_development_directory_get(this, 0);
+    change_env_set(this, 0);
+    change_become(this);
     os_execute(the_command, OS_EXEC_FLAG_NO_INPUT + OS_EXEC_FLAG_ERROK, dd);
     str_free(the_command);
-    change_become_undo();
-
-    //
-    // here for all exits
-    //
-    done:
+    change_become_undo(this);
     trace(("}\n"));
 }

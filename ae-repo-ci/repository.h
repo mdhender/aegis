@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2006, 2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface of the repository class
 //
@@ -23,7 +22,11 @@
 #ifndef AE_VC_CHECKIN_REPOSITORY_H
 #define AE_VC_CHECKIN_REPOSITORY_H
 
+#include <libaegis/change.h>
+
 class nstring; // forward
+class change_identifier; // forward
+class fstate_src_ty; // forward
 
 /**
   * The abstract repository base class is used to represent a generic
@@ -62,6 +65,12 @@ public:
     virtual void checkout(const nstring &module, const nstring &directory) = 0;
 
     /**
+      * The get_directory method is used to obtain the absolute path of
+      * the directory in which the checkout occurred.
+      */
+    virtual nstring get_directory() const = 0;
+
+    /**
       * The remove_file method is used to remove a file from the work
       * area, and instruct the repository that the file is deleted in
       * this change set.
@@ -75,6 +84,19 @@ public:
       *     relative to the Aegis baseline root) to be removed.
       */
     virtual void remove_file(const nstring &file_name) = 0;
+
+    /**
+      * The remove_file_wrapper method is used to perform all of the
+      * checks against the checked-out directory to keep the remote
+      * repository in synch with the Aegis one.  This may involve
+      * rewriting the file actions.
+      *
+      * @param cid
+      *     The change identification
+      * @param src
+      *     The file attributes
+      */
+    void remove_file_wrapper(change_identifier &cid, fstate_src_ty *src);
 
     /**
       * The add_file method is used to add a file to the work area, and
@@ -96,6 +118,19 @@ public:
 	const nstring &content_path) = 0;
 
     /**
+      * The add_file_wrapper method is used to perform all of the checks
+      * against the checked-out directory to keep the remote repository
+      * in synch with the Aegis one.  This may involve rewriting the
+      * file actions.
+      *
+      * @param cid
+      *     The change identification
+      * @param src
+      *     The file attributes
+      */
+    void add_file_wrapper(change_identifier &cid, fstate_src_ty *src);
+
+    /**
       * The modify_file method is used to modify a file to the work
       * area, and instruct the repository that the file is modified in
       * this change set.
@@ -113,6 +148,19 @@ public:
       */
     virtual void modify_file(const nstring &filename,
 	const nstring &content_path) = 0;
+
+    /**
+      * The modify_file_wrapper method is used to perform all of the
+      * checks against the checked-out directory to keep the remote
+      * repository in synch with the Aegis one.  This may involve
+      * rewriting the file actions.
+      *
+      * @param cid
+      *     The change identification
+      * @param src
+      *     The file attributes
+      */
+    void modify_file_wrapper(change_identifier &cid, fstate_src_ty *src);
 
     /**
       * The rename_file method is used to rename a file in the work
@@ -142,6 +190,49 @@ public:
 	const nstring &new_file_name, const nstring &content_path);
 
     /**
+      * The rename_file_wrapper method is used to perform all of the
+      * checks against the checked-out directory to keep the remote
+      * repository in synch with the Aegis one.  This may involve
+      * rewriting the file actions.
+      *
+      * @param cid
+      *     The change identification
+      * @param src
+      *     The file attributes
+      */
+    void rename_file_wrapper(change_identifier &cid, fstate_src_ty *src);
+
+    /**
+      * The file_attributes method is used to attached versioned
+      * attributes to the file.
+      *
+      * The default implementation does nothing.
+      *
+      * @param cid
+      *     The change identification
+      * @param src
+      *     The file attributes
+      */
+    void file_attributes(change_identifier &cid, fstate_src_ty *src);
+
+    /**
+      * The file_wrapper method is used to perform all of the
+      * checks against the checked-out directory to keep the remote
+      * repository in synch with the Aegis one.  This may involve
+      * rewriting the file actions.
+      *
+      * This method calls one of the create_file_wrapper,
+      * modify_file_wrapper, remove_filea_wrapper or rename_file_wrapper
+      * methods, and also the file_attributes method.
+      *
+      * @param cid
+      *     The change identification
+      * @param src
+      *     The file attributes
+      */
+    void file_wrapper(change_identifier &cid, fstate_src_ty *src);
+
+    /**
       * The commit method is used to commit all the changes in the
       * temorary work area into the repository.
       *
@@ -168,6 +259,25 @@ public:
       */
     static repository *factory(const char *type);
 
+    /**
+      * The list class method is used to list all of the currently
+      * supported repository types on the standard output.
+      */
+    static void list(void);
+
+    /**
+      * The change_specific_attributes method is used to give
+      * repositories the opportunity to use change attributes and
+      * project attributes to influence the behaviour.
+      *
+      * While you can use any and all of the change and project state,
+      * it is recommended that you limit yourself to the change
+      * attributes and project specific attributes.
+      *
+      * The default implementation does nothing.
+      */
+    virtual void change_specific_attributes(change::pointer cp);
+
 protected:
     /**
       * The is_binary class method is used to determine whether or not
@@ -181,6 +291,20 @@ protected:
       *     bool; true if file is binary, false if it could be text
       */
     static bool is_binary(const nstring &path);
+
+    /**
+      * The file_attribute method is used to attached versioned
+      * attributes to a file.  The default implementation does nothing.
+      *
+      * @param filename
+      *     The name of the file the attribute is to be attached to
+      * @param attribute_name
+      *     The name of the file attribute
+      * @param attribute_value
+      *     The value of the attribute
+      */
+    virtual void file_attribute(const nstring &filename,
+        const nstring &attribute_name, const nstring &attribute_value);
 
 private:
     /**

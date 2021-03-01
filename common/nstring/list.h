@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -82,6 +81,15 @@ public:
     }
 
     /**
+      * The push_back method is used to append an nstring list onto the
+      * end of this list.
+      *
+      * @param arg
+      *     The strings to push
+      */
+    void push_back(const nstring_list &arg);
+
+    /**
       * The push_back_unique method is used to add a string to the end
       * of a string list, provided it isn't already in the list.
       */
@@ -90,6 +98,13 @@ public:
     {
 	content.push_back_unique(arg.get_ref());
     }
+
+    /**
+      * The push_back_unique method is used to add a list of strings to
+      * the end of a string list, provided it they aren't already in the
+      * list.
+      */
+    void push_back_unique(const nstring_list &arg);
 
     /**
       * The pop_back method is used to discard the last value in the list.

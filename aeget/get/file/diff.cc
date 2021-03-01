@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,37 +13,37 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the get_file_diff class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
 #include <common/ac/string.h>
 
-#include <libaegis/change/branch.h>
-#include <libaegis/change/file.h>
-#include <aeget/emit/brief_descri.h>
-#include <aeget/emit/edit_number.h>
 #include <common/error.h> // for assert
-#include <aeget/get/command.h>
-#include <aeget/get/file/diff.h>
-#include <aeget/http.h>
 #include <common/libdir.h>
-#include <libaegis/project/file/roll_forward.h>
 #include <common/now.h>
 #include <common/nstring.h>
 #include <common/str_list.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/file/event.h>
+#include <libaegis/file/event/list.h>
+#include <libaegis/project/file/roll_forward.h>
 #include <libaegis/zero.h>
 
+#include <aeget/emit/brief_descri.h>
+#include <aeget/emit/edit_number.h>
+#include <aeget/get/command.h>
+#include <aeget/get/file/diff.h>
+#include <aeget/http.h>
 
 #define XRANGE 3
 #define YRANGE 7
 
 
 static bool
-same_change(change_ty *cp1, change_ty *cp2)
+same_change(change::pointer cp1, change::pointer cp2)
 {
     if (cp1 == cp2)
 	return true;
@@ -57,7 +56,7 @@ same_change(change_ty *cp1, change_ty *cp2)
 
 
 void
-get_file_diff(change_ty *master_cp, string_ty *filename,
+get_file_diff(change::pointer master_cp, string_ty *filename,
     string_list_ty *modifier_p)
 {
     string_list_ty &modifier = *modifier_p;
@@ -151,8 +150,8 @@ get_file_diff(change_ty *master_cp, string_ty *filename,
     html_encode_string(filename);
     printf("</a>&rdquo;,<br>Difference Table</h1>\n");
 
-    file_event_list_ty *felp = historian.get(filename);
-    assert(!felp || felp->length > 0);
+    file_event_list::pointer felp = historian.get(filename);
+    assert(!felp || !felp->empty());
     if (!felp)
     {
 	printf("This does not appear to be a source file;\n");
@@ -164,16 +163,16 @@ get_file_diff(change_ty *master_cp, string_ty *filename,
 	html_footer(pp, master_cp);
 	return;
     }
-    if (felp->length == 1)
+    if (felp->size() == 1)
     {
 	printf("There is only one version of this file\n(");
-	file_event_ty *fep = felp->item;
-	assert(fep->src);
-	if (fep->src)
-	    emit_file_href(fep->cp, fep->src->file_name, 0);
-	nstring s(change_version_get(fep->cp));
+	file_event *fep = felp->get(0);
+	assert(fep->get_src());
+	if (fep->get_src())
+	    emit_file_href(fep->get_change(), fep->get_src()->file_name, 0);
+	nstring s(change_version_get(fep->get_change()));
 	html_encode_charstar(s.c_str());
-	if (fep->src)
+	if (fep->get_src())
 	    printf("</a>");
 	printf(")\n so there is no difference table available.\n");
 
@@ -189,23 +188,23 @@ get_file_diff(change_ty *master_cp, string_ty *filename,
     // that corresponds to the master change.
     //
     size_t idx = 0;
-    for (; idx < felp->length; ++idx)
+    for (; idx < felp->size(); ++idx)
     {
-	file_event_ty *fep = felp->item + idx;
-	if (same_change(fep->cp, master_cp))
+	file_event *fep = felp->get(idx);
+	if (same_change(fep->get_change(), master_cp))
 	    break;
     }
 
     size_t x_last = idx + (XRANGE + 1);
-    if (x_last > felp->length)
-	x_last = felp->length;
+    if (x_last > felp->size())
+	x_last = felp->size();
     size_t x_first = x_last - (2 * XRANGE + 1);
     if (x_last < (2 * XRANGE + 1))
 	x_first = 0;
 
     size_t y_last = idx + (YRANGE + 1);
-    if (y_last > felp->length)
-	y_last = felp->length;
+    if (y_last > felp->size())
+	y_last = felp->size();
     size_t y_first = y_last - (2 * YRANGE + 1);
     if (y_last < (2 * YRANGE + 1))
 	y_first = 0;
@@ -241,12 +240,12 @@ get_file_diff(change_ty *master_cp, string_ty *filename,
     for (size_t x = x_first; x < x_last; ++x)
     {
 	printf("<td align=center>");
-	file_event_ty *fep = felp->item + x;
-	bool strong = same_change(fep->cp, master_cp);
-	nstring s(change_version_get(fep->cp));
+	file_event *fep = felp->get(x);
+	bool strong = same_change(fep->get_change(), master_cp);
+	nstring s(change_version_get(fep->get_change()));
 	if (strong)
 	    printf("<strong>");
-	emit_change_href(fep->cp, "menu");
+	emit_change_href(fep->get_change(), "menu");
 	html_encode_charstar(s.c_str());
 	printf("</a>");
 	if (strong)
@@ -268,12 +267,12 @@ get_file_diff(change_ty *master_cp, string_ty *filename,
 	const char *html_class = (((rownum++ / 3) & 1) ?  "even" : "odd");
        	printf("<tr class=\"%s-group\">", html_class);
 	printf("<td valign=top>");
-	file_event_ty *y_fep = felp->item + y;
-	bool y_strong = same_change(y_fep->cp, master_cp);
-	nstring s(change_version_get(y_fep->cp));
+	file_event *y_fep = felp->get(y);
+	bool y_strong = same_change(y_fep->get_change(), master_cp);
+	nstring s(change_version_get(y_fep->get_change()));
 	if (y_strong)
 	    printf("<strong>");
-	emit_change_href(y_fep->cp, "menu");
+	emit_change_href(y_fep->get_change(), "menu");
 	html_encode_charstar(s.c_str());
 	printf("</a>");
 	if (y_strong)
@@ -286,25 +285,25 @@ get_file_diff(change_ty *master_cp, string_ty *filename,
 	for (size_t x = x_first; x < x_last; ++x)
 	{
 	    printf("<td valign=top align=center>");
-	    file_event_ty *x_fep = felp->item + x;
-	    bool x_strong = same_change(x_fep->cp, master_cp);
+	    file_event *x_fep = felp->get(x);
+	    bool x_strong = same_change(x_fep->get_change(), master_cp);
 	    if (x_strong || y_strong)
 		printf("<strong>");
-	    if (x_fep->cp == y_fep->cp)
+	    if (x_fep->get_change() == y_fep->get_change())
 	    {
 		printf("*");
 	    }
 	    else
 	    {
-		nstring rs(change_version_get(x_fep->cp));
+		nstring rs(change_version_get(x_fep->get_change()));
 		nstring target = nstring::format("diff+rhs=%s", rs.c_str());
-		emit_file_href(y_fep->cp, filename, target.c_str());
+		emit_file_href(y_fep->get_change(), filename, target.c_str());
 		printf("diff</a> / ");
 		target = nstring::format("diff+rhs=%s+context", rs.c_str());
-		emit_file_href(y_fep->cp, filename, target.c_str());
+		emit_file_href(y_fep->get_change(), filename, target.c_str());
 		printf("-c</a> / ");
 		target = nstring::format("diff+rhs=%s+unified", rs.c_str());
-		emit_file_href(y_fep->cp, filename, target.c_str());
+		emit_file_href(y_fep->get_change(), filename, target.c_str());
 		printf("-u</a>");
 	    }
 	    if (x_strong || y_strong)
@@ -318,11 +317,11 @@ get_file_diff(change_ty *master_cp, string_ty *filename,
 	// Emit the edit number.
 	//
 	printf("<td valign=top>");
-	assert(y_fep->src);
-	if (y_fep->src)
-	    emit_file_href(y_fep->cp, y_fep->src->file_name, 0);
-	emit_edit_number(y_fep->cp, y_fep->src, &historian);
-	if (y_fep->src)
+	assert(y_fep->get_src());
+	if (y_fep->get_src())
+	    emit_file_href(y_fep->get_change(), y_fep->get_src()->file_name, 0);
+	emit_edit_number(y_fep->get_change(), y_fep->get_src(), &historian);
+	if (y_fep->get_src())
 	    printf("</a>");
 	printf("</td>\n");
 
@@ -330,7 +329,7 @@ get_file_diff(change_ty *master_cp, string_ty *filename,
 	// Emit the brief description.
 	//
 	printf("<td valign=top>");
-	emit_change_brief_description(y_fep->cp);
+	emit_change_brief_description(y_fep->get_change());
 	printf("</td></tr>\n");
     }
 

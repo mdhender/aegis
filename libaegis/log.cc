@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1997, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1997, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -48,7 +47,8 @@ static int      pid;
 
 
 static void
-tee_stdout(user_ty *up, char *filename, int also_to_tty, int append_to_file)
+tee_stdout(user_ty::pointer up, char *filename, int also_to_tty,
+    int append_to_file)
 {
     int             fd[2];
     int             uid;
@@ -58,7 +58,7 @@ tee_stdout(user_ty *up, char *filename, int also_to_tty, int append_to_file)
     int             argc;
 
     trace(("tee_stdout(up = %08lX, filename = \"%s\", also_to_tty = %d, "
-	"append_to_file = %d)\n{\n", (long)up, filename, also_to_tty,
+	"append_to_file = %d)\n{\n", (long)up.get(), filename, also_to_tty,
 	append_to_file));
 
     //
@@ -73,9 +73,9 @@ tee_stdout(user_ty *up, char *filename, int also_to_tty, int append_to_file)
     //
     // list both to a file and to the terminal
     //
-    uid = user_id(up);
-    gid = user_gid(up);
-    um = user_umask(up);
+    uid = up->get_uid();
+    gid = up->get_gid();
+    um = up->umask_get();
     if (pipe(fd))
 	nfatal("pipe()");
     switch (pid = fork())
@@ -165,7 +165,8 @@ tee_stdout(user_ty *up, char *filename, int also_to_tty, int append_to_file)
 static log_style_ty
 pref_to_style(uconf_log_file_preference_ty dflt)
 {
-    switch (user_log_file_preference(user_executing(0), dflt))
+    user_ty::pointer up = user_ty::create();
+    switch (up->log_file_preference(dflt))
     {
     case uconf_log_file_preference_never:
 	return log_style_none;
@@ -189,7 +190,7 @@ pref_to_style(uconf_log_file_preference_ty dflt)
 //	log_open - start logging
 //
 //  SYNOPSIS
-//	void log_open(string_ty *logfile, user_ty *up);
+//	void log_open(string_ty *logfile, user_ty::pointer up);
 //
 //  DESCRIPTION
 //	The log_open function is used to start sending stdout
@@ -198,7 +199,7 @@ pref_to_style(uconf_log_file_preference_ty dflt)
 //
 
 void
-log_open(string_ty *filename, user_ty *up, log_style_ty style)
+log_open(string_ty *filename, user_ty::pointer up, log_style_ty style)
 {
     static int      already_done;
     int             bg;
@@ -246,7 +247,7 @@ log_open(string_ty *filename, user_ty *up, log_style_ty style)
     // (so that baseline linked to int dir works correctly)
     //
     append_to_file = (style == log_style_append);
-    user_become(up);
+    up->become_begin();
     exists = os_exists(filename);
     if (style == log_style_snuggle && exists)
     {
@@ -261,7 +262,7 @@ log_open(string_ty *filename, user_ty *up, log_style_ty style)
 	os_unlink(filename);
     if (append_to_file && !exists)
 	append_to_file = 0;
-    user_become_undo();
+    up->become_end();
 
     //
     // If we are in the background,

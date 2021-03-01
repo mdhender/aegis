@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,93 +13,93 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate current pathname tree nodes
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
 
-#include <libaegis/aer/value/string.h>
 #include <common/error.h> // for assert
 #include <common/str.h>
 #include <common/trace.h>
+#include <libaegis/aer/value/string.h>
+
 #include <aefind/tree/this.h>
-#include <aefind/tree/private.h>
 
 
-struct tree_this_ty
+tree_this::~tree_this()
 {
-    tree_ty inherited;
-    int resolved;
-};
-
-
-static void
-destructor(tree_ty *tp)
-{
-    trace(("tree::this::destructor\n"));
 }
 
 
-static void
-print(tree_ty *tp)
+tree_this::tree_this::tree_this(int arg) :
+    resolved(arg)
 {
-    trace(("tree::this::destructor\n"));
-    printf("{}");
 }
 
 
-static rpt_value_ty *
-evaluate(tree_ty *tp, string_ty *unresolved_path, string_ty *path,
-    string_ty *resolved_path, struct stat *st)
+tree::pointer
+tree_this::create(int arg)
 {
+    return pointer(new tree_this(arg));
+}
+
+
+void
+tree_this::print()
+    const
+{
+    printf("%s", name());
+}
+
+
+rpt_value::pointer
+tree_this::evaluate(string_ty *unresolved_path, string_ty *path,
+    string_ty *resolved_path, struct stat *) const
+{
+    trace(("tree_this::evaluate\n"));
     assert(path);
-    trace(("tree::this::evaluate\n"));
-    tree_this_ty *ttp = (tree_this_ty *)tp;
-    if (ttp->resolved == 0)
-	return rpt_value_string(unresolved_path);
-    if (ttp->resolved > 0)
-	return rpt_value_string(resolved_path);
-    return rpt_value_string(path);
+    if (resolved == 0)
+	return rpt_value_string::create(nstring(unresolved_path));
+    if (resolved > 0)
+	return rpt_value_string::create(nstring(resolved_path));
+    return rpt_value_string::create(nstring(path));
 }
 
 
-static int
-useful(tree_ty *tp)
+bool
+tree_this::useful()
+    const
 {
     trace(("tree::this::useful\n"));
-    return 0;
+    return false;
 }
 
 
-static int
-constant(tree_ty *tp)
+bool
+tree_this::constant()
+    const
 {
     trace(("tree::this::constant\n"));
-    return 0;
+    return false;
 }
 
 
-static tree_method_ty method =
+const char *
+tree_this::name()
+    const
 {
-    sizeof(tree_this_ty),
-    "this",
-    destructor,
-    print,
-    evaluate,
-    useful,
-    constant,
-    0, // optimize
-};
+    if (resolved == 0)
+        return "{-}";
+    if (resolved > 0)
+        return "{+}";
+    return "{}";
+}
 
 
-tree_ty *
-tree_this_new(int arg)
+tree::pointer
+tree_this::optimize()
+    const
 {
-    tree_ty *result = tree_new(&method);
-    tree_this_ty *ttp = (tree_this_ty *)result;
-    ttp->resolved = arg;
-    return result;
+    return pointer(new tree_this(resolved));
 }

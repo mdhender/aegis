@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001, 2002, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface definition for aels/stack.c
 //
@@ -25,10 +24,9 @@
 
 #include <common/str.h>
 
-struct change_ty; // forward
 struct project_ty; // forward
 
-void stack_from_change(struct change_ty *);
+void stack_from_change(change::pointer );
 void stack_from_project(struct project_ty *);
 string_ty *stack_relative(string_ty *);
 string_ty *stack_nth(size_t);

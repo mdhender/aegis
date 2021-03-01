@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2006 Peter Miller
+//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
 //	Copyright (C) 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -14,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement copy file
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -25,33 +23,35 @@
 #include <common/ac/unistd.h>
 #include <common/ac/libintl.h>
 
-#include <aegis/aecp.h>
+#include <common/error.h>
+#include <common/gettime.h>
+#include <common/now.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <common/trace.h>
 #include <libaegis/ael/project/files.h>
 #include <libaegis/arglex2.h>
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
-#include <libaegis/commit.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
-#include <common/error.h>
+#include <libaegis/commit.h>
+#include <libaegis/file/event.h>
 #include <libaegis/file.h>
-#include <common/gettime.h>
 #include <libaegis/help.h>
 #include <libaegis/lock.h>
 #include <libaegis/log.h>
-#include <common/now.h>
 #include <libaegis/os.h>
-#include <common/progname.h>
-#include <libaegis/project.h>
 #include <libaegis/project/file.h>
 #include <libaegis/project/file/roll_forward.h>
+#include <libaegis/project.h>
 #include <libaegis/project/history.h>
-#include <common/quit.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/undo.h>
 #include <libaegis/user.h>
-#include <common/str_list.h>
+
+#include <aegis/aecp.h>
 
 
 static void
@@ -139,7 +139,7 @@ copy_file_independent(void)
     string_ty       *project_name;
     project_ty      *pp;
     project_ty      *pp2;
-    user_ty         *up;
+    user_ty::pointer up;
     long            delta_number;
     long            delta_from_change;
     time_t          delta_date;
@@ -288,7 +288,7 @@ copy_file_independent(void)
 
 	case arglex_token_base_relative:
 	case arglex_token_current_relative:
-	    user_relative_filename_preference_argument(copy_file_usage);
+	    user_ty::relative_filename_preference_argument(copy_file_usage);
 	    break;
 
 	case arglex_token_output:
@@ -370,7 +370,10 @@ copy_file_independent(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -386,7 +389,7 @@ copy_file_independent(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // In order to behave as users expect, we need the original umask
@@ -466,9 +469,8 @@ copy_file_independent(void)
 	    search_path.nstrings >= 1
 	&&
 	    (
-		user_relative_filename_preference
+		up->relative_filename_preference
 		(
-		    up,
 		    uconf_relative_filename_preference_base
 		)
 	    ==
@@ -496,9 +498,9 @@ copy_file_independent(void)
 	    s2 = str_copy(s1);
 	else
 	    s2 = os_path_join(base, s1);
-	user_become(up);
+	up->become_begin();
 	s1 = os_pathname(s2, 1);
-	user_become_undo();
+	up->become_end();
 	str_free(s2);
 	s2 = 0;
 	for (k = 0; k < search_path.nstrings; ++k)
@@ -606,12 +608,11 @@ copy_file_independent(void)
 	string_ty       *from;
 	string_ty       *to;
 	int             from_unlink = 0;
-	int             mode;
 
 	s1 = wl.string[j];
 	if (delta_date != NO_TIME_SET)
 	{
-	    file_event_ty  *fep;
+	    file_event  *fep;
 	    fstate_src_ty  *old_src;
 
 	    fep = historian.get_last(s1);
@@ -624,7 +625,7 @@ copy_file_independent(void)
 		continue;
 	    }
 
-	    old_src = fep->src;
+	    old_src = fep->get_src();
 	    assert(old_src);
 	    switch (old_src->action)
 	    {
@@ -677,7 +678,7 @@ copy_file_independent(void)
 	    //
 	    // set the file mode
 	    //
-	    mode = 0666;
+	    int mode = 0666;
 	    if (old_src->executable)
 		mode |= 0111;
 	    mode &= ~original_umask;
@@ -722,7 +723,7 @@ copy_file_independent(void)
 	    //
 	    if (!output)
 	    {
-		mode = 0666;
+		int mode = 0666;
 		if (old_src->executable)
 		    mode |= 0111;
 		mode &= ~original_umask;
@@ -761,7 +762,6 @@ copy_file_independent(void)
     }
 
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -793,14 +793,12 @@ fake_removed_file(project_ty *pp, string_ty *filename)
 }
 
 
-static int
-delete_file_p(user_ty *up, string_ty *filename)
+static bool
+delete_file_p(user_ty::pointer up, const nstring &filename)
 {
-    int             result;
-
-    user_become_undo();
-    result = user_delete_file_query(up, filename, false, true);
-    user_become(up);
+    up->become_end();
+    bool result = up->delete_file_query(filename, false, true);
+    up->become_begin();
     return result;
 }
 
@@ -819,9 +817,9 @@ copy_file_main(void)
     project_ty      *pp;
     project_ty      *pp2;
     long            change_number;
-    change_ty       *cp;
+    change::pointer cp;
     log_style_ty    log_style;
-    user_ty         *up;
+    user_ty::pointer up;
     const char      *output;
     time_t          delta_date;
     long            delta_number;
@@ -832,7 +830,6 @@ copy_file_main(void)
     const char      *branch;
     int             trunk;
     int             read_only;
-    int             mode;
     int             based;
     string_ty       *base;
 
@@ -1032,12 +1029,12 @@ copy_file_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(copy_file_usage);
+	    user_ty::lock_wait_argument(copy_file_usage);
 	    break;
 
 	case arglex_token_base_relative:
 	case arglex_token_current_relative:
-	    user_relative_filename_preference_argument(copy_file_usage);
+	    user_ty::relative_filename_preference_argument(copy_file_usage);
 	    break;
 
 	case arglex_token_rescind:
@@ -1049,7 +1046,7 @@ copy_file_main(void)
 	case arglex_token_keep:
 	case arglex_token_interactive:
 	case arglex_token_keep_not:
-	    user_delete_file_argument(copy_file_usage);
+	    user_ty::delete_file_argument(copy_file_usage);
 	    break;
 	}
 	arglex();
@@ -1142,7 +1139,10 @@ copy_file_main(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -1158,13 +1158,13 @@ copy_file_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -1202,7 +1202,7 @@ copy_file_main(void)
 	    lock_take();
 	}
     }
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
 
     //
     // When there is no explicit output file:
@@ -1235,7 +1235,7 @@ copy_file_main(void)
 	    goto wrong_state;
 	if (change_is_a_branch(cp))
 	    change_fatal(cp, 0, i18n("bad branch cp"));
-	if (!str_equal(change_developer_name(cp), user_name(up)))
+	if (nstring(change_developer_name(cp)) != up->name())
 	    change_fatal(cp, 0, i18n("not developer"));
     }
 
@@ -1300,7 +1300,7 @@ copy_file_main(void)
 	    //
 	    size_t used = 0;
 	    size_t available = 0;
-	    change_ty *cp2 = historian.get_last_change();
+	    change::pointer cp2 = historian.get_last_change();
 	    assert(cp2);
 	    for (size_t n = 0; ; ++n)
 	    {
@@ -1356,9 +1356,8 @@ copy_file_main(void)
 	    search_path.nstrings >= 1
 	&&
 	    (
-		user_relative_filename_preference
+		up->relative_filename_preference
 		(
-		    up,
 		    uconf_relative_filename_preference_current
 		)
 	    ==
@@ -1391,9 +1390,9 @@ copy_file_main(void)
 	    s2 = str_copy(s1);
 	else
 	    s2 = os_path_join(base, s1);
-	user_become(up);
+	up->become_begin();
 	s1 = os_pathname(s2, 1);
-	user_become_undo();
+	up->become_end();
 	str_free(s2);
 	s2 = 0;
 	for (k = 0; k < search_path.nstrings; ++k)
@@ -1626,7 +1625,8 @@ copy_file_main(void)
 	trace(("s1 = \"%s\";\n", s1->str_text));
 	if (delta_date != NO_TIME_SET)
 	{
-	    file_event_ty   *fep;
+	    file_event   *fep;
+            bool         set_mode = true;
 
 	    fep = historian.get_last(s1);
 	    if (!fep)
@@ -1646,14 +1646,14 @@ copy_file_main(void)
 	    }
 	    else
 	    {
-		old_src = fep->src;
-		if (rescind)
+		old_src = fep->get_src();
+                if (rescind)
 		{
 		    fep = historian.get_older(s1);
 		    trace(("fep = %lX\n", (long)fep));
 		    if (fep)
 		    {
-			older_src = fep->src;
+			older_src = fep->get_src();
 		    }
 		    else
 		    {
@@ -1714,7 +1714,7 @@ copy_file_main(void)
 	    // But only if it doesn't exist,
 	    // or the user didn't say --keep.
 	    //
-	    user_become(up);
+	    up->become_begin();
 	    if (output)
 	    {
 		copy_whole_file(from, to, 0);
@@ -1727,11 +1727,13 @@ copy_file_main(void)
 		    // File exists in development directory.
 		    // Be careful replacing it.
 		    //
-		    if (overwriting || delete_file_p(up, s1))
+		    if (overwriting || delete_file_p(up, nstring(s1)))
 		    {
 			os_unlink(to);
 			copy_whole_file(from, to, 0);
 		    }
+                    else
+                        set_mode = false;
 		}
 		else
 		{
@@ -1748,20 +1750,23 @@ copy_file_main(void)
 	    //
 	    // set the file mode
 	    //
-	    mode = 0444;
-	    if (!read_only)
-		mode |= 0600;
-	    if (older_src->executable)
-		mode |= 0111;
-	    mode &= ~change_umask(cp);
-	    os_chmod(to, mode);
+            if (set_mode)
+            {
+                int mode = 0444;
+                if (!read_only)
+                    mode |= 0600;
+                if (older_src->executable)
+                    mode |= 0111;
+                mode &= ~change_umask(cp);
+                os_chmod(to, mode);
+            }
 
 	    //
 	    // clean up afterwards
 	    //
 	    if (from_unlink)
 		os_unlink_errok(from);
-	    user_become_undo();
+	    up->become_end();
 
         done:
             str_free(from);
@@ -1800,7 +1805,8 @@ copy_file_main(void)
             //
 	    // copy the file
 	    //
-	    user_become(up);
+            bool set_mode = true;
+	    up->become_begin();
 	    if (output)
 	    {
 		copy_whole_file(from, to, 0);
@@ -1813,11 +1819,13 @@ copy_file_main(void)
 		    // File exists in development directory.
 		    // Be careful replacing it.
 		    //
-		    if (overwriting || delete_file_p(up, s1))
+		    if (overwriting || delete_file_p(up, nstring(s1)))
 		    {
 			os_unlink(to);
 			copy_whole_file(from, to, 0);
 		    }
+                    else
+                        set_mode = false;
 		}
 		else
 		{
@@ -1834,14 +1842,17 @@ copy_file_main(void)
 	    //
 	    // set the file mode
 	    //
-	    mode = 0444;
-	    if (!read_only)
-		mode |= 0600;
-	    if (old_src->executable)
-		mode |= 0111;
-	    mode &= ~change_umask(cp);
-	    os_chmod(to, mode);
-	    user_become_undo();
+            if (set_mode)
+            {
+                int mode = 0444;
+                if (!read_only)
+                    mode |= 0600;
+                if (old_src->executable)
+                    mode |= 0111;
+                mode &= ~change_umask(cp);
+                os_chmod(to, mode);
+            }
+	    up->become_end();
 
 	    //
 	    // clean up afterwards
@@ -1868,9 +1879,14 @@ copy_file_main(void)
             //
             // but it is not true for removed files.
             //
+            // FIXME: shouldn't this be find-by-meta?
 	    c_src_data = change_file_find(cp, s1, view_path_first);
 	    if (!c_src_data)
-		c_src_data = change_file_new(cp, s1);
+            {
+		c_src_data = cp->file_new(s1);
+                // we copy the meta data soon,
+                // so don't bother with cp->file_new(p_src_data);
+            }
 	    switch (p_src_data->action)
 	    {
 	    case file_action_remove:
@@ -2025,7 +2041,6 @@ copy_file_main(void)
                     history_version_copy(p_src_data->edit_origin);
             }
 
-
 	    //
 	    // Copying the config file into a change
 	    // invalidates all of the file fingerprints.
@@ -2048,6 +2063,7 @@ copy_file_main(void)
 	change_verbose(cp, &sc, i18n("copied $filename"));
     }
 
+    bool recent_integration = false;
     if (!output)
     {
 	//
@@ -2069,12 +2085,10 @@ copy_file_main(void)
 	//
 	change_uuid_clear(cp);
 
-	//
-	// run the change file command
-	// and the project file command if necessary
-	//
-	change_run_copy_file_command(cp, &wl, up);
-	change_run_project_file_command(cp, up);
+        // remember that we are about to
+        recent_integration = cp->run_project_file_command_needed();
+        if (recent_integration)
+            cp->run_project_file_command_done();
 
 	//
 	// release the locks
@@ -2092,12 +2106,23 @@ copy_file_main(void)
     sc.var_optional("Number");
     change_verbose(cp, &sc, i18n("copy file complete"));
 
-    //
-    // run the change file command
-    //
+    if (!output)
+    {
+	//
+	// run the change file command
+	// and the project file command if necessary
+        //
+        // The -output option means the change set's state is not
+        // altered in any way, so no notification is required.
+	//
+	cp->run_copy_file_command(&wl, up);
+    }
+
+    if (recent_integration)
+        cp->run_project_file_command(up);
+
     project_free(pp);
     change_free(cp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -2107,9 +2132,9 @@ copy_file(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{ arglex_token_help,        copy_file_help, },
-	{ arglex_token_list,        copy_file_list, },
-	{ arglex_token_independent, copy_file_independent, },
+	{ arglex_token_help, copy_file_help, 0 },
+	{ arglex_token_list, copy_file_list, 0 },
+	{ arglex_token_independent, copy_file_independent, 0 },
     };
 
     trace(("copy_file()\n{\n"));

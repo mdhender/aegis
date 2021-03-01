@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,46 +13,28 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate name tree nodes
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/str.h>
 #include <libaegis/aer/value/string.h>
+
 #include <aefind/function/basename.h>
 #include <aefind/shorthand/name.h>
-#include <common/str.h>
 #include <aefind/tree.h>
 #include <aefind/tree/constant.h>
-#include <aefind/tree/list.h>
 #include <aefind/tree/match.h>
 #include <aefind/tree/this.h>
 
 
-tree_ty *
-shorthand_name(string_ty *pattern)
+tree::pointer
+shorthand_name(const nstring &pattern)
 {
-    rpt_value_ty    *vp;
-    tree_ty	    *tp1;
-    tree_ty	    *tp2;
-    tree_list_ty    *tlp;
-    tree_ty	    *result;
+    rpt_value::pointer vp = rpt_value_string::create(pattern);
+    tree::pointer tp1 = tree_constant::create(vp);
 
-    vp = rpt_value_string(pattern);
-    tp1 = tree_constant_new(vp);
-    rpt_value_free(vp);
+    tree::pointer tp2 = tree_basename::create(tree_this::create());
 
-    tlp = tree_list_new();
-    tp2 = tree_this_new();
-    tree_list_append(tlp, tp2);
-    tree_delete(tp2);
-    tp2 = function_basename(tlp);
-    tree_list_delete(tlp);
-
-    result = tree_match_new(tp1, tp2);
-    tree_delete(tp1);
-    tree_delete(tp2);
-
-    return result;
+    return tree_match::create(tp1, tp2);
 }

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1999, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1994, 1999, 2004-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -65,7 +64,6 @@ void *mem_alloc(size_t nbytes);
 void *mem_alloc_clear(size_t nbytes);
 
 
-void *mem_change_size(void *, size_t);
 void mem_free(void *);
 
 /**

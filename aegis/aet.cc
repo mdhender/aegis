@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement test
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -39,6 +36,7 @@
 #include <libaegis/arglex2.h>
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
+#include <libaegis/attribute.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
 #include <libaegis/change.h>
@@ -154,7 +152,7 @@ limit_suggestions_cmp(const void *va, const void *vb)
 
 
 static void
-limit_suggestions(change_ty *cp, string_list_ty *flp, int want,
+limit_suggestions(change::pointer cp, string_list_ty *flp, int want,
     int noise_percent, bool sort_by_name)
 {
     project_ty	    *pp;
@@ -331,7 +329,7 @@ limit_suggestions(change_ty *cp, string_list_ty *flp, int want,
 
 
 static void
-verbose_message(project_ty *pp, change_ty *cp, batch_result_list_ty *brlp)
+verbose_message(project_ty *pp, change::pointer cp, batch_result_list_ty *brlp)
 {
     sub_context_ty  *scp;
 
@@ -344,6 +342,15 @@ verbose_message(project_ty *pp, change_ty *cp, batch_result_list_ty *brlp)
 	else
 	    project_verbose(pp, scp, i18n("passed $number tests"));
 	sub_context_delete(scp);
+    }
+    if (brlp->skip_count)
+    {
+	sub_context_ty sc;
+	sc.var_set_long("Number", brlp->skip_count);
+        if (cp)
+            change_error(cp, &sc, i18n("skipped $number tests"));
+        else
+            project_error(pp, &sc, i18n("skipped $number tests"));
     }
     if (brlp->no_result_count)
     {
@@ -380,6 +387,54 @@ verbose_message(project_ty *pp, change_ty *cp, batch_result_list_ty *brlp)
 
 
 static void
+attr_elapsed(fstate_src_ty *src, string_ty *arch, double elapsed)
+{
+    trace(("attr_elapsed(src = %08lX, arch = %s, elapsed = %g)\n{\n", (long)src,
+        nstring(arch).quote_c().c_str(), elapsed));
+    if (elapsed < 1e-6)
+        elapsed = 1e-6;
+    if (!src->attribute)
+        src->attribute = (attributes_list_ty *)attributes_list_type.alloc();
+    nstring name =
+        nstring::format
+        (
+            "test/%s/elapsed",
+            (arch ? arch->str_text : "unspecified")
+        );
+    nstring value =
+        (
+            elapsed < 10
+        ?
+            nstring::format("%8.6f", elapsed)
+        :
+            elapsed < 100
+        ?
+            nstring::format("%7.5f", elapsed)
+        :
+            elapsed < 1000
+        ?
+            nstring::format("%6.4f", elapsed)
+        :
+            elapsed < 10000
+        ?
+            nstring::format("%5.3f", elapsed)
+        :
+            nstring::format("%g", elapsed)
+        );
+
+    //
+    // Note that this will replace the first attribute with
+    // that name.  If there is more than one of that name,
+    // the second and subsequent attributes are unchanged.
+    // If there is no attribute of that name, it will be
+    // appended.
+    //
+    attributes_list_insert(src->attribute, name.c_str(), value.c_str());
+    trace(("}\n"));
+}
+
+
+static void
 test_main(void)
 {
     sub_context_ty  *scp;
@@ -387,7 +442,6 @@ test_main(void)
     int		    regression_flag;
     int		    manual_flag;
     int		    automatic_flag;
-    int		    progress_flag;
     string_ty	    *s1;
     string_ty	    *s2;
     fstate_src_ty   *p_src_data;
@@ -399,9 +453,9 @@ test_main(void)
     string_ty	    *project_name;
     project_ty	    *pp;
     long	    change_number;
-    change_ty	    *cp;
+    change::pointer cp;
     log_style_ty    log_style;
-    user_ty	    *up;
+    user_ty::pointer up;
     string_list_ty  search_path;
     time_t	    when;
     int		    integrating;
@@ -428,7 +482,6 @@ test_main(void)
     dir = 0;
     suggest = 0;
     suggest_noise = -1;
-    progress_flag = -1;
     int suggest_limit = 0;
     nstring_list variable_assignments;
     while (arglex_token != arglex_token_eoln)
@@ -473,27 +526,11 @@ test_main(void)
 	    break;
 
 	case arglex_token_progress:
-	    if (progress_flag == 1)
-		duplicate_option(test_usage);
-	    if (progress_flag >= 0)
-	    {
-		too_many_progress:
-		mutually_exclusive_options
-		(
-		    arglex_token_progress,
-		    arglex_token_progress_not,
-		    test_usage
-		);
-	    }
-	    progress_flag = 1;
+            user_ty::progress_option_set(test_usage);
 	    break;
 
 	case arglex_token_progress_not:
-	    if (progress_flag == 0)
-		duplicate_option(test_usage);
-	    if (progress_flag >= 0)
-		goto too_many_progress;
-	    progress_flag = 0;
+            user_ty::progress_option_clear(test_usage);
 	    break;
 
 	case arglex_token_file:
@@ -537,7 +574,7 @@ test_main(void)
 
 	case arglex_token_persevere:
 	case arglex_token_persevere_not:
-	    user_persevere_argument(test_usage);
+	    user_ty::persevere_argument(test_usage);
 	    break;
 
 	case arglex_token_suggest:
@@ -589,7 +626,7 @@ test_main(void)
 
 	case arglex_token_base_relative:
 	case arglex_token_current_relative:
-	    user_relative_filename_preference_argument(test_usage);
+	    user_ty::relative_filename_preference_argument(test_usage);
 	    break;
 
 	case arglex_token_suggest_limit:
@@ -694,7 +731,10 @@ test_main(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -702,13 +742,13 @@ test_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -718,7 +758,7 @@ test_main(void)
     change_cstate_lock_prepare(cp);
     project_baseline_read_lock_prepare(pp);
     lock_take();
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
 
     //
     // see if it is an appropriate thing to be doing
@@ -732,7 +772,7 @@ test_main(void)
 	{
 	    change_fatal(cp, 0, i18n("bad branch test"));
 	}
-	if (!str_equal(change_developer_name(cp), user_name(up)))
+	if (nstring(change_developer_name(cp)) != up->name())
 	    change_fatal(cp, 0, i18n("not developer"));
 	if (baseline_flag)
 	    dir = pp->baseline_path_get();
@@ -751,19 +791,19 @@ test_main(void)
 	    pattr_develop_end_action_goto_awaiting_review
 	)
 	{
-	    if (!str_equal(change_reviewer_name(cp), user_name(up)))
+	    if (nstring(change_reviewer_name(cp)) != up->name())
 		change_fatal(cp, 0, i18n("not reviewer"));
 	}
 	else
 	{
-	    if (!project_reviewer_query(pp, user_name(up)))
+	    if (!project_reviewer_query(pp, up->name()))
 		project_fatal(pp, 0, i18n("not a reviewer"));
 	}
 	reviewing = 1;
 	break;
 
     case cstate_state_being_integrated:
-	if (!str_equal(change_integrator_name(cp), user_name(up)))
+	if (nstring(change_integrator_name(cp)) != up->name())
 	    change_fatal(cp, 0, i18n("not integrator"));
 	if (baseline_flag)
 	    dir = pp->baseline_path_get();
@@ -818,9 +858,8 @@ test_main(void)
 	    search_path.nstrings >= 1
 	&&
 	    (
-		user_relative_filename_preference
+		up->relative_filename_preference
 		(
-		    up,
 		    uconf_relative_filename_preference_base
 		)
 	    ==
@@ -847,9 +886,9 @@ test_main(void)
 	    s2 = str_copy(s1);
 	else
 	    s2 = os_path_join(base, s1);
-	user_become(up);
+	up->become_begin();
 	s1 = os_pathname(s2, 1);
-	user_become_undo();
+	up->become_end();
 	str_free(s2);
 	s2 = 0;
 	for (k = 0; k < search_path.nstrings; ++k)
@@ -1182,11 +1221,8 @@ test_main(void)
     }
     else if (integrating)
     {
-	user_ty		*pup;
-
-	pup = project_user(pp);
+	user_ty::pointer pup = project_user(pp);
 	log_open(change_logfile_get(cp), pup, log_style);
-	user_free(pup);
     }
     else
 	log_open(change_logfile_get(cp), up, log_style);
@@ -1257,8 +1293,6 @@ test_main(void)
     // Do each of the tests.
     //
     trace_string(dir->str_text);
-    if (progress_flag < 0)
-	progress_flag = 0;
     brlp =
 	change_test_run_list
 	(
@@ -1266,7 +1300,7 @@ test_main(void)
 	    &wl,
 	    up,
 	    baseline_flag,
-	    progress_flag,
+	    up->progress_get(),
 	    suggest_limit,
 	    variable_assignments
 	);
@@ -1408,6 +1442,11 @@ test_main(void)
 		    }
 		    else
 		    {
+                        if (!rp->architecture)
+                        {
+                            rp->architecture =
+                                str_copy(change_architecture_name(cp, 1));
+                        }
 			change_file_test_time_set
 			(
 			    cp,
@@ -1415,6 +1454,15 @@ test_main(void)
 			    when,
 			    rp->architecture
 			);
+                        if (!os_unthrottle())
+                        {
+                            attr_elapsed
+                            (
+                                src_data,
+                                rp->architecture,
+                                rp->elapsed
+                            );
+                        }
 		    }
 		    break;
 
@@ -1494,7 +1542,6 @@ test_main(void)
     batch_result_list_delete(brlp);
     change_free(cp);
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -1504,7 +1551,6 @@ test_independent(void)
 {
     int		    automatic_flag;
     int		    manual_flag;
-    int		    progress_flag;
     string_ty	    *s1;
     string_ty	    *s2;
     string_ty	    *s3;
@@ -1513,7 +1559,7 @@ test_independent(void)
     size_t	    k;
     string_ty	    *project_name;
     project_ty	    *pp;
-    user_ty	    *up;
+    user_ty::pointer up;
     int		    based;
     string_ty	    *base;
     batch_result_list_ty *brlp;
@@ -1522,7 +1568,6 @@ test_independent(void)
     project_name = 0;
     automatic_flag = 0;
     manual_flag = 0;
-    progress_flag = -1;
     string_list_ty wl;
     nstring_list variable_assignments;
     arglex();
@@ -1547,27 +1592,11 @@ test_independent(void)
 	    break;
 
 	case arglex_token_progress:
-	    if (progress_flag == 1)
-		duplicate_option(test_usage);
-	    if (progress_flag >= 0)
-	    {
-		too_many_progress:
-		mutually_exclusive_options
-		(
-		    arglex_token_progress,
-		    arglex_token_progress_not,
-		    test_usage
-		);
-	    }
-	    progress_flag = 1;
+            user_ty::progress_option_set(test_usage);
 	    break;
 
 	case arglex_token_progress_not:
-	    if (progress_flag == 0)
-		duplicate_option(test_usage);
-	    if (progress_flag >= 0)
-		goto too_many_progress;
-	    progress_flag = 0;
+            user_ty::progress_option_clear(test_usage);
 	    break;
 
 	case arglex_token_directory:
@@ -1599,17 +1628,17 @@ test_independent(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(test_usage);
+	    user_ty::lock_wait_argument(test_usage);
 	    break;
 
 	case arglex_token_base_relative:
 	case arglex_token_current_relative:
-	    user_relative_filename_preference_argument(test_usage);
+	    user_ty::relative_filename_preference_argument(test_usage);
 	    break;
 
 	case arglex_token_persevere:
 	case arglex_token_persevere_not:
-	    user_persevere_argument(test_usage);
+	    user_ty::persevere_argument(test_usage);
 	    break;
 	}
 	arglex();
@@ -1660,7 +1689,10 @@ test_independent(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -1668,7 +1700,7 @@ test_independent(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // Take a baseline read lock.
@@ -1690,9 +1722,8 @@ test_independent(void)
 	    search_path.nstrings >= 1
 	&&
 	    (
-		user_relative_filename_preference
+		up->relative_filename_preference
 		(
-		    up,
 		    uconf_relative_filename_preference_base
 		)
 	    ==
@@ -1719,9 +1750,9 @@ test_independent(void)
 	    s2 = str_copy(s1);
 	else
 	    s2 = os_path_join(base, s1);
-	user_become(up);
+	up->become_begin();
 	s1 = os_pathname(s2, 1);
-	user_become_undo();
+	up->become_end();
 	str_free(s2);
 	s2 = 0;
 	for (k = 0; k < search_path.nstrings; ++k)
@@ -1894,8 +1925,6 @@ test_independent(void)
     // (Logging is disabled, because there is no [logical] place
     // to put the log file; the user should redirect stdout and stderr.)
     //
-    if (progress_flag < 0)
-	progress_flag = 0;
     time_t time_limit = 0;
     brlp =
 	project_test_run_list
@@ -1903,7 +1932,7 @@ test_independent(void)
 	    pp,
 	    &wl,
 	    up,
-	    progress_flag,
+	    up->progress_get(),
 	    time_limit,
 	    variable_assignments
 	);
@@ -1916,13 +1945,12 @@ test_independent(void)
     //
     // verbose result message
     //
-    verbose_message(pp, (change_ty *)0, brlp);
+    verbose_message(pp, (change::pointer )0, brlp);
 
     //
     // clean up and go home
     //
     batch_result_list_delete(brlp);
-    user_free(up);
     project_free(pp);
     trace(("}\n"));
 }
@@ -1933,9 +1961,9 @@ test(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_independent, test_independent, },
-	{arglex_token_help, test_help, },
-	{arglex_token_list, test_list, },
+	{ arglex_token_independent, test_independent, 0, },
+	{ arglex_token_help, test_help, 0 },
+	{ arglex_token_list, test_list, 0 },
     };
 
     trace(("test()\n{\n"));

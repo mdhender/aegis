@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000, 2002-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2000, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,30 +13,38 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate run_lists
 //
 
+#include <common/ac/stdlib.h>
+#include <common/ac/math.h>
+
+#include <common/error.h> // for assert
+#include <common/nstring.h>
 #include <common/str_list.h>
 #include <common/trace.h>
+#include <libaegis/attribute.h>
 #include <libaegis/change.h>
+#include <libaegis/change/file.h>
 #include <libaegis/change/test/batch_fake.h>
 #include <libaegis/change/test/batch.h>
 #include <libaegis/change/test/run_list.h>
 #include <libaegis/pconf.h>
 #include <libaegis/project.h>
+#include <libaegis/project/file.h>
 #include <libaegis/project/history.h>
 #include <libaegis/user.h>
 
 
 batch_result_list_ty *
-project_test_run_list(project_ty *pp, string_list_ty *wlp, user_ty *up,
+project_test_run_list(project_ty *pp, string_list_ty *wlp, user_ty::pointer up,
     bool progress_flag, time_t time_limit,
     const nstring_list &variable_assignments)
 {
-    change_ty	    *cp;
+    change::pointer cp;
     batch_result_list_ty *result;
 
     //
@@ -47,7 +54,7 @@ project_test_run_list(project_ty *pp, string_list_ty *wlp, user_ty *up,
     //
     trace(("project_run_test_list(pp = %08lX, wlp = %08lX, up = %08lX, "
 	"progress_flag = %d, time_limit = %ld)\n{\n",(long)pp, (long)wlp,
-	(long)up, progress_flag, (long)time_limit));
+	(long)up.get(), progress_flag, (long)time_limit));
     cp = change_alloc(pp, project_next_change_number(pp, 1));
     change_bind_new(cp);
     change_architecture_from_pconf(cp);
@@ -75,26 +82,23 @@ project_test_run_list(project_ty *pp, string_list_ty *wlp, user_ty *up,
 
 
 static batch_result_list_ty *
-change_test_run_list_inner(change_ty *cp, string_list_ty *wlp, user_ty *up,
-    bool baseline_flag, int current, int total, time_t time_limit,
-    const nstring_list &variable_assignments)
+change_test_run_list_inner(change::pointer cp, string_list_ty *wlp,
+    user_ty::pointer up, bool baseline_flag, int current, int total,
+    time_t time_limit, const nstring_list &variable_assignments,
+    const long *countdown)
 {
-    pconf_ty        *pconf_data;
-    batch_result_list_ty *result;
-
     trace(("change_test_run_list_inner(cp = %08lX, wlp = %08lX, up = %08lX, "
-	"baseline_flag = %d, current = %d, total = %d, time_limit = %ld)\n{\n",
-	(long)cp, (long)wlp, (long)up, baseline_flag, current, total,
-	(long)time_limit));
-    pconf_data = change_pconf_get(cp, 1);
+	"baseline_flag = %d, current = %d, total = %d, time_limit = %ld, "
+        "countdown = %08lX)\n{\n", (long)cp, (long)wlp, (long)up.get(),
+        baseline_flag, current, total, (long)time_limit, (long)countdown));
+    pconf_ty *pconf_data = change_pconf_get(cp, 1);
+    batch_result_list_ty *result = 0;
     if (wlp->nstrings == 0)
     {
-	trace(("mark\n"));
 	result = batch_result_list_new();
     }
     else if (pconf_data->batch_test_command)
     {
-	trace(("mark\n"));
 	result =
 	    change_test_batch
 	    (
@@ -104,12 +108,12 @@ change_test_run_list_inner(change_ty *cp, string_list_ty *wlp, user_ty *up,
 		baseline_flag,
 		current,
 		total,
-		variable_assignments
+		variable_assignments,
+                countdown
 	    );
     }
     else
     {
-	trace(("mark\n"));
 	result =
 	    change_test_batch_fake
 	    (
@@ -120,12 +124,90 @@ change_test_run_list_inner(change_ty *cp, string_list_ty *wlp, user_ty *up,
 		current,
 		total,
 		time_limit,
-		variable_assignments
+		variable_assignments,
+                countdown
 	    );
     }
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;
+}
+
+
+static double
+calculate_average_elapsed(change::pointer cp, const nstring &attr_name)
+{
+    double sum = 0;
+    long n = 0;
+    for (size_t j = 0; ; ++j)
+    {
+        fstate_src_ty *src = cp->pp->file_nth(j, view_path_extreme);
+        if (!src)
+            break;
+
+        if (src->usage != file_usage_test)
+        {
+            //
+            // we don't bother with the timings for manual tests,
+            // they will have human induced oscillations.
+            //
+            continue;
+        }
+
+        double secs =
+            attributes_list_find_real(src->attribute, attr_name.c_str(), -1);
+        if (secs > 0)
+        {
+            sum += secs;
+            ++n;
+        }
+    }
+    if (n == 0)
+        return 60;
+    sum /= n;
+    if (sum < 1e-3)
+        sum = 1e-3;
+    return sum;
+}
+
+
+static void
+calculate_eta(change::pointer cp, string_list_ty *wlp, long *countdown)
+{
+    nstring arch_name(change_architecture_name(cp, 0));
+    if (arch_name.empty())
+        arch_name = "unspecified";
+    nstring attr_name = "test/" + arch_name + "/elapsed";
+    double average_elapsed = -1;
+    double eta = 0;
+    for (size_t nn = 0; nn < wlp->nstrings; ++nn)
+    {
+        size_t n = wlp->nstrings - 1 - nn;
+        string_ty *fn = wlp->string[n];
+        fstate_src_ty *src = change_file_find(cp, fn, view_path_simple);
+        double secs = -1;
+        assert(src);
+        if (src)
+        {
+            secs =
+                attributes_list_find_real
+                (
+                    src->attribute,
+                    attr_name.c_str(),
+                    -1
+                );
+        }
+        if (secs < 0)
+        {
+            if (average_elapsed < 0)
+                average_elapsed = calculate_average_elapsed(cp, attr_name);
+            assert(average_elapsed > 0);
+            secs = average_elapsed;
+        }
+        assert(secs > 0);
+        eta += secs;
+        countdown[n] = long(ceil(eta));
+    }
 }
 
 
@@ -135,21 +217,23 @@ change_test_run_list_inner(change_ty *cp, string_list_ty *wlp, user_ty *up,
 //
 
 batch_result_list_ty *
-change_test_run_list(change_ty *cp, string_list_ty *wlp, user_ty *up,
-    bool baseline_flag, bool progress_flag, time_t time_limit,
-    const nstring_list &variable_assignments)
+change_test_run_list(change::pointer cp, string_list_ty *wlp,
+    user_ty::pointer up, bool baseline_flag, bool progress_flag,
+    time_t time_limit, const nstring_list &variable_assignments)
 {
-    batch_result_list_ty *result;
-    size_t	    multiple;
-    size_t	    j;
-    int		    persevere;
+    //
+    // Build an ETA based on the past performance of the tests on this
+    // architecture.
+    //
+    long *countdown = new long [wlp->nstrings];
+    calculate_eta(cp, wlp, countdown);
 
     //
     // We limit ourselves to commands with at most 100 tests, because
     // some Unix implementations have very short command lines and can't
     // cope with more.
     //
-    multiple = 100;
+    size_t multiple = 100;
     if (time_limit)
     {
 	//
@@ -163,7 +247,7 @@ change_test_run_list(change_ty *cp, string_list_ty *wlp, user_ty *up,
 
     if (wlp->nstrings <= multiple)
     {
-	return
+        batch_result_list_ty *result =
 	    change_test_run_list_inner
 	    (
 		cp,
@@ -173,28 +257,27 @@ change_test_run_list(change_ty *cp, string_list_ty *wlp, user_ty *up,
 		0, // start
 		(progress_flag ? wlp->nstrings : 0),
 		time_limit,
-		variable_assignments
+		variable_assignments,
+                countdown
 	    );
+        delete [] countdown;
+        return result;
     }
     trace(("change_test_run_list(cp = %08lX, wlp = %08lX, up = %08lX, "
 	"baseline_flag = %d, progress_flag = %d, time_limit = %ld)\n{\n",
-	(long)cp, (long)wlp, (long)up, baseline_flag, progress_flag,
+	(long)cp, (long)wlp, (long)up.get(), baseline_flag, progress_flag,
 	(long)time_limit));
-    result = batch_result_list_new();
-    persevere = user_persevere_preference(up, 1);
-    for (j = 0; j < wlp->nstrings; j += multiple)
+    batch_result_list_ty *result = batch_result_list_new();
+    int persevere = up->persevere_preference(true);
+    for (size_t j = 0; j < wlp->nstrings; j += multiple)
     {
-	size_t		end;
-	size_t		k;
-	batch_result_list_ty *result2;
-
-	end = j + multiple;
+	size_t end = j + multiple;
 	if (end > wlp->nstrings)
 	    end = wlp->nstrings;
 	string_list_ty wl2;
-	for (k = j; k < end; ++k)
+	for (size_t k = j; k < end; ++k)
 	    wl2.push_back(wlp->string[k]);
-	result2 =
+	batch_result_list_ty *result2 =
 	    change_test_run_list_inner
 	    (
 		cp,
@@ -204,7 +287,8 @@ change_test_run_list(change_ty *cp, string_list_ty *wlp, user_ty *up,
 		j,
 		(progress_flag ? wlp->nstrings : 0),
 		time_limit,
-		variable_assignments
+		variable_assignments,
+                countdown + j
 	    );
 	batch_result_list_append_list(result, result2);
 	batch_result_list_delete(result2);
@@ -227,6 +311,7 @@ change_test_run_list(change_ty *cp, string_list_ty *wlp, user_ty *up,
 		break;
 	}
     }
+    delete [] countdown;
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;

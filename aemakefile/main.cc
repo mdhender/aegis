@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -31,6 +30,7 @@
 #include <common/error.h>
 #include <common/language.h>
 #include <common/nstring/list.h>
+#include <common/rsrc_limits.h>
 #include <aemakefile/printer/stdout.h>
 #include <aemakefile/printer/wrap.h>
 #include <aemakefile/process/body.h>
@@ -98,6 +98,7 @@ main(int argc, char **argv)
     arglex_init(argc, argv, argtab);
     env_initialize();
     language_init();
+    resource_limits_init();
 
     if (arglex() == arglex_token_help)
 	usage();

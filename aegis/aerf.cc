@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-1999, 2001-2006 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 1991-1999, 2001-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to impliment review fail
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -120,12 +117,12 @@ review_fail_list(void)
 
 
 static void
-check_permissions(change_ty *cp, user_ty *up)
+check_permissions(change::pointer cp, user_ty::pointer up)
 {
     cstate_ty       *cstate_data;
     cstate_history_ty *hp;
 
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
 
     //
     // it is an error if the change is not in the 'being_reviewed' state.
@@ -136,7 +133,7 @@ check_permissions(change_ty *cp, user_ty *up)
     hp = cstate_data->history->list[cstate_data->history->length - 1];
     if (hp->what == cstate_history_what_review_begin)
     {
-        if (!str_equal(change_reviewer_name(cp), user_name(up)))
+        if (nstring(change_reviewer_name(cp)) != up->name())
             change_fatal(cp, 0, i18n("not reviewer"));
     }
     else
@@ -145,13 +142,13 @@ check_permissions(change_ty *cp, user_ty *up)
 
         assert(hp->what == cstate_history_what_develop_end);
         pp = cp->pp;
-        if (!project_reviewer_query(pp, user_name(up)))
+        if (!project_reviewer_query(pp, up->name()))
             project_fatal(pp, 0, i18n("not a reviewer"));
         if
         (
             !project_developer_may_review_get(pp)
         &&
-            str_equal(change_developer_name(cp), user_name(up))
+            nstring(change_developer_name(cp)) == up->name()
         )
         {
             change_fatal(cp, 0, i18n("developer may not review"));
@@ -170,9 +167,9 @@ review_fail_main(void)
     string_ty       *project_name;
     project_ty      *pp;
     long            change_number;
-    change_ty       *cp;
-    user_ty         *up;
-    user_ty         *devup;
+    change::pointer cp;
+    user_ty::pointer up;
+    user_ty::pointer devup;
     edit_ty         edit;
 
     trace(("review_fail_main()\n{\n"));
@@ -280,7 +277,7 @@ review_fail_main(void)
 
         case arglex_token_wait:
         case arglex_token_wait_not:
-            user_lock_wait_argument(review_fail_usage);
+            user_ty::lock_wait_argument(review_fail_usage);
             break;
         }
         arglex();
@@ -335,7 +332,10 @@ review_fail_main(void)
     // locate project data
     //
     if (!project_name)
-        project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -343,13 +343,13 @@ review_fail_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-        change_number = user_default_change(up);
+        change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -370,7 +370,7 @@ review_fail_main(void)
     change_cstate_lock_prepare(cp);
     lock_prepare_ustate_all(0, 0); // we don't know which user until later
     lock_take();
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
 
     //
     // check they are allowed to
@@ -392,8 +392,8 @@ review_fail_main(void)
     //
     // add it back into the user's change list
     //
-    devup = user_symbolic(pp, change_developer_name(cp));
-    user_own_add(devup, project_name_get(pp), change_number);
+    devup = user_ty::create(nstring(change_developer_name(cp)));
+    devup->own_add(pp, change_number);
 
     //
     // go through the files in the change and unlock them
@@ -454,14 +454,14 @@ review_fail_main(void)
     //
     pp->pstate_write();
     change_cstate_write(cp);
-    user_ustate_write(devup);
+    devup->ustate_write();
     commit();
     lock_release();
 
     //
     // run the notify command
     //
-    change_run_review_fail_notify_command(cp);
+    cp->run_review_fail_notify_command();
 
     //
     // Update the RSS feed file if necessary.
@@ -474,8 +474,6 @@ review_fail_main(void)
     change_verbose(cp, 0, i18n("review fail complete"));
     change_free(cp);
     project_free(pp);
-    user_free(up);
-    user_free(devup);
     trace(("}\n"));
 }
 
@@ -485,8 +483,8 @@ review_fail(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-        {arglex_token_help, review_fail_help, },
-        {arglex_token_list, review_fail_list, },
+        { arglex_token_help, review_fail_help, 0 },
+        { arglex_token_list, review_fail_list, 0 },
     };
 
     trace(("review_fail()\n{\n"));

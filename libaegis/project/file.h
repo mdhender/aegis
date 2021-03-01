@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995-1997, 2002, 2003, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1995-1997, 2002, 2003, 2005-2007 Peter Miller
+//	Copyright (C) 2006 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -16,8 +16,6 @@
 //	You should have received a copy of the GNU General Public License
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aegis/project/file/...c
 //
 
 #ifndef AEGIS_PROJECT_FILE_H
@@ -68,7 +66,7 @@ project_file_find_by_uuid(project_ty *pp, string_ty *uuid, view_path_ty vp)
 }
 
 /**
-  * The project_file_find_by_meta function is used to find the state
+  * The project_file_find function is used to find the state
   * information of a file within the project, given the corresponding
   * change file's meta-data.  It will search the immediate branch, and
   * then any ancestor branches until the file is found.
@@ -83,7 +81,7 @@ project_file_find_by_uuid(project_ty *pp, string_ty *uuid, view_path_ty vp)
   *	it is removed, return a null pointer) if false return first
   *	instance found.
   */
-fstate_src_ty *project_file_find_by_meta(project_ty *pp, fstate_src_ty *c_src,
+fstate_src_ty *project_file_find(project_ty *pp, fstate_src_ty *c_src,
     view_path_ty as_view_path);
 
 /**
@@ -200,7 +198,13 @@ void project_file_directory_query(project_ty *, string_ty *,
     struct string_list_ty *, struct string_list_ty *,
     view_path_ty as_view_path);
 string_ty *project_file_directory_conflict(project_ty *, string_ty *);
-fstate_src_ty *project_file_new(project_ty *, string_ty *);
+
+DEPRECATED inline fstate_src_ty *
+project_file_new(project_ty *pp, string_ty *fn)
+{
+    return pp->file_new(fn);
+}
+
 void project_file_remove(project_ty *, string_ty *);
 
 /**

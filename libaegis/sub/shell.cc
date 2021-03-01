@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -25,7 +24,7 @@
 #include <libaegis/sub/shell.h>
 #include <common/trace.h>
 #include <common/wstr.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
 
 
 //
@@ -50,16 +49,16 @@
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_shell(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_shell(sub_context_ty *scp, const wstring_list &arg)
 {
     trace(("sub_shell()\n{\n"));
-    wstring_ty *result = 0;
-    if (arg->size() != 1)
-	sub_context_error_set(scp, i18n("requires zero arguments"));
+    wstring result;
+    if (arg.size() != 1)
+	scp->error_set(i18n("requires zero arguments"));
     else
-	result = wstr_from_c(os_shell());
-    trace(("return %8.8lX;\n", (long)result));
+	result = wstring(os_shell());
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

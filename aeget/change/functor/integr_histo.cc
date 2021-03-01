@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the change_functor_integr_histo class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -88,12 +85,12 @@ change_functor_integration_histogram::recurse_branches()
 
 
 void
-change_functor_integration_histogram::operator()(change_ty *cp)
+change_functor_integration_histogram::operator()(change::pointer cp)
 {
     //
     // We are only interested in completed change sets.
     //
-    assert(change_is_completed(cp));
+    assert(cp->is_completed());
     time_t t = change_completion_timestamp(cp);
 
     //

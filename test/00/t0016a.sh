@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1993-1998, 2000, 2001, 2004, 2005 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 1993-1998, 2000, 2001, 2004-2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -47,7 +46,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	persevere_preference = all; \
 	log_file_preference = never;"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 here=`pwd`
@@ -364,6 +363,7 @@ if test $? -ne 0 ; then cat test.out; no_result; fi
 #
 # start work on change 2
 #
+workchan=$work/foo.chan.2
 activity="develop begin 348"
 $bin/aegis -devbeg 2 -p foo -v -dir $workchan -lib $worklib > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
@@ -377,8 +377,9 @@ $bin/aegis -mv $workchan/old1 "$workchan/bad:name" \
     -nl -v -lib $worklib -c 2 -p foo > test.out.raw 2>&1
 if test $? -eq 0; then cat test.out; fail; fi
 
-sed -e '/warning: test mode/d' < test.out.raw > test.out
-if test $? -ne 0 ; then cat test.diff; no_result; fi
+sed -e '/warning: test mode/d' -e '/waiting for lock/d' \
+	< test.out.raw > test.out
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # we also check aemv fails for the expected error
@@ -387,7 +388,7 @@ cat > expected-err <<EOF
 aegis: project "foo": change 2: file name "bad:name" contains illegal
 	characters
 EOF
-diff test.out expected-err > test.diff 2>&1
+diff expected-err test.out > test.diff 2>&1
 if test $? -ne 0 ; then cat test.diff; no_result; fi
 
 #

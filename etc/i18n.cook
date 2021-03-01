@@ -1,23 +1,19 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999, 2001-2004 Peter Miller;
- *	All rights reserved.
+ * aegis - project change supervisor
+ * Copyright (C) 1997, 1999, 2001-2004, 2006, 2007 Peter Miller
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or (at
+ * your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: instructions to cook(1), how to build internationalization files
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
@@ -37,11 +33,11 @@ if [find_command msgcat] then
  * files are, and where the documentation is.
  */
 langs =
-	[stringset
-		[fromto lib/%1/%0%2.po %1
-			[match_mask lib/%1/%0%2.po [source_files]]
-		]
-	];
+        [stringset
+                [fromto lib/%1/%0%2.po %1
+                        [match_mask lib/%1/%0%2.po [source_files]]
+                ]
+        ];
 
 /*
  * Translate the localization files into their binary form.  This will
@@ -52,158 +48,158 @@ langs =
 internationalization: [internationalization];
 
 internationalization =
-	[fromto lib/%0%.po [arch]/lib/%0%.mo
-		[match_mask lib/%0%.po [source_files]]]
-	[fromto lib/%0%.po lib/%0%.merge
-		[match_mask lib/%0%.po [source_files]]]
-	    ;
+        [fromto lib/%0%.po [arch]/lib/%0%.mo
+                [match_mask lib/%0%.po [source_files]]]
+        [fromto lib/%0%.po lib/%0%.merge
+                [match_mask lib/%0%.po [source_files]]]
+            ;
 
 internationalization-int: [internationalization-int];
 
 internationalization-int =
-	/*
-	 * This next file is for the benefit of the Translation Project
-	 * robot.  (Yes, that's right, a bloody robot.)
-	 *
-	 * See http://www.iro.umontreal.ca/contrib/po/HTML/maintainers.html
-	 * for more information.
-	 *
-	 * I particularly dislike this approach, because it is incredibly
-	 * short sighted.  This approach fails to take into account that
-	 * you may want to have translations of manual pages and other
-	 * documentation, AS WELL AS translations of error messages.
-	 *
-	 * Would it make sense to ask authors to catenate all of
-	 * ther man pages together, and have a po/PACKAGE.man file?
-	 * No, of course not.  Would it make sense to ask authors to
-	 * catenate all of their other documentation together, and
-	 * have a po/PACKAGE.latex file?  No, of course not.  Well then,
-	 * why on Earth does it make sense to catenate together all of
-	 * the messages into a po/PACKAGE.pot file?  Betch.
-	 *
-	 * And then, to add insult to injury, it wastes space in the tarball.
-	 *
-	 * My project uses a directory tree
-	 * 	lib/
-	 *	    <LL>/
-	 *		LC_MESSAGES/
-	 *		    all of the various .po files go here
-	 *		man<N>/
-	 *		    all of the man<N> pages go here
-	 *		user-guide/
-	 *		    all of the files which make the
-	 *		    user guide go here.
-	 *		<other-docs>/
-	 *		    and so on...
-	 *
-	 * As you can see, this can accomodate translated .po files,
-	 * AND ALSO any other documentation, once it is translated.
-	 */
-	po/[project_short].pot
-	[prepost "po/"[project_short]"." ".po" [langs]]
-	;
+        /*
+         * This next file is for the benefit of the Translation Project
+         * robot.  (Yes, that's right, a bloody robot.)
+         *
+         * See http://www.iro.umontreal.ca/contrib/po/HTML/maintainers.html
+         * for more information.
+         *
+         * I particularly dislike this approach, because it is incredibly
+         * short sighted.  This approach fails to take into account that
+         * you may want to have translations of manual pages and other
+         * documentation, AS WELL AS translations of error messages.
+         *
+         * Would it make sense to ask authors to catenate all of
+         * ther man pages together, and have a po/PACKAGE.man file?
+         * No, of course not.  Would it make sense to ask authors to
+         * catenate all of their other documentation together, and
+         * have a po/PACKAGE.latex file?  No, of course not.  Well then,
+         * why on Earth does it make sense to catenate together all of
+         * the messages into a po/PACKAGE.pot file?  Betch.
+         *
+         * And then, to add insult to injury, it wastes space in the tarball.
+         *
+         * My project uses a directory tree
+         *      lib/
+         *          <LL>/
+         *              LC_MESSAGES/
+         *                  all of the various .po files go here
+         *              man<N>/
+         *                  all of the man<N> pages go here
+         *              user-guide/
+         *                  all of the files which make the
+         *                  user guide go here.
+         *              <other-docs>/
+         *                  and so on...
+         *
+         * As you can see, this can accomodate translated .po files,
+         * AND ALSO any other documentation, once it is translated.
+         */
+        po/[project_short].pot
+        [prepost "po/"[project_short]"." ".po" [langs]]
+        ;
 
 all,I =
-	[fromto %0%.y %0%.gen.cc,I [match_mask %0%.y [source_files]]]
-	[fromto %0%.def %0%.cc,I [match_mask %0%.def [source_files]]]
-	[fromto %0%.cc %0%.cc,I [match_mask %0%.cc [source_files]]]
-	;
+        [fromto %0%.y %0%.gen.cc,I [match_mask %0%.y [source_files]]]
+        [fromto %0%.def %0%.cc,I [match_mask %0%.def [source_files]]]
+        [fromto %0%.cc %0%.cc,I [match_mask %0%.cc [source_files]]]
+        ;
 
 msgmerge = msgmerge;
 
 lib/%1/LC_MESSAGES/%.merge: lib/%1/LC_MESSAGES/%.po i18n-tmp/aegis.pot
-	lib/en/LC_MESSAGES/aegis.po
+        lib/en/LC_MESSAGES/aegis.po
 {
-	[msgmerge]
-		--indent
-		--sort-output
-		--width\=75
-		-v -v
-		--no-location
-		--force-po
-		-o [target]
-		[resolve lib/%1/LC_MESSAGES/%.po i18n-tmp/aegis.pot]
-		['if' [not [in %1 en]] 'then'
-		    --compendium\=[resolve lib/en/LC_MESSAGES/aegis.po]
-		]
-		;
+        [msgmerge]
+                --indent
+                --sort-output
+                --width\=75
+                -v -v
+                --no-location
+                --force-po
+                -o [target]
+                [resolve lib/%1/LC_MESSAGES/%.po i18n-tmp/aegis.pot]
+                ['if' [not [in %1 en]] 'then'
+                    --compendium\=[resolve lib/en/LC_MESSAGES/aegis.po]
+                ]
+                ;
 
-	/*
-	 * There should be no differences.
-	 * If there are, this next command will show them.
-	 */
-	diff -b -u [resolve lib/%1/LC_MESSAGES/%.po] [target];
+        /*
+         * There should be no differences.
+         * If there are, this next command will show them.
+         */
+        diff -b -u [resolve lib/%1/LC_MESSAGES/%.po] [target];
 
-	/*
-	 * Only need the timestamp.
-	 */
-	> [target];
+        /*
+         * Only need the timestamp.
+         */
+        > [target];
 }
 
 
 [arch]/lib/%0%.mo: lib/%0%.po
-	etc/msgfmt.sh
-	set ['if' [not [defined baseline]] 'then' shallow]
+        etc/msgfmt.sh
+        set ['if' [not [defined baseline]] 'then' shallow]
 {
-	/*
-	 * This only works for GNU gettext.
-	 */
-	sh [resolve etc/msgfmt.sh]
-	    --msgfmt\=[msgfmt]
-	    --msgcat\=[msgcat]
-	    --output\=[target]
-	    [resolve lib/%0%.po]
-	    ;
+        /*
+         * This only works for GNU gettext.
+         */
+        sh [resolve etc/msgfmt.sh]
+            --msgfmt\=[msgfmt]
+            --msgcat\=[msgcat]
+            --output\=[target]
+            [resolve lib/%0%.po]
+            ;
 }
 
 
 xgettext = xgettext;
 
 i18n-tmp/aegis.pot: [all,I]:
-	etc/i18n.clean.sh
+        etc/i18n.clean.sh
 {
-	/*
-	 * The author only speaks English, so the master translation is
-	 * "en", hence lib/en/LC_MESSAGES/aegis.po is the file
-	 * intended.
-	 */
-	[xgettext]
-		--sort-output
-		--indent
-		--add-location
-		--force-po
-		-o [target]
-		[prepost "--dir=" "" [search_list]]
-		--language\=PO
-		[all,I];
-	/*
-	 * Get rid of the "POT-Creation-Date" header,
-	 * it messes up the .po file checking.
-	 */
-	sh [resolve etc/i18n.clean.sh] [target];
+        /*
+         * The author only speaks English, so the master translation is
+         * "en", hence lib/en/LC_MESSAGES/aegis.po is the file
+         * intended.
+         */
+        [xgettext]
+                --sort-output
+                --indent
+                --add-location
+                --force-po
+                -o [target]
+                [prepost "--dir=" "" [search_list]]
+                --language\=PO
+                [all,I];
+        /*
+         * Get rid of the "POT-Creation-Date" header,
+         * it messes up the .po file checking.
+         */
+        sh [resolve etc/i18n.clean.sh] [target];
 }
 
 %0%.cc,I: %0%.cc
-	set no-cascade
+        set no-cascade
 {
-	[xgettext]
-		--sort-output
-		--indent
-		--omit-header
-		--force-po
-		--add-location
-		-o [target]
-		--keyword\=i18n
-		--keyword\=error_intl
-		--keyword\=fatal_intl
-		--keyword\=verbose_intl
-		--keyword\=io_comment_append
-		--keyword\=aer_report_error
-		--keyword\=gram_error
-		--keyword\=subst_intl
-		--keyword\=input_error_fatal
-		[prepost "--dir=" "" [search_list]]
-		%0%.cc;
+        [xgettext]
+                --sort-output
+                --indent
+                --omit-header
+                --force-po
+                --add-location
+                -o [target]
+                --keyword\=i18n
+                --keyword\=error_intl
+                --keyword\=fatal_intl
+                --keyword\=verbose_intl
+                --keyword\=io_comment_append
+                --keyword\=aer_report_error
+                --keyword\=gram_error
+                --keyword\=subst_intl
+                --keyword\=input_error_fatal
+                [prepost "--dir=" "" [search_list]]
+                %0%.cc;
 }
 
 
@@ -230,17 +226,17 @@ i18n-tmp/aegis.pot: [all,I]:
  * And then, to add insult to injury, it wastes space in the tarball.
  *
  * My project uses a directory tree
- * 	lib/
- *	    <LL>/
- *		LC_MESSAGES/
- *		    all of the various .po files go here
- *		man<N>/
- *		    all of the man<N> pages go here
- *		user-guide/
- *		    all of the files which make the
- *		    user guide go here.
- *		<other-docs>/
- *		    and so on...
+ *      lib/
+ *          <LL>/
+ *              LC_MESSAGES/
+ *                  all of the various .po files go here
+ *              man<N>/
+ *                  all of the man<N> pages go here
+ *              user-guide/
+ *                  all of the files which make the
+ *                  user guide go here.
+ *              <other-docs>/
+ *                  and so on...
  *
  * As you can see, this can accomodate translated .po files,
  * AND ALSO any other documentation, once it is translated.
@@ -250,17 +246,17 @@ po/[project_short].pot: lib/en/LC_MESSAGES/aegis.po i18n-tmp/aegis.pot
     etc/i18n-munge.awk
 {
     [msgmerge]
-	    /*
-	     * Personally, I like the "--indent" option, but Emacs'
-	     * PO mode can't cope with it.  Why am I changing my files,
-	     * instead of Emacs' PO mode being fixed?!?
-	     */
-	    --sort-output
-	    --add-location
-	    --force-po
-	    -o po/[project_short].pot.tmp
-	    [resolve lib/en/LC_MESSAGES/aegis.po i18n-tmp/aegis.pot]
-	    ;
+            /*
+             * Personally, I like the "--indent" option, but Emacs'
+             * PO mode can't cope with it.  Why am I changing my files,
+             * instead of Emacs' PO mode being fixed?!?
+             */
+            --sort-output
+            --add-location
+            --force-po
+            -o po/[project_short].pot.tmp
+            [resolve lib/en/LC_MESSAGES/aegis.po i18n-tmp/aegis.pot]
+            ;
 
     /*
      * The i18n-munge script is to turn the msgstr values into commands,
@@ -274,32 +270,32 @@ po/[project_short].pot: lib/en/LC_MESSAGES/aegis.po i18n-tmp/aegis.pot
 
 po/[project_short].en.po: lib/en/LC_MESSAGES/aegis.po i18n-tmp/aegis.pot
 {
-	[msgmerge]
-		/*
-		 * Personally, I like the "--indent" option, but Emacs'
-		 * PO mode can't cope with it.  Why am I changing my files,
-		 * instead of Emacs' PO mode being fixed?!?
-		 */
-		--sort-output
-		--add-location
-		--force-po
-		-o [target]
-		[resolve lib/en/LC_MESSAGES/aegis.po i18n-tmp/aegis.pot]
-		;
+        [msgmerge]
+                /*
+                 * Personally, I like the "--indent" option, but Emacs'
+                 * PO mode can't cope with it.  Why am I changing my files,
+                 * instead of Emacs' PO mode being fixed?!?
+                 */
+                --sort-output
+                --add-location
+                --force-po
+                -o [target]
+                [resolve lib/en/LC_MESSAGES/aegis.po i18n-tmp/aegis.pot]
+                ;
 }
 
 po/[project_short].%.po: lib/%/LC_MESSAGES/aegis.po po/[project_short].pot
 {
-	[msgmerge]
-		/*
-		 * Personally, I like the "--indent" option, but Emacs'
-		 * PO mode can't cope with it.  Why am I changing my files,
-		 * instead of Emacs' PO mode being fixed?!?
-		 */
-		--sort-output
-		--add-location
-		--force-po
-		-o [target]
-		[resolve lib/%/LC_MESSAGES/aegis.po po/[project_short].pot]
-		;
+        [msgmerge]
+                /*
+                 * Personally, I like the "--indent" option, but Emacs'
+                 * PO mode can't cope with it.  Why am I changing my files,
+                 * instead of Emacs' PO mode being fixed?!?
+                 */
+                --sort-output
+                --add-location
+                --force-po
+                -o [target]
+                [resolve lib/%/LC_MESSAGES/aegis.po po/[project_short].pot]
+                ;
 }

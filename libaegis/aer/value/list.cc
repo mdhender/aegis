@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1996, 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,210 +13,130 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate list values
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/integer.h>
 #include <libaegis/aer/value/list.h>
 #include <libaegis/aer/value/null.h>
 #include <libaegis/aer/value/real.h>
-#include <common/error.h>
-#include <common/mem.h>
 #include <libaegis/sub.h>
 
 
-struct rpt_value_list_ty
+rpt_value_list::~rpt_value_list()
 {
-	RPT_VALUE
-	size_t		length;
-	size_t		max;
-	rpt_value_ty	**item;
-};
-
-
-static void
-construct(rpt_value_ty *vp)
-{
-	rpt_value_list_ty *this_thing;
-
-	this_thing = (rpt_value_list_ty *)vp;
-	assert(this_thing->method->type == rpt_value_type_list);
-	this_thing->length = 0;
-	this_thing->max = 0;
-	this_thing->item = 0;
+    delete [] item;
+    length = 0;
+    max = 0;
+    item = 0;
 }
 
 
-static void
-destruct(rpt_value_ty *vp)
+rpt_value_list::rpt_value_list() :
+    length(0),
+    max(0),
+    item(0)
 {
-	rpt_value_list_ty *this_thing;
-	size_t		j;
-
-	this_thing = (rpt_value_list_ty *)vp;
-	assert(this_thing->method->type == rpt_value_type_list);
-	for (j = 0; j < this_thing->length; ++j)
-		rpt_value_free(this_thing->item[j]);
-	if (this_thing->item)
-		mem_free(this_thing->item);
 }
 
 
-static rpt_value_ty *
-lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lvalue)
+rpt_value::pointer
+rpt_value_list::create()
 {
-	sub_context_ty	*scp;
-	rpt_value_list_ty *this_thing;
-	rpt_value_ty	*rhs2;
-	long		idx;
-	string_ty	*s;
-	rpt_value_ty	*result;
-
-	if (lvalue)
-	{
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Name1", vp->method->name);
-		sub_var_set_charstar(scp, "Name2", rhs->method->name);
-		s =
-			subst_intl
-			(
-				scp,
-			i18n("may not assign to a list member ($name1[$name2])")
-			);
-		sub_context_delete(scp);
-		result = rpt_value_error((struct rpt_pos_ty *)0, s);
-		str_free(s);
-		return result;
-	}
-	this_thing = (rpt_value_list_ty *)vp;
-	assert(this_thing->method->type == rpt_value_type_list);
-	rhs2 = rpt_value_arithmetic(rhs);
-	switch (rhs2->method->type)
-	{
-	case rpt_value_type_integer:
-		idx = rpt_value_integer_query(rhs2);
-		break;
-
-	case rpt_value_type_real:
-		idx = (long int)rpt_value_real_query(rhs2);
-		break;
-
-	default:
-		rpt_value_free(rhs2);
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Name1", vp->method->name);
-		sub_var_set_charstar(scp, "Name2", rhs->method->name);
-		s = subst_intl(scp, i18n("illegal lookup ($name1[$name2])"));
-		sub_context_delete(scp);
-		result = rpt_value_error((struct rpt_pos_ty *)0, s);
-		str_free(s);
-		return result;
-	}
-	rpt_value_free(rhs2);
-	if (idx < 0 || idx >= (long)this_thing->length)
-		return rpt_value_nul();
-	return rpt_value_copy(this_thing->item[idx]);
+    return pointer(new rpt_value_list());
 }
 
 
-static rpt_value_ty *
-keys(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_list::lookup(const rpt_value::pointer &rhs, bool lvalue)
+    const
 {
-	rpt_value_list_ty *this_thing;
-	rpt_value_ty	*result;
-	long		j;
-	rpt_value_ty	*n;
+    if (lvalue)
+    {
+	sub_context_ty sc;
+	sc.var_set_charstar("Name1", name());
+	sc.var_set_charstar("Name2", rhs->name());
+	nstring s
+        (
+	    sc.subst_intl
+	    (
+		i18n("may not assign to a list member ($name1[$name2])")
+	    )
+        );
+	return rpt_value_error::create(s);
+    }
+    rpt_value::pointer rhs2 = rpt_value::integerize(rhs);
+    rpt_value_integer *rhs2ip = dynamic_cast<rpt_value_integer *>(rhs2.get());
+    if (!rhs2ip)
+    {
+        sub_context_ty sc;
+        sc.var_set_charstar("Name1", name());
+        sc.var_set_charstar("Name2", rhs->name());
+        nstring s(sc.subst_intl(i18n("illegal lookup ($name1[$name2])")));
+        return rpt_value_error::create(s);
+    }
 
-	this_thing = (rpt_value_list_ty *)vp;
-	result = rpt_value_list();
-	for (j = 0; j < (long)this_thing->length; ++j)
-	{
-		n = rpt_value_integer(j);
-		rpt_value_list_append(result, n);
-		rpt_value_free(n);
-	}
-	return result;
+    long idx = rhs2ip->query();
+    if (idx < 0 || (size_t)idx >= length)
+	return rpt_value_null::create();
+    return item[idx];
 }
 
 
-static rpt_value_ty *
-count(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_list::keys()
+    const
 {
-	rpt_value_list_ty *this_thing;
-
-	this_thing = (rpt_value_list_ty *)vp;
-	return rpt_value_integer(this_thing->length);
+    rpt_value_list *p = new rpt_value_list();
+    for (size_t j = 0; j < length; ++j)
+    {
+	p->append(rpt_value_integer::create(j));
+    }
+    return pointer(p);
 }
 
 
-static rpt_value_method_ty method =
+rpt_value::pointer
+rpt_value_list::count()
+    const
 {
-	sizeof(rpt_value_list_ty),
-	"list",
-	rpt_value_type_list,
-	construct,
-	destruct,
-	0, // arithmetic
-	0, // stringize
-	0, // booleanize
-	lookup,
-	keys,
-	count,
-	0, // type_of
-	0, // undefer
-};
+    return rpt_value_integer::create(length);
+}
 
 
-rpt_value_ty *
-rpt_value_list()
+const char *
+rpt_value_list::name()
+    const
 {
-	return rpt_value_alloc(&method);
+    return "list";
 }
 
 
 void
-rpt_value_list_append(rpt_value_ty *vp, rpt_value_ty *child)
+rpt_value_list::append(const rpt_value::pointer &child)
 {
-	rpt_value_list_ty *this_thing;
-
-	this_thing = (rpt_value_list_ty *)vp;
-	assert(this_thing->method->type == rpt_value_type_list);
-	if (this_thing->length >= this_thing->max)
-	{
-		size_t		nbytes;
-
-		this_thing->max = this_thing->max * 2 + 4;
-		nbytes = this_thing->max * sizeof(rpt_value_ty *);
-		this_thing->item =
-                    (rpt_value_ty **)mem_change_size(this_thing->item, nbytes);
-	}
-	this_thing->item[this_thing->length++] = rpt_value_copy(child);
+    if (length >= max)
+    {
+	size_t new_max = max * 2 + 4;
+	rpt_value::pointer *new_item = new rpt_value::pointer [new_max];
+	for (size_t j = 0; j < length; ++j)
+	    new_item[j] = item[j];
+	delete [] item;
+	item = new_item;
+	max = new_max;
+    }
+    item[length++] = child;
 }
 
 
-long
-rpt_value_list_length(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_list::nth(size_t n)
+    const
 {
-	rpt_value_list_ty *this_thing;
-
-	this_thing = (rpt_value_list_ty *)vp;
-	assert(this_thing->method->type == rpt_value_type_list);
-	return this_thing->length;
-}
-
-
-rpt_value_ty *
-rpt_value_list_nth(rpt_value_ty *vp, long n)
-{
-	rpt_value_list_ty *this_thing;
-
-	this_thing = (rpt_value_list_ty *)vp;
-	assert(this_thing->method->type == rpt_value_type_list);
-	assert(n >= 0);
-	assert((size_t)n < this_thing->length);
-	return this_thing->item[n];
+    if (n >= length)
+        return rpt_value_null::create();
+    return item[n];
 }

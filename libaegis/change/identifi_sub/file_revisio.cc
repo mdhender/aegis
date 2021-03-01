@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the change_id_file_revision class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h> // for assert
@@ -28,6 +25,7 @@
 #include <libaegis/change.h>
 #include <libaegis/change/identifi_sub.h>
 #include <libaegis/cstate.h>
+#include <libaegis/file/event.h>
 #include <libaegis/project/file.h>
 #include <libaegis/project/file/roll_forward.h>
 #include <libaegis/project/identifi_sub.h>
@@ -45,7 +43,7 @@ change_identifier_subset::get_file_revision(const nstring &filename,
 	filename.c_str()));
     get_cp();
     assert(cp);
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
     fstate_src_ty *src = 0;
     switch (cstate_data->state)
     {
@@ -65,7 +63,7 @@ change_identifier_subset::get_file_revision(const nstring &filename,
 	    trace(("project = \"%s\"\n",
 		project_name_get(pid.get_pp())->str_text));
 	    project_file_roll_forward *hp = get_historian();
-	    file_event_ty *fep = hp->get_last(filename.get_ref());
+	    file_event *fep = hp->get_last(filename.get_ref());
 	    if (!fep)
 	    {
 		//
@@ -75,7 +73,7 @@ change_identifier_subset::get_file_revision(const nstring &filename,
 	       	trace(("}\n"));
 		return file_revision("/dev/null", false);
 	    }
-	    src = fep->src;
+	    src = fep->get_src();
 	}
 	break;
 

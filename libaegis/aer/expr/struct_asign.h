@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2002, 2005, 2006 Peter Miller.
-//	All rights reserved.
+//	Copyright (C) 1994, 2002, 2005-2007 Peter Miller.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aegis/aer/expr/struct_asign.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEGIS_AER_EXPR_STRUCT_ASIGN_H
@@ -25,8 +22,66 @@
 
 #include <libaegis/aer/expr.h>
 
-struct string_ty;
+/**
+  * The rpt_expr_struct_assign class is used to represent the state of
+  * evaluating a struct expression.
+  */
+class rpt_expr_struct_assign:
+    public rpt_expr
+{
+public:
+    /**
+      * The destructor.
+      */
+    virtual ~rpt_expr_struct_assign();
 
-rpt_expr_ty *rpt_expr_struct_assign(struct string_ty *, rpt_expr_ty *);
+private:
+    /**
+      * The constructor.
+      * It's private on purpose, use the "create" class method instead.
+      *
+      * @param name
+      *     The name of the struct member
+      * @param value
+      *     The value of the struct member
+      */
+    rpt_expr_struct_assign(const nstring &name, const rpt_expr::pointer &value);
+
+public:
+    /**
+      * The create class method is used to create new dynamically
+      * allocated isnatnces of this class.
+      *
+      * @param name
+      *     The name of the struct member
+      * @param value
+      *     The value of the struct member
+      */
+    static rpt_expr::pointer create(const nstring &name,
+        const rpt_expr::pointer &value);
+
+protected:
+    // See base class for documentation.
+    const char *name() const;
+
+    // See base class for documentation.
+    rpt_value::pointer evaluate() const;
+
+private:
+    /**
+      * The default constructor.  Do not use.
+      */
+    rpt_expr_struct_assign();
+
+    /**
+      * The copy constructor.  Do not use.
+      */
+    rpt_expr_struct_assign(const rpt_expr_struct_assign &);
+
+    /**
+      * The assignment operator.  Do not use.
+      */
+    rpt_expr_struct_assign &operator=(const rpt_expr_struct_assign &);
+};
 
 #endif // AEGIS_AER_EXPR_STRUCT_ASIGN_H

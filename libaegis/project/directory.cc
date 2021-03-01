@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate directorys
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change.h>
@@ -30,8 +27,8 @@ project_directory_get(project_ty *pp, int resolve)
 {
     if (pp->is_a_trunk())
 	return pp->baseline_path_get(resolve);
-    change_ty *cp = pp->change_get();
-    if (change_is_being_developed(cp))
+    change::pointer cp = pp->change_get();
+    if (cp->is_being_developed())
 	return pp->baseline_path_get(resolve);
     return project_directory_get(pp->parent_get(), resolve);
 }

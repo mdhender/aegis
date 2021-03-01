@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -31,7 +30,11 @@ void
 project_pattr_set(project_ty *pp, pattr_ty *pattr_data)
 {
     if (pattr_data->description)
-	project_description_set(pp, pattr_data->description);
+    {
+	string_ty *s = str_snip(pattr_data->description);
+	project_description_set(pp, s);
+	str_free(s);
+    }
 
     if (pattr_data->mask & pattr_developer_may_review_mask)
 	project_developer_may_review_set(pp, pattr_data->developer_may_review);

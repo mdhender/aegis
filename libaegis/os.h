@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1997, 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1997, 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -761,7 +760,36 @@ void os_execute(string_ty *cmd, int flags, string_ty *dir);
   */
 void os_execute(const nstring &cmd, int flags, const nstring &dir);
 
+/**
+  * The os_execute_retcode function is used to execute a command an
+  * returns its exit status.
+  *
+  * @param cmd
+  *     The command to execute
+  * @param flags
+  *     flags for how to run the command
+  * @param dir
+  *     the directory in which to run the command
+  * @returns
+  *     the exit status: zero on success, non-zero on failure
+  */
 int os_execute_retcode(string_ty *cmd, int flags, string_ty *dir);
+
+/**
+  * The os_execute_retcode function is used to execute a command an
+  * returns its exit status.
+  *
+  * @param cmd
+  *     The command to execute
+  * @param flags
+  *     flags for how to run the command
+  * @param dir
+  *     the directory in which to run the command
+  * @returns
+  *     the exit status: zero on success, non-zero on failure
+  */
+int os_execute_retcode(const nstring &cmd, int flags, const nstring &dir);
+
 string_ty *os_execute_slurp(string_ty *cmd, int flags, string_ty *dir);
 
 /**
@@ -892,6 +920,18 @@ void os_become(int uid, int gid, int umsk);
 void os_become_undo(void);
 
 /**
+  * The os_become_undo function is used to undo the effects of the
+  * os_become function.  It returns the effective uid and gid to root,
+  * so that future os_become call will work.
+  *
+  * It is a bug (and a fatal error will be issued) if there is no
+  * matching os_become call.  If DEBUG is enabled, it will cause an
+  * assert failure if the uid and gid in the undo does not match the
+  * os_become.
+  */
+void os_become_undo(int uid, int gid);
+
+/**
   * The os_become_undo_atexit function is used to cancel any os_become
   * setting, if one is active.  It performs all of the functions
   * of_os_become_undo, except it is not an error if there has been no
@@ -926,7 +966,28 @@ void os_become_must_not_be_active_gizzards(const char *, int);
   */
 int os_background(void);
 
-int os_readable(string_ty *);
+/**
+  * The os_readable function may be used to determine whether or not the
+  * given file is readable.
+  *
+  * @param path
+  *     The path (aabsolute or relative) of the file to test.
+  * @returns
+  *     zero on success, or the errno value on failure.
+  */
+int os_readable(string_ty *path);
+
+/**
+  * The os_readable function may be used to determine whether or not the
+  * given file is readable.
+  *
+  * @param path
+  *     The path (aabsolute or relative) of the file to test.
+  * @returns
+  *     zero on success, or the errno value on failure.
+  */
+int os_readable(const nstring &path);
+
 bool os_executable(string_ty *);
 int os_waitpid(int child, int *status);
 int os_waitpid_status(int child, const char *cmd);
@@ -967,8 +1028,43 @@ string_ty *os_edit_new(edit_ty);
 string_ty *os_edit_filename(int);
 string_ty *os_tmpdir(void);
 
-int os_pathconf_name_max(string_ty *);
-int os_pathconf_path_max(string_ty *);
+/**
+  * The os_pathconf_name_max function may be used to determine the
+  * maximum length of a path name component.
+  *
+  * @param path
+  *     the file or directory of interest
+  */
+int os_pathconf_name_max(const nstring &path);
+
+/**
+  * The os_pathconf_name_max function may be used to determine the
+  * maximum length of a path name component.
+  *
+  * @param path
+  *     the file or directory of interest
+  */
+int os_pathconf_name_max(string_ty *path);
+
+/**
+  * The os_pathconf_path_max function may be used to determine the
+  * maximum length of a file name path, over all components, including
+  * separators.
+  *
+  * @param path
+  *     the file or directory of interest
+  */
+int os_pathconf_path_max(const nstring &path);
+
+/**
+  * The os_pathconf_path_max function may be used to determine the
+  * maximum length of a file name path, over all components, including
+  * separators.
+  *
+  * @param path
+  *     the file or directory of interest
+  */
+int os_pathconf_path_max(string_ty *path);
 
 /**
   * The os_symlink function is used to make symbolic links.
@@ -1003,7 +1099,29 @@ void os_symlink_or_copy(string_ty *src, string_ty *dst);
 
 string_ty *os_readlink(string_ty *);
 int os_symlink_query(string_ty *);
+
+/**
+  * This unlikely function is used to slow aegis down.  It is primarily
+  * used for Aegis' own tests, to ensure that the time stamps are kosher
+  * even on ultra-fast machines.  It is also useful in shell scripts,
+  * e.g. automatic integration queue handling.
+  *
+  * The AEGIS_THROTTLE environment variable is set to the number of
+  * seconds to throttle, typically 2.
+  */
 void os_throttle(void);
+
+/**
+  * The os_unthrottle method is used to determine whether or not strict
+  * timestamp checks should be performed, because no throoline is in
+  * effect.
+  *
+  * @returns
+  *     bool; true if AEGIS_THROTTLE is less than zero,; false if unset
+  *     or zero or positive.
+  */
+bool os_unthrottle(void);
+
 void os_owner_query(string_ty *, int *, int *);
 string_ty *os_fingerprint(string_ty *);
 

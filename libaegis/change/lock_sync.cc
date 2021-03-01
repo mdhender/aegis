@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2004-2007 Peter Miller
+//	Copyright (C) 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate lock_syncs
 //
@@ -28,7 +28,7 @@
 
 
 void
-change_lock_sync(change_ty *cp)
+change_lock_sync(change::pointer cp)
 {
     if (cp->lock_magic != lock_magic())
 	change_lock_sync_forced(cp);
@@ -36,7 +36,7 @@ change_lock_sync(change_ty *cp)
 
 
 void
-change_lock_sync_forced(change_ty *cp)
+change_lock_sync_forced(change::pointer cp)
 {
     size_t          j;
 
@@ -61,6 +61,21 @@ change_lock_sync_forced(change_ty *cp)
     {
 	symtab_free(cp->fstate_uuid_stp);
 	cp->fstate_uuid_stp = 0;
+    }
+    if (cp->pfstate_data)
+    {
+        fstate_type.free(cp->pfstate_data);
+        cp->pfstate_data = 0;
+    }
+    if (cp->pfstate_stp)
+    {
+        symtab_free(cp->pfstate_stp);
+        cp->pfstate_stp = 0;
+    }
+    if (cp->pfstate_uuid_stp)
+    {
+        symtab_free(cp->pfstate_uuid_stp);
+        cp->pfstate_uuid_stp = 0;
     }
 
     for (j = 0; j < view_path_MAX; ++j)

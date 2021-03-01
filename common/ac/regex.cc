@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -26,23 +25,21 @@
 #if !((HAVE_RXPOSIX_H && HAVE_LIBRX) || HAVE_REGEX_H)
 
 int
-regcomp(regex_t *preg, const char *regex, int cflags)
+regcomp(regex_t *, const char *, int)
 {
     return -1;
 }
 
 
 int
-regexec(const  regex_t  *preg,  const  char *string, size_t nmatch,
-    regmatch_t pmatch[], int eflags)
+regexec(const regex_t *, const char *, size_t, regmatch_t [], int)
 {
     return REG_NOMATCH;
 }
 
 
 size_t
-regerror(int errcode, const regex_t *preg, char *errbuf,  size_t
-    errbuf_size)
+regerror(int, const regex_t *, char *errbuf,  size_t errbuf_size)
 {
     strendcpy
     (
@@ -50,11 +47,12 @@ regerror(int errcode, const regex_t *preg, char *errbuf,  size_t
 	"Regular expressions not available",
 	errbuf + errbuf_size
     );
+    return strlen(errbuf);
 }
 
 
 void
-regfree(regex_t *preg)
+regfree(regex_t *)
 {
 }
 

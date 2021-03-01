@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2003, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2002, 2003, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface definition for libaegis/ael/change/files.c
 //
@@ -23,11 +22,32 @@
 #ifndef LIBAEGIS_AEL_CHANGE_FILES_H
 #define LIBAEGIS_AEL_CHANGE_FILES_H
 
-#include <common/main.h>
+#include <libaegis/change.h>
 
 struct string_ty; // existence
 struct string_list_ty; // existence
 
-void list_change_files(struct string_ty *, long, struct string_list_ty *);
+/**
+  * The list_change_file function is used to list the files in a change set.
+  *
+  * @param project_name
+  *     The name of th eproject (or branch) the change is within
+  * @param change_number
+  *     The change number within the project
+  * @param args
+  *     additional command line arguments
+  */
+void list_change_files(string_ty *project_name, long change_number,
+    string_list_ty *args);
+
+/**
+  * The list_change_file function is used to list the files in a change set.
+  *
+  * @param cp
+  *     The change of interest
+  * @param args
+  *     additional command line arguments
+  */
+void list_change_files(change::pointer cp, string_list_ty *args);
 
 #endif // LIBAEGIS_AEL_CHANGE_FILES_H

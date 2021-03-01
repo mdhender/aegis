@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -27,7 +26,7 @@
 #include <libaegis/sub/date.h>
 #include <common/trace.h>
 #include <common/wstr.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
 
 
 //
@@ -51,8 +50,8 @@
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_date(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_date(sub_context_ty *, const wstring_list &arg)
 {
     trace(("sub_date()\n{\n"));
 
@@ -65,17 +64,15 @@ sub_date(sub_context_ty *scp, wstring_list_ty *arg)
     time_t when = 0;
     time(&when);
 
-    wstring_ty *result = 0;
-    if (arg->size() < 2)
+    wstring result;
+    if (arg.size() < 2)
     {
 	char *time_string = ctime(&when);
-	result = wstr_n_from_c(time_string, 24);
+	result = wstring(time_string, 24);
     }
     else
     {
-	wstring_ty *wfmt = arg->unsplit(1, arg->size());
-	string_ty *fmt = wstr_to_str(wfmt);
-	wstr_free(wfmt);
+	nstring fmt = arg.unsplit(1, arg.size()).to_nstring();
 	struct tm *theTm = localtime(&when);
 
 	//
@@ -83,19 +80,11 @@ sub_date(sub_context_ty *scp, wstring_list_ty *arg)
 	//
 	language_human();
 	char buf[1000];
-	size_t nbytes = strftime(buf, sizeof(buf) - 1, fmt->str_text, theTm);
+	strftime(buf, sizeof(buf), fmt.c_str(), theTm);
 	language_C();
-
-	if (!nbytes && fmt->str_length)
-	{
-	    sub_context_error_set(scp, i18n("strftime output too large"));
-	    result = 0;
-	}
-	else
-	    result = wstr_n_from_c(buf, nbytes);
-	str_free(fmt);
+        result = wstring(buf);
     }
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

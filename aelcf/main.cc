@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: operating system entry point
 //
@@ -214,7 +213,10 @@ main(int argc, char **argv)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     project_ty *pp = project_alloc(project_name);
     str_free(project_name);
     project_name = 0;
@@ -223,14 +225,14 @@ main(int argc, char **argv)
     //
     // locate user data
     //
-    user_ty *up = user_executing(pp);
+    user_ty::pointer up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
-    change_ty *cp = change_alloc(pp, change_number);
+	change_number = up->default_change(pp);
+    change::pointer cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
     //

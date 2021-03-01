@@ -1,7 +1,6 @@
 //
 //	cook - file construction tool
-//	Copyright (C) 1994, 1999, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994, 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -117,7 +116,7 @@ crc32_constructor(fingerprint_ty *p)
 
 
 static void
-crc32_destructor(fingerprint_ty *p)
+crc32_destructor(fingerprint_ty *)
 {
 }
 

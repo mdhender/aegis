@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement new test
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -128,8 +125,8 @@ new_test_main(void)
     string_ty	    *project_name;
     project_ty	    *pp;
     long	    change_number;
-    change_ty	    *cp;
-    user_ty	    *up;
+    change::pointer cp;
+    user_ty::pointer up;
     long	    n;
     size_t	    j;
     size_t	    k;
@@ -202,12 +199,12 @@ new_test_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(new_test_usage);
+	    user_ty::lock_wait_argument(new_test_usage);
 	    break;
 
 	case arglex_token_base_relative:
 	case arglex_token_current_relative:
-	    user_relative_filename_preference_argument(new_test_usage);
+	    user_ty::relative_filename_preference_argument(new_test_usage);
 	    break;
 
 	case arglex_token_output:
@@ -286,7 +283,10 @@ new_test_main(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring pn = user_ty::create()->default_project();
+	project_name = str_copy(pn.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -294,13 +294,13 @@ new_test_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -311,7 +311,7 @@ new_test_main(void)
     project_pstate_lock_prepare_top(pp);
     change_cstate_lock_prepare(cp);
     lock_take();
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
 
     log_open(change_logfile_get(cp), up, log_style);
 
@@ -323,7 +323,7 @@ new_test_main(void)
 	change_fatal(cp, 0, i18n("bad nt state"));
     if (change_is_a_branch(cp))
 	change_fatal(cp, 0, i18n("bad nf branch"));
-    if (!str_equal(change_developer_name(cp), user_name(up)))
+    if (nstring(change_developer_name(cp)) != up->name())
 	change_fatal(cp, 0, i18n("not developer"));
 
     //
@@ -366,9 +366,8 @@ new_test_main(void)
 		search_path.nstrings >= 1
 	    &&
 		(
-		    user_relative_filename_preference
+		    up->relative_filename_preference
 		    (
-			up,
 			uconf_relative_filename_preference_current
 		    )
 		==
@@ -395,9 +394,9 @@ new_test_main(void)
 		s2 = str_copy(s1);
 	    else
 		s2 = os_path_join(base, s1);
-	    user_become(up);
+	    up->become_begin();
 	    s1 = os_pathname(s2, 1);
-	    user_become_undo();
+	    up->become_end();
 	    str_free(s2);
 	    s2 = 0;
 	    for (k = 0; k < search_path.nstrings; ++k)
@@ -632,7 +631,7 @@ new_test_main(void)
 	    change_file_remove(cp, s1);
 	}
 
-	src_data = change_file_new(cp, s1);
+	src_data = cp->file_new(s1);
 	src_data->action = file_action_create;
 	if (manual_flag)
 	    src_data->usage = file_usage_manual_test;
@@ -675,13 +674,6 @@ new_test_main(void)
     change_uuid_clear(cp);
 
     //
-    // run the change file command
-    // and the project file command if necessary
-    //
-    change_run_new_test_command(cp, &wl, up);
-    change_run_project_file_command(cp, up);
-
-    //
     // If there is an output option,
     // write the change number to the file.
     //
@@ -693,15 +685,19 @@ new_test_main(void)
 	    string_ty	    *fn;
 
 	    fn = str_from_c(output);
-	    user_become(up);
+            user_ty::become scoped(up);
 	    file_from_string(fn, content, 0644);
-	    user_become_undo();
 	    str_free(fn);
 	}
 	else
 	    cat_string_to_stdout(content);
 	str_free(content);
     }
+
+    // remember we are about to
+    bool recent_integration = cp->run_project_file_command_needed();
+    if (recent_integration)
+        cp->run_project_file_command_done();
 
     //
     // update the state files
@@ -711,6 +707,14 @@ new_test_main(void)
     change_cstate_write(cp);
     commit();
     lock_release();
+
+    //
+    // run the change file command
+    // and the project file command if necessary
+    //
+    cp->run_new_test_command(&wl, up);
+    if (recent_integration)
+        cp->run_project_file_command(up);
 
     //
     // verbose success message
@@ -727,7 +731,6 @@ new_test_main(void)
     }
     project_free(pp);
     change_free(cp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -737,8 +740,8 @@ new_test(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, new_test_help, },
-	{arglex_token_list, new_test_list, },
+	{ arglex_token_help, new_test_help, 0 },
+	{ arglex_token_list, new_test_list, 0 },
     };
 
     trace(("new_test()\n{\n"));

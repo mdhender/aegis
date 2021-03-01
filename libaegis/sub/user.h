@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2002, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001, 2002, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -24,22 +23,22 @@
 #define LIBAEGIS_SUB_USER_H
 
 #include <common/main.h>
+#include <libaegis/user.h>
 
 struct wstring_ty; // existence
 struct sub_context_ty; // existence
 struct wstring_list_ty; // existence
+struct string_ty; // forward
 
-struct wstring_ty *sub_user(struct sub_context_ty *,
-	struct wstring_list_ty *arg);
+wstring sub_user(sub_context_ty *, const wstring_list &arg);
 
 //
 // Looks for a user function, by name.  Used by ${developer},
 // ${developers}, ${reviewer}, ${reviewers}, ${integrator},
 // ${integrators}, ${administrator}, ${administrators} and ${user}.
 //
-struct user_ty; // forward
-struct string_ty; // forward
-typedef struct string_ty *(*sub_user_func_ptr)(struct user_ty *);
-sub_user_func_ptr sub_user_func(struct string_ty *);
+typedef nstring (*sub_user_func_ptr)(user_ty::pointer);
+
+sub_user_func_ptr sub_user_func(const nstring &name);
 
 #endif // LIBAEGIS_SUB_USER_H

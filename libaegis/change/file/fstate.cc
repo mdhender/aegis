@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,7 +13,7 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see
+//	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
 //
 
@@ -26,7 +25,7 @@
 
 
 static void
-fimprove(fstate_ty *fstate_data, string_ty *filename, change_ty *cp)
+fimprove(fstate_ty *fstate_data, string_ty *, change::pointer cp)
 {
     size_t	    j;
 
@@ -62,29 +61,7 @@ fimprove(fstate_ty *fstate_data, string_ty *filename, change_ty *cp)
 	switch (src->action)
 	{
 	case file_action_transparent:
-            break;
-
 	case file_action_remove:
-            //
-            // There was once a bug in aeclone which caused the
-            // edit_origin field to be omitted for removed files.  This,
-            // in turn, led to project file entries with no edit_origin
-            // field, which hauses assert failues and segfaults all over
-            // the place.
-            //
-            if (!src->edit_origin && !src->edit_number_origin)
-            {
-                //
-                // The problem is , what the heck to we replace it with?
-                // Probably not important, since it will never be passed
-                // to the history_get_command.
-                //
-                src->edit_origin =
-                    (history_version_ty *)history_version_type.alloc();
-                src->edit_origin->errpos = str_copy(src->errpos);
-                src->edit_origin->revision = str_from_c("0.0");
-                src->edit_origin->encoding = history_version_encoding_none;
-            }
 	    break;
 
 	case file_action_create:
@@ -201,7 +178,7 @@ fimprove(fstate_ty *fstate_data, string_ty *filename, change_ty *cp)
 
 
 fstate_ty *
-change_fstate_get(change_ty *cp)
+change_fstate_get(change::pointer cp)
 {
     string_ty	    *fn;
     size_t	    j;
@@ -212,14 +189,14 @@ change_fstate_get(change_ty *cp)
     // (also to ensure lock_sync has been called for both)
     //
     trace(("change_fstate_get(cp = %08lX)\n{\n", (long)cp));
-    change_cstate_get(cp);
+    cp->cstate_get();
 
     if (!cp->fstate_data)
     {
 	fn = change_fstate_filename_get(cp);
 	change_become(cp);
 	cp->fstate_data = fstate_read_file(fn);
-	change_become_undo();
+	change_become_undo(cp);
 	fimprove(cp->fstate_data, fn, cp);
     }
     if (!cp->fstate_data->src)

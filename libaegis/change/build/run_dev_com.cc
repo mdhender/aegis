@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate run_dev_coms
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change.h>
@@ -30,7 +27,7 @@
 
 
 void
-change_run_development_build_command(change_ty *cp, user_ty *up,
+change_run_development_build_command(change::pointer cp, user_ty::pointer up,
     string_list_ty *partial)
 {
     sub_context_ty  *scp;
@@ -39,7 +36,7 @@ change_run_development_build_command(change_ty *cp, user_ty *up,
     string_ty       *dd;
 
     assert(cp->reference_count >= 1);
-    assert(change_is_being_developed(cp));
+    assert(cp->is_being_developed());
     pconf_data = change_pconf_get(cp, 1);
     assert(pconf_data);
     the_command = pconf_data->development_build_command;
@@ -83,8 +80,7 @@ change_run_development_build_command(change_ty *cp, user_ty *up,
 
     dd = change_development_directory_get(cp, 0);
     change_env_set(cp, 1);
-    user_become(up);
+    user_ty::become scope(up);
     os_execute(the_command, OS_EXEC_FLAG_NO_INPUT, dd);
-    os_become_undo();
     str_free(the_command);
 }

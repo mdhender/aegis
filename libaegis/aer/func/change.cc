@@ -1,136 +1,139 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994, 2000, 2003-2006 Peter Miller;
-//	All rights reserved.
+//      aegis - project change supervisor
+//      Copyright (C) 1994, 2000, 2003-2007 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate changes
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/func/change.h>
 #include <libaegis/aer/func/project.h>
 #include <libaegis/aer/value/boolean.h>
 #include <libaegis/aer/value/integer.h>
 #include <libaegis/aer/value/string.h>
-#include <common/error.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/project.h>
 #include <libaegis/user.h>
 #include <libaegis/zero.h>
 
-static long	change_number;
-static int	change_number_set;
+static change_identifier *cidp;
 
 
-static void
-grab(void)
+rpt_func_change_number::~rpt_func_change_number()
 {
-	rpt_value_ty	*vp;
-	string_ty	*project_name;
-	project_ty	*pp;
-	user_ty		*up;
-
-	assert(!change_number);
-	assert(!change_number_set);
-
-	//
-	// find the project name
-	//	(this could be done nicer)
-	//
-	vp = rpt_func_project_name.run((rpt_expr_ty *)0, 0, (rpt_value_ty **)0);
-	project_name = rpt_value_string_query(vp);
-
-	//
-	// find the project
-	//
-	pp = project_alloc(project_name);
-	pp->bind_existing();
-
-	//
-	// allocate the user
-	//
-	up = user_executing(pp);
-
-	//
-	// get the default change number
-	//
-	change_number = user_default_change(up);
-
-	//
-	// clean up
-	//
-	user_free(up);
-	project_free(pp);
-	rpt_value_free(vp);
 }
 
 
-static int
-change_number_valid(rpt_expr_ty *ep)
+rpt_func_change_number::rpt_func_change_number()
 {
-	return (ep->nchild == 0);
 }
 
 
-static rpt_value_ty *
-change_number_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func::pointer
+rpt_func_change_number::create()
 {
-	assert(argc == 0);
-	if (!change_number && !change_number_set)
-		grab();
-	return rpt_value_integer(magic_zero_decode(change_number));
+    return pointer(new rpt_func_change_number());
 }
 
 
-rpt_func_ty rpt_func_change_number =
+const char *
+rpt_func_change_number::name()
+    const
 {
-	"change_number",
-	0, // not optimizable
-	change_number_valid,
-	change_number_run,
-};
-
-
-static int
-change_number_set_valid(rpt_expr_ty *ep)
-{
-	return (ep->nchild == 0);
+    return "change_number";
 }
 
 
-static rpt_value_ty *
-change_number_set_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+bool
+rpt_func_change_number::optimizable()
+    const
 {
-	assert(argc == 0);
-	return rpt_value_boolean(change_number_set);
+    return false;
 }
 
 
-rpt_func_ty rpt_func_change_number_set =
+bool
+rpt_func_change_number::verify(const rpt_expr::pointer &ep)
+    const
 {
-	"change_number_set",
-	0, // not optimizable
-	change_number_set_valid,
-	change_number_set_run,
-};
+    return (ep->get_nchildren() == 0);
+}
+
+
+rpt_value::pointer
+rpt_func_change_number::run(const rpt_expr::pointer &, size_t,
+    rpt_value::pointer *) const
+{
+    assert(cidp);
+    return rpt_value_integer::create(magic_zero_decode(cidp->get_cp()->number));
+}
+
+
+rpt_func_change_number_set::~rpt_func_change_number_set()
+{
+}
+
+
+rpt_func_change_number_set::rpt_func_change_number_set()
+{
+}
+
+
+rpt_func::pointer
+rpt_func_change_number_set::create()
+{
+    return pointer(new rpt_func_change_number_set());
+}
+
+
+const char *
+rpt_func_change_number_set::name()
+    const
+{
+    return "change_number_set";
+}
+
+
+bool
+rpt_func_change_number_set::optimizable()
+    const
+{
+    return false;
+}
+
+
+bool
+rpt_func_change_number_set::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 0);
+}
+
+
+rpt_value::pointer
+rpt_func_change_number_set::run(const rpt_expr::pointer &, size_t,
+    rpt_value::pointer *) const
+{
+    assert(cidp);
+    return rpt_value_boolean::create(cidp->set());
+}
 
 
 void
-report_parse_change_set(long n)
+report_parse_change_set(change_identifier &cid)
 {
-	change_number = n;
-	change_number_set = 1;
+    cidp = &cid;
 }

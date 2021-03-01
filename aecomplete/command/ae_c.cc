@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -31,22 +30,21 @@
 
 
 static void
-destructor(command_ty *this_thing)
+destructor(command_ty *)
 {
 }
 
 
 static complete_ty *
-completion_get(command_ty *cmd)
+completion_get(command_ty *)
 {
-    string_ty       *project_name;
     project_ty      *pp;
 
     //
     // Work out which project to use.
     //
-    project_name = user_default_project();
-    pp = project_alloc(project_name);
+    nstring project_name = user_ty::create()->default_project();
+    pp = project_alloc(project_name.get_ref());
     pp->bind_existing();
 
     //

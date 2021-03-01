@@ -1,7 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001-2006 Peter Miller;
-.\"	All rights reserved.
+.\"	Copyright (C) 1999, 2001-2007 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 .\"	GNU General Public License for more details.
 .\"
 .\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: manual page describing the aedist command.
+.\"	along with this program. If not, see
+.\"	<http://www.gnu.org/licenses/>.
 .\"
 .so version.so
 .so z_name.so
@@ -130,6 +127,15 @@ This option suppresses the description header.
 \fB\-Entire_Source\fP
 This option may be used to send the entire source of the project,
 as well as the change source files.
+.TP 8n
+\fB\-Ignore_UUID\fP
+This option may be used to ignore the UUID, if present, of the
+outgoing change set.
+.TP 8n
+\fB\-No_Ignore_UUID\fP
+This option forces the \fIaedist\fP command to use the outgoing change
+set's UUID information.  This is the default (unless the compaitibility
+option will to avoid attributes).
 .so o_mime_heade.so
 .TP 8n
 \fB\-Partial_Source\fP

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -52,7 +51,7 @@ public:
       * \param resub
       *     Whether or nmot to resubstitute tinto the text of this diversion.
       */
-    void push_back(wstring_ty *s, bool resub);
+    void push_back(const wstring &s, bool resub);
 
     /**
       * The pop_back method is used to discard to top element of the

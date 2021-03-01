@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -422,29 +421,29 @@ input_uudecode::candidate(input &ifp)
     trace(("input_uudecode_recognise()\n{\n"));
     static char magic[] = "begin ";
     bool result = 0;
-    nstring_accumulator buffer;
-    int state = 0;
-    while (buffer.size() < 8000)
+    nstring_accumulator sac;
+    int char_state = 0;
+    while (sac.size() < 8000)
     {
 	int c = ifp->getch();
 	if (c < 0)
 	    break;
-	buffer.push_back(c);
+	sac.push_back(c);
 	if (c == '\n')
-	    state = 0;
-	else if ((size_t)state < sizeof(magic) && c == magic[state])
+	    char_state = 0;
+	else if ((size_t)char_state < sizeof(magic) && c == magic[char_state])
 	{
-	    ++state;
-	    if (!magic[state])
+	    ++char_state;
+	    if (!magic[char_state])
 	    {
 		result = 1;
 		break;
 	    }
 	}
 	else
-	    state = 666;
+	    char_state = 666;
     }
-    ifp->unread(buffer.get_data(), buffer.size());
+    ifp->unread(sac.get_data(), sac.size());
     trace(("return %d\n", result));
     trace(("}\n"));
     return result;

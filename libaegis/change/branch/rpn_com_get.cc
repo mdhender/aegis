@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate rpn_com_gets
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change/branch.h>
@@ -25,12 +22,12 @@
 
 
 string_ty *
-change_branch_review_pass_notify_command_get(change_ty *cp)
+change_branch_review_pass_notify_command_get(change::pointer cp)
 {
     cstate_ty       *cstate_data;
     cstate_branch_ty *bp;
 
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     bp = cstate_data->branch;
     assert(bp);
     if

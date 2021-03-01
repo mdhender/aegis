@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate checks
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h>      // for assert
@@ -28,7 +25,7 @@
 
 
 void
-change_check_architectures(change_ty *cp)
+change_check_architectures(change::pointer cp)
 {
     cstate_ty       *cstate_data;
     pconf_ty        *pconf_data;
@@ -36,7 +33,7 @@ change_check_architectures(change_ty *cp)
     int		    error_count;
 
     assert(cp->reference_count >= 1);
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     if (!cstate_data->architecture)
 	return; // should not happen
     pconf_data = change_pconf_get(cp, 1);

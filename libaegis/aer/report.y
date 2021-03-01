@@ -1,23 +1,20 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 1999, 2002, 2005 Peter Miller;
- *	All rights reserved.
+ *      aegis - project change supervisor
+ *      Copyright (C) 1994-1996, 1999, 2002, 2005-2007 Peter Miller
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
+ *      This program is free software; you can redistribute it and/or modify
+ *      it under the terms of the GNU General Public License as published by
+ *      the Free Software Foundation; either version 2 of the License, or
+ *      (at your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ *      This program is distributed in the hope that it will be useful,
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *      GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: functions to parse report grammar
+ *      You should have received a copy of the GNU General Public License
+ *      along with this program. If not, see
+ *      <http://www.gnu.org/licenses/>.
  */
 
 %{
@@ -27,6 +24,7 @@
 
 #include <libaegis/aer/expr/assign.h>
 #include <libaegis/aer/expr/bit.h>
+#include <libaegis/aer/expr/comma.h>
 #include <libaegis/aer/expr/constant.h>
 #include <libaegis/aer/expr/func.h>
 #include <libaegis/aer/expr/in.h>
@@ -72,57 +70,52 @@ static void
 turn_on_debug(void)
 {
 #ifdef DEBUG
-	extern int yydebug;
+    extern int yydebug;
 
-	yydebug = trace_pretest_;
+    yydebug = trace_pretest_;
 #endif
 }
 
 
-static rpt_stmt_ty *result;
+static rpt_stmt::pointer result;
 
 
 void
 report_interpret(void)
 {
-	sub_context_ty	*scp;
-	rpt_stmt_result_ty ok;
+    assert(!!result);
+    sub_context_ty sc;
+    rpt_stmt_result_ty ok;
+    result->run(&ok);
+    switch (ok.status)
+    {
+    case rpt_stmt_status_normal:
+        break;
 
-	rpt_stmt_run(result, &ok);
-	switch (ok.status)
-	{
-	case rpt_stmt_status_normal:
-		break;
+    case rpt_stmt_status_break:
+        sc.fatal_intl(i18n("floating \"break\" statement"));
+        break;
 
-	case rpt_stmt_status_break:
-		scp = sub_context_new();
-		fatal_intl(scp, i18n("floating \"break\" statement"));
-		sub_context_delete(scp);
-		break;
+    case rpt_stmt_status_continue:
+        sc.fatal_intl(i18n("floating \"continue\" statement"));
+        break;
 
-	case rpt_stmt_status_continue:
-		scp = sub_context_new();
-		fatal_intl(scp, i18n("floating \"continue\" statement"));
-		sub_context_delete(scp);
-		break;
+    case rpt_stmt_status_return:
+        sc.fatal_intl(i18n("floating \"return\" statement"));
+        break;
 
-	case rpt_stmt_status_return:
-		scp = sub_context_new();
-		fatal_intl(scp, i18n("floating \"return\" statement"));
-		sub_context_delete(scp);
-		rpt_value_free(ok.thrown);
-		break;
-
-	case rpt_stmt_status_error:
-		assert(ok.thrown->method->type == rpt_value_type_error);
-		rpt_value_error_print(ok.thrown);
-		scp = sub_context_new();
-		fatal_intl(scp, i18n("report aborted"));
-		sub_context_delete(scp);
-		rpt_value_free(ok.thrown);
-		break;
-	}
-	rpt_stmt_free(result);
+    case rpt_stmt_status_error:
+        {
+            rpt_value_error *ep =
+                dynamic_cast<rpt_value_error *>(ok.thrown.get());
+            assert(ep);
+            if (ep)
+                ep->print();
+            sc.fatal_intl(i18n("report aborted"));
+        }
+        break;
+    }
+    result.reset();
 }
 
 %}
@@ -201,14 +194,14 @@ report_interpret(void)
 
 %union
 {
-	long		lv_number;
-	struct string_ty *lv_string;
-	struct rpt_value_ty *lv_value;
-	struct rpt_stmt_ty *lv_stmt;
-	struct rpt_expr_ty *lv_expr;
+    long lv_number;
+    nstring *lv_string;
+    rpt_value::pointer *lv_value;
+    rpt_stmt::pointer *lv_stmt;
+    rpt_expr::pointer *lv_expr;
 }
 
-%type <lv_expr>	expr
+%type <lv_expr> expr
 %type <lv_value> CONSTANT
 %type <lv_stmt> stmt stmt_list compound_stmt
 %type <lv_string> NAME
@@ -218,537 +211,628 @@ report_interpret(void)
 /*
  * the precedences, lowest to highest
  */
-%right	ELSE
+%right  ELSE
 %left   COMMA
 %right  ASSIGN ASSIGN_PLUS ASSIGN_MINUS ASSIGN_MUL ASSIGN_DIV ASSIGN_MOD
-	ASSIGN_POWER ASSIGN_SHIFT_LEFT ASSIGN_SHIFT_RIGHT ASSIGN_AND_BIT
-	ASSIGN_OR_BIT ASSIGN_XOR_BIT ASSIGN_JOIN
+        ASSIGN_POWER ASSIGN_SHIFT_LEFT ASSIGN_SHIFT_RIGHT ASSIGN_AND_BIT
+        ASSIGN_OR_BIT ASSIGN_XOR_BIT ASSIGN_JOIN
 %right  QUESTION COLON
 %left   OR_LOGICAL
 %left   AND_LOGICAL
 %left   OR_BIT
 %left   XOR_BIT
-%left	AND_BIT
+%left   AND_BIT
 %left   EQ NE
 %left   LT GT LE GE
 %left   SHIFT_LEFT SHIFT_RIGHT
 %left   PLUS MINUS JOIN
 %left   MUL DIV MOD MATCH NMATCH IN
-%right	POWER
+%right  POWER
 %right  INCR DECR NOT_LOGICAL NOT_BIT unary.prec
 %left   LP RP LBB RBB LB RB DOT
 
 %%
 
 report_debugged
-	: turn_on_debug report
-	;
+    : turn_on_debug report
+    ;
 
 turn_on_debug
-	: /* empty */
-		{ turn_on_debug(); }
-	;
+    : /* empty */
+        { turn_on_debug(); }
+    ;
 
 report
-	: stmt_list
-		{ result = $1; }
-	;
+    : stmt_list
+        {
+            result = *$1;
+            delete $1;
+        }
+    ;
 
 stmt_list
-	: /* empty */
-		{ $$ = rpt_stmt_compound(); }
-	| stmt_list stmt
-		{
-			$$ = $1;
-			rpt_stmt_append($$, $2);
-			rpt_stmt_free($2);
-		}
-	;
+    : /* empty */
+        {
+            rpt_stmt::pointer sp = rpt_stmt_compound::create();
+            $$ = new rpt_stmt::pointer(sp);
+        }
+    | stmt_list stmt
+        {
+            $$ = $1;
+            (*$$)->append(*$2);
+            delete $2;
+        }
+    ;
 
 stmt
-	: SEMICOLON
-		{ $$ = rpt_stmt_null(); }
-	| expr SEMICOLON
-		{
-			$$ = rpt_stmt_expr($1);
-			rpt_expr_free($1);
-		}
-	| compound_stmt
-		{ $$ = $1; }
-	| FOR LP expr SEMICOLON expr SEMICOLON expr RP stmt
-		{
-			$$ = rpt_stmt_for($3, $5, $7, $9);
-			rpt_expr_free($3);
-			rpt_expr_free($5);
-			rpt_expr_free($7);
-			rpt_stmt_free($9);
-		}
-	| FOR LP expr IN expr RP stmt
-		{
-			$$ = rpt_stmt_foreach($3, $5, $7);
-			rpt_expr_free($3);
-			rpt_expr_free($5);
-			rpt_stmt_free($7);
-		}
-	| declaration
-		{ $$ = $1; }
-	| BREAK SEMICOLON
-		{ $$ = rpt_stmt_break(); }
-	| CONTINUE SEMICOLON
-		{ $$ = rpt_stmt_continue(); }
-	| IF LP expr RP stmt
-		%prec ELSE
-		{
-			$$ = rpt_stmt_if($3);
-			rpt_expr_free($3);
-			rpt_stmt_append($$, $5);
-			rpt_stmt_free($5);
-		}
-	| IF LP expr RP stmt ELSE stmt
-		{
-			$$ = rpt_stmt_if($3);
-			rpt_expr_free($3);
-			rpt_stmt_append($$, $5);
-			rpt_stmt_free($5);
-			rpt_stmt_append($$, $7);
-			rpt_stmt_free($7);
-		}
-	| WHILE LP expr RP stmt
-		{
-			$$ = rpt_stmt_while($3, $5);
-			rpt_expr_free($3);
-			rpt_stmt_free($5);
-		}
-	| DO stmt WHILE LP expr RP SEMICOLON
-		{
-			$$ = rpt_stmt_do($5, $2);
-			rpt_stmt_free($2);
-			rpt_expr_free($5);
-		}
-	| RETURN expr SEMICOLON
-		{ $$ = rpt_stmt_return($2); }
-	| RETURN SEMICOLON
-		{ $$ = rpt_stmt_return((rpt_expr_ty *)0); }
-	| THROW expr SEMICOLON
-		{ $$ = rpt_stmt_throw($2); }
-	| TRY stmt CATCH LP expr RP stmt
-		{ $$ = rpt_stmt_try($2, $5, $7); }
-	| error
-		{ $$ = rpt_stmt_null(); }
-	;
+    : SEMICOLON
+        {
+            rpt_stmt::pointer sp = rpt_stmt_null::create();
+            $$ = new rpt_stmt::pointer(sp);
+        }
+    | expr SEMICOLON
+        {
+            rpt_stmt::pointer sp = rpt_stmt_expr::create(*$1);
+            $$ = new rpt_stmt::pointer(sp);
+            delete $1;
+        }
+    | compound_stmt
+        { $$ = $1; }
+    | FOR LP expr SEMICOLON expr SEMICOLON expr RP stmt
+        {
+            rpt_stmt::pointer sp = rpt_stmt_for::create(*$3, *$5, *$7, *$9);
+            $$ = new rpt_stmt::pointer(sp);
+            delete $3;
+            delete $5;
+            delete $7;
+            delete $9;
+        }
+    | FOR LP expr IN expr RP stmt
+        {
+            rpt_stmt::pointer sp = rpt_stmt_foreach::create(*$3, *$5, *$7);
+            $$ = new rpt_stmt::pointer(sp);
+            delete $3;
+            delete $5;
+            delete $7;
+        }
+    | declaration
+        { $$ = $1; }
+    | BREAK SEMICOLON
+        {
+            rpt_stmt::pointer sp = rpt_stmt_break::create();
+            $$ = new rpt_stmt::pointer(sp);
+        }
+    | CONTINUE SEMICOLON
+        {
+            rpt_stmt::pointer sp = rpt_stmt_continue::create();
+            $$ = new rpt_stmt::pointer(sp);
+        }
+    | IF LP expr RP stmt
+        %prec ELSE
+        {
+            rpt_stmt::pointer sp = rpt_stmt_if::create(*$3, *$5);
+            $$ = new rpt_stmt::pointer(sp);
+            delete $3;
+            delete $5;
+        }
+    | IF LP expr RP stmt ELSE stmt
+        {
+            rpt_stmt::pointer sp = rpt_stmt_if::create(*$3, *$5, *$7);
+            $$ = new rpt_stmt::pointer(sp);
+            delete $3;
+            delete $5;
+            delete $7;
+        }
+    | WHILE LP expr RP stmt
+        {
+            rpt_stmt::pointer sp = rpt_stmt_while::create(*$3, *$5);
+            $$ = new rpt_stmt::pointer(sp);
+            delete $3;
+            delete $5;
+        }
+    | DO stmt WHILE LP expr RP SEMICOLON
+        {
+            rpt_stmt::pointer sp = rpt_stmt_do::create(*$2, *$5);
+            $$ = new rpt_stmt::pointer(sp);
+            delete $2;
+            delete $5;
+        }
+    | RETURN expr SEMICOLON
+        {
+            rpt_stmt::pointer sp = rpt_stmt_return::create(*$2);
+            $$ = new rpt_stmt::pointer(sp);
+            delete $2;
+        }
+    | RETURN SEMICOLON
+        {
+            rpt_stmt::pointer sp = rpt_stmt_return::create();
+            $$ = new rpt_stmt::pointer(sp);
+        }
+    | THROW expr SEMICOLON
+        {
+            rpt_stmt::pointer sp = rpt_stmt_throw::create(*$2);
+            $$ = new rpt_stmt::pointer(sp);
+            delete $2;
+        }
+    | TRY stmt CATCH LP expr RP stmt
+        {
+            rpt_stmt::pointer sp = rpt_stmt_try::create(*$2, *$5, *$7);
+            $$ = new rpt_stmt::pointer(sp);
+            delete $2;
+            delete $5;
+            delete $7;
+        }
+    | error
+        {
+            rpt_stmt::pointer sp = rpt_stmt_null::create();
+            $$ = new rpt_stmt::pointer(sp);
+        }
+    ;
 
 compound_stmt
-	: LB stmt_list RB
-		{ $$ = $2; }
-	;
+    : LB stmt_list RB
+        { $$ = $2; }
+    ;
 
 declaration
-	: AUTO decl_name_list SEMICOLON
-		{ $$ = $2; }
-	;
+    : AUTO decl_name_list SEMICOLON
+        { $$ = $2; }
+    ;
 
 decl_name_list
-	: decl_name
-		{
-			$$ = rpt_stmt_compound();
-			rpt_stmt_append($$, $1);
-		}
-	| decl_name_list COMMA decl_name
-		{
-			$$ = $1;
-			rpt_stmt_append($$, $3);
-		}
-	;
+    : decl_name
+        {
+            rpt_stmt::pointer sp = rpt_stmt_compound::create();
+            sp->append(*$1);
+            delete $1;
+            $$ = new rpt_stmt::pointer(sp);
+        }
+    | decl_name_list COMMA decl_name
+        {
+            $$ = $1;
+            (*$$)->append(*$3);
+            delete $3;
+        }
+    ;
 
 decl_name
-	: NAME
-		{
-			rpt_expr_ty	*e1;
-			rpt_expr_ty	*e2;
-			rpt_expr_ty	*e3;
-			rpt_value_ty	*vp;
+    : NAME
+        {
+            /*
+             * declare the name
+             * and initialize it to nul
+             */
+            rpt_expr_name__declare(*$1);
+            rpt_expr::pointer e1 = rpt_expr_name(*$1);
+            e1->pos_from_lex();
+            delete $1;
 
-			/*
-			 * declare the name
-			 * and initialize it to nul
-			 */
-			rpt_expr_name__declare($1);
-			e1 = rpt_expr_name($1);
-			e1->pos = rpt_lex_pos_get();
-			str_free($1);
+            rpt_value::pointer vp = rpt_value_null::create();
+            rpt_expr::pointer e2 = rpt_expr_constant::create(vp);
+            e2->pos_from_lex();
 
-			vp = rpt_value_nul();
-			e2 = rpt_expr_constant(vp);
-			e2->pos = rpt_lex_pos_get();
-			rpt_value_free(vp);
+            rpt_expr::pointer e3 = rpt_expr_assign::create(e1, e2);
 
-			e3 = rpt_expr_assign(e1, e2);
-			rpt_expr_free(e1);
-			rpt_expr_free(e2);
-
-			$$ = rpt_stmt_expr(e3);
-			rpt_expr_free(e3);
-		}
-	;
+            rpt_stmt::pointer sp = rpt_stmt_expr::create(e3);
+            $$ = new rpt_stmt::pointer(sp);
+        }
+    ;
 
 expr
-	: CONSTANT
-		{
-			$$ = rpt_expr_constant($1);
-			$$->pos = rpt_lex_pos_get();
-			rpt_value_free($1);
-		}
-	| NAME
-		{
-			$$ = rpt_expr_name($1);
-			$$->pos = rpt_lex_pos_get();
-			str_free($1);
-		}
-	| LP expr RP
-		{ $$ = $2; }
-	| expr LP expr_list_opt RP
-		{
-			$$ = rpt_expr_func($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| LB struct_list RB
-		{
-			$$ = $2;
-		}
-	| LBB expr_list_opt RBB
-		{ $$ = $2; }
-	| expr LBB expr RBB
-		{
-			$$ = rpt_expr_lookup($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr DOT NAME
-		{
-			$$ = rpt_expr_dot($1, $3);
-			rpt_expr_free($1);
-			str_free($3);
-		}
-	| MINUS expr
-		%prec unary.prec
-		{
-			$$ = rpt_expr_neg($2);
-			rpt_expr_free($2);
-		}
-	| PLUS expr
-		%prec unary.prec
-		{
-			$$ = rpt_expr_pos($2);
-			rpt_expr_free($2);
-		}
-	| NOT_LOGICAL expr
-		{
-			$$ = rpt_expr_not_logical($2);
-			rpt_expr_free($2);
-		}
-	| NOT_BIT expr
-		{
-			$$ = rpt_expr_not_bit($2);
-			rpt_expr_free($2);
-		}
-	| INCR expr
-		{
-			$$ = rpt_expr_inc_pre($2);
-			rpt_expr_free($2);
-		}
-	| DECR expr
-		{
-			$$ = rpt_expr_dec_pre($2);
-			rpt_expr_free($2);
-		}
-	| expr INCR
-		{
-			$$ = rpt_expr_inc_post($1);
-			rpt_expr_free($1);
-		}
-	| expr DECR
-		{
-			$$ = rpt_expr_dec_post($1);
-			rpt_expr_free($1);
-		}
-	| expr POWER expr
-		{
-			$$ = rpt_expr_power($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr MUL expr
-		{
-			$$ = rpt_expr_mul($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr DIV expr
-		{
-			$$ = rpt_expr_div($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr MOD expr
-		{
-			$$ = rpt_expr_mod($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr SHIFT_LEFT expr
-		{
-			$$ = rpt_expr_shift_left($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr SHIFT_RIGHT expr
-		{
-			$$ = rpt_expr_shift_right($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr PLUS expr
-		{
-			$$ = rpt_expr_plus($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr MINUS expr
-		{
-			$$ = rpt_expr_minus($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr JOIN expr
-		{
-			$$ = rpt_expr_join($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr LT expr
-		{
-			$$ = rpt_expr_lt($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr LE expr
-		{
-			$$ = rpt_expr_le($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr GT expr
-		{
-			$$ = rpt_expr_gt($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr GE expr
-		{
-			$$ = rpt_expr_ge($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr EQ expr
-		{
-			$$ = rpt_expr_eq($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr NE expr
-		{
-			$$ = rpt_expr_ne($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr IN expr
-		{
-			$$ = rpt_expr_in($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr MATCH expr
-		{
-			$$ = rpt_expr_match($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr NMATCH expr
-		{
-			$$ = rpt_expr_nmatch($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr AND_BIT expr
-		{
-			$$ = rpt_expr_and_bit($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr AND_LOGICAL expr
-		{
-			$$ = rpt_expr_and_logical($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr OR_BIT expr
-		{
-			$$ = rpt_expr_or_bit($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr XOR_BIT expr
-		{
-			$$ = rpt_expr_xor_bit($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr OR_LOGICAL expr
-		{
-			$$ = rpt_expr_or_logical($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr ASSIGN expr
-		{
-			$$ = rpt_expr_assign($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr ASSIGN_PLUS expr
-		{
-			$$ = rpt_expr_assign_plus($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr ASSIGN_MINUS expr
-		{
-			$$ = rpt_expr_assign_minus($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr ASSIGN_MUL expr
-		{
-			$$ = rpt_expr_assign_mul($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr ASSIGN_DIV expr
-		{
-			$$ = rpt_expr_assign_div($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr ASSIGN_MOD expr
-		{
-			$$ = rpt_expr_assign_mod($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr ASSIGN_POWER expr
-		{
-			$$ = rpt_expr_assign_power($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr ASSIGN_JOIN expr
-		{
-			$$ = rpt_expr_assign_join($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr ASSIGN_AND_BIT expr
-		{
-			$$ = rpt_expr_assign_and_bit($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr ASSIGN_OR_BIT expr
-		{
-			$$ = rpt_expr_assign_or_bit($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr ASSIGN_XOR_BIT expr
-		{
-			$$ = rpt_expr_assign_xor_bit($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr ASSIGN_SHIFT_LEFT expr
-		{
-			$$ = rpt_expr_assign_shift_left($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr ASSIGN_SHIFT_RIGHT expr
-		{
-			$$ = rpt_expr_assign_shift_right($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr COMMA expr
-		{
-			$$ = rpt_expr_comma($1, $3);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-		}
-	| expr QUESTION expr COLON expr
-		{
-			$$ = rpt_expr_if($1, $3, $5);
-			rpt_expr_free($1);
-			rpt_expr_free($3);
-			rpt_expr_free($5);
-		}
-	;
+    : CONSTANT
+        {
+            rpt_expr::pointer ep = rpt_expr_constant::create(*$1);
+            delete $1;
+            ep->pos_from_lex();
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | NAME
+        {
+            rpt_expr::pointer ep = rpt_expr_name(*$1);
+            ep->pos_from_lex();
+            delete $1;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | LP expr RP
+        { $$ = $2; }
+    | expr LP expr_list_opt RP
+        {
+            rpt_expr::pointer ep = rpt_expr_func::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | LB struct_list RB
+        {
+            $$ = $2;
+        }
+    | LBB expr_list_opt RBB
+        { $$ = $2; }
+    | expr LBB expr RBB
+        {
+            rpt_expr::pointer ep = rpt_expr_lookup::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr DOT NAME
+        {
+            rpt_expr::pointer ep = rpt_expr_lookup::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | MINUS expr
+        %prec unary.prec
+        {
+            rpt_expr::pointer ep = rpt_expr_neg::create(*$2);
+            delete $2;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | PLUS expr
+        %prec unary.prec
+        {
+            rpt_expr::pointer ep = rpt_expr_pos::create(*$2);
+            delete $2;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | NOT_LOGICAL expr
+        {
+            rpt_expr::pointer ep = rpt_expr_not_logical::create(*$2);
+            delete $2;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | NOT_BIT expr
+        {
+            rpt_expr::pointer ep = rpt_expr_not_bit::create(*$2);
+            delete $2;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | INCR expr
+        {
+            rpt_expr::pointer ep = rpt_expr_inc_pre::create(*$2);
+            delete $2;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | DECR expr
+        {
+            rpt_expr::pointer ep = rpt_expr_dec_pre::create(*$2);
+            delete $2;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr INCR
+        {
+            rpt_expr::pointer ep = rpt_expr_inc_post::create(*$1);
+            delete $1;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr DECR
+        {
+            rpt_expr::pointer ep = rpt_expr_dec_post::create(*$1);
+            delete $1;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr POWER expr
+        {
+            rpt_expr::pointer ep = rpt_expr_power::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr MUL expr
+        {
+            rpt_expr::pointer ep = rpt_expr_mul::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr DIV expr
+        {
+            rpt_expr::pointer ep = rpt_expr_div::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr MOD expr
+        {
+            rpt_expr::pointer ep = rpt_expr_mod::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr SHIFT_LEFT expr
+        {
+            rpt_expr::pointer ep = rpt_expr_shift_left::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr SHIFT_RIGHT expr
+        {
+            rpt_expr::pointer ep = rpt_expr_shift_right::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr PLUS expr
+        {
+            rpt_expr::pointer ep = rpt_expr_plus::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr MINUS expr
+        {
+            rpt_expr::pointer ep = rpt_expr_minus::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr JOIN expr
+        {
+            rpt_expr::pointer ep = rpt_expr_join::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr LT expr
+        {
+            rpt_expr::pointer ep = rpt_expr_lt::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr LE expr
+        {
+            rpt_expr::pointer ep = rpt_expr_le::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr GT expr
+        {
+            rpt_expr::pointer ep = rpt_expr_gt::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr GE expr
+        {
+            rpt_expr::pointer ep = rpt_expr_ge::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr EQ expr
+        {
+            rpt_expr::pointer ep = rpt_expr_eq::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr NE expr
+        {
+            rpt_expr::pointer ep = rpt_expr_ne::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr IN expr
+        {
+            rpt_expr::pointer ep = rpt_expr_in::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr MATCH expr
+        {
+            rpt_expr::pointer ep = rpt_expr_match::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr NMATCH expr
+        {
+            rpt_expr::pointer ep = rpt_expr_nmatch::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr AND_BIT expr
+        {
+            rpt_expr::pointer ep = rpt_expr_and_bit::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr AND_LOGICAL expr
+        {
+            rpt_expr::pointer ep = rpt_expr_and_logical::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr OR_BIT expr
+        {
+            rpt_expr::pointer ep = rpt_expr_or_bit::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr XOR_BIT expr
+        {
+            rpt_expr::pointer ep = rpt_expr_xor_bit::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr OR_LOGICAL expr
+        {
+            rpt_expr::pointer ep = rpt_expr_or_logical::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr ASSIGN expr
+        {
+            rpt_expr::pointer ep = rpt_expr_assign::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr ASSIGN_PLUS expr
+        {
+            rpt_expr::pointer ep = rpt_expr_assign_plus::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr ASSIGN_MINUS expr
+        {
+            rpt_expr::pointer ep = rpt_expr_assign_minus::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr ASSIGN_MUL expr
+        {
+            rpt_expr::pointer ep = rpt_expr_assign_mul::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr ASSIGN_DIV expr
+        {
+            rpt_expr::pointer ep = rpt_expr_assign_div::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr ASSIGN_MOD expr
+        {
+            rpt_expr::pointer ep = rpt_expr_assign_mod::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr ASSIGN_POWER expr
+        {
+            rpt_expr::pointer ep = rpt_expr_assign_power::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr ASSIGN_JOIN expr
+        {
+            rpt_expr::pointer ep = rpt_expr_assign_join::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr ASSIGN_AND_BIT expr
+        {
+            rpt_expr::pointer ep = rpt_expr_assign_and_bit::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr ASSIGN_OR_BIT expr
+        {
+            rpt_expr::pointer ep = rpt_expr_assign_or_bit::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr ASSIGN_XOR_BIT expr
+        {
+            rpt_expr::pointer ep = rpt_expr_assign_xor_bit::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr ASSIGN_SHIFT_LEFT expr
+        {
+            rpt_expr::pointer ep = rpt_expr_assign_shift_left::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr ASSIGN_SHIFT_RIGHT expr
+        {
+            rpt_expr::pointer ep =
+                rpt_expr_assign_shift_right::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr COMMA expr
+        {
+            rpt_expr::pointer ep = rpt_expr_comma::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr QUESTION expr COLON expr
+        {
+            rpt_expr::pointer ep = rpt_expr_if::create(*$1, *$3, *$5);
+            delete $1;
+            delete $3;
+            delete $5;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    ;
 
 expr_list_opt
-	: /* empty */
-		{
-			$$ = rpt_expr_list();
-			$$->pos = rpt_lex_pos_get();
-		}
-	| expr_list
-		{
-			$$ = $1;
-		}
-	;
+    : /* empty */
+        {
+            rpt_expr::pointer ep = rpt_expr_list::create();
+            ep->pos_from_lex();
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr_list
+        {
+            $$ = $1;
+        }
+    ;
 
 expr_list
-	: expr
-		%prec COMMA
-		{
-			$$ = rpt_expr_list();
-			rpt_expr_append($$, $1);
-		}
-	| expr_list COMMA expr
-		{
-			$$ = $1;
-			rpt_expr_append($$, $3);
-		}
-	;
+    : expr
+        %prec COMMA
+        {
+            rpt_expr::pointer ep = rpt_expr_list::create();
+            ep->append(*$1);
+            delete $1;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | expr_list COMMA expr
+        {
+            $$ = $1;
+            (*$$)->append(*$3);
+            delete $3;
+        }
+    ;
 
 struct_list
-	: /* empty */
-		{
-			$$ = rpt_expr_struct();
-			$$->pos = rpt_lex_pos_get();
-		}
-	| struct_list struct_assign
-		{
-			$$ = $1;
-			rpt_expr_append($$, $2);
-			rpt_expr_free($2);
-		}
-	;
+    : /* empty */
+        {
+            rpt_expr::pointer ep = rpt_expr_struct::create();
+            ep->pos_from_lex();
+            $$ = new rpt_expr::pointer(ep);
+        }
+    | struct_list struct_assign
+        {
+            $$ = $1;
+            (*$$)->append(*$2);
+            delete $2;
+        }
+    ;
 
 struct_assign
-	: NAME ASSIGN expr SEMICOLON
-		{
-			$$ = rpt_expr_struct_assign($1, $3);
-			$$->pos = rpt_pos_copy($3->pos);
-			str_free($1);
-			rpt_expr_free($3);
-		}
-	;
+    : NAME ASSIGN expr SEMICOLON
+        {
+            rpt_expr::pointer ep = rpt_expr_struct_assign::create(*$1, *$3);
+            delete $1;
+            delete $3;
+            $$ = new rpt_expr::pointer(ep);
+        }
+    ;

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate line_lists
 //
@@ -25,7 +24,6 @@
 #include <libaegis/change.h>
 #include <common/error.h> // for assert
 #include <aeannotate/line_list.h>
-#include <common/mem.h>
 #include <common/trace.h>
 
 
@@ -69,8 +67,7 @@ line_list_destructor(line_list_t *llp)
 {
     trace(("line_list_destructor(llp = %08lX)\n{\n", (long)llp));
     line_list_clear(llp);
-    if (llp->item)
-	mem_free(llp->item);
+    delete [] llp->item;
     llp->maximum = 0;
     llp->start1 = 0;
     llp->length1 = 0;
@@ -248,7 +245,7 @@ line_list_delete(line_list_t *llp, size_t first_line, size_t num_lines)
 void
 line_list_insert(line_list_t *llp,
                  size_t first_line,
-                 change_ty *cp,
+                 change::pointer cp,
                  string_ty *text)
 {
     trace(("line_list_insert(llp = %08lX, first_line = %ld, cp = %08lX, "
@@ -292,14 +289,15 @@ line_list_insert(line_list_t *llp,
 	    assert(llp->start1 == 0);
 	    if (llp->length1 == llp->start2)
 	    {
-		size_t		nbytes;
-
 		trace(("growing...\n"));
 		assert(llp->length2 == 0);
 		assert(llp->start2 == llp->maximum);
 		llp->maximum = llp->maximum * 2 + 4;
-		nbytes = llp->maximum * sizeof(llp->item[0]);
-		llp->item = (line_t *)mem_change_size(llp->item, nbytes);
+		line_t *new_item = new line_t [llp->maximum];
+		for (size_t k = 0; k < llp->length1; ++k)
+		    new_item[k] = llp->item[k];
+		delete [] llp->item;
+		llp->item = new_item;
 
 		llp->start2 = llp->maximum;
 		trace(("llp->start2 = %ld\n", (long)llp->start2));

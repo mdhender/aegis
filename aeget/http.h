@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2003-2005 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 2003-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface definition for aeget/http.c
 //
@@ -23,10 +22,9 @@
 #ifndef AEGET_HTTP_H
 #define AEGET_HTTP_H
 
-#include <common/main.h>
+#include <libaegis/change.h>
 
 class nstring; // forward
-struct change_ty; // forward
 struct project_ty; // forward
 struct string_ty; // forward
 class nstring; // forward
@@ -91,13 +89,13 @@ void http_content_type_header(string_ty *);
   *
   * The "html:meta" attributes are inserted at this point.
   */
-void html_header(project_ty *, change_ty *);
+void html_header(project_ty *, change::pointer);
 
 /**
   * The html_header_os function is used to emit the "html:body-begin"
   * attributes.
   */
-void html_header_ps(project_ty *, change_ty *);
+void html_header_ps(project_ty *, change::pointer);
 
 /**
   * The html_footer function is used to emit the final page footer,
@@ -105,21 +103,21 @@ void html_header_ps(project_ty *, change_ty *);
   *
   * The "html:body-end" attributes are inserted at this point.
   */
-void html_footer(project_ty *, change_ty *);
+void html_footer(project_ty *, change::pointer);
 
 /**
   * The emit_change function is used to emit the project name and change
   * number cross linked to all of the relevant pages.  This is used in
   * web page headings.
   */
-void emit_change(change_ty *);
+void emit_change(change::pointer);
 
 /**
   * The emit_change function is used to emit the project name and change
   * number cross linked to all of the relevant pages, except the last
   * element.  This is used in web page headings.
   */
-void emit_change_but1(change_ty *);
+void emit_change_but1(change::pointer);
 
 /**
   * The http_script_name is used to obtainb the value sof the SCRIPT_NAME
@@ -140,7 +138,7 @@ void emit_project_href(project_ty *pp, const char *modifier, ...)
   * The emit_change_href function is used to print the leading <a>
   * portion of a change reference.
   */
-void emit_change_href(change_ty *cp, const char *modifier);
+void emit_change_href(change::pointer cp, const char *modifier);
 
 /**
   * The emit_change_href_n function is used to print the leading <a>
@@ -160,7 +158,7 @@ void emit_change_href_n(project_ty *pp, long change_number,
   * \param modifier
   *     extra equery elements
   */
-void emit_file_href(change_ty *cp, const nstring &filename,
+void emit_file_href(change::pointer cp, const nstring &filename,
     const char *modifier);
 
 /**
@@ -176,7 +174,7 @@ void emit_file_href(change_ty *cp, const nstring &filename,
   * \note
   *     This function will be DEPRECATED one day
   */
-void emit_file_href(change_ty *cp, string_ty *filename,
+void emit_file_href(change::pointer cp, string_ty *filename,
     const char *modifier);
 
 /**

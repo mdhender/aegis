@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -25,10 +24,10 @@
 
 #include <common/main.h>
 
-struct sub_context_ty;
-struct wstring_list_ty;
+class sub_context_ty; // forward
+class wstring; // forward
+class wstring_list; // forward
 
-struct wstring_ty *sub_architecture(struct sub_context_ty *,
-    struct wstring_list_ty *arg);
+wstring sub_architecture(sub_context_ty *, const wstring_list &arg);
 
 #endif // LIBAEGIS_SUB_ARCHITECTURE_H

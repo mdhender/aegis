@@ -1,23 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//      aegis - project change supervisor
+//      Copyright (C) 1994-1996, 1999, 2001-2007 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate relative comparison expressions
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
@@ -33,1186 +30,970 @@
 #include <libaegis/sub.h>
 #include <common/trace.h>
 
-#define PAIR(a, b)	((a) * rpt_value_type_MAX + (b))
+#define PAIR(a, b)      ((a) * rpt_value_type_MAX + (b))
 
 
-static rpt_value_ty *
-lt_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_lt::~rpt_expr_lt()
 {
-    sub_context_ty  *scp;
-    rpt_value_ty    *lv1;
-    rpt_value_ty    *lv2;
-    rpt_value_ty    *rv1;
-    rpt_value_ty    *rv2;
-    rpt_value_ty    *vp;
-    string_ty       *s;
+}
 
+
+rpt_expr_lt::rpt_expr_lt(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
+{
+    append(lhs);
+    append(rhs);
+}
+
+
+rpt_expr::pointer
+rpt_expr_lt::create(const rpt_expr::pointer &lhs, const rpt_expr::pointer &rhs)
+{
+    return pointer(new rpt_expr_lt(lhs, rhs));
+}
+
+
+rpt_value::pointer
+rpt_expr_lt::evaluate()
+    const
+{
     //
     // evaluate the left hand side
     //
-    trace(("lt::evaluate()\n{\n"));
-    assert(this_thing->nchild == 2);
-    lv1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (lv1->method->type == rpt_value_type_error)
-    {
-	trace(("}\n"));
-	return lv1;
-    }
+    trace(("lt::evaluate()\n"));
+    assert(get_nchildren() == 2);
+    rpt_value::pointer lv1 = nth_child(0)->evaluate(true, true);
+    if (lv1->is_an_error())
+        return lv1;
 
     //
     // coerce the left hand side to an arithmetic type
-    //	(will not give error if can't, will copy instead)
+    //  (will not give error if can't, will copy instead)
     //
-    lv2 = rpt_value_arithmetic(lv1);
+    rpt_value::pointer lv2 = rpt_value::arithmetic(lv1);
 
     //
     // evaluate the right hand side
     //
-    rv1 = rpt_expr_evaluate(this_thing->child[1], 1);
-    if (rv1->method->type == rpt_value_type_error)
-    {
-	rpt_value_free(lv1);
-	rpt_value_free(lv2);
-	trace(("}\n"));
-	return rv1;
-    }
+    rpt_value::pointer rv1 = nth_child(1)->evaluate(true, true);
+    if (rv1->is_an_error())
+        return rv1;
 
     //
     // coerce the right hand side to an arithmetic type
-    //	(will not give error if can't, will copy instead)
+    //  (will not give error if can't, will copy instead)
     //
-    rv2 = rpt_value_arithmetic(rv1);
+    rpt_value::pointer rv2 = rpt_value::arithmetic(rv1);
 
     //
     // what to do depends on
     // the types of the operands
     //
-    switch (PAIR(lv2->method->type, rv2->method->type))
     {
-    case PAIR(rpt_value_type_real, rpt_value_type_real):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_real_query(lv2) < rpt_value_real_query(rv2)
-	    );
-	trace(("(%g < %g) --> %d\n", rpt_value_real_query(lv2),
-	    rpt_value_real_query(rv2), rpt_value_boolean_query(vp)));
-	break;
+        rpt_value_integer *lv2ip = dynamic_cast<rpt_value_integer *>(lv2.get());
+        if (lv2ip)
+        {
+            long li = lv2ip->query();
 
-    case PAIR(rpt_value_type_real, rpt_value_type_integer):
-	vp =
-	    rpt_value_boolean
-	    (
-		rpt_value_real_query(lv2) < rpt_value_integer_query(rv2)
-	    );
-	break;
+            {
+                rpt_value_integer *rv2ip =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2ip)
+                {
+                    long ri = rv2ip->query();
+                    return rpt_value_boolean::create(li < ri);
+                }
+            }
 
-    case PAIR(rpt_value_type_integer, rpt_value_type_real):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_integer_query(lv2) < rpt_value_real_query(rv2)
-	    );
-	break;
-
-    case PAIR(rpt_value_type_integer, rpt_value_type_integer):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_integer_query(lv2) < rpt_value_integer_query(rv2)
-	    );
-	break;
-
-    case PAIR(rpt_value_type_string, rpt_value_type_string):
-	string_string:
-	vp =
-	    rpt_value_boolean
-	    (
-	       	strcmp
-	       	(
-		    rpt_value_string_query(lv2)->str_text,
-		    rpt_value_string_query(rv2)->str_text
-	       	)
-	    <
-	       	0
-	    );
-	break;
-
-    default:
-	//
-	// try to compare as strings
-	//
-	rpt_value_free(lv2);
-	rpt_value_free(rv2);
-	lv2 = rpt_value_stringize(lv1);
-	rv2 = rpt_value_stringize(rv1);
-	if
-	(
-	    lv2->method->type == rpt_value_type_string
-	&&
-	    rv2->method->type == rpt_value_type_string
-	)
-	    goto string_string;
-
-	//
-	// give up on this one
-	//
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name1", lv1->method->name);
-	sub_var_set_charstar(scp, "Name2", rv1->method->name);
-	s = subst_intl(scp, i18n("illegal comparison ($name1 < $name2)"));
-	sub_context_delete(scp);
-	vp = rpt_value_error(this_thing->pos, s);
-	str_free(s);
-	break;
+            {
+                rpt_value_integer *rv2rp =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2rp)
+                {
+                    double rr = rv2rp->query();
+                    return rpt_value_boolean::create(li < rr);
+                }
+            }
+        }
     }
-    rpt_value_free(lv1);
-    rpt_value_free(lv2);
-    rpt_value_free(rv1);
-    rpt_value_free(rv2);
-    trace(("return %08lX;\n", (long)vp));
-    trace(("}\n"));
-    return vp;
+
+    {
+        rpt_value_real *lv2rp = dynamic_cast<rpt_value_real *>(lv2.get());
+        if (lv2rp)
+        {
+            double lr = lv2rp->query();
+
+            {
+                rpt_value_integer *rv2ip =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2ip)
+                {
+                    long ri = rv2ip->query();
+                    return rpt_value_boolean::create(lr < ri);
+                }
+            }
+
+            {
+                rpt_value_integer *rv2rp =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2rp)
+                {
+                    double rr = rv2rp->query();
+                    return rpt_value_boolean::create(lr < rr);
+                }
+            }
+        }
+    }
+
+    //
+    // No numerical comparisons worked, try for a string comparison.
+    //
+    rpt_value::pointer lv5 = rpt_value::stringize(lv1);
+    rpt_value_string *lv5sp = dynamic_cast<rpt_value_string *>(lv5.get());
+    rpt_value::pointer rv5 = rpt_value::stringize(rv1);
+    rpt_value_string *rv5sp = dynamic_cast<rpt_value_string *>(rv5.get());
+    if (lv5sp && rv5sp)
+    {
+        return rpt_value_boolean::create(lv5sp->query() < rv5sp->query());
+    }
+
+    //
+    // nothing worked.  complain.
+    //
+    sub_context_ty sc;
+    sc.var_set_charstar("Name1", lv1->name());
+    sc.var_set_charstar("Name2", rv1->name());
+    nstring s(sc.subst_intl(i18n("illegal comparison ($name1 < $name2)")));
+    return rpt_value_error::create(get_pos(), s);
 }
 
 
-static rpt_expr_method_ty lt_method =
+rpt_expr_le::~rpt_expr_le()
 {
-    sizeof(rpt_expr_ty),
-    "less than",
-    0, // construct
-    0, // destruct
-    lt_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_lt(rpt_expr_ty *a, rpt_expr_ty *b)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&lt_method);
-    rpt_expr_append(this_thing, a);
-    rpt_expr_append(this_thing, b);
-    return this_thing;
 }
 
 
-static rpt_value_ty *
-le_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_le::rpt_expr_le(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
 {
-    sub_context_ty  *scp;
-    rpt_value_ty    *lv1;
-    rpt_value_ty    *lv2;
-    rpt_value_ty    *rv1;
-    rpt_value_ty    *rv2;
-    rpt_value_ty    *vp;
-    string_ty       *s;
+    append(lhs);
+    append(rhs);
+}
 
+
+rpt_expr::pointer
+rpt_expr_le::create(const rpt_expr::pointer &lhs, const rpt_expr::pointer &rhs)
+{
+    return pointer(new rpt_expr_le(lhs, rhs));
+}
+
+
+rpt_value::pointer
+rpt_expr_le::evaluate()
+    const
+{
     //
     // evaluate the left hand side
     //
-    trace(("le::evaluate()\n{\n"));
-    assert(this_thing->nchild == 2);
-    lv1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (lv1->method->type == rpt_value_type_error)
-    {
-	trace(("}\n"));
-	return lv1;
-    }
+    trace(("le::evaluate()\n"));
+    assert(get_nchildren() == 2);
+    rpt_value::pointer lv1 = nth_child(0)->evaluate(true, true);
+    if (lv1->is_an_error())
+        return lv1;
 
     //
     // coerce the left hand side to an arithmetic type
-    // (will not give error if can't, will copy instead)
+    //  (will not give error if can't, will copy instead)
     //
-    lv2 = rpt_value_arithmetic(lv1);
+    rpt_value::pointer lv2 = rpt_value::arithmetic(lv1);
 
     //
     // evaluate the right hand side
     //
-    rv1 = rpt_expr_evaluate(this_thing->child[1], 1);
-    if (rv1->method->type == rpt_value_type_error)
-    {
-	rpt_value_free(lv1);
-	rpt_value_free(lv2);
-	trace(("}\n"));
-	return rv1;
-    }
+    rpt_value::pointer rv1 = nth_child(1)->evaluate(true, true);
+    if (rv1->is_an_error())
+        return rv1;
 
     //
     // coerce the right hand side to an arithmetic type
-    // (will not give error if can't, will copy instead)
+    //  (will not give error if can't, will copy instead)
     //
-    rv2 = rpt_value_arithmetic(rv1);
+    rpt_value::pointer rv2 = rpt_value::arithmetic(rv1);
 
     //
     // what to do depends on
     // the types of the operands
     //
-    switch (PAIR(lv2->method->type, rv2->method->type))
     {
-    case PAIR(rpt_value_type_real, rpt_value_type_real):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_real_query(lv2) <= rpt_value_real_query(rv2)
-	    );
-	break;
+        rpt_value_integer *lv2ip = dynamic_cast<rpt_value_integer *>(lv2.get());
+        if (lv2ip)
+        {
+            long li = lv2ip->query();
 
-    case PAIR(rpt_value_type_real, rpt_value_type_integer):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_real_query(lv2) <= rpt_value_integer_query(rv2)
-	    );
-	break;
+            {
+                rpt_value_integer *rv2ip =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2ip)
+                {
+                    long ri = rv2ip->query();
+                    return rpt_value_boolean::create(li <= ri);
+                }
+            }
 
-    case PAIR(rpt_value_type_integer, rpt_value_type_real):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_integer_query(lv2) <= rpt_value_real_query(rv2)
-	    );
-	break;
-
-    case PAIR(rpt_value_type_integer, rpt_value_type_integer):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_integer_query(lv2) <= rpt_value_integer_query(rv2)
-	    );
-	break;
-
-    case PAIR(rpt_value_type_string, rpt_value_type_string):
-	string_string:
-	vp =
-	    rpt_value_boolean
-	    (
-	       	strcmp
-	       	(
-		    rpt_value_string_query(lv2)->str_text,
-		    rpt_value_string_query(rv2)->str_text
-	       	)
-	    <=
-	       	0
-	    );
-	break;
-
-    default:
-	//
-	// try to compare as strings
-	//
-	rpt_value_free(lv2);
-	rpt_value_free(rv2);
-	lv2 = rpt_value_stringize(lv1);
-	rv2 = rpt_value_stringize(rv1);
-	if
-	(
-	    lv2->method->type == rpt_value_type_string
-	&&
-	    rv2->method->type == rpt_value_type_string
-	)
-	    goto string_string;
-
-	//
-	// give up on this one
-	//
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name1", lv1->method->name);
-	sub_var_set_charstar(scp, "Name2", rv1->method->name);
-	s = subst_intl(scp, i18n("illegal comparison ($name1 <= $name2)"));
-	sub_context_delete(scp);
-	vp = rpt_value_error(this_thing->pos, s);
-	str_free(s);
-	break;
+            {
+                rpt_value_integer *rv2rp =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2rp)
+                {
+                    double rr = rv2rp->query();
+                    return rpt_value_boolean::create(li <= rr);
+                }
+            }
+        }
     }
-    rpt_value_free(lv1);
-    rpt_value_free(lv2);
-    rpt_value_free(rv1);
-    rpt_value_free(rv2);
-    trace(("return %08lX;\n", (long)vp));
-    trace(("}\n"));
-    return vp;
+
+    {
+        rpt_value_real *lv2rp = dynamic_cast<rpt_value_real *>(lv2.get());
+        if (lv2rp)
+        {
+            double lr = lv2rp->query();
+
+            {
+                rpt_value_integer *rv2ip =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2ip)
+                {
+                    long ri = rv2ip->query();
+                    return rpt_value_boolean::create(lr <= ri);
+                }
+            }
+
+            {
+                rpt_value_integer *rv2rp =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2rp)
+                {
+                    double rr = rv2rp->query();
+                    return rpt_value_boolean::create(lr <= rr);
+                }
+            }
+        }
+    }
+
+    //
+    // No numerical comparisons worked, try for a string comparison.
+    //
+    rpt_value::pointer lv5 = rpt_value::stringize(lv1);
+    rpt_value_string *lv5sp = dynamic_cast<rpt_value_string *>(lv5.get());
+    rpt_value::pointer rv5 = rpt_value::stringize(rv1);
+    rpt_value_string *rv5sp = dynamic_cast<rpt_value_string *>(rv5.get());
+    if (lv5sp && rv5sp)
+    {
+        return rpt_value_boolean::create(lv5sp->query() <= rv5sp->query());
+    }
+
+    //
+    // nothing worked.  complain.
+    //
+    sub_context_ty sc;
+    sc.var_set_charstar("Name1", lv1->name());
+    sc.var_set_charstar("Name2", rv1->name());
+    nstring s(sc.subst_intl(i18n("illegal comparison ($name1 <= $name2)")));
+    return rpt_value_error::create(get_pos(), s);
 }
 
 
-static rpt_expr_method_ty le_method =
+rpt_expr_gt::~rpt_expr_gt()
 {
-    sizeof(rpt_expr_ty),
-    "less than or equal to",
-    0, // construct
-    0, // destruct
-    le_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_le(rpt_expr_ty *a, rpt_expr_ty *b)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&le_method);
-    rpt_expr_append(this_thing, a);
-    rpt_expr_append(this_thing, b);
-    return this_thing;
 }
 
 
-static rpt_value_ty *
-gt_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_gt::rpt_expr_gt(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
 {
-    sub_context_ty  *scp;
-    rpt_value_ty    *lv1;
-    rpt_value_ty    *lv2;
-    rpt_value_ty    *rv1;
-    rpt_value_ty    *rv2;
-    rpt_value_ty    *vp;
-    string_ty       *s;
+    append(lhs);
+    append(rhs);
+}
 
+
+rpt_expr::pointer
+rpt_expr_gt::create(const rpt_expr::pointer &lhs, const rpt_expr::pointer &rhs)
+{
+    return pointer(new rpt_expr_gt(lhs, rhs));
+}
+
+
+rpt_value::pointer
+rpt_expr_gt::evaluate()
+    const
+{
     //
     // evaluate the left hand side
     //
-    trace(("gt::evaluate()\n{\n"));
-    assert(this_thing->nchild == 2);
-    lv1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (lv1->method->type == rpt_value_type_error)
-    {
-	trace(("}\n"));
-	return lv1;
-    }
+    trace(("gt::evaluate()\n"));
+    assert(get_nchildren() == 2);
+    rpt_value::pointer lv1 = nth_child(0)->evaluate(true, true);
+    if (lv1->is_an_error())
+        return lv1;
 
     //
     // coerce the left hand side to an arithmetic type
-    // (will not give error if can't, will copy instead)
+    //  (will not give error if can't, will copy instead)
     //
-    lv2 = rpt_value_arithmetic(lv1);
+    rpt_value::pointer lv2 = rpt_value::arithmetic(lv1);
 
     //
     // evaluate the right hand side
     //
-    rv1 = rpt_expr_evaluate(this_thing->child[1], 1);
-    if (rv1->method->type == rpt_value_type_error)
-    {
-	rpt_value_free(lv1);
-	rpt_value_free(lv2);
-	trace(("}\n"));
-	return rv1;
-    }
+    rpt_value::pointer rv1 = nth_child(1)->evaluate(true, true);
+    if (rv1->is_an_error())
+        return rv1;
 
     //
     // coerce the right hand side to an arithmetic type
-    //	(will not give error if can't, will copy instead)
+    //  (will not give error if can't, will copy instead)
     //
-    rv2 = rpt_value_arithmetic(rv1);
+    rpt_value::pointer rv2 = rpt_value::arithmetic(rv1);
 
     //
     // what to do depends on
     // the types of the operands
     //
-    switch (PAIR(lv2->method->type, rv2->method->type))
     {
-    case PAIR(rpt_value_type_real, rpt_value_type_real):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_real_query(lv2) > rpt_value_real_query(rv2)
-	    );
-	break;
+        rpt_value_integer *lv2ip = dynamic_cast<rpt_value_integer *>(lv2.get());
+        if (lv2ip)
+        {
+            long li = lv2ip->query();
 
-    case PAIR(rpt_value_type_real, rpt_value_type_integer):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_real_query(lv2) > rpt_value_integer_query(rv2)
-	    );
-	break;
+            {
+                rpt_value_integer *rv2ip =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2ip)
+                {
+                    long ri = rv2ip->query();
+                    return rpt_value_boolean::create(li > ri);
+                }
+            }
 
-    case PAIR(rpt_value_type_integer, rpt_value_type_real):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_integer_query(lv2) > rpt_value_real_query(rv2)
-	    );
-	break;
-
-    case PAIR(rpt_value_type_integer, rpt_value_type_integer):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_integer_query(lv2) > rpt_value_integer_query(rv2)
-	    );
-	break;
-
-    case PAIR(rpt_value_type_string, rpt_value_type_string):
-	string_string:
-	vp =
-	    rpt_value_boolean
-	    (
-	       	strcmp
-	       	(
-		    rpt_value_string_query(lv2)->str_text,
-		    rpt_value_string_query(rv2)->str_text
-	       	)
-	    >
-	       	0
-	    );
-	break;
-
-    default:
-	//
-	// try to compare as strings
-	//
-	rpt_value_free(lv2);
-	rpt_value_free(rv2);
-	lv2 = rpt_value_stringize(lv1);
-	rv2 = rpt_value_stringize(rv1);
-	if
-	(
-	    lv2->method->type == rpt_value_type_string
-	&&
-	    rv2->method->type == rpt_value_type_string
-	)
-	    goto string_string;
-
-	//
-	// give up on this one
-	//
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name1", lv1->method->name);
-	sub_var_set_charstar(scp, "Name2", rv1->method->name);
-	s = subst_intl(scp, i18n("illegal comparison ($name1 > $name2)"));
-	sub_context_delete(scp);
-	vp = rpt_value_error(this_thing->pos, s);
-	str_free(s);
-	break;
+            {
+                rpt_value_integer *rv2rp =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2rp)
+                {
+                    double rr = rv2rp->query();
+                    return rpt_value_boolean::create(li > rr);
+                }
+            }
+        }
     }
-    rpt_value_free(lv1);
-    rpt_value_free(lv2);
-    rpt_value_free(rv1);
-    rpt_value_free(rv2);
-    trace(("return %08lX;\n", (long)vp));
-    trace(("}\n"));
-    return vp;
+
+    {
+        rpt_value_real *lv2rp = dynamic_cast<rpt_value_real *>(lv2.get());
+        if (lv2rp)
+        {
+            double lr = lv2rp->query();
+
+            {
+                rpt_value_integer *rv2ip =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2ip)
+                {
+                    long ri = rv2ip->query();
+                    return rpt_value_boolean::create(lr > ri);
+                }
+            }
+
+            {
+                rpt_value_integer *rv2rp =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2rp)
+                {
+                    double rr = rv2rp->query();
+                    return rpt_value_boolean::create(lr > rr);
+                }
+            }
+        }
+    }
+
+    //
+    // No numerical comparisons worked, try for a string comparison.
+    //
+    rpt_value::pointer lv5 = rpt_value::stringize(lv1);
+    rpt_value_string *lv5sp = dynamic_cast<rpt_value_string *>(lv5.get());
+    rpt_value::pointer rv5 = rpt_value::stringize(rv1);
+    rpt_value_string *rv5sp = dynamic_cast<rpt_value_string *>(rv5.get());
+    if (lv5sp && rv5sp)
+    {
+        return rpt_value_boolean::create(lv5sp->query() > rv5sp->query());
+    }
+
+    //
+    // nothing worked.  complain.
+    //
+    sub_context_ty sc;
+    sc.var_set_charstar("Name1", lv1->name());
+    sc.var_set_charstar("Name2", rv1->name());
+    nstring s(sc.subst_intl(i18n("illegal comparison ($name1 > $name2)")));
+    return rpt_value_error::create(get_pos(), s);
 }
 
 
-static rpt_expr_method_ty gt_method =
+rpt_expr_ge::~rpt_expr_ge()
 {
-    sizeof(rpt_expr_ty),
-    "greater than",
-    0, // construct
-    0, // destruct
-    gt_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_gt(rpt_expr_ty *a, rpt_expr_ty *b)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&gt_method);
-    rpt_expr_append(this_thing, a);
-    rpt_expr_append(this_thing, b);
-    return this_thing;
 }
 
 
-static rpt_value_ty *
-ge_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_ge::rpt_expr_ge(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
 {
-    sub_context_ty  *scp;
-    rpt_value_ty    *lv1;
-    rpt_value_ty    *lv2;
-    rpt_value_ty    *rv1;
-    rpt_value_ty    *rv2;
-    rpt_value_ty    *vp;
-    string_ty       *s;
+    append(lhs);
+    append(rhs);
+}
 
+
+rpt_expr::pointer
+rpt_expr_ge::create(const rpt_expr::pointer &lhs, const rpt_expr::pointer &rhs)
+{
+    return pointer(new rpt_expr_ge(lhs, rhs));
+}
+
+
+rpt_value::pointer
+rpt_expr_ge::evaluate()
+    const
+{
     //
     // evaluate the left hand side
     //
-    trace(("ge::evaluate()\n{\n"));
-    assert(this_thing->nchild == 2);
-    lv1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (lv1->method->type == rpt_value_type_error)
-    {
-	trace(("}\n"));
-	return lv1;
-    }
+    trace(("ge::evaluate()\n"));
+    assert(get_nchildren() == 2);
+    rpt_value::pointer lv1 = nth_child(0)->evaluate(true, true);
+    if (lv1->is_an_error())
+        return lv1;
 
     //
     // coerce the left hand side to an arithmetic type
-    //	(will not give error if can't, will copy instead)
+    //  (will not give error if can't, will copy instead)
     //
-    lv2 = rpt_value_arithmetic(lv1);
+    rpt_value::pointer lv2 = rpt_value::arithmetic(lv1);
 
     //
     // evaluate the right hand side
     //
-    rv1 = rpt_expr_evaluate(this_thing->child[1], 1);
-    if (rv1->method->type == rpt_value_type_error)
-    {
-	rpt_value_free(lv1);
-	rpt_value_free(lv2);
-	trace(("}\n"));
-	return rv1;
-    }
+    rpt_value::pointer rv1 = nth_child(1)->evaluate(true, true);
+    if (rv1->is_an_error())
+        return rv1;
 
     //
     // coerce the right hand side to an arithmetic type
-    // (will not give error if can't, will copy instead)
+    //  (will not give error if can't, will copy instead)
     //
-    rv2 = rpt_value_arithmetic(rv1);
+    rpt_value::pointer rv2 = rpt_value::arithmetic(rv1);
 
     //
     // what to do depends on
     // the types of the operands
     //
-    switch (PAIR(lv2->method->type, rv2->method->type))
     {
-    case PAIR(rpt_value_type_real, rpt_value_type_real):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_real_query(lv2) >= rpt_value_real_query(rv2)
-	    );
-	break;
+        rpt_value_integer *lv2ip = dynamic_cast<rpt_value_integer *>(lv2.get());
+        if (lv2ip)
+        {
+            long li = lv2ip->query();
 
-    case PAIR(rpt_value_type_real, rpt_value_type_integer):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_real_query(lv2) >= rpt_value_integer_query(rv2)
-	    );
-	break;
+            {
+                rpt_value_integer *rv2ip =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2ip)
+                {
+                    long ri = rv2ip->query();
+                    return rpt_value_boolean::create(li >= ri);
+                }
+            }
 
-    case PAIR(rpt_value_type_integer, rpt_value_type_real):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_integer_query(lv2) >= rpt_value_real_query(rv2)
-	    );
-	break;
-
-    case PAIR(rpt_value_type_integer, rpt_value_type_integer):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_integer_query(lv2) >= rpt_value_integer_query(rv2)
-	    );
-	break;
-
-    case PAIR(rpt_value_type_string, rpt_value_type_string):
-	string_string:
-	vp =
-	    rpt_value_boolean
-	    (
-	       	strcmp
-	       	(
-		    rpt_value_string_query(lv2)->str_text,
-		    rpt_value_string_query(rv2)->str_text
-	       	)
-	    >=
-	       	0
-	    );
-	break;
-
-    default:
-	//
-	// try to compare as strings
-	//
-	rpt_value_free(lv2);
-	rpt_value_free(rv2);
-	lv2 = rpt_value_stringize(lv1);
-	rv2 = rpt_value_stringize(rv1);
-	if
-	(
-	    lv2->method->type == rpt_value_type_string
-	&&
-	    rv2->method->type == rpt_value_type_string
-	)
-	    goto string_string;
-
-	//
-	// give up on this one
-	//
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name1", lv1->method->name);
-	sub_var_set_charstar(scp, "Name2", rv1->method->name);
-	s = subst_intl(scp, i18n("illegal comparison ($name1 >= $name2)"));
-	sub_context_delete(scp);
-	vp = rpt_value_error(this_thing->pos, s);
-	str_free(s);
-	break;
+            {
+                rpt_value_integer *rv2rp =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2rp)
+                {
+                    double rr = rv2rp->query();
+                    return rpt_value_boolean::create(li >= rr);
+                }
+            }
+        }
     }
-    rpt_value_free(lv1);
-    rpt_value_free(lv2);
-    rpt_value_free(rv1);
-    rpt_value_free(rv2);
-    trace(("return %08lX;\n", (long)vp));
-    trace(("}\n"));
-    return vp;
+
+    {
+        rpt_value_real *lv2rp = dynamic_cast<rpt_value_real *>(lv2.get());
+        if (lv2rp)
+        {
+            double lr = lv2rp->query();
+
+            {
+                rpt_value_integer *rv2ip =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2ip)
+                {
+                    long ri = rv2ip->query();
+                    return rpt_value_boolean::create(lr >= ri);
+                }
+            }
+
+            {
+                rpt_value_integer *rv2rp =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2rp)
+                {
+                    double rr = rv2rp->query();
+                    return rpt_value_boolean::create(lr >= rr);
+                }
+            }
+        }
+    }
+
+    //
+    // No numerical comparisons worked, try for a string comparison.
+    //
+    rpt_value::pointer lv5 = rpt_value::stringize(lv1);
+    rpt_value_string *lv5sp = dynamic_cast<rpt_value_string *>(lv5.get());
+    rpt_value::pointer rv5 = rpt_value::stringize(rv1);
+    rpt_value_string *rv5sp = dynamic_cast<rpt_value_string *>(rv5.get());
+    if (lv5sp && rv5sp)
+    {
+        return rpt_value_boolean::create(lv5sp->query() >= rv5sp->query());
+    }
+
+    //
+    // nothing worked.  complain.
+    //
+    sub_context_ty sc;
+    sc.var_set_charstar("Name1", lv1->name());
+    sc.var_set_charstar("Name2", rv1->name());
+    nstring s(sc.subst_intl(i18n("illegal comparison ($name1 >= $name2)")));
+    return rpt_value_error::create(get_pos(), s);
 }
 
 
-static rpt_expr_method_ty ge_method =
+rpt_expr_eq::~rpt_expr_eq()
 {
-    sizeof(rpt_expr_ty),
-    "greater than or equal to",
-    0, // construct
-    0, // destruct
-    ge_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_ge(rpt_expr_ty *a, rpt_expr_ty *b)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&ge_method);
-    rpt_expr_append(this_thing, a);
-    rpt_expr_append(this_thing, b);
-    return this_thing;
 }
 
 
-static rpt_value_ty *
-eq_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_eq::rpt_expr_eq(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
 {
-    sub_context_ty  *scp;
-    rpt_value_ty    *lv1;
-    rpt_value_ty    *lv2;
-    rpt_value_ty    *rv1;
-    rpt_value_ty    *rv2;
-    rpt_value_ty    *vp;
-    string_ty       *s;
+    append(lhs);
+    append(rhs);
+}
 
+
+rpt_expr::pointer
+rpt_expr_eq::create(const rpt_expr::pointer &lhs, const rpt_expr::pointer &rhs)
+{
+    return pointer(new rpt_expr_eq(lhs, rhs));
+}
+
+
+rpt_value::pointer
+rpt_expr_eq::evaluate()
+    const
+{
     //
     // evaluate the left hand side
     //
-    trace(("eq::evaluate()\n{\n"));
-    assert(this_thing->nchild == 2);
-    lv1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (lv1->method->type == rpt_value_type_error)
-    {
-	trace(("}\n"));
-	return lv1;
-    }
+    trace(("eq::evaluate()\n"));
+    assert(get_nchildren() == 2);
+    rpt_value::pointer lv1 = nth_child(0)->evaluate(true, true);
+    trace(("lv1 is a %s\n", lv1->name()));
+    if (lv1->is_an_error())
+        return lv1;
 
     //
     // coerce the left hand side to an arithmetic type
-    // (will not give error if can't, will copy instead)
+    //  (will not give error if can't, will copy instead)
     //
-    lv2 = rpt_value_arithmetic(lv1);
+    rpt_value::pointer lv2 = rpt_value::arithmetic(lv1);
+    trace(("lv2 is a %s\n", lv2->name()));
 
     //
     // evaluate the right hand side
     //
-    rv1 = rpt_expr_evaluate(this_thing->child[1], 1);
-    if (rv1->method->type == rpt_value_type_error)
-    {
-	rpt_value_free(lv1);
-	rpt_value_free(lv2);
-	trace(("}\n"));
-	return rv1;
-    }
+    rpt_value::pointer rv1 = nth_child(1)->evaluate(true, true);
+    trace(("rv1 is a %s\n", rv1->name()));
+    if (rv1->is_an_error())
+        return rv1;
 
     //
     // coerce the right hand side to an arithmetic type
-    // (will not give error if can't, will copy instead)
+    //  (will not give error if can't, will copy instead)
     //
-    rv2 = rpt_value_arithmetic(rv1);
+    rpt_value::pointer rv2 = rpt_value::arithmetic(rv1);
+    trace(("rv2 is a %s\n", rv2->name()));
 
     //
     // what to do depends on
     // the types of the operands
     //
-    switch (PAIR(lv2->method->type, rv2->method->type))
     {
-    case PAIR(rpt_value_type_real, rpt_value_type_real):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_real_query(lv2) == rpt_value_real_query(rv2)
-	    );
-	break;
+        rpt_value_integer *lv2ip = dynamic_cast<rpt_value_integer *>(lv2.get());
+        if (lv2ip)
+        {
+            long li = lv2ip->query();
 
-    case PAIR(rpt_value_type_real, rpt_value_type_integer):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_real_query(lv2) == rpt_value_integer_query(rv2)
-	    );
-	break;
+            {
+                rpt_value_integer *rv2ip =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2ip)
+                {
+                    long ri = rv2ip->query();
+                    return rpt_value_boolean::create(li == ri);
+                }
+            }
 
-    case PAIR(rpt_value_type_integer, rpt_value_type_real):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_integer_query(lv2) == rpt_value_real_query(rv2)
-	    );
-	break;
-
-    case PAIR(rpt_value_type_integer, rpt_value_type_integer):
-	vp =
-	    rpt_value_boolean
-	    (
-		rpt_value_integer_query(lv2) == rpt_value_integer_query(rv2)
-	    );
-	break;
-
-    case PAIR(rpt_value_type_string, rpt_value_type_string):
-	string_string:
-	vp =
-	    rpt_value_boolean
-	    (
-	       	str_equal
-	       	(
-		    rpt_value_string_query(lv2),
-		    rpt_value_string_query(rv2)
-	       	)
-	    );
-	break;
-
-    default:
-	//
-	// try to compare as strings
-	//
-	rpt_value_free(lv2);
-	rpt_value_free(rv2);
-	lv2 = rpt_value_stringize(lv1);
-	rv2 = rpt_value_stringize(rv1);
-	if
-	(
-	    lv2->method->type == rpt_value_type_string
-	&&
-	    rv2->method->type == rpt_value_type_string
-	)
-	    goto string_string;
-
-	//
-	// give up on this_thing one
-	//
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name1", lv1->method->name);
-	sub_var_set_charstar(scp, "Name2", rv1->method->name);
-	s = subst_intl(scp, i18n("illegal comparison ($name1 == $name2)"));
-	sub_context_delete(scp);
-	vp = rpt_value_error(this_thing->pos, s);
-	str_free(s);
-	break;
+            {
+                rpt_value_integer *rv2rp =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2rp)
+                {
+                    double rr = rv2rp->query();
+                    return rpt_value_boolean::create(li == rr);
+                }
+            }
+        }
     }
-    rpt_value_free(lv1);
-    rpt_value_free(lv2);
-    rpt_value_free(rv1);
-    rpt_value_free(rv2);
-    trace(("return %08lX;\n", (long)vp));
-    trace(("}\n"));
-    return vp;
+
+    {
+        rpt_value_real *lv2rp = dynamic_cast<rpt_value_real *>(lv2.get());
+        if (lv2rp)
+        {
+            double lr = lv2rp->query();
+
+            {
+                rpt_value_integer *rv2ip =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2ip)
+                {
+                    long ri = rv2ip->query();
+                    return rpt_value_boolean::create(lr == ri);
+                }
+            }
+
+            {
+                rpt_value_integer *rv2rp =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2rp)
+                {
+                    double rr = rv2rp->query();
+                    return rpt_value_boolean::create(lr == rr);
+                }
+            }
+        }
+    }
+
+    //
+    // No numerical comparisons worked, try for a string comparison.
+    //
+    rpt_value::pointer lv5 = rpt_value::stringize(lv1);
+    rpt_value_string *lv5sp = dynamic_cast<rpt_value_string *>(lv5.get());
+    rpt_value::pointer rv5 = rpt_value::stringize(rv1);
+    rpt_value_string *rv5sp = dynamic_cast<rpt_value_string *>(rv5.get());
+    if (lv5sp && rv5sp)
+    {
+        return rpt_value_boolean::create(lv5sp->query() == rv5sp->query());
+    }
+
+    //
+    // nothing worked.  complain.
+    //
+    sub_context_ty sc;
+    sc.var_set_charstar("Name1", lv1->name());
+    sc.var_set_charstar("Name2", rv1->name());
+    nstring s(sc.subst_intl(i18n("illegal comparison ($name1 == $name2)")));
+    return rpt_value_error::create(get_pos(), s);
 }
 
 
-static rpt_expr_method_ty eq_method =
+rpt_expr_ne::~rpt_expr_ne()
 {
-    sizeof(rpt_expr_ty),
-    "equal to",
-    0, // construct
-    0, // destruct
-    eq_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_eq(rpt_expr_ty *a, rpt_expr_ty *b)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&eq_method);
-    rpt_expr_append(this_thing, a);
-    rpt_expr_append(this_thing, b);
-    return this_thing;
 }
 
 
-static rpt_value_ty *
-ne_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_ne::rpt_expr_ne(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
 {
-    sub_context_ty  *scp;
-    rpt_value_ty    *lv1;
-    rpt_value_ty    *lv2;
-    rpt_value_ty    *rv1;
-    rpt_value_ty    *rv2;
-    rpt_value_ty    *vp;
-    string_ty       *s;
+    append(lhs);
+    append(rhs);
+}
 
+
+rpt_expr::pointer
+rpt_expr_ne::create(const rpt_expr::pointer &lhs, const rpt_expr::pointer &rhs)
+{
+    return pointer(new rpt_expr_ne(lhs, rhs));
+}
+
+
+rpt_value::pointer
+rpt_expr_ne::evaluate()
+    const
+{
     //
     // evaluate the left hand side
     //
-    trace(("ne::evaluate()\n{\n"));
-    assert(this_thing->nchild == 2);
-    lv1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (lv1->method->type == rpt_value_type_error)
-    {
-	trace(("}\n"));
-	return lv1;
-    }
+    trace(("ne::evaluate()\n"));
+    assert(get_nchildren() == 2);
+    rpt_value::pointer lv1 = nth_child(0)->evaluate(true, true);
+    if (lv1->is_an_error())
+        return lv1;
 
     //
     // coerce the left hand side to an arithmetic type
-    // (will not give error if can't, will copy instead)
+    //  (will not give error if can't, will copy instead)
     //
-    lv2 = rpt_value_arithmetic(lv1);
+    rpt_value::pointer lv2 = rpt_value::arithmetic(lv1);
 
     //
     // evaluate the right hand side
     //
-    rv1 = rpt_expr_evaluate(this_thing->child[1], 1);
-    if (rv1->method->type == rpt_value_type_error)
-    {
-	rpt_value_free(lv1);
-	rpt_value_free(lv2);
-	trace(("}\n"));
-	return rv1;
-    }
+    rpt_value::pointer rv1 = nth_child(1)->evaluate(true, true);
+    if (rv1->is_an_error())
+        return rv1;
 
     //
     // coerce the right hand side to an arithmetic type
-    // (will not give error if can't, will copy instead)
+    //  (will not give error if can't, will copy instead)
     //
-    rv2 = rpt_value_arithmetic(rv1);
+    rpt_value::pointer rv2 = rpt_value::arithmetic(rv1);
 
     //
     // what to do depends on
     // the types of the operands
     //
-    switch (PAIR(lv2->method->type, rv2->method->type))
     {
-    case PAIR(rpt_value_type_real, rpt_value_type_real):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_real_query(lv2) != rpt_value_real_query(rv2)
-	    );
-	break;
+        rpt_value_integer *lv2ip = dynamic_cast<rpt_value_integer *>(lv2.get());
+        if (lv2ip)
+        {
+            long li = lv2ip->query();
 
-    case PAIR(rpt_value_type_real, rpt_value_type_integer):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_real_query(lv2) != rpt_value_integer_query(rv2)
-	    );
-	break;
+            {
+                rpt_value_integer *rv2ip =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2ip)
+                {
+                    long ri = rv2ip->query();
+                    return rpt_value_boolean::create(li != ri);
+                }
+            }
 
-    case PAIR(rpt_value_type_integer, rpt_value_type_real):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_integer_query(lv2) != rpt_value_real_query(rv2)
-	    );
-	break;
-
-    case PAIR(rpt_value_type_integer, rpt_value_type_integer):
-	vp =
-	    rpt_value_boolean
-	    (
-	       	rpt_value_integer_query(lv2) != rpt_value_integer_query(rv2)
-	    );
-	break;
-
-    case PAIR(rpt_value_type_string, rpt_value_type_string):
-	string_string:
-	vp =
-	    rpt_value_boolean
-	    (
-	       	!str_equal
-	       	(
-		    rpt_value_string_query(lv2),
-		    rpt_value_string_query(rv2)
-	       	)
-	    );
-	break;
-
-    default:
-	//
-	// try to compare as strings
-	//
-	rpt_value_free(lv2);
-	rpt_value_free(rv2);
-	lv2 = rpt_value_stringize(lv1);
-	rv2 = rpt_value_stringize(rv1);
-	if
-	(
-	    lv2->method->type == rpt_value_type_string
-	&&
-	    rv2->method->type == rpt_value_type_string
-	)
-	    goto string_string;
-
-	//
-	// give up on this one
-	//
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name1", lv1->method->name);
-	sub_var_set_charstar(scp, "Name2", rv1->method->name);
-	s = subst_intl(scp, i18n("illegal comparison ($name1 != $name2)"));
-	sub_context_delete(scp);
-	vp = rpt_value_error(this_thing->pos, s);
-	str_free(s);
-	break;
+            {
+                rpt_value_integer *rv2rp =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2rp)
+                {
+                    double rr = rv2rp->query();
+                    return rpt_value_boolean::create(li != rr);
+                }
+            }
+        }
     }
-    rpt_value_free(lv1);
-    rpt_value_free(lv2);
-    rpt_value_free(rv1);
-    rpt_value_free(rv2);
-    trace(("return %08lX;\n", (long)vp));
-    trace(("}\n"));
-    return vp;
+
+    {
+        rpt_value_real *lv2rp = dynamic_cast<rpt_value_real *>(lv2.get());
+        if (lv2rp)
+        {
+            double lr = lv2rp->query();
+
+            {
+                rpt_value_integer *rv2ip =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2ip)
+                {
+                    long ri = rv2ip->query();
+                    return rpt_value_boolean::create(lr != ri);
+                }
+            }
+
+            {
+                rpt_value_integer *rv2rp =
+                    dynamic_cast<rpt_value_integer *>(rv2.get());
+                if (rv2rp)
+                {
+                    double rr = rv2rp->query();
+                    return rpt_value_boolean::create(lr != rr);
+                }
+            }
+        }
+    }
+
+    //
+    // No numerical comparisons worked, try for a string comparison.
+    //
+    rpt_value::pointer lv5 = rpt_value::stringize(lv1);
+    rpt_value_string *lv5sp = dynamic_cast<rpt_value_string *>(lv5.get());
+    rpt_value::pointer rv5 = rpt_value::stringize(rv1);
+    rpt_value_string *rv5sp = dynamic_cast<rpt_value_string *>(rv5.get());
+    if (lv5sp && rv5sp)
+    {
+        return rpt_value_boolean::create(lv5sp->query() != rv5sp->query());
+    }
+
+    //
+    // nothing worked.  complain.
+    //
+    sub_context_ty sc;
+    sc.var_set_charstar("Name1", lv1->name());
+    sc.var_set_charstar("Name2", rv1->name());
+    nstring s(sc.subst_intl(i18n("illegal comparison ($name1 != $name2)")));
+    return rpt_value_error::create(get_pos(), s);
 }
 
 
-static rpt_expr_method_ty ne_method =
+rpt_expr_match::~rpt_expr_match()
 {
-    sizeof(rpt_expr_ty),
-    "not equal to",
-    0, // construct
-    0, // destruct
-    ne_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_ne(rpt_expr_ty *a, rpt_expr_ty *b)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&ne_method);
-    rpt_expr_append(this_thing, a);
-    rpt_expr_append(this_thing, b);
-    return this_thing;
 }
 
 
-static rpt_value_ty *
-match_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_match::rpt_expr_match(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
 {
-    sub_context_ty  *scp;
-    rpt_value_ty    *lv1;
-    rpt_value_ty    *lv2;
-    rpt_value_ty    *rv1;
-    rpt_value_ty    *rv2;
-    rpt_value_ty    *vp;
-    string_ty       *s;
+    append(lhs);
+    append(rhs);
+}
 
+
+rpt_expr::pointer
+rpt_expr_match::create(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
+{
+    return pointer(new rpt_expr_match(lhs, rhs));
+}
+
+
+rpt_value::pointer
+rpt_expr_match::evaluate()
+    const
+{
     //
     // evaluate the left hand side
     //
-    trace(("match::evaluate()\n{\n"));
-    assert(this_thing->nchild == 2);
-    lv1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (lv1->method->type == rpt_value_type_error)
-    {
-	trace(("}\n"));
-	return lv1;
-    }
+    trace(("match::evaluate()\n"));
+    assert(get_nchildren() == 2);
+    rpt_value::pointer lv1 = nth_child(0)->evaluate(true, true);
+    if (lv1->is_an_error())
+        return lv1;
 
     //
     // coerce the left hand side to a string
     // (will not give error if can't, will copy instead)
     //
-    lv2 = rpt_value_stringize(lv1);
+    rpt_value::pointer lv2 = rpt_value::stringize(lv1);
 
     //
     // evaluate the right hand side
     //
-    rv1 = rpt_expr_evaluate(this_thing->child[1], 1);
-    if (rv1->method->type == rpt_value_type_error)
-    {
-	rpt_value_free(lv1);
-	rpt_value_free(lv2);
-	trace(("}\n"));
-	return rv1;
-    }
+    rpt_value::pointer rv1 = nth_child(1)->evaluate(true, true);
+    if (rv1->is_an_error())
+        return rv1;
 
     //
     // coerce the right hand side to a string
     // (will not give error if can't, will copy instead)
     //
-    rv2 = rpt_value_stringize(rv1);
+    rpt_value::pointer rv2 = rpt_value::stringize(rv1);
 
     //
     // what to do depends on
     // the types of the operands
     //
-    switch (PAIR(lv2->method->type, rv2->method->type))
+    rpt_value_string *lsp = dynamic_cast<rpt_value_string *>(lv2.get());
+    rpt_value_string *rsp = dynamic_cast<rpt_value_string *>(rv2.get());
+    if (lsp && rsp)
     {
-    case PAIR(rpt_value_type_string, rpt_value_type_string):
-	vp =
-	    rpt_value_real
-	    (
-	       	fstrcmp
-	       	(
-		    rpt_value_string_query(lv2)->str_text,
-		    rpt_value_string_query(rv2)->str_text
-	       	)
-	    );
-	break;
-
-    default:
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name1", lv1->method->name);
-	sub_var_set_charstar(scp, "Name2", rv1->method->name);
-	s = subst_intl(scp, i18n("illegal comparison ($name1 ~~ $name2)"));
-	sub_context_delete(scp);
-	vp = rpt_value_error(this_thing->pos, s);
-	str_free(s);
-	break;
+        return
+            rpt_value_real::create
+            (
+                fstrcmp(lsp->query().c_str(), rsp->query().c_str())
+            );
     }
-    rpt_value_free(lv1);
-    rpt_value_free(lv2);
-    rpt_value_free(rv1);
-    rpt_value_free(rv2);
-    trace(("return %08lX;\n", (long)vp));
-    trace(("}\n"));
-    return vp;
+
+    sub_context_ty sc;
+    sc.var_set_charstar("Name1", lv1->name());
+    sc.var_set_charstar("Name2", rv1->name());
+    nstring s(sc.subst_intl(i18n("illegal comparison ($name1 ~~ $name2)")));
+    return rpt_value_error::create(get_pos(), s);
 }
 
 
-static rpt_expr_method_ty match_method =
+rpt_expr_nmatch::~rpt_expr_nmatch()
 {
-    sizeof(rpt_expr_ty),
-    "match",
-    0, // construct
-    0, // destruct
-    match_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_match(rpt_expr_ty *a, rpt_expr_ty *b)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&match_method);
-    rpt_expr_append(this_thing, a);
-    rpt_expr_append(this_thing, b);
-    return this_thing;
 }
 
 
-static rpt_value_ty *
-nmatch_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_nmatch::rpt_expr_nmatch(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
 {
-    sub_context_ty  *scp;
-    rpt_value_ty    *lv1;
-    rpt_value_ty    *lv2;
-    rpt_value_ty    *rv1;
-    rpt_value_ty    *rv2;
-    rpt_value_ty    *vp;
-    string_ty       *s;
+    append(lhs);
+    append(rhs);
+}
 
+
+rpt_expr::pointer
+rpt_expr_nmatch::create(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
+{
+    return pointer(new rpt_expr_nmatch(lhs, rhs));
+}
+
+
+rpt_value::pointer
+rpt_expr_nmatch::evaluate()
+    const
+{
     //
     // evaluate the left hand side
     //
-    trace(("nmatch::evaluate()\n{\n"));
-    assert(this_thing->nchild == 2);
-    lv1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (lv1->method->type == rpt_value_type_error)
-    {
-	trace(("}\n"));
-	return lv1;
-    }
+    trace(("nmatch::evaluate()\n"));
+    assert(get_nchildren() == 2);
+    rpt_value::pointer lv1 = nth_child(0)->evaluate(true, true);
+    if (lv1->is_an_error())
+        return lv1;
 
     //
     // coerce the left hand side to a string
     // (will not give error if can't, will copy instead)
     //
-    lv2 = rpt_value_arithmetic(lv1);
+    rpt_value::pointer lv2 = rpt_value::stringize(lv1);
 
     //
     // evaluate the right hand side
     //
-    rv1 = rpt_expr_evaluate(this_thing->child[1], 1);
-    if (rv1->method->type == rpt_value_type_error)
-    {
-	rpt_value_free(lv1);
-	rpt_value_free(lv2);
-	trace(("}\n"));
-	return rv1;
-    }
+    rpt_value::pointer rv1 = nth_child(1)->evaluate(true, true);
+    if (rv1->is_an_error())
+        return rv1;
 
     //
     // coerce the right hand side to a string
     // (will not give error if can't, will copy instead)
     //
-    rv2 = rpt_value_arithmetic(rv1);
+    rpt_value::pointer rv2 = rpt_value::stringize(rv1);
 
     //
     // what to do depends on
     // the types of the operands
     //
-    switch (PAIR(lv2->method->type, rv2->method->type))
+    rpt_value_string *lsp = dynamic_cast<rpt_value_string *>(lv2.get());
+    rpt_value_string *rsp = dynamic_cast<rpt_value_string *>(rv2.get());
+    if (lsp && rsp)
     {
-    case PAIR(rpt_value_type_string, rpt_value_type_string):
-	vp =
-	    rpt_value_real
-	    (
-	       	1
-	    -
-	       	fstrcmp
-	       	(
-		    rpt_value_string_query(lv2)->str_text,
-		    rpt_value_string_query(rv2)->str_text
-	       	)
-	    );
-	break;
-
-    default:
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name1", lv1->method->name);
-	sub_var_set_charstar(scp, "Name2", rv1->method->name);
-	s = subst_intl(scp, i18n("illegal comparison ($name1 !~ $name2)"));
-	sub_context_delete(scp);
-	vp = rpt_value_error(this_thing->pos, s);
-	str_free(s);
-	break;
+        return
+            rpt_value_real::create
+            (
+                1 - fstrcmp(lsp->query().c_str(), rsp->query().c_str())
+            );
     }
-    rpt_value_free(lv1);
-    rpt_value_free(lv2);
-    rpt_value_free(rv1);
-    rpt_value_free(rv2);
-    trace(("return %08lX;\n", (long)vp));
-    trace(("}\n"));
-    return vp;
-}
 
-
-static rpt_expr_method_ty nmatch_method =
-{
-    sizeof(rpt_expr_ty),
-    "does not match",
-    0, // construct
-    0, // destruct
-    nmatch_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_nmatch(rpt_expr_ty *a, rpt_expr_ty *b)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&nmatch_method);
-    rpt_expr_append(this_thing, a);
-    rpt_expr_append(this_thing, b);
-    return this_thing;
+    sub_context_ty sc;
+    sc.var_set_charstar("Name1", lv1->name());
+    sc.var_set_charstar("Name2", rv1->name());
+    nstring s(sc.subst_intl(i18n("illegal comparison ($name1 !~ $name2)")));
+    return rpt_value_error::create(get_pos(), s);
 }

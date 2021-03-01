@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999-2005 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 1999-2006 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -52,8 +51,7 @@ wide_output_delete(wide_output_ty *fp)
         crp = &fp->callback[ncb];
         crp->func(fp, crp->arg);
     }
-    if (fp->callback)
-        mem_free(fp->callback);
+    delete [] fp->callback;
     fp->ncallbacks = 0;
     fp->ncallbacks_max = 0;
     fp->callback = 0;
@@ -285,13 +283,13 @@ wide_output_delete_callback(wide_output_ty *fp, wide_output_callback_ty func,
 
     if (fp->ncallbacks >= fp->ncallbacks_max)
     {
-        size_t          nbytes;
-
         fp->ncallbacks_max = fp->ncallbacks_max * 2 + 4;
-        nbytes = fp->ncallbacks_max * sizeof(fp->callback[0]);
-        fp->callback =
-            (wide_output_callback_record *)
-	    mem_change_size(fp->callback, nbytes);
+	wide_output_callback_record *new_callback =
+	    new wide_output_callback_record [fp->ncallbacks_max];
+	for (size_t j = 0; j < fp->ncallbacks; ++j)
+	    new_callback[j] = fp->callback[j];
+	delete [] fp->callback;
+	fp->callback = new_callback;
     }
     crp = &fp->callback[fp->ncallbacks++];
     crp->func = func;

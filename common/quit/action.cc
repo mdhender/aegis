@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -33,13 +32,13 @@ quit_action::quit_action()
 }
 
 
-quit_action::quit_action(const quit_action &arg)
+quit_action::quit_action(const quit_action &)
 {
 }
 
 
 quit_action &
-quit_action::operator=(const quit_action &arg)
+quit_action::operator=(const quit_action &)
 {
     return *this;
 }

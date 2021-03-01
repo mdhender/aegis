@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2006, 2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,18 +13,17 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the checkin class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 
-#include <common/error.h> // hmmm...
+#include <common/error.h> // for assert
 #include <common/progname.h>
 #include <common/trace.h>
+#include <libaegis/attribute.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
 #include <libaegis/change/identifier.h>
@@ -33,6 +31,7 @@
 #include <libaegis/os.h>
 #include <libaegis/project.h>
 #include <libaegis/project/file.h>
+#include <libaegis/sub.h>
 #include <libaegis/undo.h>
 
 #include <ae-repo-ci/arglex3.h>
@@ -48,6 +47,20 @@ checkin_usage()
     fprintf(stderr, "       %s --list [ <option>... ]\n", progname);
     fprintf(stderr, "       %s --help\n", progname);
     exit(1);
+}
+
+
+static string_ty *
+project_specific_find(change_identifier &cid, const char *name)
+{
+    pconf_ty *pconf_data = change_pconf_get(cid.get_cp(), 0);
+    assert(pconf_data);
+    attributes_ty *psp =
+        attributes_list_find(pconf_data->project_specific, name);
+    if (!psp)
+        return 0;
+    assert(psp->value);
+    return psp->value;
 }
 
 
@@ -102,18 +115,19 @@ checkin()
 	arglex();
     }
     if (!rp)
-	error_raw("now repository type specified");
+	error_raw("no repository type specified");
 
     //
     // reject illegal combinations of options
     //
     cid.command_line_check(checkin_usage);
 
-    if (!change_is_completed(cid.get_cp()))
+    if (!cid.get_cp()->is_completed())
     {
 	fatal_raw("change wrong state");
     }
     trace(("change number = %ld\n", cid.get_cp()->number));
+    rp->change_specific_attributes(cid.get_cp());
 
     //
     // Default the module name to the name of the project
@@ -140,65 +154,25 @@ checkin()
 	fstate_src_ty *src = change_file_nth(cid.get_cp(), j, view_path_first);
 	if (!src)
 	    break;
-	switch (src->action)
-	{
-	case file_action_create:
-	    if (src->move)
-	    {
-		nstring from(project_file_path(cid.get_pp(), src));
-		os_become_orig();
-		rp->rename_file
-	       	(
-		    nstring(src->move),
-		    nstring(src->file_name),
-		    from
-		);
-		os_become_undo();
-	    }
-	    else
-	    {
-		nstring from(project_file_path(cid.get_pp(), src));
-		os_become_orig();
-		rp->add_file(nstring(src->file_name), from);
-		os_become_undo();
-	    }
-	    break;
-
-	case file_action_transparent:
-	case file_action_modify:
-	    {
-		nstring from(project_file_path(cid.get_pp(), src));
-		os_become_orig();
-		rp->modify_file(nstring(src->file_name), from);
-		os_become_undo();
-	    }
-	    break;
-
-	case file_action_remove:
-	    if (!src->move)
-	    {
-		os_become_orig();
-		rp->remove_file(nstring(src->file_name));
-		os_become_undo();
-	    }
-	    break;
-
-	case file_action_insulate:
-#ifndef DEBUG
-	default:
-#endif
-	    assert(0);
-	    break;
-	}
+	rp->file_wrapper(cid, src);
     }
+
+    //
+    // build a commit message
+    //
+    string_ty *msg1 = project_specific_find(cid, "ae-repo-ci:commit-message");
+    if (!msg1)
+        msg1 = str_from_c("$version - ${change brief_description}");
+    sub_context_ty sc;
+    string_ty *msg2 = sc.substitute(cid.get_cp(), msg1);
+    str_free(msg1);
+    msg1 = 0;
+    nstring message(msg2);
+    msg2 = 0;
 
     //
     // commit all the duplicate changes to the duplicate repository
     //
-    // FIXME: add some appropriate comment, generated from change brief
-    // description, perhapse?
-    //
-    nstring message(change_version_get(cid.get_cp()));
     os_become_orig();
     rp->commit(message);
     delete rp;

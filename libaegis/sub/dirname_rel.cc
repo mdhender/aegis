@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -20,13 +19,12 @@
 // MANIFEST: functions to manipulate dirnames
 //
 
+#include <common/nstring/list.h>
+#include <common/trace.h>
+#include <common/wstring/list.h>
 #include <libaegis/os.h>
-#include <common/str.h>
-#include <common/str_list.h>
 #include <libaegis/sub.h>
 #include <libaegis/sub/dirname_rel.h>
-#include <common/trace.h>
-#include <common/wstr/list.h>
 
 
 //
@@ -49,40 +47,30 @@
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_dirname_relative(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_dirname_relative(sub_context_ty *scp, const wstring_list &arg)
 {
-    wstring_ty	    *result;
-
     trace(("sub_dirname()\n{\n"));
-    if (arg->size() < 2)
+    wstring result;
+    if (arg.size() < 2)
     {
-       	sub_context_error_set(scp, i18n("requires one argument"));
-       	result = 0;
+       	scp->error_set(i18n("requires one argument"));
     }
     else
     {
-	size_t		j;
-	string_ty	*s;
-
-	string_list_ty results;
+	nstring_list results;
 	os_become_orig();
-	for (j = 1; j < arg->size(); ++j)
+	for (size_t j = 1; j < arg.size(); ++j)
 	{
-	    string_ty       *s2;
-
-	    s = wstr_to_str(arg->get(j));
-	    s2 = os_dirname_relative(s);
-	    str_free(s);
+	    nstring s = arg[j].to_nstring();
+	    nstring s2 = os_dirname_relative(s);
 	    results.push_back(s2);
-	    str_free(s2);
 	}
 	os_become_undo();
-	s = results.unsplit();
-	result = str_to_wstr(s);
-	str_free(s);
+	nstring s = results.unsplit();
+	result = wstring(s);
     }
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

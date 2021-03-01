@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -236,7 +235,7 @@ xml_text_reader::read()
 
 
 void
-xml_text_reader::process_node_end(bool was_empty)
+xml_text_reader::process_node_end(bool)
 {
     // Do nothing.
 }

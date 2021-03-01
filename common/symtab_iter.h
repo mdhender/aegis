@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -37,6 +36,7 @@ public:
 
     void reset(void);
     bool next(string_ty **key, void **data);
+    bool next(nstring &key, void *&data);
 
 private:
     //

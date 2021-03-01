@@ -1,7 +1,6 @@
 //
 //	cook - file construction tool
-//	Copyright (C) 1994, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -89,7 +88,7 @@
 // comp.sources.unix edition by Rich Salz <rsalz@osf.org>.
 //
 // Original Xerox copyright:
-//	Copyright (C) Xerox Corporation 1989.  All rights reserved.
+//     Copyright (C) Xerox Corporation 1989.  All rights reserved.
 //
 //	License to copy and use this software is granted provided that it
 //	is identified as the 'Xerox Secure Hash Function' in all material
@@ -1601,7 +1600,7 @@ snefru_constructor(fingerprint_ty *p)
 
 
 static void
-snefru_destructor(fingerprint_ty *p)
+snefru_destructor(fingerprint_ty *)
 {
 }
 

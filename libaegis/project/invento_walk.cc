@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the project_invento_walk class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change/branch.h>
@@ -33,15 +30,15 @@
 static bool
 project_is_completed_branch(project_ty *pp)
 {
-    change_ty *cp = pp->change_get();
-    return change_is_completed(cp);
+    change::pointer cp = pp->change_get();
+    return cp->is_completed();
 }
 
 
 static time_t
 project_completion_timestamp(project_ty *pp)
 {
-    change_ty *cp = pp->change_get();
+    change::pointer cp = pp->change_get();
     return change_completion_timestamp(cp);
 }
 
@@ -63,7 +60,7 @@ project_change_inventory_get(project_ty *pp, change_functor &result,
 	    if (!project_change_nth(pp, j, &cn))
 		break;
 
-	    change_ty *cp = change_alloc(pp, cn);
+	    change::pointer cp = change_alloc(pp, cn);
 	    change_bind_existing(cp);
 	    time_t when = change_completion_timestamp(cp);
 	    if (when <= time_limit)
@@ -124,9 +121,9 @@ project_change_inventory_get(project_ty *pp, change_functor &result,
             // Once a change is past the time limit, all later ones will
             // be, too.
 	    //
-	    change_ty *cp = change_alloc(pp, cn);
+	    change::pointer cp = change_alloc(pp, cn);
 	    change_bind_existing(cp);
-	    assert(change_is_completed(cp));
+	    assert(cp->is_completed());
 	    time_t when = change_completion_timestamp(cp);
 	    if (when > time_limit)
 	    {

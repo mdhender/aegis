@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001, 2002, 2004-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -30,7 +29,7 @@ struct format_vtable_ty
     size_t          size;
     void            (*destructor)(format_ty *);
     int             (*is_a_candidate)(format_ty *, string_ty *);
-    string_ty       *(*sanitize)(format_ty *, string_ty *);
+    string_ty       *(*sanitize)(format_ty *, string_ty *, int);
     struct format_version_ty *(*read_versions)(format_ty *, string_ty *,
 	                string_ty *);
     string_ty       *(*history_put)(format_ty *);

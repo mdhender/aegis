@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2000-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -33,48 +32,42 @@
 void
 change_attributes_edit(cattr_ty **dp, int et)
 {
-	sub_context_ty	*scp;
-	cattr_ty	*d;
-	string_ty	*filename;
-	string_ty	*msg;
+    //
+    // write attributes to temporary file
+    //
+    cattr_ty *d = *dp;
+    assert(d);
+    string_ty *filename = os_edit_filename(1);
+    os_become_orig();
+    language_human();
+    cattr_write_file(filename, d, 0);
+    language_C();
+    cattr_type.free(d);
 
-	//
-	// write attributes to temporary file
-	//
-	d = *dp;
-	assert(d);
-	filename = os_edit_filename(1);
-	os_become_orig();
-	language_human();
-	cattr_write_file(filename, d, 0);
-	language_C();
-	cattr_type.free(d);
+    //
+    // an error message to issue if anything goes wrong
+    //
+    sub_context_ty sc;
+    sc.var_set_string("File_Name", filename);
+    string_ty *msg = sc.subst_intl(i18n("attributes in $filename"));
+    undo_message(msg);
+    str_free(msg);
+    os_become_undo();
 
-	//
-	// an error message to issue if anything goes wrong
-	//
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", filename);
-	msg = subst_intl(scp, i18n("attributes in $filename"));
-	sub_context_delete(scp);
-	undo_message(msg);
-	str_free(msg);
-	os_become_undo();
+    //
+    // edit the file
+    //
+    os_edit(filename, (edit_ty)et);
 
-	//
-	// edit the file
-	//
-	os_edit(filename, (edit_ty)et);
-
-	//
-	// read it in again
-	//
-	os_become_orig();
-	d = cattr_read_file(filename);
-	commit_unlink_errok(filename);
-	os_become_undo();
-	change_attributes_fixup(d);
-	change_attributes_verify(filename, d);
-	str_free(filename);
-	*dp = d;
+    //
+    // read it in again
+    //
+    os_become_orig();
+    d = cattr_read_file(filename);
+    commit_unlink_errok(filename);
+    os_become_undo();
+    change_attributes_fixup(d);
+    change_attributes_verify(filename, d);
+    str_free(filename);
+    *dp = d;
 }

@@ -1,7 +1,7 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1996, 1998-2006 Peter Miller;
- *	All rights reserved.
+ *	Copyright (C) 1991-1996, 1998-2006 Peter Miller
+ *	Copyright (C) 2006 Walter Franzini;
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -323,6 +323,14 @@ build_time_adjust_notify_command = string;
  * Cook's ability to nominate hosts on which to execute each build rule.
  */
 build_covers_all_architectures = boolean;
+
+/*
+ * This field is set to true if the test command, when executed on any
+ * architecture, results in all architectures being tested.  This may be
+ * accomplished, for example, by using Cook's ability to nominate hosts
+ * on which to execute each test rule.
+ */
+test_covers_all_architectures = boolean;
 
 /*
  * Executed whenever the files in the change, change.
@@ -1502,3 +1510,11 @@ unchanged_file_integrate_pass_policy = (ignore, warning, remove);
  * This field defaults to true if not set.
  */
 cache_project_file_list_for_each_delta = boolean;
+
+/*
+ * It is possible to have Aegis exclude from the clean process any file
+ * that match one of the pattern listed in the clean_exceptions list.
+ *
+ * This field default to an empty list if not set.
+ */
+clean_exceptions = [ string ];

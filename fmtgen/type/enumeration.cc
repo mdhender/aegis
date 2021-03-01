@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1997-1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1994, 1997-1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: enumerated types functions generation
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <fmtgen/indent.h>
@@ -26,19 +23,19 @@
 #include <fmtgen/type/enumeration.h>
 
 
-type_enumeration_ty::~type_enumeration_ty()
+type_enumeration::~type_enumeration()
 {
 }
 
 
-type_enumeration_ty::type_enumeration_ty(const nstring &a_name) :
-    type_ty(a_name)
+type_enumeration::type_enumeration(const nstring &a_name) :
+    type(a_name)
 {
 }
 
 
 void
-type_enumeration_ty::gen_include()
+type_enumeration::gen_include()
     const
 {
     indent_putchar('\n');
@@ -65,7 +62,7 @@ type_enumeration_ty::gen_include()
     indent_printf("#endif // %s_DEF\n", def_name().c_str());
 
     indent_putchar('\n');
-    indent_printf("extern type_ty %s_type;\n", def_name().c_str());
+    indent_printf("extern meta_type %s_type;\n", def_name().c_str());
 
     indent_putchar('\n');
     indent_printf
@@ -90,7 +87,7 @@ type_enumeration_ty::gen_include()
 
 
 void
-type_enumeration_ty::gen_include_declarator(const nstring &variable_name,
+type_enumeration::gen_include_declarator(const nstring &variable_name,
     bool is_a_list) const
 {
     indent_printf
@@ -104,7 +101,7 @@ type_enumeration_ty::gen_include_declarator(const nstring &variable_name,
 
 
 void
-type_enumeration_ty::gen_code()
+type_enumeration::gen_code()
     const
 {
     indent_putchar('\n');
@@ -255,7 +252,7 @@ type_enumeration_ty::gen_code()
     );
 
     indent_putchar('\n');
-    indent_printf("static struct rpt_value_ty *\n");
+    indent_printf("static rpt_value::pointer \n");
     indent_printf("%s_convert(void *this_thing)\n", def_name().c_str());
     indent_printf("{\n");
     indent_printf("if (!%s_f[0])\n", def_name().c_str());
@@ -287,7 +284,7 @@ type_enumeration_ty::gen_code()
     indent_printf("}\n");
 
     indent_putchar('\n');
-    indent_printf("type_ty %s_type =\n", def_name().c_str());
+    indent_printf("meta_type %s_type =\n", def_name().c_str());
     indent_printf("{\n");
     indent_printf("\"%s\",\n", def_name().c_str());
     indent_printf("0, // alloc\n");
@@ -303,7 +300,7 @@ type_enumeration_ty::gen_code()
 
 
 void
-type_enumeration_ty::gen_code_declarator(const nstring &variable_name,
+type_enumeration::gen_code_declarator(const nstring &variable_name,
     bool is_a_list, int attributes) const
 {
     int show = 1;
@@ -325,7 +322,7 @@ type_enumeration_ty::gen_code_declarator(const nstring &variable_name,
 
 
 void
-type_enumeration_ty::gen_code_call_xml(const nstring &form_name,
+type_enumeration::gen_code_call_xml(const nstring &form_name,
     const nstring &member_name, int attributes) const
 {
     int show = !!(attributes & ATTRIBUTE_SHOW_IF_DEFAULT);
@@ -341,8 +338,8 @@ type_enumeration_ty::gen_code_call_xml(const nstring &form_name,
 
 
 void
-type_enumeration_ty::gen_free_declarator(const nstring &variable_name,
-    bool is_a_list) const
+type_enumeration::gen_free_declarator(const nstring &, bool is_a_list)
+    const
 {
     if (is_a_list)
        	indent_printf(";\n");
@@ -350,15 +347,14 @@ type_enumeration_ty::gen_free_declarator(const nstring &variable_name,
 
 
 void
-type_enumeration_ty::member_add(const nstring &member_name,
-    type_ty *member_type, int attributes)
+type_enumeration::member_add(const nstring &member_name, type *, int)
 {
     elements.push_back(member_name);
 }
 
 
 nstring
-type_enumeration_ty::c_name_inner()
+type_enumeration::c_name_inner()
     const
 {
     return nstring::format("%s_ty", def_name().c_str());
@@ -366,7 +362,7 @@ type_enumeration_ty::c_name_inner()
 
 
 bool
-type_enumeration_ty::has_a_mask()
+type_enumeration::has_a_mask()
     const
 {
     return true;
@@ -374,7 +370,7 @@ type_enumeration_ty::has_a_mask()
 
 
 void
-type_enumeration_ty::gen_code_copy(const nstring &member_name)
+type_enumeration::gen_code_copy(const nstring &member_name)
     const
 {
     indent_printf
@@ -387,7 +383,7 @@ type_enumeration_ty::gen_code_copy(const nstring &member_name)
 
 
 void
-type_enumeration_ty::gen_code_trace(const nstring &vname, const nstring &value)
+type_enumeration::gen_code_trace(const nstring &vname, const nstring &value)
     const
 {
     indent_printf

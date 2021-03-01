@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1996, 2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1994, 1996, 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -24,6 +23,7 @@
 #define AEGIS_LOG_H
 
 #include <libaegis/quit/action/log.h>
+#include <libaegis/user.h>
 
 enum log_style_ty
 {
@@ -37,10 +37,9 @@ enum log_style_ty
 	log_style_snuggle_default
 };
 
-struct string_ty;
-struct user_ty;
+class string_ty; // forward
 
-void log_open(struct string_ty *, struct user_ty *, log_style_ty);
+void log_open(string_ty *, user_ty::pointer, log_style_ty);
 void log_close(void);
 extern quit_action_log log_quitter;
 

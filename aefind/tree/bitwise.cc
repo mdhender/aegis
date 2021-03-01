@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,535 +13,538 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate bitwise operators
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
+#include <common/trace.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/integer.h>
-#include <common/error.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
+
+#include <aefind/function/needs.h>
 #include <aefind/tree/bitwise.h>
 #include <aefind/tree/diadic.h>
+#include <aefind/tree/list.h>
 #include <aefind/tree/monadic.h>
 
 
-static rpt_value_ty *
-bitwise_and_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
-    string_ty *path_res, struct stat *st)
+tree_bitwise_and::~tree_bitwise_and()
 {
-    tree_diadic_ty  *this_thing;
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v1i;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *v2i;
-    rpt_value_ty    *result;
+}
 
-    this_thing = (tree_diadic_ty *)tp;
-    v1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
-    if (v1->method->type == rpt_value_type_error)
+
+tree_bitwise_and::tree_bitwise_and(const tree::pointer &a1,
+        const tree::pointer &a2) :
+    tree_diadic(a1, a2)
+{
+}
+
+
+tree::pointer
+tree_bitwise_and::create(const tree::pointer &a1, const tree::pointer &a2)
+{
+    return pointer(new tree_bitwise_and(a1, a2));
+}
+
+
+tree::pointer
+tree_bitwise_and::create_l(const tree_list &args)
+{
+    function_needs_two("&", args);
+    return create(args[0], args[1]);
+}
+
+
+rpt_value::pointer
+tree_bitwise_and::evaluate(string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st) const
+{
+    rpt_value::pointer v1 =
+        get_left()->evaluate(path_unres, path, path_res, st);
+    if (v1->is_an_error())
 	return v1;
-    v1i = rpt_value_integerize(v1);
-    if (v1i->method->type != rpt_value_type_integer)
+    rpt_value::pointer v1i = rpt_value::integerize(v1);
+    rpt_value_integer *v1ip = dynamic_cast<rpt_value_integer *>(v1i.get());
+    if (!v1ip)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	rpt_value_free(v1i);
-	sub_var_set_charstar(scp, "Name", v1->method->name);
-	rpt_value_free(v1);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", v1->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
 		i18n("integer value required for bit and (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(0, s);
-	str_free(s);
-	return result;
+	    )
+        );
+	return rpt_value_error::create(s);
     }
-    rpt_value_free(v1);
 
-    v2 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
-    if (v2->method->type == rpt_value_type_error)
-    {
-	rpt_value_free(v1i);
+    rpt_value::pointer v2 =
+        get_right()->evaluate(path_unres, path, path_res, st);
+    if (v2->is_an_error())
 	return v2;
-    }
-    v2i = rpt_value_integerize(v2);
-    if (v2i->method->type != rpt_value_type_integer)
+    rpt_value::pointer v2i = rpt_value::integerize(v2);
+    rpt_value_integer *v2ip = dynamic_cast<rpt_value_integer *>(v2i.get());
+    if (!v2ip)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	rpt_value_free(v1i);
-	rpt_value_free(v2i);
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", v2->method->name);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", v2->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
 		i18n("integer value required for bit and (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(0, s);
-	str_free(s);
-	rpt_value_free(v2);
-	return result;
+	    )
+        );
+	return rpt_value_error::create(s);
     }
-    rpt_value_free(v2);
 
-    result =
-	rpt_value_integer
-	(
-    	    rpt_value_integer_query(v1i) & rpt_value_integer_query(v2i)
-	);
-    rpt_value_free(v1i);
-    rpt_value_free(v2i);
-    return result;
+    return rpt_value_integer::create(v1ip->query() & v2ip->query());
 }
 
 
-static tree_method_ty bitwise_and_method =
+tree::pointer
+tree_bitwise_and::optimize()
+    const
 {
-    sizeof(tree_diadic_ty),
-    "&",
-    tree_diadic_destructor,
-    tree_diadic_print,
-    bitwise_and_evaluate,
-    tree_diadic_useful,
-    tree_diadic_constant,
-    tree_diadic_optimize,
-};
-
-
-tree_ty *
-tree_bitwise_and_new(tree_ty *left, tree_ty *right)
-{
-    return tree_diadic_new(&bitwise_and_method, left, right);
+    tree::pointer tp = create(get_left()->optimize(), get_right()->optimize());
+    if (tp->constant())
+        tp = tp->optimize_constant();
+    return tp;
 }
 
 
-static rpt_value_ty *
-bitwise_xor_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
-    string_ty *path_res, struct stat *st)
+const char *
+tree_bitwise_and::name()
+    const
 {
-    tree_diadic_ty  *this_thing;
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v1i;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *v2i;
-    rpt_value_ty    *result;
+    return "&";
+}
 
-    this_thing = (tree_diadic_ty *)tp;
-    v1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
-    if (v1->method->type == rpt_value_type_error)
+
+tree_bitwise_xor::~tree_bitwise_xor()
+{
+}
+
+
+tree_bitwise_xor::tree_bitwise_xor(const tree::pointer &a1,
+        const tree::pointer &a2) :
+    tree_diadic(a1, a2)
+{
+}
+
+
+tree::pointer
+tree_bitwise_xor::create(const tree::pointer &a1, const tree::pointer &a2)
+{
+    return pointer(new tree_bitwise_xor(a1, a2));
+}
+
+
+tree::pointer
+tree_bitwise_xor::create_l(const tree_list &args)
+{
+    function_needs_two("^", args);
+    return create(args[0], args[1]);
+}
+
+
+rpt_value::pointer
+tree_bitwise_xor::evaluate(string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st) const
+{
+    rpt_value::pointer v1 =
+        get_left()->evaluate(path_unres, path, path_res, st);
+    if (v1->is_an_error())
 	return v1;
-    v1i = rpt_value_integerize(v1);
-    if (v1i->method->type != rpt_value_type_integer)
+    rpt_value::pointer v1i = rpt_value::integerize(v1);
+    rpt_value_integer *v1ip = dynamic_cast<rpt_value_integer *>(v1i.get());
+    if (!v1ip)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	rpt_value_free(v1i);
-	sub_var_set_charstar(scp, "Name", v1->method->name);
-	rpt_value_free(v1);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", v1->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
 		i18n("integer value required for bit xor (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(0, s);
-	str_free(s);
-	return result;
+	    )
+        );
+	return rpt_value_error::create(s);
     }
-    rpt_value_free(v1);
 
-    v2 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
-    if (v2->method->type == rpt_value_type_error)
-    {
-	rpt_value_free(v1i);
+    rpt_value::pointer v2 =
+        get_right()->evaluate(path_unres, path, path_res, st);
+    if (v2->is_an_error())
 	return v2;
-    }
-    v2i = rpt_value_integerize(v2);
-    if (v2i->method->type != rpt_value_type_integer)
+    rpt_value::pointer v2i = rpt_value::integerize(v2);
+    rpt_value_integer *v2ip = dynamic_cast<rpt_value_integer *>(v2i.get());
+    if (!v2ip)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	rpt_value_free(v1i);
-	rpt_value_free(v2i);
-	sub_var_set_charstar(scp, "Name", v2->method->name);
-	rpt_value_free(v2);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", v2->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
 		i18n("integer value required for bit xor (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(0, s);
-	str_free(s);
-	return result;
+	    )
+        );
+	return rpt_value_error::create(s);
     }
-    rpt_value_free(v2);
 
-    result =
-	rpt_value_integer
-	(
-    	    rpt_value_integer_query(v1i) ^ rpt_value_integer_query(v2i)
-	);
-    rpt_value_free(v1i);
-    rpt_value_free(v2i);
-    return result;
+    return rpt_value_integer::create(v1ip->query() ^ v2ip->query());
 }
 
 
-static tree_method_ty bitwise_xor_method =
+tree::pointer
+tree_bitwise_xor::optimize()
+    const
 {
-    sizeof(tree_diadic_ty),
-    "^",
-    tree_diadic_destructor,
-    tree_diadic_print,
-    bitwise_xor_evaluate,
-    tree_diadic_useful,
-    tree_diadic_constant,
-    tree_diadic_optimize,
-};
-
-
-tree_ty *
-tree_bitwise_xor_new(tree_ty *left, tree_ty *right)
-{
-    return tree_diadic_new(&bitwise_xor_method, left, right);
+    tree::pointer tp = create(get_left()->optimize(), get_right()->optimize());
+    if (tp->constant())
+        tp = tp->optimize_constant();
+    return tp;
 }
 
 
-static rpt_value_ty *
-bitwise_or_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
-    string_ty *path_res, struct stat *st)
+const char *
+tree_bitwise_xor::name()
+    const
 {
-    tree_diadic_ty  *this_thing;
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v1i;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *v2i;
-    rpt_value_ty    *result;
+    return "^";
+}
 
-    this_thing = (tree_diadic_ty *)tp;
-    v1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
-    if (v1->method->type == rpt_value_type_error)
+
+tree_bitwise_or::~tree_bitwise_or()
+{
+}
+
+
+tree_bitwise_or::tree_bitwise_or(const tree::pointer &a1,
+        const tree::pointer &a2) :
+    tree_diadic(a1, a2)
+{
+}
+
+
+tree::pointer
+tree_bitwise_or::create(const tree::pointer &a1, const tree::pointer &a2)
+{
+    return pointer(new tree_bitwise_or(a1, a2));
+}
+
+
+tree::pointer
+tree_bitwise_or::create_l(const tree_list &args)
+{
+    function_needs_two("|", args);
+    return create(args[0], args[1]);
+}
+
+
+rpt_value::pointer
+tree_bitwise_or::evaluate(string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st) const
+{
+    rpt_value::pointer v1 =
+        get_left()->evaluate(path_unres, path, path_res, st);
+    if (v1->is_an_error())
 	return v1;
-    v1i = rpt_value_integerize(v1);
-    if (v1i->method->type != rpt_value_type_integer)
+    rpt_value::pointer v1i = rpt_value::integerize(v1);
+    rpt_value_integer *v1ip = dynamic_cast<rpt_value_integer *>(v1i.get());
+    if (!v1ip)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	rpt_value_free(v1i);
-	sub_var_set_charstar(scp, "Name", v1->method->name);
-	rpt_value_free(v1);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", v1->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
 		i18n("integer value required for bit or (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(0, s);
-	str_free(s);
-	return result;
+	    )
+        );
+	return rpt_value_error::create(s);
     }
-    rpt_value_free(v1);
 
-    v2 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
-    if (v2->method->type == rpt_value_type_error)
-    {
-	rpt_value_free(v1i);
+    rpt_value::pointer v2 =
+        get_right()->evaluate(path_unres, path, path_res, st);
+    if (v2->is_an_error())
 	return v2;
-    }
-    v2i = rpt_value_integerize(v2);
-    if (v2i->method->type != rpt_value_type_integer)
+    rpt_value::pointer v2i = rpt_value::integerize(v2);
+    rpt_value_integer *v2ip = dynamic_cast<rpt_value_integer *>(v2i.get());
+    if (!v2ip)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	rpt_value_free(v1i);
-	rpt_value_free(v2i);
-	sub_var_set_charstar(scp, "Name", v2->method->name);
-	rpt_value_free(v2);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", v2->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
 		i18n("integer value required for bit or (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(0, s);
-	str_free(s);
-	return result;
+	    )
+        );
+	return rpt_value_error::create(s);
     }
-    rpt_value_free(v2);
 
-    result =
-	rpt_value_integer
-	(
-    	    rpt_value_integer_query(v1i) | rpt_value_integer_query(v2i)
-	);
-    rpt_value_free(v1i);
-    rpt_value_free(v2i);
-    return result;
+    return rpt_value_integer::create(v1ip->query() | v2ip->query());
 }
 
 
-static tree_method_ty bitwise_or_method =
+tree::pointer
+tree_bitwise_or::optimize()
+    const
 {
-    sizeof(tree_diadic_ty),
-    "|",
-    tree_diadic_destructor,
-    tree_diadic_print,
-    bitwise_or_evaluate,
-    tree_diadic_useful,
-    tree_diadic_constant,
-    tree_diadic_optimize,
-};
-
-
-tree_ty *
-tree_bitwise_or_new(tree_ty *left, tree_ty *right)
-{
-    return tree_diadic_new(&bitwise_or_method, left, right);
+    tree::pointer tp = create(get_left()->optimize(), get_right()->optimize());
+    if (tp->constant())
+        tp = tp->optimize_constant();
+    return tp;
 }
 
 
-static rpt_value_ty *
-bitwise_not_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
-    string_ty *path_res, struct stat *st)
+const char *
+tree_bitwise_or::name()
+    const
 {
-    tree_monadic_ty *this_thing;
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *vp;
+    return "|";
+}
 
+
+tree_bitwise_not::~tree_bitwise_not()
+{
+}
+
+
+tree_bitwise_not::tree_bitwise_not(const tree::pointer &a_arg) :
+    tree_monadic(a_arg)
+{
+}
+
+
+tree::pointer
+tree_bitwise_not::create(const tree::pointer &a_arg)
+{
+    return pointer(new tree_bitwise_not(a_arg));
+}
+
+
+tree::pointer
+tree_bitwise_not::create_l(const tree_list &args)
+{
+    function_needs_one("~", args);
+    return create(args[0]);
+}
+
+
+rpt_value::pointer
+tree_bitwise_not::evaluate(string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st) const
+{
     //
     // evaluate the argument
     //
-    trace(("not::evaluate()\n{\n"));
-    this_thing = (tree_monadic_ty *)tp;
-    v1 = tree_evaluate(this_thing->arg, path_unres, path, path_res, st);
-    if (v1->method->type == rpt_value_type_error)
-    {
-	trace(("}\n"));
+    trace(("not::evaluate()\n"));
+    rpt_value::pointer v1 = get_arg()->evaluate(path_unres, path, path_res, st);
+    if (v1->is_an_error())
 	return v1;
-    }
 
     //
     // coerce the argument to an arithmetic type
     // (will not give error if can't, will copy instead)
     //
-    v2 = rpt_value_integerize(v1);
-    rpt_value_free(v1);
+    rpt_value::pointer v2 = rpt_value::integerize(v1);
 
     //
     // the type of the result depends on
     // the types of the argument
     //
-    if (v2->method->type == rpt_value_type_integer)
-	vp = rpt_value_integer(~rpt_value_integer_query(v2));
-    else
+    rpt_value_integer *v2ip = dynamic_cast<rpt_value_integer *>(v2.get());
+    if (!v2ip)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", v2->method->name);
-	s = subst_intl(scp, i18n("illegal bit not ($name)"));
-	sub_context_delete(scp);
-	vp = rpt_value_error(0, s);
-	str_free(s);
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", v1->name());
+	nstring s(sc.subst_intl(i18n("illegal bit not ($name)")));
+	return rpt_value_error::create(s);
     }
-    rpt_value_free(v2);
-    trace(("return %08lX;\n", (long)vp));
-    trace(("}\n"));
-    return vp;
+
+    return rpt_value_integer::create(~v2ip->query());
 }
 
 
-static tree_method_ty bitwise_not_method =
+tree::pointer
+tree_bitwise_not::optimize()
+    const
 {
-    sizeof(tree_monadic_ty),
-    "~",
-    tree_monadic_destructor,
-    tree_monadic_print,
-    bitwise_not_evaluate,
-    tree_monadic_useful,
-    tree_monadic_constant,
-    tree_monadic_optimize,
-};
-
-
-tree_ty *
-tree_bitwise_not_new(tree_ty *arg)
-{
-    return tree_monadic_new(&bitwise_not_method, arg);
+    tree::pointer tp = create(get_arg()->optimize());
+    if (tp->constant())
+        tp = tp->optimize_constant();
+    return tp;
 }
 
 
-static rpt_value_ty *
-shift_left_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
-    string_ty *path_res, struct stat *st)
+const char *
+tree_bitwise_not::name()
+    const
 {
-    tree_diadic_ty  *this_thing;
-    sub_context_ty  *scp;
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v1i;
-    unsigned long   v1n;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *v2i;
-    long	    v2n;
-    rpt_value_ty    *result;
+    return "~";
+}
 
-    this_thing = (tree_diadic_ty *)tp;
-    v1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
-    if (v1->method->type == rpt_value_type_error)
+
+tree_shift_left::~tree_shift_left()
+{
+}
+
+
+tree_shift_left::tree_shift_left(const tree::pointer &a1,
+        const tree::pointer &a2) :
+    tree_diadic(a1, a2)
+{
+}
+
+
+tree::pointer
+tree_shift_left::create(const tree::pointer &a1, const tree::pointer &a2)
+{
+    return pointer(new tree_shift_left(a1, a2));
+}
+
+
+tree::pointer
+tree_shift_left::create_l(const tree_list &args)
+{
+    function_needs_two("<<", args);
+    return create(args[0], args[1]);
+}
+
+
+rpt_value::pointer
+tree_shift_left::evaluate(string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st) const
+{
+    rpt_value::pointer v1 =
+        get_left()->evaluate(path_unres, path, path_res, st);
+    if (v1->is_an_error())
 	return v1;
-    v1i = rpt_value_integerize(v1);
-    rpt_value_free(v1);
+    rpt_value::pointer v1i = rpt_value::integerize(v1);
+    rpt_value_integer *v1ip = dynamic_cast<rpt_value_integer *>(v1i.get());
 
-    v2 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
-    if (v2->method->type == rpt_value_type_error)
+    rpt_value::pointer v2 =
+        get_right()->evaluate(path_unres, path, path_res, st);
+    if (v2->is_an_error())
 	return v2;
-    v2i = rpt_value_integerize(v2);
-    rpt_value_free(v2);
+    rpt_value::pointer v2i = rpt_value::integerize(v2);
+    rpt_value_integer *v2ip = dynamic_cast<rpt_value_integer *>(v2i.get());
 
-    if
-    (
-	v1i->method->type != rpt_value_type_integer
-    ||
-	v2i->method->type != rpt_value_type_integer
-    )
+    if (!v1ip || !v2ip)
     {
-	string_ty	*s;
-
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name1", v1i->method->name);
-	sub_var_set_charstar(scp, "Name2", v2i->method->name);
-	s = subst_intl(scp, i18n("illegal shift ($name1 << $name2)"));
-	sub_context_delete(scp);
-	result = rpt_value_error(0, s);
-	str_free(s);
-	return result;
+	sub_context_ty sc;
+	sc.var_set_charstar("Name1", v1->name());
+	sc.var_set_charstar("Name2", v2->name());
+	nstring s(sc.subst_intl(i18n("illegal shift ($name1 << $name2)")));
+	return rpt_value_error::create(s);
     }
 
-    v1n = rpt_value_integer_query(v1i);
-    v2n = rpt_value_integer_query(v2i);
-    rpt_value_free(v1i);
-    rpt_value_free(v2i);
-    return rpt_value_integer(v1n << v2n);
+    long v1n = v1ip->query();
+    long v2n = v2ip->query();
+    return rpt_value_integer::create(v1n << v2n);
 }
 
 
-static tree_method_ty shift_left_method =
+tree::pointer
+tree_shift_left::optimize()
+    const
 {
-    sizeof(tree_diadic_ty),
-    "<<",
-    tree_diadic_destructor,
-    tree_diadic_print,
-    shift_left_evaluate,
-    tree_diadic_useful,
-    tree_diadic_constant,
-    tree_diadic_optimize,
-};
-
-
-tree_ty *
-tree_shift_left_new(tree_ty *left, tree_ty *right)
-{
-    return tree_diadic_new(&shift_left_method, left, right);
+    tree::pointer tp = create(get_left()->optimize(), get_right()->optimize());
+    if (tp->constant())
+        tp = tp->optimize_constant();
+    return tp;
 }
 
 
-static rpt_value_ty *
-shift_right_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
-    string_ty *path_res, struct stat *st)
+const char *
+tree_shift_left::name()
+    const
 {
-    tree_diadic_ty  *this_thing;
-    sub_context_ty  *scp;
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v1i;
-    unsigned long   v1n;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *v2i;
-    long	    v2n;
-    rpt_value_ty    *result;
+    return "<<";
+}
 
-    this_thing = (tree_diadic_ty *)tp;
-    v1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
-    if (v1->method->type == rpt_value_type_error)
+
+tree_shift_right::~tree_shift_right()
+{
+}
+
+
+tree_shift_right::tree_shift_right(const tree::pointer &a1,
+        const tree::pointer &a2) :
+    tree_diadic(a1, a2)
+{
+}
+
+
+tree::pointer
+tree_shift_right::create(const tree::pointer &a1, const tree::pointer &a2)
+{
+    return pointer(new tree_shift_right(a1, a2));
+}
+
+
+tree::pointer
+tree_shift_right::create_l(const tree_list &args)
+{
+    function_needs_two(">>", args);
+    return create(args[0], args[1]);
+}
+
+
+rpt_value::pointer
+tree_shift_right::evaluate(string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st) const
+{
+    rpt_value::pointer v1 =
+        get_left()->evaluate(path_unres, path, path_res, st);
+    if (v1->is_an_error())
 	return v1;
-    v1i = rpt_value_integerize(v1);
-    rpt_value_free(v1);
+    rpt_value::pointer v1i = rpt_value::integerize(v1);
+    rpt_value_integer *v1ip = dynamic_cast<rpt_value_integer *>(v1i.get());
 
-    v2 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
-    if (v2->method->type == rpt_value_type_error)
+    rpt_value::pointer v2 =
+        get_right()->evaluate(path_unres, path, path_res, st);
+    if (v2->is_an_error())
 	return v2;
-    v2i = rpt_value_integerize(v2);
-    rpt_value_free(v2);
+    rpt_value::pointer v2i = rpt_value::integerize(v2);
+    rpt_value_integer *v2ip = dynamic_cast<rpt_value_integer *>(v2i.get());
 
-    if
-    (
-	v1i->method->type != rpt_value_type_integer
-    ||
-	v2i->method->type != rpt_value_type_integer
-    )
+    if (!v1ip || !v2ip)
     {
-	string_ty	*s;
-
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name1", v1i->method->name);
-	sub_var_set_charstar(scp, "Name2", v2i->method->name);
-	s = subst_intl(scp, i18n("illegal shift ($name1 >> $name2)"));
-	sub_context_delete(scp);
-	result = rpt_value_error(0, s);
-	str_free(s);
-	return result;
+	sub_context_ty sc;
+	sc.var_set_charstar("Name1", v1->name());
+	sc.var_set_charstar("Name2", v2->name());
+	nstring s(sc.subst_intl(i18n("illegal shift ($name1 >> $name2)")));
+	return rpt_value_error::create(s);
     }
 
-    v1n = rpt_value_integer_query(v1i);
-    v2n = rpt_value_integer_query(v2i);
-    rpt_value_free(v1i);
-    rpt_value_free(v2i);
-    return rpt_value_integer(v1n >> v2n);
+    long v1n = v1ip->query();
+    long v2n = v2ip->query();
+    return rpt_value_integer::create(v1n >> v2n);
 }
 
 
-static tree_method_ty shift_right_method =
+tree::pointer
+tree_shift_right::optimize()
+    const
 {
-    sizeof(tree_diadic_ty),
-    ">>",
-    tree_diadic_destructor,
-    tree_diadic_print,
-    shift_right_evaluate,
-    tree_diadic_useful,
-    tree_diadic_constant,
-    tree_diadic_optimize,
-};
+    tree::pointer tp = create(get_left()->optimize(), get_right()->optimize());
+    if (tp->constant())
+        tp = tp->optimize_constant();
+    return tp;
+}
 
 
-tree_ty *
-tree_shift_right_new(tree_ty *left, tree_ty *right)
+const char *
+tree_shift_right::name()
+    const
 {
-    return tree_diadic_new(&shift_right_method, left, right);
+    return ">>";
 }

@@ -1,7 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1992-1995, 1997-2006 Peter Miller;
-.\"	All rights reserved.
+.\"	Copyright (C) 1992-1995, 1997-2007 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 .\"	GNU General Public License for more details.
 .\"
 .\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: source for BUILDING file
+.\"	along with this program. If not, see
+.\"	<http://www.gnu.org/licenses/>.
 .\"
 .if n .ftr CB B
 .if n .ftr CI I
@@ -34,8 +31,7 @@ aegis \- project change supervisor
 .br
 .if t .ds C) \(co
 .if n .ds C) (C)
-Copyright \*(C) \*(Y) Peter Miller;
-All rights reserved.
+Copyright \*(C) \*(Y) Peter Miller
 .PP
 The
 .I aegis
@@ -83,6 +79,12 @@ This works best if the version you are upgrading is 4.11 or later.
 To disable looking for an existing installation (maybe because
 you want to change the prefix),
 use the \f[CW]./configure --with-no-aegis-configured\fP option.
+.PP
+To change the \f[CW]AEGIS_UID\fP and \f[CW]AEGIS_GID\fP values
+(these control the ownership of Aegis' system files) you need to
+set environment variables of these names \f[B]before\fP running the
+\fI./configure\fP script.  You almost never need to do this, so if you
+have no idea what this is about, don't try to change them.
 .SS Before You Start
 Before you start configuring,
 it is worth reading the \fIOTHER USEFUL SOFTWARE\fP section,
@@ -1365,7 +1367,7 @@ file included in this distribution.
 .TS
 tab(;);
 l r l.
-Peter Miller;E-Mail:;millerp@canb.auug.org.au
+Peter MillerE-Mail:;millerp@canb.auug.org.au
 \f[CW]/\e/\e*\fR;WWW:;http://www.canb.auug.org.au/~millerp/
 .TE
 .bp

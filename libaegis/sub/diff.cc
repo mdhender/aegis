@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -23,19 +22,19 @@
 #include <libaegis/sub.h>
 #include <libaegis/sub/diff.h>
 #include <common/trace.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
 
 
-wstring_ty *
-sub_diff(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_diff(sub_context_ty *scp, const wstring_list &arg)
 {
     trace(("sub_diff()\n{\n"));
-    wstring_ty *result = 0;
-    if (arg->size() != 1)
-	sub_context_error_set(scp, i18n("requires zero arguments"));
+    wstring result;
+    if (arg.size() != 1)
+	scp->error_set(i18n("requires zero arguments"));
     else
-	result = wstr_from_c(CONF_DIFF);
-    trace(("return %8.8lX;\n", (long)result));
+	result = wstring(CONF_DIFF);
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

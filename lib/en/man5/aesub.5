@@ -1,7 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993-1995, 1997-2005 Peter Miller;
-.\"	All rights reserved.
+.\"	Copyright (C) 1993-1995, 1997-2007 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 .\"	GNU General Public License for more details.
 .\"
 .\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: manual page describing command substitutions
+.\"	along with this program. If not, see
+.\"	<http://www.gnu.org/licenses/>.
 .\"
 .so z_name.so
 .TH aesub 5 \*(N) "Reference Manual"
@@ -125,6 +122,25 @@ Specific entries will be defined in the relevant manual section.
 .PP
 The following lists contains those substitutions which are always understood:
 .\" -------------------- A --------------------
+.TP 8n
+Active_Directory
+The absolute path of the change's development directory,
+if the change is between the
+.I "being developed"
+and
+.I "awaiting integration"
+states.
+The absolute path of the change's integration directory,
+if the change is in the
+.I "being integrated"
+state.
+Not available when the change is in the
+.I "awaiting development"
+or
+.I "completed"
+states.
+This rather like the default behaviour of the \fIaecd\fP(1) command.
+.br
 .TP 8n
 Add_Path_Suffix
 .br
@@ -544,6 +560,13 @@ to the file system maximum.
 .\" -------------------- O --------------------
 .\" -------------------- P --------------------
 .TP 8n
+PAth_Reduce
+This function requires at least one argument.  It is used to remove
+duplicates from a command search path, such as may be found in the PATH
+environment variable.  If more than one argument is given, all are
+included in the results,
+as if they were separated by colons.
+.TP 8n
 PERL
 This function requires zero arguments.
 It is replaced by the absolute path of a Perl interpreter.
@@ -602,6 +625,12 @@ numbers included).
 .TP 8n
 trunk_description
 This returns the description of the trunk of the project.
+.TP 8n
+version
+This returns the version of the project.
+.TP 8n
+version_long
+This returns the version of the project, including the delta number.
 .RE
 .TP 8n
 Project_Specific
@@ -609,6 +638,7 @@ This substitution takes exactly one argument.  This argument is a name
 to be found in the project configuration file's \fIproject_\%specific\fP
 field (see \fIaepconf\fP(5) for more information).
 This returns the value listed in the project configuration file.
+Unknown attributes will be replaced with the empty string.
 .\" -------------------- Q --------------------
 .TP 8n
 QUote

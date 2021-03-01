@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001, 2002, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -23,13 +22,10 @@
 #ifndef LIBAEGIS_SUB_PROJECT_SPECIFIC_H
 #define LIBAEGIS_SUB_PROJECT_SPECIFIC_H
 
-#include <common/main.h>
+class sub_context_ty; // forward
+class wstring; // forward
+class wstring_list; // forward
 
-struct wstring_ty; // existence
-struct sub_context_ty; // existence
-struct wstring_list_ty; // existence
-
-struct wstring_ty *sub_project_specific(struct sub_context_ty *,
-        struct wstring_list_ty *arg);
+wstring sub_project_specific(sub_context_ty *, const wstring_list &);
 
 #endif // LIBAEGIS_SUB_PROJECT_SPECIFIC_H

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -32,28 +31,23 @@
 void
 os_edit(const nstring &filename, edit_ty et)
 {
-    string_ty       *cmd;
-    string_ty       *cwd;
-    string_ty       *editor;
-
     //
     // find the editor to use
     //
     os_become_must_not_be_active();
+    nstring editor;
     if (et == edit_background)
     {
-	editor = user_editor_command((user_ty*)0);
+	editor = user_ty::create()->editor_command();
     }
     else
     {
-	char	*cp;
-	editor = user_visual_command((user_ty*)0);
-
-	cp = strrchr(editor->str_text, '/');
+	editor = user_ty::create()->visual_command();
+	const char *cp = strrchr(editor.c_str(), '/');
 	if (!cp)
-		cp = editor->str_text;
+            cp = editor.c_str();
 	if (0 == strcmp(cp, "ed"))
-		et = edit_background;
+            et = edit_background;
     }
 
     //
@@ -73,14 +67,12 @@ os_edit(const nstring &filename, edit_ty et)
     // Please note: we ignore the exit status on purpose.
     // This is because vi (amongst others) returns a silly exit status.
     //
+    nstring cmd = nstring::format("%s %s", editor.c_str(), filename.c_str());
     os_become_orig();
-    cmd = str_format("%s %s", editor->str_text, filename.c_str());
-    cwd = os_curdir();
+    nstring cwd(os_curdir());
     assert(cwd);
     os_execute(cmd, OS_EXEC_FLAG_INPUT | OS_EXEC_FLAG_ERROK, cwd);
     os_become_undo();
-    str_free(cmd);
-    str_free(cwd);
 }
 
 

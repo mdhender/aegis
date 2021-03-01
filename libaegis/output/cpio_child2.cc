@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2003-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -36,7 +35,8 @@ output_cpio_child2_ty::~output_cpio_child2_ty()
     //
     // Create a cpio archive member, now that the length is known.
     //
-    output_ty *tmp = new output_cpio_child_ty(deeper, name, buffer->ftell());
+    output_ty *tmp =
+	new output_cpio_child_ty(deeper, name, buffer->ftell(), mtime);
 
     //
     // Forward the stashed data to the cpio archive member.
@@ -59,10 +59,11 @@ output_cpio_child2_ty::~output_cpio_child2_ty()
 
 
 output_cpio_child2_ty::output_cpio_child2_ty(output_ty *arg1,
-	const nstring &arg2) :
+	const nstring &arg2, time_t a_mtime) :
     deeper(arg1),
     name(arg2),
-    buffer(new output_memory_ty())
+    buffer(new output_memory_ty()),
+    mtime(a_mtime)
 {
 }
 

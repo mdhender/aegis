@@ -1,25 +1,23 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994-2005 Peter Miller;
-//	All rights reserved.
+//      aegis - project change supervisor
+//      Copyright (C) 1994-2007 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate builtin functions
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/symtab.h>
 #include <libaegis/aer/func/capitalize.h>
 #include <libaegis/aer/func/change.h>
 #include <libaegis/aer/func/columns.h>
@@ -52,72 +50,75 @@
 #include <libaegis/aer/func/upcase.h>
 #include <libaegis/aer/func/wrap.h>
 #include <libaegis/aer/value/func.h>
-#include <common/symtab.h>
 
 
-static rpt_func_ty *table[] =
+rpt_func::~rpt_func()
 {
-	&rpt_func_basename,
-	&rpt_func_capitalize,
-	&rpt_func_ceil,
-	&rpt_func_change_number,
-	&rpt_func_change_number_set,
-	&rpt_func_columns,
-	&rpt_func_count,
-	&rpt_func_dirname,
-	&rpt_func_downcase,
-	&rpt_func_eject,
-	&rpt_func_floor,
-	&rpt_func_getenv,
-	&rpt_func_gettime,
-	&rpt_func_getuid,
-	&rpt_func_keys,
-	&rpt_func_length,
-	&rpt_func_mktime,
-	&rpt_func_mtime,
-	&rpt_func_need,
-	&rpt_func_now,
-	&rpt_func_page_length,
-	&rpt_func_page_width,
-	&rpt_func_print,
-	&rpt_func_project_name,
-	&rpt_func_project_name_set,
-	&rpt_func_quote_html,
-	&rpt_func_quote_tcl,
-	&rpt_func_quote_url,
-	&rpt_func_round,
-	&rpt_func_sort,
-	&rpt_func_split,
-	&rpt_func_sprintf,
-	&rpt_func_strftime,
-	&rpt_func_substitute,
-	&rpt_func_substr,
-	&rpt_func_terse,
-	&rpt_func_title,
-	&rpt_func_trunc,
-	&rpt_func_typeof,
-	&rpt_func_unquote_url,
-	&rpt_func_upcase,
-	&rpt_func_working_days,
-	&rpt_func_wrap,
-	&rpt_func_wrap_html,
+}
+
+
+rpt_func::rpt_func()
+{
+}
+
+
+typedef rpt_func::pointer (*table_t)(void);
+
+static table_t table[] =
+{
+    &rpt_func_basename::create,
+    &rpt_func_capitalize::create,
+    &rpt_func_ceil::create,
+    &rpt_func_change_number::create,
+    &rpt_func_change_number_set::create,
+    &rpt_func_columns::create,
+    &rpt_func_count::create,
+    &rpt_func_dirname::create,
+    &rpt_func_downcase::create,
+    &rpt_func_eject::create,
+    &rpt_func_floor::create,
+    &rpt_func_getenv::create,
+    &rpt_func_gettime::create,
+    &rpt_func_getuid::create,
+    &rpt_func_keys::create,
+    &rpt_func_length::create,
+    &rpt_func_mktime::create,
+    &rpt_func_mtime::create,
+    &rpt_func_need::create,
+    &rpt_func_now::create,
+    &rpt_func_page_length::create,
+    &rpt_func_page_width::create,
+    &rpt_func_print::create,
+    &rpt_func_project_name::create,
+    &rpt_func_project_name_set::create,
+    &rpt_func_quote_html::create,
+    &rpt_func_quote_tcl::create,
+    &rpt_func_quote_url::create,
+    &rpt_func_round::create,
+    &rpt_func_sort::create,
+    &rpt_func_split::create,
+    &rpt_func_sprintf::create,
+    &rpt_func_strftime::create,
+    &rpt_func_substitute::create,
+    &rpt_func_substr::create,
+    &rpt_func_terse::create,
+    &rpt_func_title::create,
+    &rpt_func_trunc::create,
+    &rpt_func_typeof::create,
+    &rpt_func_unquote_url::create,
+    &rpt_func_upcase::create,
+    &rpt_func_working_days::create,
+    &rpt_func_wrap::create,
+    &rpt_func_wrap_html::create,
 };
 
 
 void
-rpt_func_init(symtab_ty *stp)
+rpt_func::init(symtab<rpt_value::pointer> &symbol_table)
 {
-	size_t		j;
-	rpt_func_ty	*fp;
-	string_ty	*name;
-	rpt_value_ty	*data;
-
-	for (j = 0; j < SIZEOF(table); ++j)
-	{
-		fp = table[j];
-		name = str_from_c(fp->name);
-		data = rpt_value_func(fp);
-		symtab_assign(stp, name, data);
-		str_free(name);
-	}
+    for (size_t j = 0; j < SIZEOF(table); ++j)
+    {
+        rpt_func::pointer fp = table[j]();
+        symbol_table.assign(fp->name(), rpt_value_func::create(fp));
+    }
 }

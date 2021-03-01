@@ -1,48 +1,46 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 1997-2006 Peter Miller;
- *	Copyright (C) 2007 Walter Franzini;
- *	All rights reserved.
+ * aegis - project change supervisor
+ * Copyright (C) 1997-2007 Peter Miller
+ * Copyright (C) 2006 Walter Franzini
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or (at
+ * your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: instructions to cook(1), how to build archive directory
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 integration-build-targets +=
-	archive/change_log.txt
-	archive/[project_minus].README
-	archive/[project_minus].ae
-	archive/[project_minus].faq
-	archive/[project_minus].lsm
-	archive/[project_minus].spec
-	html-targets
-	lib/en/release/release.txt
-	;
-if [not [project_is_dev_version]] then
-{
-    integration-build-targets +=
-	archive/[project_version_other]/aegis-[project_version_other].tar.gz;
-}
-
+        archive/change_log.txt
+        archive/[project_minus].README
+        archive/[project_minus].ae
+        archive/[project_minus].faq
+        archive/[project_minus].lsm
+        archive/[project_minus].spec
+        html-targets
+        lib/en/release/release.txt
+        ;
 rpm-arch = noarch;
 if [find_command tardy] then
 {
+    /* Need gnu style tar to build the archive - so try different names */
+    if [find_command gnutar] then
+        tar-cmd = gnutar;
+    else if [find_command gtar] then
+        tar-cmd = gtar;
+    else
+        tar-cmd = tar;
+
     integration-build-targets +=
-	archive/[project_minus].tar.gz
-	;
+        archive/[project_minus].tar.gz
+        ;
 
     /*
      * PMiller's build machine is Debian, not RedHat any more.
@@ -50,30 +48,27 @@ if [find_command tardy] then
 #if 0
     if [find_command rpm] then
     {
-	rpm-arch = [collect rpm --showrc | [awk] "'/^build arch/{print $4}'" ];
-	if [matches %1.D%2 [version]] then
-	if [in [fromto %1.D%2 %2 [version]] 001 002] then
-	if [matches linux%1 [arch]] then
-	    integration-build-targets += RPM;
+        rpm-arch = [collect rpm --showrc | [awk] "'/^build arch/{print $4}'" ];
+        if [matches %1.D%2 [version]] then
+        if [in [fromto %1.D%2 %2 [version]] 001 002] then
+        if [matches linux%1 [arch]] then
+            integration-build-targets += RPM;
     }
 #endif
 }
 
 if [find_command png2ico] then
-{
+if [find_command convert] then
     integration-build-targets += archive/favicon.ico;
 
-    archive/favicon.ico: archive/[project_short].png
-    {
-	pngtopnm [resolve archive/[project_short].png] | pnmgamma 2.0
-	    | pnmscale -xysize 16 16 > temp1.pnm;
-	pnmquant 16 temp1.pnm | pnmtopng > temp16.png;
-	pngtopnm [resolve archive/[project_short].png] | pnmgamma 2.0
-	    | pnmscale -xysize 32 32 > temp1.pnm;
-	pnmquant 16 temp1.pnm | pnmtopng > temp32.png;
-	png2ico [target] temp16.png temp32.png;
-	rm temp1.pnm temp16.png temp32.png;
-    }
+archive/favicon.ico: archive/[project_short].png
+{
+    convert [resolve archive/[project_short].png] -scale 16 -gamma 2
+        temp16.png;
+    convert [resolve archive/[project_short].png] -scale 32 -gamma 2
+        temp32.png;
+    png2ico [target] temp16.png temp32.png;
+    rm temp16.png temp32.png;
 }
 
 html-targets: [html-targets];
@@ -84,12 +79,13 @@ html-targets =
     [fromto web/%0%.html archive/%0%.html [html-sources]]
     archive/[project_short].png
     [fromto web/%0%.uue archive/%0%
-	[match_mask web/%0%.uue [source_files]]
+        [match_mask web/%0%.uue [source_files]]
     ]
     archive/missiku/index.html
     archive/eg_oss_begin.ae
     archive/eg_oss_build.ae
     archive/eg_oss_templ.ae
+    archive/eg_oss_aemak.ae
     ;
 
 /*
@@ -98,10 +94,10 @@ html-targets =
 if [find_command convert] then
 {
     html-targets +=
-	[fromto web/missiku/%.png.uue archive/missiku/%_2.png
-	    [match_mask web/missiku/%.png.uue [source_files]]
-	]
-	;
+        [fromto web/missiku/%.png.uue archive/missiku/%_2.png
+            [match_mask web/missiku/%.png.uue [source_files]]
+        ]
+        ;
 }
 
 if [count [html-sources]] then
@@ -113,238 +109,256 @@ web/version.so: etc/version.so
 }
 
 web/%0%.html.d: web/%0%.html
-	set no-cascade
+        set no-cascade
 {
-	c_incl -nc -ns -eia -r -nrec
-		[prepost "-I" /[arch]/web [search_list]]
-		[prepost "-I" "/web" [search_list]]
-		-prefix "'cascade web/%0%.html ='"
-		-suffix "';'"
-		[resolve web/%0%.html]
-		[prepost "-rlp=" "" [search_list]] /* remove leading path */
-		-slp [arch] "'[arch]'" /* substitute leading path */
-		-o [target];
+        c_incl -nc -ns -eia -r -nrec
+                [prepost "-I" /[arch]/web [search_list]]
+                [prepost "-I" "/web" [search_list]]
+                -prefix "'cascade web/%0%.html ='"
+                -suffix "';'"
+                [resolve web/%0%.html]
+                [prepost "-rlp=" "" [search_list]] /* remove leading path */
+                -slp [arch] "'[arch]'" /* substitute leading path */
+                -o [target];
 }
 #include-cooked-nowarn [addsuffix ".d" [match_mask web/%0%.html [source_files]]]
 
 archive/%0%.html: web/%0%.html: etc/ssp.awk
-	set shallow
+        set shallow
 {
-	roffpp
-		[prepost "-I" /[arch]/web [search_list]]
-		[prepost "-I" "/web" [search_list]]
-		[resolve web/%0%.html]
-	| GROFF_NO_SGR\=-c groff -Tascii -t -P-bhu -man
-	| [awk] -f [resolve etc/ssp.awk]
-	> [target];
+        roffpp
+                [prepost "-I" /[arch]/web [search_list]]
+                [prepost "-I" "/web" [search_list]]
+                [resolve web/%0%.html]
+        | GROFF_NO_SGR\=-c groff -Tascii -t -P-bhu -man
+        | [awk] -f [resolve etc/ssp.awk]
+        > [target];
 }
 
 archive/%.txt: etc/%.man
 {
     roffpp
-	[prepost "-I" /[arch]/etc [search_list]]
-	[prepost "-I" "/etc" [search_list]]
-	[prepost "-I" "/lib/en/readme" [search_list]]
-	[resolve etc/%.man]
+        [prepost "-I" /[arch]/etc [search_list]]
+        [prepost "-I" "/etc" [search_list]]
+        [prepost "-I" "/lib/en/readme" [search_list]]
+        [resolve etc/%.man]
     | GROFF_NO_SGR\=-c groff -Tascii -t -P-bhu -man
     | [awk] -f [resolve etc/ssp.awk]
     > [target];
 }
 
 archive/[project_minus].ug.ps.gz: lib/en/user-guide/user-guide.ps.gz
-	set shallow
+        set shallow
 {
-	cp [resolve [need]] [target];
+        cp [resolve [need]] [target];
 }
 
 archive/[project_minus].rm.ps.gz: lib/en/refman/refman.ps.gz
-	set shallow
+        set shallow
 {
-	cp [resolve [need]] [target];
+        cp [resolve [need]] [target];
 }
 
 archive/[project_minus].faq: lib/en/faq/faq.txt
-	set shallow
+        set shallow
 {
-	cp [resolve [need]] [target];
+        cp [resolve [need]] [target];
 }
 
 archive/[project_minus].lsm: lib/en/lsm/lsm.txt
-	set shallow
+        set shallow
 {
-	cp [resolve [need]] [target];
+        cp [resolve [need]] [target];
 }
 
 archive/[project_minus].README: lib/en/readme/readme.txt
-	set shallow
+        set shallow
 {
-	cp [resolve [need]] [target];
+        cp [resolve [need]] [target];
 }
 
 
 source_file_order =
-	README
-	[project_short].spec /* so RPM can build without separate spec file */
-	[project_short].png
-	[sort
-		[stringset
-			[source_files]
-			install-sh
-			Makefile.in
-			BUILDING
-			LICENSE
-			MANIFEST
-			README
-			etc/version.so
-			common/config.h.in
-			common/patchlevel.h
-			configure
-			/* etc/CHANGES */
-			[fromto
-				lib/%1/faq/main.%2 lib/%1/faq/toc.so
-				[match_mask lib/%1/faq/main.%2 [source_files]]
-			]
-			[fromto
-				lib/%/refman/main.%2 lib/%/refman/index.so
-				[match_mask lib/%/refman/main.%2 [source_files]]
-			]
-			[fromto
-				lib/%/refman/main.%2 lib/%/refman/parts.so
-				[match_mask lib/%/refman/main.%2 [source_files]]
-			]
-			[fromto
-				lib/icon/%.uue lib/icon/%
-				[match_mask lib/icon/%.uue [source_files]]
-			]
-		-
-			README
-		]
-	]
-	;
+        README
+        [project_short].spec /* so RPM can build without separate spec file */
+        [project_short].png
+        [sort
+                [stringset
+                        [source_files]
+                        install-sh
+                        config.guess
+                        config.sub
+                        Makefile.in
+                        BUILDING
+                        LICENSE
+                        README
+                        etc/version.so
+                        common/config.h.in
+                        common/patchlevel.h
+                        configure
+                        /* etc/CHANGES */
+                        [fromto
+                                lib/%1/faq/main.%2 lib/%1/faq/toc.so
+                                [match_mask lib/%1/faq/main.%2 [source_files]]
+                        ]
+                        [fromto
+                                lib/%/refman/main.%2 lib/%/refman/index.so
+                                [match_mask lib/%/refman/main.%2 [source_files]]
+                        ]
+                        [fromto
+                                lib/%/refman/main.%2 lib/%/refman/parts.so
+                                [match_mask lib/%/refman/main.%2 [source_files]]
+                        ]
+                        [fromto
+                                lib/icon/%.uue lib/icon/%
+                                [match_mask lib/icon/%.uue [source_files]]
+                        ]
+                -
+                        README
+                ]
+        ]
+        ;
 
 /*
  * For the primary build, when making a release,
  * add the full changes list.
- *
- * This target is disabled until we fix the time safe problem: it make
- * ael pd fails and we cannot even end the first delta.  So we cannot
- * end the 2nd and so on.
- *
- * Uncomment the following statement to reenable the target.
-
- if [matches %1.D%2 [version]] then
- if [in [fromto %1.D%2 %2 [version]] 001 002] then
- if [matches linux%1 [arch]] then
-    source_file_order += etc/CHANGES.txt;
-
  */
+if [matches %1.D%2 [version]] then
+if [in [fromto %1.D%2 %2 [version]] 001 002] then
+if [matches linux%1 [arch]] then
+    source_file_order += etc/CHANGES.txt;
 
 etc/CHANGES.txt: [arch]/bin/aegis
 {
     [resolve [arch]/bin/aegis] -list project_details -p [project_short]
-	-pw\=80 -pl\=66 -v > [target]
-								set meter;
+        -pw\=80 -pl\=66 -v > [target]
+                                                                set meter;
 }
 
 if [find_command msgcat] then
 {
     source_file_order +=
-	/*
-	 * This next file is for the benefit of the Translation Project
-	 * robot.  (Yes, that's right, a bloody robot.)
-	 *
-	 * See http://www.iro.umontreal.ca/contrib/po/HTML/maintainers.html
-	 * for more information.
-	 *
-	 * I particularly dislike this approach, because it is incredibly
-	 * short sighted.  This approach fails to take into account that
-	 * you may want to have translations of manual pages and other
-	 * documentation, AS WELL AS translations of error messages.
-	 *
-	 * Would it make sense to ask authors to catenate all of
-	 * ther man pages together, and have a po/PACKAGE.man file?
-	 * No, of course not.  Would it make sense to ask authors to
-	 * catenate all of their other documentation together, and
-	 * have a po/PACKAGE.latex file?  No, of course not.  Well then,
-	 * why on Earth does it make sense to catenate together all of
-	 * the messages into a po/PACKAGE.pot file?  Betch.
-	 *
-	 * And then, to add insult to injury, it wastes space in the tarball.
-	 *
-	 * My project uses a directory tree
-	 * 	lib/
-	 *	    <LL>/
-	 *		LC_MESSAGES/
-	 *		    all of the various .po files go here
-	 *		man<N>/
-	 *		    all of the man<N> pages go here
-	 *		user-guide/
-	 *		    all of the files which make the
-	 *		    user guide go here.
-	 *		<other-docs>/
-	 *		    and so on...
-	 *
-	 * As you can see, this can accomodate translated .po files,
-	 * AND ALSO any other documentation, once it is translated.
-	 */
-	po/[project_short].pot
-	[prepost "po/"[project_short]"." ".po" [langs]]
-	    /* see etc/i18n.cook for definition of "langs" variable */
-	;
-}
-
-MANIFEST: [arch]/bin/aemanifest(exists)
-    [stringset [source_file_order] - [target]]
-{
-    [resolve [arch]/bin/aemanifest]
-	[addprefix "--dir=" [search_list]]
-	[source_file_order]
-	-o [target];
-    ls -l [target];
-    chmod a+r [target];
+        /*
+         * This next file is for the benefit of the Translation Project
+         * robot.  (Yes, that's right, a bloody robot.)
+         *
+         * See http://www.iro.umontreal.ca/contrib/po/HTML/maintainers.html
+         * for more information.
+         *
+         * I particularly dislike this approach, because it is incredibly
+         * short sighted.  This approach fails to take into account that
+         * you may want to have translations of manual pages and other
+         * documentation, AS WELL AS translations of error messages.
+         *
+         * Would it make sense to ask authors to catenate all of
+         * ther man pages together, and have a po/PACKAGE.man file?
+         * No, of course not.  Would it make sense to ask authors to
+         * catenate all of their other documentation together, and
+         * have a po/PACKAGE.latex file?  No, of course not.  Well then,
+         * why on Earth does it make sense to catenate together all of
+         * the messages into a po/PACKAGE.pot file?  Betch.
+         *
+         * And then, to add insult to injury, it wastes space in the tarball.
+         *
+         * My project uses a directory tree
+         *      lib/
+         *          <LL>/
+         *              LC_MESSAGES/
+         *                  all of the various .po files go here
+         *              man<N>/
+         *                  all of the man<N> pages go here
+         *              user-guide/
+         *                  all of the files which make the
+         *                  user guide go here.
+         *              <other-docs>/
+         *                  and so on...
+         *
+         * As you can see, this can accomodate translated .po files,
+         * AND ALSO any other documentation, once it is translated.
+         */
+        po/[project_short].pot
+        [prepost "po/"[project_short]"." ".po" [langs]]
+            /* see etc/i18n.cook for definition of "langs" variable */
+        ;
 }
 
 archive/[project_minus].tar.gz: [source_file_order]
-	set shallow
+        set shallow
 {
-	if [exists archive/[project_minus].tar] then
-		rm archive/[project_minus].tar
-			set clearstat;
-	tar --create --file - --dereference [resolve [source_file_order]]
-		| tardy -unu 0 -gnu 0 -una Peter -gna Miller
-			-p [project_minus] -ms 0644 -mc 07022 -now
-			[prepost "-rp=" "" [search_list]]
-		> archive/[project_minus].tar;
-	gzip -9 -v archive/[project_minus].tar;
+        if [exists archive/[project_minus].tar] then
+                rm archive/[project_minus].tar
+                        set clearstat;
+        [tar-cmd] --create --file - --dereference [resolve [source_file_order]]
+                | tardy -unu 0 -gnu 0 -una Peter -gna Miller
+                        -p [project_minus] -ms 0644 -mc 07022 -now
+                        [prepost "-rp=" "" [search_list]]
+                > archive/[project_minus].tar;
+        gzip -9 -v archive/[project_minus].tar;
+}
+
+patch_files = [fromto %0% %0%,P [source_files] etc/CHANGES.[version_short]];
+patch_files = [vs_file],P [stringset [patch_files] - [vs_file],P];
+
+archive/[project_minus].patch.gz: [patch_files]
+        set shallow
+{
+        if [exists archive/[project_short].patch] then
+                rm archive/[project_short].patch
+                        set clearstat;
+        sh [resolve etc/patches.sh] [resolve [patch_files]]
+                > archive/[project_short].patch;
+        gzip -9 -v archive/[project_short].patch;
 }
 
 [project_short].spec: etc/spec.sh [source_files]
 {
-	version\=[version_short]
-	sh [resolve etc/spec.sh] [source_files] > [target];
+        version\=[version_short]
+        sh [resolve etc/spec.sh] [source_files] > [target];
 }
 
 archive/[project_minus].spec: [project_short].spec
-	set shallow
+        set shallow
 {
-	cp [resolve [need]] [target];
+        cp [resolve [need]] [target];
+}
+
+[vs_file],P: [vs_file]
+{
+        echo "Index:" [vs_file] > [target];
+        prev =
+                [collect
+                        aegis -list version -p [project] -c [change]
+                        | [awk] -F"'\"'" "'/previous/{print $2}'"
+                ];
+        echo "'Prereq: \""[prev]"\"'" >> [target];
+        echo "'#define PATCHLEVEL \""[prev]"\"'" |
+        diff -c - [vs_file] | sed '1,2d' >> [target];
+}
+
+%0%,P: %0%
+        if [exists [resolve %0%]]
+{
+        aegis -cp %0% -delta 1 -output patch.orig -p [project] -c [change]
+                || cp /dev/null patch.orig;
+        sh [resolve etc/patch.fil.sh] patch.orig [resolve %0%] %0% > [target];
+        rm patch.orig;
 }
 
 lib/%0%: lib/%0%.uue: [arch]/bin/test_base64
 {
-	[resolve [arch]/bin/test_base64] -uu -i -nh
-	    [resolve lib/%0%.uue] [target];
+        [resolve [arch]/bin/test_base64] -uu -i -nh
+            [resolve lib/%0%.uue] [target];
 }
 
 archive/[project_short].png: lib/icon2/64x64.png
-	set shallow
+        set shallow
 {
-	cp [resolve [need]] [target];
+        cp [resolve [need]] [target];
 }
 
 [project_short].png: archive/[project_short].png
 {
-	cp [resolve [need]] [target];
+        cp [resolve [need]] [target];
 }
 
 /*
@@ -355,127 +369,191 @@ archive/[project_short].png: lib/icon2/64x64.png
 RPM: archive/[project_minus]-1.[rpm-arch].rpm;
 
 archive/[project_minus]-1.[rpm-arch].rpm archive/[project_minus]-1.src.rpm:
-		archive/[project_minus].tar.gz
-		etc/rpm-build.sh
-	set shallow
+                archive/[project_minus].tar.gz
+                etc/rpm-build.sh
+        set shallow
 {
-	/*
-	 * The book says that the icon files need to be in the SOURCES
-	 * directory.  Actually, they need to be in the same directory
-	 * as the tarball.
-	 *
-	 * The icon must be GIF or XPM.
-	 */
-	sh [resolve etc/rpm-build.sh]
-		RPM-temporary
-		[resolve archive/[project_minus].tar.gz]
-		;
-	mv RPM-temporary/RPMS/[rpm-arch]/[project_minus]-1.[rpm-arch].rpm
-		archive/[project_minus]-1.[rpm-arch].rpm
-		;
-	mv RPM-temporary/SRPMS/[project_minus]-1.src.rpm
-		archive/[project_minus]-1.src.rpm
-		;
-	rm -r RPM-temporary;
+        /*
+         * The book says that the icon files need to be in the SOURCES
+         * directory.  Actually, they need to be in the same directory
+         * as the tarball.
+         *
+         * The icon must be GIF or XPM.
+         */
+        sh [resolve etc/rpm-build.sh]
+                RPM-temporary
+                [resolve archive/[project_minus].tar.gz]
+                ;
+        mv RPM-temporary/RPMS/[rpm-arch]/[project_minus]-1.[rpm-arch].rpm
+                archive/[project_minus]-1.[rpm-arch].rpm
+                ;
+        mv RPM-temporary/SRPMS/[project_minus]-1.src.rpm
+                archive/[project_minus]-1.src.rpm
+                ;
+        rm -r RPM-temporary;
 }
 
 LICENSE: lib/en/cat1/aelic.1
 {
-	cat [resolve [need]] > [target];
+        cat [resolve [need]] > [target];
 }
 
 archive/[project_minus].ae: [source_files] [arch]/bin/aedist
 {
     [arch]/bin/aedist --send --entire-source -ndh
-	--comp-alg\=gzip
-	-p\=[project] -c\=[change]
-	-trace send
-	-o [target] -naa;
+        --comp-alg\=gzip
+        -p\=[project] -c\=[change]
+        -o [target] -naa;
 }
 
+/* ---------------------------------------------------------------------- */
 
 example-cook-aesvt-version = 1.0;
 example-cook-aesvt-baseline =
      [collect aegis -cd -bl -p example-cook-aesvt.[example-cook-aesvt-version]
-	'2>/dev/null' || true];
+        '2>/dev/null' || true];
 
 if [example-cook-aesvt-baseline] then
 {
     html-targets +=
-	archive/example-cook-aesvt.html
-	archive/example-cook-aesvt.ae
-	;
+        archive/example-cook-aesvt.html
+        archive/example-cook-aesvt.ae
+        ;
 
     archive/example-cook-aesvt.html: [example-cook-aesvt-baseline]/README.html
-	set shallow
+        set shallow
     {
-	cp [need] [target];
+        cp [need] [target];
     }
 
     archive/example-cook-aesvt.ae:
-	[example-cook-aesvt-baseline
-			]/example-cook-aesvt.[example-cook-aesvt-version].ae
-	set shallow
+        [example-cook-aesvt-baseline
+                        ]/example-cook-aesvt.[example-cook-aesvt-version].ae
+        set shallow
     {
-	cp [need] [target];
+        cp [need] [target];
     }
 }
 
+/* ---------------------------------------------------------------------- */
 
 example-cook-fhist-version = 1.0;
 example-cook-fhist-baseline =
      [collect aegis -cd -bl -p example-cook-fhist.[example-cook-fhist-version]
-	'2>/dev/null' || true];
+        '2>/dev/null' || true];
 
 if [example-cook-fhist-baseline] then
 {
     html-targets +=
-	archive/example-cook-fhist.html
-	archive/example-cook-fhist.ae
-	;
+        archive/example-cook-fhist.html
+        archive/example-cook-fhist.ae
+        ;
 
     archive/example-cook-fhist.html: [example-cook-fhist-baseline]/README.html
-	set shallow
+        set shallow
     {
-	cp [need] [target];
+        cp [need] [target];
     }
 
     archive/example-cook-fhist.ae:
-	[example-cook-fhist-baseline
-			]/example-cook-fhist.[example-cook-fhist-version].ae
-	set shallow
+        [example-cook-fhist-baseline
+                        ]/example-cook-fhist.[example-cook-fhist-version].ae
+        set shallow
     {
-	cp [need] [target];
+        cp [need] [target];
     }
 }
 
+/* ---------------------------------------------------------------------- */
 
 example-make-rcs-version = 1.0;
 example-make-rcs-baseline =
-	[collect aegis -cd -bl -p example-make-rcs.[example-make-rcs-version]
-		'2>/dev/null' || true];
+        [collect aegis -cd -bl -p example-make-rcs.[example-make-rcs-version]
+                '2>/dev/null' || true];
 
 if [example-make-rcs-baseline] then
 {
     html-targets +=
-	archive/example-make-rcs.html
-	archive/example-make-rcs.ae
-	;
+        archive/example-make-rcs.html
+        archive/example-make-rcs.ae
+        ;
 
     archive/example-make-rcs.html: [example-make-rcs-baseline]/README.html
-	set shallow
+        set shallow
     {
-	cp [need] [target];
+        cp [need] [target];
     }
 
     archive/example-make-rcs.ae:
-	[example-make-rcs-baseline
-			]/example-make-rcs.[example-make-rcs-version].ae
-	set shallow
+        [example-make-rcs-baseline
+                        ]/example-make-rcs.[example-make-rcs-version].ae
+        set shallow
     {
-	cp [need] [target];
+        cp [need] [target];
     }
 }
+
+/* ---------------------------------------------------------------------- */
+
+example-c-plus-plus-version = 1.0;
+example-c-plus-plus-baseline =
+    [collect aegis -cd -bl -p example-c-plus-plus.[example-c-plus-plus-version]
+        '2>/dev/null' || true];
+
+if [example-c-plus-plus-baseline] then
+{
+    html-targets +=
+        archive/example-c-plus-plus.html
+        archive/example-c-plus-plus.ae
+        ;
+
+    archive/example-c-plus-plus.html: [example-c-plus-plus-baseline]/README.html
+        set shallow
+    {
+        cp [need] [target];
+    }
+
+    archive/example-c-plus-plus.ae:
+        [example-c-plus-plus-baseline
+                        ]/example-c-plus-plus.[example-c-plus-plus-version].ae
+        set shallow
+    {
+        cp [need] [target];
+    }
+}
+
+/* ---------------------------------------------------------------------- */
+
+/* ---------------------------------------------------------------------- */
+
+example-c-plus-plus-version = 1.0;
+example-c-plus-plus-baseline =
+    [collect aegis -cd -bl -p example-c-plus-plus.[example-c-plus-plus-version]
+        '2>/dev/null' || true];
+
+if [example-c-plus-plus-baseline] then
+{
+    html-targets +=
+        archive/example-c-plus-plus.html
+        archive/example-c-plus-plus.ae
+        ;
+
+    archive/example-c-plus-plus.html: [example-c-plus-plus-baseline]/README.html
+        set shallow
+    {
+        cp [need] [target];
+    }
+
+    archive/example-c-plus-plus.ae:
+        [example-c-plus-plus-baseline
+                        ]/example-c-plus-plus.[example-c-plus-plus-version].ae
+        set shallow
+    {
+        cp [need] [target];
+    }
+}
+
+/* ---------------------------------------------------------------------- */
 
 archive/change_log.txt: lib/en/change_log/change_log.txt
     set shallow
@@ -488,8 +566,8 @@ check-tarball: [project_short]-sf.tgz;
 [project_short]-sf.tgz: archive/[project_minus].tar.gz
 {
     sh [resolve etc/check-tar-gz.sh]
-	[pathname [resolve archive/[project_minus].tar.gz]]
-	[pathname [target]];
+        [pathname [resolve archive/[project_minus].tar.gz]]
+        [pathname [target]];
 }
 
 archive/%0%.png: web/%0%.png.uue: [arch]/bin/test_base64
@@ -504,26 +582,26 @@ archive/missiku/%_2.png: archive/missiku/%.png
 
     convert -scale 64 [resolve archive/missiku/%.png] %.tmp.png;
     pngcrush -q
-	'-text b "Author" "Gregory Delattre <delattre.greg@free.fr>"'
-	'-text b "Copyright" "(C) 2005 Gregory Delattre"'
-	'-text b "HomePage" "http://zone72.free.fr/"'
-	-brute
-	%.tmp.png [target];
+        '-text b "Author" "Gregory Delattre <delattre.greg@free.fr>"'
+        '-text b "Copyright" "(C) 2005 Gregory Delattre"'
+        '-text b "HomePage" "http://zone72.free.fr/"'
+        -brute
+        %.tmp.png [target];
     rm %.tmp.png
-	set silent;
+        set silent;
 }
 
 archive/missiku/index.html: web/missiku/index.sh
-	[match_mask web/missiku/%.png.uue [source_files]]
+        [match_mask web/missiku/%.png.uue [source_files]]
     set shallow
 {
     sh [resolve web/missiku/index.sh]
-	[sort
-	    [fromto %0%.png.uue %.png
-		[match_mask web/missiku/%.png.uue [source_files]]
-	    ]
-	]
-	> [target];
+        [sort
+            [fromto %0%.png.uue %.png
+                [match_mask web/missiku/%.png.uue [source_files]]
+            ]
+        ]
+        > [target];
 }
 
 
@@ -535,22 +613,10 @@ archive/eg_oss_%.ae: web/eg_oss_%.sh
     lib/config.example/merge
 {
     sh [resolve web/eg_oss_%.sh]
-	[arch]
-	aegis.conf.d/diff\=[resolve lib/config.example/gnu_diff]
-	aegis.conf.d/history\=[resolve lib/config.example/aesvt]
-	aegis.conf.d/merge\=[resolve lib/config.example/merge]
-	> [target]
-	;
-}
-
-
-archive/[project_version_other]/aegis-[project_version_other].tar.gz:
-    set shallow
-{
-    rm -rf archive/[project_version_other];
-    mkdir archive/[project_version_other];
-    cp -r
-	[collect aegis -cd -bl -p aegis.[project_version_other]]/archive/.
-	archive/[project_version_other]/.
-	;
+        [arch]
+        aegis.conf.d/diff\=[resolve lib/config.example/gnu_diff]
+        aegis.conf.d/history\=[resolve lib/config.example/aesvt]
+        aegis.conf.d/merge\=[resolve lib/config.example/merge]
+        output\=[target]
+        ;
 }

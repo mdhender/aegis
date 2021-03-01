@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate gets
 //
@@ -27,7 +26,7 @@
 
 
 static void
-metric_check(metric_ty *mp, string_ty *fn, change_ty *cp)
+metric_check(metric_ty *mp, string_ty *fn, change::pointer cp)
 {
 	sub_context_ty	*scp;
 
@@ -59,7 +58,7 @@ metric_check(metric_ty *mp, string_ty *fn, change_ty *cp)
 
 
 static void
-metric_list_check(metric_list_ty *mlp, string_ty *fn, change_ty *cp)
+metric_list_check(metric_list_ty *mlp, string_ty *fn, change::pointer cp)
 {
 	size_t		j;
 
@@ -69,7 +68,7 @@ metric_list_check(metric_list_ty *mlp, string_ty *fn, change_ty *cp)
 
 
 static string_ty *
-change_file_metrics_filename(change_ty *cp, string_ty *filename)
+change_file_metrics_filename(change::pointer cp, string_ty *filename)
 {
 	string_ty	*metrics_filename_pattern;
 	sub_context_ty	*scp;
@@ -88,7 +87,7 @@ change_file_metrics_filename(change_ty *cp, string_ty *filename)
 
 
 metric_list_ty *
-change_file_metrics_get(change_ty *cp, string_ty *filename)
+change_file_metrics_get(change::pointer cp, string_ty *filename)
 {
 	string_ty	*metrics_filename;
 	metrics_ty      *mp;
@@ -109,7 +108,7 @@ change_file_metrics_get(change_ty *cp, string_ty *filename)
 	}
 	else
 		mp = 0;
-	change_become_undo();
+	change_become_undo(cp);
 
 	//
 	// Extract the metrics list from the file data,

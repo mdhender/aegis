@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,62 +13,110 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to impliment the builtin page_width function
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
+#include <common/page.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/func/page_width.h>
 #include <libaegis/aer/value/integer.h>
-#include <common/error.h>
-#include <common/page.h>
 
 
-static int
-page_width_valid(rpt_expr_ty *ep)
+rpt_func_page_width::~rpt_func_page_width()
 {
-    return (ep->nchild == 0);
 }
 
 
-static rpt_value_ty *
-page_width_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func_page_width::rpt_func_page_width()
 {
-    assert(argc == 0);
-    return rpt_value_integer(page_width_get(-1));
 }
 
 
-rpt_func_ty rpt_func_page_width =
+rpt_func::pointer
+rpt_func_page_width::create()
 {
-    "page_width",
-    0, // not constant
-    page_width_valid,
-    page_width_run,
-};
-
-
-static int
-page_length_valid(rpt_expr_ty *ep)
-{
-    return (ep->nchild == 0);
+    return pointer(new rpt_func_page_width());
 }
 
 
-static rpt_value_ty *
-page_length_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+const char *
+rpt_func_page_width::name()
+    const
 {
-    assert(argc == 0);
-    return rpt_value_integer(page_length_get(-1));
+    return "page_width";
 }
 
 
-rpt_func_ty rpt_func_page_length =
+bool
+rpt_func_page_width::optimizable()
+    const
 {
-    "page_length",
-    0, // not constant
-    page_length_valid,
-    page_length_run,
-};
+    return false;
+}
+
+
+bool
+rpt_func_page_width::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 0);
+}
+
+
+rpt_value::pointer
+rpt_func_page_width::run(const rpt_expr::pointer &,
+    size_t, rpt_value::pointer *) const
+{
+    return rpt_value_integer::create(page_width_get(-1));
+}
+
+
+rpt_func_page_length::~rpt_func_page_length()
+{
+}
+
+
+rpt_func_page_length::rpt_func_page_length()
+{
+}
+
+
+rpt_func::pointer
+rpt_func_page_length::create()
+{
+    return pointer(new rpt_func_page_length());
+}
+
+
+const char *
+rpt_func_page_length::name()
+    const
+{
+    return "page_length";
+}
+
+
+bool
+rpt_func_page_length::optimizable()
+    const
+{
+    return false;
+}
+
+
+bool
+rpt_func_page_length::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 0);
+}
+
+
+rpt_value::pointer
+rpt_func_page_length::run(const rpt_expr::pointer &, size_t,
+    rpt_value::pointer *) const
+{
+    return rpt_value_integer::create(page_length_get(-1));
+}

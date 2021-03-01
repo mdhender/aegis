@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1997, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1997, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -426,6 +425,18 @@ option_needs_files(int name, void (*usage)(void))
     sub_context_delete(scp);
 
     usage();
+}
+
+
+void
+option_needs_url(int name, void (*usage)(void))
+{
+    sub_context_ty *scp = sub_context_new();
+    sub_var_set_charstar(scp, "Name", arglex_token_name(name));
+    error_intl(scp, i18n("$Name needs url"));
+    sub_context_delete(scp);
+
+    usage ();
 }
 
 

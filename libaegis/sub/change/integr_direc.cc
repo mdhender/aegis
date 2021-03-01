@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,18 +13,15 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate integr_direcs
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
-#include <libaegis/change.h>
-#include <libaegis/sub/change/integr_direc.h>
-#include <libaegis/sub.h>
 #include <common/trace.h>
-#include <common/wstr.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
+#include <libaegis/change.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/change/integr_direc.h>
 
 
 //
@@ -49,38 +45,33 @@
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_integration_directory(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_integration_directory(sub_context_ty *scp, const wstring_list &arg)
 {
-    wstring_ty	    *result;
-    cstate_ty       *cstate_data;
-
     trace(("sub_integration_directory()\n{\n"));
-    if (arg->size() != 1)
+    wstring result;
+    if (arg.size() != 1)
     {
-	sub_context_error_set(scp, i18n("requires zero arguments"));
-	result = 0;
+	scp->error_set(i18n("requires zero arguments"));
     }
     else
     {
-	change_ty	*cp;
-
-	cp = sub_context_change_get(scp);
+	change::pointer cp = sub_context_change_get(scp);
 	if (!cp)
 	{
 	    yuck:
-	    sub_context_error_set(scp, i18n("not valid in current context"));
-	    result = 0;
+	    scp->error_set(i18n("not valid in current context"));
 	}
 	else
 	{
-	    cstate_data = change_cstate_get(cp);
+            cstate_ty *cstate_data = cp->cstate_get();
 	    if (cstate_data->state != cstate_state_being_integrated)
 		goto yuck;
-	    result = str_to_wstr(change_integration_directory_get(cp, 0));
+	    nstring s(change_integration_directory_get(cp, 0));
+	    result = wstring(s);
 	}
     }
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

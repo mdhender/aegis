@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -47,6 +46,9 @@ public:
 
     // See base class for documentation.
     void checkout(const nstring &module, const nstring &directory);
+
+    // See base class for documentation.
+    nstring get_directory() const;
 
     // See base class for documentation.
     void remove_file(const nstring &file_name);

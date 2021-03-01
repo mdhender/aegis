@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate statisticss
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -38,11 +35,11 @@
 
 
 void
-get_project_statistics(project_ty *pp, string_ty *fn, string_list_ty *modifier)
+get_project_statistics(project_ty *pp, string_ty *, string_list_ty *)
 {
     double          scale;
     cstate_branch_ty *bp;
-    change_ty       *cp;
+    change::pointer cp;
     long            cause_stats[change_cause_max];
     long            number_of_changes = 0;
     long            file_action_stats[file_action_max];
@@ -89,7 +86,7 @@ get_project_statistics(project_ty *pp, string_ty *fn, string_list_ty *modifier)
     // traverse each change
     //
     cp = pp->change_get();
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     bp = cstate_data->branch;
     assert(bp);
     if (!bp->change)
@@ -110,7 +107,7 @@ get_project_statistics(project_ty *pp, string_ty *fn, string_list_ty *modifier)
 	change_number = bp->change->list[n];
 	cp = change_alloc(pp, change_number);
 	change_bind_existing(cp);
-	cstate_data = change_cstate_get(cp);
+	cstate_data = cp->cstate_get();
 	cause_stats[cstate_data->cause]++;
 	number_of_changes++;
 

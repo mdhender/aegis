@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001, 2003-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -25,7 +24,6 @@
 #include <common/ac/string.h>
 
 #include <libaegis/glue.h>
-#include <common/mem.h>
 #include <libaegis/os.h>
 
 
@@ -59,8 +57,16 @@ read_whole_dir(const char *path, char **data_p, long *data_len_p)
 	len = strlen(np) + 1;
 	if (data_len + len > data_max)
 	{
-	    data_max = data_max * 2 + 32;
-	    data = (char *)mem_change_size(data, data_max);
+	    for (;;)
+	    {
+		data_max = data_max * 2 + 32;
+		if (data_len + len <= data_max)
+		    break;
+	    }
+	    char *new_data = new char [data_max];
+	    memcpy(new_data, data, data_len);
+	    delete [] data;
+	    data = new_data;
 	}
 	memcpy(data + data_len, np, len);
 	data_len += len;

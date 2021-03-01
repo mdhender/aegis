@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -30,6 +29,8 @@
   */
 
 #include <common/wstr.h>
+
+class nstring; // forward
 
 /**
   * The wstring class is used to represent a reference counted wide string
@@ -100,6 +101,18 @@ public:
     }
 
     /**
+      * The constructor.
+      *
+      * This will be DEPRECATED as soon as possible.
+      */
+    wstring(string_ty *arg);
+
+    /**
+      * The constructor.
+      */
+    wstring(const nstring &arg);
+
+    /**
       * The copy constructor.
       */
     wstring(const wstring &arg) :
@@ -122,6 +135,12 @@ public:
     }
 
     /**
+      * The clear method may be used to discard the contents of the
+      * string, and replace it with the empty string.
+      */
+    void clear();
+
+    /**
       * The c_str method is used to obtain a pointer to the underlying C
       * string (guaranteed to the NUL terminated).
       */
@@ -131,6 +150,12 @@ public:
     {
 	return ref->wstr_text;
     }
+
+    /**
+      * The to_nstring method is used to convert a wide string to a
+      * narrow string.
+      */
+    nstring to_nstring() const;
 
     bool
     empty()
@@ -359,6 +384,19 @@ public:
 	const
     {
 	return (n < size() ? ref->wstr_text[n] : L'\0');
+    }
+
+    /**
+      * The column_width method is used to determine how many printing
+      * columns wde this character is.  Most characters are one printing
+      * column wide, byt Kanji characters (for example0 can be two
+      * columns wide.
+      */
+    int
+    column_width()
+        const
+    {
+        return wstr_column_width(ref);
     }
 
 private:

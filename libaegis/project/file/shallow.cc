@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate shallows
 //
@@ -34,7 +33,7 @@
 void
 project_file_shallow(project_ty *pp, string_ty *file_name, long cn)
 {
-    change_ty       *pcp;
+    change::pointer pcp;
     fstate_src_ty   *src1_data;
     fstate_src_ty   *src2_data;
 
@@ -90,14 +89,9 @@ project_file_shallow(project_ty *pp, string_ty *file_name, long cn)
     // review fails or the integration fails.
     //
     trace(("shallowing \"%s\"\n", file_name->str_text));
-    src1_data = change_file_new(pcp, file_name);
+    src1_data = pcp->file_new(src2_data);
     src1_data->action = file_action_transparent;
     src1_data->about_to_be_copied_by = cn;
-
-    //
-    // Copy the usage, attributes and uuid.
-    //
-    change_file_copy_basic_attributes(src1_data, src2_data);
 
     //
     // The value here is bogus (can't use the old one, it refers to
@@ -151,7 +145,7 @@ project_file_shallow(project_ty *pp, string_ty *file_name, long cn)
 	for (j = 0; j < src2_data->test->length; ++j)
 	{
 	    string_ty       **addr_p;
-	    type_ty         *type_p;
+	    meta_type *type_p = 0;
 
 	    addr_p =
 		(string_ty **)

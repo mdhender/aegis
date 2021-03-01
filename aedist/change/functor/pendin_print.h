@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
+//	Copyright (C) 2006, 2007 Peter Miller
 //	Copyright (C) 2005 Walter Franzini;
-//	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface of the change_functor_pendin_print class
 //
@@ -29,7 +29,7 @@
 #include <common/symtab/template.h>
 #include <common/nstring.h>
 
-struct col_ty;
+struct col;
 struct output_ty;
 template <class valye_type_ty> class symtab;
 
@@ -54,7 +54,7 @@ public:
 	nstring_list *exclude_uuid_list, nstring_list *exclude_version_list);
 
     // See base class for documentation.
-    virtual void operator()(change_ty *);
+    virtual void operator()(change::pointer );
 
 private:
     project_ty *pp;
@@ -63,7 +63,7 @@ private:
     nstring_list *in_version_list;
     nstring_list *ex_uuid_list;
     nstring_list *ex_version_list;
-    col_ty *colp;
+    col *colp;
     output_ty *vers_col;
     output_ty *uuid_col;
     output_ty *desc_col;

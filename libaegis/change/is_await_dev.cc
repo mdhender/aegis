@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the change_is_await_dev class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h> // for assert
@@ -26,13 +23,13 @@
 
 
 bool
-change_is_awaiting_development(change_ty *cp)
+change::is_awaiting_development()
 {
-    if (cp->bogus)
+    if (bogus)
 	return false;
-    cstate_ty *cstate_data = change_cstate_get(cp);
-    assert(cstate_data);
-    if (!cstate_data)
+    cstate_ty *csp = cstate_get();
+    assert(csp);
+    if (!csp)
 	return false;
-    return (cstate_data->state == cstate_state_awaiting_development);
+    return (csp->state == cstate_state_awaiting_development);
 }

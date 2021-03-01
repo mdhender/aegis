@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1996, 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,12 +13,13 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate cstate values
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
+#include <common/mem.h>
+#include <common/trace.h>
 #include <libaegis/aer/value/cstate.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/fstate.h>
@@ -30,134 +30,123 @@
 #include <libaegis/aer/value/string.h>
 #include <libaegis/aer/value/struct.h>
 #include <libaegis/change.h>
-#include <common/error.h>
-#include <common/mem.h>
 #include <libaegis/project.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 
 
-struct rpt_value_cstate_ty
+rpt_value_cstate::~rpt_value_cstate()
 {
-    RPT_VALUE
-    project_ty	    *pp;
-    long	    length;
-    long	    *list;
-};
-
-
-static void
-destruct(rpt_value_ty *vp)
-{
-    rpt_value_cstate_ty *this_thing;
-
-    trace(("rpt_value_cstate::destruct(vp = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_cstate_ty *)vp;
-    project_free(this_thing->pp);
-    mem_free(this_thing->list);
-    trace(("}\n"));
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    if (pp)
+        project_free(pp);
+    delete [] list;
 }
 
 
-static rpt_value_ty *
-lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lval)
+rpt_value_cstate::rpt_value_cstate(project_ty *a_pp, size_t a_length,
+        const long *a_list) :
+    pp(project_copy(a_pp)),
+    length(a_length),
+    list(0)
 {
-    rpt_value_cstate_ty *this_thing;
-    rpt_value_ty    *rhs2;
-    rpt_value_ty    *result;
-    long	    change_number;
-    long	    j;
-    change_ty	    *cp;
-    cstate_ty       *cstate_data;
-    string_ty	    *name;
-    rpt_value_ty    *vp1;
-    rpt_value_ty    *vp2;
-    rpt_value_ty    *vp3;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    list = new long [length];
+    for (size_t j = 0; j < length; ++j)
+	list[j] = magic_zero_decode(a_list[j]);
+}
 
+
+rpt_value::pointer
+rpt_value_cstate::create(project_ty *pp, size_t length, const long *list)
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return pointer(new rpt_value_cstate(pp, length, list));
+}
+
+
+rpt_value::pointer
+rpt_value_cstate::lookup(const rpt_value::pointer &rhs, bool)
+    const
+{
     //
     // extract the change number
     //
-    trace(("rpt_value_cstate::lookup(this_thing = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_cstate_ty *)vp;
-    rhs2 = rpt_value_integerize(rhs);
-    if (rhs2->method->type != rpt_value_type_integer)
+    trace(("rpt_value_cstate::lookup(this = %08lX)\n{\n", (long)this));
+    rpt_value::pointer rhs2 = rpt_value::integerize(rhs);
+    rpt_value_integer *rhs2ip = dynamic_cast<rpt_value_integer *>(rhs2.get());
+    if (!rhs2ip)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", rhs2->method->name);
-	rpt_value_free(rhs2);
-	s = subst_intl(scp, i18n("integer index required (was given $name)"));
-	sub_context_delete(scp);
-	result = rpt_value_error((struct rpt_pos_ty *)0, s);
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", rhs2->name());
+	nstring s
+        (
+            sc.subst_intl(i18n("integer index required (was given $name)"))
+        );
+	rpt_value::pointer result = rpt_value_error::create(s);
 	trace(("}\n"));
 	return result;
     }
-    change_number = rpt_value_integer_query(rhs2);
-    rpt_value_free(rhs2);
+    long change_number = rhs2ip->query();
+    trace(("change_number = %ld;\n", change_number));
 
     //
     // see if the change exists
     //
-    for (j = 0; j < this_thing->length; ++j)
-	if (this_thing->list[j] == change_number)
+    size_t j = 0;
+    for (j = 0; j < length; ++j)
+	if (list[j] == change_number)
     	    break;
-    if (j >= this_thing->length)
+    if (j >= length)
     {
-	result = rpt_value_nul();
+        trace(("change number not found\n"));
 	trace(("}\n"));
-	return result;
+	return rpt_value_null::create();
     }
 
     //
     // find the change
     //
-    cp = change_alloc(this_thing->pp, magic_zero_encode(change_number));
+    change::pointer cp = change_alloc(pp, magic_zero_encode(change_number));
     change_bind_existing(cp);
+    trace(("cp = %08lX;\n", (long)cp));
 
     //
     // create the result value
     //
-    cstate_data = change_cstate_get(cp);
-    result = cstate_type.convert(&cstate_data);
+    cstate_ty *cstate_data = cp->cstate_get();
+    rpt_value::pointer result = cstate_type.convert(&cstate_data);
     assert(result);
-    assert(result->method->type == rpt_value_type_structure);
+    rpt_value_struct *result_struct_p =
+        dynamic_cast<rpt_value_struct *>(result.get());
+    assert(result_struct_p);
 
     //
     // The src field is now kept in the fstate file.
     // It will not be read in until referenced.
     //
     assert(!cstate_data->src);
-    name = str_from_c("src");
-    vp1 = rpt_value_fstate(cp);
-    rpt_value_struct__set(result, name, vp1);
-    str_free(name);
-    rpt_value_free(vp1);
+    nstring sname("src");
+    rpt_value::pointer vp1 = rpt_value_fstate::create(cp);
+    result_struct_p->assign(sname, vp1);
 
     //
     // add some extra stuff
     //
-    name = str_from_c("project_name");
-    vp1 = rpt_value_string(project_name_get(this_thing->pp));
-    rpt_value_struct__set(result, name, vp1);
-    str_free(name);
-    rpt_value_free(vp1);
-    name = str_from_c("change_number");
-    vp1 = rpt_value_integer(change_number);
-    rpt_value_struct__set(result, name, vp1);
-    str_free(name);
-    rpt_value_free(vp1);
+    sname = "project_name";
+    vp1 = rpt_value_string::create(nstring(project_name_get(pp)));
+    result_struct_p->assign(sname, vp1);
+
+    sname = "change_number";
+    vp1 = rpt_value_integer::create(change_number);
+    result_struct_p->assign(sname, vp1);
 
     //
     // Add a special "config" field, which is a deferred reference
     // to the project config data.
     //
-    name = str_from_c("config");
-    vp1 = rpt_value_pconf(cp);
-    rpt_value_struct__set(result, name, vp1);
-    str_free(name);
-    rpt_value_free(vp1);
+    sname = "config";
+    vp1 = rpt_value_pconf::create(cp);
+    result_struct_p->assign(sname, vp1);
 
     //
     // mangle the "change" list
@@ -165,118 +154,89 @@ lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lval)
     //
     if (cstate_data->branch && cstate_data->branch->change)
     {
-	name = str_from_c("branch");
-	vp1 = rpt_value_string(name);
+	sname = "branch";
+	vp1 = rpt_value_string::create(sname);
 	assert(vp1);
-	str_free(name);
-	vp2 = rpt_value_lookup(result, vp1, 0);
+	rpt_value::pointer vp2 = result->lookup(vp1, false);
 	assert(vp2);
-	rpt_value_free(vp1);
-	vp3 =
-	    rpt_value_cstate
+        rpt_value_struct *vp2sp = dynamic_cast<rpt_value_struct *>(vp2.get());
+        assert(vp2sp);
+
+	rpt_value::pointer vp3 =
+	    rpt_value_cstate::create
 	    (
-	       	this_thing->pp,
+	       	pp,
 	       	cstate_data->branch->change->length,
 	       	cstate_data->branch->change->list
 	    );
-	name = str_from_c("change");
-	rpt_value_struct__set(vp2, name, vp3);
-	rpt_value_free(vp2);
-	str_free(name);
-	rpt_value_free(vp3);
+	sname = "change";
+	vp2sp->assign(sname, vp3);
     }
 
     //
     // clean up and go home
     //
     change_free(cp);
-    trace(("return %08lX;\n", (long)result));
+    trace(("return %08lX;\n", (long)result.get()));
     trace(("}\n"));
     return result;
 }
 
 
-static rpt_value_ty *
-keys(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_cstate::keys()
+    const
 {
-    rpt_value_cstate_ty *this_thing;
-    rpt_value_ty    *result;
-    long	    j;
-
-    trace(("rpt_value_cstate::keys(this_thing = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_cstate_ty *)vp;
-    result = rpt_value_list();
-    for (j = 0; j < this_thing->length; ++j)
+    trace(("rpt_value_cstate::keys(this = %08lX)\n{\n", (long)this));
+    rpt_value_list *p = new rpt_value_list();
+    rpt_value::pointer result(p);
+    for (size_t j = 0; j < length; ++j)
     {
-	rpt_value_ty	*elem;
-
-	elem = rpt_value_integer(magic_zero_decode(this_thing->list[j]));
-	rpt_value_list_append(result, elem);
-	rpt_value_free(elem);
+	rpt_value::pointer elem =
+            rpt_value_integer::create(magic_zero_decode(list[j]));
+	p->append(elem);
     }
-    trace(("return %08lX;\n", (long)result));
+    trace(("return %08lX;\n", (long)result.get()));
     trace(("}\n"));
     return result;
 }
 
 
-static rpt_value_ty *
-count(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_cstate::count()
+    const
 {
-    rpt_value_cstate_ty *this_thing;
-    rpt_value_ty    *result;
-
-    trace(("rpt_value_cstate::count(this_thing = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_cstate_ty *)vp;
-    result = rpt_value_integer(this_thing->length);
-    trace(("return %08lX;\n", (long)result));
+    trace(("rpt_value_cstate::count(this = %08lX)\n{\n", (long)this));
+    rpt_value::pointer result = rpt_value_integer::create(length);
+    trace(("return %08lX;\n", (long)result.get()));
     trace(("}\n"));
     return result;
 }
 
 
-static const char *
-type_of(rpt_value_ty *vp)
+const char *
+rpt_value_cstate::type_of()
+    const
 {
-    const char      *result;
-
-    trace(("rpt_value_cstate::type_of(this = %08lX)\n{\n", (long)vp));
-    result = "struct";
+    trace(("rpt_value_cstate::type_of()\n{\n"));
+    const char *result = "struct";
     trace(("return \"%s\";\n", result));
     trace(("}\n"));
     return result;
 }
 
 
-static rpt_value_method_ty method =
+bool
+rpt_value_cstate::is_a_struct()
+    const
 {
-    sizeof(rpt_value_cstate_ty),
-    "cstate",
-    rpt_value_type_structure,
-    0, // construct
-    destruct,
-    0, // arithmetic
-    0, // stringize
-    0, // booleanize
-    lookup,
-    keys,
-    count,
-    type_of,
-    0, // undefer
-};
+    return true;
+}
 
 
-rpt_value_ty *
-rpt_value_cstate(project_ty *pp, long length, long *list)
+const char *
+rpt_value_cstate::name()
+    const
 {
-    rpt_value_cstate_ty *this_thing;
-    long		j;
-
-    this_thing = (rpt_value_cstate_ty *)rpt_value_alloc(&method);
-    this_thing->pp = project_copy(pp);
-    this_thing->length = length;
-    this_thing->list = (long int *)mem_alloc(length * sizeof(long));
-    for (j = 0; j < length; ++j)
-	this_thing->list[j] = magic_zero_decode(list[j]);
-    return (rpt_value_ty *)this_thing;
+    return "cstate";
 }

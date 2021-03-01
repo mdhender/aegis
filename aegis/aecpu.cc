@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
+//	Copyright (C) 2006 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to impliment copy file undo
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -136,9 +134,9 @@ copy_file_undo_main(void)
     string_ty	    *project_name;
     project_ty	    *pp;
     long	    change_number;
-    change_ty	    *cp;
+    change::pointer cp;
     log_style_ty    log_style;
-    user_ty	    *up;
+    user_ty::pointer up;
     int		    config_seen;
     int		    number_of_errors;
     string_list_ty  search_path;
@@ -182,7 +180,7 @@ copy_file_undo_main(void)
 	case arglex_token_keep:
 	case arglex_token_interactive:
 	case arglex_token_keep_not:
-	    user_delete_file_argument(copy_file_undo_usage);
+	    user_ty::delete_file_argument(copy_file_undo_usage);
 	    break;
 
 	case arglex_token_change:
@@ -217,17 +215,20 @@ copy_file_undo_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(copy_file_undo_usage);
+	    user_ty::lock_wait_argument(copy_file_undo_usage);
 	    break;
 
 	case arglex_token_base_relative:
 	case arglex_token_current_relative:
-	    user_relative_filename_preference_argument(copy_file_undo_usage);
+	    user_ty::relative_filename_preference_argument
+            (
+                copy_file_undo_usage
+            );
 	    break;
 
 	case arglex_token_symbolic_links:
 	case arglex_token_symbolic_links_not:
-	    user_symlink_pref_argument(copy_file_undo_usage);
+	    user_ty::symlink_pref_argument(copy_file_undo_usage);
 	    break;
 
 	case arglex_token_read_only:
@@ -245,7 +246,10 @@ copy_file_undo_main(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -253,13 +257,13 @@ copy_file_undo_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -275,11 +279,11 @@ copy_file_undo_main(void)
     // It is an error if the change is not in the in_development state.
     // It is an error if the change is not assigned to the current user.
     //
-    if (!change_is_being_developed(cp))
+    if (!cp->is_being_developed())
 	change_fatal(cp, 0, i18n("bad cp undo state"));
     if (change_is_a_branch(cp))
 	change_fatal(cp, 0, i18n("bad cp undo branch"));
-    if (!str_equal(change_developer_name(cp), user_name(up)))
+    if (nstring(change_developer_name(cp)) != up->name())
 	change_fatal(cp, 0, i18n("not developer"));
 
     //
@@ -308,9 +312,8 @@ copy_file_undo_main(void)
 	    search_path.nstrings >= 1
 	&&
 	    (
-		user_relative_filename_preference
+		up->relative_filename_preference
 		(
-		    up,
 		    uconf_relative_filename_preference_current
 		)
 	    ==
@@ -337,9 +340,9 @@ copy_file_undo_main(void)
 	    s2 = str_copy(s1);
 	else
 	    s2 = os_path_join(base, s1);
-	user_become(up);
+	up->become_begin();
 	s1 = os_pathname(s2, 1);
-	user_become_undo();
+	up->become_end();
 	str_free(s2);
 	s2 = 0;
 	for (k = 0; k < search_path.nstrings; ++k)
@@ -546,9 +549,9 @@ copy_file_undo_main(void)
 	    }
 	}
 
-	user_become(up);
+	up->become_begin();
         exists = os_exists(s2);
-	user_become_undo();
+	up->become_end();
 
 	//
 	// skip the changed files
@@ -591,8 +594,7 @@ copy_file_undo_main(void)
 	    // The file could have vanished from under us,
 	    // so make sure this is sensable.
 	    //
-	    psrc_data =
-		project_file_find_by_meta(pp, src_data, view_path_extreme);
+	    psrc_data = project_file_find(pp, src_data, view_path_extreme);
 	    if (!psrc_data)
 		goto not_this_one;
 
@@ -610,9 +612,9 @@ copy_file_undo_main(void)
 		    blf = project_file_version_path(pp, psrc_data, &blf_unlink);
 	    }
 
-            user_become(up);
+            up->become_begin();
 	    different = files_are_different(s2, blf);
-	    user_become_undo();
+	    up->become_end();
             if (blf_unlink)
             {
                 os_become_orig();
@@ -633,7 +635,7 @@ copy_file_undo_main(void)
 	// delete the file if it exists
 	// and the users wants us to
 	//
-	if (exists && user_delete_file_query(up, s1, false, -1))
+	if (exists && up->delete_file_query(nstring(s1), false, -1))
 	{
 	    //
             // This is not as robust in the face of
@@ -647,15 +649,14 @@ copy_file_undo_main(void)
 	    // take a long time over NFS, and users
 	    // expect this to be fast.
 	    //
-	    user_become(up);
+	    user_ty::become scoped(up);
 	    os_unlink_errok(s2);
-	    user_become_undo();
 	}
 
 	//
 	// always delete the difference file
 	//
-	user_become(up);
+	up->become_begin();
 	s1 = str_format("%s,D", s2->str_text);
 	if (os_exists(s1))
 	    commit_unlink_errok(s1);
@@ -668,7 +669,7 @@ copy_file_undo_main(void)
 	if (os_exists(s1))
 	    commit_unlink_errok(s1);
 	str_free(s1);
-	user_become_undo();
+	up->become_end();
 
 	//
 	// verbose success message
@@ -767,19 +768,17 @@ copy_file_undo_main(void)
 	// as was received by aedist or aepatch, and the UUID is invalidated.
 	//
 	change_uuid_clear(cp);
-
-	//
-	// run the change file command
-	// and the project file command if necessary
-	//
-	change_run_copy_file_undo_command(cp, &wl, up);
-	change_run_project_file_command(cp, up);
     }
 
     //
     // Repair symlinks (etc) to the baseline.
     //
     change_maintain_symlinks_to_baseline(cp, up);
+
+    // remember that we are about to
+    bool recent_integration = cp->run_project_file_command_needed();
+    if (recent_integration)
+        cp->run_project_file_command_done();
 
     //
     // release the locks
@@ -788,9 +787,26 @@ copy_file_undo_main(void)
     commit();
     lock_release();
 
+    //
+    // run the change file command
+    // and the project file command if necessary
+    //
+    if (wl.nstrings > 0)
+    {
+        //
+        // The only way to have no files is if we are doing "aecpu
+        // -unch" and nothing has changed.  Every other code path which
+        // would result in zero files is an error.  In the "aecpu -unch"
+        // case, we don't want to perturb the change state when "aedist
+        // -receive" uses this command.
+        //
+	cp->run_copy_file_undo_command(&wl, up);
+    }
+    if (recent_integration)
+	cp->run_project_file_command(up);
+
     project_free(pp);
     change_free(cp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -800,8 +816,8 @@ copy_file_undo(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, copy_file_undo_help, },
-	{arglex_token_list, copy_file_undo_list, },
+	{ arglex_token_help, copy_file_undo_help, 0 },
+	{ arglex_token_list, copy_file_undo_list, 0 },
     };
 
     trace(("copy_file_undo()\n{\n"));

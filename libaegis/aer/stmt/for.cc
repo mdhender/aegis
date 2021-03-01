@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1996, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,61 +13,60 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate for statements
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/trace.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/lex.h>
 #include <libaegis/aer/stmt/for.h>
 #include <libaegis/aer/value/boolean.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/list.h>
+#include <libaegis/aer/value/null.h>
 #include <libaegis/aer/value/ref.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 
 
-struct rpt_stmt_for_ty
+rpt_stmt_for::~rpt_stmt_for()
 {
-    RPT_STMT
-    rpt_expr_ty     *e[3];
-};
-
-
-static void
-for_destruct(rpt_stmt_ty *sp)
-{
-    rpt_stmt_for_ty *this_thing;
-
-    this_thing = (rpt_stmt_for_ty *)sp;
-    rpt_expr_free(this_thing->e[0]);
-    rpt_expr_free(this_thing->e[1]);
-    rpt_expr_free(this_thing->e[2]);
 }
 
 
-static void
-for_run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
+rpt_stmt_for::rpt_stmt_for(const rpt_expr::pointer &e0,
+    const rpt_expr::pointer &e1, const rpt_expr::pointer &e2,
+    const rpt_stmt::pointer &body)
 {
-    rpt_stmt_for_ty	*this_thing;
-    rpt_value_ty	*vp;
-    rpt_value_ty	*vp2;
+    e[0] = e0;
+    e[1] = e1;
+    e[2] = e2;
+    append(body);
+}
 
+
+rpt_stmt::pointer
+rpt_stmt_for::create(const rpt_expr::pointer &e0, const rpt_expr::pointer &e1,
+    const rpt_expr::pointer &e2, const rpt_stmt::pointer &body)
+{
+    return pointer(new rpt_stmt_for(e0, e1, e2, body));
+}
+
+
+void
+rpt_stmt_for::run(rpt_stmt_result_ty *rp)
+    const
+{
     //
     // evaluate the initializing expression
     //
-    this_thing = (rpt_stmt_for_ty *)sp;
-    vp = rpt_expr_evaluate(this_thing->e[0], 0);
-    if (vp->method->type == rpt_value_type_error)
+    rpt_value::pointer vp = e[0]->evaluate(true, true);
+    if (vp->is_an_error())
     {
        	rp->status = rpt_stmt_status_error;
        	rp->thrown = vp;
        	return;
     }
-    rpt_value_free(vp);
 
     //
     // loop until need to stop
@@ -78,8 +76,8 @@ for_run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
 	//
 	// evaluate the looping condition
 	//
-       	vp = rpt_expr_evaluate(this_thing->e[1], 1);
-       	if (vp->method->type == rpt_value_type_error)
+       	vp = e[1]->evaluate(true, true);
+       	if (vp->is_an_error())
        	{
 	    rp->status = rpt_stmt_status_error;
 	    rp->thrown = vp;
@@ -90,26 +88,21 @@ for_run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
 	// coerce the looping condition to boolean
 	//    it is an error if we can't
 	//
-	vp2 = rpt_value_booleanize(vp);
-	rpt_value_free(vp);
-	if (vp2->method->type != rpt_value_type_boolean)
+	rpt_value::pointer vp2 = rpt_value::booleanize(vp);
+        rpt_value_boolean *vp2bp = dynamic_cast<rpt_value_boolean *>(vp2.get());
+	if (!vp2bp)
 	{
-	    sub_context_ty  *scp;
-	    string_ty	    *s;
-
-	    scp = sub_context_new();
-	    sub_var_set_charstar(scp, "Name", vp2->method->name);
-	    rpt_value_free(vp2);
-	    s =
-	     	subst_intl
+	    sub_context_ty sc;
+	    sc.var_set_charstar("Name", vp2->name());
+	    nstring s
+            (
+	     	sc.subst_intl
 	     	(
-		    scp,
 		    i18n("loop condition must be boolean (not $name)")
-	     	);
-	    sub_context_delete(scp);
+	     	)
+            );
 	    rp->status = rpt_stmt_status_error;
-	    rp->thrown = rpt_value_error(this_thing->e[1]->pos, s);
-	    str_free(s);
+	    rp->thrown = rpt_value_error::create(e[1]->get_pos(), s);
 	    return;
        	}
 
@@ -117,17 +110,15 @@ for_run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
 	// if looping condition is false,
 	//	stop looping
 	//
-       	if (!rpt_value_boolean_query(vp2))
+       	if (!vp2bp->query())
        	{
-	    rpt_value_free(vp2);
 	    break;
        	}
-       	rpt_value_free(vp2);
 
 	//
 	// run the inner statement
 	//
-	rpt_stmt_run(this_thing->child[0], rp);
+	nth_child(0)->run(rp);
        	switch (rp->status)
        	{
        	case rpt_stmt_status_error:
@@ -144,14 +135,13 @@ for_run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
 	    // evaluate the increment expression
 	    //
 	    trace(("loop normal\n"));
-	    vp = rpt_expr_evaluate(this_thing->e[2], 0);
-	    if (vp->method->type == rpt_value_type_error)
+	    vp = e[2]->evaluate(true, true);
+	    if (vp->is_an_error())
 	    {
 	     	rp->status = rpt_stmt_status_error;
 	     	rp->thrown = vp;
 	     	return;
 	    }
-	    rpt_value_free(vp);
 
 	    //
 	    // do another iteration
@@ -168,143 +158,103 @@ for_run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
        	break;
     }
     rp->status = rpt_stmt_status_normal;
-    rp->thrown = 0;
+    rp->thrown.reset();
 }
 
 
-static rpt_stmt_method_ty for_method =
+rpt_stmt_foreach::~rpt_stmt_foreach()
 {
-    sizeof(rpt_stmt_for_ty),
-    "for",
-    0, // construct
-    for_destruct,
-    for_run,
-};
-
-
-rpt_stmt_ty *
-rpt_stmt_for(rpt_expr_ty *e0,
-             rpt_expr_ty *e1,
-             rpt_expr_ty *e2,
-             rpt_stmt_ty *sub)
-{
-    rpt_stmt_ty     *sp;
-    rpt_stmt_for_ty *this_thing;
-
-    sp = rpt_stmt_alloc(&for_method);
-    this_thing = (rpt_stmt_for_ty *)sp;
-    this_thing->e[0] = rpt_expr_copy(e0);
-    this_thing->e[1] = rpt_expr_copy(e1);
-    this_thing->e[2] = rpt_expr_copy(e2);
-    rpt_stmt_append(sp, sub);
-    return sp;
 }
 
 
-struct rpt_stmt_foreach_ty
+rpt_stmt_foreach::rpt_stmt_foreach(const rpt_expr::pointer &e0,
+    const rpt_expr::pointer &e1, const rpt_stmt::pointer &body)
 {
-    RPT_STMT
-    rpt_expr_ty     *e[2];
-};
-
-
-static void
-foreach_destruct(rpt_stmt_ty *sp)
-{
-    rpt_stmt_foreach_ty *this_thing;
-
-    this_thing = (rpt_stmt_foreach_ty *)sp;
-    rpt_expr_free(this_thing->e[0]);
-    rpt_expr_free(this_thing->e[1]);
+    e[0] = e0;
+    e[1] = e1;
+    append(body);
+    if (!e0->lvalue())
+       	e0->parse_error(i18n("the loop variable must be modifiable"));
 }
 
 
-static void
-foreach_run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
+rpt_stmt::pointer
+rpt_stmt_foreach::create(const rpt_expr::pointer &e0,
+    const rpt_expr::pointer &e1, const rpt_stmt::pointer &body)
 {
-    rpt_stmt_foreach_ty *this_thing;
-    rpt_value_ty    *lhs;
-    rpt_value_ty    *rhs;
-    size_t	    rhs_length;
-    size_t	    j;
-    rpt_value_ty    *vp;
+    return pointer(new rpt_stmt_foreach(e0, e1, body));
+}
 
+
+void
+rpt_stmt_foreach::run(rpt_stmt_result_ty *rp)
+    const
+{
     //
     // evaluate the initializing expression
     //
     trace(("foreach::run()\n{\n"));
-    this_thing = (rpt_stmt_foreach_ty *)sp;
-    lhs = rpt_expr_evaluate(this_thing->e[0], 0);
-    if (lhs->method->type == rpt_value_type_error)
+    rpt_value::pointer lhs = e[0]->evaluate(true, false);
+    if (lhs->is_an_error())
     {
        	rp->status = rpt_stmt_status_error;
        	rp->thrown = lhs;
        	trace(("}\n"));
        	return;
     }
-    if (lhs->method->type != rpt_value_type_reference)
+    rpt_value_reference *lhs_ref_p =
+        dynamic_cast<rpt_value_reference *>(lhs.get());
+    if (!lhs_ref_p)
     {
-       	sub_context_ty	*scp;
-       	string_ty	*s;
-
-       	scp = sub_context_new();
-       	sub_var_set_charstar(scp, "Name", lhs->method->name);
-       	rpt_value_free(lhs);
-       	s =
-	    subst_intl
+       	sub_context_ty sc;
+       	sc.var_set_charstar("Name", lhs->name());
+       	nstring s
+        (
+	    sc.subst_intl
 	    (
-	     	scp,
 	       	i18n("the loop variable must be modifiable (not $name)")
-	    );
-       	sub_context_delete(scp);
+	    )
+        );
        	rp->status = rpt_stmt_status_error;
-       	rp->thrown = rpt_value_error(this_thing->e[0]->pos, s);
-       	str_free(s);
+       	rp->thrown = rpt_value_error::create(e[0]->get_pos(), s);
        	trace(("}\n"));
        	return;
     }
 
-    rhs = rpt_expr_evaluate(this_thing->e[1], 1);
-    if (rhs->method->type == rpt_value_type_error)
+    rpt_value::pointer rhs = e[1]->evaluate(true, true);
+    if (rhs->is_an_error())
     {
-       	rpt_value_free(lhs);
        	rp->status = rpt_stmt_status_error;
        	rp->thrown = rhs;
        	trace(("}\n"));
        	return;
     }
-    if (rhs->method->type == rpt_value_type_nul)
+    rpt_value_null *rhs_null_p = dynamic_cast<rpt_value_null *>(rhs.get());
+    if (rhs_null_p)
     {
        	//
 	// pretend nul is the empty list, and do nothing
 	//
        	trace(("loop list nul\n"));
-       	rpt_value_free(lhs);
-       	rpt_value_free(rhs);
        	rp->status = rpt_stmt_status_normal;
-       	rp->thrown = 0;
+       	rp->thrown.reset();
        	trace(("}\n"));
        	return;
     }
-    if (rhs->method->type != rpt_value_type_list)
+    rpt_value_list *rhs_list_p = dynamic_cast<rpt_value_list *>(rhs.get());
+    if (!rhs_list_p)
     {
-       	sub_context_ty	*scp;
-       	string_ty	*s;
-
-       	rpt_value_free(lhs);
-       	scp = sub_context_new();
-       	sub_var_set_charstar(scp, "Name", rhs->method->name);
-       	rpt_value_free(rhs);
-       	s =
-	    subst_intl
+       	sub_context_ty sc;
+       	sc.var_set_charstar("Name", rhs->name());
+       	nstring s
+        (
+	    sc.subst_intl
 	    (
-	     	scp,
 	       	i18n("the loop iteration value must be a list (not $name)")
-	    );
-       	sub_context_delete(scp);
+	    )
+        );
        	rp->status = rpt_stmt_status_error;
-       	rp->thrown = rpt_value_error(this_thing->e[1]->pos, s);
-       	str_free(s);
+       	rp->thrown = rpt_value_error::create(e[1]->get_pos(), s);
        	trace(("}\n"));
        	return;
     }
@@ -312,20 +262,20 @@ foreach_run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
     //
     // loop across all values
     //
-    rhs_length = rpt_value_list_length(rhs);
-    for (j = 0; j < rhs_length; ++j)
+    size_t rhs_length = rhs_list_p->size();
+    for (size_t j = 0; j < rhs_length; ++j)
     {
        	//
 	// set the loop variable
 	//
        	trace(("loop index %ld;\n", (long)j));
-       	vp = rpt_value_list_nth(rhs, j);
-       	rpt_value_reference_set(lhs, vp);
+        rpt_value::pointer vp = rhs_list_p->nth(j);
+       	lhs_ref_p->set(vp);
 
        	//
 	// run the inner statement
 	//
-       	rpt_stmt_run(this_thing->child[0], rp);
+       	nth_child(0)->run(rp);
        	switch (rp->status)
        	{
        	case rpt_stmt_status_error:
@@ -334,8 +284,6 @@ foreach_run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
 	    // immediate termination
 	    //
 	    trace(("loop exit\n"));
-	    rpt_value_free(rhs);
-	    rpt_value_free(lhs);
 	    trace(("}\n"));
 	    return;
 
@@ -357,88 +305,61 @@ foreach_run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
        	break;
     }
     trace(("loop complete\n"));
-    rpt_value_free(rhs);
-    rpt_value_free(lhs);
     rp->status = rpt_stmt_status_normal;
-    rp->thrown = 0;
+    rp->thrown.reset();
     trace(("}\n"));
 }
 
 
-static rpt_stmt_method_ty foreach_method =
+rpt_stmt_break::~rpt_stmt_break()
 {
-    sizeof(rpt_stmt_foreach_ty),
-    "for in",
-    0, // construct
-    foreach_destruct,
-    foreach_run,
-};
-
-
-rpt_stmt_ty *
-rpt_stmt_foreach(rpt_expr_ty *e0, rpt_expr_ty *e1, rpt_stmt_ty *sub)
-{
-    rpt_stmt_ty     *sp;
-    rpt_stmt_foreach_ty *this_thing;
-
-    sp = rpt_stmt_alloc(&foreach_method);
-    this_thing = (rpt_stmt_foreach_ty *)sp;
-    if (!rpt_expr_lvalue(e0))
-       	rpt_expr_parse_error(e0, i18n("the loop variable must be modifiable"));
-    this_thing->e[0] = rpt_expr_copy(e0);
-    this_thing->e[1] = rpt_expr_copy(e1);
-    rpt_stmt_append(sp, sub);
-    return sp;
 }
 
 
-static void
-break_run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
+rpt_stmt_break::rpt_stmt_break()
 {
-    trace(("stmt_break::run();\n"));
+}
+
+
+rpt_stmt::pointer
+rpt_stmt_break::create()
+{
+    return pointer(new rpt_stmt_break());
+}
+
+
+void
+rpt_stmt_break::run(rpt_stmt_result_ty *rp)
+    const
+{
+    trace(("rpt_stmt_break::run();\n"));
     rp->status = rpt_stmt_status_break;
-    rp->thrown = 0;
+    rp->thrown.reset();
 }
 
 
-static rpt_stmt_method_ty break_method =
+rpt_stmt_continue::~rpt_stmt_continue()
 {
-    sizeof(rpt_stmt_ty),
-    "break",
-    0, // construct
-    0, // destruct
-    break_run,
-};
-
-
-rpt_stmt_ty *
-rpt_stmt_break()
-{
-    return rpt_stmt_alloc(&break_method);
 }
 
 
-static void
-continue_run(rpt_stmt_ty *sp, rpt_stmt_result_ty *rp)
+rpt_stmt_continue::rpt_stmt_continue()
 {
-    trace(("stmt_continue::run();\n"));
+}
+
+
+rpt_stmt::pointer
+rpt_stmt_continue::create()
+{
+    return pointer(new rpt_stmt_continue());
+}
+
+
+void
+rpt_stmt_continue::run(rpt_stmt_result_ty *rp)
+    const
+{
+    trace(("rpt_stmt_continue::run();\n"));
     rp->status = rpt_stmt_status_continue;
-    rp->thrown = 0;
-}
-
-
-static rpt_stmt_method_ty continue_method =
-{
-    sizeof(rpt_stmt_ty),
-    "continue",
-    0, // construct
-    0, // destruct
-    continue_run,
-};
-
-
-rpt_stmt_ty *
-rpt_stmt_continue()
-{
-    return rpt_stmt_alloc(&continue_method);
+    rp->thrown.reset();
 }

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -54,7 +53,7 @@ wstring_list::push_back(const wstring_list &arg)
 
 
 wstring
-wstring_list::operator[](int n)
+wstring_list::get(int n)
     const
 {
     if (n < 0 || (size_t)n >= content.size())
@@ -68,4 +67,12 @@ wstring_list::unsplit(const char *separator)
     const
 {
     return wstring(content.unsplit(separator));
+}
+
+
+wstring
+wstring_list::unsplit(size_t first, size_t last, const char *separator)
+    const
+{
+    return wstring(content.unsplit(first, last, separator));
 }

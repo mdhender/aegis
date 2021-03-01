@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997, 1999-2006 Peter Miller
+#	Copyright (C) 1997, 1999-2007 Peter Miller
 #	Copyright (C) 2006, 2007 Walter Franzini
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -265,7 +265,7 @@ done
 for file in $files_rx
 do
 	case $file in
-	*/bin/aegis | */bin/aeimport | */bin/aelock)
+	*/bin/aegis | */bin/aeimport)
 		echo "%attr(4755,root,bin) $file"
 		;;
 	*)

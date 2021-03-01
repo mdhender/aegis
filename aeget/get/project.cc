@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2003-2006 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 2003-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -71,19 +70,19 @@ static const table_ty table[] =
     { "change", change_handoff, 1 },
     { "project", get_project, 1 },
 
-    { "aedist", get_project_aedist },
-    { "changes", get_change_list },
-    { "change-cause", get_project_change_cause },
-    { "history", get_project_history },
-    { "integration-histogram", get_project_integration_histogram },
-    { "inventory", get_change_inventory },
-    { "file-inventory", get_project_file_inventory },
-    { "files", get_project_files },
-    { "menu", get_project_menu },
-    { "progress", get_project_progress },
-    { "staff", get_project_staff },
-    { "statistics", get_project_statistics },
-    { "rss", get_rss },
+    { "aedist", get_project_aedist, 0 },
+    { "changes", get_change_list, 0 },
+    { "change-cause", get_project_change_cause, 0 },
+    { "history", get_project_history, 0 },
+    { "integration-histogram", get_project_integration_histogram, 0 },
+    { "inventory", get_change_inventory, 0 },
+    { "file-inventory", get_project_file_inventory, 0 },
+    { "files", get_project_files, 0 },
+    { "menu", get_project_menu, 0 },
+    { "progress", get_project_progress, 0 },
+    { "staff", get_project_staff, 0 },
+    { "statistics", get_project_statistics, 0 },
+    { "rss", get_rss, 0 },
 };
 
 

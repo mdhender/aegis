@@ -1,7 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2006 Peter Miller;
-.\"	All rights reserved.
+.\"	Copyright (C) 2006, 2007 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 .\"	GNU General Public License for more details.
 .\"
 .\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: manual page describing the lib/en/man1/ae-repo-ci command.
+.\"	along with this program. If not, see
+.\"	<http://www.gnu.org/licenses/>.
 .\"
 .so z_name.so
 .ds n) ae-repo-ci
@@ -61,11 +58,30 @@ integrate_pass_notify_command =
 .RE
 You may also need to specify the module, if the module name is not the
 same as the project name.
+.SS Commit Messages
+You are able to control the commit message, by using
+the \f[CW]ae-repo-ci:commit-message\fP sttribute in the
+\fIproject_specific\fP field of the project configuration file.
+.PP
+The default is as if the following entry were present:
+.RS
+project_specific =
+[
+    {
+        name = "ae-repo-ci:commit-message";
+        value = "$version - ${change brief_description}";
+    }
+];
+.RE
+All of the \fIaesub\fP(5) substitutions are available.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so
 .so o_dir.so
 .so o_help.so
+.TP 8n
+\fB\-List\fP
+This option may be used to obtain a list of supported repository types.
 .TP 8n
 \fB\-MODule\fP \fIname\fP
 This option may be used to specify which module is to be checked out.
@@ -79,9 +95,34 @@ This option is used to specify the repository type for the checkin.
 Known repository types are:
 .TP 8n
 cvs
-Concurrent version System
+Concurrent version System.
+You will need to set the CVSROOT environment variable appropriately,
+and the \fB\-modue\fP option will be relative to it.
+.TP 8n
+svn
+.RS
+Subversion.
+You must specify the complete URL with the \fB\-module\fP option.
+.PP
+The following field in the \f[CW]project_specific\fP field of the
+project configuration file (see \fIaepconf\fP(5) for more information)
+are relevant:
+.TP 8n
+svn:username
+If present, the \f[CW]--username\fP command line option will be added to
+\fIsvn\fP(1) command lines, with this value.
+.TP
+svn:password 8n
+If present, the \f[CW]--username\fP command line option will be added to
+\fIsvn\fP(1) command lines, with this value.
+.PP
+These options can help when you can't convince Subversion to use the
+correct athorization any other way.
+.RE
 .PP
 This option must be specified, there is no default.
+The \fB\-list\fP option may be used to obtain an up-to-date list of
+supported repository types.
 .RE
 .so o__rules.so
 .so z_exit.so

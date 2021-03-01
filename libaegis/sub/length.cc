@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1996, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1996, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -23,35 +22,31 @@
 #include <libaegis/sub.h>
 #include <libaegis/sub/length.h>
 #include <common/trace.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
 
 
-wstring_ty *
-sub_length(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_length(sub_context_ty *scp, const wstring_list &arg)
 {
-    wstring_ty	*result;
-
     trace(("sub_length()\n{\n"));
-    if (arg->size() < 2)
+    wstring result;
+    if (arg.size() < 2)
     {
-       	sub_context_error_set(scp, i18n("requires one argument"));
-	result = 0;
+       	scp->error_set(i18n("requires one argument"));
     }
     else
     {
-	wstring_list_ty results;
-	for (size_t j = 1; j < arg->size(); ++j)
+	wstring_list results;
+	for (size_t j = 1; j < arg.size(); ++j)
 	{
-    	    string_ty *s = str_format("%ld", (long)arg->get(j)->wstr_length);
-    	    trace(("result = \"%s\";\n", s->str_text));
-    	    wstring_ty *ws = str_to_wstr(s);
-    	    str_free(s);
+    	    nstring s = nstring::format("%ld", (long)arg[j].size());
+    	    trace(("result = %s;\n", s.quote_c().c_str()));
+    	    wstring ws(s);
 	    results.push_back(ws);
-	    wstr_free(ws);
 	}
 	result = results.unsplit();
     }
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

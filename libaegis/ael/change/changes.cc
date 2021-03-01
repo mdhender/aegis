@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -29,9 +28,7 @@
 
 
 void
-list_changes(string_ty *project_name,
-             long change_number,
-             string_list_ty *args)
+list_changes(string_ty *project_name, long change_number, string_list_ty *)
 {
 	trace(("list_changes()\n{\n"));
 	if (change_number)

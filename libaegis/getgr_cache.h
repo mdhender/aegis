@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001, 2002, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -23,12 +22,13 @@
 #ifndef LIBAEGIS_GETGR_CACHE_H
 #define LIBAEGIS_GETGR_CACHE_H
 
-#include <common/main.h>
 #include <common/ac/grp.h>
+#include <common/nstring.h>
 
-struct string_ty; // forward
+struct group; // forward
 
-struct group *getgrnam_cached(struct string_ty *name);
-struct group *getgrgid_cached(int gid);
+group *getgrnam_cached(string_ty *name);
+group *getgrnam_cached(const nstring &name);
+group *getgrgid_cached(int gid);
 
 #endif // LIBAEGIS_GETGR_CACHE_H

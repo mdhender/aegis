@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2002, 2005, 2006 Peter Miller.
-//	All rights reserved.
+//	Copyright (C) 1994, 2002, 2005-2007 Peter Miller.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aegis/aer/expr/list.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEGIS_AER_EXPR_LIST_H
@@ -25,7 +22,49 @@
 
 #include <libaegis/aer/expr.h>
 
-rpt_expr_ty *rpt_expr_list(void);
-rpt_expr_ty *rpt_expr_comma(rpt_expr_ty *, rpt_expr_ty *);
+/**
+  * The rpt_expr_list class is used to represent a list expression node.
+  */
+class rpt_expr_list:
+    public rpt_expr
+{
+public:
+    /**
+      * The destructor.
+      */
+    virtual ~rpt_expr_list();
+
+private:
+    /**
+      * The default constructor.  It's private on purpose; use the
+      * "create" class method instead.
+      */
+    rpt_expr_list();
+
+public:
+    /**
+      * The create class method is used to create new dynamically
+      * allocated instances of list expression nodes.
+      */
+    static rpt_expr::pointer create();
+
+protected:
+    // See base class for documentation.
+    const char *name() const;
+
+    // See base class for documentation.
+    rpt_value::pointer evaluate() const;
+
+private:
+    /**
+      * The copy constructor.  Do not use.
+      */
+    rpt_expr_list(rpt_expr_list &);
+
+    /**
+      * The assignment operator.  Do not use.
+      */
+    rpt_expr_list &operator=(rpt_expr_list &);
+};
 
 #endif // AEGIS_AER_EXPR_LIST_H

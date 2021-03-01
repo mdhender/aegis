@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement the 'aegis -Change_Owner' command
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -34,6 +31,7 @@
 #include <libaegis/arglex/project.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
+#include <libaegis/change/identifier.h>
 #include <libaegis/change.h>
 #include <libaegis/commit.h>
 #include <libaegis/cstate.h>
@@ -57,7 +55,7 @@ change_owner_usage(void)
     const char      *progname;
 
     progname = progname_get();
-    fprintf(stderr, "usage: %s -Change_Owner [ <option>... ]\n", progname);
+    fprintf(stderr, "Usage: %s -Change_Owner [ <option>... ]\n", progname);
     fprintf
     (
 	stderr,
@@ -110,13 +108,9 @@ static void
 change_owner_main(void)
 {
     sub_context_ty  *scp;
-    string_ty	    *project_name;
-    long	    change_number;
     project_ty	    *pp;
-    user_ty	    *up;
-    user_ty	    *up1;
-    user_ty	    *up2;
-    change_ty	    *cp;
+    user_ty::pointer up1;
+    user_ty::pointer up2;
     cstate_ty       *cstate_data;
     cstate_history_ty *history_data;
     string_ty	    *new_developer;
@@ -127,8 +121,7 @@ change_owner_main(void)
 
     trace(("change_owner_main()\n{\n"));
     arglex();
-    project_name = 0;
-    change_number = 0;
+    change_identifier cid;
     new_developer = 0;
     devdir = 0;
     string_ty *reason = 0;
@@ -143,25 +136,18 @@ change_owner_main(void)
 	case arglex_token_keep:
 	case arglex_token_interactive:
 	case arglex_token_keep_not:
-	    user_delete_file_argument(change_owner_usage);
+	    user_ty::delete_file_argument(change_owner_usage);
 	    break;
 
+	case arglex_token_branch:
 	case arglex_token_change:
-	    arglex();
-	    // fall through...
-
+	case arglex_token_delta:
+	case arglex_token_delta_date:
+	case arglex_token_grandparent:
 	case arglex_token_number:
-	    arglex_parse_change
-	    (
-		&project_name,
-		&change_number,
-		change_owner_usage
-	    );
-	    continue;
-
 	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, change_owner_usage);
+	case arglex_token_trunk:
+            cid.command_line_parse(change_owner_usage);
 	    continue;
 
 	case arglex_token_directory:
@@ -185,7 +171,7 @@ change_owner_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(change_owner_usage);
+	    user_ty::lock_wait_argument(change_owner_usage);
 	    break;
 
 	case arglex_token_reason:
@@ -206,24 +192,15 @@ change_owner_main(void)
 	}
 	arglex();
     }
-    if (!change_number)
+    if (!cid.set())
 	fatal_intl(0, i18n("no change number"));
     if (!new_developer)
 	fatal_intl(0, i18n("no user name"));
 
     //
-    // locate project data
-    //
-    if (!project_name)
-	project_name = user_default_project();
-    pp = project_alloc(project_name);
-    str_free(project_name);
-    pp->bind_existing();
-
-    //
     // it is an error if the named user is not a developer
     //
-    if (!project_developer_query(pp, new_developer))
+    if (!project_developer_query(cid.get_pp(), nstring(new_developer)))
     {
 	scp = sub_context_new();
 	sub_var_set_string(scp, "Target", new_developer);
@@ -233,31 +210,18 @@ change_owner_main(void)
     }
 
     //
-    // locate user data
-    //
-    up = user_executing(pp);
-
-    //
-    // locate change data
-    //
-    assert(change_number);
-    cp = change_alloc(pp, change_number);
-    change_bind_existing(cp);
-
-    //
     // It is an error if the change is not in the 'being developed' state
     //
-    cstate_data = change_cstate_get(cp);
-    if (cstate_data->state != cstate_state_being_developed)
-	change_fatal(cp, 0, i18n("bad chown state"));
+    if (!cid.get_cp()->is_being_developed())
+	change_fatal(cid.get_cp(), 0, i18n("bad chown state"));
 
     //
     // Get details of the two users involved.
     //
-    up1 = user_symbolic(pp, change_developer_name(cp));
-    trace(("up1 = %08lX\n", (long)up1));
-    up2 = user_symbolic(pp, new_developer);
-    trace(("up2 = %08lX\n", (long)up2));
+    up1 = user_ty::create(nstring(change_developer_name(cid.get_cp())));
+    trace(("up1 = %08lX\n", (long)up1.get()));
+    up2 = user_ty::create(nstring(new_developer));
+    trace(("up2 = %08lX\n", (long)up2.get()));
 
     //
     // It is an error if the executing user is not a project
@@ -265,22 +229,22 @@ change_owner_main(void)
     // to themselves, because this is a common way of moving the
     // development directory of a change.
     //
-    if (str_equal(change_developer_name(cp), new_developer))
-	change_verbose(cp, 0, i18n("warning: no chown"));
-    else if (!project_administrator_query(pp, user_name(up)))
-	project_fatal(pp, 0, i18n("not an administrator"));
+    if (str_equal(change_developer_name(cid.get_cp()), new_developer))
+	change_verbose(cid.get_cp(), 0, i18n("warning: no chown"));
+    else if (!project_administrator_query(cid.get_pp(), cid.get_up()->name()))
+	project_fatal(cid.get_pp(), 0, i18n("not an administrator"));
 
     //
     // Take an advisory write lock on the appropriate row of the change
     // table.  Take an advisory write lock on the appropriate row of the
     // user table.  Block until can get both simultaneously.
     //
-    pp->pstate_lock_prepare();
-    change_cstate_lock_prepare(cp);
-    user_ustate_lock_prepare(up1);
-    user_ustate_lock_prepare(up2);
+    cid.get_pp()->pstate_lock_prepare();
+    change_cstate_lock_prepare(cid.get_cp());
+    up1->ustate_lock_prepare();
+    up2->ustate_lock_prepare();
     lock_take();
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cid.get_cp()->cstate_get();
 
     //
     // These could have changed, check again:
@@ -288,24 +252,28 @@ change_owner_main(void)
     // It is an error if the change is already being developed by the
     // named user.
     //
-    if (!str_equal(change_developer_name(cp), user_name(up1)))
-	change_fatal(cp, 0, i18n("sync error, try again"));
-    if (change_is_a_branch(cp))
-	change_fatal(cp, 0, i18n("no branch chown"));
+    if (nstring(change_developer_name(cid.get_cp())) != up1->name())
+	change_fatal(cid.get_cp(), 0, i18n("sync error, try again"));
+    if (change_is_a_branch(cid.get_cp()))
+	change_fatal(cid.get_cp(), 0, i18n("no branch chown"));
 
     //
     // add to history for state change
     //
     string_ty *reason2 =
-	str_format("Forced by administrator \"%s\".", user_name(up)->str_text);
+	str_format
+        (
+            "Forced by administrator \"%s\".",
+            cid.get_up()->name().c_str()
+        );
     if (reason)
 	reason = str_format("%s\n%s", reason->str_text, reason2->str_text);
     else
 	reason = reason2;
-    history_data = change_history_new(cp, up1);
+    history_data = change_history_new(cid.get_cp(), up1);
     history_data->what = cstate_history_what_develop_begin_undo;
     history_data->why = str_copy(reason);
-    history_data = change_history_new(cp, up2);
+    history_data = change_history_new(cid.get_cp(), up2);
     history_data->what = cstate_history_what_develop_begin;
     history_data->why = reason;
 
@@ -315,14 +283,14 @@ change_owner_main(void)
     // Clear the test-baseline-time field.
     // Clear the src field.
     //
-    change_build_times_clear(cp);
+    change_build_times_clear(cid.get_cp());
 
     //
     // Remove the change from the list of assigned changes in the user
     // change table (in the user row).
     //
-    user_own_remove(up1, project_name_get(pp), change_number);
-    user_own_add(up2, project_name_get(pp), change_number);
+    up1->own_remove(cid.get_pp(), cid.get_change_number());
+    up2->own_add(cid.get_pp(), cid.get_change_number());
 
     //
     // Create the change directory.
@@ -330,9 +298,14 @@ change_owner_main(void)
     if (!devdir)
     {
 	scp = sub_context_new();
-	devdir = change_development_directory_template(cp, up2);
+	devdir = change_development_directory_template(cid.get_cp(), up2);
 	sub_var_set_string(scp, "File_Name", devdir);
-	change_verbose(cp, scp, i18n("development directory \"$filename\""));
+	change_verbose
+        (
+            cid.get_cp(),
+            scp,
+            i18n("development directory \"$filename\"")
+        );
 	sub_context_delete(scp);
     }
     assert(cstate_data->development_directory);
@@ -342,23 +315,23 @@ change_owner_main(void)
     //
     // Create the development directory.
     //
-    user_become(up2);
+    up2->become_begin();
     os_mkdir(devdir, 02755);
     undo_rmdir_errok(devdir);
-    user_become_undo();
+    up2->become_end();
 
     //
     // Make sure fstate read in so that it does not do so during
     // the loop (otherwise multiple user permissions set).
     //
-    change_file_nth(cp, 0, view_path_first);
+    change_file_nth(cid.get_cp(), 0, view_path_first);
 
     //
     // copy change files across
     //	    (even the removed files)
     //
-    change_verbose(cp, 0, i18n("copy change source files"));
-    user_become(up2);
+    change_verbose(cid.get_cp(), 0, i18n("copy change source files"));
+    up2->become_begin();
     for (j = 0;; ++j)
     {
 	string_ty	*s1;
@@ -367,7 +340,7 @@ change_owner_main(void)
 	//
 	// copy the file across
 	//
-	src_data = change_file_nth(cp, j, view_path_first);
+	src_data = change_file_nth(cid.get_cp(), j, view_path_first);
 	if (!src_data)
 	    break;
 	s1 = os_path_join(old_dd, src_data->file_name);
@@ -404,17 +377,21 @@ change_owner_main(void)
 	    src_data->architecture_times = 0;
 	}
     }
-    user_become_undo();
+    up2->become_end();
 
     //
     // remove the old development directory
     //
-    if (user_delete_file_query(up, old_dd, true, true))
+    if (cid.get_up()->delete_file_query(nstring(old_dd), true, true))
     {
-	change_verbose(cp, 0, i18n("remove old development directory"));
-	user_become(up1);
+	change_verbose
+        (
+            cid.get_cp(),
+            0,
+            i18n("remove old development directory")
+        );
+	user_ty::become scoped(up1);
 	commit_rmdir_tree_errok(old_dd);
-	user_become_undo();
     }
     str_free(old_dd);
 
@@ -423,19 +400,19 @@ change_owner_main(void)
     // Write the user table rows.
     // Release advisory locks.
     //
-    change_cstate_write(cp);
-    pp->pstate_write();
-    user_ustate_write(up1);
-    user_ustate_write(up2);
+    change_cstate_write(cid.get_cp());
+    cid.get_pp()->pstate_write();
+    up1->ustate_write();
+    cid.get_up()->ustate_write();
     commit();
     lock_release();
 
     //
     // run the notification commands
     //
-    change_run_develop_begin_undo_command(cp, up1);
-    change_run_develop_begin_command(cp, up2);
-    change_run_forced_develop_begin_notify_command(cp, up);
+    change_run_develop_begin_undo_command(cid.get_cp(), up1);
+    change_run_develop_begin_command(cid.get_cp(), up2);
+    cid.get_cp()->run_forced_develop_begin_notify_command(cid.get_up());
 
     //
     // if symlinks are being used to pander to dumb DMT,
@@ -443,33 +420,25 @@ change_owner_main(void)
     // create them now, rather than waiting for the first build.
     // This will present a more uniform interface to the developer.
     //
-    pconf_data = change_pconf_get(cp, 0);
+    pconf_data = change_pconf_get(cid.get_cp(), 0);
     assert(pconf_data->development_directory_style);
     if (!pconf_data->development_directory_style->during_build_only)
     {
 	work_area_style_ty style = *pconf_data->development_directory_style;
-       	change_create_symlinks_to_baseline(cp, up2, style);
+       	change_create_symlinks_to_baseline(cid.get_cp(), up2, style);
     }
 
     //
     // verbose success message
     //
     scp = sub_context_new();
-    sub_var_set_string(scp, "ORiginal", user_name(up1));
+    sub_var_set_string(scp, "ORiginal", up1->name());
     sub_var_optional(scp, "ORiginal");
-    sub_var_set_string(scp, "Target", user_name(up2));
+    sub_var_set_string(scp, "Target", up2->name());
     sub_var_optional(scp, "Target");
-    change_verbose(cp, scp, i18n("chown complete"));
+    change_verbose(cid.get_cp(), scp, i18n("chown complete"));
     sub_context_delete(scp);
 
-    //
-    // clean up and go home
-    //
-    change_free(cp);
-    project_free(pp);
-    user_free(up);
-    user_free(up1);
-    user_free(up2);
     trace(("}\n"));
 }
 
@@ -479,8 +448,8 @@ change_owner(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, change_owner_help, },
-	{arglex_token_list, change_owner_list, },
+	{ arglex_token_help, change_owner_help, 0 },
+	{ arglex_token_list, change_owner_list, 0 },
     };
 
     trace(("change_owner()\n{\n"));

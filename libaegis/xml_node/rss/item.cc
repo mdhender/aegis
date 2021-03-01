@@ -2,6 +2,7 @@
 //      aegis - project change supervisor
 //      Copyright (C) 2005 Matthew Lee;
 //      All rights reserved.
+//      Copyright (C) 2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -52,7 +53,7 @@ xml_node_rss_item::xml_node_rss_item(const xml_node_rss_item &arg) :
 
 
 void
-xml_node_rss_item::element_begin(const nstring &name)
+xml_node_rss_item::element_begin(const nstring &)
 {
     ++num_items_found;
 
@@ -75,7 +76,7 @@ xml_node_rss_item::element_begin(const nstring &name)
 
 
 void
-xml_node_rss_item::element_end(const nstring &name)
+xml_node_rss_item::element_end(const nstring &)
 {
     // If we are not merely counting items, terminate the item element.
     if (new_item != 0)

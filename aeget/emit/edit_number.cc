@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate edit_numbers
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -25,24 +22,27 @@
 #include <common/error.h> // for assert
 #include <libaegis/change.h>
 #include <libaegis/change/branch.h>
+#include <libaegis/file/event.h>
+#include <libaegis/file/event/list.h>
 #include <libaegis/project/file/roll_forward.h>
 
 #include <aeget/emit/edit_number.h>
 #include <aeget/http.h>
 
 
-static file_event_ty *
-file_event_from_revision(string_ty *revision, file_event_list_ty *felp)
+static file_event *
+file_event_from_revision(string_ty *revision,
+    const file_event_list::pointer &felp)
 {
     if (!felp)
 	return 0;
-    for (size_t j = 0; j < felp->length; ++j)
+    for (size_t j = 0; j < felp->size(); ++j)
     {
-	file_event_ty *fep = felp->item + j;
+	file_event *fep = felp->get(j);
 	assert(fep);
 	if (!fep)
 	    continue;
-	fstate_src_ty *src = fep->src;
+	fstate_src_ty *src = fep->get_src();
 	assert(src);
 	if (!src)
 	    continue;
@@ -60,8 +60,8 @@ file_event_from_revision(string_ty *revision, file_event_list_ty *felp)
 
 
 static void
-emit_edit_number_inner(change_ty *cp, fstate_src_ty *src_data,
-    file_event_list_ty *felp = 0)
+emit_edit_number_inner(change::pointer cp, fstate_src_ty *src_data,
+    const file_event_list::pointer &felp = file_event_list::pointer())
 {
     if (src_data->edit_origin && src_data->edit)
     {
@@ -82,7 +82,7 @@ emit_edit_number_inner(change_ty *cp, fstate_src_ty *src_data,
 	    )
 	)
 	{
-	    file_event_ty *fep =
+	    file_event *fep =
 		file_event_from_revision
 		(
 		    src_data->edit_origin->revision,
@@ -90,13 +90,18 @@ emit_edit_number_inner(change_ty *cp, fstate_src_ty *src_data,
 		);
 	    if (fep)
 	    {
-		emit_file_href(fep->cp, fep->src->file_name, 0);
+		emit_file_href(fep->get_change(), fep->get_src()->file_name, 0);
 		printf("%s</a>\n", src_data->edit_origin->revision->str_text);
 		string_ty *vers = change_version_get(cp);
 		string_ty *mod =
 		    str_format("diff+unified+rhs=%s", vers->str_text);
 		str_free(vers);
-		emit_file_href(fep->cp, fep->src->file_name, mod->str_text);
+		emit_file_href
+		(
+		    fep->get_change(),
+		    fep->get_src()->file_name,
+		    mod->str_text
+		);
 		str_free(mod);
 		printf("&rarr;</a>\n");
 	    }
@@ -121,12 +126,12 @@ emit_edit_number_inner(change_ty *cp, fstate_src_ty *src_data,
 	// The "original version" copied.
 	//
 	assert(src_data->edit_origin->revision);
-	file_event_ty *fep =
+	file_event *fep =
 	    file_event_from_revision(src_data->edit_origin->revision, felp);
 	if (fep)
 	{
-	    emit_file_href(fep->cp, fep->src->file_name, 0);
-	    printf("%s</a>\n", fep->src->edit->revision->str_text);
+	    emit_file_href(fep->get_change(), fep->get_src()->file_name, 0);
+	    printf("%s</a>\n", fep->get_src()->edit->revision->str_text);
 	}
 	else
 	    printf("%s\n", src_data->edit_origin->revision->str_text);
@@ -139,12 +144,12 @@ emit_edit_number_inner(change_ty *cp, fstate_src_ty *src_data,
 	// and branches, the revision at aeipass.
 	//
 	assert(src_data->edit->revision);
-	file_event_ty *fep =
+	file_event *fep =
 	    file_event_from_revision(src_data->edit->revision, felp);
 	if (fep)
 	{
-	    emit_file_href(fep->cp, fep->src->file_name, 0);
-	    printf("%s</a>\n", fep->src->edit->revision->str_text);
+	    emit_file_href(fep->get_change(), fep->get_src()->file_name, 0);
+	    printf("%s</a>\n", fep->get_src()->edit->revision->str_text);
 	}
 	else
 	    printf("%4s\n", src_data->edit->revision->str_text);
@@ -154,12 +159,12 @@ emit_edit_number_inner(change_ty *cp, fstate_src_ty *src_data,
 	printf("<br>{cross ");
 
 	assert(src_data->edit_origin_new->revision);
-	file_event_ty *fep =
+	file_event *fep =
 	    file_event_from_revision(src_data->edit_origin_new->revision, felp);
 	if (fep)
 	{
-	    emit_file_href(fep->cp, fep->src->file_name, 0);
-	    printf("%s</a>", fep->src->edit->revision->str_text);
+	    emit_file_href(fep->get_change(), fep->get_src()->file_name, 0);
+	    printf("%s</a>", fep->get_src()->edit->revision->str_text);
 	}
 	else
 	    printf("%4s", src_data->edit_origin_new->revision->str_text);
@@ -169,7 +174,7 @@ emit_edit_number_inner(change_ty *cp, fstate_src_ty *src_data,
 
 
 void
-emit_edit_number(change_ty *cp, fstate_src_ty *src,
+emit_edit_number(change::pointer cp, fstate_src_ty *src,
     project_file_roll_forward * hp)
 {
     switch (src->action)

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -21,7 +20,6 @@
 //
 
 #include <aecvsserver/directo_list.h>
-#include <common/mem.h>
 
 
 void
@@ -40,8 +38,7 @@ directory_list_destructor(directory_list_ty *dlp)
 
     for (j = 0; j < dlp->length; ++j)
 	directory_destructor(dlp->item+ j);
-    if (dlp->item)
-	mem_free(dlp->item);
+    delete [] dlp->item;
     dlp->length = 0;
     dlp->maximum = 0;
     dlp->item = 0;
@@ -64,13 +61,15 @@ directory_list_append(directory_list_ty *dlp, string_ty *client_side,
     string_ty *server_side)
 {
     directory_ty    *dp;
-    size_t          nbytes;
 
     if (dlp->length >= dlp->maximum)
     {
 	dlp->maximum = dlp->maximum * 2 + 4;
-	nbytes = dlp->maximum * sizeof(dlp->item[0]);
-	dlp->item = (directory_ty *)mem_change_size(dlp->item, nbytes);
+	directory_ty *new_item = new directory_ty [dlp->maximum];
+	for (size_t j = 0; j < dlp->length; ++j)
+	    new_item[j] = dlp->item[j];
+	delete [] dlp->item;
+	dlp->item = new_item;
     }
     dp = dlp->item + dlp->length++;
     directory_constructor(dp, client_side, server_side);

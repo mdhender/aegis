@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2002, 2005, 2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -20,8 +19,10 @@
 // MANIFEST: interface definition for aedist/output/cpio_child2.c
 //
 
-#ifndef AEDIST_OUTPUT_CPIO_CHILD2_H
-#define AEDIST_OUTPUT_CPIO_CHILD2_H
+#ifndef LIBAEGIS_OUTPUT_CPIO_CHILD2_H
+#define LIBAEGIS_OUTPUT_CPIO_CHILD2_H
+
+#include <common/ac/time.h>
 
 #include <libaegis/output.h>
 
@@ -50,7 +51,7 @@ public:
       * \param name
       *     The name of the archive member.
       */
-    output_cpio_child2_ty(output_ty *deeper, const nstring &name);
+    output_cpio_child2_ty(output_ty *deeper, const nstring &name, time_t mtime);
 
     // See base class for documentation.
     string_ty *filename() const ;
@@ -90,6 +91,12 @@ private:
     output_memory_ty *buffer;
 
     /**
+      * The mtime instance variable is used to remember the time stamp
+      * to attach to the file in the archive.
+      */
+    time_t mtime;
+
+    /**
       * The default constructor.  Do not use.
       */
     output_cpio_child2_ty();
@@ -105,10 +112,4 @@ private:
     output_cpio_child2_ty &operator=(const output_cpio_child2_ty &);
 };
 
-inline DEPRECATED output_ty *
-output_cpio_child2_open(output_ty *deeper, const nstring &name)
-{
-    return new output_cpio_child2_ty(deeper, name);
-}
-
-#endif // AEDIST_OUTPUT_CPIO_CHILD2_H
+#endif // LIBAEGIS_OUTPUT_CPIO_CHILD2_H

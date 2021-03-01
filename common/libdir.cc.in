@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -136,6 +135,12 @@ configured_comdir(void)
     return "@sharedstatedir@";
 }
 
+
+//
+// If you choose to edit the values returned by configured_aegis_uid
+// and configured_aegis_gid, you MUST make sure that the corresponding
+// entries in Makefile agree exactly.
+//
 
 int
 configured_aegis_uid(void)

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,39 +13,36 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the sub_change_develop_list class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/nstring/list.h>
+#include <common/trace.h>
+#include <common/wstring/list.h>
 #include <libaegis/change.h>
-#include <common/str_list.h>
 #include <libaegis/sub.h>
 #include <libaegis/sub/change/develop_list.h>
-#include <common/trace.h>
-#include <common/wstr/list.h>
 
 
-wstring_ty *
-sub_change_developer_list(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_change_developer_list(sub_context_ty *scp, const wstring_list &)
 {
     trace(("sub_change_developer_list()\n{\n"));
-    wstring_ty *result = 0;
-    change_ty *cp = sub_context_change_get(scp);
+    wstring result;
+    change::pointer cp = sub_context_change_get(scp);
     if (!cp)
     {
-	sub_context_error_set(scp, i18n("not valid in current context"));
-	trace(("return NULL;\n"));
+	scp->error_set(i18n("not valid in current context"));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
 
     //
     // Recapitulate the change's history, tracking develop begins.
     //
-    cstate_ty *cstate_data = change_cstate_get(cp);
-    string_list_ty developer_list;
+    cstate_ty *cstate_data = cp->cstate_get();
+    nstring_list developer_list;
     for (size_t i = 0; i < cstate_data->history->length; ++i)
     {
 	cstate_history_ty *hp = cstate_data->history->list[i];
@@ -54,7 +50,7 @@ sub_change_developer_list(sub_context_ty *scp, wstring_list_ty *arg)
 	{
 	case cstate_history_what_develop_begin:
 	case cstate_history_what_develop_end:
-	    developer_list.push_back_unique(hp->who);
+	    developer_list.push_back_unique(nstring(hp->who));
 	    break;
 
 	case cstate_history_what_develop_begin_undo:
@@ -81,16 +77,15 @@ sub_change_developer_list(sub_context_ty *scp, wstring_list_ty *arg)
     //
     // Turn the list of developer names into a single space-separated string.
     //
-    string_ty *s = developer_list.unsplit(0, developer_list.size(), 0);
+    nstring s = developer_list.unsplit();
 
     //
     // Turn the narrow character string into a wide character string
     // to form the result of the substitution.
     //
-    result = str_to_wstr(s);
-    str_free(s);
+    result = wstring(s);
 
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

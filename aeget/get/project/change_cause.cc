@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the get_project_change_cause class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -91,7 +88,7 @@ incr(symtab<long> *stp, const nstring &key)
 
 
 void
-get_project_change_cause(project_ty *pp, string_ty *filename,
+get_project_change_cause(project_ty *pp, string_ty *,
     string_list_ty *modifier_p)
 {
     string_list_ty &modifier = *modifier_p;
@@ -172,16 +169,16 @@ get_project_change_cause(project_ty *pp, string_ty *filename,
     for (int nn = 0; nn < change_cause_max; ++nn)
 	legend_needed[nn] = 0;
     symtab<long> sum_by_when;
-    change_ty *pcp = pp->change_get();
-    cstate_ty *proj_cstate_data = change_cstate_get(pcp);
+    change::pointer pcp = pp->change_get();
+    cstate_ty *proj_cstate_data = pcp->cstate_get();
     for (size_t k = 0; k < proj_cstate_data->branch->history->length; ++k)
     {
 	cstate_branch_history_ty *hp =
 	    proj_cstate_data->branch->history->list[k];
-	change_ty *cp = change_alloc(pp, hp->change_number);
+	change::pointer cp = change_alloc(pp, hp->change_number);
 	change_bind_existing(cp);
-	assert(change_is_completed(cp));
-	cstate_ty *cstate_data = change_cstate_get(cp);
+	assert(cp->is_completed());
+	cstate_ty *cstate_data = cp->cstate_get();
 	time_t when = change_completion_timestamp(cp);
 	struct tm *tmp = localtime(&when);
 	nstring key;

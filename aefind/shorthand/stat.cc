@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement stat-based shorthands
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/aer/value/integer.h>
@@ -36,414 +33,228 @@
 #include <aefind/tree/this.h>
 
 
-tree_ty *
-shorthand_atime(tree_ty *(*cmp)(tree_ty *, tree_ty *), int n, int units)
+tree::pointer
+shorthand_atime(diadic_t cmp, int n, int units)
 {
-    tree_ty	    *tp1;
-    tree_ty	    *tp2;
-    tree_list_ty    *tlp3;
-    tree_ty	    *tp3;
-    tree_ty	    *tp4;
-    rpt_value_ty    *vp5;
-    tree_ty	    *tp5;
-    tree_ty	    *tp6;
-    rpt_value_ty    *vp7;
-    tree_ty	    *tp7;
-    tree_ty	    *result;
-
     // now
-    tp1 = tree_now_new();
+    tree::pointer tp1 = tree_now_new();
 
     // {}
-    tp2 = tree_this_new();
+    tree::pointer tp2 = tree_this::create();
 
     // atime({})
-    tlp3 = tree_list_new();
-    tree_list_append(tlp3, tp2);
-    tree_delete(tp2);
-    tp3 = function_atime(tlp3);
-    tree_list_delete(tlp3);
+    tree::pointer tp3 = tree_atime::create(tp2);
 
     // now - atime({})
-    tp4 = tree_subtract_new(tp1, tp3);
-    tree_delete(tp1);
-    tree_delete(tp3);
+    tree::pointer tp4 = tree_subtract::create(tp1, tp3);
 
     // units
-    vp5 = rpt_value_integer(units);
-    tp5 = tree_constant_new(vp5);
-    rpt_value_free(vp5);
+    rpt_value::pointer vp5 = rpt_value_integer::create(units);
+    tree::pointer tp5 = tree_constant::create(vp5);
 
     // (now - atime({})) / units
-    tp6 = tree_divide_new(tp4, tp5);
-    tree_delete(tp4);
-    tree_delete(tp5);
+    tree::pointer tp6 = tree_divide::create(tp4, tp5);
 
-    vp7 = rpt_value_integer(n);
-    tp7 = tree_constant_new(vp7);
-    rpt_value_free(vp7);
+    rpt_value::pointer vp7 = rpt_value_integer::create(n);
+    tree::pointer tp7 = tree_constant::create(vp7);
 
     // (now - atime({})) / units == n
-    result = cmp(tp6, tp7);
-    tree_delete(tp6);
-    tree_delete(tp7);
-    return result;
+    return cmp(tp6, tp7);
 }
 
 
-tree_ty *
-shorthand_ctime(tree_ty *(*cmp)(tree_ty *, tree_ty *), int n, int units)
+tree::pointer
+shorthand_ctime( diadic_t cmp, int n, int units)
 {
-    tree_ty	    *tp1;
-    tree_ty	    *tp2;
-    tree_list_ty    *tlp3;
-    tree_ty	    *tp3;
-    tree_ty	    *tp4;
-    rpt_value_ty    *vp5;
-    tree_ty	    *tp5;
-    tree_ty	    *tp6;
-    rpt_value_ty    *vp7;
-    tree_ty	    *tp7;
-    tree_ty	    *result;
-
     // now
-    tp1 = tree_now_new();
+    tree::pointer tp1 = tree_now_new();
 
     // {}
-    tp2 = tree_this_new();
+    tree::pointer tp2 = tree_this::create();
 
     // ctime({})
-    tlp3 = tree_list_new();
-    tree_list_append(tlp3, tp2);
-    tree_delete(tp2);
-    tp3 = function_ctime(tlp3);
-    tree_list_delete(tlp3);
+    tree::pointer tp3 = tree_ctime::create(tp2);
 
     // now - ctime({})
-    tp4 = tree_subtract_new(tp1, tp3);
-    tree_delete(tp1);
-    tree_delete(tp3);
+    tree::pointer tp4 = tree_subtract::create(tp1, tp3);
 
     // units
-    vp5 = rpt_value_integer(units);
-    tp5 = tree_constant_new(vp5);
-    rpt_value_free(vp5);
+    rpt_value::pointer vp5 = rpt_value_integer::create(units);
+    tree::pointer tp5 = tree_constant::create(vp5);
 
     // (now - ctime({})) / units
-    tp6 = tree_divide_new(tp4, tp5);
-    tree_delete(tp4);
-    tree_delete(tp5);
+    tree::pointer tp6 = tree_divide::create(tp4, tp5);
 
-    vp7 = rpt_value_integer(n);
-    tp7 = tree_constant_new(vp7);
-    rpt_value_free(vp7);
+    rpt_value::pointer vp7 = rpt_value_integer::create(n);
+    tree::pointer tp7 = tree_constant::create(vp7);
 
     // (now - ctime({})) / units == n
-    result = cmp(tp6, tp7);
-    tree_delete(tp6);
-    tree_delete(tp7);
-    return result;
+    return cmp(tp6, tp7);
 }
 
 
-tree_ty *
-shorthand_gid(tree_ty *(*cmp)(tree_ty *, tree_ty *), int n)
+tree::pointer
+shorthand_gid(diadic_t cmp, int n)
 {
-    tree_ty	    *tp1;
-    tree_list_ty    *tlp2;
-    tree_ty	    *tp2;
-    rpt_value_ty    *vp3;
-    tree_ty	    *tp3;
-    tree_ty	    *result;
-
     // {}
-    tp1 = tree_this_new();
+    tree::pointer tp1 = tree_this::create();
 
     // gid({})
-    tlp2 = tree_list_new();
-    tree_list_append(tlp2, tp1);
-    tree_delete(tp1);
-    tp2 = function_gid(tlp2);
-    tree_list_delete(tlp2);
+    tree::pointer tp2 = tree_gid::create(tp1);
 
     // n
-    vp3 = rpt_value_integer(n);
-    tp3 = tree_constant_new(vp3);
-    rpt_value_free(vp3);
+    rpt_value::pointer vp3 = rpt_value_integer::create(n);
+    tree::pointer tp3 = tree_constant::create(vp3);
 
     // gid({}) == n
-    result = cmp(tp2, tp3);
-    tree_delete(tp2);
-    tree_delete(tp3);
-    return result;
+    return cmp(tp2, tp3);
 }
 
 
-tree_ty *
-shorthand_ino(tree_ty *(*cmp)(tree_ty *, tree_ty *), int n)
+tree::pointer
+shorthand_ino(diadic_t cmp, int n)
 {
-    tree_ty	    *tp1;
-    tree_list_ty    *tlp2;
-    tree_ty	    *tp2;
-    rpt_value_ty    *vp3;
-    tree_ty	    *tp3;
-    tree_ty	    *result;
-
     // {}
-    tp1 = tree_this_new();
+    tree::pointer tp1 = tree_this::create();
 
     // ino({})
-    tlp2 = tree_list_new();
-    tree_list_append(tlp2, tp1);
-    tree_delete(tp1);
-    tp2 = function_ino(tlp2);
-    tree_list_delete(tlp2);
+    tree::pointer tp2 = tree_ino::create(tp1);
 
     // n
-    vp3 = rpt_value_integer(n);
-    tp3 = tree_constant_new(vp3);
-    rpt_value_free(vp3);
+    rpt_value::pointer vp3 = rpt_value_integer::create(n);
+    tree::pointer tp3 = tree_constant::create(vp3);
 
     // ino({}) == n
-    result = cmp(tp2, tp3);
-    tree_delete(tp2);
-    tree_delete(tp3);
-    return result;
+    return cmp(tp2, tp3);
 }
 
 
-tree_ty *
+tree::pointer
 shorthand_mode(int n)
 {
-    tree_ty	    *tp1;
-    tree_list_ty    *tlp2;
-    tree_ty	    *tp2;
-    rpt_value_ty    *vp3;
-    tree_ty	    *tp3;
-    tree_ty	    *result;
-
     // {}
-    tp1 = tree_this_new();
+    tree::pointer tp1 = tree_this::create();
 
     // mode({})
-    tlp2 = tree_list_new();
-    tree_list_append(tlp2, tp1);
-    tree_delete(tp1);
-    tp2 = function_mode(tlp2);
-    tree_list_delete(tlp2);
+    tree::pointer tp2 = tree_mode::create(tp1);
 
     // n
-    vp3 = rpt_value_integer(n);
-    tp3 = tree_constant_new(vp3);
-    rpt_value_free(vp3);
+    rpt_value::pointer vp3 = rpt_value_integer::create(n);
+    tree::pointer tp3 = tree_constant::create(vp3);
 
     // mode({}) == n
-    result = tree_eq_new(tp2, tp3);
-    tree_delete(tp2);
-    tree_delete(tp3);
-    return result;
+    return tree_eq::create(tp2, tp3);
 }
 
 
-tree_ty *
-shorthand_mtime(tree_ty *(*cmp)(tree_ty *, tree_ty *), int n, int units)
+tree::pointer
+shorthand_mtime(diadic_t cmp, int n, int units)
 {
-    tree_ty	    *tp1;
-    tree_ty	    *tp2;
-    tree_list_ty    *tlp3;
-    tree_ty	    *tp3;
-    tree_ty	    *tp4;
-    rpt_value_ty    *vp5;
-    tree_ty	    *tp5;
-    tree_ty	    *tp6;
-    rpt_value_ty    *vp7;
-    tree_ty	    *tp7;
-    tree_ty	    *result;
-
     // now
-    tp1 = tree_now_new();
+    tree::pointer tp1 = tree_now_new();
 
     // {}
-    tp2 = tree_this_new();
+    tree::pointer tp2 = tree_this::create();
 
     // mtime({})
-    tlp3 = tree_list_new();
-    tree_list_append(tlp3, tp2);
-    tree_delete(tp2);
-    tp3 = function_mtime(tlp3);
-    tree_list_delete(tlp3);
+    tree::pointer tp3 = tree_mtime::create(tp2);
 
     // now - mtime({})
-    tp4 = tree_subtract_new(tp1, tp3);
-    tree_delete(tp1);
-    tree_delete(tp3);
+    tree::pointer tp4 = tree_subtract::create(tp1, tp3);
 
     // units
-    vp5 = rpt_value_integer(units);
-    tp5 = tree_constant_new(vp5);
-    rpt_value_free(vp5);
+    rpt_value::pointer vp5 = rpt_value_integer::create(units);
+    tree::pointer tp5 = tree_constant::create(vp5);
 
     // (now - mtime({})) / units
-    tp6 = tree_divide_new(tp4, tp5);
-    tree_delete(tp4);
-    tree_delete(tp5);
+    tree::pointer tp6 = tree_divide::create(tp4, tp5);
 
     // n
-    vp7 = rpt_value_integer(n);
-    tp7 = tree_constant_new(vp7);
-    rpt_value_free(vp7);
+    rpt_value::pointer vp7 = rpt_value_integer::create(n);
+    tree::pointer tp7 = tree_constant::create(vp7);
 
     // (now - mtime({})) / units == n
-    result = cmp(tp6, tp7);
-    tree_delete(tp6);
-    tree_delete(tp7);
-    return result;
+    return cmp(tp6, tp7);
 }
 
 
-tree_ty *
-shorthand_newer(string_ty *filename)
+tree::pointer
+shorthand_newer(const nstring &filename)
 {
-    tree_ty	    *tp1;
-    tree_list_ty    *tlp2;
-    tree_ty	    *tp2;
-    rpt_value_ty    *vp3;
-    tree_ty	    *tp3;
-    tree_list_ty    *tlp4;
-    tree_ty	    *tp4;
-    tree_ty	    *result;
-
     // {}
-    tp1 = tree_this_new();
+    tree::pointer tp1 = tree_this::create();
 
     // mtime({})
-    tlp2 = tree_list_new();
-    tree_list_append(tlp2, tp1);
-    tree_delete(tp1);
-    tp2 = function_mtime(tlp2);
-    tree_list_delete(tlp2);
+    tree::pointer tp2 = tree_mtime::create(tp1);
 
     // filename
-    vp3 = rpt_value_string(filename);
-    tp3 = tree_constant_new(vp3);
-    rpt_value_free(vp3);
+    rpt_value::pointer vp3 = rpt_value_string::create(filename);
+    tree::pointer tp3 = tree_constant::create(vp3);
 
     // mtime(filename)
-    tlp4 = tree_list_new();
-    tree_list_append(tlp4, tp3);
-    tree_delete(tp3);
-    tp4 = function_mtime(tlp4);
-    tree_list_delete(tlp4);
+    tree::pointer tp4 = tree_mtime::create(tp3);
 
     // mtime({}) > mtime(filename)
-    result = tree_gt_new(tp2, tp4);
-    tree_delete(tp2);
-    tree_delete(tp4);
-    return result;
+    return tree_gt::create(tp2, tp4);
 }
 
 
-tree_ty *
-shorthand_nlink(tree_ty *(*cmp)(tree_ty *, tree_ty *), int n)
+tree::pointer
+shorthand_nlink(diadic_t cmp, int n)
 {
-    tree_ty	    *tp1;
-    tree_list_ty    *tlp2;
-    tree_ty	    *tp2;
-    rpt_value_ty    *vp3;
-    tree_ty	    *tp3;
-    tree_ty	    *result;
-
     // {}
-    tp1 = tree_this_new();
+    tree::pointer tp1 = tree_this::create();
 
     // nlink({})
-    tlp2 = tree_list_new();
-    tree_list_append(tlp2, tp1);
-    tree_delete(tp1);
-    tp2 = function_nlink(tlp2);
-    tree_list_delete(tlp2);
+    tree::pointer tp2 = tree_nlink::create(tp1);
 
     // n
-    vp3 = rpt_value_integer(n);
-    tp3 = tree_constant_new(vp3);
-    rpt_value_free(vp3);
+    rpt_value::pointer vp3 = rpt_value_integer::create(n);
+    tree::pointer tp3 = tree_constant::create(vp3);
 
     // nlink({}) == n
-    result = cmp(tp2, tp3);
-    tree_delete(tp2);
-    tree_delete(tp3);
-    return result;
+    return cmp(tp2, tp3);
 }
 
 
-tree_ty *
-shorthand_size(tree_ty *(*cmp)(tree_ty *, tree_ty *), int n)
+tree::pointer
+shorthand_size(diadic_t cmp, int n)
 {
-    tree_ty	    *tp1;
-    tree_list_ty    *tlp2;
-    tree_ty	    *tp2;
-    rpt_value_ty    *vp3;
-    tree_ty	    *tp3;
-    tree_ty	    *result;
-
     // {}
-    tp1 = tree_this_new();
+    tree::pointer tp1 = tree_this::create();
 
     // size({})
-    tlp2 = tree_list_new();
-    tree_list_append(tlp2, tp1);
-    tree_delete(tp1);
-    tp2 = function_size(tlp2);
-    tree_list_delete(tlp2);
+    tree::pointer tp2 = tree_size::create(tp1);
 
     // n
-    vp3 = rpt_value_integer(n);
-    tp3 = tree_constant_new(vp3);
-    rpt_value_free(vp3);
+    rpt_value::pointer vp3 = rpt_value_integer::create(n);
+    tree::pointer tp3 = tree_constant::create(vp3);
 
     // size({}) == n
-    result = cmp(tp2, tp3);
-    tree_delete(tp2);
-    tree_delete(tp3);
-    return result;
+    return cmp(tp2, tp3);
 }
 
 
-tree_ty *
-shorthand_uid(tree_ty *(*cmp)(tree_ty *, tree_ty *), int n)
+tree::pointer
+shorthand_uid(diadic_t cmp, int n)
 {
-    tree_ty	    *tp1;
-    tree_list_ty    *tlp2;
-    tree_ty	    *tp2;
-    rpt_value_ty    *vp3;
-    tree_ty	    *tp3;
-    tree_ty	    *result;
-
     // {}
-    tp1 = tree_this_new();
+    tree::pointer tp1 = tree_this::create();
 
     // uid({})
-    tlp2 = tree_list_new();
-    tree_list_append(tlp2, tp1);
-    tree_delete(tp1);
-    tp2 = function_uid(tlp2);
-    tree_list_delete(tlp2);
+    tree::pointer tp2 = tree_uid::create(tp1);
 
     // n
-    vp3 = rpt_value_integer(n);
-    tp3 = tree_constant_new(vp3);
-    rpt_value_free(vp3);
+    rpt_value::pointer vp3 = rpt_value_integer::create(n);
+    tree::pointer tp3 = tree_constant::create(vp3);
 
     // uid({}) == n
-    result = cmp(tp2, tp3);
-    tree_delete(tp2);
-    tree_delete(tp3);
-    return result;
+    return cmp(tp2, tp3);
 }
 
 
-static string_ty *
-type_name_by_pattern(string_ty *abbrev)
+static nstring
+type_name_by_pattern(const nstring &abbrev)
 {
     struct table_ty
     {
@@ -469,53 +280,32 @@ type_name_by_pattern(string_ty *abbrev)
 	{ "Symbolic_Link",	"symbolic_link",	},
     };
 
-    table_ty        *tp;
-    sub_context_ty  *scp;
-
-    for (tp = table; tp < ENDOF(table); ++tp)
-	if (arglex_compare(tp->pattern, abbrev->str_text, 0))
-    	    return str_from_c(tp->name);
-    scp = sub_context_new();
-    sub_var_set_string(scp, "Name", abbrev);
-    fatal_intl(scp, i18n("file type $name unknown"));
+    for (table_ty *tp = table; tp < ENDOF(table); ++tp)
+	if (arglex_compare(tp->pattern, abbrev.c_str(), 0))
+    	    return tp->name;
+    sub_context_ty sc;
+    sc.var_set_string("Name", abbrev);
+    sc.fatal_intl(i18n("file type $name unknown"));
     // NOTREACHED
-    sub_context_delete(scp);
-    return str_from_c("unknown");
+    return "unknown";
 }
 
 
-tree_ty *
-shorthand_type(string_ty *abbrev)
+tree::pointer
+shorthand_type(const nstring &abbrev)
 {
-    string_ty	    *name;
-    tree_ty	    *tp1;
-    tree_list_ty    *tlp2;
-    tree_ty	    *tp2;
-    rpt_value_ty    *vp3;
-    tree_ty	    *tp3;
-    tree_ty	    *result;
-
-    name = type_name_by_pattern(abbrev);
+    nstring name = type_name_by_pattern(abbrev);
 
     // {}
-    tp1 = tree_this_new();
+    tree::pointer tp1 = tree_this::create();
 
     // type({})
-    tlp2 = tree_list_new();
-    tree_list_append(tlp2, tp1);
-    tree_delete(tp1);
-    tp2 = function_type(tlp2);
-    tree_list_delete(tlp2);
+    tree::pointer tp2 = tree_type::create(tp1);
 
     // name
-    vp3 = rpt_value_string(name);
-    str_free(name);
-    tp3 = tree_constant_new(vp3);
-    rpt_value_free(vp3);
+    rpt_value::pointer vp3 = rpt_value_string::create(name);
+    tree::pointer tp3 = tree_constant::create(vp3);
 
     // type({}) == name
-    result = tree_eq_new(tp2, tp3);
-    tree_delete(tp2);
-    tree_delete(tp3);
-    return result;
+    return tree_eq::create(tp2, tp3);
 }

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate function tree nodes
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <aefind/function.h>
@@ -35,88 +32,77 @@
 
 struct table_ty
 {
-    const char      *name;
-    tree_ty         *(*func)(tree_list_ty *);
+    const char *name;
+    tree::pointer (*func)(const tree_list &);
 };
 
 
 static table_ty table[] =
 {
-    { "access_time", function_atime, },
-    { "atime", function_atime, },
-    { "basename", function_basename, },
-    { "change_time", function_ctime, },
-    { "ctime", function_ctime, },
-    { "execute", function_execute, },
-    { "gid", function_gid, },
-    { "group_id", function_gid, },
-    { "ino", function_ino, },
-    { "inode", function_ino, },
-    { "mode", function_mode, },
-    { "modify_time", function_mtime, },
-    { "mtime", function_mtime, },
-    { "nlink", function_nlink, },
-    { "print", function_print, },
-    { "size", function_size, },
-    { "st_atime", function_atime, },
-    { "st_ctime", function_ctime, },
-    { "st_gid", function_gid, },
-    { "st_ino", function_ino, },
-    { "st_mode", function_mode, },
-    { "st_mtime", function_mtime, },
-    { "st_nlink", function_nlink, },
-    { "st_size", function_size, },
-    { "st_uid", function_uid, },
-    { "type", function_type, },
-    { "uid", function_uid, },
-    { "user_id", function_uid, },
+    { "access_time", &tree_atime::create_l, },
+    { "atime", &tree_atime::create_l, },
+    { "basename", &tree_basename::create_l, },
+    { "change_time", &tree_ctime::create_l, },
+    { "ctime", &tree_ctime::create_l, },
+    { "execute", &tree_execute::create_l, },
+    { "gid", &tree_gid::create_l, },
+    { "group_id", &tree_gid::create_l, },
+    { "ino", &tree_ino::create_l, },
+    { "inode", &tree_ino::create_l, },
+    { "mode", &tree_mode::create_l, },
+    { "modify_time", &tree_mtime::create_l, },
+    { "mtime", &tree_mtime::create_l, },
+    { "nlink", &tree_nlink::create_l, },
+    { "print", &tree_print::create_l, },
+    { "size", &tree_size::create_l, },
+    { "st_atime", &tree_atime::create_l, },
+    { "st_ctime", &tree_ctime::create_l, },
+    { "st_gid", &tree_gid::create_l, },
+    { "st_ino", &tree_ino::create_l, },
+    { "st_mode", &tree_mode::create_l, },
+    { "st_mtime", &tree_mtime::create_l, },
+    { "st_nlink", &tree_nlink::create_l, },
+    { "st_size", &tree_size::create_l, },
+    { "st_uid", &tree_uid::create_l, },
+    { "type", &tree_type::create_l, },
+    { "uid", &tree_uid::create_l, },
+    { "user_id", &tree_uid::create_l, },
 };
 
 
-tree_ty *
-function_indirection(string_ty *name, tree_list_ty *args)
+tree::pointer
+function_indirection(string_ty *name, const tree_list &args)
 {
-    table_ty        *tp;
-    string_ty       *s;
     static symtab_ty *stp;
-
     if (!stp)
     {
 	stp = symtab_alloc(SIZEOF(table));
-	for (tp = table; tp < ENDOF(table); ++tp)
+	for (table_ty *tp = table; tp < ENDOF(table); ++tp)
 	{
-	    s = str_from_c(tp->name);
+	    string_ty *s = str_from_c(tp->name);
 	    symtab_assign(stp, s, tp);
 	    str_free(s);
 	}
     }
 
-    tp = (table_ty *)symtab_query(stp, name);
+    table_ty *tp = (table_ty *)symtab_query(stp, name);
     if (!tp)
     {
-	string_ty	*guess;
-
-	guess = symtab_query_fuzzy(stp, name);
+	string_ty *guess = symtab_query_fuzzy(stp, name);
 	if (!guess)
 	{
-	    sub_context_ty  *scp;
-
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Name", name);
-	    cmdline_lex_error(scp, i18n("the name \"$name\" is undefined"));
-	    sub_context_delete(scp);
+	    sub_context_ty sc;
+	    sc.var_set_string("Name", name);
+	    cmdline_lex_error(&sc, i18n("the name \"$name\" is undefined"));
 	}
 	else
 	{
-	    sub_context_ty  *scp;
-
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Name", name);
-	    sub_var_set_string(scp, "Guess", guess);
-	    cmdline_lex_error(scp, i18n("no \"$name\", guessing \"$guess\""));
-	    sub_context_delete(scp);
+	    sub_context_ty sc;
+	    sc.var_set_string("Name", name);
+	    sc.var_set_string("Guess", guess);
+	    cmdline_lex_error(&sc, i18n("no \"$name\", guessing \"$guess\""));
 	}
-	return tree_this_new();
+	return tree_this::create();
     }
     return tp->func(args);
 }

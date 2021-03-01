@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -86,7 +85,7 @@ project_alias_remove_main(void)
 {
     string_ty	    *project_name;
     project_ty	    *pp;
-    user_ty	    *up;
+    user_ty::pointer up;
     sub_context_ty  *scp;
 
     trace(("project_alias_remove_main()\n{\n"));
@@ -103,7 +102,7 @@ project_alias_remove_main(void)
 	case arglex_token_keep:
 	case arglex_token_interactive:
 	case arglex_token_keep_not:
-	    user_delete_file_argument(project_alias_remove_usage);
+	    user_ty::delete_file_argument(project_alias_remove_usage);
 	    break;
 
 	case arglex_token_project:
@@ -116,7 +115,7 @@ project_alias_remove_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(project_alias_remove_usage);
+	    user_ty::lock_wait_argument(project_alias_remove_usage);
 	    break;
 	}
 	arglex();
@@ -136,7 +135,7 @@ project_alias_remove_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // make sure it's an alias
@@ -158,7 +157,7 @@ project_alias_remove_main(void)
     //
     // it is an error if the current user is not an administrator
     //
-    if (!project_administrator_query(pp, user_name(up)))
+    if (!project_administrator_query(pp, up->name()))
 	project_fatal(pp, 0, i18n("not an administrator"));
 
     //
@@ -185,7 +184,6 @@ project_alias_remove_main(void)
     // clean up and go home
     //
     project_free(pp);
-    user_free(up);
     str_free(project_name);
     trace(("}\n"));
 }
@@ -196,8 +194,8 @@ project_alias_remove(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, project_alias_remove_help, },
-	{arglex_token_list, project_alias_remove_list, },
+	{ arglex_token_help, project_alias_remove_help, 0 },
+	{ arglex_token_list, project_alias_remove_list, 0 },
     };
 
     trace(("project_alias_remove()\n{\n"));

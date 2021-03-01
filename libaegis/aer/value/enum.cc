@@ -1,110 +1,93 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2003-2005 Peter Miller;
-//	All rights reserved.
+//      aegis - project change supervisor
+//      Copyright (C) 1994, 1996, 2003-2007 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate enumeration values
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
+#include <common/str.h>
 #include <libaegis/aer/value/boolean.h>
 #include <libaegis/aer/value/enum.h>
 #include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/real.h>
 #include <libaegis/aer/value/string.h>
-#include <common/error.h>
-#include <common/str.h>
 
 
-struct rpt_value_enumeration_ty
+rpt_value_enumeration::~rpt_value_enumeration()
 {
-	RPT_VALUE
-	long		value_n;
-	string_ty	*value_s;
-};
-
-
-static void
-destruct(rpt_value_ty *vp)
-{
-	rpt_value_enumeration_ty *this_thing;
-
-	this_thing = (rpt_value_enumeration_ty *)vp;
-	assert(this_thing->method->type == rpt_value_type_enumeration);
-	str_free(this_thing->value_s);
 }
 
 
-static rpt_value_ty *
-stringize(rpt_value_ty *vp)
+rpt_value_enumeration::rpt_value_enumeration(int ii, const nstring &ss) :
+    ival(ii),
+    sval(ss)
 {
-	rpt_value_enumeration_ty *this_thing;
-
-	this_thing = (rpt_value_enumeration_ty *)vp;
-	assert(this_thing->method->type == rpt_value_type_enumeration);
-	return rpt_value_string(this_thing->value_s);
 }
 
 
-static rpt_value_ty *
-arithmetic(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_enumeration::create(int ii, const nstring &ss)
 {
-	rpt_value_enumeration_ty *this_thing;
-
-	this_thing = (rpt_value_enumeration_ty *)vp;
-	assert(this_thing->method->type == rpt_value_type_enumeration);
-	return rpt_value_integer(this_thing->value_n);
+    return pointer(new rpt_value_enumeration(ii, ss));
 }
 
 
-static rpt_value_ty *
-booleanize(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_enumeration::stringize_or_null()
+    const
 {
-	rpt_value_enumeration_ty *this_thing;
-
-	this_thing = (rpt_value_enumeration_ty *)vp;
-	assert(this_thing->method->type == rpt_value_type_enumeration);
-	return rpt_value_boolean(this_thing->value_n != 0);
+    return rpt_value_string::create(sval);
 }
 
 
-static rpt_value_method_ty method =
+rpt_value::pointer
+rpt_value_enumeration::arithmetic_or_null()
+    const
 {
-	sizeof(rpt_value_enumeration_ty),
-	"enumeration",
-	rpt_value_type_enumeration,
-	0, // construct
-	destruct,
-	arithmetic,
-	stringize,
-	booleanize,
-	0, // lookup
-	0, // keys
-	0, // count
-	0, // type_of
-	0, // undefer
-};
+    return rpt_value_integer::create(ival);
+}
 
 
-rpt_value_ty *
-rpt_value_enumeration(long n, string_ty *s)
+rpt_value::pointer
+rpt_value_enumeration::integerize_or_null()
+    const
 {
-	rpt_value_enumeration_ty *this_thing;
+    return rpt_value_integer::create(ival);
+}
 
-	this_thing = (rpt_value_enumeration_ty *)rpt_value_alloc(&method);
-	this_thing->value_n = n;
-	this_thing->value_s = str_copy(s);;
-	return (rpt_value_ty *)this_thing;
+
+rpt_value::pointer
+rpt_value_enumeration::realize_or_null()
+    const
+{
+    return rpt_value_integer::create(ival);
+}
+
+
+rpt_value::pointer
+rpt_value_enumeration::booleanize_or_null()
+    const
+{
+    return rpt_value_boolean::create(ival != 0);
+}
+
+
+const char *
+rpt_value_enumeration::name()
+    const
+{
+    return "enumeration";
 }

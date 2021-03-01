@@ -1,7 +1,6 @@
 //
 //	aranea - WWW Server
-//	Copyright (C) 1991-1994, 2000, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1994, 2000, 2005, 2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by

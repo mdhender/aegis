@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2006 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 2006 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -20,6 +19,7 @@
 #
 # MANIFEST: shell script to construct the eg_oss_begin.ae file
 #
+output=
 here=`pwd`
 test $? -eq 0 || exit 1
 tmp=${TMP_DIR:-/tmp}/$$
@@ -31,6 +31,7 @@ fail() {
 }
 trap "fail" 1 2 3 15
 
+set -x
 mkdir $tmp $tmp/lib
 test $? -eq 0 || fail
 cd $tmp
@@ -68,7 +69,7 @@ test $? -eq 0 || fail
 #
 # add minimal staff, we wont actually be completing any change sets.
 #
-$bin/aegis --new-dev -p $AEGIS_PROJECT $USER
+$bin/aegis --new-dev --project=$AEGIS_PROJECT $USER
 test $? -eq 0 || fail
 
 AEGIS_CHANGE=1
@@ -90,20 +91,24 @@ test_baseline_exempt = true;
 fubar
 test $? -eq 0 || fail
 
-$bin/aegis --new-change -p $AEGIS_PROJECT -f caf -c $AEGIS_CHANGE
+$bin/aegis --new-change -f caf \
+	--project=$AEGIS_PROJECT --change=$AEGIS_CHANGE
 test $? -eq 0 || fail
 
 #
 # Begin development of the change
 #
-$bin/aegis --develop-begin -dir $tmp/chan.dir -c $AEGIS_CHANGE -v -nolog
+$bin/aegis --develop-begin -dir $tmp/chan.dir -v -nolog \
+	--project=$AEGIS_PROJECT --change=$AEGIS_CHANGE
 test $? -eq 0 || fail
 
 #
 # Create the top-level aegis.conf file,
 # pointing into the aegis.conf.d directory.
 #
-$bin/aegis -nf $tmp/chan.dir/aegis.conf -v -nolog > log 2>&1
+$bin/aegis -nf $tmp/chan.dir/aegis.conf -v -nolog \
+	--project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+	> log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 echo 'configuration_directory = "aegis.conf.d";' > $tmp/chan.dir/aegis.conf
@@ -113,7 +118,9 @@ test $? -eq 0 || fail
 # Create the build file.  It says we don't do builds at all.
 # We will have to wait until there is some content for that to be useful.
 #
-$bin/aegis -nf $tmp/chan.dir/aegis.conf.d/build -v -nolog > log 2>&1
+$bin/aegis -nf $tmp/chan.dir/aegis.conf.d/build -v -nolog \
+	--project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+	> log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 echo 'build_command = "exit 0";' > $tmp/chan.dir/aegis.conf.d/build
@@ -126,9 +133,21 @@ test $? -eq 0 || fail
 while [ $# -ge 1 ]
 do
     case "$1" in
+    output=*)
+	output=`echo $1 | sed 's|.*=||'`
+	;;
+
     *=*)
 	name=`echo $1 | sed 's|=.*||'`
 	value=`echo $1 | sed 's|.*=||'`
+
+	$bin/aegis -nf $tmp/chan.dir/$name -v -nolog \
+	    --project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+	    > log 2>&1
+	if test $? -ne 0 ; then cat log; fail; fi
+
+	cp $here/$value $tmp/chan.dir/$name
+	test $? -eq 0 || fail
 	;;
 
     *)
@@ -138,17 +157,21 @@ do
     esac
     shift
 
-    $bin/aegis -nf $tmp/chan.dir/$name -v -nolog > log 2>&1
-    if test $? -ne 0 ; then cat log; fail; fi
-
-    cp $here/$value $tmp/chan.dir/$name
-    test $? -eq 0 || fail
 done
+
+if test -z "$output"
+then
+    echo "No output=[target] option given."
+    fail
+fi
 
 #
 # Package the change set.
 #
-$bin/aedist -send -ndh -mh -naa -comp-alg=gzip
+$bin/aedist -send -ndh -mh -naa -comp-alg=gzip \
+	--ignore-uuid \
+	--output="$here/$output" \
+	--project=$AEGIS_PROJECT --change=$AEGIS_CHANGE
 
 cd $here
 rm -rf $tmp

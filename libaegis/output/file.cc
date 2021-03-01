@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2003-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -156,7 +155,7 @@ open_with_stale_nfs_retry(const char *path, int mode)
 	    break;
 	sleep(nsecs);
 	errno = 0;
-	fd = glue_open(path, mode);
+	fd = glue_open(path, mode, 0);
     }
 #endif
 

@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2003-2005 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 2003-2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -60,7 +59,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	persevere_preference = all; \
 	log_file_preference = never;"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 here=`pwd`
@@ -279,9 +278,6 @@ new_test_filename = "test/${zpad $hundred 2}/t${zpad $number 4}.sh";
 EOF
 if test $? -ne 0 ; then no_result; fi
 
-# allow timestamps to be different
-sleep 2
-
 # build
 activity="build 266"
 $bin/aegis -build -c 10 -v > LOG 2>&1
@@ -358,8 +354,6 @@ if test $? -ne 0 ; then no_result; fi
 activity="change attributes 338"
 $bin/aegis -ca -file changeAttributes -c 11 > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
-
-sleep 2
 
 # build
 activity="build 345"
@@ -462,8 +456,6 @@ activity="remove file 441"
 $bin/aegis -rm $chanDir/hosttest/0001/main.cc > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-sleep 2
-
 # build
 activity="build 448"
 $bin/aegis -build -c 10 -v > LOG 2>&1
@@ -535,8 +527,6 @@ cat > $chanDir/hosttest/0001/main.cc << EOF
 Reinstated hosttest
 EOF
 if test $? -ne 0 ; then no_result; fi
-
-sleep 2
 
 # build
 activity="build 522"

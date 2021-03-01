@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1996, 1998, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1996, 1998, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -40,7 +39,7 @@ iswprint(wint_t c)
     // assumptions, but real i18n support will provide a real
     // iswprint function.
     //
-    return (c >= 256 || (c >= 0 && isprint((unsigned char)c)));
+    return (c >= 256 || isprint((unsigned char)c));
 }
 
 
@@ -57,7 +56,7 @@ iswspace(wint_t c)
     // assumptions, but real i18n support will provide a real
     // iswspace function.
     //
-    return (c >= 0 && c < 256 && isspace((unsigned char)c));
+    return (c < 256 && isspace((unsigned char)c));
 }
 
 
@@ -74,7 +73,7 @@ iswpunct(wint_t c)
     // assumptions, but real i18n support will provide a real
     // iswpunct function.
     //
-    return (c >= 0 && c < 256 && ispunct((unsigned char)c));
+    return (c < 256 && ispunct((unsigned char)c));
 }
 
 
@@ -85,7 +84,7 @@ iswpunct(wint_t c)
 int
 iswupper(wint_t c)
 {
-    return (c >= 0 && c < 256 && isupper((unsigned char)c));
+    return (c < 256 && isupper((unsigned char)c));
 }
 
 
@@ -96,7 +95,7 @@ iswupper(wint_t c)
 int
 iswlower(wint_t c)
 {
-    return (c >= 0 && c < 256 && islower((unsigned char)c));
+    return (c < 256 && islower((unsigned char)c));
 }
 
 
@@ -107,7 +106,7 @@ iswlower(wint_t c)
 int
 iswdigit(wint_t c)
 {
-    return (c >= 0 && c < 256 && isdigit((unsigned char)c));
+    return (c < 256 && isdigit((unsigned char)c));
 }
 
 
@@ -118,7 +117,7 @@ iswdigit(wint_t c)
 int
 iswalnum(wint_t c)
 {
-    return (c >= 0 && c < 256 && isalnum((unsigned char)c));
+    return (c < 256 && isalnum((unsigned char)c));
 }
 
 
@@ -129,7 +128,7 @@ iswalnum(wint_t c)
 wint_t
 towupper(wint_t c)
 {
-    if (c >= 0 && c < 256 && islower((unsigned char)c))
+    if (c < 256 && islower((unsigned char)c))
        	return toupper((unsigned char)c);
     return c;
 }
@@ -142,7 +141,7 @@ towupper(wint_t c)
 wint_t
 towlower(wint_t c)
 {
-    if (c >= 0 && c < 256 && isupper((unsigned char)c))
+    if (c < 256 && isupper((unsigned char)c))
        	return tolower((unsigned char)c);
     return c;
 }

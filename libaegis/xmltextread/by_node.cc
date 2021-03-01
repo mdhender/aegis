@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -69,8 +68,9 @@ xml_text_reader_by_node::push_name(const nstring &arg)
 void
 xml_text_reader_by_node::pop_name(const nstring &arg)
 {
-    trace(("xml_text_reader_by_node::pop_name(ar = \"%s\")\n{\n", arg.c_str()));
+    trace(("xml_text_reader_by_node::pop_name()\n{\n"));
     assert(!names.empty());
+    (void)arg;
     assert
     (
 	names.size() == 1

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -43,7 +42,7 @@ quit_action_unlink::quit_action_unlink(const nstring &arg) :
 
 
 void
-quit_action_unlink::operator()(int exit_status)
+quit_action_unlink::operator()(int)
 {
     // This action is NOT conditional on the exit status.
     os_become_undo_atexit();

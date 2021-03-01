@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -20,43 +19,37 @@
 // MANIFEST: functions to manipulate plurals
 //
 
-#include <libaegis/sub.h>
-#include <libaegis/sub/plural.h>
 #include <common/trace.h>
 #include <common/wstr.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/plural.h>
 
 
-wstring_ty *
-sub_plural(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_plural(sub_context_ty *scp, const wstring_list &arg)
 {
-    string_ty	    *s;
-    wstring_ty	    *result;
-    long	    n;
-
     trace(("sub_plural()\n{\n"));
-    switch (arg->size())
+    wstring result;
+    switch (arg.size())
     {
     default:
-	sub_context_error_set(scp, i18n("requires two or three arguments"));
-	result = 0;
+	scp->error_set(i18n("requires two or three arguments"));
 	break;
 
     case 3:
-	arg->push_back(wstr_from_c(""));
-	// fall through...
+        if (arg[1].to_nstring().to_long() != 1)
+            result = arg[2];
+	break;
 
     case 4:
-	s = wstr_to_str(arg->get(1));
-	n = atol(s->str_text);
-	str_free(s);
-	if (n != 1)
-	    result = wstr_copy(arg->get(2));
-	else
-	    result = wstr_copy(arg->get(3));
+        if (arg[1].to_nstring().to_long() != 1)
+            result = arg[2];
+        else
+            result = arg[3];
 	break;
     }
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

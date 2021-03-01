@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1998, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate integer indexed tables
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h> // for assert
@@ -45,12 +42,12 @@
 //
 
 itab_ty *
-itab_alloc(int size)
+itab_alloc()
 {
     itab_ty	    *itp;
     itab_key_ty     j;
 
-    trace(("itab_alloc(size = %d)\n{\n", size));
+    trace(("itab_alloc()\n{\n"));
     itp = (itab_ty *)mem_alloc(sizeof(itab_ty));
     itp->reap = 0;
     itp->hash_modulus = 1 << 5; // MUST be a power of 2
@@ -163,7 +160,6 @@ split(itab_ty *itp)
 	while (p)
 	{
 	    itab_row_ty     *p2;
-	    itab_key_ty     index;
 	    itab_row_ty     **ipp;
 
 	    p2 = p;
@@ -176,8 +172,8 @@ split(itab_ty *itp)
 	    // head of the list will reverse the order of the stack!
 	    //
 	    assert((p2->key & itp->hash_mask) == idx);
-	    index = p2->key & new_hash_mask;
-	    for (ipp = &new_hash_table[index]; *ipp; ipp = &(*ipp)->overflow)
+	    itab_key_ty idx2 = p2->key & new_hash_mask;
+	    for (ipp = &new_hash_table[idx2]; *ipp; ipp = &(*ipp)->overflow)
 		;
 	    *ipp = p2;
 	}
@@ -210,14 +206,14 @@ split(itab_ty *itp)
 void *
 itab_query(itab_ty *itp, itab_key_ty key)
 {
-    itab_key_ty     index;
+    itab_key_ty     idx;
     itab_row_ty     *p;
     void	    *result;
 
     trace(("itab_query(itp = %08lX, key = %ld)\n{\n", (long)itp, (long)key));
     result = 0;
-    index = key & itp->hash_mask;
-    for (p = itp->hash_table[index]; p; p = p->overflow)
+    idx = key & itp->hash_mask;
+    for (p = itp->hash_table[idx]; p; p = p->overflow)
     {
 	if (key == p->key)
 	{
@@ -249,14 +245,14 @@ itab_query(itab_ty *itp, itab_key_ty key)
 void
 itab_assign(itab_ty *itp, itab_key_ty key, void *data)
 {
-    itab_key_ty     index;
+    itab_key_ty     idx;
     itab_row_ty     *p;
 
     trace(("itab_assign(itp = %08lX, key = %ld, data = %08lX)\n{\n",
 	(long)itp, (long)key, (long)data));
-    index = key & itp->hash_mask;
+    idx = key & itp->hash_mask;
 
-    for (p = itp->hash_table[index]; p; p = p->overflow)
+    for (p = itp->hash_table[idx]; p; p = p->overflow)
     {
 	if (key == p->key)
 	{
@@ -271,9 +267,9 @@ itab_assign(itab_ty *itp, itab_key_ty key, void *data)
     trace(("new entry\n"));
     p = (itab_row_ty *)mem_alloc(sizeof(itab_row_ty));
     p->key = key;
-    p->overflow = itp->hash_table[index];
+    p->overflow = itp->hash_table[idx];
     p->data = data;
-    itp->hash_table[index] = p;
+    itp->hash_table[idx] = p;
 
     itp->load++;
     if (itp->load * 10 >= itp->hash_modulus * 8)
@@ -301,14 +297,14 @@ itab_assign(itab_ty *itp, itab_key_ty key, void *data)
 void
 itab_delete(itab_ty *itp, itab_key_ty key)
 {
-    itab_key_ty	index;
+    itab_key_ty	idx;
     itab_row_ty	**pp;
 
     trace(("itab_delete(itp = %08lX, key = %ld)\n{\n",
 	(long)itp, (long)key));
-    index = key & itp->hash_mask;
+    idx = key & itp->hash_mask;
 
-    pp = &itp->hash_table[index];
+    pp = &itp->hash_table[idx];
     for (;;)
     {
 	itab_row_ty	*p;

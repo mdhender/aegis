@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000, 2002-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2000, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate sets
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h> // for assert
@@ -30,13 +27,13 @@
 
 
 void
-change_top_path_set(change_ty *cp, string_ty *s)
+change_top_path_set(change::pointer cp, string_ty *s)
 {
     change_top_path_set(cp, nstring(s));
 }
 
 void
-change_top_path_set(change_ty *cp, const nstring  &s)
+change_top_path_set(change::pointer cp, const nstring  &s)
 {
     cstate_ty       *cstate_data;
 
@@ -81,7 +78,7 @@ change_top_path_set(change_ty *cp, const nstring  &s)
     // points at top_path, not top_path/baseline.
     //
     // assert(change_was_a_branch(cp));
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     if (!cstate_data->development_directory)
     {
 	nstring         dir;

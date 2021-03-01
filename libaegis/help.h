@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1993, 1997, 2002-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1993, 1997, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -17,13 +16,16 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 //
-// MANIFEST: interface definition for aegis/help.c
+// MANIFEST: interface definition for libaegis/help.c
 //
 
-#ifndef HELP_H
-#define HELP_H
+#ifndef LIBAEGIS_HELP_H
+#define LIBAEGIS_HELP_H
 
 #include <common/main.h>
+
+struct string_ty; // forward
+class nstring; // forward
 
 void help(const char *progname, void (*usagefunc)(void));
 void generic_argument(void(*usagefunc)(void));
@@ -39,15 +41,32 @@ void option_needs_name(int name, void(*usagefunc)(void));
 void option_needs_file(int name, void(*usagefunc)(void));
 void option_needs_dir(int name, void(*usagefunc)(void));
 void option_needs_files(int name, void(*usagefunc)(void));
+
+/**
+  * The option_need_url function is used to report a command line error
+  * to the user, complaining that the given option must be followed by a
+  * URL.
+  *
+  * @param name
+  *     The option to complain about
+  * @param usage
+  *     The usage function to exit via
+  */
+void option_needs_url(int name, void(*usagefunc)(void));
+
 void option_needs_uuid(int name, void(*usagefunc)(void));
 
-struct string_ty; // forward
 void fatal_too_many_files(void) NORETURN;
-void fatal_user_too_privileged(struct string_ty *) NORETURN;
-void fatal_group_too_privileged(struct string_ty *) NORETURN;
-void fatal_bad_project_name(struct string_ty *) NORETURN;
-void fatal_project_name_too_long(struct string_ty *, int) NORETURN;
-void fatal_date_unknown(const char *) NORETURN;
-void fatal_project_alias_exists(struct string_ty *) NORETURN;
 
-#endif // HELP_H
+void fatal_user_too_privileged(string_ty *name) NORETURN DEPRECATED;
+void fatal_user_too_privileged(const nstring &name) NORETURN;
+
+void fatal_group_too_privileged(string_ty *name) NORETURN DEPRECATED;
+void fatal_group_too_privileged(const nstring &name) NORETURN;
+
+void fatal_bad_project_name(string_ty *) NORETURN;
+void fatal_project_name_too_long(string_ty *, int) NORETURN;
+void fatal_date_unknown(const char *) NORETURN;
+void fatal_project_alias_exists(string_ty *) NORETURN;
+
+#endif // LIBAEGIS_HELP_H

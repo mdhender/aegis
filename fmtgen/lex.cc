@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1997, 1999, 2002-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1995, 1997, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -566,7 +565,7 @@ lex_debug_printf(const char *s, ...)
 
 
 void
-lex_debug_fprintf(void *ignore, const char *s, ...)
+lex_debug_fprintf(void *, const char *s, ...)
 {
     va_list ap;
     va_start(ap, s);

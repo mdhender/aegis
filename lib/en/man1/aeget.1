@@ -1,7 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2003, 2004, 2006 Peter Miller;
-.\"	All rights reserved.
+.\"	Copyright (C) 2003, 2004, 2006, 2007 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 .\"	GNU General Public License for more details.
 .\"
 .\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: manual page describing the lib/en/man1/aeget command.
+.\"	along with this program. If not, see
+.\"	<http://www.gnu.org/licenses/>.
 .\"
 .so z_name.so
 .ds n) aeget
@@ -121,4 +118,46 @@ attribute =
 .RE
 You must use the \fIaeca\fP(1) command for this, the \fItkaeca\fP(1)
 command can not edit change set attributes.
+.SH DEBUGGING and TESTING
+You can run the \fI\*(n)\fP(1) program from the command line if you set
+the appropriate environment variables.
+This is how you debug or test \fI\*(n)\fP(1) command.
+.TP 8n
+REQUEST_METHOD
+This is how the script is being invoked.
+For \fI\*(n)\fP(1) command, this is always "\f[CW]GET\fP".
+.TP 8n
+SCRIPT_NAME
+This is the path of the script name, from the HTTP client's point of view.
+Typically this is "\f[CW]/cgi-bin/aeget\fP".
+.TP 8n
+PATH_INFO
+This is the portion of the URL between the script name and the question
+mark.  For \fI\*(n)\fP(1) this is usually the project name or the
+project name and the change number.
+No project name will get you the project list page.
+.TP 8n
+QUERY_STRING
+This the portion of the URL after the question mark.
+.PP
+The above will not means much if you are not familar with CGI scripts.
+For the URL \f[CW]http://localhost/cgi-bin/aeget/aegis.4.1.C10?menu\fP
+would have Apache set the following environment variables
+.RS
+.nf
+.ft CW
+REQUEST_METHOD=GET \e
+SCRIPT_NAME=/cgi-bin/aeget \e
+PATH_INFO=/aegis.4.1.C10 \e
+QUERY_STRING='menu' \e
+aeget
+.ft P
+.fi
+.RE
+Output is written to stdout.  Tests scripts can easily capture this and
+compare it with expected results.  Make sure you avoid false negatives
+because of the date tacked onto the end of most pages.
+.SS Apache
+If you see "serious server error" pages when accessing \fI\*(n)\fP(1) via
+a web server, the stderr text is usually available in the server's error log.
 .so z_cr.so

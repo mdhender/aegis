@@ -1,23 +1,19 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002-2004 Peter Miller;
- *	All rights reserved.
+ * aegis - project change supervisor
+ * Copyright (C) 1999, 2002-2004, 2006, 2007 Peter Miller
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or (at
+ * your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: metrics.cook
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 all += metrics.targets ;
@@ -32,18 +28,18 @@ source_file_order += [metrics_include_file] ;
  * integration pass time.
  */
 metrics.targets =
-	[addsuffix ",S"
-	    [stringset [project_files] [change_files] - [metrics_include_file]]
-	]
-	;
+        [addsuffix ",S"
+            [stringset [project_files] [change_files] - [metrics_include_file]]
+        ]
+        ;
 metrics.targets: [metrics.targets];
 
 [metrics_include_file]: [metrics.targets] etc/statistics.awk
 {
-	[awk] -f [resolve etc/statistics.awk]
-		`cat -`
-		> [target]
-		;
+        [awk] -f [resolve etc/statistics.awk]
+                `cat -`
+                > [target]
+                ;
 data
 [unsplit "\n" [resolve [metrics.targets]]]
 dataend
@@ -55,13 +51,13 @@ dataend
 %1/%0%2.cc,S: %1/%0%2.cc
     set nocascade
 {
-	sw_measure
-		[stringset
-			-I/usr/lib/gcc-lib/i386-redhat-linux/2.7.2.3/include
-			[prepost "-I" "/%1" [search_list]]
-			[cc_include_flags]
-		]
-		[resolve %1/%0%2.cc] [target];
+        sw_measure
+                [stringset
+                        -I/usr/lib/gcc-lib/i386-redhat-linux/2.7.2.3/include
+                        [prepost "-I" "/%1" [search_list]]
+                        [cc_include_flags]
+                ]
+                [resolve %1/%0%2.cc] [target];
 }
 
 #endif

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1996, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1996, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,65 +13,75 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate try/catch statements
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
+#include <common/str.h>
+#include <common/trace.h>
 #include <libaegis/aer/stmt/try.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/ref.h>
 #include <libaegis/aer/value/string.h>
-#include <common/error.h>
-#include <common/str.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 
 
-struct rpt_stmt_try_ty
+rpt_stmt_try::~rpt_stmt_try()
 {
-    RPT_STMT
-    rpt_expr_ty     *e;
-};
+}
 
 
-static void
-run(rpt_stmt_ty *that, rpt_stmt_result_ty *rp)
+rpt_stmt_try::rpt_stmt_try(const rpt_stmt::pointer &s1,
+        const rpt_expr::pointer &a_variable, const rpt_stmt::pointer &s2) :
+    variable(a_variable)
 {
-    rpt_stmt_try_ty *this_thing;
-    rpt_value_ty    *lhs;
+    append(s1);
+    append(s2);
+    if (!variable->lvalue())
+	variable->parse_error(i18n("the catch variable must be modifiable"));
+}
 
+
+rpt_stmt::pointer
+rpt_stmt_try::create(const rpt_stmt::pointer &s1, const rpt_expr::pointer &e,
+    const rpt_stmt::pointer &s2)
+{
+    return pointer(new rpt_stmt_try(s1, e, s2));
+}
+
+
+void
+rpt_stmt_try::run(rpt_stmt_result_ty *rp)
+    const
+{
     //
     // evaluate the catch variable's address
     //
     trace(("try::run()\n{\n"));
-    this_thing = (rpt_stmt_try_ty *)that;
-    lhs = rpt_expr_evaluate(this_thing->e, 0);
-    if (lhs->method->type == rpt_value_type_error)
+    rpt_value::pointer lhs = variable->evaluate(true, false);
+    if (lhs->is_an_error())
     {
 	rp->status = rpt_stmt_status_error;
 	rp->thrown = lhs;
 	trace(("}\n"));
 	return;
     }
-    if (lhs->method->type != rpt_value_type_reference)
+    rpt_value_reference *lhs_ref_p =
+        dynamic_cast<rpt_value_reference *>(lhs.get());
+    if (!lhs_ref_p)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", lhs->method->name);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", lhs->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
 		i18n("the catch variable must be modifiable (not $name)")
-	    );
-	sub_context_delete(scp);
+	    )
+        );
 	rp->status = rpt_stmt_status_error;
-	rp->thrown = rpt_value_error(this_thing->e->pos, s);
-	str_free(s);
+	rp->thrown = rpt_value_error::create(variable->get_pos(), s);
 	trace(("}\n"));
 	return;
     }
@@ -80,54 +89,33 @@ run(rpt_stmt_ty *that, rpt_stmt_result_ty *rp)
     //
     // run the try clause
     //
-    assert(this_thing->nchild == 2);
-    rpt_stmt_run(this_thing->child[0], rp);
+    assert(get_nchildren() == 2);
+    nth_child(0)->run(rp);
     if (rp->status == rpt_stmt_status_error)
     {
-	rpt_value_ty	*vp;
-
 	//
 	// set the catch variable
 	// to the <string> of the error
 	// without the file position
 	//
-	vp = rpt_value_string(rpt_value_error_query(rp->thrown));
-	rpt_value_free(rp->thrown);
-	rpt_value_reference_set(lhs, vp);
-	rpt_value_free(vp);
+        rpt_value_error *thrown_err_p =
+            dynamic_cast<rpt_value_error *>(rp->thrown.get());
+        assert(thrown_err_p);
+        if (thrown_err_p)
+        {
+            rpt_value::pointer vp =
+                rpt_value_string::create(thrown_err_p->query());
+            lhs_ref_p->set(vp);
+        }
+        else
+        {
+            lhs_ref_p->set(rp->thrown);
+        }
 
 	//
 	// run the catch clause
 	//
-	rpt_stmt_run(this_thing->child[1], rp);
+	nth_child(1)->run(rp);
     }
-    rpt_value_free(lhs);
     trace(("}\n"));
-}
-
-
-static rpt_stmt_method_ty method =
-{
-    sizeof(rpt_stmt_try_ty),
-    "try catch",
-    0, // construct
-    0, // destruct
-    run
-};
-
-
-rpt_stmt_ty *
-rpt_stmt_try(rpt_stmt_ty *s1, rpt_expr_ty *e, rpt_stmt_ty *s2)
-{
-    rpt_stmt_ty	    *that;
-    rpt_stmt_try_ty *this_thing;
-
-    that = rpt_stmt_alloc(&method);
-    this_thing = (rpt_stmt_try_ty *)that;
-    this_thing->e = rpt_expr_copy(e);
-    rpt_stmt_append(that, s1);
-    rpt_stmt_append(that, s2);
-    if (!rpt_expr_lvalue(e))
-	rpt_expr_parse_error(e, i18n("the catch variable must be modifiable"));
-    return that;
 }

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate actives
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change.h>
@@ -33,7 +30,7 @@ project_active(project_ty *pp, int active_branch_ok)
 {
     long	    j;
     long	    change_number;
-    change_ty	    *cp;
+    change::pointer cp;
     int		    active;
     project_ty	    *p2;
     cstate_ty       *cstate_data;
@@ -70,7 +67,7 @@ project_active(project_ty *pp, int active_branch_ok)
 	}
 	else
 	{
-	    cstate_data = change_cstate_get(cp);
+	    cstate_data = cp->cstate_get();
 	    switch (cstate_data->state)
 	    {
 	    case cstate_state_awaiting_development:
@@ -120,7 +117,7 @@ project_active_check(project_ty *pp, int brok)
 
 
 void
-project_active_check_branch(change_ty *cp, int brok)
+project_active_check_branch(change::pointer cp, int brok)
 {
     project_ty      *pp;
 

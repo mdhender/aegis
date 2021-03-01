@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1996, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,189 +13,197 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate values
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
+#include <common/mem.h>
+#include <common/trace.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/value.h>
 #include <libaegis/aer/value/error.h>
-#include <common/error.h>
-#include <common/mem.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 
 
-rpt_value_ty *
-rpt_value_alloc(rpt_value_method_ty *method)
+rpt_value::rpt_value()
 {
-    rpt_value_ty    *this_thing;
-
-    trace(("value::alloc(method = %08lX)\n{\n", (long)method));
-    trace(("method is \"%s\"\n", method->name));
-    this_thing = (rpt_value_ty *)mem_alloc(method->size);
-    this_thing->method = method;
-    this_thing->reference_count = 1;
-    if (method->construct)
-	method->construct(this_thing);
-    trace(("return %08lX;\n", (long)this_thing));
-    trace(("}\n"));
-    return this_thing;
+    trace(("%s\n", __PRETTY_FUNCTION__));
 }
 
 
-rpt_value_ty *
-rpt_value_copy(rpt_value_ty *this_thing)
+rpt_value::~rpt_value()
 {
-    trace(("value::copy(this_thing = %08lX)\n{\n", (long)this_thing));
-    assert(this_thing->reference_count >= 1);
-    trace(("method is \"%s\"\n", this_thing->method->name));
-    this_thing->reference_count++;
-    trace(("reference_count = %ld /* after */\n",
-	this_thing->reference_count));
-    trace(("return %08lX;\n", (long)this_thing));
-    trace(("}\n"));
-    return this_thing;
+    trace(("%s\n", __PRETTY_FUNCTION__));
 }
 
 
-void
-rpt_value_free(rpt_value_ty *this_thing)
+rpt_value::pointer
+rpt_value::lookup(const rpt_value::pointer &rhs, bool)
+    const
 {
-    trace(("value::free(this_thing = %08lX)\n{\n", (long)this_thing));
-    assert(this_thing->reference_count >= 1);
-    trace(("method is \"%s\"\n", this_thing->method->name));
-    trace(("reference_count = %ld /* before */\n",
-	this_thing->reference_count));
-    this_thing->reference_count--;
-    if (this_thing->reference_count <= 0)
-    {
-	if (this_thing->method->destruct)
-    	    this_thing->method->destruct(this_thing);
-	mem_free(this_thing);
-    }
-    trace(("}\n"));
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    sub_context_ty sc;
+    sc.var_set_charstar("Name1", name());
+    sc.var_set_charstar("Name2", rhs->name());
+    nstring s(sc.subst_intl(i18n("illegal lookup ($name1[$name2])")));
+    return rpt_value_error::create(s);
 }
 
 
-rpt_value_ty *
-rpt_value_arithmetic(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value::keys()
+    const
 {
-    if (vp->method->arithmetic)
-	return vp->method->arithmetic(vp);
-    return rpt_value_copy(vp);
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    sub_context_ty sc;
+    sc.var_set_charstar("Name", name());
+    nstring s(sc.subst_intl(i18n("illegal keys request ($name)")));
+    return rpt_value_error::create(s);
 }
 
 
-rpt_value_ty *
-rpt_value_stringize(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value::count()
+    const
 {
-    if (vp->method->stringize)
-	return vp->method->stringize(vp);
-    return rpt_value_copy(vp);
-}
-
-
-rpt_value_ty *
-rpt_value_booleanize(rpt_value_ty *vp)
-{
-    if (vp->method->booleanize)
-	return vp->method->booleanize(vp);
-    return rpt_value_copy(vp);
-}
-
-
-rpt_value_ty *
-rpt_value_lookup(rpt_value_ty *lhs, rpt_value_ty *rhs, int lvalue)
-{
-    sub_context_ty  *scp;
-    string_ty       *s;
-    rpt_value_ty    *result;
-
-    if (lhs->method->lookup)
-	return lhs->method->lookup(lhs, rhs, lvalue);
-
-    scp = sub_context_new();
-    sub_var_set_charstar(scp, "Name1", lhs->method->name);
-    sub_var_set_charstar(scp, "Name2", rhs->method->name);
-    s = subst_intl(scp, i18n("illegal lookup ($name1[$name2])"));
-    sub_context_delete(scp);
-    result = rpt_value_error((struct rpt_pos_ty *)0, s);
-    str_free(s);
-    return result;
-}
-
-
-rpt_value_ty *
-rpt_value_keys(rpt_value_ty *vp)
-{
-    sub_context_ty  *scp;
-    string_ty       *s;
-    rpt_value_ty    *result;
-
-    if (vp->method->keys)
-	return vp->method->keys(vp);
-
-    scp = sub_context_new();
-    sub_var_set_charstar(scp, "Name", vp->method->name);
-    s = subst_intl(scp, i18n("illegal keys request ($name)"));
-    sub_context_delete(scp);
-    result = rpt_value_error((struct rpt_pos_ty *)0, s);
-    str_free(s);
-    return result;
-}
-
-
-rpt_value_ty *
-rpt_value_count(rpt_value_ty *vp)
-{
-    sub_context_ty  *scp;
-    string_ty       *s;
-    rpt_value_ty    *result;
-
-    if (vp->method->count)
-	return vp->method->count(vp);
-
-    scp = sub_context_new();
-    sub_var_set_charstar(scp, "Name", vp->method->name);
-    s = subst_intl(scp, i18n("illegal count request ($name)"));
-    sub_context_delete(scp);
-    result = rpt_value_error((struct rpt_pos_ty *)0, s);
-    str_free(s);
-    return result;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    sub_context_ty sc;
+    sc.var_set_charstar("Name", name());
+    nstring s(sc.subst_intl(i18n("illegal count request ($name)")));
+    return rpt_value_error::create(s);
 }
 
 
 const char *
-rpt_value_typeof(rpt_value_ty *vp)
+rpt_value::type_of()
+    const
 {
-    const char      *result;
-
-    trace(("value::typeof(vp = %08lX)\n{\n", (long)vp));
-    if (vp->method->type_of)
-	result = vp->method->type_of(vp);
-    else
-	result = vp->method->name;
-    trace(("result = \"%s\";\n", result));
-    trace(("}\n"));
-    return result;
+    return name();
 }
 
 
-rpt_value_ty *
-rpt_value_undefer(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value::integerize(const rpt_value::pointer &vp)
 {
-    rpt_value_ty    *result;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    rpt_value::pointer result = vp->integerize_or_null();
+    return (result ? result : vp);
+}
 
-    trace(("value::undefer(vp = %08lX)\n{\n", (long)vp));
-    if (vp->method->undefer)
-	result = vp->method->undefer(vp);
-    else
-	result = rpt_value_copy(vp);
-    assert(result->method->type != rpt_value_type_deferred);
-    trace(("result = %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
+
+rpt_value::pointer
+rpt_value::integerize_or_null()
+    const
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return pointer();
+}
+
+
+rpt_value::pointer
+rpt_value::undefer(const rpt_value::pointer &vp)
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    rpt_value::pointer result = vp->undefer_or_null();
+    return (result ? result : vp);
+}
+
+
+rpt_value::pointer
+rpt_value::undefer_or_null()
+    const
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return pointer();
+}
+
+
+rpt_value::pointer
+rpt_value::arithmetic(const rpt_value::pointer &vp)
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    rpt_value::pointer result = vp->arithmetic_or_null();
+    return (result ? result : vp);
+}
+
+
+rpt_value::pointer
+rpt_value::arithmetic_or_null()
+    const
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return pointer();
+}
+
+
+rpt_value::pointer
+rpt_value::realize(const rpt_value::pointer &vp)
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    rpt_value::pointer result = vp->realize_or_null();
+    return (result ? result : vp);
+}
+
+
+rpt_value::pointer
+rpt_value::realize_or_null()
+    const
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return pointer();
+}
+
+
+rpt_value::pointer
+rpt_value::stringize(const rpt_value::pointer &vp)
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    trace(("vp is a %s\n", vp->name()));
+    rpt_value::pointer result = vp->stringize_or_null();
+    trace(("result = %p\n", result.get()));
+    return (result ? result : vp);
+}
+
+
+rpt_value::pointer
+rpt_value::stringize_or_null()
+    const
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return pointer();
+}
+
+
+rpt_value::pointer
+rpt_value::booleanize(const rpt_value::pointer &vp)
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    rpt_value::pointer result = vp->booleanize_or_null();
+    return (result ? result : vp);
+}
+
+
+rpt_value::pointer
+rpt_value::booleanize_or_null()
+    const
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return pointer();
+}
+
+
+bool
+rpt_value::is_an_error()
+    const
+{
+    return false;
+}
+
+
+bool
+rpt_value::is_a_struct()
+    const
+{
+    return false;
 }

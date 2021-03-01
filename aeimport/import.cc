@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -22,39 +21,40 @@
 
 #include <common/ac/stdio.h>
 
+#include <common/error.h>
+#include <common/now.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/trace.h>
 #include <libaegis/ael/project/projects.h>
-#include <aeimport/arglex3.h>
 #include <libaegis/arglex/project.h>
 #include <libaegis/change.h>
-#include <aeimport/change_set/find.h>
-#include <aeimport/change_set/list.h>
 #include <libaegis/commit.h>
-#include <aeimport/config_file.h>
-#include <common/error.h>
 #include <libaegis/file.h>
-#include <aeimport/format.h>
-#include <aeimport/format/search_list.h>
 #include <libaegis/gonzo.h>
 #include <libaegis/help.h>
-#include <aeimport/import.h>
 #include <libaegis/io.h>
 #include <libaegis/lock.h>
-#include <common/now.h>
 #include <libaegis/os.h>
-#include <common/progname.h>
 #include <libaegis/project.h>
 #include <libaegis/project/history.h>
 #include <libaegis/project/pattr/set.h>
 #include <libaegis/project/verbose.h>
-#include <common/quit.h>
-#include <aeimport/reconstruct.h>
 #include <libaegis/sub.h>
-#include <aeimport/synthesize.h>
-#include <common/trace.h>
 #include <libaegis/undo.h>
 #include <libaegis/user.h>
 #include <libaegis/version.h>
 #include <libaegis/zero.h>
+
+#include <aeimport/arglex3.h>
+#include <aeimport/change_set/find.h>
+#include <aeimport/change_set/list.h>
+#include <aeimport/config_file.h>
+#include <aeimport/format.h>
+#include <aeimport/format/search_list.h>
+#include <aeimport/import.h>
+#include <aeimport/reconstruct.h>
+#include <aeimport/synthesize.h>
 
 
 //
@@ -148,11 +148,9 @@ static void
 import_main(void)
 {
     sub_context_ty  *scp;
-    string_ty	    *home;
-    string_ty	    *s1;
     string_ty	    *project_name;
     project_ty	    *pp;
-    user_ty	    *up;
+    user_ty::pointer up;
     string_ty	    *bl;
     string_ty	    *hp;
     string_ty	    *ip;
@@ -173,7 +171,7 @@ import_main(void)
 
     trace(("import_main()\n{\n"));
     project_name = 0;
-    home = 0;
+    nstring home;
     version_number_length = 0;
     version_string = 0;
     source_directory = 0;
@@ -205,7 +203,7 @@ import_main(void)
 	    // symbolic links resolved, and any comparison of paths
 	    // is done on this "system idea" of the pathname.
 	    //
-	    home = str_from_c(arglex_value.alv_string);
+	    home = arglex_value.alv_string;
 	    break;
 
 	case arglex_token_version:
@@ -377,7 +375,7 @@ import_main(void)
     //
     // locate user data
     //
-    up = user_executing((project_ty *)0);
+    up = user_ty::create();
 
     //
     // read in the project table
@@ -388,10 +386,10 @@ import_main(void)
     //
     // make sure not too privileged
     //
-    if (!user_uid_check(up->name))
-	fatal_user_too_privileged(user_name(up));
-    if (!user_gid_check(up->group))
-	fatal_group_too_privileged(user_group(up));
+    if (!up->check_uid())
+	fatal_user_too_privileged(up->name());
+    if (!up->check_gid())
+	fatal_group_too_privileged(up->get_group_name());
 
     //
     // it is an error if the name is already in use
@@ -405,7 +403,7 @@ import_main(void)
     //
     // The user who ran the command is the project administrator.
     //
-    project_administrator_add(pp, user_name(up));
+    project_administrator_add(pp, up->name());
 
     //
     // Add the staff to the project.
@@ -417,13 +415,13 @@ import_main(void)
     // case where exactly one staff member is found, when it's pretty
     // clear who should be an administrator.
     //
-    if (staff.nstrings == 1 && !str_equal(staff.string[0], user_name(up)))
-	project_administrator_add(pp, staff.string[0]);
+    if (staff.nstrings == 1 && nstring(staff.string[0]) != up->name())
+	project_administrator_add(pp, nstring(staff.string[0]));
     for (j = 0; j < staff.nstrings; ++j)
     {
-	project_developer_add(pp, staff.string[j]);
-	project_reviewer_add(pp, staff.string[j]);
-	project_integrator_add(pp, staff.string[j]);
+	project_developer_add(pp, nstring(staff.string[j]));
+	project_reviewer_add(pp, nstring(staff.string[j]));
+	project_integrator_add(pp, nstring(staff.string[j]));
     }
 
     //
@@ -432,28 +430,24 @@ import_main(void)
     //
     if (!home)
     {
-	int		max;
-
-	s1 = user_default_project_directory(up);
+	nstring s1 = up->default_project_directory();
 	assert(s1);
 	os_become_orig();
-	max = os_pathconf_name_max(s1);
+	int max = os_pathconf_name_max(s1);
 	os_become_undo();
 	if ((int)project_name_get(pp)->str_length > max)
 	    fatal_project_name_too_long(project_name_get(pp), max);
-	home = os_path_cat(s1, project_name_get(pp));
-	str_free(s1);
+	home = os_path_cat(s1, nstring(project_name_get(pp)));
 
-	project_verbose_directory(pp, home);
+	project_verbose_directory(pp, home.get_ref());
     }
     pp->home_path_set(home);
-    str_free(home);
 
     //
     // Create the directory and subdirectories.
     // It is an error if the directories can't be created.
     //
-    home = pp->home_path_get();
+    home = nstring(pp->home_path_get());
     bl = pp->baseline_path_get();
     hp = pp->history_path_get();
     ip = pp->info_path_get();
@@ -467,7 +461,7 @@ import_main(void)
     undo_rmdir_errok(hp);
     os_mkdir(ip, 02755);
     undo_rmdir_errok(ip);
-    project_become_undo();
+    project_become_undo(pp);
 
     //
     // add a row to the table
@@ -537,9 +531,11 @@ import_main(void)
 
 	fsp = fslp->item[j];
 	tail = os_below_dir(source_directory, fsp->filename_physical);
-	dst = os_path_cat(hp, tail);
-	os_mkdir_between(hp, tail, mode);
+        string_ty *sanitized_tail = format_sanitize(format, tail, 0);
+	dst = os_path_cat(hp, sanitized_tail);
+	os_mkdir_between(hp, sanitized_tail, mode);
 	str_free(tail);
+	str_free(sanitized_tail);
 	copy_whole_file(fsp->filename_physical, dst, 1);
 
 	//
@@ -549,7 +545,7 @@ import_main(void)
 	format_unlock(format, dst);
 	str_free(dst);
     }
-    project_become_undo();
+    project_become_undo(pp);
 
     //
     // After this point, we just use the terminal branch.

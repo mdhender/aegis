@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate users
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/ael/change/inappropriat.h>
@@ -39,7 +36,7 @@ void
 list_user_changes(struct string_ty *project_name, long change_number,
     string_list_ty *args)
 {
-    user_ty	    *up;
+    user_ty::pointer up;
     output_ty	    *project_col;
     output_ty	    *change_col;
     output_ty	    *state_col;
@@ -48,7 +45,7 @@ list_user_changes(struct string_ty *project_name, long change_number,
     string_list_ty  name;
     size_t	    j;
     int		    left;
-    col_ty	    *colp;
+    col	    *colp;
     string_ty       *login = 0;
 
     trace(("list_user_changes()\n{\n"));
@@ -69,7 +66,7 @@ list_user_changes(struct string_ty *project_name, long change_number,
         //
 	// No user name is provided, use the current user.
 	//
-        up = user_executing((project_ty *)0);
+        up = user_ty::create();
     }
     else
     {
@@ -77,22 +74,21 @@ list_user_changes(struct string_ty *project_name, long change_number,
 	// Use the user name supplied by the caller.
 	//
         login = args->string[0];
-        up = user_symbolic((project_ty *)0, login);
+        up = user_ty::create(nstring(login));
     }
 
     //
     // open listing
     //
-    colp = col_open((string_ty *)0);
+    colp = col::open((string_ty *)0);
     s =
 	str_format
 	(
 	    "Owned by %s <%s>",
-	    up->full_name->str_text,
-	    user_name(up)->str_text
+	    up->full_name().c_str(),
+	    up->name().c_str()
 	);
-    user_free(up);
-    col_title(colp, "List of Changes", s->str_text);
+    colp->title("List of Changes", s->str_text);
     str_free(s);
 
     //
@@ -100,13 +96,13 @@ list_user_changes(struct string_ty *project_name, long change_number,
     //
     left = 0;
     project_col =
-	col_create(colp, left, left + PROJECT_WIDTH, "Project\n----------");
+	colp->create(left, left + PROJECT_WIDTH, "Project\n----------");
     left += PROJECT_WIDTH + 1;
-    change_col = col_create(colp, left, left + CHANGE_WIDTH, "Change\n------");
+    change_col = colp->create(left, left + CHANGE_WIDTH, "Change\n------");
     left += CHANGE_WIDTH + 1;
-    state_col = col_create(colp, left, left + STATE_WIDTH, "State\n----------");
+    state_col = colp->create(left, left + STATE_WIDTH, "State\n----------");
     left += STATE_WIDTH + 1;
-    description_col = col_create(colp, left, 0, "Description\n-------------");
+    description_col = colp->create(left, 0, "Description\n-------------");
 
     //
     // for each project, see if the current user
@@ -135,9 +131,9 @@ list_user_changes(struct string_ty *project_name, long change_number,
 	// bind a user to that project
 	//
         if (!login)
-            up = user_executing(pp);
+            up = user_ty::create();
         else
-            up = user_symbolic(pp, login);
+            up = user_ty::create(nstring(login));
 
 	//
 	// for each change within this project the user
@@ -145,10 +141,10 @@ list_user_changes(struct string_ty *project_name, long change_number,
 	//
 	for (n = 0;; ++n)
 	{
-	    change_ty	    *cp;
+	    change::pointer cp;
 	    cstate_ty	    *cstate_data;
 
-	    if (!user_own_nth(up, project_name_get(pp), n, &change_number))
+	    if (!up->own_nth(pp, n, change_number))
 		break;
 
 	    //
@@ -162,7 +158,7 @@ list_user_changes(struct string_ty *project_name, long change_number,
 	    //
 	    project_col->fputs(project_name_get(pp)->str_text);
 	    change_col->fprintf("%4ld", magic_zero_decode(change_number));
-	    cstate_data = change_cstate_get(cp);
+	    cstate_data = cp->cstate_get();
 	    state_col->fputs(cstate_state_ename(cstate_data->state));
 	    if (cstate_data->brief_description)
 	    {
@@ -171,7 +167,7 @@ list_user_changes(struct string_ty *project_name, long change_number,
 		    cstate_data->brief_description->str_text
 		);
 	    }
-	    col_eoln(colp);
+	    colp->eoln();
 
 	    //
 	    // release change and project
@@ -183,14 +179,13 @@ list_user_changes(struct string_ty *project_name, long change_number,
 	// free user and project
 	//
         str_free(login);
-	user_free(up);
 	project_free(pp);
     }
 
     //
     // clean up and go home
     //
-    col_close(colp);
+    delete colp;
     done:
     trace(("}\n"));
 }

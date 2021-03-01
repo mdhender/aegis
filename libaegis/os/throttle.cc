@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -28,56 +27,60 @@
 #include <libaegis/sub.h>
 
 
-//
-// NAME
-//	os_throttle
-//
-// SYNOPSIS
-//	void os_throttle(void);
-//
-// DESCRIPTION
-//	This unlikely function is used to slow aegis down.  it is
-//	primarily used for aegis' own tests, to ensure that the time
-//	stamps are kosher even on ultra-fast machines.  It is also
-//	useful in shell scripts, e.g. automatic integration queue
-//	handling.
-//
+static int nsecs;
+static bool nsecs_set;
+
+
+static void
+slurp(void)
+{
+    if (nsecs_set)
+        return;
+    nsecs_set = true;
+
+    const char *cp = getenv("AEGIS_THROTTLE");
+    if (!cp)
+    {
+        //
+        // If not set, default to zero
+        //
+        nsecs = 0;
+    }
+    else
+    {
+        char *ep = 0;
+        nsecs = strtol(cp, &ep, 10);
+
+        //
+        // If it isn't a valid number, default to zero.
+        //
+        if (cp == ep || *ep)
+            nsecs = 0;
+    }
+}
+
 
 void
 os_throttle(void)
 {
-    static int      nsecs;
-
-    if (nsecs == 0)
-    {
-	char            *cp;
-
-	cp = getenv("AEGIS_THROTTLE");
-	if (!cp)
-	    nsecs = -1;
-	else
-	{
-	    nsecs = atoi(cp);
-	    if (nsecs <= 0)
-		nsecs = 1;
-	    else if (nsecs > 5)
-		nsecs = 5;
-	}
-    }
+    slurp();
     if (nsecs > 0)
     {
 	sync();
 #ifdef DEBUG
-	{
-	    sub_context_ty *scp;
-
-	    scp = sub_context_new();
-	    sub_var_set_long(scp, "Number", (long)nsecs);
-	    error_intl(scp, i18n("throttling $number seconds"));
-	    sub_context_delete(scp);
-	}
+        sub_context_ty sc;
+        sc.var_set_long("Number", (long)nsecs);
+        sc.error_intl(i18n("throttling $number seconds"));
 #endif
-	sleep(nsecs);
+	sleep(nsecs > 5 ? 5 : nsecs);
 	now_clear();
     }
+}
+
+
+bool
+os_unthrottle(void)
+{
+    slurp();
+    return (nsecs < 0);
 }

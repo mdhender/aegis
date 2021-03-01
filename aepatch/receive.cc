@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate receives
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -257,7 +254,7 @@ static long
 number_of_files(string_ty *project_name, long change_number)
 {
     project_ty	    *pp;
-    change_ty	    *cp;
+    change::pointer cp;
     long	    result;
 
     pp = project_alloc(project_name);
@@ -360,7 +357,7 @@ receive(void)
     string_ty	    *project_name;
     long	    change_number;
     project_ty	    *pp;
-    change_ty	    *cp;
+    change::pointer cp;
     string_ty	    *attribute_file_name;
     cattr_ty	    *cattr_data;
     cattr_ty	    *dflt;
@@ -503,7 +500,10 @@ receive(void)
     if (!project_name)
 	project_name = plp->project_name;
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
 
     //
     // locate project data
@@ -1327,7 +1327,7 @@ receive(void)
     //
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
 
     //
     // now test the change

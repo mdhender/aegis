@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 1990-1994, 2003-2006 Peter Miller.
-//	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -28,13 +27,13 @@
 
 #include <common/env.h>
 #include <common/error.h>
-#include <common/mem.h>
 #include <common/page.h>
 #include <common/trace.h>
 
 
 extern	char	**environ;
 static	size_t	nenvirons;
+static	size_t	nenvirons_maximum;
 static	int	initialized;
 
 
@@ -65,13 +64,15 @@ env_initialize(void)
     nenvirons = 0;
     for (j = 0; environ[j]; ++j)
 	++nenvirons;
+    while (nenvirons + 1 > nenvirons_maximum)
+	nenvirons_maximum = nenvirons_maximum * 2 + 16;
     old = environ;
-    environ = (char **)mem_alloc((nenvirons + 1) * sizeof(char *));
+    environ = new char * [nenvirons_maximum];
     for (j = 0; j < nenvirons; ++j)
     {
 	char *was = old[j];
 	size_t nbytes = strlen(was) + 1;
-	char *cp = (char *)mem_alloc(nbytes);
+	char *cp = new char [nbytes];
 	strendcpy(cp, was, cp + nbytes);
 	environ[j] = cp;
     }
@@ -131,14 +132,23 @@ env_set(const char *name, const char *value)
     }
     if (j < nenvirons)
     {
-	environ[j] = (char *)mem_change_size(environ[j], nbytes);
+	delete [] environ[j];
+	environ[j] = new char [nbytes];
 	cp = environ[j];
     }
     else
     {
-	environ =
-            (char **)mem_change_size(environ, (nenvirons + 2) * sizeof(char *));
-	environ[nenvirons] = (char *)mem_alloc(nbytes);
+	if (nenvirons + 1 >= nenvirons_maximum)
+	{
+	    size_t new_nenvirons_maximum = nenvirons_maximum * 2 + 16;
+	    char **new_environ = new char * [new_nenvirons_maximum];
+	    for (size_t k = 0; k < nenvirons; ++k)
+		new_environ[k] = environ[k];
+	    delete [] environ;
+	    environ = new_environ;
+	    nenvirons_maximum = new_nenvirons_maximum;
+	}
+	environ[nenvirons] = new char [nbytes];
 	cp = environ[nenvirons];
 	++nenvirons;
 	environ[nenvirons] = 0;
@@ -205,11 +215,10 @@ env_unset(const char *name)
 	)
     	    break;
     }
-    if (!environ[j])
+    if (j >= nenvirons)
 	return;
     environ[j] = 0;
-    if (cp)
-	mem_free(cp);
+    delete [] cp;
     --nenvirons;
     for ( ; j < nenvirons; ++j)
 	environ[j] = environ[j + 1];

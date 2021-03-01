@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -20,39 +19,17 @@
 // MANIFEST: functions to manipulate cat_threes
 //
 
-#include <common/ac/string.h>
-
-#include <common/mem.h>
 #include <common/str.h>
+#include <common/stracc.h>
 
 
 string_ty *
 str_cat_three(string_ty *s1, string_ty *s2, string_ty *s3)
 {
-    static char	*tmp;
-    static size_t	tmplen;
-    string_ty	*s;
-    size_t		length;
-
-    length = s1->str_length + s2->str_length + s3->str_length;
-    if (!tmp)
-    {
-	tmplen = length;
-	if (tmplen < 16)
-    	    tmplen = 16;
-	tmp = (char *)mem_alloc(tmplen);
-    }
-    else
-    {
-	if (tmplen < length)
-	{
-    	    tmplen = length;
-    	    tmp = (char *)mem_change_size(tmp, tmplen);
-	}
-    }
-    memcpy(tmp, s1->str_text, s1->str_length);
-    memcpy(tmp + s1->str_length, s2->str_text, s2->str_length);
-    memcpy(tmp + s1->str_length + s2->str_length, s3->str_text, s3->str_length);
-    s = str_n_from_c(tmp, length);
-    return s;
+    static stracc_t ac;
+    ac.clear();
+    ac.push_back(s1->str_text, s1->str_length);
+    ac.push_back(s2->str_text, s2->str_length);
+    ac.push_back(s3->str_text, s3->str_length);
+    return ac.mkstr();
 }

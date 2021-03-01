@@ -1,25 +1,25 @@
 #!/bin/sh
 #
-#	aegis - project change supervisor
-#	Copyright (C) 2006 Peter Miller;
-#	All rights reserved.
+#       aegis - project change supervisor
+#       Copyright (C) 2006 Peter Miller
 #
-#	This program is free software; you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation; either version 2 of the License, or
-#	(at your option) any later version.
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 2 of the License, or
+#       (at your option) any later version.
 #
-#	This program is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#	GNU General Public License for more details.
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#       You should have received a copy of the GNU General Public License
+#       along with this program; if not, write to the Free Software
+#       Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
-# MANIFEST: shell script to manipulate eg_oss_begins
+# MANIFEST: shell script to create archive/eg_oss_templ.ae
 #
+output=
 here=`pwd`
 test $? -eq 0 || exit 1
 tmp=${TMP_DIR:-/tmp}/$$
@@ -31,6 +31,7 @@ fail() {
 }
 trap "fail" 1 2 3 15
 
+set -x
 mkdir $tmp $tmp/lib
 test $? -eq 0 || fail
 cd $tmp
@@ -53,11 +54,11 @@ USER=`whoami`
 export USER
 
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	lock_wait_preference = always; \
-	diff_preference = automatic_merge; \
-	pager_preference = never; \
-	persevere_preference = all; \
-	log_file_preference = never;"
+        lock_wait_preference = always; \
+        diff_preference = automatic_merge; \
+        pager_preference = never; \
+        persevere_preference = all; \
+        log_file_preference = never;"
 
 #
 # Create a new project
@@ -76,7 +77,7 @@ default_development_directory = "$tmp";
 fubar
 test $? -eq 0 || fail
 
-$bin/aegis -pa -f paf
+$bin/aegis -pa -f paf --project=$AEGIS_PROJECT
 test $? -eq 0 || fail
 
 #
@@ -110,20 +111,25 @@ test_baseline_exempt = true;
 fubar
 test $? -eq 0 || fail
 
-$bin/aegis --new-change -p $AEGIS_PROJECT -f caf -c $AEGIS_CHANGE
+$bin/aegis --new-change -f caf \
+        --project=$AEGIS_PROJECT --change=$AEGIS_CHANGE
 test $? -eq 0 || fail
 
 #
 # Begin development of the change
 #
-$bin/aegis --develop-begin -dir $tmp/chan.dir -c $AEGIS_CHANGE -nolog > log 2>&1
+$bin/aegis --develop-begin -dir $tmp/chan.dir -nolog \
+        --project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+        > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # Create the top-level aegis.conf file,
 # pointing into the aegis.conf.d directory.
 #
-$bin/aegis -nf $tmp/chan.dir/aegis.conf -v -nolog > log 2>&1
+$bin/aegis -nf $tmp/chan.dir/aegis.conf -v -nolog \
+        --project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+        > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 echo 'configuration_directory = "aegis.conf.d";' > $tmp/chan.dir/aegis.conf
@@ -133,7 +139,9 @@ test $? -eq 0 || fail
 # Create the build file.  It says we don't do builds at all.
 # We will have to wait until there is some content for that to be useful.
 #
-$bin/aegis -nf $tmp/chan.dir/aegis.conf.d/build -v -nolog > log 2>&1
+$bin/aegis -nf $tmp/chan.dir/aegis.conf.d/build -v -nolog \
+        --project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+        > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 echo 'build_command = "exit 0";' > $tmp/chan.dir/aegis.conf.d/build
@@ -146,40 +154,61 @@ test $? -eq 0 || fail
 while [ $# -ge 1 ]
 do
     case "$1" in
+    output=*)
+        output=`echo $1 | sed 's|.*=||'`
+        ;;
+
     *=*)
-	name=`echo $1 | sed 's|=.*||'`
-	value=`echo $1 | sed 's|.*=||'`
-	;;
+        name=`echo $1 | sed 's|=.*||'`
+        value=`echo $1 | sed 's|.*=||'`
+
+        $bin/aegis -nf $tmp/chan.dir/$name -v -nolog \
+            --project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+            > log 2>&1
+        if test $? -ne 0 ; then cat log; fail; fi
+
+        cp $here/$value $tmp/chan.dir/$name
+        test $? -eq 0 || fail
+        ;;
 
     *)
-	echo "$0 name=value ..." 1>&2
-	fail
-	;;
+        echo "$0 name=value ..." 1>&2
+        fail
+        ;;
     esac
     shift
-
-    $bin/aegis -nf $tmp/chan.dir/$name -v -nolog > log 2>&1
-    if test $? -ne 0 ; then cat log; fail; fi
-
-    cp $here/$value $tmp/chan.dir/$name
-    test $? -eq 0 || fail
 done
 
-$bin/aegis -diff -v -nolog > log 2>&1
+if test -z "$output"
+then
+    echo "No output=[target] option given."
+    fail
+fi
+
+$bin/aegis -diff -v -nolog \
+        --project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+        > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-$bin/aegis -dev-end
+$bin/aegis -dev-end \
+        --project=$AEGIS_PROJECT --change=$AEGIS_CHANGE
 test $? -eq 0 || fail
 
 # now integrate it
 
-$bin/aegis -integrate-begin 1 -v -nolog > log 2>&1
+$bin/aegis -integrate-begin -v -nolog \
+        --project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+        > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-$bin/aegis -diff -v -nolog > log 2>&1
+$bin/aegis -diff -v -nolog \
+        --project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+        > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-$bin/aegis -int-pass -v -nolog > log 2>&1
+$bin/aegis -int-pass -v -nolog \
+        --project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+        > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 # --------------------------------------------------------------------------
@@ -204,40 +233,43 @@ regression_test_exempt = true;
 fubar
 test $? -eq 0 || fail
 
-$bin/aegis --new-change -p $AEGIS_PROJECT -f caf -c $AEGIS_CHANGE
+$bin/aegis --new-change -f caf \
+        --project=$AEGIS_PROJECT --change=$AEGIS_CHANGE
 test $? -eq 0 || fail
 
 #
 # Begin development of the change
 #
-$bin/aegis --dev-begin -dir $tmp/chan.dir -c $AEGIS_CHANGE -v -nolog > log 2>&1
+$bin/aegis --dev-begin -dir $tmp/chan.dir.3 -v -nolog \
+        --project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+        > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-$bin/aegis -nf $tmp/chan.dir/aegis.conf.d/file_template -v -nolog > log 2>&1
+$bin/aegis -nf $tmp/chan.dir.3/aegis.conf.d/file_template -v -nolog > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-cat > $tmp/chan.dir/aegis.conf.d/file_template << 'fubar'
+cat > $tmp/chan.dir.3/aegis.conf.d/file_template << 'fubar'
 file_template =
 [
     {
-	pattern = [ "*.[cyl]" ];
-	body = "${read_file ${source aegis.file.template/c abs}}";
+        pattern = [ "*.[cyl]" ];
+        body = "${read_file ${source aegis.file.template/c abs}}";
     },
     {
-	pattern = [ "*.h" ];
-	body = "${read_file ${source aegis.file.template/h abs}}";
+        pattern = [ "*.h" ];
+        body = "${read_file ${source aegis.file.template/h abs}}";
     },
     {
-	pattern = [ "test/*/*.sh" ];
-	body = "${read_file ${source aegis.file.template/test.sh abs}}";
+        pattern = [ "test/*/*.sh" ];
+        body = "${read_file ${source aegis.file.template/test.sh abs}}";
     },
     {
-	pattern = [ "*.sh" ];
-	body = "${read_file ${source aegis.file.template/sh abs}}";
+        pattern = [ "*.sh" ];
+        body = "${read_file ${source aegis.file.template/sh abs}}";
     },
     {
-	pattern = [ "*" ];
-	body = "${read_file ${source aegis.file.template/generic abs}}";
+        pattern = [ "*" ];
+        body = "${read_file ${source aegis.file.template/generic abs}}";
     }
 ];
 
@@ -266,18 +298,20 @@ test $? -eq 0 || fail
 # now create the content templates
 #
 $bin/aegis --new-file \
-	$tmp/chan.dir/aegis.file.template/c \
-	$tmp/chan.dir/aegis.file.template/generic \
-	$tmp/chan.dir/aegis.file.template/h \
-	$tmp/chan.dir/aegis.file.template/sh \
-	$tmp/chan.dir/aegis.file.template/test.sh \
-	$tmp/chan.dir/aegis.supplementary/test_prelude.inc.sh \
-	-no-template -v -nolog > log 2>&1
+        $tmp/chan.dir.3/aegis.file.template/c \
+        $tmp/chan.dir.3/aegis.file.template/generic \
+        $tmp/chan.dir.3/aegis.file.template/h \
+        $tmp/chan.dir.3/aegis.file.template/sh \
+        $tmp/chan.dir.3/aegis.file.template/test.sh \
+        $tmp/chan.dir.3/aegis.supplementary/test_prelude.inc.sh \
+        -no-template -v -nolog \
+        --project=$AEGIS_PROJECT --change=$AEGIS_CHANGE \
+        > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-cat > $tmp/chan.dir/aegis.file.template/c << 'fubar'
+cat > $tmp/chan.dir.3/aegis.file.template/c << 'fubar'
 /*
- * ${project trunk_description}
+ * ${project trunk_name} - ${project trunk_description}
  * Copyright (C) ${date %Y} ${copyright-owner}
  *
  * This program is free software; you can redistribute it and/or modify
@@ -303,13 +337,12 @@ void
 ${id ${trim_ext $fn}}(void)
 {
 }
-endif
 fubar
 test $? -eq 0 || fail
 
-cat > $tmp/chan.dir/aegis.file.template/generic << 'fubar'
+cat > $tmp/chan.dir.3/aegis.file.template/generic << 'fubar'
 #
-# ${project trunk_description}
+# ${project trunk_name} - ${project trunk_description}
 # Copyright (C) ${date %Y} ${copyright-owner}
 #
 # This program is free software; you can redistribute it and/or modify
@@ -330,9 +363,9 @@ cat > $tmp/chan.dir/aegis.file.template/generic << 'fubar'
 fubar
 test $? -eq 0 || fail
 
-cat > $tmp/chan.dir/aegis.file.template/h << 'fubar'
+cat > $tmp/chan.dir.3/aegis.file.template/h << 'fubar'
 /*
- * ${project trunk_description}
+ * ${project trunk_name} - ${project trunk_description}
  * Copyright (C) ${date %Y} ${copyright-owner}
  *
  * This program is free software; you can redistribute it and/or modify
@@ -368,10 +401,10 @@ void ${id ${trim_ext $fn}}(void);
 fubar
 test $? -eq 0 || fail
 
-cat > $tmp/chan.dir/aegis.file.template/sh << 'fubar'
+cat > $tmp/chan.dir.3/aegis.file.template/sh << 'fubar'
 #!/bin/sh
 #
-# ${project trunk_description}
+# ${project trunk_name} - ${project trunk_description}
 # Copyright (C) ${date %Y} ${copyright-owner}
 #
 # This program is free software; you can redistribute it and/or modify
@@ -393,10 +426,10 @@ exit 0
 fubar
 test $? -eq 0 || fail
 
-cat > $tmp/chan.dir/aegis.file.template/test.sh << 'fubar'
+cat > $tmp/chan.dir.3/aegis.file.template/test.sh << 'fubar'
 #!/bin/sh
 #
-# ${project trunk_description}
+# ${project trunk_name} - ${project trunk_description}
 # Copyright (C) ${date %Y} ${copyright-owner}
 #
 # This program is free software; you can redistribute it and/or modify
@@ -422,7 +455,7 @@ TEST_SUBJECT="fill me in"
 # files to your heart's content.  It also loads our modules.  The
 # functions "pass", "fail" and "no_result" are the only correct ways of
 # leaving this test script.  The development directory is available via
-# the $$devdir variable, if you need data files or test programs.
+# the $devdir variable, if you need data files or test programs.
 #
 # That dot means "include" in shell speak.  It has to be an include,
 # executing it in a sub-shell will not work.
@@ -439,8 +472,8 @@ TEST_SUBJECT="fill me in"
 # through megabytes of verbal diarrhoea from tests which pass to find
 # the one useful output indicating what failed.
 #
-$$devdir/blah blah blah
-test $$? -eq 0 || fail
+$devdir/blah blah blah
+test $? -eq 0 || fail
 
 #
 # All the things tested by this individual test passed.
@@ -450,11 +483,11 @@ pass
 fubar
 test $? -eq 0 || fail
 
-cat > $tmp/chan.dir/aegis.file.template/test.sh << 'fubar'
+cat > $tmp/chan.dir.3/aegis.supplementary/test_prelude.inc.sh << 'fubar'
 #!/bin/sh
 #
-# Simple Video4Linux image grabber
-# Copyright (C) 2006 Peter Miller
+# ${project trunk_name} - ${project trunk_description}
+# Copyright (C) ${date %Y} ${copyright-owner}
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -483,7 +516,7 @@ fi
 #
 # Remember where we came from, so that we can refer back to it as necessary.
 #
-devdir=$(pwd)
+devdir=`pwd`
 test $? -eq 0 || exit 2
 
 #
@@ -492,7 +525,7 @@ test $? -eq 0 || exit 2
 # can be run even if the development directory is read only (e.g. for
 # reviewers).
 #
-testdir=/tmp/ovcam.$$
+testdir=/tmp/$$
 
 #
 # The tear_down function is used by all the ways of leaving a test
@@ -536,7 +569,7 @@ fail()
 #
 # The no_result function (command) is used to declare a test to have
 # failed in an unexpected way, and exit.  This is used for any case
-# where the "scaffolding" of a test does no succeed, effectively making
+# where the "scaffolding" of a test does not succeed, effectively making
 # the correctedness of the functionality being tested indeterminate.
 # The exit code of 2 is dictated by Aegis, so Aegis can know the result
 # of running the test.
@@ -545,7 +578,7 @@ no_result()
 {
     tear_down
     echo "NO RESULT for test of $TEST_SUBJECT"
-    exit 1
+    exit 2
 }
 
 #
@@ -561,7 +594,10 @@ test $? -eq 0 || fail
 #
 # Package the change set.
 #
-$bin/aedist -send -ndh -mh -naa -comp-alg=gzip -compat=4.6
+$bin/aedist -send -ndh -mh -naa -comp-alg=gzip -compat=4.6 \
+        --ignore-uuid \
+        --output="$here/$output" \
+        --project=$AEGIS_PROJECT --change=$AEGIS_CHANGE
 
 # --------------------------------------------------------------------------
 

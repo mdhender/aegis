@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2006 Peter Miller
+//	Copyright (C) 2006 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -20,10 +20,14 @@
 // MANIFEST: functions to manipulate interrupts
 //
 
+#include <common/ac/execinfo.h>
 #include <common/ac/signal.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 #include <common/ac/string.h>
 #include <common/ac/unistd.h>
 
+#include <common/error.h>
 #include <libaegis/os.h>
 #include <libaegis/os/interrupt.h>
 #include <libaegis/sub.h>
@@ -48,6 +52,31 @@ os_interrupt(int n)
     sub_context_delete(scp);
 }
 
+#ifdef HAVE_BACKTRACE
+
+RETSIGTYPE
+os_backtrace(int n)
+{
+    signal(n, SIG_IGN);
+    if (interrupted)
+        return;
+    interrupted = 1;
+
+#define BT_MAX_DEPTH 20
+
+    void **bt_info;
+    bt_info = (void**)calloc(BT_MAX_DEPTH, sizeof(void*));
+    int bt_depth = backtrace(bt_info, BT_MAX_DEPTH);
+    char **symbol = backtrace_symbols(bt_info, bt_depth);
+    for (int j = 0; j < bt_depth; ++j)
+    {
+        error_raw("%d: %s", j, symbol[j]);
+    }
+    signal(n, SIG_DFL);
+    kill(0, n);
+}
+
+#endif
 
 void
 os_interrupt_register(void)
@@ -60,6 +89,15 @@ os_interrupt_register(void)
 	signal(SIGINT, os_interrupt);
     if (signal(SIGTERM, SIG_IGN) != SIG_IGN)
 	signal(SIGTERM, os_interrupt);
+
+#ifdef HAVE_BACKTRACE
+    if (signal(SIGSEGV, SIG_IGN) != SIG_IGN)
+        signal(SIGSEGV, os_backtrace);
+    if (signal(SIGBUS, SIG_IGN) != SIG_IGN)
+        signal(SIGBUS, os_backtrace);
+    if (signal(SIGABRT, SIG_IGN) != SIG_IGN)
+        signal(SIGABRT, os_backtrace);
+#endif
 }
 
 

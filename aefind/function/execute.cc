@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,75 +13,94 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate executes
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/trace.h>
 #include <libaegis/aer/value/boolean.h>
 #include <libaegis/aer/value/string.h>
+#include <libaegis/os.h>
+
 #include <aefind/function/execute.h>
 #include <aefind/function/needs.h>
-#include <libaegis/os.h>
-#include <common/trace.h>
 #include <aefind/tree/list.h>
 #include <aefind/tree/monadic.h>
 
 
-static rpt_value_ty *
-evaluate(tree_ty *tp, string_ty *path1, string_ty *path2, string_ty *path3,
-    struct stat *st)
+tree_execute::~tree_execute()
 {
-    tree_monadic_ty *this_thing;
-    rpt_value_ty    *vp;
-    rpt_value_ty    *svp;
-    int		    exit_status;
-
-    trace(("tree::execute::evaluate\n"));
-    this_thing = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this_thing->arg, path1, path2, path3, st);
-    svp = rpt_value_stringize(vp);
-    rpt_value_free(vp);
-    os_become_orig();
-    exit_status =
-	os_execute_retcode
-	(
-	    rpt_value_string_query(svp),
-	    OS_EXEC_FLAG_SILENT,
-	    0
-	);
-    os_become_undo();
-    rpt_value_free(svp);
-    return rpt_value_boolean(exit_status == 0);
 }
 
 
-static int
-useful(tree_ty *tp)
+tree_execute::tree_execute(const pointer &a_arg) :
+    tree_monadic(a_arg)
+{
+}
+
+
+tree::pointer
+tree_execute::create(const pointer &a_arg)
+{
+    return pointer(new tree_execute(a_arg));
+}
+
+
+tree::pointer
+tree_execute::create_l(const tree_list &args)
+{
+    trace(("tree_execute::create\n"));
+    function_needs_one("execute", args);
+    return create(args[0]);
+}
+
+
+rpt_value::pointer
+tree_execute::evaluate(string_ty *path1, string_ty *path2, string_ty *path3,
+    struct stat *st) const
+{
+    trace(("tree::execute::evaluate\n"));
+    rpt_value::pointer vp = get_arg()->evaluate(path1, path2, path3, st);
+    rpt_value::pointer svp = rpt_value::stringize(vp);
+
+    rpt_value_string *ss = dynamic_cast<rpt_value_string *>(svp.get());
+    if (!ss)
+    {
+        // FIXME: shouldn't thi be an error?
+        return rpt_value_boolean::create(true);
+    }
+    nstring cmd(ss->query());
+
+    os_become_orig();
+    int exit_status = os_execute_retcode(cmd, OS_EXEC_FLAG_SILENT, 0);
+    os_become_undo();
+    return rpt_value_boolean::create(exit_status == 0);
+}
+
+
+tree::pointer
+tree_execute::optimize()
+    const
+{
+    tree::pointer tp = create(get_arg()->optimize());
+    if (tp->constant())
+        tp = tp->optimize_constant();
+    return tp;
+}
+
+
+bool
+tree_execute::useful()
+    const
 {
     trace(("tree::execute::useful\n"));
-    return 1;
+    return true;
 }
 
 
-static tree_method_ty method =
+const char *
+tree_execute::name()
+    const
 {
-    sizeof(tree_monadic_ty),
-    "execute",
-    tree_monadic_destructor,
-    tree_monadic_print,
-    evaluate,
-    useful,
-    0, // constant
-    0, // optimize
-};
-
-
-tree_ty *
-function_execute(tree_list_ty *args)
-{
-    trace(("tree::execute::new\n"));
-    function_needs_one("execute", args);
-    return tree_monadic_new(&method, args->item[0]);
+    return "execute";
 }

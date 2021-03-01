@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1998, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -23,28 +22,27 @@
 #include <libaegis/sub.h>
 #include <libaegis/sub/quote.h>
 #include <common/trace.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
 
 
-wstring_ty *
-sub_quote(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_quote(sub_context_ty *, const wstring_list &arg)
 {
     //
     // Convert the work list to a single string.
     //
     trace(("sub_quote()\n{\n"));
-    wstring_ty *s = arg->unsplit(1, arg->size());
+    nstring s = arg.unsplit(1, arg.size()).to_nstring();
 
     //
     // quote the string as required
     //
-    wstring_ty *result = wstr_quote_shell(s);
+    wstring result(s.quote_shell());
 
     //
     // clean up and return
     //
-    wstr_free(s);
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

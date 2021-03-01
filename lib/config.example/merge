@@ -1,8 +1,6 @@
 /*
  *	aegis - project change supervisor
  *	This file is in the Public Domain, 2006 Peter Miller.
- *
- * MANIFEST: example of using RCS merge in the project config file
  */
 
 /*

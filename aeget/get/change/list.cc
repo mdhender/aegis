@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate lists
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -108,7 +105,7 @@ single_bit(int n)
 
 
 void
-get_change_list(project_ty *pp, string_ty *filename, string_list_ty *modifier)
+get_change_list(project_ty *pp, string_ty *, string_list_ty *modifier)
 {
     int             state_mask;
     int	            bit;
@@ -171,13 +168,13 @@ get_change_list(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     {
 	cstate_ty       *cstate_data;
 	long            change_number;
-	change_ty       *cp;
+	change::pointer cp;
 
 	if (!project_change_nth(pp, j, &change_number))
     	    break;
 	cp = change_alloc(pp, change_number);
 	change_bind_existing(cp);
-	cstate_data = change_cstate_get(cp);
+	cstate_data = cp->cstate_get();
 	if
 	(
 	    (state_mask & (1 << cstate_data->state))
@@ -222,13 +219,13 @@ get_change_list(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     {
 	cstate_ty       *cstate_data;
 	long            change_number;
-	change_ty       *cp;
+	change::pointer cp;
 
 	if (!project_change_nth(pp, j, &change_number))
     	    break;
 	cp = change_alloc(pp, change_number);
 	change_bind_existing(cp);
-	cstate_data = change_cstate_get(cp);
+	cstate_data = cp->cstate_get();
 	if (!(state_mask & (1 << cstate_data->state)))
 	{
 	    change_free(cp);
@@ -287,9 +284,76 @@ get_change_list(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     printf("Listed %lu changes.</td></tr>\n", (unsigned long)num);
     printf("</table></div>\n");
 
+    if (state_mask == (1L << cstate_state_completed))
+    {
+	printf("See also the ");
+	emit_project_href(pp, "project+history");
+	printf("Project History</a> page.");
+    }
+
     printf("<hr>\n");
     printf("A similar report may be obtained from the command line, with\n");
-    printf("<blockquote><pre>ael c -p ");
+    printf("<blockquote><pre>");
+    bit = single_bit(state_mask);
+    if (bit >= 0)
+    {
+	switch (bit)
+	{
+	case cstate_state_awaiting_development:
+	    printf("aedb -l");
+	    break;
+
+	case cstate_state_being_developed:
+	    printf("aede -l");
+	    break;
+
+	case cstate_state_awaiting_review:
+	    printf("aerb -l");
+	    break;
+
+	case cstate_state_being_reviewed:
+	    printf("aerpass -l");
+	    break;
+
+	case cstate_state_awaiting_integration:
+	    printf("aeib -l");
+	    break;
+
+	case cstate_state_being_integrated:
+	    printf("aeipass -l");
+	    break;
+
+	case cstate_state_completed:
+	    printf("ael project-history");
+	    break;
+
+	default:
+	    printf("ael c");
+	    break;
+	}
+    }
+    else
+    {
+	bit = single_bit(~state_mask);
+	if (bit >= 0)
+	{
+	    switch (bit)
+	    {
+	    case cstate_state_completed:
+		printf("ael outstanding-changes");
+		break;
+
+	    default:
+		printf("ael c");
+		break;
+	    }
+	}
+	else
+	{
+	    printf("ael c");
+	}
+    }
+    printf(" -p ");
     html_encode_string(project_name_get(pp));
     printf("</pre></blockquote>\n");
 

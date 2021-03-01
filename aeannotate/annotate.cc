@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,16 +13,13 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate annotates
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
 
 #include <common/error.h> // for assert
-#include <common/mem.h>
 #include <common/now.h>
 #include <common/str.h>
 #include <common/symtab.h>
@@ -34,6 +30,8 @@
 #include <libaegis/change/identifier.h>
 #include <libaegis/change.h>
 #include <libaegis/col.h>
+#include <libaegis/file/event.h>
+#include <libaegis/file/event/list.h>
 #include <libaegis/fstate.h>
 #include <libaegis/help.h>
 #include <libaegis/input/file_text.h>
@@ -85,17 +83,16 @@ static void
 column_list_append(column_list_t *clp, string_ty *formula, string_ty *heading,
     int width)
 {
-    column_t	    *cp;
-
     if (clp->length >= clp->maximum)
     {
-	size_t		nbytes;
-
 	clp->maximum = clp->maximum * 2 + 4;
-	nbytes = clp->maximum * sizeof(clp->item[0]);
-	clp->item = (column_t *)mem_change_size(clp->item, nbytes);
+	column_t *new_item = new column_t [clp->maximum];
+	for (size_t j = 0; j < clp->length; ++j)
+	    new_item[j] = clp->item[j];
+	delete [] clp->item;
+	clp->item = new_item;
     }
-    cp = clp->item + clp->length++;
+    column_t *cp = clp->item + clp->length++;
     cp->formula = formula;
     cp->heading = heading;
     cp->width = width;
@@ -108,7 +105,7 @@ column_list_append(column_list_t *clp, string_ty *formula, string_ty *heading,
 
 
 static string_ty *
-change_number_get(change_ty *cp)
+change_number_get(change::pointer cp)
 {
     return str_format("%ld", magic_zero_decode(cp->number));
 }
@@ -118,7 +115,7 @@ static void
 process(change_identifier &cid, string_ty *filename, line_list_t *buffer)
 {
     size_t	    j;
-    file_event_list_ty *felp;
+    file_event_list::pointer felp;
     string_ty	    *prev_ifn;
     int		    prev_ifn_unlink;
     size_t	    linum;
@@ -129,9 +126,9 @@ process(change_identifier &cid, string_ty *filename, line_list_t *buffer)
     //
     // We can't cope with change history that isn't in history yet.
     //
-    change_ty *cp = cid.get_cp();
+    change::pointer cp = cid.get_cp();
     project_ty *pp = cid.get_pp();
-    if (!change_was_a_branch(cp) && !change_is_completed(cp))
+    if (!change_was_a_branch(cp) && !cp->is_completed())
     {
 	sub_context_ty sc;
 	sc.var_set_string("Number", change_number_get(cp));
@@ -174,9 +171,10 @@ process(change_identifier &cid, string_ty *filename, line_list_t *buffer)
     line_list_constructor(buffer);
     prev_ifn = 0;
     prev_ifn_unlink = 0;
-    for (j = 0; j < felp->length; ++j)
+    for (j = 0; j < felp->size(); ++j)
     {
-	file_event_ty	*fep;
+        trace(("j = %d of %d\n", (int)j, (int)felp->size()));
+	file_event	*fep;
 	string_ty	*ifn;
 	int		ifn_unlink;
 	input ifp;
@@ -185,23 +183,25 @@ process(change_identifier &cid, string_ty *filename, line_list_t *buffer)
 	//
 	// find the file within the change
 	//
-	fep = felp->item + j;
-	assert(fep->src);
+	fep = felp->get(j);
+	assert(fep->get_src());
 
 	//
 	// What we do next depends on what the change did to the file.
 	//
 	ifn = 0;
 	ifn_unlink = 0;
-	switch (fep->src->action)
+	switch (fep->get_src()->action)
 	{
 	case file_action_create:
 	    //
 	    // read whole file into buffer
 	    //
-	    trace(("create %s\n", change_version_get(fep->cp)->str_text));
+	    trace(("create %s\n",
+		change_version_get(fep->get_change())->str_text));
+            treat_as_create:
 	    line_list_clear(buffer);
-	    ifn = project_file_version_path(pp, fep->src, &ifn_unlink);
+	    ifn = project_file_version_path(pp, fep->get_src(), &ifn_unlink);
 	    os_become_orig();
 	    ifp = input_file_text_open(ifn);
 	    for (linum = 0;; ++linum)
@@ -209,8 +209,8 @@ process(change_identifier &cid, string_ty *filename, line_list_t *buffer)
 		nstring s;
 		if (!ifp->one_line(s))
 		    break;
-		line_list_insert(buffer, linum, fep->cp, s.get_ref());
-		assert(buffer->item[linum].cp == fep->cp);
+		line_list_insert(buffer, linum, fep->get_change(), s.get_ref());
+		assert(buffer->item[linum].cp == fep->get_change());
 		assert(str_equal(buffer->item[linum].text, s.get_ref()));
 	    }
 	    ifp.close();
@@ -223,21 +223,33 @@ process(change_identifier &cid, string_ty *filename, line_list_t *buffer)
 	    // fall through...
 
 	case file_action_modify:
-	    trace(("modify %s\n", change_version_get(fep->cp)->str_text));
+	    trace(("modify %s\n",
+		change_version_get(fep->get_change())->str_text));
+            if (!prev_ifn)
+            {
+                trace(("treating this modify as a create\n"));
+                goto treat_as_create;
+            }
 
 	    //
 	    // generate the difference between the last edit and this edit.
 	    //
-	    ifn = project_file_version_path(pp, fep->src, &ifn_unlink);
+	    ifn = project_file_version_path(pp, fep->get_src(), &ifn_unlink);
+            trace(("prev_ifn = \"%s\"\n", prev_ifn ? prev_ifn->str_text :
+                "NULL"));
+            trace(("ifn = \"%s\"\n", ifn->str_text));
+            trace(("output_file_name = \"%s\"\n", output_file_name->str_text));
+            trace(("filename = \"%s\"\n", filename->str_text));
+            trace(("diff_option = \"%s\"\n", diff_option));
 	    change_run_annotate_diff_command
 	    (
-		fep->cp,
-		user_executing(fep->cp->pp),
+		fep->get_change(),
+		user_ty::create(),
 		prev_ifn,
 		ifn,
 		output_file_name,
 		filename,
-		diff_option
+		(diff_option ? diff_option : "")
 	    );
 
 	    //
@@ -297,7 +309,7 @@ process(change_identifier &cid, string_ty *filename, line_list_t *buffer)
 			(
 			    buffer,
 			    first_line++,
-			    fep->cp,
+			    fep->get_change(),
 			    plip->value
 			);
 		    }
@@ -392,7 +404,7 @@ incr(symtab_ty *stp, string_ty *key, long *maximum_p)
 	if (templen == 0)
 	{
 	    templen = 100;
-	    temp = (long int *)mem_alloc(templen * sizeof(long));
+	    temp = new long [templen];
 	}
 	data = temp++;
 	--templen;
@@ -407,7 +419,7 @@ incr(symtab_ty *stp, string_ty *key, long *maximum_p)
 
 static void
 emit_range(output_ty *line_col, output_ty *source_col, line_t *line_array,
-    size_t line_len, long *linum_p, col_ty *ofp)
+    size_t line_len, long *linum_p, col *ofp)
 {
     size_t	    j;
 
@@ -451,7 +463,7 @@ emit_range(output_ty *line_col, output_ty *source_col, line_t *line_array,
 	}
 	line_col->fprintf("%5ld", *linum_p);
 	source_col->fputs(lp->text);
-	col_eoln(ofp);
+	ofp->eoln();
 
 	//
 	// Collect the file statistics.
@@ -473,7 +485,7 @@ static void
 emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
     project_ty *pp)
 {
-    col_ty	    *ofp;
+    col	    *ofp;
     output_ty	    *line_col;
     output_ty	    *source_col;
     size_t	    j;
@@ -481,8 +493,8 @@ emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
     int		    left;
 
     trace(("buf line = %ld\n", (long)(buffer->length1 + buffer->length2)));
-    ofp = col_open(outfilename);
-    col_title(ofp, "Annotated File Listing", filename->str_text);
+    ofp = col::open(outfilename);
+    ofp->title("Annotated File Listing", filename->str_text);
 
     //
     // Create the columns.
@@ -493,11 +505,11 @@ emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
 	column_t	*cp;
 
 	cp = columns.item + j;
-	cp->fp = col_create(ofp, left, left + cp->width, cp->heading->str_text);
+	cp->fp = ofp->create(left, left + cp->width, cp->heading->str_text);
 	left += cp->width + 1;
     }
-    line_col = col_create(ofp, left, left + 6, "Line\n------");
-    source_col = col_create(ofp, left + 7, 0, "Source\n---------");
+    line_col = ofp->create(left, left + 6, "Line\n------");
+    source_col = ofp->create(left + 7, 0, "Source\n---------");
     file_stp = new symtab_ty(5);
 
     //
@@ -527,8 +539,8 @@ emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
 
     if (linum > 1)
     {
-	col_eject(ofp);
-	col_title(ofp, "Statistics", filename->str_text);
+	ofp->eject();
+	ofp->title("Statistics", filename->str_text);
 	--linum;
     }
     for (j = 0; j < columns.length; ++j)
@@ -539,7 +551,7 @@ emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
 	cp = columns.item + j;
 	string_list_ty keys;
 	cp->stp->keys(&keys);
-	col_need(ofp, keys.nstrings > 10 ? 10 : (int)keys.nstrings);
+	ofp->need(keys.nstrings > 10 ? 10 : (int)keys.nstrings);
 	keys.sort_version();
 	for (k = 0; k < keys.nstrings; ++k)
 	{
@@ -576,7 +588,7 @@ emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
 		    }
 		}
 	    }
-	    col_eoln(ofp);
+	    ofp->eoln();
 	}
     }
 
@@ -588,7 +600,7 @@ emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
 	string_list_ty keys;
 	file_stp->keys(&keys);
 	keys.sort();
-	col_need(ofp, keys.nstrings > 10 ? 10 : (int)keys.nstrings);
+	ofp->need(keys.nstrings > 10 ? 10 : (int)keys.nstrings);
 	for (j = 0; j < keys.nstrings; ++j)
 	{
 	    string_ty       *key;
@@ -607,10 +619,10 @@ emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
 		continue;
 	    line_col->fprintf("%5ld", *data);
 	    source_col->fputs(key);
-	    col_eoln(ofp);
+	    ofp->eoln();
 	}
     }
-    col_close(ofp);
+    delete ofp;
 }
 
 
@@ -690,11 +702,11 @@ annotate(void)
 		else
 		    width = 7;
 
-		minus = (char *)mem_alloc(width + 1);
+		minus = new char [width + 1];
 		memset(minus, '-', width);
 		minus[width] = 0;
 		s = str_format("%.*s\n%s", width, heading->str_text, minus);
-		mem_free(minus);
+		delete [] minus;
 		str_free(heading);
 		heading = s;
 

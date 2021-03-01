@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate lists
 //
@@ -61,9 +60,9 @@ static output_ty *size_col;
 int		when_flag = -1;
 static output_ty *when_col;
 static output_ty *name_col;
-static col_ty	*col_ptr;
+static col	*col_ptr;
 static string_list_ty dirs;
-static change_ty *cp;
+static change::pointer cp;
 static project_ty *pp;
 static time_t	oldest;
 static time_t	youngest;
@@ -583,7 +582,7 @@ list_file(string_ty *long_name, string_ty *short_name, struct stat *st,
 	}
 	str_free(link);
     }
-    col_eoln(col_ptr);
+    col_ptr->eoln();
 }
 
 
@@ -645,7 +644,7 @@ list_dir(string_ty *dirname)
 //
 
 void
-list(string_list_ty *paths, project_ty *a_pp, change_ty *a_cp)
+list(string_list_ty *paths, project_ty *a_pp, change::pointer a_cp)
 {
     size_t	    j;
     int		    need_eject;
@@ -675,49 +674,49 @@ list(string_list_ty *paths, project_ty *a_pp, change_ty *a_cp)
 	    when_flag = 1;
     }
 
-    col_ptr = col_open((string_ty *)0);
+    col_ptr = col::open((string_ty *)0);
     if (mode_flag > 0)
     {
 	width = 10;
-	mode_col = col_create(col_ptr, column, column + width, "Mode");
+	mode_col = col_ptr->create(column, column + width, "Mode");
 	column += width + 1;
     }
     if (attr_flag)
     {
 	width = 4;
-	attr_col = col_create(col_ptr, column, column + width, "Attr");
+	attr_col = col_ptr->create(column, column + width, "Attr");
 	column += width + 1;
     }
     if (user_flag > 0)
     {
 	width = 8;
 	user_col =
-	    col_create(col_ptr, column, column + width, "User\n--------");
+	    col_ptr->create(column, column + width, "User\n--------");
 	column += width + 1;
     }
     if (group_flag > 0)
     {
 	width = 8;
 	group_col =
-	    col_create(col_ptr, column, column + width, "Group\n--------");
+	    col_ptr->create(column, column + width, "Group\n--------");
 	column += width + 1;
     }
     if (size_flag > 0)
     {
 	width = 8;
 	size_col =
-	    col_create(col_ptr, column, column + width, "Size\n--------");
+	    col_ptr->create(column, column + width, "Size\n--------");
 	column += width + 1;
     }
     if (when_flag > 0)
     {
 	width = 12;
 	when_col =
-	    col_create(col_ptr, column, column + width, "When\n------------");
+	    col_ptr->create(column, column + width, "When\n------------");
 	column += width + 1;
     }
-    name_col = col_create(col_ptr, column, 0, "File Name\n-----------");
-    col_title(col_ptr, "Annotated Listing", "");
+    name_col = col_ptr->create(column, 0, "File Name\n-----------");
+    col_ptr->title("Annotated Listing", "");
 
     need_eject = 0;
     for (j = 0; j < paths->nstrings; ++j)
@@ -745,12 +744,12 @@ list(string_list_ty *paths, project_ty *a_pp, change_ty *a_cp)
 	string_ty	*path;
 
 	if (need_eject)
-	    col_eject(col_ptr);
+	    col_ptr->eject();
 	path = str_copy(dirs.string[0]);
 	dirs.remove(path);
-	col_title(col_ptr, "Annotated Directory Listing", path->str_text);
+	col_ptr->title("Annotated Directory Listing", path->str_text);
 	list_dir(path);
 	need_eject = 1;
     }
-    col_close(col_ptr);
+    delete col_ptr;
 }

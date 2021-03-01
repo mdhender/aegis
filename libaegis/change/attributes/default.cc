@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2000, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -84,7 +83,7 @@ change_attributes_default(cattr_ty *a, project_ty *pp, pconf_ty *pc)
 	    pconf_architecture_ty *pca = pc->architecture->list[j];
 	    if (pca->mode != pconf_architecture_mode_required)
 		continue;
-	    type_ty *type_p = 0;
+	    meta_type *type_p = 0;
 	    string_ty **str_p =
 		(string_ty **)
 		cattr_architecture_list_type.list_parse

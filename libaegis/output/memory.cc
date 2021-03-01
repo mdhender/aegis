@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -23,9 +22,10 @@
 #include <common/ac/string.h>
 
 #include <common/error.h>
-#include <libaegis/output/memory.h>
+#include <common/nstring.h>
 #include <common/str.h>
 #include <common/trace.h>
+#include <libaegis/output/memory.h>
 
 
 output_memory_ty::~output_memory_ty()
@@ -120,4 +120,12 @@ output_memory_ty::forward(output_ty *deeper)
 	error_raw("%s: %d: nothing to forward", __FILE__, __LINE__);
 #endif
     trace(("}\n"));
+}
+
+
+nstring
+output_memory_ty::mkstr()
+    const
+{
+    return nstring((const char *)buffer, size);
 }

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1992-1995, 1997, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1992-1995, 1997, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -76,9 +75,8 @@ option_pager_get(void)
 {
     if (option_pager_flag < 0)
     {
-	user_ty *up = user_executing(0);
-	option_pager_flag = user_pager_preference(up);
-	user_free(up);
+	user_ty::pointer up = user_ty::create();
+	option_pager_flag = up->pager_preference();
     }
     return option_pager_flag;
 }
@@ -211,7 +209,7 @@ output_pager_ty::~output_pager_ty()
 output_pager_ty::output_pager_ty() :
     vdeeper(0),
     pid(0),
-    pager(str_copy(user_pager_command(0))),
+    pager(user_ty::create()->pager_command()),
     bol(true)
 {
     os_become_orig();

@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 2001, 2002, 2004-2006 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -23,7 +22,6 @@
 #include <common/ac/stdlib.h>
 
 #include <aeimport/change_set/list.h>
-#include <common/mem.h>
 
 
 change_set_list_ty *
@@ -31,7 +29,7 @@ change_set_list_new(void)
 {
     change_set_list_ty *cslp;
 
-    cslp = (change_set_list_ty *)mem_alloc(sizeof(change_set_list_ty));
+    cslp = new change_set_list_ty;
     cslp->length = 0;
     cslp->maximum = 0;
     cslp->item = 0;
@@ -45,13 +43,12 @@ change_set_list_delete(change_set_list_ty *cslp)
     size_t          j;
 
     for (j = 0; j < cslp->length; ++j)
-            delete cslp->item[j];
-    if (cslp->item)
-            mem_free(cslp->item);
+	delete cslp->item[j];
+    delete [] cslp->item;
     cslp->length = 0;
     cslp->maximum = 0;
     cslp->item = 0;
-    mem_free(cslp);
+    delete cslp;
 }
 
 
@@ -72,13 +69,14 @@ change_set_list_validate(change_set_list_ty *cslp)
 void
 change_set_list_append(change_set_list_ty *cslp, change_set_ty *csp)
 {
-    size_t          nbytes;
-
     if (cslp->length >= cslp->maximum)
     {
         cslp->maximum = cslp->maximum * 2 + 4;
-        nbytes = cslp->maximum * sizeof(cslp->item[0]);
-        cslp->item = (change_set_ty **)mem_change_size(cslp->item, nbytes);
+	change_set_ty **new_item = new change_set_ty * [cslp->maximum];
+	for (size_t j = 0; j < cslp->length; ++j)
+	    new_item[j] = cslp->item[j];
+	delete [] cslp->item;
+	cslp->item = new_item;
     }
     cslp->item[cslp->length++] = csp;
 }

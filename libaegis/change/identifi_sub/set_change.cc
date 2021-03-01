@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -95,7 +94,7 @@ change_identifier_subset::set_change()
     //
     if (!change_number)
     {
-	change_number = user_default_change(get_up());
+	change_number = get_up()->default_change(get_pp());
 	trace(("change %ld\n", change_number));
     }
     cp = change_alloc(pid.get_pp(), change_number);

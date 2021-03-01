@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate config_files
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h>
@@ -51,12 +48,12 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     long	    change_number;
     fstate_src_ty   *c_src_data;
     fstate_src_ty   *p_src_data;
-    change_ty	    *cp;
+    change::pointer cp;
     pconf_ty	    *pconf_data;
     string_ty	    *bl;
     string_ty	    *pconf_file_name;
     cstate_history_ty *history_data;
-    user_ty	    *up;
+    user_ty::pointer up;
     cstate_ty	    *cstate_data;
     cstate_ty	    *p_cstate_data;
     string_ty	    *path;
@@ -101,7 +98,7 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     io_comment_append(0, i18n("configuration file hint"));
     project_become(pp);
     pconf_write_file(pconf_file_name, pconf_data, 0);
-    project_become_undo();
+    project_become_undo(pp);
 
     //
     // Now create a change so we can pretend we created the config
@@ -110,7 +107,7 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     change_number = project_next_change_number(pp, 1);
     cp = change_alloc(pp, change_number);
     change_bind_new(cp);
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
 
     //
     // Set change attributes.
@@ -150,7 +147,7 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     //
     // Add the file to the change.
     //
-    c_src_data = change_file_new(cp, the_config_file);
+    c_src_data = cp->file_new(the_config_file);
     c_src_data->action = file_action_create;
     c_src_data->usage = file_usage_config;
 
@@ -165,7 +162,7 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     //
     // create the project file
     //
-    p_src_data = project_file_new(pp, the_config_file);
+    p_src_data = pp->file_new(the_config_file);
     p_src_data->usage = c_src_data->usage;
 
     //
@@ -206,7 +203,7 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     p_src_data->diff_file_fp = (fingerprint_ty *)fingerprint_type.alloc();
     project_become(pp);
     change_fingerprint_same(p_src_data->diff_file_fp, path_d, 0);
-    project_become_undo();
+    project_become_undo(pp);
 
     //
     // Check the config file into the history.
@@ -219,7 +216,7 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     p_src_data->file_fp = (fingerprint_ty *)fingerprint_type.alloc();
     project_become(pp);
     change_fingerprint_same(p_src_data->file_fp, path, 0);
-    project_become_undo();
+    project_become_undo(pp);
 
     //
     // Update the head revision number.
@@ -252,7 +249,7 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     // of the files are checkout into the baseline, once all the
     // change sets are in place.
     //
-    p_cstate_data = change_cstate_get(pp->change_get());
+    p_cstate_data = pp->change_get()->cstate_get();
     p_cstate_data->build_time = history_data->when;
 
     //

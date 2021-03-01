@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -108,7 +107,7 @@ static const request *const table[] =
 
 
 const request *
-request::find(string_ty *name)
+request::find(string_ty *a_name)
 {
     static symtab_ty *stp;
     if (!stp)
@@ -122,11 +121,11 @@ request::find(string_ty *name)
 	    str_free(key);
 	}
     }
-    const request *rp = (const request *)symtab_query(stp, name);
+    const request *rp = (const request *)symtab_query(stp, a_name);
     if (!rp)
     {
-	rp = new request_unknown(name);
-	symtab_assign(stp, name, (void *)rp);
+	rp = new request_unknown(a_name);
+	symtab_assign(stp, a_name, (void *)rp);
     }
     return rp;
 }

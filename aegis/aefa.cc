@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to list and modify file attributes
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/libintl.h>
@@ -104,7 +101,7 @@ file_attributes_help(void)
 
 
 static void
-change_fatal_unknown_file(change_ty *cp, string_ty *filename)
+change_fatal_unknown_file(change::pointer cp, string_ty *filename)
 {
     sub_context_ty sc(__FILE__, __LINE__);
     sc.var_set_string("File_Name", filename);
@@ -165,8 +162,8 @@ file_attributes_list(void)
     project_ty	    *pp;
     fattr_ty	    *fattr_data;
     long	    change_number;
-    change_ty	    *cp;
-    user_ty	    *up;
+    change::pointer cp;
+    user_ty::pointer up;
     string_ty       *filename;
     fstate_src_ty   *src;
 
@@ -185,7 +182,10 @@ file_attributes_list(void)
 
 	case arglex_token_base_relative:
 	case arglex_token_current_relative:
-    	    user_relative_filename_preference_argument(file_attributes_usage);
+    	    user_ty::relative_filename_preference_argument
+            (
+                file_attributes_usage
+            );
 	    break;
 
 	case arglex_token_change:
@@ -222,7 +222,10 @@ file_attributes_list(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -230,13 +233,13 @@ file_attributes_list(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -259,7 +262,7 @@ file_attributes_list(void)
     //
     if
     (
-	change_is_being_developed(cp)
+	cp->is_being_developed()
     &&
 	!fattr_exists(fattr_data, "Content-Type")
     )
@@ -281,19 +284,18 @@ file_attributes_list(void)
     fattr_type.free(fattr_data);
     project_free(pp);
     change_free(cp);
-    user_free(up);
     trace(("}\n"));
 }
 
 
 static void
-check_permissions(change_ty *cp, user_ty *up)
+check_permissions(change::pointer cp, user_ty::pointer up)
 {
     if
     (
-	!change_is_being_developed(cp)
+	!cp->is_being_developed()
     ||
-	!str_equal(change_developer_name(cp), user_name(up))
+	nstring(change_developer_name(cp)) != up->name()
     )
     {
 	change_fatal(cp, 0, i18n("bad fa, not auth"));
@@ -365,8 +367,8 @@ file_attributes_main(void)
     project_ty	    *pp;
     fattr_ty	    *fattr_data;
     long	    change_number;
-    change_ty	    *cp;
-    user_ty	    *up;
+    change::pointer cp;
+    user_ty::pointer up;
     edit_ty	    edit;
     string_ty	    *input;
     string_ty	    *filename;
@@ -391,7 +393,10 @@ file_attributes_main(void)
 
 	case arglex_token_base_relative:
 	case arglex_token_current_relative:
-    	    user_relative_filename_preference_argument(file_attributes_usage);
+    	    user_ty::relative_filename_preference_argument
+            (
+                file_attributes_usage
+            );
 	    break;
 
 	case arglex_token_string:
@@ -468,7 +473,7 @@ file_attributes_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(file_attributes_usage);
+	    user_ty::lock_wait_argument(file_attributes_usage);
 	    break;
 	}
 	arglex();
@@ -523,7 +528,10 @@ file_attributes_main(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -531,13 +539,13 @@ file_attributes_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -571,7 +579,7 @@ file_attributes_main(void)
 	//
 	if
 	(
-	    change_is_being_developed(cp)
+	    cp->is_being_developed()
 	&&
 	    !fattr_exists(fattr_data, "content-type")
 	)
@@ -691,7 +699,6 @@ file_attributes_main(void)
     sub_context_delete(scp);
     project_free(pp);
     change_free(cp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -758,12 +765,15 @@ file_attributes_uuid(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(file_attributes_usage);
+	    user_ty::lock_wait_argument(file_attributes_usage);
 	    break;
 
 	case arglex_token_base_relative:
 	case arglex_token_current_relative:
-    	    user_relative_filename_preference_argument(file_attributes_usage);
+    	    user_ty::relative_filename_preference_argument
+            (
+                file_attributes_usage
+            );
 	    break;
 	}
 	arglex();
@@ -801,9 +811,9 @@ file_attributes_uuid(void)
     //
     if
     (
-	!change_is_being_developed(cid.get_cp())
+	!cid.get_cp()->is_being_developed()
     ||
-	!str_equal(change_developer_name(cid.get_cp()), user_name(cid.get_up()))
+	nstring(change_developer_name(cid.get_cp())) != cid.get_up()->name()
     )
     {
 	change_fatal(cid.get_cp(), 0, i18n("bad fa, not auth"));
@@ -881,9 +891,9 @@ file_attributes(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, file_attributes_help, },
-	{arglex_token_list, file_attributes_list, },
-	{arglex_token_uuid, file_attributes_uuid, },
+	{ arglex_token_help, file_attributes_help, 0 },
+	{ arglex_token_list, file_attributes_list, 0 },
+	{ arglex_token_uuid, file_attributes_uuid, 0 },
     };
 
     trace(("file_attributes()\n{\n"));

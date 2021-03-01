@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for libaegis/project/file/roll_forward.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef LIBAEGIS_PROJECT_FILE_ROLL_FORWARD_H
@@ -29,23 +26,12 @@
 #include <libaegis/change/list.h>
 #include <libaegis/fstate.h>
 #include <libaegis/project.h>
+#include <libaegis/file/event/list.h>
 
 class nstring_list; // forward
 struct cstate_src_ty; // forward
+class file_event;
 
-struct file_event_ty
-{
-    time_t	    when;
-    struct change_ty *cp;
-    struct fstate_src_ty *src;
-};
-
-struct file_event_list_ty
-{
-    size_t	    length;
-    size_t	    maximum;
-    file_event_ty   *item;
-};
 
 class project_file_roll_forward
 {
@@ -103,7 +89,7 @@ public:
       *    Do not free the change pointed to, as it may be referenced by
       *    other files' histories.
       */
-    file_event_list_ty *get(fstate_src_ty *src);
+    file_event_list::pointer get(fstate_src_ty *src);
 
     /**
       * The get method is used to obtain the events for a given file,
@@ -121,7 +107,7 @@ public:
       *    Do not free the change pointed to, as it may be referenced by
       *    other files' histories.
       */
-    file_event_list_ty *get(cstate_src_ty *src);
+    file_event_list::pointer get(cstate_src_ty *src);
 
     /**
       * The project_file_roll_forward_get function is used to obtain the
@@ -137,7 +123,7 @@ public:
       *    Do not free the change pointed to, as it may be referenced by
       *    other files' histories.
       */
-    file_event_list_ty *get(const nstring &filename);
+    file_event_list::pointer get(const nstring &filename);
 
     /**
       * The project_file_roll_forward_get function is used to obtain the
@@ -155,7 +141,7 @@ public:
       * \note
       *    This method will be DEPRECATED one day.
       */
-    file_event_list_ty *get(string_ty *filename);
+    file_event_list::pointer get(string_ty *filename);
 
     /**
       * The project_file_roll_forward_get_last function is used to get the
@@ -167,7 +153,7 @@ public:
       *    Pointer to the last event for the named file, or NULL if the
       *    file has never existed at the time (delta) specified.
       */
-    file_event_ty *get_last(const nstring &filename);
+    file_event *get_last(const nstring &filename);
 
     /**
       * The project_file_roll_forward_get_last function is used to get the
@@ -181,7 +167,7 @@ public:
       * \note
       *    This method will be DEPRECATED one day.
       */
-    file_event_ty *get_last(string_ty *filename);
+    file_event *get_last(string_ty *filename);
 
     /**
       * The project_file_roll_forward_get_older function is used to get the
@@ -193,7 +179,7 @@ public:
       *    Pointer to the last event for the named file, or NULL if the
       *    file has never existed at the time (delta) specified.
       */
-    file_event_ty *get_older(const nstring &filename);
+    file_event *get_older(const nstring &filename);
 
     /**
       * The project_file_roll_forward_get_older function is used to get the
@@ -207,7 +193,7 @@ public:
       * \note
       *    This method will be DEPRECATED one day.
       */
-    file_event_ty *get_older(string_ty *filename);
+    file_event *get_older(string_ty *filename);
 
     /**
       * The keys method is used to get a list of filenames for which
@@ -231,7 +217,7 @@ public:
       * The get_last_change method is used to get the pointer to the
       * last change set in the reconstructed history.
       */
-    change_ty *get_last_change() const;
+    change::pointer get_last_change() const;
 
 private:
     /**
@@ -242,14 +228,14 @@ private:
       *     The UUID of the file, if it has one, otherwise the name of
       *     the file.
       */
-    file_event_list_ty *get_by_uuid(string_ty *uuid);
+    file_event_list::pointer get_by_uuid(string_ty *uuid);
 
     /**
       * The uuid_to_felp instance variable is used to remember the
       * mapping from UUIS to file history (for backwards compatibility,
       * index by filename if no UUID is available).
       */
-    symtab<file_event_list_ty> uuid_to_felp;
+    symtab<file_event_list::pointer> uuid_to_felp;
 
     /**
       * The filename_to_uuid method is used to map user perception of
@@ -268,7 +254,7 @@ private:
       * The last_change instance variable is used to remember the last
       * change in the historical reconstruction.
       */
-    change_ty *last_change;
+    change::pointer last_change;
 
     /**
       * The recapitulate method is used to replay the changes of a

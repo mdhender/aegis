@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -233,7 +232,6 @@ xml_help(void)
 static void
 xml_list(void)
 {
-    col_ty          *colp;
     output_ty       *name_col = 0;
     output_ty       *desc_col = 0;
     table_ty        *tp;
@@ -247,12 +245,12 @@ xml_list(void)
     //
     // create the columns
     //
-    colp = col_open((string_ty *)0);
-    col_title(colp, "List of Lists", (const char *)0);
-    name_col = col_create(colp, 0, 15, "Name\n------");
+    col *colp = col::open((string_ty *)0);
+    colp->title("List of Lists", (const char *)0);
+    name_col = colp->create(0, 15, "Name\n------");
     if (!option_terse_get())
     {
-	desc_col = col_create(colp, 16, 0, "Description\n-------------");
+	desc_col = colp->create(16, 0, "Description\n-------------");
     }
 
     //
@@ -263,13 +261,14 @@ xml_list(void)
 	name_col->fputs(tp->name);
 	if (desc_col)
     	    desc_col->fputs(tp->description);
-	col_eoln(colp);
+	colp->eoln();
     }
 
     //
     // clean up and go home
     //
-    col_close(colp);
+    delete colp;
+    colp = 0;
 
     trace(("}\n"));
 }
@@ -344,9 +343,9 @@ xml_main(void)
 int
 main(int argc, char **argv)
 {
+    arglex2_init(argc, argv);
     resource_limits_init();
     os_become_init_mortal();
-    arglex2_init(argc, argv);
     env_initialize();
     language_init();
     switch (arglex())

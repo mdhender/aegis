@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -265,34 +264,34 @@ input_gunzip::length()
 static int gz_magic[2] = {0x1f, 0x8b}; // gzip magic header
 
 bool
-input_gunzip::candidate(input &deeper)
+input_gunzip::candidate(input &ip)
 {
     //
     // Check for the magic number.
     // If it isn't present, assume transparent mode.
     //
-    int c = deeper->getch();
+    int c = ip->getch();
     if (c < 0)
 	return false;
     if (c != gz_magic[0])
     {
-	deeper->ungetc(c);
+	ip->ungetc(c);
 	return false;
     }
-    c = deeper->getch();
+    c = ip->getch();
     if (c < 0)
     {
-	deeper->ungetc(gz_magic[0]);
+	ip->ungetc(gz_magic[0]);
 	return false;
     }
     if (c != gz_magic[1])
     {
-	deeper->ungetc(c);
-	deeper->ungetc(gz_magic[0]);
+	ip->ungetc(c);
+	ip->ungetc(gz_magic[0]);
 	return false;
     }
-    deeper->ungetc(gz_magic[1]);
-    deeper->ungetc(gz_magic[0]);
+    ip->ungetc(gz_magic[1]);
+    ip->ungetc(gz_magic[0]);
     return true;
 }
 

@@ -1,8 +1,8 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1995, 1997 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 1995, 1997, 2006, 2007 Peter Miller
+#	Copyright (C) 2006 Walter Franzini
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -15,15 +15,14 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: shell script to run tests
+#	along with this program. If not, see
+#	<http://www.gnu.org/licenses/>.
 #
 
 progname=$0
 shell=/bin/sh
 
+whoami=`id -u`
 
 usage() {
 	echo "usage: $progname -run test-file results-file" 1>&2
@@ -33,8 +32,14 @@ usage() {
 
 
 run() {
-	$shell $1
-	echo $? > $2
+	if test "$whoami" = '0'
+	then
+		su nobody -c "$shell $1"
+		echo $? > $2
+	else
+		$shell $1
+		echo $? > $2
+        fi
 }
 
 
@@ -42,6 +47,7 @@ summary() {
 	total=$#
 	npassed=0
 	nfailed=0
+	nskipped=0
 	noresult=0
 	for f in $*
 	do
@@ -52,6 +58,9 @@ summary() {
 		1)
 			nfailed=`expr $nfailed + 1`
 			;;
+                77)
+                        nskipped=`expr $nskipped + 1`
+                        ;;
 		*)
 			noresult=`expr $noresult + 1`
 			;;
@@ -66,6 +75,9 @@ summary() {
 	fi
 	if test $nfailed -gt 0 ; then
 		echo "Failed $nfailed of $total tests."
+	fi
+	if test $nskipped -gt 0 ; then
+		echo "Skipped $nskipped of $total tests."
 	fi
 	if test $noresult -gt 0 ; then
 		echo "No result for $noresult of $total tests."

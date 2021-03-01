@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -25,7 +24,7 @@
 
 #include <common/ac/stddef.h>
 
-struct wstring_ty; // forward
+class wstring; // forward
 
 /**
   * The collect class is used to represent an accumulated wide character
@@ -75,13 +74,22 @@ public:
     void append(const wchar_t *s, size_t n);
 
     /**
+      * The push_back method may be used to append the given wide string
+      * to the end of the buffer.
+      *
+      * @param s
+      *     The string to append.
+      */
+    void push_back(const wstring &s);
+
+    /**
       * The end method is used to fetch the string accumulated with
       * the collect function.  The buffer is cleared.
       *
       * \returns
-      *     wstring_ty *; pointer to the string in dynamic memory.
+      *     wstring; pointer to the string in dynamic memory.
       */
-    wstring_ty *end();
+    wstring end();
 
 private:
     size_t pos;

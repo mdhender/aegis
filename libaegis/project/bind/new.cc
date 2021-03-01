@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -33,10 +32,6 @@
 void
 project_ty::bind_new()
 {
-    int		    um;
-    user_ty	    *up;
-    cstate_history_ty *h;
-
     //
     // make sure does not already exist
     //
@@ -60,7 +55,22 @@ project_ty::bind_new()
     is_a_new_file = true;
     pstate_data = (pstate_ty *)pstate_type.alloc();
     pstate_data->next_test_number = 1;
+    int um = 0;
     os_become_orig_query(&uid, &gid, &um);
+
+    um |= 022;
+    if (um & 1)
+        um |= 4;
+    um &= 027;
+
+    //
+    // Create the project user from the details of the user who created
+    // the project (the executing user).
+    //
+    trace(("uid %d, gid %d\n", uid, gid));
+    up = user_ty::create(uid, gid);
+    trace(("um %04o\n", um));
+    up->umask_set(um);
 
     pcp = change_alloc(this, TRUNK_CHANGE_NUMBER);
     change_bind_new(pcp);
@@ -71,12 +81,11 @@ project_ty::bind_new()
     // The new change is in the 'being developed'
     // state, and will be forever.
     //
-    up = user_executing(this);
-    h = change_history_new(pcp, up);
+    trace(("mark\n"));
+    cstate_history_ty *h = change_history_new(pcp, up);
     h->what = cstate_history_what_new_change;
     h = change_history_new(pcp, up);
     h->what = cstate_history_what_develop_begin;
-    user_free(up);
     pcp->cstate_data->state = cstate_state_being_developed;
     trace(("}\n"));
 }

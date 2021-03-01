@@ -2,6 +2,7 @@
 //      aegis - project change supervisor
 //      Copyright (C) 2005 Matthew Lee;
 //      All rights reserved.
+//      Copyright (C) 2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -14,10 +15,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the rss_item class
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
@@ -222,9 +221,9 @@ rss_item::print(output_ty *out)
 
 
 void
-rss_item::handle_change(change_ty *cp)
+rss_item::handle_change(change::pointer cp)
 {
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
 
     //
     // Set the <pubDate> from the most recent change history event.
@@ -284,15 +283,9 @@ rss_item::handle_change(change_ty *cp)
     //
     // Set the <author> from the change's history
     //
-    user_ty *up =
-	(
-	    hp && hp->who
-	?
-	    user_symbolic(cp->pp, hp->who)
-	:
-	    user_executing(cp->pp)
-	);
-    author = nstring(user_email_address(up));
+    user_ty::pointer up =
+	(hp && hp->who ? user_ty::create(nstring(hp->who)) : user_ty::create());
+    author = up->get_email_address();
 
     //
     // Create a unique <guid> for every feed item.

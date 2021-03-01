@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -24,21 +23,19 @@
 #include <common/ac/fcntl.h>
 #include <common/ac/stdio.h>
 #include <common/ac/unistd.h>
-#include <common/ac/string.h>
 #include <common/ac/signal.h>
 
 #include <common/error.h>
+#include <common/now.h>
+#include <common/quit.h>
+#include <common/r250.h>
+#include <common/trace.h>
 #include <libaegis/glue.h>
 #include <libaegis/gonzo.h>
 #include <libaegis/lock.h>
-#include <common/mem.h>
-#include <common/now.h>
 #include <libaegis/os.h>
-#include <common/quit.h>
 #include <libaegis/quit/action/lock.h>
-#include <common/r250.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/user.h>
 
 //
@@ -86,8 +83,13 @@ enum lock_mux_ty
 };
 
 
+static struct flock flock_zero;
+
 struct lock_place_ty
 {
+    lock_place_ty() : location(flock_zero), release_immediately(0),
+	callback(0), callback_arg(0) { }
+
     struct flock    location;
     int             release_immediately;
     lock_callback_ty callback;
@@ -115,13 +117,12 @@ static void
 flock_construct(struct flock *p, int type, long start, long length)
 {
     //
-    // the memset is here because some systems have
-    // extra fields in the flock structure.
-    // These fields are frequently undocumented,
-    // and yet these systems give "EINVAL" if the
+    // the static zero variable is here because some systems have extra
+    // fields in the flock structure.  These fields are frequently
+    // undocumented, and yet these systems give "EINVAL" if the
     // undocumented fields are not zero!
     //
-    memset(p, 0, sizeof(*p));
+    *p = flock_zero;
 
     assert(start >= 0);
     assert(length >= 0);
@@ -216,11 +217,12 @@ lock_prepare(long start, long length, int exclusive, lock_callback_ty callback,
     //
     if (nplaces >= nplaces_max)
     {
-	size_t          nbytes;
-
 	nplaces_max = nplaces_max * 2 + 4;
-	nbytes = nplaces_max * sizeof(p);
-	place = (lock_place_ty *)mem_change_size(place, nbytes);
+	lock_place_ty *new_place = new lock_place_ty [nplaces_max];
+	for (size_t k = 0; k < nplaces; ++k)
+	    new_place[k] = place[k];
+	delete [] place;
+	place = new_place;
     }
     place[nplaces++] = p;
     trace(("}\n"));
@@ -504,7 +506,6 @@ lock_quitter()
 void
 lock_take(void)
 {
-    int             flags;
     struct flock    p;
     size_t          j;
     int             nsecs;
@@ -530,7 +531,7 @@ lock_take(void)
     //
     // See if we will wait for locks.
     //
-    wait_for_locks = user_lock_wait(0);
+    wait_for_locks = user_ty::create()->lock_wait();
 
     gonzo_become();
 #if defined(__CYGWIN__) || defined(__hpux__)
@@ -583,7 +584,7 @@ lock_take(void)
     // make sure the file is closed when a child exec's
     //
 #ifndef CONF_NO_seteuid
-    flags = 0;
+    int flags = 0;
     if (fcntl(fd, F_GETFD, &flags))
     {
 	sub_context_ty  *scp;
@@ -993,7 +994,7 @@ lock_release(void)
     gonzo_become_undo();
     nplaces = 0;
     nplaces_max = 0;
-    mem_free((char *)place);
+    delete [] place;
     place = 0;
     trace(("}\n"));
 }
@@ -1176,9 +1177,6 @@ lock_walk_hunt(long min, long max, lock_walk_callback callback)
 void
 lock_walk(lock_walk_callback callback)
 {
-    int             flags;
-    int             fildes;
-
     trace(("lock_walk()\n{\n"));
     assert(fd < 0);
     assert(!nplaces);
@@ -1210,6 +1208,7 @@ lock_walk(lock_walk_callback callback)
     // make sure the file is closed when a child exec's
     //
 #ifndef CONF_NO_seteuid
+    int flags = 0;
     if (fcntl(fd, F_GETFD, &flags))
     {
 	sub_context_ty  *scp;
@@ -1254,7 +1253,7 @@ lock_walk(lock_walk_callback callback)
     trace_int(fd);
     assert(fd >= 0);
     assert(path);
-    fildes = fd;
+    int fildes = fd;
     fd = -1;
     glue_close(fildes);
     gonzo_become_undo();
@@ -1273,4 +1272,11 @@ lock_release_child(void)
 	close(fd);
     fd = -1;
 #endif
+}
+
+
+bool
+lock_active()
+{
+    return (fd >= 0);
 }

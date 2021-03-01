@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999-2005 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 1999-2006 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -25,7 +24,6 @@
 //
 
 #include <common/language.h>
-#include <common/mem.h>
 #include <common/str.h>
 #include <libaegis/wide_output.h>
 #include <libaegis/wide_output/private.h>
@@ -56,8 +54,7 @@ wide_output_truncate_destructor(wide_output_ty *fp)
     if (this_thing->buf_pos)
         wide_output_write(
             this_thing->deeper, this_thing->buf, this_thing->buf_pos);
-    if (this_thing->buf)
-        mem_free(this_thing->buf);
+    delete [] this_thing->buf;
     if (this_thing->delete_on_close)
         wide_output_delete(this_thing->deeper);
     this_thing->deeper = 0;
@@ -124,12 +121,12 @@ wide_output_truncate_write(wide_output_ty *fp, const wchar_t *data, size_t len)
             //
             if (this_thing->buf_pos >= this_thing->buf_max)
             {
-                size_t          nbytes;
-
                 this_thing->buf_max = 16 + 2 * this_thing->buf_max;
-                nbytes = this_thing->buf_max * sizeof(this_thing->buf[0]);
-                this_thing->buf =
-                    (wchar_t *)mem_change_size(this_thing->buf, nbytes);
+		wchar_t *new_buf = new wchar_t [this_thing->buf_max];
+		for (size_t k = 0; k < this_thing->buf_pos; ++k)
+		    new_buf[k] = this_thing->buf[k];
+		delete [] this_thing->buf;
+		this_thing->buf = new_buf;
             }
             this_thing->buf[this_thing->buf_pos++] = wc;
             this_thing->column += cwid;

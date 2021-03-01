@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1995, 1997, 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994, 1995, 1997, 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to parse report descriptions
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
@@ -43,7 +40,7 @@
 
 static string_ty *input;
 static string_ty *output;
-static string_list_ty	arg;
+static string_list_ty arg;
 
 
 void
@@ -108,7 +105,7 @@ find_filename_process(string_ty *name, string_ty *dir, const char *nondir,
 	    rptidx_where_ty *in;
 	    rptidx_where_ty *out;
 	    rptidx_where_ty **out_p;
-	    type_ty         *type_p;
+	    meta_type         *type_p;
 	    int             have_it_already;
 
 	    in = data->where->list[j];
@@ -236,25 +233,15 @@ find_filename(string_ty *name)
 void
 report_parse__init_arg()
 {
-    rpt_value_ty    *list;
-    size_t          j;
-    rpt_value_ty    *value;
-    string_ty       *name;
-
-    list = rpt_value_list();
-    for (j = 1; j < arg.nstrings; ++j)
+    rpt_value_list *p = new rpt_value_list();
+    rpt_value::pointer list(p);
+    for (size_t j = 1; j < arg.nstrings; ++j)
     {
-	value = rpt_value_string(arg.string[j]);
-	rpt_value_list_append(list, value);
-	rpt_value_free(value);
+	p->append(rpt_value_string::create(nstring(arg.string[j])));
     }
-    value = rpt_value_reference(list);
-    rpt_value_free(list);
+    rpt_value::pointer value = rpt_value_reference::create(list);
 
-    name = str_from_c("arg");
-    rpt_expr_name__init(name, value);
-    str_free(name);
-    // do not free value
+    rpt_expr_name__init("arg", value);
 }
 
 
@@ -289,11 +276,11 @@ report_run()
     //
     trace(("open the output file\n"));
     assert(!rpt_func_print__colp);
-    rpt_func_print__colp = col_open(output);
+    rpt_func_print__colp = col::open(output);
     trace(("interpret the report\n"));
     report_interpret();
     trace(("close the output file\n"));
-    col_close(rpt_func_print__colp);
+    delete rpt_func_print__colp;
     rpt_func_print__colp = 0;
 
     //

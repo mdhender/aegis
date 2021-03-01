@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001-2005 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 2001-2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -55,7 +54,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	persevere_preference = all; \
 	log_file_preference = never;"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 here=`pwd`
@@ -154,52 +153,52 @@ mkdir src src/sub
 if test $? -ne 0 ; then no_result; fi
 
 activity="create sccs file 156"
-cat > src/s.file1 << 'fubar'
-h10874
-s 00001/00000/00001
-d D 1.2 99/03/12 06:17:16 bogus2 2 1
-c second
-e
-s 00001/00000/00000
-d D 1.1 99/03/09 06:51:24 bogus1 1 0
-c first
-e
-u
-U
-f e 0
-t
-T
-I 1
-I 2
-blah
-E 2
+$bin/test_base64 -qp -i - src/s.file1 << 'fubar'
+=01h10874
+=01s 00001/00000/00001
+=01d D 1.2 99/03/12 06:17:16 bogus2 2 1
+=01c second
+=01e
+=01s 00001/00000/00000
+=01d D 1.1 99/03/09 06:51:24 bogus1 1 0
+=01c first
+=01e
+=01u
+=01U
+=01f e 0
+=01t
+=01T
+=01I 1
+=01I 2
+=01lah
+=01E 2
 This is file 1.
-E 1
+=01E 1
 fubar
 if test $? -ne 0 ; then no_result; fi
 
 activity="create sccs file 181"
-cat > src/sub/s.file2 << 'fubar'
-h11284
-s 00001/00000/00001
-d D 1.2 99/03/12 07:00:00 bogus1 2 1
-c third
-e
-s 00001/00000/00000
-d D 1.1 99/03/12 06:17:16 bogus2 1 0
-c second
-e
-u
-U
-f e 0
-t
-T
-I 1
-I 2
+$bin/test_base64 -qp -i - src/sub/s.file2 << 'fubar'
+=01h11284
+=01s 00001/00000/00001
+=01d D 1.2 99/03/12 07:00:00 bogus1 2 1
+=01c third
+=01e
+=01s 00001/00000/00000
+=01d D 1.1 99/03/12 06:17:16 bogus2 1 0
+=01c second
+=01e
+=01u
+=01U
+=01f e 0
+=01t
+=01T
+=01I 1
+=01I 2
 blah blah
-E 2
+=01E 2
 This is file 2.
-E 1
+=01E 1
 fubar
 if test $? -ne 0 ; then no_result; fi
 

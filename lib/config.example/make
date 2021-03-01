@@ -2,8 +2,6 @@
  *	aegis - project change supervisor
  *	This file is in the Public Domain, 1995, Peter Miller.
  *
- * MANIFEST: example use of cook in project config file
- *
  * The make(1) program exists in many forms, usually one is available with each
  * UNIX version.  The one used in the writing of this section is GNU Make 3.70,
  * available by anonymous FTP from your nearest GNU archive site.  GNU Make was

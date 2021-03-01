@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 2001, 2002, 2004-2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -57,7 +56,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	persevere_preference = all; \
 	log_file_preference = never;"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 here=`pwd`
@@ -140,7 +139,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	persevere_preference = all; \
 	log_file_preference = never;"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 activity="make directories 130"
@@ -275,8 +274,6 @@ if test $? -ne 0 ; then no_result; fi
 
 cp b64.out $chandir/b64
 if test $? -ne 0 ; then no_result; fi
-
-sleep 1
 
 activity="build 266"
 $bin/aegis -build -c 1 -project foo -lib $worklib > LOG 2>&1

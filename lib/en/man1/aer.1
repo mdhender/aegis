@@ -1,7 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1994, 1999, 2001, 2002 Peter Miller;
-.\"	All rights reserved.
+.\"	Copyright (C) 1994, 1999, 2001, 2002, 2006, 2007 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 .\"	GNU General Public License for more details.
 .\"
 .\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: manual page describing the aer command.
+.\"	along with this program. If not, see
+.\"	<http://www.gnu.org/licenses/>.
 .\"
 .so z_name.so
 .so libdir.so
@@ -90,18 +87,22 @@ Each of the above man pages also contains a section towards the end which
 specifically addresses report generator use, usually with code fragments.
 .SH OPTIONS
 The following options are understood:
+.so o_baselin.so
+.so o_branch.so
 .so o_change.so
+.so o_delta.so
 .TP 8n
 \fB-File\fP \fIfilename\fP
 .br
 Take the report script from the specified file, rather than looking for
 the named report in the library of reports distributed with \*(N).
-The filename `-' is understood to mean the standard input.
+The filename \[lq]\-\[rq] is understood to mean the standard input.
 .so o_help.so
 .so o_list.so
 .so o_output.so
 .so o_project.so
 .so o_terse.so
+.so o_trunk.so
 .so o_unforma.so
 .so o_verbose.so
 .so o__rules.so

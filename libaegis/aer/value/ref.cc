@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994, 1996, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,251 +13,137 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate reference values
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
-#include <libaegis/aer/value/ref.h>
 #include <common/error.h>
 #include <common/trace.h>
+#include <libaegis/aer/value/ref.h>
 
 
-struct rpt_value_reference_ty
+rpt_value_reference::~rpt_value_reference()
 {
-    RPT_VALUE
-    rpt_value_ty    *value;
-};
-
-
-static void
-destruct(rpt_value_ty *vp)
-{
-    rpt_value_reference_ty *this_thing;
-
-    trace(("reference::destruct(this = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_reference_ty *)vp;
-    assert(this_thing->method->type == rpt_value_type_reference);
-    assert(this_thing->value->reference_count >= 1);
-    rpt_value_free(this_thing->value);
-    trace(("}\n"));
+    trace(("%s\n", __PRETTY_FUNCTION__));
 }
 
 
-static rpt_value_ty *
-arithmetic(rpt_value_ty *vp)
+rpt_value_reference::rpt_value_reference(const rpt_value::pointer &a_value) :
+    value(a_value)
 {
-    rpt_value_reference_ty *this_thing;
-    rpt_value_ty    *result;
-
-    trace(("reference::destruct(this = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_reference_ty *)vp;
-    assert(this_thing->method->type == rpt_value_type_reference);
-    assert(this_thing->reference_count >= 1);
-    assert(this_thing->value->reference_count >= 1);
-    assert(this_thing->value->method->type != rpt_value_type_reference);
-    result = rpt_value_arithmetic(this_thing->value);
-    trace(("return %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
+    trace(("%s\n", __PRETTY_FUNCTION__));
 }
 
 
-static rpt_value_ty *
-stringize(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_reference::arithmetic_or_null()
+    const
 {
-    rpt_value_reference_ty *this_thing;
-    rpt_value_ty    *result;
-
-    trace(("reference::stringize(this = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_reference_ty *)vp;
-    assert(this_thing->method->type == rpt_value_type_reference);
-    assert(this_thing->reference_count >= 1);
-    assert(this_thing->value->reference_count >= 1);
-    assert(this_thing->value->method->type != rpt_value_type_reference);
-    result = rpt_value_stringize(this_thing->value);
-    trace(("return %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
+    return arithmetic(value);
 }
 
 
-static rpt_value_ty *
-booleanize(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_reference::stringize_or_null()
+    const
 {
-    rpt_value_reference_ty *this_thing;
-    rpt_value_ty    *result;
-
-    trace(("reference::booleanize(this = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_reference_ty *)vp;
-    assert(this_thing->method->type == rpt_value_type_reference);
-    assert(this_thing->reference_count >= 1);
-    assert(this_thing->value->reference_count >= 1);
-    assert(this_thing->value->method->type != rpt_value_type_reference);
-    result = rpt_value_booleanize(this_thing->value);
-    trace(("return %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return stringize(value);
 }
 
 
-static rpt_value_ty *
-lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lvalue)
+rpt_value::pointer
+rpt_value_reference::booleanize_or_null()
+    const
 {
-    rpt_value_reference_ty *this_thing;
-    rpt_value_ty    *result;
-
-    trace(("reference::lookup(this = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_reference_ty *)vp;
-    assert(this_thing->method->type == rpt_value_type_reference);
-    assert(this_thing->reference_count >= 1);
-    assert(this_thing->value->reference_count >= 1);
-    assert(this_thing->value->method->type != rpt_value_type_reference);
-    result = rpt_value_lookup(this_thing->value, rhs, lvalue);
-    trace(("return %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return booleanize(value);
 }
 
 
-static rpt_value_ty *
-keys(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_reference::lookup(const rpt_value::pointer &rhs, bool lvalue)
+    const
 {
-    rpt_value_reference_ty *this_thing;
-    rpt_value_ty    *result;
-
-    trace(("reference::keys(this = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_reference_ty *)vp;
-    assert(this_thing->method->type == rpt_value_type_reference);
-    assert(this_thing->reference_count >= 1);
-    assert(this_thing->value->reference_count >= 1);
-    assert(this_thing->value->method->type != rpt_value_type_reference);
-    result = rpt_value_keys(this_thing->value);
-    trace(("return %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return value->lookup(rhs, lvalue);
 }
 
 
-static rpt_value_ty *
-count(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_reference::keys()
+    const
 {
-    rpt_value_reference_ty *this_thing;
-    rpt_value_ty    *result;
-
-    trace(("reference::count(this = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_reference_ty *)vp;
-    assert(this_thing->method->type == rpt_value_type_reference);
-    assert(this_thing->reference_count >= 1);
-    assert(this_thing->value->reference_count >= 1);
-    assert(this_thing->value->method->type != rpt_value_type_reference);
-    result = rpt_value_count(this_thing->value);
-    trace(("return %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return value->keys();
 }
 
 
-static const char *
-type_of(rpt_value_ty *that)
+rpt_value::pointer
+rpt_value_reference::count()
+    const
 {
-    rpt_value_reference_ty *this_thing;
-
-    this_thing = (rpt_value_reference_ty *)that;
-    assert(this_thing->reference_count >= 1);
-    assert(this_thing->method->type == rpt_value_type_reference);
-    assert(this_thing->value->reference_count >= 1);
-    assert(this_thing->value->method->type != rpt_value_type_reference);
-    return rpt_value_typeof(this_thing->value);
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return value->count();
 }
 
 
-static rpt_value_ty *
-undefer(rpt_value_ty *that)
+const char *
+rpt_value_reference::type_of()
+    const
 {
-    rpt_value_reference_ty *this_thing;
-
-    this_thing = (rpt_value_reference_ty *)that;
-    assert(this_thing->reference_count >= 1);
-    assert(this_thing->method->type == rpt_value_type_reference);
-    assert(this_thing->value->reference_count >= 1);
-    assert(this_thing->value->method->type != rpt_value_type_reference);
-    return rpt_value_copy(this_thing->value);
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return value->type_of();
 }
 
 
-static rpt_value_method_ty method =
+rpt_value::pointer
+rpt_value_reference::integerize_or_null()
+    const
 {
-    sizeof(rpt_value_reference_ty),
-    "reference",
-    rpt_value_type_reference,
-    0, // construct
-    destruct,
-    arithmetic,
-    stringize,
-    booleanize,
-    lookup,
-    keys,
-    count,
-    type_of,
-    undefer,
-};
-
-
-rpt_value_ty *
-rpt_value_reference(rpt_value_ty *deeper)
-{
-    rpt_value_reference_ty *this_thing;
-
-    trace(("rpt_value_reference(deeper = %08lX)\n{\n", (long)deeper));
-    assert(deeper->reference_count >= 1);
-    assert(deeper->method->type != rpt_value_type_reference);
-    this_thing = (rpt_value_reference_ty *)rpt_value_alloc(&method);
-    this_thing->value = rpt_value_copy(deeper);
-    trace(("return %08lX;\n", (long)this_thing));
-    trace(("}\n"));
-    return (rpt_value_ty *)this_thing;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return rpt_value::integerize(value);
 }
 
 
-rpt_value_ty *
-rpt_value_reference_get(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_reference::realize_or_null()
+    const
 {
-    rpt_value_reference_ty *this_thing;
-    rpt_value_ty    *result;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return rpt_value::realize(value);
+}
 
-    trace(("reference::get(this = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_reference_ty *)vp;
-    assert(this_thing->method == &method);
-    assert(this_thing->reference_count >= 1);
-    assert(this_thing->value->reference_count >= 1);
-    assert(this_thing->value->method->type != rpt_value_type_reference);
-    result = rpt_value_copy(this_thing->value);
-    trace(("return %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
+
+const char *
+rpt_value_reference::name()
+    const
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return "reference";
+}
+
+
+rpt_value::pointer
+rpt_value_reference::create(const rpt_value::pointer &deeper)
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return pointer(new rpt_value_reference(deeper));
+}
+
+
+rpt_value::pointer
+rpt_value_reference::get()
+    const
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return value;
 }
 
 
 void
-rpt_value_reference_set(rpt_value_ty *vp, rpt_value_ty *deeper)
+rpt_value_reference::set(const rpt_value::pointer &rhs)
 {
-    rpt_value_reference_ty *this_thing;
-    rpt_value_ty    *old;
-
-    trace(("rpt_value_reference_set(vp = %08lX, deeper = %08lX)\n{\n",
-	(long)vp, (long)deeper));
-    assert(deeper->method->type != rpt_value_type_reference);
-    assert(deeper->reference_count >= 1);
-    this_thing = (rpt_value_reference_ty *)vp;
-    assert(this_thing->method == &method);
-    assert(this_thing->reference_count >= 1);
-    assert(this_thing->value->reference_count >= 1);
-    assert(this_thing->value->method->type != rpt_value_type_reference);
-    old = this_thing->value;
-    this_thing->value = rpt_value_copy(deeper);
-    assert(deeper->reference_count >= 2);
-    rpt_value_free(old);
-    trace(("}\n"));
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    value = rhs;
 }

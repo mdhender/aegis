@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate project state data
 //
@@ -64,12 +63,11 @@ project_ty::convert_to_new_format()
     // The new change is in the 'being developed'
     // state, and will be forever.
     //
-    user_ty *up = user_executing(this);
+    assert(up);
     cstate_history_ty *h = change_history_new(pcp, up);
     h->what = cstate_history_what_new_change;
     h = change_history_new(pcp, up);
     h->what = cstate_history_what_develop_begin;
-    user_free(up);
     pcp->cstate_data->state = cstate_state_being_developed;
 
     //
@@ -258,7 +256,7 @@ project_ty::convert_to_new_format()
 	    // NOTREACHED
 	    sub_context_delete(scp);
 	}
-	fstate_src_ty *sp2 = change_file_new(pcp, sp1->file_name);
+	fstate_src_ty *sp2 = pcp->file_new(sp1->file_name);
 	if (!(sp1->mask & pstate_src_usage_mask))
 	    goto yuck;
 	sp2->usage = sp1->usage;
@@ -428,6 +426,7 @@ project_ty::convert_to_new_format()
 
 project_ty::~project_ty()
 {
+    trace(("project_ty::~project_ty(this = %08lX)\n{\n", (long)this));
     if (pcp)
 	change_free(pcp);
     assert(name);
@@ -451,6 +450,7 @@ project_ty::~project_ty()
     if (parent)
 	project_free(parent);
     file_list_invalidate();
+    trace(("}\n"));
 }
 
 
@@ -509,7 +509,25 @@ project_free(project_ty *pp)
     trace(("project_free(pp = %08lX)\n{\n", (long)pp));
     assert(pp->reference_count >= 1);
     pp->reference_count--;
-    if (pp->reference_count <= 0)
+
+    //
+    // The root project's pcp references the root project (project_ty
+    // data structure). Thus even as all other references go away, the
+    // reference count of the root project remains at 1 and its memory
+    // is not released. In the special case where reference_count is
+    // one in project_free() we should test whether we're the root
+    // project and the only thing holding on to us is the pcp. In that
+    // case we should untie the loop and do a free on the pcp (which
+    // will cascade to free us).
+    //
+    if (pp->reference_count == 1)
+    {
+        change::pointer tmp = pp->change_get_raw();
+
+        if (tmp && tmp->pp == pp && pp->is_a_trunk())
+            pp->change_reset();
+    }
+    else if (pp->reference_count <= 0)
     {
 	delete pp;
     }
@@ -532,7 +550,7 @@ waiting_for_baseline_read_lock(void *p)
     project_ty	    *pp;
 
     pp = (project_ty *)p;
-    if (user_lock_wait(0))
+    if (user_ty::create()->lock_wait())
 	project_error(pp, 0, i18n("waiting for baseline read lock"));
     else
 	project_fatal(pp, 0, i18n("baseline read lock not available"));
@@ -553,7 +571,7 @@ project_baseline_read_lock_prepare(project_ty *pp)
     {
 	lock_prepare_baseline_read
 	(
-	    pp->name,
+	    pp->name_get(),
 	    waiting_for_baseline_read_lock,
 	    pp
 	);
@@ -571,7 +589,7 @@ waiting_for_baseline_write_lock(void *p)
     project_ty	    *pp;
 
     pp = (project_ty *)p;
-    if (user_lock_wait(0))
+    if (user_ty::create()->lock_wait())
 	project_error(pp, 0, i18n("waiting for baseline write lock"));
     else
 	project_fatal(pp, 0, i18n("baseline write lock not available"));
@@ -582,7 +600,12 @@ void
 project_baseline_write_lock_prepare(project_ty *pp)
 {
     trace(("project_baseline_write_lock_prepare(pp = %08lX)\n{\n", (long)pp));
-    lock_prepare_baseline_write(pp->name, waiting_for_baseline_write_lock, pp);
+    lock_prepare_baseline_write
+    (
+	pp->name_get(),
+	waiting_for_baseline_write_lock,
+	pp
+    );
     trace(("}\n"));
 }
 
@@ -593,7 +616,7 @@ waiting_for_history_lock(void *p)
     project_ty	    *pp;
 
     pp = (project_ty *)p;
-    if (user_lock_wait(0))
+    if (user_ty::create()->lock_wait())
 	project_error(pp, 0, i18n("waiting for history lock"));
     else
 	project_fatal(pp, 0, i18n("history lock not available"));
@@ -796,7 +819,7 @@ project_ty::find_branch(const char *version_string)
     for (j = 0; j < version_length; ++j)
     {
 	long		cn;
-	change_ty	*cp;
+	change::pointer cp;
 
 	cn = version[j];
 	cp = change_alloc(pp, cn);
@@ -847,7 +870,7 @@ project_ty::pstate_write()
 	filename = pstate_path_get();
 	filename_new = str_format("%s,%d", filename->str_text, ++count);
 	filename_old = str_format("%s,%d", filename->str_text, ++count);
-	project_become(this);
+        user_ty::become scoped(get_user());
 
 	// enums with 0 value not to be printed
 	type_enum_option_set();
@@ -872,7 +895,6 @@ project_ty::pstate_write()
 	// (Only needed for new files, but be paranoid.)
 	//
 	os_chmod(filename_new, 0644 & ~project_umask_get(this));
-	project_become_undo();
 	str_free(filename_new);
 	str_free(filename_old);
     }
@@ -899,7 +921,7 @@ project_Home_path_get(project_ty *pp)
 string_ty *
 project_top_path_get(project_ty *pp, int resolve)
 {
-    change_ty *cp = pp->change_get();
+    change::pointer cp = pp->change_get();
     return change_top_path_get(cp, resolve);
 }
 
@@ -1017,7 +1039,7 @@ project_verbose(project_ty *pp, sub_context_ty *scp, const char *s)
 void
 project_change_append(project_ty *pp, long cn, int is_a_branch)
 {
-    change_ty *cp = pp->change_get();
+    change::pointer cp = pp->change_get();
     change_branch_change_add(cp, cn, is_a_branch);
 }
 
@@ -1025,7 +1047,7 @@ project_change_append(project_ty *pp, long cn, int is_a_branch)
 void
 project_change_delete(project_ty *pp, long cn)
 {
-    change_ty *cp = pp->change_get();
+    change::pointer cp = pp->change_get();
     change_branch_change_remove(cp, cn);
 }
 
@@ -1033,7 +1055,7 @@ project_change_delete(project_ty *pp, long cn)
 int
 project_change_number_in_use(project_ty *pp, long cn)
 {
-    change_ty *cp = pp->change_get();
+    change::pointer cp = pp->change_get();
     return change_branch_change_number_in_use(cp, cn);
 }
 
@@ -1110,7 +1132,7 @@ project_version_get(project_ty *pp)
     string_ty	    *tmp;
 
     trace(("project_version_get(pp = %08lX)\n{\n", (long)pp));
-    change_ty *cp = pp->change_get();
+    change::pointer cp = pp->change_get();
     dn = change_history_delta_latest(cp);
     tmp = project_version_short_get(pp);
     result = str_format("%s.D%3.3ld", tmp->str_text, dn);
@@ -1121,13 +1143,30 @@ project_version_get(project_ty *pp)
 }
 
 
-user_ty *
+user_ty::pointer
 project_user(project_ty *pp)
 {
-    trace(("project_user(pp = %08lX)\n{\n", (long)pp));
-    pp = pp->trunk_get();
-    user_ty *up = user_numeric(pp, pp->uid_get());
-    trace(("return %08lX;\n", (long)up));
+    return pp->get_user();
+}
+
+
+user_ty::pointer
+project_ty::get_user()
+    const
+{
+    trace(("project_ty::get_user(this = %08lX)\n{\n", (long)this));
+    if (!up)
+    {
+        fatal_raw
+        (
+            "%s: %d: project_ty::up not set, you should have called "
+            "project_bind_existing or project_ty::bind_new() before now "
+            "(bug)",
+            __FILE__,
+            __LINE__
+        );
+    }
+    trace(("return %08lX;\n", (long)up.get()));
     trace(("}\n"));
     return up;
 }
@@ -1136,21 +1175,17 @@ project_user(project_ty *pp)
 void
 project_become(project_ty *pp)
 {
-    user_ty	    *up;
-
     trace(("project_become(pp = %08lX)\n{\n", (long)pp));
-    up = project_user(pp);
-    user_become(up);
-    user_free(up);
+    pp->get_user()->become_begin();
     trace(("}\n"));
 }
 
 
 void
-project_become_undo(void)
+project_become_undo(project_ty *pp)
 {
-    trace(("project_become_undo()\n{\n"));
-    user_become_undo();
+    trace(("project_become_undo(cp)\n{\n"));
+    pp->get_user()->become_end();
     trace(("}\n"));
 }
 
@@ -1194,7 +1229,7 @@ project_next_test_number_get(project_ty *pp)
 long
 project_minimum_change_number_get(project_ty *pp)
 {
-    change_ty *cp = pp->change_get();
+    change::pointer cp = pp->change_get();
     return change_branch_minimum_change_number_get(cp);
 }
 
@@ -1202,7 +1237,7 @@ project_minimum_change_number_get(project_ty *pp)
 void
 project_minimum_change_number_set(project_ty *pp, long n)
 {
-    change_ty *cp = pp->change_get();
+    change::pointer cp = pp->change_get();
     change_branch_minimum_change_number_set(cp, n);
 }
 
@@ -1210,7 +1245,7 @@ project_minimum_change_number_set(project_ty *pp, long n)
 bool
 project_reuse_change_numbers_get(project_ty *pp)
 {
-    change_ty *cp = pp->change_get();
+    change::pointer cp = pp->change_get();
     return change_branch_reuse_change_numbers_get(cp);
 }
 
@@ -1218,7 +1253,7 @@ project_reuse_change_numbers_get(project_ty *pp)
 void
 project_reuse_change_numbers_set(project_ty *pp, bool n)
 {
-    change_ty *cp = pp->change_get();
+    change::pointer cp = pp->change_get();
     change_branch_reuse_change_numbers_set(cp, n);
 }
 
@@ -1226,7 +1261,7 @@ project_reuse_change_numbers_set(project_ty *pp, bool n)
 long
 project_minimum_branch_number_get(project_ty *pp)
 {
-    change_ty *cp = pp->change_get();
+    change::pointer cp = pp->change_get();
     return change_branch_minimum_branch_number_get(cp);
 }
 
@@ -1234,7 +1269,7 @@ project_minimum_branch_number_get(project_ty *pp)
 void
 project_minimum_branch_number_set(project_ty *pp, long n)
 {
-    change_ty *cp = pp->change_get();
+    change::pointer cp = pp->change_get();
     change_branch_minimum_branch_number_set(cp, n);
 }
 
@@ -1242,7 +1277,7 @@ project_minimum_branch_number_set(project_ty *pp, long n)
 bool
 project_skip_unlucky_get(project_ty *pp)
 {
-    change_ty *cp = pp->change_get();
+    change::pointer cp = pp->change_get();
     return change_branch_skip_unlucky_get(cp);
 }
 
@@ -1250,7 +1285,7 @@ project_skip_unlucky_get(project_ty *pp)
 void
 project_skip_unlucky_set(project_ty *pp, bool n)
 {
-    change_ty *cp = pp->change_get();
+    change::pointer cp = pp->change_get();
     change_branch_skip_unlucky_set(cp, n);
 }
 

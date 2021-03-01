@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001, 2003-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -42,8 +41,7 @@ patch_line_list_destructor(patch_line_list_ty *this_thing)
 
     for (j = 0; j < this_thing->length; ++j)
 	patch_line_destructor(this_thing->item + j);
-    if (this_thing->item)
-	mem_free(this_thing->item);
+    delete [] this_thing->item;
     this_thing->start_line_number = -1;
     this_thing->length = 0;
     this_thing->maximum = 0;
@@ -57,12 +55,13 @@ patch_line_list_append(patch_line_list_ty *this_thing, patch_line_type type,
 {
     if (this_thing->length >= this_thing->maximum)
     {
-	size_t		nbytes;
-
-	this_thing->maximum = this_thing->maximum * 2 + 8;
-	nbytes = this_thing->maximum * sizeof(this_thing->item[0]);
-	this_thing->item =
-            (patch_line_ty *)mem_change_size(this_thing->item, nbytes);
+	size_t new_maximum = this_thing->maximum * 2 + 8;
+	patch_line_ty *new_item = new patch_line_ty [new_maximum];
+	for (size_t j = 0; j < this_thing->length; ++j)
+	    new_item[j] = this_thing->item[j];
+	delete [] this_thing->item;
+	this_thing->item = new_item;
+	this_thing->maximum = new_maximum;
     }
     patch_line_constructor(
         this_thing->item + this_thing->length++, type, value);

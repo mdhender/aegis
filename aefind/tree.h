@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,35 +13,59 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aefind/tree.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEFIND_TREE_H
 #define AEFIND_TREE_H
 
-#include <common/main.h>
+#include <common/ac/shared_ptr.h>
+#include <libaegis/aer/value.h>
 
 struct string_ty; // existence
 struct stat; // existence
 
-struct tree_ty
+/**
+  * The tree abstract base class is used to represent a generic node in
+  * an expression syntax tree.
+  */
+class tree
 {
-    struct tree_method_ty *method;
-    long	    reference_count;
+public:
+    typedef aegis_shared_ptr<tree> pointer;
+
+    virtual ~tree();
+
+protected:
+    /**
+      * The default constructor.
+      */
+    tree();
+
+public:
+    virtual const char *name() const = 0;
+    virtual void print() const = 0;
+    virtual rpt_value::pointer evaluate(string_ty *, string_ty *, string_ty *,
+        struct stat *) const = 0;
+    virtual bool useful() const = 0;
+    virtual bool constant() const = 0;
+    virtual tree::pointer optimize() const = 0;
+
+    rpt_value::pointer evaluate_constant() const;
+    tree::pointer optimize_constant() const;
+
+private:
+    /**
+      * The copy constructor.  Do not use.
+      */
+    tree(const tree &);
+
+    /**
+      * The copy constructor.  Do not use.
+      */
+    tree &operator=(const tree &);
 };
 
-tree_ty *tree_copy(tree_ty *);
-void tree_delete(tree_ty *);
-void tree_print(tree_ty *);
-struct rpt_value_ty *tree_evaluate(tree_ty *, struct string_ty *,
-    struct string_ty *, struct string_ty *, struct stat *);
-int tree_useful(tree_ty *);
-int tree_constant(tree_ty *);
-struct rpt_value_ty *tree_evaluate_constant(tree_ty *);
-tree_ty *tree_optimize(tree_ty *);
-tree_ty *tree_optimize_constant(tree_ty *);
 
 #endif // AEFIND_TREE_H

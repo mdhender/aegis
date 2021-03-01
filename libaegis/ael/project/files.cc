@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate filess
 //
@@ -42,18 +41,18 @@
 
 void
 list_project_files(string_ty *project_name, long change_number,
-    string_list_ty *args)
+    string_list_ty *)
 {
     project_ty	    *pp;
-    change_ty	    *cp;
-    user_ty	    *up;
+    change::pointer cp;
+    user_ty::pointer up;
     output_ty	    *usage_col =    0;
     output_ty	    *edit_col =	    0;
     output_ty	    *file_name_col = 0;
     int		    j;
     string_ty	    *line1;
     int		    left;
-    col_ty	    *colp;
+    col	    *colp;
     symtab_ty       *attr_col_stp = 0;
 
     //
@@ -61,7 +60,10 @@ list_project_files(string_ty *project_name, long change_number,
     //
     trace(("list_project_files()\n{\n"));
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     else
 	project_name = str_copy(project_name);
     pp = project_alloc(project_name);
@@ -71,7 +73,7 @@ list_project_files(string_ty *project_name, long change_number,
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
@@ -87,7 +89,7 @@ list_project_files(string_ty *project_name, long change_number,
     //
     // create the columns
     //
-    colp = col_open((string_ty *)0);
+    colp = col::open((string_ty *)0);
     if (change_number)
     {
 	line1 =
@@ -100,13 +102,13 @@ list_project_files(string_ty *project_name, long change_number,
     }
     else
 	line1 = str_format("Project \"%s\"", project_name_get(pp)->str_text);
-    col_title(colp, line1->str_text, "List of Project's Files");
+    colp->title(line1->str_text, "List of Project's Files");
     str_free(line1);
 
     left = 0;
     if (!option_terse_get())
     {
-	usage_col = col_create(colp, left, left + USAGE_WIDTH, "Type\n-------");
+	usage_col = colp->create(left, left + USAGE_WIDTH, "Type\n-------");
 	left += USAGE_WIDTH + 1;
 
 	attr_col_stp = symtab_alloc(5);
@@ -142,14 +144,7 @@ list_project_files(string_ty *project_name, long change_number,
 			output_ty       *op;
 
 			s = ael_build_header(ap->name);
-			op =
-			    col_create
-			    (
-				colp,
-				left,
-				left + ATTR_WIDTH,
-				s->str_text
-			    );
+			op = colp->create(left, left + ATTR_WIDTH, s->str_text);
 			str_free(s);
 			symtab_assign(attr_col_stp, lc_name, op);
 			left += ATTR_WIDTH + 1;
@@ -159,10 +154,10 @@ list_project_files(string_ty *project_name, long change_number,
 	    }
 	}
 
-	edit_col = col_create(colp, left, left + EDIT_WIDTH, "Edit\n-------");
+	edit_col = colp->create(left, left + EDIT_WIDTH, "Edit\n-------");
 	left += EDIT_WIDTH + 1;
     }
-    file_name_col = col_create(colp, left, 0, "File Name\n-----------");
+    file_name_col = colp->create(left, 0, "File Name\n-----------");
 
     //
     // list the project's files
@@ -298,7 +293,7 @@ list_project_files(string_ty *project_name, long change_number,
 		}
 	    }
 	}
-	col_eoln(colp);
+	colp->eoln();
     }
 
     //
@@ -306,10 +301,9 @@ list_project_files(string_ty *project_name, long change_number,
     //
     if (attr_col_stp)
 	symtab_free(attr_col_stp);
-    col_close(colp);
+    delete colp;
     project_free(pp);
     if (cp)
 	change_free(cp);
-    user_free(up);
     trace(("}\n"));
 }

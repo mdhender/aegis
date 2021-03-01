@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1996, 2003-2005 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 1996, 2003-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -25,43 +24,39 @@
 #include <libaegis/sub.h>
 #include <libaegis/sub/zero_pad.h>
 #include <common/trace.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
 
 
-wstring_ty *
-sub_zero_pad(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_zero_pad(sub_context_ty *scp, const wstring_list &arg)
 {
     trace(("sub_zero_pad()\n{\n"));
-    if (arg->size() != 3)
+    trace(("arg.size() => %d\n", int(arg.size())));
+    if (arg.size() != 3)
     {
-	sub_context_error_set(scp, i18n("requires two arguments"));
-	trace(("return NULL;\n"));
+	scp->error_set(i18n("requires two arguments"));
 	trace(("}\n"));
-	return 0;
+	return wstring();
     }
-    string_ty *s = wstr_to_str(arg->get(2));
-    long n = atol(s->str_text);
+    long n = arg[2].to_nstring().to_long();
     trace(("n = %ld;\n", n));
-    str_free(s);
 
-    wstring_ty *result = 0;
-    if (n <= (long)arg->get(1)->wstr_length)
-	result = wstr_copy(arg->get(1));
+    wstring result;
+    if (n <= (long)arg[1].size())
+	result = arg[1];
     else
     {
-	size_t len = n - arg->get(1)->wstr_length;
-	string_ty *s3 = wstr_to_str(arg->get(1));
+	size_t len = n - arg[1].size();
+	nstring s3 = arg[1].to_nstring();
 	char *buffer = new char [len + 1];
 	memset(buffer, '0', len);
 	buffer[len] = 0;
-	string_ty *s2 = str_format("%s%s", buffer, s3->str_text);
-	trace(("result = \"%s\";\n", s2->str_text));
+	nstring s2 = nstring::format("%s%s", buffer, s3.c_str());
 	delete [] buffer;
-	str_free(s3);
-	result = str_to_wstr(s2);
-	str_free(s2);
+	trace(("s2 = %s;\n", s2.quote_c().c_str()));
+	result = wstring(s2);
     }
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

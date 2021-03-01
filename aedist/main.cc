@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -73,14 +72,14 @@ main(int argc, char **argv)
 
     static arglex_dispatch_ty dispatch[] =
     {
-        { arglex_token_send, send_main },
-        { arglex_token_receive, receive_main },
-        { arglex_token_missing, missing_main },
-        { arglex_token_pending, pending_main },
-        { arglex_token_replay, replay_main },
-        { arglex_token_version, version },
-        { arglex_token_help, aedist_help },
-        { arglex_token_list, list_main },
+        { arglex_token_send, send_main, 0 },
+        { arglex_token_receive, receive_main, 0 },
+        { arglex_token_missing, missing_main, 0 },
+        { arglex_token_pending, pending_main, 0 },
+        { arglex_token_replay, replay_main, 0 },
+        { arglex_token_version, version, 0 },
+        { arglex_token_help, aedist_help, 1 },
+        { arglex_token_list, list_main, 1 },
     };
     arglex_dispatch(dispatch, SIZEOF(dispatch), usage);
 

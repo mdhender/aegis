@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001, 2002, 2004-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -47,6 +46,7 @@ string_ty *format_history_query(format_ty *);
 string_ty *format_diff(format_ty *);
 string_ty *format_merge(format_ty *);
 void format_unlock(format_ty *, string_ty *);
+string_ty *format_sanitize(format_ty *, string_ty *, int);
 
 format_ty *format_find(const char *);
 

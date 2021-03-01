@@ -1,7 +1,6 @@
 //
 //	cook - file construction tool
-//	Copyright (C) 1994, 1995, 1999, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994, 1995, 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -22,7 +21,7 @@
 // Derived from code marked
 //	derived from RSADSI MD5 Message-Digest Algorithm
 //	Copyright (C) 1991-2, RSA Data Security, Inc. Created 1991.
-//	All rights reserved.
+//      All rights reserved.
 //
 //	License to copy and use this software is granted provided that it
 //	is identified as the "RSA Data Security, Inc. MD5 Message-Digest
@@ -162,7 +161,7 @@ md5_constructor(fingerprint_ty *p)
 
 
 static void
-md5_destructor(fingerprint_ty *p)
+md5_destructor(fingerprint_ty *)
 {
 }
 

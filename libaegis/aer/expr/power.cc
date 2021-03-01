@@ -1,176 +1,146 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//      aegis - project change supervisor
+//      Copyright (C) 1994-1996, 1999, 2002-2007 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate power (exponentiation) expressions
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/errno.h>
 #include <common/ac/string.h>
 #include <common/ac/math.h>
 
+#include <common/error.h>
+#include <common/trace.h>
 #include <libaegis/aer/expr/power.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/integer.h>
 #include <libaegis/aer/value/real.h>
-#include <common/error.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 
 
-static rpt_value_ty *
-evaluate(rpt_expr_ty *this_thing)
+rpt_expr_power::~rpt_expr_power()
 {
-    sub_context_ty  *scp;
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v1a;
-    double	    v1d;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *v2a;
-    double	    v2d;
-    rpt_value_ty    *result;
-    double	    n;
-    string_ty       *s;
+}
 
+
+rpt_expr_power::rpt_expr_power(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
+{
+    append(lhs);
+    append(rhs);
+}
+
+
+rpt_expr::pointer
+rpt_expr_power::create(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
+{
+    return pointer(new rpt_expr_power(lhs, rhs));
+}
+
+
+rpt_value::pointer
+rpt_expr_power::evaluate()
+    const
+{
     //
     // evaluate the left hand side
     //
-    trace(("power::evaluate()\n{\n"));
-    assert(this_thing->nchild == 2);
-    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (v1->method->type == rpt_value_type_error)
-    {
-	trace(("}\n"));
-	return v1;
-    }
+    trace(("power::evaluate()\n"));
+    assert(get_nchildren() == 2);
+    rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
+    if (v1->is_an_error())
+        return v1;
 
     //
     // coerce the left hand side to an arithmetic type
     // (will not give error if can't, will copy instead)
     //
-    v1a = rpt_value_arithmetic(v1);
-    rpt_value_free(v1);
+    rpt_value::pointer v1a = rpt_value::arithmetic(v1);
 
     //
     // evaluate the right hand side
     //
-    v2 = rpt_expr_evaluate(this_thing->child[1], 1);
-    if (v2->method->type == rpt_value_type_error)
-    {
-	rpt_value_free(v1a);
-	trace(("}\n"));
-	return v2;
-    }
+    rpt_value::pointer v2 = nth_child(1)->evaluate(true, true);
+    if (v2->is_an_error())
+        return v2;
 
     //
     // coerce the right hand side to an arithmetic type
     // (will not give error if can't, will copy instead)
     //
-    v2a = rpt_value_arithmetic(v2);
-    rpt_value_free(v2);
+    rpt_value::pointer v2a = rpt_value::arithmetic(v2);
 
-    //
-    // the type of the result depends on
-    // the types of the operands
-    //
-    switch (v1a->method->type)
+    double v1d = 0;
+    rpt_value_real *v1arp = dynamic_cast<rpt_value_real *>(v1a.get());
+    if (v1arp)
     {
-    case rpt_value_type_real:
-	v1d = rpt_value_real_query(v1a);
-	break;
-
-    case rpt_value_type_integer:
-	v1d = rpt_value_integer_query(v1a);
-	break;
-
-    default:
-	illegal_power:
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name1", v1a->method->name);
-	sub_var_set_charstar(scp, "Name2", v2a->method->name);
-	rpt_value_free(v1a);
-	rpt_value_free(v2a);
-	s = subst_intl(scp, i18n("illegal power ($name1 ** $name2)"));
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->pos, s);
-	str_free(s);
-	trace(("}\n"));
-	return result;
+        v1d = v1arp->query();
     }
-    switch (v2a->method->type)
-    {
-    case rpt_value_type_real:
-	v2d = rpt_value_real_query(v2a);
-	break;
-
-    case rpt_value_type_integer:
-	v2d = rpt_value_integer_query(v2a);
-	break;
-
-    default:
-	goto illegal_power;
-    }
-    rpt_value_free(v1a);
-    rpt_value_free(v2a);
-
-    errno = 0;
-    n = pow(v1d, v2d);
-    if (errno == 0)
-	result = rpt_value_real(n);
     else
     {
-	int             errno_old;
-
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_format(scp, "Value1", "%g", v1d);
-	sub_var_set_format(scp, "Value2", "%g", v2d);
-	s = subst_intl(scp, i18n("$value1 ** $value2: $errno"));
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->pos, s);
-	str_free(s);
+        rpt_value_integer *v1aip = dynamic_cast<rpt_value_integer *>(v1a.get());
+        if (v1aip)
+        {
+            v1d = v1aip->query();
+        }
+        else
+        {
+            sub_context_ty sc;
+            sc.var_set_charstar("Name1", v1->name());
+            sc.var_set_charstar("Name2", v2->name());
+            nstring s(sc.subst_intl(i18n("illegal power ($name1 ** $name2)")));
+            return rpt_value_error::create(get_pos(), s);
+        }
     }
 
-    trace(("return %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
-}
+    double v2d = 0;
+    rpt_value_real *v2arp = dynamic_cast<rpt_value_real *>(v2a.get());
+    if (v2arp)
+    {
+        v2d = v2arp->query();
+    }
+    else
+    {
+        rpt_value_integer *v2aip = dynamic_cast<rpt_value_integer *>(v2a.get());
+        if (v2aip)
+        {
+            v2d = v2aip->query();
+        }
+        else
+        {
+            sub_context_ty sc;
+            sc.var_set_charstar("Name1", v1->name());
+            sc.var_set_charstar("Name2", v2->name());
+            nstring s(sc.subst_intl(i18n("illegal power ($name1 ** $name2)")));
+            return rpt_value_error::create(get_pos(), s);
+        }
+    }
 
+    errno = 0;
+    double n = pow(v1d, v2d);
+    if (errno != 0)
+    {
+        int errno_old = errno;
+        sub_context_ty sc;
+        sc.errno_setx(errno_old);
+        sc.var_set_format("Value1", "%g", v1d);
+        sc.var_set_format("Value2", "%g", v2d);
+        nstring s(sc.subst_intl(i18n("$value1 ** $value2: $errno")));
+        return rpt_value_error::create(get_pos(), s);
+    }
 
-static rpt_expr_method_ty method =
-{
-    sizeof(rpt_expr_ty),
-    "**",
-    0, // construct
-    0, // destruct
-    evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_power(rpt_expr_ty *e1, rpt_expr_ty *e2)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&method);
-    rpt_expr_append(this_thing, e1);
-    rpt_expr_append(this_thing, e2);
-    return this_thing;
+    return rpt_value_real::create(n);
 }

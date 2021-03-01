@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 1999, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1998, 1999, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,166 +13,174 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement the dirname builtin function
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
 
+#include <common/error.h>
+#include <common/mem.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/func/dirname.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/string.h>
-#include <common/error.h>
-#include <common/mem.h>
 #include <libaegis/sub.h>
 
 
-static int
-basename_verify(rpt_expr_ty *ep)
+rpt_func_basename::~rpt_func_basename()
 {
-    return (ep->nchild == 1);
 }
 
 
-static rpt_value_ty *
-basename_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func_basename::rpt_func_basename()
 {
-    rpt_value_ty    *arg;
-    rpt_value_ty    *result;
-    string_ty       *pathname;
-    string_ty       *s;
-    char            *cp;
+}
 
-    assert(argc == 1);
-    arg = argv[0];
-    assert(arg->method->type != rpt_value_type_error);
-    arg = rpt_value_stringize(arg);
-    if (arg->method->type != rpt_value_type_string)
+
+rpt_func::pointer
+rpt_func_basename::create()
+{
+    return pointer(new rpt_func_basename());
+}
+
+
+const char *
+rpt_func_basename::name()
+    const
+{
+    return "basename";
+}
+
+
+bool
+rpt_func_basename::optimizable()
+    const
+{
+    return true;
+}
+
+
+bool
+rpt_func_basename::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 1);
+}
+
+
+rpt_value::pointer
+rpt_func_basename::run(const rpt_expr::pointer &ep, size_t,
+    rpt_value::pointer *argv) const
+{
+    rpt_value::pointer arg = argv[0];
+    assert(!arg->is_an_error());
+    arg = rpt_value::stringize(arg);
+    rpt_value_string *rvsp = dynamic_cast<rpt_value_string *>(arg.get());
+    if (!rvsp)
     {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
-	rpt_value_free(arg);
-	sub_var_set_charstar(scp, "Function", "basename");
-	sub_var_set_long(scp, "Number", 1);
-	sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "basename");
+	sc.var_set_long("Number", 1);
+	sc.var_set_charstar("Name", argv[0]->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
-    i18n("$function: argument $number: string value required (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(ep->pos, s);
-	str_free(s);
-	return result;
+                i18n("$function: argument $number: string value required "
+                    "(was given $name)")
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
-    pathname = str_copy(rpt_value_string_query(arg));
-    rpt_value_free(arg);
+    nstring pathname(rvsp->query());
 
     //
     // extract the final path element
     //
-    cp = strrchr(pathname->str_text, '/');
-    if (cp)
-	s = str_from_c(cp + 1);
-    else
-	s = str_copy(pathname);
-    str_free(pathname);
+    nstring s = pathname.basename();
 
     //
     // build the result
     //
-    result = rpt_value_string(s);
-    str_free(s);
-    return result;
+    return rpt_value_string::create(s);
 }
 
 
-rpt_func_ty rpt_func_basename =
+rpt_func_dirname::~rpt_func_dirname()
 {
-    "basename",
-    1, // optimizable
-    basename_verify,
-    basename_run
-};
-
-
-static int
-dirname_verify(rpt_expr_ty *ep)
-{
-    return (ep->nchild == 1);
 }
 
 
-static rpt_value_ty *
-dirname_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func_dirname::rpt_func_dirname()
 {
-    rpt_value_ty    *arg;
-    rpt_value_ty    *result;
-    string_ty       *f;
-    string_ty       *d;
-    char            *cp;
+}
 
-    assert(argc == 1);
-    arg = argv[0];
-    assert(arg->method->type != rpt_value_type_error);
-    arg = rpt_value_stringize(arg);
-    if (arg->method->type != rpt_value_type_string)
+
+rpt_func::pointer
+rpt_func_dirname::create()
+{
+    return pointer(new rpt_func_dirname());
+}
+
+
+const char *
+rpt_func_dirname::name()
+    const
+{
+    return "dirname";
+}
+
+
+bool
+rpt_func_dirname::optimizable()
+    const
+{
+    return true;
+}
+
+
+bool
+rpt_func_dirname::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 1);
+}
+
+
+rpt_value::pointer
+rpt_func_dirname::run(const rpt_expr::pointer &ep, size_t,
+    rpt_value::pointer *argv) const
+{
+    rpt_value::pointer arg = argv[0];
+    assert(!arg->is_an_error());
+    arg = rpt_value::stringize(arg);
+    rpt_value_string *rvsp = dynamic_cast<rpt_value_string *>(arg.get());
+    if (!rvsp)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	rpt_value_free(arg);
-	sub_var_set_charstar(scp, "Function", "dirname");
-	sub_var_set_long(scp, "Number", 1);
-	sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "dirname");
+	sc.var_set_long("Number", 1);
+	sc.var_set_charstar("Name", argv[0]->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
-    i18n("$function: argument $number: string value required (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(ep->pos, s);
-	str_free(s);
-	return result;
+                i18n("$function: argument $number: string value required "
+                    "(was given $name)")
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
-    f = str_copy(rpt_value_string_query(arg));
-    rpt_value_free(arg);
+    nstring pathname(rvsp->query());
 
     //
     // extract the final path element
     //
-    cp = strrchr(f->str_text, '/');
-    if (cp)
-    {
-	if (cp == f->str_text)
-    	    d = str_from_c("/");
-	else
-    	    d = str_n_from_c(f->str_text, cp - f->str_text);
-    }
-    else
-	d = str_from_c(".");
-    str_free(f);
+    nstring d = pathname.dirname();
 
     //
     // build the result
     //
-    result = rpt_value_string(d);
-    str_free(d);
-    return result;
+    return rpt_value_string::create(d);
 }
-
-
-rpt_func_ty rpt_func_dirname =
-{
-    "dirname",
-    1, // optimizable
-    dirname_verify,
-    dirname_run
-};

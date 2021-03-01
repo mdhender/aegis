@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -53,7 +52,7 @@ public:
     // See base class for documentation.
     project_ty* get_pp();
 
-    user_ty* get_up();
+    user_ty::pointer get_up();
 
     // See base class for documentation.
     void parse_change_with_branch(long &change_number, usage_t usage);
@@ -61,6 +60,9 @@ public:
     // See base class for documentation.
     void parse_change_with_branch(long &change_number, const char *&branch,
 	usage_t usage);
+
+    // See base class for documentation.
+    bool set() const;
 
 private:
     /**

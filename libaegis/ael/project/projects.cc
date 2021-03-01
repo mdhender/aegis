@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -36,7 +35,7 @@
 
 
 void
-list_projects(string_ty *project_name, long change_number, string_list_ty *args)
+list_projects(string_ty *project_name, long change_number, string_list_ty *)
 {
     string_list_ty name;
     output_ty *name_col = 0;
@@ -44,7 +43,7 @@ list_projects(string_ty *project_name, long change_number, string_list_ty *args)
     output_ty *desc_col = 0;
     size_t j;
     int left;
-    col_ty *colp;
+    col *colp;
 
     trace(("list_projects()\n{\n"));
     if (project_name)
@@ -55,42 +54,45 @@ list_projects(string_ty *project_name, long change_number, string_list_ty *args)
     //
     // list the projects
     //
+    trace(("mark\n"));
     project_list_get(&name);
+    trace(("mark\n"));
 
     //
     // create the columns
     //
-    colp = col_open((string_ty *)0);
-    col_title(colp, "List of Projects", (char *)0);
+    colp = col::open((string_ty *)0);
+    colp->title("List of Projects", (char *)0);
 
     left = 0;
-    name_col =
-	col_create(colp, left, left + PROJECT_WIDTH, "Project\n---------");
+    name_col = colp->create(left, left + PROJECT_WIDTH, "Project\n---------");
     left += PROJECT_WIDTH + 1;
 
     if (!option_terse_get())
     {
 	dir_col =
-	    col_create
+	    colp->create
 	    (
-	       	colp,
 	       	left,
 	       	left + DIRECTORY_WIDTH,
 	       	"Directory\n-----------"
 	    );
 	left += DIRECTORY_WIDTH + 1;
 
-	desc_col = col_create(colp, left, 0, "Description\n-------------");
+	desc_col = colp->create(left, 0, "Description\n-------------");
     }
 
     //
     // list each project
     //
+    trace(("mark\n"));
     for (j = 0; j < name.nstrings; ++j)
     {
+        trace(("j = %d/%d\n", (int)j, (int)name.nstrings));
 	project_ty *pp = project_alloc(name.string[j]);
 	pp->bind_existing();
 
+    trace(("mark\n"));
 	int err = project_is_readable(pp);
 
 	name_col->fputs(project_name_get(pp));
@@ -112,13 +114,17 @@ list_projects(string_ty *project_name, long change_number, string_list_ty *args)
 		desc_col->fputs(project_description_get(pp));
 	    }
 	}
+    trace(("mark\n"));
 	project_free(pp);
-	col_eoln(colp);
+    trace(("mark\n"));
+	colp->eoln();
     }
 
     //
     // clean up and go home
     //
-    col_close(colp);
+    trace(("mark\n"));
+    delete colp;
+    colp = 0;
     trace(("}\n"));
 }

@@ -1,53 +1,54 @@
 dnl
-dnl	aegis - a project change supervisor
-dnl	Copyright (C) 1994, 1995, 1997-1999, 2001-2006 Peter Miller;
-dnl	All rights reserved.
+dnl     aegis - a project change supervisor
+dnl     Copyright (C) 1994, 1995, 1997-1999, 2001-2007 Peter Miller
+dnl     Copyright (C) 2006, 2007 Walter Franzini
 dnl
-dnl	This program is free software; you can redistribute it and/or modify
-dnl	it under the terms of the GNU General Public License as published by
-dnl	the Free Software Foundation; either version 2 of the License, or
-dnl	(at your option) any later version.
+dnl     This program is free software; you can redistribute it and/or
+dnl     modify it under the terms of the GNU General Public License as
+dnl     published by the Free Software Foundation; either version 2 of
+dnl     the License, or (at your option) any later version.
 dnl
-dnl	This program is distributed in the hope that it will be useful,
-dnl	but WITHOUT ANY WARRANTY; without even the implied warranty of
-dnl	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-dnl	GNU General Public License for more details.
+dnl     This program is distributed in the hope that it will be useful,
+dnl     but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl     GNU General Public License for more details.
 dnl
-dnl	You should have received a copy of the GNU General Public License
-dnl	along with this program; if not, write to the Free Software
-dnl	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-dnl
-dnl MANIFEST: how to configure aegis, input to the GNU autoconf program
+dnl     You should have received a copy of the GNU General Public License
+dnl     along with this program. If not, see
+dnl     <http://www.gnu.org/licenses/>.
 dnl
 AC_INIT(install-sh)
 AC_CONFIG_HEADER(common/config.h)
 AC_PROG_CXX
 AC_PROG_CPP
+AC_CANONICAL_HOST
+AC_LANG(C++)
+AC_GNU_SOURCE
 
 dnl
-dnl	Look for an existing Aegis installation, and use the "aegis
-dnl	--configured" command to replicate its configuration.
-dnl	Unless they said --with-no-aegis-configured
+dnl     Look for an existing Aegis installation, and use the "aegis
+dnl     --configured" command to replicate its configuration.
+dnl     Unless they said --with-no-aegis-configured
 dnl
 if test "x$prefix" = "xNONE"
 then
     if test "x$with_no_aegis_configured" = "x"; then
-	cfgval=`aegis --configured 2> /dev/null`
-	if test $? -eq 0; then
-	    eval "$cfgval"
-	else
-	    cfgval=`which aegis 2> /dev/null`
-	    if test $? -ne 0; then
-		case "$cfgval" in
-		/bin/aegis )
-		    prefix=/
-		    ;;
-		*/bin/aegis )
-		    prefix=`echo $cfgval | sed 's|/bin/aegis$||'`
-		    ;;
-		esac
-	    fi
-	fi
+        cfgval=`aegis --configured 2> /dev/null`
+        if test $? -eq 0; then
+            eval "$cfgval"
+        else
+            cfgval=`which aegis 2> /dev/null`
+            if test $? -ne 0; then
+                case "$cfgval" in
+                /bin/aegis )
+                    prefix=/
+                    ;;
+                */bin/aegis )
+                    prefix=`echo $cfgval | sed 's|/bin/aegis$||'`
+                    ;;
+                esac
+            fi
+        fi
     fi
 fi
 
@@ -61,8 +62,8 @@ AC_EXEEXT
 
 dnl Solaris 2.5.1 and below wide-character support
 AC_CHECK_FUNC(wschr, ,
-	unset ac_cv_func_wschr
-	AC_CHECK_LIB(w, wschr))
+        unset ac_cv_func_wschr
+        AC_CHECK_LIB(w, wschr))
 
 dnl
 dnl Solaris needs to use the GNU Gettext to have any chance of
@@ -70,11 +71,11 @@ dnl having working error message translation.  So we look for -lintl
 dnl unconditionally.
 dnl
 AC_CHECK_LIB(intl, gettext, ,
-	unset ac_cv_func_gettext)
+        unset ac_cv_func_gettext)
 
 AC_CHECK_FUNC(setsockopt, ,
-	unset ac_cv_func_setsockopt
-	AC_CHECK_LIB(socket, setsockopt))
+        unset ac_cv_func_setsockopt
+        AC_CHECK_LIB(socket, setsockopt))
 AC_CHECK_LIB(m, main)
 AC_CHECK_LIB(rx, main)
 AC_CHECK_LIB(z, main, ,
@@ -141,9 +142,9 @@ then
 
     if test -n "$CURL_CONFIG"
     then
-	CFLAGS="$CFLAGS `$CURL_CONFIG --cflags`"
+        CFLAGS="$CFLAGS `$CURL_CONFIG --cflags`"
         CXXFLAGS="$CXXFLAGS `$CURL_CONFIG --cflags`"
-	STATIC_LIBS="`$CURL_CONFIG --libs`"
+        STATIC_LIBS="`$CURL_CONFIG --libs`"
     fi
 fi
 
@@ -157,9 +158,9 @@ then
 
     if test -n "$XML2_CONFIG"
     then
-	CFLAGS="$CFLAGS `$XML2_CONFIG --cflags`"
+        CFLAGS="$CFLAGS `$XML2_CONFIG --cflags`"
         CXXFLAGS="$CXXFLAGS `$XML2_CONFIG --cflags`"
-	STATIC_LIBS="$STATIC_LIBS `$XML2_CONFIG --libs` -lpthread"
+        STATIC_LIBS="$STATIC_LIBS `$XML2_CONFIG --libs` -lpthread"
     fi
 fi
 
@@ -177,7 +178,7 @@ dnl     *** later we check for uuid_create, uuid_make and uuid_export
 dnl
 dnl The e2fsprogs variant has uuid_generate in -luuid
 dnl     and which include file?
-dnl	*** later we check for uuid_generate and uuid_unparse
+dnl     *** later we check for uuid_generate and uuid_unparse
 dnl
 dnl The DCE compliant variant has uuid_hash in -luuid
 dnl     The include file is <dce/uuid.h>
@@ -241,9 +242,9 @@ else
     temp_str=`man -w 2>/dev/null`
     if test -n "$temp_str"
     then
-	MANPATH_PROG="man -w 2>/dev/null"
+        MANPATH_PROG="man -w 2>/dev/null"
     else
-	MANPATH_PROG="echo /usr/man:/usr/share/man"
+        MANPATH_PROG="echo /usr/man:/usr/share/man"
     fi
 fi
 
@@ -269,7 +270,7 @@ AC_DEFINE_UNQUOTED(CONF_PERL, ["$PERL"],
 [Set this to be the absolute path of a Perl interpreter.])
 
 dnl
-dnl	See if we are using GNU diff
+dnl     See if we are using GNU diff
 dnl
 AC_CHECK_PROGS(DIFFsimple, gdiff diff, diff)
 AC_PATH_PROG(DIFF, $DIFFsimple, /usr/local/bin/$DIFFsimple)
@@ -281,16 +282,16 @@ if $DIFF --version > conftest.out 2>&1
 then
     if grep 'GNU diff' conftest.out > conftest.err 2>&1
     then
-	AC_DEFINE(HAVE_GNU_DIFF, 1,
-	    [Define this symbol of your system has GNU diff.])
-	HAVE_GNU_DIFF=yes
+        AC_DEFINE(HAVE_GNU_DIFF, 1,
+            [Define this symbol of your system has GNU diff.])
+        HAVE_GNU_DIFF=yes
     fi
 fi
 AC_MSG_RESULT([$HAVE_GNU_DIFF])
 
 dnl
-dnl	Find the patch program, and check whether or not it understands
-dnl	the -f and -s options.
+dnl     Find the patch program, and check whether or not it understands
+dnl     the -f and -s options.
 dnl
 AC_CHECK_PROGS(PATCHsimple, gpatch patch)
 AC_PATH_PROG(PATCH, $PATCHsimple, /usr/local/bin/$PATCHsimple)
@@ -301,44 +302,44 @@ HAVE_GNU_PATCH=no
 if $PATCH -f -s < /dev/null > conftest.out 2>&1
 then
     AC_DEFINE(HAVE_GNU_PATCH, 1,
-	[Define this symbol of your system has GNU patch.])
+        [Define this symbol of your system has GNU patch.])
     HAVE_GNU_PATCH=yes
 fi
 AC_MSG_RESULT([$HAVE_GNU_PATCH])
 
 dnl
-dnl	Test if groff takes -ms or -mgs for the macro package.
+dnl     Test if groff takes -ms or -mgs for the macro package.
 dnl
 AC_MSG_CHECKING([for $GROFF -ms macros])
 if test `echo ' ' | groff -mgs 2> /dev/null | wc -l` -gt 0
 then
-	GROFF_MS_MACROS=gs
+        GROFF_MS_MACROS=gs
 else
-	GROFF_MS_MACROS=s
+        GROFF_MS_MACROS=s
 fi
 AC_SUBST(GROFF_MS_MACROS)
 AC_MSG_RESULT([-m$GROFF_MS_MACROS])
 
 dnl
-dnl	Test if groff takes -mm or -mgm for the macro package.
+dnl     Test if groff takes -mm or -mgm for the macro package.
 dnl
 AC_MSG_CHECKING([for $GROFF -mm macros])
 if test `echo ' ' | groff -mgm 2> /dev/null | wc -l` -gt 0
 then
-	GROFF_MM_MACROS=gm
+        GROFF_MM_MACROS=gm
 else
-	GROFF_MM_MACROS=m
+        GROFF_MM_MACROS=m
 fi
 AC_SUBST(GROFF_MM_MACROS)
 AC_MSG_RESULT([-m$GROFF_MM_MACROS])
 
 dnl
-dnl	Test to see where TIOCGWINSZ is defined.
+dnl     Test to see where TIOCGWINSZ is defined.
 dnl
 AC_MSG_CHECKING([for TIOCGWINSZ])
 AC_TRY_RUN([
 #include <sys/ioctl.h>
-int main(argc, argv)int argc; char **argv;{
+int main(int argc, char **argv){
 #ifdef TIOCGWINSZ
 struct winsize ws; ws.ws_col = 0; exit(ws.ws_col);
 #else
@@ -353,12 +354,12 @@ AC_MSG_RESULT([not found]),
 AC_MSG_RESULT(cross))
 
 dnl
-dnl	Test to see where struct winsize is defined.
+dnl     Test to see where struct winsize is defined.
 dnl
 AC_MSG_CHECKING([for struct winsize])
 AC_TRY_RUN([
 #include <termios.h>
-int main(argc, argv)int argc; char **argv;{
+int main(int argc, char **argv){
 #ifdef TIOCGWINSZ
 struct winsize ws; ws.ws_col = 0; exit(ws.ws_col);
 #else
@@ -373,7 +374,7 @@ AC_MSG_RESULT([not found]),
 AC_MSG_RESULT(cross))
 
 dnl
-dnl	Test to see if stdarg.h is available *and* works.
+dnl     Test to see if stdarg.h is available *and* works.
 dnl
 AC_MSG_CHECKING([for working stdarg.h])
 AC_TRY_RUN([
@@ -384,7 +385,7 @@ int test(char*,...);
 #endif
 int test(fmt)char*fmt;{va_list ap;char*a;int x;
 va_start(ap,fmt);a=va_arg(ap,char*);x=(a!=foo);va_end(ap);return x;}
-int main(argc,argv)int argc;char**argv;{
+int main(int argc, char **argv){
 exit(test("",foo));}]
 , AC_DEFINE(HAVE_STDARG_H,1,
 [Define this symbol of your system has <stdarg.h> AND it works.])
@@ -393,7 +394,7 @@ AC_MSG_RESULT(no),
 AC_MSG_RESULT(cross))
 
 dnl
-dnl	Test to see if mblen is available *and* works.
+dnl     Test to see if mblen is available *and* works.
 dnl
 AC_MSG_CHECKING([for working mblen])
 AC_TRY_RUN([
@@ -406,25 +407,54 @@ AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no),
 AC_MSG_RESULT(cross))
 
-AC_CHECK_HEADERS(bzlib.h crypt.h curl/curl.h curl/multi.h dce/rpc.h    \
-        dce/uuid.h fcntl.h iso646.h libgettext.h libintl.h limits.h    \
-        locale.h magic.h memory.h mntent.h new.h regex.h rxposix.h     \
-        shadow.h stddef.h stdlib.h string.h sys/clu.h sys/ioctl.h      \
-        sys/prctl.h sys/uuid.h unistd.h uuid.h uuid/uuid.h wchar.h     \
-        wctype.h widec.h zlib.h                                        \
+AC_CHECK_HEADERS(            \
+        boost/shared_ptr.hpp \
+        bzlib.h              \
+        crypt.h              \
+        curl/curl.h          \
+        curl/multi.h         \
+        dce/rpc.h            \
+        dce/uuid.h           \
+        execinfo.h           \
+        fcntl.h              \
+        iso646.h             \
+        libgettext.h         \
+        libintl.h            \
+        limits.h             \
+        locale.h             \
+        magic.h              \
+        memory.h             \
+        mntent.h             \
+        new.h                \
+        regex.h              \
+        rxposix.h            \
+        shadow.h             \
+        stddef.h             \
+        stdlib.h             \
+        string.h             \
+        sys/clu.h            \
+        sys/ioctl.h          \
+        sys/prctl.h          \
+        sys/uuid.h           \
+        tr1/memory           \
+        unistd.h             \
+        uuid.h               \
+        uuid/uuid.h          \
+        wchar.h              \
+        wctype.h             \
+        widec.h              \
+        zlib.h               \
 	)
 
 #
 # Look for the C++ <new> header.
 #
-AC_LANG_PUSH(C++)
 AC_MSG_CHECKING([for <new>])
 AC_COMPILE_IFELSE([#include <new>],
 AC_DEFINE(HAVE_HEADER_NEW, 1,
     [Define this symbol of your system has the <new> C++ header])
 AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no))
-AC_LANG_POP(C++)
 
 AC_HEADER_DIRENT
 AC_TYPE_SIGNAL
@@ -432,16 +462,16 @@ AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_C_CONST
 AC_SYS_LONG_FILE_NAMES
-AC_CHECK_FUNCS(clu_info crypt curl_easy_strerror curl_multi_strerror   \
-        getpgrp igetspnam initgroups gettext gettimeofday iswctype     \
-        lutime magic_file mbrtowc pathconf prctl regcomp               \
-        rpc_string_free seteuid setlocale setresuid setreuid sighold   \
-        sigrelse sigprocmask snprintf strcasecmp strendcpy strlcat     \
-        strlcpy strncasecmp strerror strftime strsignal strtoul        \
-        strverscmp symlink tcgetpgrp uuid_create uuid_export           \
-        uuid_generate uuid_hash uuid_load uuid_make uuid_to_string     \
-        uuid_unparse vsnprintf wcrtomb wcslen wcswidth wcwidth         \
-        xmlReaderForIO                                                 \
+AC_CHECK_FUNCS(backtrace clu_info crypt curl_easy_strerror             \
+        curl_multi_strerror getpgrp igetspnam initgroups gettext       \
+        gettimeofday iswctype lutime magic_file mbrtowc memmem         \
+        pathconf prctl regcomp rpc_string_free seteuid setlocale       \
+        setresuid setreuid sighold sigrelse sigprocmask snprintf       \
+        strcasecmp strendcpy strlcat strlcpy strncasecmp strerror      \
+        strftime strsignal strtoul strverscmp symlink tcgetpgrp        \
+        uuid_create uuid_export uuid_generate uuid_hash uuid_load      \
+        uuid_make uuid_to_string uuid_unparse vsnprintf wcrtomb wcslen \
+        wcswidth wcwidth xmlReaderForIO                                \
 	)
 AC_CHECK_DECLS([crypt],,, [
 #if HAVE_UNISTD_H
@@ -452,7 +482,6 @@ AC_CHECK_DECLS([crypt],,, [
 #endif
 ])
 AC_CHECK_DECLS([mbrtowc, wcrtomb, wcwidth, wcswidth],,, [
-#define _GNU_SOURCE
 #if HAVE_WCHAR_H
 #include <wchar.h>
 #endif
@@ -460,7 +489,6 @@ AC_CHECK_DECLS([mbrtowc, wcrtomb, wcwidth, wcswidth],,, [
 dnl the strsignal function is usually defined in <string.h>
 dnl but is sometimes defined in <unistd.h>
 AC_CHECK_DECLS([strsignal],,, [
-#define _GNU_SOURCE
 #if HAVE_STRING_H
 #include <string.h>
 #include <unistd.h>
@@ -506,10 +534,10 @@ AC_TRY_COMPILE([
 #include <wctype.h>
 #endif
 ],
-[ mbstate_t x; ],
+[ mbstate_t x; return sizeof x;],
 AC_DEFINE(HAVE_MBSTATE_T,1,
 [Define this symbol of your system has the mbstate_t type defined.
-It is usually in <stddef.h> or <wchar.h>.])
+ It is usually in <stddef.h> or <wchar.h>.])
 AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no))dnl
 
@@ -529,7 +557,7 @@ AC_TRY_RUN([
 #ifdef HAVE_WCTYPE_H
 #include <wctype.h>
 #endif
-int main(argc,argv)int argc;char**argv;{
+int main(int argc, char **argv){
 exit(iswprint('a') == 0);}]
 , AC_DEFINE(HAVE_ISWPRINT,1,
 [Define this symbol of your system has iswprint() AND it works.])
@@ -543,7 +571,7 @@ dnl	discover the process group of the current process.
 dnl
 AC_MSG_CHECKING([for appropriate getpgrp argument])
 AC_TRY_RUN([
-int main(argc, argv) int argc; char **argv; {
+int main(int argc, char **argv) {
 #ifdef HAVE_GETPGRP
 if (getpgrp(32767) == getpgrp(0)) exit(2);
 #endif
@@ -682,7 +710,7 @@ if test "x$AEGIS_UID" = "x"; then
 #line __oline__ "configure"
 #include <sys/types.h>
 #include <sys/stat.h>
-main(ac,av)int ac; char **av;{struct stat st;
+main(int ac, char **av){struct stat st;
 if (stat(*(av+1),&st)!=0)exit(1);
 printf("%d\n", ac>2?st.st_gid:st.st_uid);exit(0);}
 EOF
@@ -828,6 +856,16 @@ then
 fi
 AC_SUBST(HAVE_GROFF)
 
+dnl
+dnl If the $host is Linux then we add -rdynamic to LD_FLAGS in order
+dnl to make make backtrace return function names.
+dnl
+case $host in
+     i?86-*-gnu*)
+	LDFLAGS="$LDFLAGS -rdynamic" ;;
+esac
+AC_SUBST(LDFLAGS)
+
 # program prefix is the bit to add to the start of the name
 if test ${PROGRAM_PREFIX-NONE} != NONE -a ${program_prefix-NONE} != NONE; then
 PROGRAM_PREFIX=${program_prefix}
@@ -843,8 +881,7 @@ AC_SUBST(PROGRAM_SUFFIX)
 AH_TOP(
 [/*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2006 Peter Miller;
- *	All rights reserved.
+ *	Copyright (C) 1991-2007 Peter Miller
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -857,10 +894,8 @@ AH_TOP(
  *	GNU General Public License for more details.
  *
  *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: template common/config.h file
+ *	along with this program. If not, see
+ *	<http://www.gnu.org/licenses/>.
  */
 
 #ifndef COMMON_CONFIG_H

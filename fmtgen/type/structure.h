@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2002, 2005 Peter Miller.
-//	All rights reserved.
+//	Copyright (C) 1994, 2002, 2005-2007 Peter Miller.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -26,22 +25,22 @@
 #include <fmtgen/type.h>
 
 /**
-  * The type_structure_ty class is used to represent the type of a field
+  * The type_structure class is used to represent the type of a field
   * which is a compound type, made up of several fields.
   */
-class type_structure_ty:
-    public type_ty
+class type_structure:
+    public type
 {
 public:
     /**
       * The destructor.
       */
-    virtual ~type_structure_ty();
+    virtual ~type_structure();
 
     /**
       * The constructor.
       */
-    type_structure_ty(const nstring &arg);
+    type_structure(const nstring &arg);
 
     // See base class for documentation.
     void gen_include() const;
@@ -72,7 +71,7 @@ public:
 	const;
 
     // See base class for documentation.
-    void member_add(const nstring &member_name, type_ty *member_type,
+    void member_add(const nstring &member_name, type *member_type,
 	int attributes);
 
     // See base class for documentation.
@@ -90,9 +89,9 @@ public:
 private:
     struct element_ty
     {
-	element_ty() : type(0), attributes(0) { }
+	element_ty() : etype(0), attributes(0) { }
 	nstring name;
-        type_ty *type;
+        type *etype;
 	int attributes;
     };
 
@@ -104,17 +103,17 @@ private:
     /**
       * The default constructor.  Do not use.
       */
-    type_structure_ty();
+    type_structure();
 
     /**
       * The copy constructor.  Do not use.
       */
-    type_structure_ty(const type_structure_ty &);
+    type_structure(const type_structure &);
 
     /**
       * The assignment operator.  Do not use.
       */
-    type_structure_ty &operator=(const type_structure_ty &);
+    type_structure &operator=(const type_structure &);
 };
 
 #endif // FMTGEN_TYPE_STRUCTURE_H

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1998, 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1994, 1998, 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,32 +13,29 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate list types
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h> // for assert
 #include <fmtgen/indent.h>
-#include <common/mem.h>
 #include <fmtgen/type/list.h>
 
 
-type_list_ty::~type_list_ty()
+type_list::~type_list()
 {
 }
 
 
-type_list_ty::type_list_ty(const nstring &a_name, type_ty *a_type) :
-    type_ty(a_name),
+type_list::type_list(const nstring &a_name, type *a_type) :
+    type(a_name),
     subtype(a_type)
 {
 }
 
 
 void
-type_list_ty::gen_include()
+type_list::gen_include()
     const
 {
     assert(subtype);
@@ -48,14 +44,14 @@ type_list_ty::gen_include()
     indent_printf("#define %s_DEF\n", def_name().c_str());
     indent_printf("struct %s_ty\n", def_name().c_str());
     indent_printf("{\n");
-    indent_printf("size_t\1length;\n");
-    indent_printf("size_t\1maximum;\n");
+    indent_printf("size_t length;\n");
+    indent_printf("size_t maximum;\n");
     subtype->gen_include_declarator("list", 1);
     indent_printf("};\n");
     indent_printf("#endif // %s_DEF\n", def_name().c_str());
 
     indent_putchar('\n');
-    indent_printf("extern type_ty %s_type;\n", def_name().c_str());
+    indent_printf("extern meta_type %s_type;\n", def_name().c_str());
 
     indent_putchar('\n');
     indent_printf
@@ -105,14 +101,14 @@ type_list_ty::gen_include()
 
 
 void
-type_list_ty::gen_include_declarator(const nstring &variable_name,
+type_list::gen_include_declarator(const nstring &variable_name,
     bool is_a_list) const
 {
     assert(subtype);
     const char *deref = (is_a_list ? "*" : "");
     indent_printf
     (
-	"%s_ty\1%s*%s;\n",
+	"%s_ty %s*%s;\n",
 	def_name().c_str(),
 	deref,
 	variable_name.c_str()
@@ -121,7 +117,7 @@ type_list_ty::gen_include_declarator(const nstring &variable_name,
 
 
 void
-type_list_ty::gen_code()
+type_list::gen_code()
     const
 {
     assert(subtype);
@@ -142,7 +138,7 @@ type_list_ty::gen_code()
 	def_name().c_str()
     );
     indent_printf("{\n");
-    indent_printf("size_t\1j;\n");
+    indent_printf("size_t j;\n");
     indent_putchar('\n');
     indent_printf("if (!this_thing)\n");
     indent_more();
@@ -184,7 +180,7 @@ type_list_ty::gen_code()
 	def_name().c_str()
     );
     indent_printf("{\n");
-    indent_printf("size_t\1j;\n");
+    indent_printf("size_t j;\n");
     indent_putchar('\n');
     indent_printf("if (!this_thing)\n");
     indent_more();
@@ -221,7 +217,7 @@ type_list_ty::gen_code()
     indent_printf("static void *\n");
     indent_printf("%s_alloc(void)\n", def_name().c_str());
     indent_printf("{\n");
-    indent_printf("%s_ty\1*result;\n\n", def_name().c_str());
+    indent_printf("%s_ty *result;\n\n", def_name().c_str());
     indent_printf("trace((\"%s_alloc()\\n{\\n\"));\n",
                   def_name().c_str());
     indent_printf
@@ -242,8 +238,8 @@ type_list_ty::gen_code()
     indent_printf("static void\n");
     indent_printf("%s_free(void *that)\n", def_name().c_str());
     indent_printf("{\n");
-    indent_printf("%s_ty\1*this_thing;\n", def_name().c_str());
-    indent_printf("size_t\1j;\n");
+    indent_printf("%s_ty *this_thing;\n", def_name().c_str());
+    indent_printf("size_t j;\n");
     indent_putchar('\n');
     indent_printf("this_thing = (%s_ty *)that;\n", def_name().c_str());
     indent_printf("if (!this_thing)\n");
@@ -261,10 +257,7 @@ type_list_ty::gen_code()
     indent_more();
     subtype->gen_free_declarator("list[j]", 1);
     indent_less();
-    indent_printf("if (this_thing->list)\n");
-    indent_more();
-    indent_printf("mem_free(this_thing->list);\n");
-    indent_less();
+    indent_printf("delete [] this_thing->list;\n");
     indent_printf("mem_free(this_thing);\n");
     indent_printf("trace((\"}\\n\"));\n");
     indent_printf("}\n");
@@ -273,12 +266,12 @@ type_list_ty::gen_code()
     indent_printf("static void *\n");
     indent_printf
     (
-	"%s_parse(void *that, type_ty **type_pp)\n",
+	"%s_parse(void *that, meta_type **type_pp)\n",
 	def_name().c_str()
     );
     indent_printf("{\n");
-    indent_printf("%s_ty\1*this_thing;\n", def_name().c_str());
-    indent_printf("void\1*addr;\n");
+    indent_printf("%s_ty *this_thing;\n", def_name().c_str());
+    indent_printf("void *addr;\n");
     indent_putchar('\n');
     indent_printf("this_thing = (%s_ty *)that;\n", def_name().c_str());
     indent_printf
@@ -293,16 +286,19 @@ type_list_ty::gen_code()
     indent_printf("trace_pointer(*type_pp);\n");
     indent_printf("if (this_thing->length >= this_thing->maximum)\n");
     indent_printf("{\n");
-    indent_printf("size_t\1nbytes;\n\n");
     indent_printf("this_thing->maximum = this_thing->maximum * 2 + 16;\n");
-    indent_printf(
-        "nbytes = this_thing->maximum * sizeof(this_thing->list[0]);\n");
     indent_printf
     (
-	"this_thing->list = "
-	    "(%s*)mem_change_size((void *)this_thing->list, nbytes);\n",
+	"%s *new_list = new %s [this_thing->maximum];\n",
+	subtype->c_name().c_str(),
 	subtype->c_name().c_str()
     );
+    indent_printf("for (size_t j = 0; j < this_thing->length; ++j)\n");
+    indent_more();
+    indent_printf("new_list[j] = this_thing->list[j];\n");
+    indent_less();
+    indent_printf("delete [] this_thing->list;\n");
+    indent_printf("this_thing->list = new_list;\n");
     indent_printf("}\n");
     indent_printf("addr = &this_thing->list[this_thing->length++];\n");
     indent_printf("trace((\"return %%08lX;\\n\", (long)addr));\n");
@@ -311,19 +307,18 @@ type_list_ty::gen_code()
     indent_printf("}\n");
 
     indent_putchar('\n');
-    indent_printf("static rpt_value_ty *\n");
+    indent_printf("static rpt_value::pointer\n");
     indent_printf("%s_convert(void *that)\n", def_name().c_str());
     indent_printf("{\n");
-    indent_printf("%s_ty\1*this_thing;\n", def_name().c_str());
-    indent_printf("rpt_value_ty\1*result;\n");
-    indent_printf("size_t\1j;\n");
-    indent_printf("rpt_value_ty\1*vp;\n");
+    indent_printf("%s_ty *this_thing;\n", def_name().c_str());
+    indent_printf("size_t j;\n");
+    indent_printf("rpt_value::pointer vp;\n");
     indent_putchar('\n');
     indent_printf("this_thing = *(%s_ty **)that;\n",
 	def_name().c_str());
     indent_printf("if (!this_thing)\n");
     indent_more();
-    indent_printf("return 0;\n");
+    indent_printf("return rpt_value::pointer();\n");
     indent_less();
     indent_printf
     (
@@ -333,7 +328,8 @@ type_list_ty::gen_code()
     );
     indent_printf("assert(this_thing->length <= this_thing->maximum);\n");
     indent_printf("assert(!this_thing->list == !this_thing->maximum);\n");
-    indent_printf("result = rpt_value_list();\n");
+    indent_printf("rpt_value_list *p = new rpt_value_list();\n");
+    indent_printf("rpt_value::pointer result(p);\n");
     indent_printf("for (j = 0; j < this_thing->length; ++j)\n");
     indent_printf("{\n");
     indent_printf
@@ -342,11 +338,10 @@ type_list_ty::gen_code()
 	subtype->def_name().c_str()
     );
     indent_printf("assert(vp);\n");
-    indent_printf("rpt_value_list_append(result, vp);\n");
-    indent_printf("rpt_value_free(vp);\n");
+    indent_printf("p->append(vp);\n");
     indent_printf("}\n");
     indent_printf("trace((\"}\\n\"));\n");
-    indent_printf("trace((\"return %%08lX;\\n\", (long)result));\n");
+    indent_printf("trace((\"return %%08lX;\\n\", (long)result.get()));\n");
     indent_printf("return result;\n");
     indent_printf("}\n");
 
@@ -359,8 +354,8 @@ type_list_ty::gen_code()
 	def_name().c_str()
     );
     indent_printf("{\n");
-    indent_printf("size_t\1j;\n");
-    indent_printf("%s_ty\1*result;\n", def_name().c_str());
+    indent_printf("size_t j;\n");
+    indent_printf("%s_ty *result;\n", def_name().c_str());
     indent_putchar('\n');
     indent_printf("if (!from)\n");
     indent_more();
@@ -381,9 +376,9 @@ type_list_ty::gen_code()
     indent_printf("assert(!from->list == !from->maximum);\n");
     indent_printf("for (j = 0; j < from->length; ++j)\n");
     indent_printf("{\n");
-    indent_printf("%s\1mp;\n", subtype->c_name().c_str());
-    indent_printf("%s\1*mpp;\n", subtype->c_name().c_str());
-    indent_printf("type_ty\1*bogus;\n\n");
+    indent_printf("%s mp;\n", subtype->c_name().c_str());
+    indent_printf("%s *mpp;\n", subtype->c_name().c_str());
+    indent_printf("meta_type *bogus;\n\n");
     indent_printf("mp = from->list[j];\n");
     indent_printf
     (
@@ -452,7 +447,7 @@ type_list_ty::gen_code()
     indent_printf("\n#endif // DEBUG\n");
 
     indent_putchar('\n');
-    indent_printf("type_ty %s_type =\n", def_name().c_str());
+    indent_printf("meta_type %s_type =\n", def_name().c_str());
     indent_printf("{\n");
     indent_printf("\"%s\",\n", def_name().c_str());
     indent_printf("%s_alloc,\n", def_name().c_str());
@@ -468,8 +463,8 @@ type_list_ty::gen_code()
 
 
 void
-type_list_ty::gen_code_declarator(const nstring &variable_name, bool is_a_list,
-    int attributes) const
+type_list::gen_code_declarator(const nstring &variable_name, bool is_a_list,
+    int) const
 {
     assert(subtype);
     indent_printf("%s_write(fp, ", def_name().c_str());
@@ -482,8 +477,8 @@ type_list_ty::gen_code_declarator(const nstring &variable_name, bool is_a_list,
 
 
 void
-type_list_ty::gen_code_call_xml(const nstring &form_name,
-    const nstring &member_name, int show) const
+type_list::gen_code_call_xml(const nstring &form_name,
+    const nstring &member_name, int) const
 {
     assert(subtype);
     indent_printf
@@ -497,7 +492,7 @@ type_list_ty::gen_code_call_xml(const nstring &form_name,
 
 
 void
-type_list_ty::gen_code_copy(const nstring &member_name)
+type_list::gen_code_copy(const nstring &member_name)
     const
 {
     assert(subtype);
@@ -512,7 +507,7 @@ type_list_ty::gen_code_copy(const nstring &member_name)
 
 
 void
-type_list_ty::gen_free_declarator(const nstring &variable_name, bool is_a_list)
+type_list::gen_free_declarator(const nstring &variable_name, bool)
     const
 {
     assert(subtype);
@@ -538,16 +533,16 @@ type_list_ty::gen_free_declarator(const nstring &variable_name, bool is_a_list)
 
 
 void
-type_list_ty::in_include_file()
+type_list::in_include_file()
 {
     assert(subtype);
-    type_ty::in_include_file();
+    type::in_include_file();
     subtype->in_include_file();
 }
 
 
 nstring
-type_list_ty::c_name_inner()
+type_list::c_name_inner()
     const
 {
     return (def_name() + "_ty *");
@@ -555,7 +550,7 @@ type_list_ty::c_name_inner()
 
 
 bool
-type_list_ty::has_a_mask()
+type_list::has_a_mask()
     const
 {
     return false;
@@ -563,7 +558,7 @@ type_list_ty::has_a_mask()
 
 
 void
-type_list_ty::gen_code_trace(const nstring &vname, const nstring &value)
+type_list::gen_code_trace(const nstring &vname, const nstring &value)
     const
 {
     indent_printf

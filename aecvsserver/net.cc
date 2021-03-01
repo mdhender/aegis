@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -23,18 +22,18 @@
 #include <common/ac/stdlib.h>
 
 #include <common/error.h> // for assert
-#include <aecvsserver/file_info.h>
-#include <libaegis/input/stdin.h>
+#include <common/symtab.h>
 #include <libaegis/input/crop.h>
-#include <common/mem.h>
-#include <aecvsserver/net.h>
+#include <libaegis/input/stdin.h>
 #include <libaegis/os.h>
 #include <libaegis/output/file.h>
 #include <libaegis/output/prefix.h>
 #include <libaegis/output/stdout.h>
 #include <libaegis/output/tee.h>
+
+#include <aecvsserver/file_info.h>
+#include <aecvsserver/net.h>
 #include <aecvsserver/response.h>
-#include <common/symtab.h>
 
 
 net_ty::net_ty() :
@@ -148,13 +147,12 @@ net_ty::response_queue(response *rp)
     //
     if (response_queue_length >= response_queue_max)
     {
-	size_t          nbytes;
-
-	response_queue_max = 4 + 2 * response_queue_max;
-	nbytes = sizeof(response_queue_item[0]) * response_queue_max;
-	response_queue_item =
-	    (response **)
-	    mem_change_size(response_queue_item, nbytes);
+	response_queue_max = response_queue_max * 2 + 4;
+	response **new_queue = new response * [response_queue_max];
+	for (size_t k = 0; k < response_queue_length; ++k)
+	    new_queue[k] = response_queue_item[k];
+	delete [] response_queue_item;
+	response_queue_item = new_queue;
     }
 
     //

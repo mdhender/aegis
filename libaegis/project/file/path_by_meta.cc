@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: implementation of the project_file_path_by_meta class
 //
@@ -37,7 +36,7 @@ project_file_path(project_ty *pp, fstate_src_ty *src)
     project_ty *ppp = pp;
     for (ppp = pp; ppp; ppp = (ppp->is_a_trunk() ? 0 : ppp->parent_get()))
     {
-	change_ty *cp = ppp->change_get();
+	change::pointer cp = ppp->change_get();
 	fstate_src_ty *src_data = change_file_find(cp, src, view_path_first);
 	if (!src_data)
 	    continue;

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2006, 2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -50,7 +49,7 @@ project_ty::baseline_path_get(bool resolve)
 	{
 	    project_become(this);
 	    baseline_path = os_pathname(baseline_path_unresolved, 1);
-	    project_become_undo();
+	    project_become_undo(this);
 	}
 	result = baseline_path;
     }

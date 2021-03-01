@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1997, 1999, 2000, 2002-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1997, 1999, 2000, 2002-2007 Peter Miller
+//	Copyright (C) 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface definition for aegis/change_file.c
 //
@@ -26,14 +26,16 @@
 #include <libaegis/change.h>
 #include <libaegis/view_path.h>
 
-struct string_list_ty; // forward
+class string_list_ty; // forward
 class nstring; // forward
 
 /**
   * This would be static to aegis/change_file.c if only aegis/aer/value/fstate.c
   * did not need it.  No other place should access this directly.
   */
-fstate_ty *change_fstate_get(change_ty *);
+fstate_ty *change_fstate_get(change::pointer );
+
+fstate_ty *change_pfstate_get(change::pointer );
 
 /**
   * The change_file_find function is used to locate a change file
@@ -47,7 +49,7 @@ fstate_ty *change_fstate_get(change_ty *);
   * \param vp
   *     The style of view path to be used.
   */
-fstate_src_ty *change_file_find(change_ty *cp, fstate_src_ty *src,
+fstate_src_ty *change_file_find(change::pointer cp, fstate_src_ty *src,
     view_path_ty vp);
 
 /**
@@ -62,7 +64,7 @@ fstate_src_ty *change_file_find(change_ty *cp, fstate_src_ty *src,
   * \param vp
   *     The style of view path to be used.
   */
-fstate_src_ty *change_file_find(change_ty *cp, cstate_src_ty *src,
+fstate_src_ty *change_file_find(change::pointer cp, cstate_src_ty *src,
     view_path_ty vp);
 
 /**
@@ -77,7 +79,7 @@ fstate_src_ty *change_file_find(change_ty *cp, cstate_src_ty *src,
   * \param vp
   *     The style of view path to be used.
   */
-fstate_src_ty *change_file_find(change_ty *cp, string_ty *filename,
+fstate_src_ty *change_file_find(change::pointer cp, string_ty *filename,
     view_path_ty vp);
 
 /**
@@ -92,10 +94,10 @@ fstate_src_ty *change_file_find(change_ty *cp, string_ty *filename,
   * \param vp
   *     The style of view path to be used.
   */
-fstate_src_ty *change_file_find(change_ty *cp, const nstring &filename,
+fstate_src_ty *change_file_find(change::pointer cp, const nstring &filename,
     view_path_ty vp);
 
-fstate_src_ty *change_file_find_fuzzy(change_ty *, string_ty *);
+fstate_src_ty *change_file_find_fuzzy(change::pointer , string_ty *);
 
 /**
   * The change_file_find_uuid function is used to find a source file
@@ -112,7 +114,7 @@ fstate_src_ty *change_file_find_fuzzy(change_ty *, string_ty *);
   *     a pointer to the file information, or NULL if no file has the
   *     specified UUID.
   */
-fstate_src_ty *change_file_find_uuid(change_ty *cp, string_ty *uuid,
+fstate_src_ty *change_file_find_uuid(change::pointer cp, string_ty *uuid,
     view_path_ty view_path);
 
 /**
@@ -127,7 +129,7 @@ fstate_src_ty *change_file_find_uuid(change_ty *cp, string_ty *uuid,
   *     a string containing the absolute path, or NULL if the file is
   *     not a change source file.
   */
-string_ty *change_file_path(change_ty *cp, string_ty *file_name);
+string_ty *change_file_path(change::pointer cp, string_ty *file_name);
 
 /**
   * The change_file_path_by_uuid function is used to obtain the absolute
@@ -141,7 +143,7 @@ string_ty *change_file_path(change_ty *cp, string_ty *file_name);
   *     a string containing the absolute path, or NULL if the file is
   *     not a change source file.
   */
-string_ty *change_file_path_by_uuid(change_ty *cp, string_ty *uuid);
+string_ty *change_file_path_by_uuid(change::pointer cp, string_ty *uuid);
 
 /**
   * The change_file_path function is used to obtain the absolute path to
@@ -155,41 +157,48 @@ string_ty *change_file_path_by_uuid(change_ty *cp, string_ty *uuid);
   *     a string containing the absolute path, or NULL if the file is
   *     not a change source file.
   */
-string_ty *change_file_path(change_ty *cp, fstate_src_ty *src);
+string_ty *change_file_path(change::pointer cp, fstate_src_ty *src);
 
-string_ty *change_file_version_path(change_ty *cp, fstate_src_ty *src,
+string_ty *change_file_version_path(change::pointer cp, fstate_src_ty *src,
     int *unlink_p);
-string_ty *change_file_source(change_ty *, string_ty *);
-void change_file_remove(change_ty *, string_ty *);
-fstate_src_ty *change_file_new(change_ty *, string_ty *);
-void change_file_remove_all(change_ty *);
-fstate_src_ty *change_file_nth(change_ty *, size_t, view_path_ty);
-size_t change_file_count(change_ty *);
-void change_file_directory_query(change_ty *cp, string_ty *file_name,
-    struct string_list_ty *result_in, struct string_list_ty *result_out);
-string_ty *change_file_directory_conflict(change_ty *cp,
-    string_ty *file_name);
-void change_search_path_get(change_ty *, struct string_list_ty *, int);
+string_ty *change_file_source(change::pointer , string_ty *);
+void change_file_remove(change::pointer , string_ty *);
 
-void change_file_test_time_clear(change_ty *, fstate_src_ty *, string_ty *);
-void change_file_test_time_set(change_ty *, fstate_src_ty *, time_t,
+DEPRECATED inline fstate_src_ty *
+change_file_new(change::pointer cp, string_ty *fn)
+{
+    return cp->file_new(fn);
+}
+
+void change_file_remove_all(change::pointer );
+fstate_src_ty *change_file_nth(change::pointer , size_t, view_path_ty);
+size_t change_file_count(change::pointer );
+void change_file_directory_query(change::pointer cp, string_ty *file_name,
+    string_list_ty *result_in, string_list_ty *result_out);
+string_ty *change_file_directory_conflict(change::pointer cp,
+    string_ty *file_name);
+void change_search_path_get(change::pointer , string_list_ty *, int);
+
+void change_file_test_time_clear(change::pointer cp, fstate_src_ty *src,
     string_ty *);
-time_t change_file_test_time_get(change_ty *, fstate_src_ty *, string_ty *);
-void change_file_test_baseline_time_clear(change_ty *, fstate_src_ty *,
+void change_file_test_time_set(change::pointer , fstate_src_ty *, time_t,
     string_ty *);
-void change_file_test_baseline_time_set(change_ty *, fstate_src_ty *, time_t,
+time_t change_file_test_time_get(change::pointer cp, fstate_src_ty *src,
     string_ty *);
-time_t change_file_test_baseline_time_get(change_ty *, fstate_src_ty *,
+void change_file_test_baseline_time_clear(change::pointer , fstate_src_ty *,
+    string_ty *);
+void change_file_test_baseline_time_set(change::pointer cp, fstate_src_ty *src,
+    time_t, string_ty *);
+time_t change_file_test_baseline_time_get(change::pointer , fstate_src_ty *,
     string_ty *);
 
 int change_fingerprint_same(fingerprint_ty *, string_ty *, int);
-void change_file_fingerprint_check(change_ty *, fstate_src_ty *);
-int change_file_up_to_date(struct project_ty *, fstate_src_ty *);
-struct metric_list_ty *change_file_metrics_get(change_ty *,
-    struct string_ty *);
-void change_file_list_metrics_check(change_ty *);
-void change_file_template(change_ty *, string_ty *, struct user_ty *, int);
-int change_file_is_config(change_ty *, string_ty *);
+void change_file_fingerprint_check(change::pointer , fstate_src_ty *);
+int change_file_up_to_date(project_ty *, fstate_src_ty *);
+metric_list_ty *change_file_metrics_get(change::pointer , string_ty *);
+void change_file_list_metrics_check(change::pointer );
+void change_file_template(change::pointer , string_ty *, user_ty::pointer, int);
+int change_file_is_config(change::pointer , string_ty *);
 
 /**
   * The change_file_copy_basic_attributes function is used to copy the
@@ -216,7 +225,7 @@ void change_file_copy_basic_attributes(fstate_src_ty *to, fstate_src_ty *from);
   *     The file names to be resolved.
   *     This parameter ISN'T const because this will be done in situ.
   */
-void change_file_resolve_names(change_ty *cp, user_ty *up,
+void change_file_resolve_names(change::pointer cp, user_ty::pointer up,
     string_list_ty &file_names);
 
 /**
@@ -234,7 +243,7 @@ void change_file_resolve_names(change_ty *cp, user_ty *up,
   *     The resolved base relative file name.  Use str_free when you are
   *     done with it.
   */
-string_ty *change_file_resolve_name(change_ty *cp, user_ty *up,
+string_ty *change_file_resolve_name(change::pointer cp, user_ty::pointer up,
     string_ty *file_name);
 
 /**
@@ -257,7 +266,7 @@ string_ty *change_file_resolve_name(change_ty *cp, user_ty *up,
   * @returns
   *     true if anything changed, false if nothing changed.
   */
-bool change_file_promote(change_ty *cp);
+bool change_file_promote(change::pointer cp);
 
 /**
   * The change_file_unchanged function is used to determine whether a
@@ -273,6 +282,7 @@ bool change_file_promote(change_ty *cp);
   *     bool; true if the file is unchanged, false if the file has
   *     changed, and false if the comparison isn't meaningful.
   */
-bool change_file_unchanged(change_ty *cp, fstate_src_ty *src_data, user_ty *up);
+bool change_file_unchanged(change::pointer cp, fstate_src_ty *src_data,
+    user_ty::pointer up);
 
 #endif // CHANGE_FILE_H

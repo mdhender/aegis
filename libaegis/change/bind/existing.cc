@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate existings
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change.h>
@@ -28,9 +25,9 @@
 
 
 void
-change_bind_existing(change_ty *cp)
+change_bind_existing(change::pointer cp)
 {
-    change_ty       *pcp;
+    change::pointer pcp;
     cstate_ty       *pcsp;
     cstate_branch_change_list_ty *lp;
     size_t          j;
@@ -46,7 +43,7 @@ change_bind_existing(change_ty *cp)
 	return;
     }
     pcp = cp->pp->change_get();
-    pcsp = change_cstate_get(pcp);
+    pcsp = pcp->cstate_get();
     if (!pcsp->branch)
     {
 	assert(0);
@@ -71,9 +68,9 @@ change_bind_existing(change_ty *cp)
 
 
 int
-change_bind_existing_errok(change_ty *cp)
+change_bind_existing_errok(change::pointer cp)
 {
-    change_ty       *pcp;
+    change::pointer pcp;
     cstate_ty       *pcsp;
     cstate_branch_change_list_ty *lp;
     size_t          j;
@@ -90,7 +87,7 @@ change_bind_existing_errok(change_ty *cp)
 	return 1;
     }
     pcp = cp->pp->change_get();
-    pcsp = change_cstate_get(pcp);
+    pcsp = pcp->cstate_get();
     if (!pcsp->branch)
     {
 	assert(0);

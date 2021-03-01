@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -378,7 +377,13 @@ check_one_line(void)
 		nfatal("read %s", fn);
 	    if (pos)
 	    {
-		error_raw("%s: %d: last line has no newline", fn, line_number);
+		fprintf
+                (
+                    stderr,
+                    "%s: %d: last line has no newline\n",
+                    fn,
+                    line_number
+                );
 		++number_of_errors;
 		goto done;
 	    }
@@ -415,9 +420,10 @@ check_one_line(void)
 	    done:
 	    if (unprintable && !unprintable_ok)
 	    {
-		error_raw
+		fprintf
 		(
-		    "%s: %d: line contains %d unprintable character%s",
+                    stderr,
+		    "%s: %d: line contains %d unprintable character%s\n",
 		    fn,
 		    line_number,
 		    unprintable,
@@ -427,9 +433,10 @@ check_one_line(void)
 	    }
 	    if (white_space)
 	    {
-		error_raw
+		fprintf
 		(
-		    "%s: %d: white space at end of line",
+                    stderr,
+		    "%s: %d: white space at end of line\n",
 		    fn,
 		    line_number
 		);
@@ -437,9 +444,10 @@ check_one_line(void)
 	    }
 	    if (pos > limit && line_contains_white_space)
 	    {
-		error_raw
+		fprintf
 		(
-		    "%s: %d: line too long (by %d)",
+                    stderr,
+		    "%s: %d: line too long (by %d)\n",
 		    fn,
 		    line_number,
 		    pos - limit
@@ -546,15 +554,17 @@ check(const char *file_name)
 	;
     if (dos_format)
     {
-	error_raw("%s: file in DOS format (must use UNIX format)", fn);
+	fprintf(stderr, "%s: file in DOS format (must use UNIX format)\n", fn);
 	++number_of_errors;
     }
     if (number_of_blank_lines > 0)
     {
-	error_raw
+	fprintf
 	(
-	    "%s: found %d blank line%s at the end of the file",
+            stderr,
+	    "%s: %d: found %d blank line%s at the end of the file\n",
 	    fn,
+            (line_number <= 1 ? 1 : line_number - 1),
 	    number_of_blank_lines,
 	    (number_of_blank_lines == 1 ? "" : "s")
 	);
@@ -562,10 +572,11 @@ check(const char *file_name)
     }
     if (binary_format)
     {
-	error_raw
+	fprintf
 	(
+            stderr,
             "%s: file appears to be binary, it needs to be replaced "
-            "with a plain-text file",
+                "with a plain-text file\n",
 	    fn
 	);
 	++number_of_errors;

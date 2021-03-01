@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Walter Franzini;
-//	All rights reserved.
+//	Copyright (C) 2004, 2006 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -22,6 +21,8 @@
 
 #ifndef COMMON_AC_EXECINFO_H
 #define COMMON_AC_EXECINFO_H
+
+#include <common/config.h>
 
 #ifdef HAVE_EXECINFO_H
 #include <execinfo.h>

@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1998, 2000, 2004, 2005 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 1991-1998, 2000, 2004-2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -44,7 +43,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	persevere_preference = all; \
 	log_file_preference = never;"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 work=${AEGIS_TMP:-/tmp}/$$
@@ -378,12 +377,6 @@ if test $? -ne 0 ; then no_result; fi
 activity="integrate pass 364"
 $bin/aegis -intpass -nl -lib $worklib -p foo > /dev/null 2>&1
 if test $? -ne 0 ; then fail; fi
-
-#
-# Need to sleeo for a few seconds, because the directories are removed
-# in the background.
-#
-sleep 5
 
 #
 # see if the symbolic link in the work area has been removed

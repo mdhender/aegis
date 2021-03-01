@@ -2,8 +2,6 @@
  *	aegis - project change supervisor
  *	This file is in the Public Domain, 1999 Peter Miller.
  *
- * MANIFEST: example use of diff3 for merging in the project config file
- *
  * The diff3(1) command is the oldest of the Unix file merge tools, and
  * the least capable.  You should use the RCS merge(1) in preference to
  * diff(3).

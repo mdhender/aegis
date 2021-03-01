@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the validation_list class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <aede-policy/validation/list.h>
@@ -67,12 +64,14 @@ validation_list::push_back(validation *vp)
 
 
 bool
-validation_list::run(change_ty *cp)
+validation_list::run(change::pointer cp)
     const
 {
     bool result = true;
     for (size_t j = 0; j < length; ++j)
+    {
 	if (!list[j]->run(cp))
 	    result = false;
+    }
     return result;
 }

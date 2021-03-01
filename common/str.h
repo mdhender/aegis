@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1998, 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1995, 1998, 1999, 2001-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface definition for common/str.c
 //
@@ -88,6 +87,8 @@ struct string_ty
       */
     char	    str_text[1];
 };
+
+void str_release(void);
 
 /**
   * \brief
@@ -436,6 +437,22 @@ string_ty *str_quote_shell(string_ty *str);
   *	not</b> be altered.
   */
 string_ty *str_trim(string_ty *str);
+
+/**
+  * \brief
+  *	remove leading and trailing white space
+  *
+  * The str_snip function is used to remove white space from the beginning
+  * and end of the string.  Interior white space is unchanged.
+  *
+  * \param str
+  *	The string to be converted.
+  *
+  * \return
+  *	a pointer to a string in dynamic memory.  Use str_free() when
+  *	finished with.
+ */
+string_ty *str_snip(string_ty *str);
 
 /**
   * \brief

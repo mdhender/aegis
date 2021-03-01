@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1996, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1996, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,31 +13,56 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aegis/aer/pos.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEGIS_AER_POS_H
 #define AEGIS_AER_POS_H
 
-#include <common/main.h>
+#include <common/ac/shared_ptr.h>
+#include <common/nstring.h>
 
 struct sub_context_ty; // existence
 
-struct rpt_pos_ty
-{
-	long		reference_count;
-	struct string_ty *file_name;
-	long		line_number1;
-	long		line_number2;
-};
+class sub_context_ty; // forward
 
-rpt_pos_ty *rpt_pos_alloc(struct string_ty *, long);
-rpt_pos_ty *rpt_pos_copy(rpt_pos_ty *);
-rpt_pos_ty *rpt_pos_union(rpt_pos_ty *, rpt_pos_ty *);
-void rpt_pos_free(rpt_pos_ty *);
-void rpt_pos_error(struct sub_context_ty *, rpt_pos_ty *, const char *);
+/**
+  * The rpt_position class is used to represent a source file location,
+  * by name and line number.
+  */
+class rpt_position
+{
+public:
+    typedef aegis_shared_ptr<rpt_position> pointer;
+
+    virtual ~rpt_position();
+
+private:
+    rpt_position(const nstring &file_name, long linum1, long linum2);
+
+public:
+    static rpt_position::pointer create(const nstring &file_name);
+
+    static rpt_position::pointer create(const nstring &file_name, long linum);
+
+    static rpt_position::pointer create(const nstring &file_name, long linum1,
+        long linum2);
+
+    static rpt_position::pointer join(const rpt_position::pointer &lhs,
+        const rpt_position::pointer &rhs);
+
+    void print_error(sub_context_ty &sc, const char *text) const;
+
+    nstring get_file_name() const { return file_name; }
+
+    long get_line_number() const { return line_number[0]; }
+
+    nstring representation() const;
+
+private:
+    nstring file_name;
+    long line_number[2];
+};
 
 #endif // AEGIS_AER_POS_H

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate read_onlys
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stddef.h>
@@ -40,10 +37,10 @@
 
 struct auxilliary
 {
-    change_ty       *cp;
+    change::pointer cp;
     string_ty       *dd;
     mode_t          umask;
-    user_ty         *up;
+    user_ty::pointer up;
     uid_t           uid;
     bool            protect;
 };
@@ -122,7 +119,7 @@ func(void *arg, dir_walk_message_ty msg, string_ty *path,
         // the more interesting development directory styles then the
         // file could be meant to be read-only.
 	//
-	user_become_undo();
+	aux->up->become_end();
 	string_ty *rpath = os_below_dir(aux->dd, path);
 	fstate_src_ty *src = change_file_find(aux->cp, rpath, view_path_first);
 	if (src)
@@ -155,7 +152,7 @@ func(void *arg, dir_walk_message_ty msg, string_ty *path,
 		mode &= ~0222;
 	}
 	str_free(rpath);
-	user_become(aux->up);
+	aux->up->become_begin();
 
 	//
 	// Verify the mode.
@@ -171,11 +168,11 @@ func(void *arg, dir_walk_message_ty msg, string_ty *path,
 
 
 void
-change_development_directory_chmod_read_only(change_ty *cp)
+change_development_directory_chmod_read_only(change::pointer cp)
 {
     if (change_was_a_branch(cp))
 	return;
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
     switch (cstate_data->state)
     {
     case cstate_state_awaiting_development:
@@ -194,12 +191,12 @@ change_development_directory_chmod_read_only(change_ty *cp)
     aux.cp = cp;
     aux.dd = change_development_directory_get(cp, 0);
     aux.umask = change_umask(cp);
-    aux.up = user_symbolic(cp->pp, change_developer_name(cp));
-    aux.uid = user_id(aux.up);
+    aux.up = user_ty::create(nstring(change_developer_name(cp)));
+    aux.uid = aux.up->get_uid();
     aux.protect = project_protect_development_directory_get(cp->pp);
     if (aux.protect)
 	change_verbose(cp, 0, i18n("making dev dir read only"));
-    user_become(aux.up);
+    aux.up->become_begin();
     dir_walk(aux.dd, func, &aux);
-    user_become_undo();
+    aux.up->become_end();
 }

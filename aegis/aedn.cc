@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -33,6 +32,7 @@
 #include <libaegis/arglex/project.h>
 #include <libaegis/change/file.h>
 #include <libaegis/commit.h>
+#include <libaegis/file/event.h>
 #include <libaegis/help.h>
 #include <libaegis/lock.h>
 #include <libaegis/pconf.h>
@@ -128,7 +128,7 @@ delta_name_main(void)
     string_ty       *delta_name2;
     int             stomp;
     project_ty      *pp;
-    user_ty         *up;
+    user_ty::pointer up;
     pconf_ty        *pconf_data;
     time_t          delta_date;
 
@@ -242,7 +242,7 @@ delta_name_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(delta_name_usage);
+	    user_ty::lock_wait_argument(delta_name_usage);
 	    break;
 	}
 	arglex();
@@ -278,7 +278,10 @@ delta_name_main(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -286,7 +289,7 @@ delta_name_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // lock the project file
@@ -297,7 +300,7 @@ delta_name_main(void)
     //
     // it is an error if the user is not a project administrator
     //
-    if (!project_administrator_query(pp, user_name(up)))
+    if (!project_administrator_query(pp, up->name()))
 	project_fatal(pp, 0, i18n("not an administrator"));
 
     //
@@ -380,7 +383,7 @@ delta_name_main(void)
 	for (j = 0;; j++)
 	{
 	    fstate_src_ty   *src;
-	    file_event_ty   *fep;
+	    file_event   *fep;
 
 	    src = pp->file_nth(j, view_path_simple);
 	    if (!src)
@@ -393,7 +396,7 @@ delta_name_main(void)
 		//
 		continue;
 	    }
-	    src = fep->src;
+	    src = fep->get_src();
 	    assert(src);
 	    switch (src->action)
 	    {
@@ -413,7 +416,12 @@ delta_name_main(void)
 	    //
 	    // Label everything else.
 	    //
-	    change_run_history_label_command(fep->cp, src, delta_name2);
+	    change_run_history_label_command
+	    (
+		fep->get_change(),
+		src,
+		delta_name2
+	    );
 	}
     }
 
@@ -435,7 +443,6 @@ delta_name_main(void)
     project_verbose(pp, scp, i18n("delta name complete"));
     sub_context_delete(scp);
     project_free(pp);
-    user_free(up);
     str_free(delta_name2);
     trace(("}\n"));
 }
@@ -446,8 +453,8 @@ delta_name_assignment(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{ arglex_token_help, delta_name_help, },
-	{ arglex_token_list, delta_name_list, },
+	{ arglex_token_help, delta_name_help, 0 },
+	{ arglex_token_list, delta_name_list, 0 },
     };
 
     trace(("delta_name_assignment()\n{\n"));

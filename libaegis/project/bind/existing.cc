@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -116,6 +115,13 @@ project_ty::bind_existing()
 		"%s.branch",
 		parent->change_path_get(parent_bn)->str_text
 	    );
+
+        //
+        // This project's user will be the same as the parent's user.
+        //
+        up = project_user(parent);
+        uid = up->get_uid();
+        gid = up->get_gid();
 	return;
     }
 
@@ -195,6 +201,17 @@ project_ty::bind_existing()
     // of the pathname.
     //
     home_path = str_copy(s);
+
+    //
+    // Create the project user from details of the project path.
+    //
+    get_the_owner();
+    up = user_ty::create(uid, gid);
+
+    //
+    // set the umask from the project state data.
+    //
+    up->umask_set(umask_get());
     trace(("}\n"));
 }
 
@@ -225,6 +242,7 @@ project_ty::bind_existing_errok()
 	parent = project_alloc(parent_name);
 	if (!parent->bind_existing_errok())
 	{
+            project_free(parent);
 	    trace(("return false;\n"));
 	    trace(("}\n"));
 	    return false;
@@ -232,12 +250,16 @@ project_ty::bind_existing_errok()
 	pcp = change_alloc(parent, parent_bn);
 	if (!change_bind_existing_errok(pcp))
 	{
+            change_free(pcp);
+            project_free(parent);
 	    trace(("return false;\n"));
 	    trace(("}\n"));
 	    return false;
 	}
 	if (!change_was_a_branch(pcp))
 	{
+            change_free(pcp);
+            project_free(parent);
 	    trace(("return false;\n"));
 	    trace(("}\n"));
 	    return false;
@@ -262,6 +284,13 @@ project_ty::bind_existing_errok()
 		"%s.branch",
 		parent->change_path_get(parent_bn)->str_text
 	    );
+
+        //
+        // This project's user will be the same as the parent's user.
+        //
+        up = project_user(parent);
+        uid = up->get_uid();
+        gid = up->get_gid();
 	trace(("return true;\n"));
 	trace(("}\n"));
 	return true;
@@ -309,6 +338,17 @@ project_ty::bind_existing_errok()
     // of the pathname.
     //
     home_path = str_copy(s);
+
+    //
+    // Create the project user from the details of the project directory.
+    //
+    get_the_owner();
+    up = user_ty::create(uid, gid);
+
+    //
+    // set the umask from the project state data.
+    //
+    up->umask_set(umask_get());
     trace(("return true\n"));
     trace(("}\n"));
     return true;

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2006, 2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: implementation of the repository_subversion class
 //
@@ -26,6 +25,9 @@
 #include <common/env.h>
 #include <common/error.h> // for assert
 #include <common/trace.h>
+#include <libaegis/attribute.h>
+#include <libaegis/cattr.h>
+#include <libaegis/change.h>
 #include <libaegis/file.h>
 #include <libaegis/os.h>
 #include <libaegis/undo.h>
@@ -70,11 +72,19 @@ repository_subversion::checkout(const nstring &a_mod, const nstring &a_dir)
     //
     // Run the subversion checkout command.
     //
-    nstring command = "svn checkout " + module.quote_shell() + " "
+    nstring command = "svn checkout" + auth + " " + module.quote_shell() + " "
 	+ directory.quote_shell();
     int flags = 0;
-    os_execute(command, flags, os_dirname_relative("/tmp"));
+    os_execute(command, flags, os_dirname_relative(directory));
     trace(("}\n"));
+}
+
+
+nstring
+repository_subversion::get_directory()
+    const
+{
+    return directory;
 }
 
 
@@ -191,12 +201,32 @@ repository_subversion::rename_file(const nstring &old_file_name,
 
     //
     // Copy the baseline file into the subversion work area.
-    // There is not special subversion command to let it know he content
+    // There is no special subversion command to let it know he content
     // changed (if it did) subversion will work it out for itself.
     //
     nstring dest = os_path_cat(directory, new_file_name);
     copy_whole_file(from, dest, false);
     trace(("}\n"));
+}
+
+
+void
+repository_subversion::file_attribute(const nstring &filename,
+    const nstring &attribute_name, const nstring &attribute_value)
+{
+    nstring attribute_lname = attribute_name.downcase();
+    if (attribute_lname == "content-type")
+        attribute_lname = "svn:mime-type";
+    else if (attribute_lname == "executable")
+        attribute_lname = "svn:executable";
+    else if (!strchr(attribute_lname.c_str(), ':'))
+        attribute_lname = "aegis:" + attribute_lname;
+
+    nstring dest = os_path_cat(directory, filename);
+    nstring command = "svn propset -q " + attribute_lname.quote_shell() + " " +
+        attribute_value.quote_shell() + " " + dest.quote_shell();
+    int flags = 0;
+    os_execute(command, flags, directory);
 }
 
 
@@ -213,7 +243,7 @@ repository_subversion::commit(const nstring &comment)
     // than the project owner.
     //
     nstring command = "svn commit -m " + comment.quote_shell()
-	+ " --non-interactive";
+	+ " --non-interactive" + auth;
     int flags = 0;
     os_execute(command, flags, directory);
 
@@ -222,4 +252,28 @@ repository_subversion::commit(const nstring &comment)
     //
     os_rmdir_tree(directory);
     trace(("}\n"));
+}
+
+
+void
+repository_subversion::change_specific_attributes(change::pointer cp)
+{
+    //
+    // Subversion is a PITA when it comes to background execution.
+    // It repeatedly fails with "Can't get password" errors.  As a
+    // work-around for the problem, specify the username and password on
+    // the command line, via the svn:username and svn:password project
+    // specific attributes.
+    //
+    attributes_ty *psp = 0;
+    pconf_ty *pconf_data = change_pconf_get(cp, 0);
+    assert(pconf_data);
+    if (!pconf_data->project_specific)
+	return;
+    psp = attributes_list_find(pconf_data->project_specific, "svn:username");
+    if (psp)
+	auth += " --username=" + nstring(psp->value).quote_shell();
+    psp = attributes_list_find(pconf_data->project_specific, "svn:password");
+    if (psp)
+	auth += " --password=" + nstring(psp->value).quote_shell();
 }

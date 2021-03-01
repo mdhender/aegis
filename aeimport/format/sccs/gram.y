@@ -1,7 +1,6 @@
 /*
  *      aegis - project change supervisor
- *      Copyright (C) 2001-2005 Peter Miller;
- *      All rights reserved.
+ *      Copyright (C) 2001-2007 Peter Miller
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
@@ -112,7 +111,7 @@ count_the_dots(string_ty *s)
 
 
 static void
-walker(itab_ty *itp2, itab_key_ty key, void *data, void *aux)
+walker(itab_ty *, itab_key_ty, void *data, void *)
 {
     format_version_ty *fvp;
     int             ndots;
@@ -154,7 +153,7 @@ sccs_parse(string_ty *physical, string_ty *logical)
     extern int yyparse(void);
     format_version_ty *result;
 
-    itp = itab_alloc(5);
+    itp = itab_alloc();
     pfn = physical;
     lfn = logical;
 

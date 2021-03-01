@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1995, 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -40,7 +39,6 @@ version_copyright()
 {
     static const char *const text[] =
     {
-	"All rights reserved.\n",
 	"\n",
 	"The %s program comes with ABSOLUTELY NO WARRANTY; ",
 	"for details use the '%s -VERSion License' command.  ",
@@ -57,7 +55,7 @@ version_copyright()
     fp = output_pager_open();
     fp = output_wrap_open(fp, 1, -1);
     fp->fprintf("%s version %s\n", progname, version_stamp());
-    fp->fprintf("Copyright (C) %s Peter Miller;\n", copyright_years());
+    fp->fprintf("Copyright (C) %s Peter Miller\n", copyright_years());
     for (cpp = text; cpp < ENDOF(text); ++cpp)
 	fp->fprintf(*cpp, progname);
     delete fp;
@@ -190,7 +188,7 @@ version(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{ arglex_token_help, version_help, },
+	{ arglex_token_help, version_help, 0 },
     };
 
     trace(("version()\n{\n"));

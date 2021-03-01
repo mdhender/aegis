@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -64,8 +63,7 @@ module_project::groan(server_ty *sp, const char *request_name)
 
 
 void
-module_project::modified(server_ty *sp, string_ty *file_name, file_info_ty *fip,
-    input &ip)
+module_project::modified(server_ty *sp, string_ty *, file_info_ty *, input &)
 {
     //
     // It is an error to try to write a project file.
@@ -83,8 +81,8 @@ module_project::calculate_canonical_name()
 
 
 bool
-module_project::update(server_ty *sp, string_ty *client_side_0,
-    string_ty *server_side_0, const options &opt)
+module_project::update(server_ty *sp, string_ty *, string_ty *server_side_0,
+    const options &opt)
 {
     //
     // Form a list of files by unioning the source files of the project
@@ -266,8 +264,7 @@ module_project::update(server_ty *sp, string_ty *client_side_0,
 
 
 bool
-module_project::checkin(server_ty *sp, string_ty *client_side,
-    string_ty *server_side)
+module_project::checkin(server_ty *sp, string_ty *, string_ty *)
 {
     groan(sp, "ci");
     return false;
@@ -275,8 +272,7 @@ module_project::checkin(server_ty *sp, string_ty *client_side,
 
 
 bool
-module_project::add(server_ty *sp, string_ty *client_side_0,
-    string_ty *server_side_0, const options &opt)
+module_project::add(server_ty *sp, string_ty *, string_ty *, const options &)
 {
     groan(sp, "add");
     return false;
@@ -284,8 +280,7 @@ module_project::add(server_ty *sp, string_ty *client_side_0,
 
 
 bool
-module_project::remove(server_ty *sp, string_ty *client_side_0,
-    string_ty *server_side_0, const options &opt)
+module_project::remove(server_ty *sp, string_ty *, string_ty *, const options &)
 {
     groan(sp, "remove");
     return false;

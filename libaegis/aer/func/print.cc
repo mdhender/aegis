@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1996, 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,165 +13,172 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement the builtin print function
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
-#include <libaegis/aer/expr.h>
-#include <libaegis/aer/func/print.h>
-#include <libaegis/aer/value/void.h>
-#include <libaegis/aer/value/error.h>
-#include <libaegis/aer/value/string.h>
-#include <libaegis/col.h>
 #include <common/error.h>
 #include <common/mem.h>
+#include <common/trace.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/print.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/string.h>
+#include <libaegis/aer/value/void.h>
+#include <libaegis/col.h>
 #include <libaegis/os.h>
 #include <libaegis/output.h>
 #include <libaegis/sub.h>
 
 
-int		rpt_func_print__ncolumns;
-int		rpt_func_print__ncolumns_max;
-output_ty	**rpt_func_print__column;
-col_ty		*rpt_func_print__colp;
+size_t rpt_func_print__ncolumns;
+size_t rpt_func_print__ncolumns_max;
+output_ty **rpt_func_print__column;
+col *rpt_func_print__colp;
 
 
-static int
-verify(rpt_expr_ty *ep)
+rpt_func_print::~rpt_func_print()
 {
+}
+
+
+rpt_func_print::rpt_func_print()
+{
+}
+
+
+rpt_func::pointer
+rpt_func_print::create()
+{
+    return pointer(new rpt_func_print());
+}
+
+
+const char *
+rpt_func_print::name()
+    const
+{
+    return "print";
+}
+
+
+bool
+rpt_func_print::optimizable()
+    const
+{
+    return false;
+}
+
+
+bool
+rpt_func_print::verify(const rpt_expr::pointer &ep)
+    const
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
     if (!rpt_func_print__ncolumns)
-	return 0;
+    {
+        trace(("no columns defined yet\n"));
+	return false;
+    }
 
     //
     // you may not print with more arguments
     // than columns defined
     //
-    return ((int)ep->nchild <= rpt_func_print__ncolumns);
+    assert(ep);
+    bool ok = (ep->get_nchildren() <= rpt_func_print__ncolumns);
+    trace(("==> %d\n", ok));
+    return ok;
 }
 
 
-static rpt_value_ty *
-run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_value::pointer
+rpt_func_print::run(const rpt_expr::pointer &ep, size_t argc,
+    rpt_value::pointer *argv) const
 {
-    size_t	    j;
-    size_t          k;
-    rpt_value_ty    *vp;
-    static size_t   argc2;
-    static rpt_value_ty **argv2;
-    string_ty	    *s;
-
+    trace(("%s\n", __PRETTY_FUNCTION__));
     if (argc > (size_t)rpt_func_print__ncolumns)
     {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Function", "print");
-	sub_var_set_long(scp, "Number1", (long)argc);
-	sub_var_set_long(scp, "Number2", (long)rpt_func_print__ncolumns);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "print");
+	sc.var_set_long("Number1", (long)argc);
+	sc.var_set_long("Number2", (long)rpt_func_print__ncolumns);
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-		scp,
-      i18n("$function: too many arguments ($number1 given, only $number2 used)")
-	    );
-	sub_context_delete(scp);
-	vp = rpt_value_error(ep->pos, s);
-	str_free(s);
-	return vp;
-    }
-
-    //
-    // allocate more space for argv2 if necessary
-    //
-    if (argc > argc2)
-    {
-	argc2 = argc;
-	argv2 =
-            (rpt_value_ty **)mem_change_size(argv2, argc2 * sizeof(argv2[0]));
+                i18n("$function: too many arguments ($number1 given, "
+                    "only $number2 used)")
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
 
     //
     // turn each argument into a string
     //
-    for (j = 0; j < argc; ++j)
+    rpt_value::pointer *argv2 = new rpt_value::pointer [argc];
+    for (size_t j = 0; j < argc; ++j)
     {
-	sub_context_ty	*scp;
-
-	vp = rpt_value_stringize(argv[j]);
-	if (vp->method->type == rpt_value_type_string)
+        trace(("j = %d of %d\n", (int)j, (int)argc));
+	rpt_value::pointer vp = rpt_value::stringize(argv[j]);
+        trace(("mark\n"));
+        rpt_value_string *rvsp = dynamic_cast<rpt_value_string *>(vp.get());
+	if (rvsp)
 	{
+            trace(("ok\n"));
 	    argv2[j] = vp;
 	    continue;
 	}
 
-	//
-	// If it refuses to become a string,
-	// free up the converted values...
-	//
-	rpt_value_free(vp);
-	for (k = 0; k < j; ++k)
-	    rpt_value_free(argv2[k]);
-	mem_free(argv2);
+	delete [] argv2;
 
 	//
 	// ...and complain bitterly
 	//
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Function", "print");
-	sub_var_set_long(scp, "Number", (long)j + 1);
-	sub_var_set_charstar(scp, "Name", argv[j]->method->name);
-	s =
-	    subst_intl
+        trace(("erk\n"));
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "print");
+	sc.var_set_long("Number", (long)j + 1);
+	sc.var_set_charstar("Name", argv[j]->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-		scp,
 		i18n("$function: argument $number: unable to print $name value")
-	    );
-	sub_context_delete(scp);
-	vp = rpt_value_error(ep->pos, s);
-	str_free(s);
-	return vp;
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
 
     //
     // now that we know they are all stringizable, print the line out
     //
-    for (j = 0; j < argc; ++j)
+    for (size_t j = 0; j < argc; ++j)
     {
-	vp = rpt_value_stringize(argv2[j]);
-	assert(vp->method->type==rpt_value_type_string);
+        trace(("j = %d of %d\n", (int)j, (int)argc));
+	rpt_value::pointer vp = argv2[j];
+        rpt_value_string *rvsp = dynamic_cast<rpt_value_string *>(vp.get());
+	assert(rvsp);
 	if (rpt_func_print__column[j])
 	{
-	    rpt_func_print__column[j]->fputs(rpt_value_string_query(vp));
+	    rpt_func_print__column[j]->fputs(rvsp->query());
 	}
     }
+    delete [] argv2;
 
     //
     // Emit the line.
     //
     // The os_become bracketing is because we would write to the
-    // file at this point, and some operatings systems will barf if
+    // file at this point, and some operating systems will barf if
     // we have the wrong uid.
     //
+    trace(("emit\n"));
     os_become_orig();
-    col_eoln(rpt_func_print__colp);
+    rpt_func_print__colp->eoln();
     os_become_undo();
 
-    //
-    // free all the stringized values
-    // (but keep argv2, we will need it again)
-    //
-    for (j = 0; j < argc; ++j)
-	rpt_value_free(argv2[j]);
-    return rpt_value_void();
+    trace(("bye bye\n"));
+    return rpt_value_void::create();
 }
-
-
-rpt_func_ty rpt_func_print =
-{
-    "print",
-    0, // not optimizable
-    verify,
-    run
-};

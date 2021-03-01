@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1997, 1999, 2002-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1997, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,14 +13,14 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate pstate values
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
 
+#include <common/error.h>
+#include <common/trace.h>
 #include <libaegis/aer/pos.h>
 #include <libaegis/aer/value/cstate.h>
 #include <libaegis/aer/value/error.h>
@@ -30,120 +29,100 @@
 #include <libaegis/aer/value/string.h>
 #include <libaegis/aer/value/struct.h>
 #include <libaegis/change.h>
-#include <common/error.h>
 #include <libaegis/gonzo.h>
 #include <libaegis/os.h>
 #include <libaegis/project.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 
 
-struct rpt_value_pstate_ty
+rpt_value_pstate::~rpt_value_pstate()
 {
-    RPT_VALUE
-    string_ty	    *name;
-    rpt_value_ty    *value;
-};
-
-
-static void
-destruct(rpt_value_ty *vp)
-{
-    rpt_value_pstate_ty *this_thing;
-
-    trace(("rpt_value_pstate::destruct(vp = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_pstate_ty *)vp;
-    if (this_thing->value)
-	rpt_value_free(this_thing->value);
-    str_free(this_thing->name);
-    trace(("}\n"));
+    trace(("%s\n", __PRETTY_FUNCTION__));
 }
 
 
-static void
-grab(rpt_value_pstate_ty *this_thing)
+rpt_value_pstate::rpt_value_pstate(const nstring &a_pname) :
+    pname(a_pname)
 {
-    project_ty	    *pp;
-    change_ty	    *cp;
-    int		    err;
-    cstate_ty       *cstate_data;
-    string_ty	    *name;
-    rpt_value_ty    *vp1;
-    rpt_value_ty    *vp2;
-    rpt_value_ty    *vp3;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+}
 
+
+rpt_value::pointer
+rpt_value_pstate::create(const nstring &a_pname)
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return pointer(new rpt_value_pstate(a_pname));
+}
+
+
+rpt_value::pointer
+rpt_value_pstate::create(string_ty *a_pname)
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return create(nstring(a_pname));
+}
+
+
+void
+rpt_value_pstate::grab()
+    const
+{
     //
     // construct the project, assuming it exists
     //
-    trace(("rpt_value_pstate::grab(this = %08lX)\n{\n", (long)this_thing));
-    assert(!this_thing->value);
-    assert(this_thing->name);
-    pp = project_alloc(this_thing->name);
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    assert(!value);
+    assert(!pname.empty());
+    project_ty *pp = project_alloc(pname.get_ref());
     pp->bind_existing();
 
     //
     // make sure the project state is readable
     //
-    err = project_is_readable(pp);
+    int err = project_is_readable(pp);
     if (err)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	sub_errno_setx(scp, err);
-	sub_var_set_string(scp, "File_Name", pp->pstate_path_get());
-	s = subst_intl(scp, "stat $filename: $errno");
-	sub_context_delete(scp);
-	this_thing->value = rpt_value_error((rpt_pos_ty *)0, s);
-	str_free(s);
-	goto done;
+	sub_context_ty sc;
+	sc.errno_setx(err);
+	sc.var_set_string("File_Name", pp->pstate_path_get());
+	nstring s(sc.subst_intl("stat $filename: $errno"));
+	value = rpt_value_error::create(s);
+	return;
     }
 
     //
     // create the result value
     //
-    cp = pp->change_get();
-    cstate_data = change_cstate_get(cp);
-    this_thing->value = cstate_type.convert(&cstate_data);
-    assert(this_thing->value);
-    assert(this_thing->value->method->type == rpt_value_type_structure);
+    change::pointer cp = pp->change_get();
+    cstate_ty *cstate_data = cp->cstate_get();
+    value = cstate_type.convert(&cstate_data);
+    assert(value);
+    rpt_value_struct *vp = dynamic_cast<rpt_value_struct *>(value.get());
+    assert(vp);
 
     //
     // The src field is now kept in the fstate file.
     // It will not be read in until referenced.
     //
     assert(!cstate_data->src);
-    name = str_from_c("src");
-    vp1 = rpt_value_fstate(cp);
-    rpt_value_struct__set(this_thing->value, name, vp1);
-    str_free(name);
-    rpt_value_free(vp1);
+    vp->assign("src", rpt_value_fstate::create(cp));
 
     //
     // add some extra stuff
     //
-    name = str_from_c("name");
-    vp1 = rpt_value_string(project_name_get(pp));
-    rpt_value_struct__set(this_thing->value, name, vp1);
-    str_free(name);
-    rpt_value_free(vp1);
+    vp->assign("name", rpt_value_string::create(nstring(project_name_get(pp))));
+
     if (cstate_data->state == cstate_state_being_developed)
     {
-	name = str_from_c("directory");
-	vp1 = rpt_value_string(change_development_directory_get(cp, 0));
-	rpt_value_struct__set(this_thing->value, name, vp1);
-	str_free(name);
-	rpt_value_free(vp1);
+        nstring dd(change_development_directory_get(cp, 0));
+	vp->assign("directory", rpt_value_string::create(dd));
     }
 
     if (!pp->is_a_trunk())
     {
-	name = str_from_c("parent_name");
-	vp1 = rpt_value_string(project_name_get(pp->parent_get()));
-	rpt_value_struct__set(this_thing->value, name, vp1);
-	str_free(name);
-	rpt_value_free(vp1);
+        nstring pn(project_name_get(pp->parent_get()));
+	vp->assign("parent_name", rpt_value_string::create(pn));
     }
 
     //
@@ -152,161 +131,111 @@ grab(rpt_value_pstate_ty *this_thing)
     //
     if (cstate_data->branch && cstate_data->branch->change)
     {
-	name = str_from_c("branch");
-	vp1 = rpt_value_string(name);
-	assert(vp1);
-	str_free(name);
-	vp2 = rpt_value_lookup(this_thing->value, vp1, 0);
+	rpt_value::pointer vp1 = rpt_value_string::create("branch");
+	rpt_value::pointer vp2 = value->lookup(vp1, false);
 	assert(vp2);
-	rpt_value_free(vp1);
-	vp3 =
-	    rpt_value_cstate
+        rpt_value_struct *vp2sp = dynamic_cast<rpt_value_struct *>(vp2.get());
+        assert(vp2sp);
+
+	rpt_value::pointer vp3 =
+	    rpt_value_cstate::create
 	    (
 		pp,
 		cstate_data->branch->change->length,
 		cstate_data->branch->change->list
 	    );
-	name = str_from_c("change");
-	rpt_value_struct__set(vp2, name, vp3);
-	rpt_value_free(vp2);
-	str_free(name);
-	rpt_value_free(vp3);
+	vp2sp->assign("change", vp3);
     }
 
     //
     // clean up and go home
     //
-    done:
     project_free(pp);
-    trace(("this_thing->value = %08lX;\n", (long)this_thing->value));
-    trace(("}\n"));
 }
 
 
-static rpt_value_ty *
-lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lval)
+rpt_value::pointer
+rpt_value_pstate::lookup(const rpt_value::pointer &rhs, bool lval)
+    const
 {
-    rpt_value_pstate_ty *this_thing;
-    rpt_value_ty    *result;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    if (!value)
+	grab();
+    assert(value);
+    if (value->is_an_error())
+        return value;
 
-    trace(("rpt_value_pstate::lookup(this = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_pstate_ty *)vp;
-    if (!this_thing->value)
-	grab(this_thing);
-    assert(this_thing->value);
-    if (this_thing->value->method->type == rpt_value_type_error)
-	result = rpt_value_copy(this_thing->value);
-    else
-	result = rpt_value_lookup(this_thing->value, rhs, lval);
-    trace(("return %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
+    return value->lookup(rhs, lval);
 }
 
 
-static rpt_value_ty *
-keys(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_pstate::keys()
+    const
 {
-    rpt_value_pstate_ty *this_thing;
-    rpt_value_ty    *result;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    if (!value)
+	grab();
+    assert(value);
+    if (value->is_an_error())
+        return value;
 
-    trace(("rpt_value_pstate::keys(this = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_pstate_ty *)vp;
-    if (!this_thing->value)
-	grab(this_thing);
-    assert(this_thing->value);
-    if (this_thing->value->method->type == rpt_value_type_error)
-	result = rpt_value_copy(this_thing->value);
-    else
-	result = rpt_value_keys(this_thing->value);
-    trace(("return %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
+    return value->keys();
 }
 
 
-static rpt_value_ty *
-count(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_pstate::count()
+    const
 {
-    rpt_value_pstate_ty *this_thing;
-    rpt_value_ty    *result;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    if (!value)
+	grab();
+    assert(value);
+    if (value->is_an_error())
+        return value;
 
-    trace(("rpt_value_pstate::count(this = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_pstate_ty *)vp;
-    if (!this_thing->value)
-	grab(this_thing);
-    assert(this_thing->value);
-    if (this_thing->value->method->type == rpt_value_type_error)
-	result = rpt_value_copy(this_thing->value);
-    else
-	result = rpt_value_count(this_thing->value);
-    trace(("return %08lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
+    return value->count();
 }
 
 
-static const char *
-type_of(rpt_value_ty *vp)
+const char *
+rpt_value_pstate::type_of()
+    const
 {
-    rpt_value_pstate_ty *this_thing;
-    const char      *result;
-
-    trace(("rpt_value_pstate::type_of(this = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_pstate_ty *)vp;
-    if (!this_thing->value)
-	grab(this_thing);
-    assert(this_thing->value);
-    result = rpt_value_typeof(this_thing->value);
-    trace(("return \"%s\";\n", result));
-    trace(("}\n"));
-    return result;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    if (!value)
+	grab();
+    assert(value);
+    return value->type_of();
 }
 
 
-static rpt_value_ty *
-undefer(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_pstate::undefer_or_null()
+    const
 {
-    rpt_value_pstate_ty *this_thing;
-    rpt_value_ty    *result;
-
-    trace(("rpt_value_pstate::undefer(this = %08lX)\n{\n", (long)vp));
-    this_thing = (rpt_value_pstate_ty *)vp;
-    if (!this_thing->value)
-	grab(this_thing);
-    assert(this_thing->value);
-    result = rpt_value_copy(this_thing->value);
-    trace(("return %08lX\n", (long)result));
-    trace(("}\n"));
-    return result;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    if (!value)
+	grab();
+    assert(value);
+    return value;
 }
 
 
-static rpt_value_method_ty method =
+const char *
+rpt_value_pstate::name()
+    const
 {
-    sizeof(rpt_value_pstate_ty),
-    "pstate",
-    rpt_value_type_deferred,
-    0, // construct
-    destruct,
-    0, // arithmetic
-    0, // stringize
-    0, // booleanize
-    lookup,
-    keys,
-    count,
-    type_of,
-    undefer,
-};
+    return "pstate";
+}
 
 
-rpt_value_ty *
-rpt_value_pstate(string_ty *name)
+bool
+rpt_value_pstate::is_a_struct()
+    const
 {
-    rpt_value_pstate_ty *this_thing;
-
-    this_thing = (rpt_value_pstate_ty *)rpt_value_alloc(&method);
-    this_thing->name = str_copy(name);
-    this_thing->value = 0;
-    return (rpt_value_ty *)this_thing;
+    if (!value)
+        return true;
+    return value->is_a_struct();
 }

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -29,13 +28,13 @@
 
 
 static void
-destructor(format_ty *fp)
+destructor(format_ty *)
 {
 }
 
 
 static int
-is_a_candidate(format_ty *fp, string_ty *filename)
+is_a_candidate(format_ty *, string_ty *filename)
 {
     return
 	(
@@ -49,7 +48,7 @@ is_a_candidate(format_ty *fp, string_ty *filename)
 
 
 static string_ty *
-sanitize(format_ty *fp, string_ty *filename)
+sanitize(format_ty *, string_ty *filename, int last_part)
 {
     static string_ty *rcs =	    0;
     static string_ty *cvs =	    0;
@@ -81,27 +80,30 @@ sanitize(format_ty *fp, string_ty *filename)
 	    sl2.push_back(s);
     }
 
-    //
-    // Remove the ",v" from the end of the last path element.
-    //
-    if (sl2.nstrings)
+    if (last_part)
     {
-	string_ty	*s;
+        //
+        // Remove the ",v" from the end of the last path element.
+        //
+        if (sl2.nstrings)
+        {
+            string_ty	*s;
 
-	s = sl2.string[sl2.nstrings - 1];
-	if
-	(
-	    s->str_length >= 2
-	&&
-	    s->str_text[s->str_length - 2] == ','
-	&&
-	    s->str_text[s->str_length - 1] == 'v'
-	)
-	{
-	    sl2.string[sl2.nstrings - 1] =
-		str_n_from_c(s->str_text, s->str_length - 2);
-	    str_free(s);
-	}
+            s = sl2.string[sl2.nstrings - 1];
+            if
+            (
+                s->str_length >= 2
+            &&
+                s->str_text[s->str_length - 2] == ','
+            &&
+                s->str_text[s->str_length - 1] == 'v'
+            )
+            {
+                sl2.string[sl2.nstrings - 1] =
+                    str_n_from_c(s->str_text, s->str_length - 2);
+                str_free(s);
+            }
+        }
     }
 
     //
@@ -112,14 +114,14 @@ sanitize(format_ty *fp, string_ty *filename)
 
 
 static format_version_ty *
-read_versions(format_ty *fp, string_ty *physical, string_ty *logical)
+read_versions(format_ty *, string_ty *physical, string_ty *logical)
 {
     return rcs_parse(physical, logical);
 }
 
 
 static string_ty *
-history_put(format_ty *fp)
+history_put(format_ty *)
 {
     return
 	str_from_c
@@ -132,7 +134,7 @@ history_put(format_ty *fp)
 
 
 static string_ty *
-history_get(format_ty *fp)
+history_get(format_ty *)
 {
     return
 	str_from_c
@@ -143,7 +145,7 @@ history_get(format_ty *fp)
 
 
 static string_ty *
-history_query(format_ty	*fp)
+history_query(format_ty	*)
 {
     return
 	str_from_c
@@ -154,7 +156,7 @@ history_query(format_ty	*fp)
 
 
 static string_ty *
-diff(format_ty *fp)
+diff(format_ty *)
 {
     //
     // I'd prefer to say "diff -U10", but we can't rely on GNU
@@ -178,7 +180,7 @@ diff(format_ty *fp)
 
 
 static string_ty *
-merge(format_ty *fp)
+merge(format_ty *)
 {
     return
 	str_from_c
@@ -192,7 +194,7 @@ merge(format_ty *fp)
 
 
 static void
-unlock(format_ty *fp, string_ty *filename)
+unlock(format_ty *, string_ty *filename)
 {
     int		    flags;
     string_ty	    *cmd;

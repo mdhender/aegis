@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -23,15 +22,17 @@
 #include <common/ac/stdio.h>
 #include <common/ac/signal.h>
 
+#include <common/env.h>
+#include <common/language.h>
+#include <common/quit.h>
+#include <common/rsrc_limits.h>
+#include <common/str.h>
+#include <libaegis/help.h>
+#include <libaegis/os.h>
+#include <libaegis/version.h>
+
 #include <aesubunit/arglex3.h>
 #include <aesubunit/subunit.h>
-#include <common/env.h>
-#include <libaegis/help.h>
-#include <common/language.h>
-#include <libaegis/os.h>
-#include <common/quit.h>
-#include <common/str.h>
-#include <libaegis/version.h>
 
 
 static void
@@ -46,8 +47,8 @@ main(int argc, char **argv)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{ arglex_token_help, main_help, },
-	{ arglex_token_version, version, },
+	{ arglex_token_help, main_help, 0 },
+	{ arglex_token_version, version, 0 },
     };
 
     //
@@ -65,6 +66,7 @@ main(int argc, char **argv)
 #endif
 
     arglex3_init(argc, argv);
+    resource_limits_init();
     env_initialize();
     language_init();
     os_become_init_mortal();

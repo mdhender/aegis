@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2000, 2002-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2000, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate templates
 //
@@ -34,7 +33,7 @@
 
 
 static pconf_file_template_ty *
-find(change_ty *cp, string_ty *file_name)
+find(change::pointer cp, string_ty *file_name)
 {
     trace(("change_file_template_string(file_name = \"%s\")\n{\n",
 	file_name->str_text));
@@ -78,7 +77,7 @@ find(change_ty *cp, string_ty *file_name)
 
 
 static bool
-painful_development_directory_style(change_ty *cp)
+painful_development_directory_style(change::pointer cp)
 {
     trace(("painful_development_directory_style(cp = %08lX)\n{\n", (long)cp));
     pconf_ty *pconf_data = change_pconf_get(cp, 0);
@@ -101,11 +100,11 @@ painful_development_directory_style(change_ty *cp)
 
 
 void
-change_file_template(change_ty *cp, string_ty *filename, user_ty *up,
-    int use_template)
+change_file_template(change::pointer cp, string_ty *filename,
+    user_ty::pointer up, int use_template)
 {
     trace(("change_file_template(cp = %08lX, filename = \"%s\", ip = %08lX, "
-	"use_template = %d)\n{\n", (long)cp, filename->str_text, (long)up,
+	"use_template = %d)\n{\n", (long)cp, filename->str_text, (long)up.get(),
 	use_template));
 
     //
@@ -120,7 +119,7 @@ change_file_template(change_ty *cp, string_ty *filename, user_ty *up,
     // If the file exists, do not over-write what the user has
     // already written.
     //
-    user_become(up);
+    up->become_begin();
     os_mkdir_between(dd, filename, 02755);
     bool exists = false;
     if (os_symlink_query(path))
@@ -132,7 +131,7 @@ change_file_template(change_ty *cp, string_ty *filename, user_ty *up,
         // directory style.
 	//
 	os_unlink(path);
-	user_become_undo();
+	up->become_end();
     }
     else
     {
@@ -141,7 +140,7 @@ change_file_template(change_ty *cp, string_ty *filename, user_ty *up,
         //
 	trace(("path = \"%s\"\n", path->str_text));
 	exists = os_exists(path);
-	user_become_undo();
+	up->become_end();
 
 	//
         // If the development directory style makes hard links or
@@ -166,9 +165,8 @@ change_file_template(change_ty *cp, string_ty *filename, user_ty *up,
             // development directory style permits these kinds of
             // artifacts.
 	    //
-	    user_become(up);
+	    user_ty::become scoped(up);
 	    os_unlink(path);
-	    user_become_undo();
 	    exists = false;
 	}
     }
@@ -178,7 +176,7 @@ change_file_template(change_ty *cp, string_ty *filename, user_ty *up,
     if (exists)
     {
 	trace(("Should we keep it?\n"));
-	keep = !user_delete_file_query(up, filename, false, false);
+	keep = !up->delete_file_query(nstring(filename), false, false);
     }
     trace(("keep = %d\n", keep));
 
@@ -214,12 +212,12 @@ change_file_template(change_ty *cp, string_ty *filename, user_ty *up,
 	    //
 	    int flags = OS_EXEC_FLAG_NO_INPUT;
 	    change_env_set(cp, 1);
-	    user_become(up);
+	    up->become_begin();
 	    if (exists)
 		os_unlink_errok(path);
 	    os_execute(the_command, flags, dd);
 	    exists = os_exists(path);
-	    user_become_undo();
+	    up->become_end();
 	    str_free(the_command);
 
 	    //
@@ -254,9 +252,8 @@ change_file_template(change_ty *cp, string_ty *filename, user_ty *up,
 	    // Now we have the string, write it to the file.
 	    //
 	    int mode = 0644 & ~change_umask(cp);
-	    user_become(up);
+	    user_ty::become scoped(up);
 	    file_from_string(path, body, mode);
-	    user_become_undo();
 	    str_free(body);
 	}
     }

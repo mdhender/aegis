@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999-2001, 2003-2005 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 1999-2001, 2003-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -55,14 +54,14 @@ wide_output_new(wide_output_vtbl_ty *vptr)
 
 
 int
-wide_output_generic_page_width(wide_output_ty *fp)
+wide_output_generic_page_width(wide_output_ty *)
 {
         return page_width_get(-1) - 1;
 }
 
 
 int
-wide_output_generic_page_length(wide_output_ty *fp)
+wide_output_generic_page_length(wide_output_ty *)
 {
         return page_length_get(-1);
 }

@@ -2,6 +2,7 @@
 //      aegis - project change supervisor
 //      Copyright (C) 2005 Matthew Lee;
 //      All rights reserved.
+//      Copyright (C) 2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -50,7 +51,7 @@ xml_node_rss_channel::xml_node_rss_channel(const xml_node_rss_channel &arg) :
 
 
 void
-xml_node_rss_channel::element_begin(const nstring &name)
+xml_node_rss_channel::element_begin(const nstring &)
 {
     // Just print out the element beginning.
     output->fputs("<channel>\n");
@@ -58,7 +59,7 @@ xml_node_rss_channel::element_begin(const nstring &name)
 
 
 void
-xml_node_rss_channel::element_end(const nstring &name)
+xml_node_rss_channel::element_end(const nstring &)
 {
     // First, dump the new item, then close the channel element.
     if (new_item != 0)

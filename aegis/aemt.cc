@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate aemts
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -190,10 +187,10 @@ make_transparent_main(void)
     string_ty	    *project_name;
     project_ty	    *pp;
     long	    change_number;
-    change_ty	    *cp;
-    change_ty	    *bcp;
+    change::pointer cp;
+    change::pointer bcp;
     log_style_ty    log_style;
-    user_ty	    *up;
+    user_ty::pointer up;
     string_ty	    *dd;
     int		    number_of_errors;
     string_list_ty  search_path;
@@ -261,17 +258,20 @@ make_transparent_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(make_transparent_usage);
+	    user_ty::lock_wait_argument(make_transparent_usage);
 	    break;
 
 	case arglex_token_whiteout:
 	case arglex_token_whiteout_not:
-	    user_whiteout_argument(make_transparent_usage);
+	    user_ty::whiteout_argument(make_transparent_usage);
 	    break;
 
 	case arglex_token_base_relative:
 	case arglex_token_current_relative:
-	    user_relative_filename_preference_argument(make_transparent_usage);
+	    user_ty::relative_filename_preference_argument
+            (
+                make_transparent_usage
+            );
 	    break;
 	}
 	arglex();
@@ -286,7 +286,10 @@ make_transparent_main(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -294,13 +297,13 @@ make_transparent_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -316,11 +319,11 @@ make_transparent_main(void)
     // It is an error if the change is not in the in_development state.
     // It is an error if the change is not assigned to the current user.
     //
-    if (!change_is_being_developed(cp))
+    if (!cp->is_being_developed())
 	change_fatal(cp, 0, i18n("make transparent bad state"));
     if (change_is_a_branch(cp))
 	change_fatal(cp, 0, i18n("bad nf branch"));
-    if (!str_equal(change_developer_name(cp), user_name(up)))
+    if (nstring(change_developer_name(cp)) != up->name())
 	change_fatal(cp, 0, i18n("not developer"));
 
     //
@@ -344,9 +347,8 @@ make_transparent_main(void)
 	    search_path.nstrings >= 1
 	&&
 	    (
-		user_relative_filename_preference
+		up->relative_filename_preference
 		(
-		    up,
 		    uconf_relative_filename_preference_current
 		)
 	    ==
@@ -379,9 +381,9 @@ make_transparent_main(void)
 	    s2 = str_copy(s1);
 	else
 	    s2 = os_path_join(base, s1);
-	user_become(up);
+	up->become_begin();
 	s1 = os_pathname(s2, 1);
-	user_become_undo();
+	up->become_end();
 	str_free(s2);
 	s2 = 0;
 	for (k = 0; k < search_path.nstrings; ++k)
@@ -594,8 +596,8 @@ make_transparent_main(void)
 	}
 	assert(pp_src_data);
 
-	if (unchanged)
-	{
+        if (unchanged)
+        {
 	    //
 	    // It isn't sufficient to compare versions strings, because
 	    // not everyone configures their history commands to avoid
@@ -617,13 +619,13 @@ make_transparent_main(void)
 		    pp_src_data,
 		    &f2_unlink
 		);
-	    user_become(up);
+	    up->become_begin();
 	    different = files_are_different(f1_path, f2_path);
 	    if (f1_unlink)
 		os_unlink(f1_path);
 	    if (f2_unlink)
 		os_unlink(f2_path);
-	    user_become_undo();
+	    up->become_end();
 
 	    str_free(f1_path);
 	    str_free(f2_path);
@@ -634,9 +636,8 @@ make_transparent_main(void)
 	    }
 	}
 
-	c_src_data = change_file_new(cp, s1);
+	c_src_data = cp->file_new(pp_src_data);
 	c_src_data->action = file_action_transparent;
-	change_file_copy_basic_attributes(c_src_data, pp_src_data);
 
 	//
 	// b_src_data->edit_number
@@ -701,7 +702,7 @@ make_transparent_main(void)
 	    //
 	    // copy the file
 	    //
-	    user_become(up);
+            user_ty::become scoped(up);
 	    os_mkdir_between(dd, c_src_data->file_name, 02755);
 	    if (os_exists(to))
 		os_unlink(to);
@@ -715,7 +716,6 @@ make_transparent_main(void)
 		mode |= 0111;
 	    mode &= ~change_umask(cp);
 	    os_chmod(to, mode);
-	    user_become_undo();
 
 	    //
 	    // clean up afterwards
@@ -747,12 +747,10 @@ make_transparent_main(void)
     //
     change_uuid_clear(cp);
 
-    //
-    // run the change file command
-    // and the project file command if necessary
-    //
-    change_run_make_transparent_command(cp, &wl, up);
-    change_run_project_file_command(cp, up);
+    // remember that we are about to
+    bool recent_integration = cp->run_project_file_command_needed();
+    if (recent_integration)
+        cp->run_project_file_command_done();
 
     //
     // write the data and release the lock
@@ -760,6 +758,14 @@ make_transparent_main(void)
     change_cstate_write(cp);
     commit();
     lock_release();
+
+    //
+    // run the change file command
+    // and the project file command if necessary
+    //
+    cp->run_make_transparent_command(&wl, up);
+    if (recent_integration)
+        cp->run_project_file_command(up);
 
     //
     // verbose success message
@@ -772,7 +778,6 @@ make_transparent_main(void)
 
     change_free(cp);
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -795,8 +800,8 @@ make_transparent(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, make_transparent_help, },
-	{arglex_token_list, make_transparent_list, },
+	{ arglex_token_help, make_transparent_help, 0 },
+	{ arglex_token_list, make_transparent_list, 0 },
     };
 
     trace(("make_transparent()\n{\n"));

@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2003-2005 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 2003-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -20,51 +19,42 @@
 // MANIFEST: functions to manipulate substrs
 //
 
+#include <common/nstring.h>
+#include <common/trace.h>
+#include <common/wstring/list.h>
 #include <libaegis/sub.h>
 #include <libaegis/sub/substr.h>
-#include <common/trace.h>
-#include <common/wstr/list.h>
 
 
-wstring_ty *
-sub_substr(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_substr(sub_context_ty *scp, const wstring_list &arg)
 {
-    wstring_ty      *result;
-    string_ty       *s;
-    long            n1;
-    long            n2;
-    wstring_ty      *ws;
-
     trace(("sub_substr()\n{\n"));
-    if (arg->size() != 4)
+    if (arg.size() != 4)
     {
-        sub_context_error_set(scp, i18n("requires three arguments"));
+        scp->error_set(i18n("requires three arguments"));
         trace(("return NULL;\n"));
         trace(("}\n"));
-        return 0;
+        return wstring();
     }
-    s = wstr_to_str(arg->get(2));
-    n1 = atol(s->str_text);
-    str_free(s);
 
-    s = wstr_to_str(arg->get(3));
-    n2 = atol(s->str_text);
-    str_free(s);
-
+    long n1 = arg[2].to_nstring().to_long();
+    long n2 = arg[3].to_nstring().to_long();
     if (n1 < 0)
     {
         n2 += n1;
         n1 = 0;
     }
 
-    ws = arg->get(1);
-    if (n2 <= 0 || n1 >= (long)ws->wstr_length)
-        result = wstr_from_c("");
-    else if (n1 + n2 > (long)ws->wstr_length)
-        result = wstr_n_from_wc(ws->wstr_text + n1, ws->wstr_length - n1);
+    wstring ws = arg[1];
+    wstring result;
+    if (n2 <= 0 || n1 >= (long)ws.size())
+        ;
+    else if (n1 + n2 > (long)ws.size())
+        result = wstring(ws.c_str() + n1, ws.size() - n1);
     else
-        result = wstr_n_from_wc(ws->wstr_text + n1, (size_t)n2);
-    trace(("return %8.8lX;\n", (long)result));
+        result = wstr_n_from_wc(ws.c_str() + n1, (size_t)n2);
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

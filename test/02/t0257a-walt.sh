@@ -14,8 +14,11 @@
 #       GNU General Public License for more details.
 #
 #       You should have received a copy of the GNU General Public
-#       License along with this program.  If not, see
-#	<http://www.gnu.org/licenses/>.
+#       License along with this program; if not, write to the Free
+#       Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+#       Boston, MA 02110-1301 USA.
+#
+# MANIFEST: Test the loop detection functionality
 #
 
 unset AEGIS_PROJECT
@@ -42,7 +45,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	log_file_preference = never; \
 	default_development_directory = \"$work\";"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 # This tells aeintegratq that it is being used by a test.

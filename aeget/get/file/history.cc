@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate historys
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -30,6 +27,8 @@
 #include <libaegis/change/file.h>
 #include <libaegis/change.h>
 #include <libaegis/cstate.h>
+#include <libaegis/file/event.h>
+#include <libaegis/file/event/list.h>
 #include <libaegis/project/file/roll_forward.h>
 #include <libaegis/project.h>
 
@@ -40,7 +39,7 @@
 
 
 void
-get_file_history(change_ty *master_cp, string_ty *a_filename,
+get_file_history(change::pointer master_cp, string_ty *a_filename,
     string_list_ty *modifier)
 {
     trace(("get_file_history()\n{\n"));
@@ -118,19 +117,19 @@ get_file_history(change_ty *master_cp, string_ty *a_filename,
 	int action_track = -1;
 	string_ty *file_name_track = 0;
 
-	file_event_list_ty *felp = historian.get(the_file_name);
+	file_event_list::pointer felp = historian.get(the_file_name);
 	if (felp)
 	{
-	    for (size_t k = 0; k < felp->length; ++k)
+	    for (size_t k = 0; k < felp->size(); ++k)
 	    {
-		file_event_ty *fep = felp->item + k;
-		assert(fep->src);
-		if (!fep->src)
+		file_event *fep = felp->get(k);
+		assert(fep->get_src());
+		if (!fep->get_src())
 		    continue;
 
-		if (!str_equal(file_name_track, fep->src->file_name))
+		if (!str_equal(file_name_track, fep->get_src()->file_name))
 		{
-		    file_name_track = fep->src->file_name;
+		    file_name_track = fep->get_src()->file_name;
 
 		    const char *html_class =
 			(((num / 3) & 1) ?  "even-group" : "odd-group");
@@ -156,49 +155,50 @@ get_file_history(change_ty *master_cp, string_ty *a_filename,
 
 		// usage column
 		printf("<td valign=\"top\">");
-		if (usage_track != fep->src->usage)
+		if (usage_track != fep->get_src()->usage)
 		{
-		    printf("%s", file_usage_ename(fep->src->usage));
-		    usage_track = fep->src->usage;
+		    printf("%s", file_usage_ename(fep->get_src()->usage));
+		    usage_track = fep->get_src()->usage;
 		}
 		printf("</td>\n");
 
 		// action column
 		printf("<td valign=\"top\">");
-		if (action_track != fep->src->action)
+		if (action_track != fep->get_src()->action)
 		{
-		    printf("%s", file_action_ename(fep->src->action));
-		    action_track = fep->src->action;
+		    printf("%s", file_action_ename(fep->get_src()->action));
+		    action_track = fep->get_src()->action;
 		}
 		printf("</td>\n");
 
 		// delta column
 		printf("<td valign=\"top\">");
-		emit_change_href(fep->cp, "menu");
-		string_ty *s = change_version_get(fep->cp);
+		emit_change_href(fep->get_change(), "menu");
+		string_ty *s = change_version_get(fep->get_change());
 		html_encode_string(s);
 		str_free(s);
 		printf("</a></td>\n");
 
 		// date and time column
 		printf("<td valign=\"top\">");
-		html_encode_charstar(ctime(&fep->when));
+		time_t when2 = fep->get_when();
+		html_encode_charstar(ctime(&when2));
 		printf("</td>\n");
 
 		// change column
 		printf("<td valign=\"top\" align=\"right\">");
-		emit_file_href(fep->cp, fep->src->file_name, 0);
-		emit_edit_number(fep->cp, fep->src, &historian);
+		emit_file_href(fep->get_change(), fep->get_src()->file_name, 0);
+		emit_edit_number(fep->get_change(), fep->get_src(), &historian);
 		printf("</a></td>\n");
 
 		// description column
 		printf("<td valign=\"top\">\n");
-		emit_change_brief_description(fep->cp);
+		emit_change_brief_description(fep->get_change());
 		printf("</td>\n");
 
 		// download column
 		printf("<td valign=\"top\">");
-		emit_change_href(fep->cp, "download");
+		emit_change_href(fep->get_change(), "download");
 		printf("Download</a></td></tr>\n");
 	    }
 	}
@@ -207,7 +207,7 @@ get_file_history(change_ty *master_cp, string_ty *a_filename,
 	// Now output details of this change, as the "end"
 	// of the history.
 	//
-	if (!master_cp->bogus && !change_is_completed(master_cp))
+	if (!master_cp->bogus && !master_cp->is_completed())
 	{
 	    fstate_src_ty   *src_data;
 

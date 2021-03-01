@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate time_sets
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change.h>
@@ -29,7 +26,7 @@
 
 
 void
-change_build_time_set(change_ty *cp)
+change_build_time_set(change::pointer cp)
 {
     size_t	    j, k;
     cstate_architecture_times_ty *tp;
@@ -42,7 +39,7 @@ change_build_time_set(change_ty *cp)
     trace(("change_build_time_set(cp = %8.8lX)\n{\n", (long)cp));
     assert(cp->reference_count >= 1);
     pconf_data = change_pconf_get(cp, 1);
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     cstate_data->build_time = now();
     if (pconf_data->build_covers_all_architectures)
     {

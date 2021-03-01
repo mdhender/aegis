@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991, 1992, 1995, 1997, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991, 1992, 1995, 1997, 2002-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -31,7 +30,7 @@
 //	interval_valid - internal consistency check
 //
 // SYNOPSIS
-//	int interval_valid(interval_ty *ip);
+//	int interval_valid(interval *ip);
 //
 // DESCRIPTION
 //	The interval_valid function is used to check the internal
@@ -51,21 +50,22 @@
 
 #ifdef	DEBUG
 
-static int
-interval_valid(interval_ty *ip)
+bool
+interval::valid()
+    const
 {
-    size_t	    j;
-
-    if (ip->length != ip->size)
-	return 0;
-    if (ip->length & 1)
-	return 0;
-    if ((size_t)ip->data[ip->length] != ip->length)
-	return 0;
-    for (j = 1; j < ip->length; ++j)
-	if (ip->data[j - 1] >= ip->data[j])
-    	    return 0;
-    return 1;
+    if (length > size)
+	return false;
+    if (length & 1)
+	return false;
+    if (size == 0 && data == 0)
+	return (length == 0);
+    if ((size_t)data[length] != length)
+	return false;
+    for (size_t j = 1; j < length; ++j)
+	if (data[j - 1] >= data[j])
+    	    return false;
+    return true;
 }
 
 #endif
@@ -76,7 +76,7 @@ interval_valid(interval_ty *ip)
 //	interval_create_empty - create an empty interval
 //
 // SYNOPSIS
-//	interval_ty *interval_create_empty(void);
+//	interval *interval_create_empty(void);
 //
 // DESCRIPTION
 //	The interval_create_empty function is used to create
@@ -91,22 +91,15 @@ interval_valid(interval_ty *ip)
 //	Use the interval_free function for this purpose.
 //
 
-interval_ty *
-interval_create_empty(void)
+interval::interval() :
+    length(0),
+    size(0),
+    scan_index(0),
+    scan_next_datum(0),
+    data(0)
 {
-    interval_ty	*ip;
-
-    trace(("interval_create_empty()\n{\n"));
-    ip = (interval_ty *)mem_alloc(sizeof(interval_ty));
-    ip->length = 0;
-    ip->size = 0;
-    ip->scan_index = 0;
-    ip->scan_next_datum = 0;
-    ip->data[0] = 0;
-    assert(interval_valid(ip));
-    trace(("return %8.8lX;\n", (long)ip));
-    trace(("}\n"));
-    return ip;
+    trace(("interval()\n"));
+    assert(valid());
 }
 
 
@@ -115,7 +108,7 @@ interval_create_empty(void)
 //	interval_free - release interval memory
 //
 // SYNOPSIS
-//	void interval_free(interval_ty *ip);
+//	void interval_free(interval *ip);
 //
 // DESCRIPTION
 //	The interval_free function is used to release the dynamic
@@ -125,13 +118,24 @@ interval_create_empty(void)
 //	ip	- the interval to release
 //
 
-void
-interval_free(interval_ty *ip)
+interval::~interval()
 {
-    trace(("interval_free(ip = %8.8lX)\n{\n", (long)ip));
-    assert(interval_valid(ip));
-    mem_free(ip);
-    trace(("}\n"));
+    trace(("~interval()\n"));
+    clear();
+}
+
+
+void
+interval::clear()
+{
+    assert(valid());
+    delete [] data;
+    length = 0;
+    size = 0;
+    scan_index = 0;
+    scan_next_datum = 0;
+    data = 0;
+    assert(valid());
 }
 
 
@@ -140,7 +144,7 @@ interval_free(interval_ty *ip)
 //	interval_create_range - create a single range interval
 //
 // SYNOPSIS
-//	interval_ty *interval_create_range(interval_data_ty first,
+//	interval *interval_create_range(interval_data_ty first,
 //		interval_data_ty last);
 //
 // DESCRIPTION
@@ -160,25 +164,73 @@ interval_free(interval_ty *ip)
 //	Use the interval_free function for this purpose.
 //
 
-interval_ty *
-interval_create_range(interval_data_ty first, interval_data_ty last)
+interval::interval(data_t a_first, data_t a_last) :
+    length(2),
+    size(2),
+    scan_index(0),
+    scan_next_datum(0),
+    data(new data_t[3])
 {
-    interval_ty	*ip;
+    trace(("interval(%ld, %ld)\n", a_first, a_last));
+    data[0] = a_first;
+    data[1] = a_last + 1;
+    data[2] = 2;
+    assert(valid());
+}
 
-    trace(("interval_create_range(%ld, %ld)\n{\n", first, last));
-    ip = (interval_ty *)mem_alloc(
-        sizeof(interval_ty) + 2 * sizeof(interval_data_ty));
-    ip->length = 2;
-    ip->size = 2;
-    ip->scan_index = 0;
-    ip->scan_next_datum = 0;
-    ip->data[0] = first;
-    ip->data[1] = last + 1;				//lint !e415
-    ip->data[2] = 2;					//lint !e415 !e416
-    assert(interval_valid(ip));
-    trace(("return %8.8lX;\n", (long)ip));
-    trace(("}\n"));
-    return ip;
+interval::interval(const interval &rhs) :
+    length(0),
+    size(0),
+    scan_index(0),
+    scan_next_datum(0),
+    data(0)
+{
+    trace(("interval()\n"));
+    if (!rhs.empty())
+    {
+	for (;;)
+	{
+	    size = size * 2 + 8;
+	    if (rhs.length <= size)
+		break;
+	}
+	data = new data_t [size + 1];
+	length = rhs.length;
+	for (size_t j = 0; j < length; ++j)
+	    data[j] = rhs.data[j];
+	data[length] = length;
+    }
+    assert(valid());
+}
+
+
+interval &
+interval::operator=(const interval &rhs)
+{
+    if (this != &rhs)
+    {
+	if (rhs.empty())
+	    clear();
+	else
+	{
+	    if (rhs.length > size)
+	    {
+		for (;;)
+		{
+		    size = size * 2 + 8;
+		    if (rhs.length <= size)
+			break;
+		}
+		delete [] data;
+		data = new data_t [size + 1];
+	    }
+	    length = rhs.length;
+	    for (size_t j = 0; j < length; ++j)
+		data[j] = rhs.data[j];
+	    data[length] = length;
+	}
+    }
+    return *this;
 }
 
 
@@ -187,7 +239,7 @@ interval_create_range(interval_data_ty first, interval_data_ty last)
 //	append - append datum to interval data
 //
 // SYNOPSIS
-//	void append(interval_ty **ipp, interval_data_ty datum);
+//	void append(interval **ipp, interval_data_ty datum);
 //
 // DESCRIPTION
 //	The append function is used to append a datum to
@@ -203,41 +255,41 @@ interval_create_range(interval_data_ty first, interval_data_ty last)
 //	next use interval_valid.
 //
 
-static void
-append(interval_ty **ipp, interval_data_ty datum)
+void
+interval::append(data_t datum)
 {
-    interval_ty	*ip;
-
     //
     // should always be increasing
     //
-    trace(("append()\n{\n"));
-    ip = *ipp;
-    assert(ip->length < 1 || datum >= ip->data[ip->length - 1]);
+    trace(("interval::append()\n{\n"));
+    assert(length < 1 || datum >= data[length - 1]);
 
     //
     // make it larger if necessary
     //
-    if (ip->length >= ip->size)
+    if (length >= size)
     {
-	size_t		nbytes;
-
-	ip->size += 8;
-	nbytes = sizeof(interval_ty) + ip->size * sizeof(interval_data_ty);
-	ip = (interval_ty *)mem_change_size(ip, nbytes);
-	*ipp = ip;
+	size = size * 2 + 8;
+	data_t *new_data = new data_t [size + 1];
+	for (size_t j = 0; j < length; ++j)
+	    new_data[j] = data[j];
+	delete [] data;
+	data = new_data;
     }
 
     //
     // remeber the datum
     //
-    ip->data[ip->length++] = datum;
+    data[length++] = datum;
 
     //
     // elide empty sequences
     //
-    if (ip->length >= 2 && ip->data[ip->length - 1] == ip->data[ip->length - 2])
-	ip->length -= 2;
+    if (length >= 2 && data[length - 1] == data[length - 2])
+	length -= 2;
+
+    // NOTE: this may produce an invalid interval.  This method shall
+    // always be balled an even number of times.
     trace(("}\n"));
 }
 
@@ -247,7 +299,7 @@ append(interval_ty **ipp, interval_data_ty datum)
 //	normalize - clean up after append
 //
 // SYNOPSIS
-//	void normalize(interval_ty **);
+//	void normalize(interval **);
 //
 // DESCRIPTION
 //	The normalize function is used to clean up after
@@ -260,25 +312,24 @@ append(interval_ty **ipp, interval_data_ty datum)
 //	The interval may move in dynamic memory, with is why ** is used.
 //
 
-static void
-normalize(interval_ty **ipp)
+void
+interval::normalize()
 {
-    interval_ty     *ip;
-
-    trace(("normalize()\n{\n"));
-    ip = *ipp;
-    ip->data[ip->length] = ip->length;
-    assert(ip->length <= ip->size);
-    if (ip->length < ip->size)
+    trace(("interval::normalize()\n{\n"));
+    if (length == 0)
     {
-	size_t		nbytes;
-
-	ip->size = ip->length;
-	nbytes = sizeof(interval_ty) + ip->size * sizeof(interval_data_ty);
-	ip = (interval_ty *)mem_change_size(ip, nbytes);
-	*ipp = ip;
+	assert(!size == !data);
+	if (data)
+	{
+	    delete [] data;
+	    size = 0;
+	}
     }
-    assert(interval_valid(ip));
+    else
+    {
+	data[length] = length;
+    }
+    assert(valid());
     trace(("}\n"));
 }
 
@@ -288,7 +339,7 @@ normalize(interval_ty **ipp)
 //	interval_union - union of two intervals
 //
 // SYNOPSIS
-//	interval_ty *interval_union(interval_ty *left, interval_ty *right);
+//	interval *interval_union(interval *left, interval *right);
 //
 // DESCRIPTION
 //	The interval_union function is used to form the
@@ -307,68 +358,67 @@ normalize(interval_ty **ipp)
 //	Use the interval_free function for this purpose.
 //
 
-interval_ty *
-interval_union(interval_ty *left, interval_ty *right)
+interval
+interval::operator+(const interval &rhs)
+    const
 {
-    interval_ty     *result;
-    size_t	    left_pos;
-    size_t	    right_pos;
-    int		    count;
-    int		    old_count;
-    interval_data_ty place;
+    trace(("interval::operator+()\n{\n"));
+    data_t place;
+    assert(valid());
+    assert(rhs.valid());
 
-    trace(("interval_union(left = %8.8lX, right = %8.8lX)\n{\n",
-	(long)left, (long)right));
-    assert(interval_valid(left));
-    assert(interval_valid(right));
-
-    result = interval_create_empty();
-    left_pos = 0;
-    right_pos = 0;
-    count = 0;
+    interval result;
+    size_t left_pos = 0;
+    size_t right_pos = 0;
+    int count = 0;
     for (;;)
     {
-	old_count = count;
-	if (left_pos < left->length)
+	int old_count = count;
+	if (left_pos < length)
 	{
-	    if (right_pos < right->length)
+	    if (right_pos < rhs.length)
 	    {
-		if (left->data[left_pos] < right->data[right_pos])
+		if (data[left_pos] < rhs.data[right_pos])
 		{
-	    	    count += (left_pos & 1 ? -1 : 1);
-	    	    place = left->data[left_pos++];
+	    	    count += ((left_pos & 1) ? -1 : 1);
+	    	    place = data[left_pos++];
 		}
 		else
 		{
 	    	    count += (right_pos & 1 ? -1 : 1);
-	    	    place = right->data[right_pos++];
+	    	    place = rhs.data[right_pos++];
 		}
 	    }
 	    else
 	    {
-		count += (left_pos & 1 ? -1 : 1);
-		place = left->data[left_pos++];
+		count += ((left_pos & 1) ? -1 : 1);
+		place = data[left_pos++];
 	    }
 	}
 	else
 	{
-	    if (right_pos < right->length)
+	    if (right_pos < rhs.length)
 	    {
-	       	count += (right_pos & 1 ? -1 : 1);
-	       	place = right->data[right_pos++];
+	       	count += ((right_pos & 1) ? -1 : 1);
+	       	place = rhs.data[right_pos++];
 	    }
 	    else
 	       	break;
 	}
 	if ((count >= 1) != (old_count >= 1))
-	    append(&result, place);
+	    result.append(place);
     }
-    normalize(&result);
-
-    assert(interval_valid(result));
-    trace(("return %8.8lX;\n", (long)result));
+    result.normalize();
     trace(("}\n"));
     return result;
+}
+
+
+void
+interval::operator+=(const interval &rhs)
+{
+    interval i = *this + rhs;
+    *this = i;
 }
 
 
@@ -377,8 +427,8 @@ interval_union(interval_ty *left, interval_ty *right)
 //	interval_intersection - intersection of two intervals
 //
 // SYNOPSIS
-//	interval_ty *interval_intersection(interval_ty *left,
-//		interval_ty *right);
+//	interval *interval_intersection(interval *left,
+//		interval *right);
 //
 // DESCRIPTION
 //	The interval_intersection function is used to form the
@@ -397,68 +447,69 @@ interval_union(interval_ty *left, interval_ty *right)
 //	Use the interval_free function for this purpose.
 //
 
-interval_ty *
-interval_intersection(interval_ty *left, interval_ty *right)
+interval
+interval::operator*(const interval &rhs)
+    const
 {
-    interval_ty     *result;
-    size_t	    left_pos;
-    size_t	    right_pos;
-    int		    count;
-    int		    old_count;
-    interval_data_ty place;
+    trace(("interval::operator*()\n{\n"));
+    assert(valid());
+    assert(rhs.valid());
 
-    trace(("interval_intersection(%8.8lX, %8.8lX)\n{\n",
-	(long)left, (long)right));
-    assert(interval_valid(left));
-    assert(interval_valid(right));
-
-    result = interval_create_empty();
-    left_pos = 0;
-    right_pos = 0;
-    count = 0;
+    interval result;
+    size_t left_pos = 0;
+    size_t right_pos = 0;
+    int count = 0;
     for (;;)
     {
-	old_count = count;
-	if (left_pos < left->length)
+	data_t place;
+	int old_count = count;
+	if (left_pos < length)
 	{
-	    if (right_pos < right->length)
+	    if (right_pos < rhs.length)
 	    {
-		if (left->data[left_pos] < right->data[right_pos])
+		if (data[left_pos] < rhs.data[right_pos])
 		{
-	    	    count += (left_pos & 1 ? -1 : 1);
-	    	    place = left->data[left_pos++];
+	    	    count += ((left_pos & 1) ? -1 : 1);
+	    	    place = data[left_pos++];
 		}
 		else
 		{
-	    	    count += (right_pos & 1 ? -1 : 1);
-	    	    place = right->data[right_pos++];
+	    	    count += ((right_pos & 1) ? -1 : 1);
+	    	    place = rhs.data[right_pos++];
 		}
 	    }
 	    else
 	    {
-		count += (left_pos & 1 ? -1 : 1);
-		place = left->data[left_pos++];
+		count += ((left_pos & 1) ? -1 : 1);
+		place = data[left_pos++];
 	    }
 	}
 	else
 	{
-	    if (right_pos < right->length)
+	    if (right_pos < rhs.length)
 	    {
-	       	count += (right_pos & 1 ? -1 : 1);
-	       	place = right->data[right_pos++];
+	       	count += ((right_pos & 1) ? -1 : 1);
+	       	place = rhs.data[right_pos++];
 	    }
 	    else
 	       	break;
 	}
 	if ((count >= 2) != (old_count >= 2))
-	    append(&result, place);
+	    result.append(place);
     }
-    normalize(&result);
+    result.normalize();
 
-    assert(interval_valid(result));
-    trace(("return %8.8lX;\n", (long)result));
+    assert(result.valid());
     trace(("}\n"));
     return result;
+}
+
+
+void
+interval::operator*=(const interval &rhs)
+{
+    interval i = *this * rhs;
+    *this = i;
 }
 
 
@@ -467,7 +518,7 @@ interval_intersection(interval_ty *left, interval_ty *right)
 //	interval_difference - difference of two intervals
 //
 // SYNOPSIS
-//	interval_ty *interval_difference(interval_ty *left, interval_ty *right);
+//	interval *interval_difference(interval *left, interval *right);
 //
 // DESCRIPTION
 //	The interval_difference function is used to form the
@@ -486,68 +537,67 @@ interval_intersection(interval_ty *left, interval_ty *right)
 //	Use the interval_free function for this purpose.
 //
 
-interval_ty *
-interval_difference(interval_ty *left, interval_ty *right)
+interval
+interval::operator-(const interval &rhs)
+    const
 {
-    interval_ty     *result;
-    size_t	    left_pos;
-    size_t	    right_pos;
-    int		    count;
-    int		    old_count;
-    interval_data_ty place;
+    trace(("interval::operator-()\n{\n"));
+    assert(valid());
+    assert(rhs.valid());
 
-    trace(("interval_difference(%8.8lX, %8.8lX)\n{\n",
-	(long)left, (long)right));
-    assert(interval_valid(left));
-    assert(interval_valid(right));
-
-    result = interval_create_empty();
-    left_pos = 0;
-    right_pos = 0;
-    count = 0;
+    interval result;
+    size_t left_pos = 0;
+    size_t right_pos = 0;
+    int count = 0;
     for (;;)
     {
-	old_count = count;
-	if (left_pos < left->length)
+	data_t place;
+	int old_count = count;
+	if (left_pos < length)
 	{
-	    if (right_pos < right->length)
+	    if (right_pos < rhs.length)
 	    {
-		if (left->data[left_pos] < right->data[right_pos])
+		if (data[left_pos] < rhs.data[right_pos])
 		{
-	    	    count += (left_pos & 1 ? -1 : 1);
-	    	    place = left->data[left_pos++];
+	    	    count += ((left_pos & 1) ? -1 : 1);
+	    	    place = data[left_pos++];
 		}
 		else
 		{
-	    	    count -= (right_pos & 1 ? -1 : 1);
-	    	    place = right->data[right_pos++];
+	    	    count -= ((right_pos & 1) ? -1 : 1);
+	    	    place = rhs.data[right_pos++];
 		}
 	    }
 	    else
 	    {
-		count += (left_pos & 1 ? -1 : 1);
-		place = left->data[left_pos++];
+		count += ((left_pos & 1) ? -1 : 1);
+		place = data[left_pos++];
 	    }
 	}
 	else
 	{
-	    if (right_pos < right->length)
+	    if (right_pos < rhs.length)
 	    {
-		count -= (right_pos & 1 ? -1 : 1);
-	       	place = right->data[right_pos++];
+		count -= ((right_pos & 1) ? -1 : 1);
+	       	place = rhs.data[right_pos++];
 	    }
 	    else
 	       	break;
 	}
 	if ((count >= 1) != (old_count >= 1))
-	    append(&result, place);
+	    result.append(place);
     }
-    normalize(&result);
-
-    assert(interval_valid(result));
-    trace(("return %8.8lX;\n", (long)result));
+    result.normalize();
     trace(("}\n"));
     return result;
+}
+
+
+void
+interval::operator-=(const interval &rhs)
+{
+    interval i = *this - rhs;
+    *this = i;
 }
 
 
@@ -556,7 +606,7 @@ interval_difference(interval_ty *left, interval_ty *right)
 //	interval_member - test for membership
 //
 // SYNOPSIS
-//	int interval_member(interval_ty *, interval_data_ty datum);
+//	int interval_member(interval *, interval_data_ty datum);
 //
 // DESCRIPTION
 //	The interval_member function is used to test if a particular
@@ -571,35 +621,32 @@ interval_difference(interval_ty *left, interval_ty *right)
 //		0 if is not a member
 //
 
-int
-interval_member(interval_ty *ip, interval_data_ty datum)
+bool
+interval::member(data_t datum)
+    const
 {
-    size_t	    min;
-    size_t	    max;
-    size_t	    mid;
-
-    trace(("interval_member(ip = %8.8lX, datum = %ld)\n{\n",
-	(long)ip, datum));
-    assert(interval_valid(ip));
-    min = 0;
-    max = ip->length - 2;
+    trace(("interval::member(this = %8.8lX, datum = %ld)\n{\n",
+	(long)this, (long)datum));
+    assert(valid());
+    size_t min = 0;
+    size_t max = length - 2;
     while (min <= max)
     {
-	mid = ((min + max) / 2) & ~1;
-	if (ip->data[mid] <= datum && datum < ip->data[mid + 1])
+	size_t mid = ((min + max) / 2) & ~1;
+	if (data[mid] <= datum && datum < data[mid + 1])
 	{
-	    trace(("return 1;\n"));
+	    trace(("return true;\n"));
 	    trace(("}\n"));
-	    return 1;
+	    return true;
 	}
-	if (ip->data[mid] < datum)
+	if (data[mid] < datum)
 	    min = mid + 2;
 	else
 	    max = mid - 2;
     }
-    trace(("return 0;\n"));
+    trace(("return false;\n"));
     trace(("}\n"));
-    return 0;
+    return false;
 }
 
 
@@ -608,7 +655,7 @@ interval_member(interval_ty *ip, interval_data_ty datum)
 //	interval_scan_begin
 //
 // SYNOPSIS
-//	void interval_scan_begin(interval_ty *ip);
+//	void interval_scan_begin(interval *ip);
 //
 // DESCRIPTION
 //	The interval_scan_begin function is used to
@@ -619,15 +666,15 @@ interval_member(interval_ty *ip, interval_data_ty datum)
 //
 
 void
-interval_scan_begin(interval_ty *ip)
+interval::scan_begin()
 {
-    assert(interval_valid(ip));
-    assert(!ip->scan_index);
-    ip->scan_index = 1;
-    if (ip->length)
-       	ip->scan_next_datum = ip->data[0];
+    assert(valid());
+    assert(!scan_index);
+    scan_index = 1;
+    if (length)
+       	scan_next_datum = data[0];
     else
-       	ip->scan_next_datum = 0;
+       	scan_next_datum = 0;
 }
 
 
@@ -636,7 +683,7 @@ interval_scan_begin(interval_ty *ip)
 //	interval_scan_next
 //
 // SYNOPSIS
-//	int interval_scan_next(interval_ty *ip, interval_data_ty *datum);
+//	int interval_scan_next(interval *ip, interval_data_ty *datum);
 //
 // DESCRIPTION
 //	The interval_scan_next function is used to
@@ -651,22 +698,22 @@ interval_scan_begin(interval_ty *ip)
 //		0 if reached end of interval
 //
 
-int
-interval_scan_next(interval_ty *ip, interval_data_ty *datum)
+bool
+interval::scan_next(data_t &datum)
 {
-    assert(interval_valid(ip));
-    assert(ip->scan_index & 1);
-    if (ip->scan_index >= ip->length)
-	return 0;
-    if (ip->scan_next_datum >= ip->data[ip->scan_index])
+    assert(valid());
+    assert(scan_index & 1);
+    if (scan_index >= length)
+	return false;
+    if (scan_next_datum >= data[scan_index])
     {
-	ip->scan_index += 2;
-	if (ip->scan_index >= ip->length)
-    	    return 0;
-	ip->scan_next_datum = ip->data[ip->scan_index - 1];
+	scan_index += 2;
+	if (scan_index >= length)
+    	    return false;
+	scan_next_datum = data[scan_index - 1];
     }
-    *datum = ip->scan_next_datum++;
-    return 1;
+    datum = scan_next_datum++;
+    return true;
 }
 
 
@@ -675,7 +722,7 @@ interval_scan_next(interval_ty *ip, interval_data_ty *datum)
 //	interval_scan_end
 //
 // SYNOPSIS
-//	void interval_scan_end(interval_ty *ip);
+//	void interval_scan_end(interval *ip);
 //
 // DESCRIPTION
 //	The interval_scan_end function is used to
@@ -686,10 +733,40 @@ interval_scan_next(interval_ty *ip, interval_data_ty *datum)
 //
 
 void
-interval_scan_end(interval_ty *ip)
+interval::scan_end()
 {
-    assert(interval_valid(ip));
-    assert(ip->scan_index & 1);
-    ip->scan_index = 0;
-    ip->scan_next_datum = 0;
+    assert(valid());
+    assert(scan_index & 1);
+    scan_index = 0;
+    scan_next_datum = 0;
+}
+
+
+interval::data_t
+interval::first()
+    const
+{
+    assert(valid());
+    assert(!empty());
+    return data[0];
+}
+
+
+interval::data_t
+interval::last()
+    const
+{
+    assert(valid());
+    assert(!empty());
+    return (data[length - 1] - 1);
+}
+
+
+interval::data_t
+interval::second_last()
+    const
+{
+    assert(valid());
+    assert(!empty());
+    return data[length - 2];
 }

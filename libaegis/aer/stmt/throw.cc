@@ -1,23 +1,20 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1996, 1999, 2003-2005 Peter Miller;
-//	All rights reserved.
+//      aegis - project change supervisor
+//      Copyright (C) 1996, 1999, 2003-2007 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate throw statements
+//      You should have received a copy of the GNU General Public License
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/aer/stmt/throw.h>
@@ -28,81 +25,58 @@
 #include <common/trace.h>
 
 
-struct rpt_stmt_throw_ty
+rpt_stmt_throw::~rpt_stmt_throw()
 {
-	RPT_STMT
-	rpt_expr_ty	*e;
-};
-
-
-static void
-run(rpt_stmt_ty *that, rpt_stmt_result_ty *rp)
-{
-	rpt_stmt_throw_ty *this_thing;
-	rpt_value_ty	*vp;
-	rpt_value_ty	*vp2;
-
-	trace(("throw::run()\n{\n"));
-	this_thing = (rpt_stmt_throw_ty *)that;
-	vp = rpt_expr_evaluate(this_thing->e, 0);
-	if (vp->method->type == rpt_value_type_error)
-	{
-		rp->status = rpt_stmt_status_error;
-		rp->thrown = vp;
-		trace(("}\n"));
-		return;
-	}
-
-	vp2 = rpt_value_stringize(vp);
-	rpt_value_free(vp);
-	if (vp2->method->type != rpt_value_type_string)
-	{
-		sub_context_ty	*scp;
-		string_ty	*s;
-
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Name", vp2->method->name);
-		rpt_value_free(vp2);
-		s =
-			subst_intl
-			(
-				scp,
-		    i18n("throw statement requires string argument (not $name)")
-			);
-		sub_context_delete(scp);
-		rp->status = rpt_stmt_status_error;
-		rp->thrown = rpt_value_error(this_thing->e->pos, s);
-		str_free(s);
-		trace(("}\n"));
-		return;
-	}
-
-	rp->status = rpt_stmt_status_error;
-	rp->thrown = rpt_value_error(this_thing->e->pos,
-                                     rpt_value_string_query(vp2));
-	rpt_value_free(vp2);
-	trace(("}\n"));
 }
 
 
-static rpt_stmt_method_ty method =
+rpt_stmt_throw::rpt_stmt_throw(const rpt_expr::pointer &a_ep) :
+    ep(a_ep)
 {
-	sizeof(rpt_stmt_throw_ty),
-	"throw",
-	0, // construct
-	0, // destruct
-	run
-};
+}
 
 
-rpt_stmt_ty *
-rpt_stmt_throw(rpt_expr_ty *e)
+rpt_stmt::pointer
+rpt_stmt_throw::create(const rpt_expr::pointer &a_ep)
 {
-	rpt_stmt_ty	*that;
-	rpt_stmt_throw_ty *this_thing;
+    return pointer(new rpt_stmt_throw(a_ep));
+}
 
-	that = rpt_stmt_alloc(&method);
-	this_thing = (rpt_stmt_throw_ty *)that;
-	this_thing->e = rpt_expr_copy(e);
-	return that;
+
+void
+rpt_stmt_throw::run(rpt_stmt_result_ty *rp)
+    const
+{
+    trace(("throw::run()\n{\n"));
+    rpt_value::pointer vp = ep->evaluate(true, true);
+    if (vp->is_an_error())
+    {
+        rp->status = rpt_stmt_status_error;
+        rp->thrown = vp;
+        trace(("}\n"));
+        return;
+    }
+
+    rpt_value::pointer vp2 = rpt_value::stringize(vp);
+    rpt_value_string *vp2sp = dynamic_cast<rpt_value_string *>(vp2.get());
+    if (!vp2sp)
+    {
+        sub_context_ty sc;
+        sc.var_set_charstar("Name", vp2->name());
+        nstring s
+        (
+            sc.subst_intl
+            (
+                i18n("throw statement requires string argument (not $name)")
+            )
+        );
+        rp->status = rpt_stmt_status_error;
+        rp->thrown = rpt_value_error::create(ep->get_pos(), s);
+        trace(("}\n"));
+        return;
+    }
+
+    rp->status = rpt_stmt_status_error;
+    rp->thrown = rpt_value_error::create(ep->get_pos(), vp2sp->query());
+    trace(("}\n"));
 }

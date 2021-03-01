@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate search_paths
 //
@@ -28,7 +27,7 @@
 #include <libaegis/sub.h>
 #include <libaegis/sub/search_path.h>
 #include <common/trace.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
 
 
 //
@@ -55,47 +54,41 @@
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_search_path(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_search_path(sub_context_ty *scp, const wstring_list &arg)
 {
-	wstring_ty	*result;
-	change_ty	*cp;
-	string_list_ty	tmp;
-	string_ty	*s;
-	project_ty	*pp;
+    trace(("sub_search_path()\n{\n"));
+    if (arg.size() != 1)
+    {
+        scp->error_set(i18n("requires zero arguments"));
+        trace(("return NULL;\n"));
+        trace(("}\n"));
+        return wstring();
+    }
 
-	trace(("sub_search_path()\n{\n"));
-	result = 0;
-	if (arg->size() != 1)
-	{
-		sub_context_error_set(scp, i18n("requires zero arguments"));
-		goto done;
-	}
+    string_list_ty tmp;
+    change::pointer cp = sub_context_change_get(scp);
+    if (!cp)
+    {
+        project_ty *pp = sub_context_project_get(scp);
+        if (!pp)
+        {
+            scp->error_set(i18n("not valid in current context"));
+            trace(("return NULL;\n"));
+            trace(("}\n"));
+            return wstring();
+        }
 
-	cp = sub_context_change_get(scp);
-	if (!cp)
-	{
-		pp = sub_context_project_get(scp);
-		if (!pp)
-		{
-			sub_context_error_set
-			(
-				scp,
-				i18n("not valid in current context")
-			);
-			goto done;
-		}
+        project_search_path_get(pp, &tmp, 0);
+    }
+    else
+        change_search_path_get(cp, &tmp, 0);
 
-		project_search_path_get(pp, &tmp, 0);
-	}
-	else
-		change_search_path_get(cp, &tmp, 0);
+    string_ty *s = tmp.unsplit(":");
+    wstring result(s);
+    str_free(s);
 
-	s = tmp.unsplit(":");
-	result = str_to_wstr(s);
-	str_free(s);
-done:
-	trace(("return %8.8lX;\n", (long)result));
-	trace(("}\n"));
-	return result;
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
+    trace(("}\n"));
+    return result;
 }

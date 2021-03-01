@@ -1,105 +1,117 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2003-2005 Peter Miller;
-//	All rights reserved.
+// aegis - project change supervisor
+// Copyright (C) 1994, 1996, 2003-2007 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or (at
+// your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate nul values
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <common/str.h>
 #include <libaegis/aer/value/boolean.h>
 #include <libaegis/aer/value/integer.h>
 #include <libaegis/aer/value/list.h>
 #include <libaegis/aer/value/null.h>
+#include <libaegis/aer/value/real.h>
 #include <libaegis/aer/value/string.h>
-#include <common/str.h>
 
 
-static rpt_value_ty *
-arithmetic(rpt_value_ty *vp)
+rpt_value_null::~rpt_value_null()
 {
-	return rpt_value_integer(0);
 }
 
 
-static rpt_value_ty *
-stringize(rpt_value_ty *vp)
+rpt_value_null::rpt_value_null()
 {
-	string_ty	*s;
-	rpt_value_ty	*result;
-
-	s = str_from_c("");
-	result = rpt_value_string(s);
-	str_free(s);
-	return result;
 }
 
 
-static rpt_value_ty *
-booleanize(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_null::create()
 {
-	return rpt_value_boolean(0);
+    static rpt_value::pointer vp;
+    if (!vp)
+        vp = pointer(new rpt_value_null());
+    return vp;
 }
 
 
-static rpt_value_ty *
-lookup(rpt_value_ty *vp, rpt_value_ty *rhs, int lvalue)
+rpt_value::pointer
+rpt_value_null::arithmetic_or_null()
+    const
 {
-	return rpt_value_copy(vp);
+    return rpt_value_integer::create(0);
 }
 
 
-static rpt_value_ty *
-keys(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_null::stringize_or_null()
+    const
 {
-	return rpt_value_list();
+    return rpt_value_string::create("");
 }
 
 
-static rpt_value_ty *
-count(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_null::booleanize_or_null()
+    const
 {
-	return rpt_value_integer(0);
+    return rpt_value_boolean::create(false);
 }
 
 
-static rpt_value_method_ty method =
+rpt_value::pointer
+rpt_value_null::integerize_or_null()
+    const
 {
-	sizeof(rpt_value_ty),
-	"nul",
-	rpt_value_type_nul,
-	0, // construct
-	0, // destruct
-	arithmetic,
-	stringize,
-	booleanize,
-	lookup,
-	keys,
-	count,
-	0, // type_of
-	0, // undefer
-};
+    return rpt_value_integer::create(0);
+}
 
 
-rpt_value_ty *
-rpt_value_nul()
+rpt_value::pointer
+rpt_value_null::realize_or_null()
+    const
 {
-	static rpt_value_ty *vp;
+    return rpt_value_real::create(0);
+}
 
-	if (!vp)
-		vp = rpt_value_alloc(&method);
-	return rpt_value_copy(vp);
+
+rpt_value::pointer
+rpt_value_null::lookup(const rpt_value::pointer &, bool)
+    const
+{
+    return create();
+}
+
+
+rpt_value::pointer
+rpt_value_null::keys()
+    const
+{
+    return rpt_value_list::create();
+}
+
+
+rpt_value::pointer
+rpt_value_null::count()
+    const
+{
+    return rpt_value_integer::create(0);
+}
+
+
+const char *
+rpt_value_null::name()
+    const
+{
+    return "nul";
 }

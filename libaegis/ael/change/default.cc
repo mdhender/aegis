@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -36,7 +35,7 @@ list_default_change(string_ty *project_name, long change_number,
     string_list_ty *args)
 {
     project_ty      *pp;
-    user_ty	    *up;
+    user_ty::pointer up;
 
     //
     // check for silly arguments
@@ -49,7 +48,7 @@ list_default_change(string_ty *project_name, long change_number,
     // resolve the project name
     //
     if (!project_name)
-	project_name = user_default_project();
+	project_name = str_copy(user_ty::create()->default_project().get_ref());
     else
 	project_name = str_copy(project_name);
     pp = project_alloc(project_name);
@@ -60,15 +59,15 @@ list_default_change(string_ty *project_name, long change_number,
     // locate user data
     //
     if (!args->nstrings)
-	up = user_executing(pp);
+	up = user_ty::create();
     else
-	up = user_symbolic(pp, args->string[0]);
+	up = user_ty::create(nstring(args->string[0]));
 
     //
     // Find default change number;
     // will generate fatal error if no default.
     //
-    change_number = user_default_change(up);
+    change_number = up->default_change(pp);
 
     //
     // print it out
@@ -79,6 +78,5 @@ list_default_change(string_ty *project_name, long change_number,
     // clean up and go home
     //
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }

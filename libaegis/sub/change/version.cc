@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,18 +13,15 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate versions
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change/branch.h>
 #include <libaegis/sub/change/version.h>
 #include <libaegis/sub.h>
 #include <common/trace.h>
-#include <common/wstr.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
 
 
 //
@@ -57,14 +53,14 @@
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_version(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_version(sub_context_ty *scp, const wstring_list &arg)
 {
     trace(("sub_version()\n{\n"));
     bool uuid = false;
-    for (size_t j = 1; j < arg->size(); ++j)
+    for (size_t j = 1; j < arg.size(); ++j)
     {
-	string_ty *s = wstr_to_str(arg->get(j));
+	string_ty *s = wstr_to_str(arg[j].get_ref());
 	static string_ty *uuid_name;
 	if (!uuid_name)
 	    uuid_name = str_from_c("delta_uuid");
@@ -72,43 +68,43 @@ sub_version(sub_context_ty *scp, wstring_list_ty *arg)
 	    uuid = true;
 	else
 	{
-	    sub_context_error_set(scp, i18n("requires zero arguments"));
+	    scp->error_set(i18n("requires zero arguments"));
     	    trace(("return NULL;\n"));
     	    trace(("}\n"));
-    	    return 0;
+    	    return wstring();
 	}
     }
 
-    change_ty *cp = sub_context_change_get(scp);
+    change::pointer cp = sub_context_change_get(scp);
     if (!cp || cp->bogus)
     {
-	sub_context_error_set(scp, i18n("not valid in current context"));
+	scp->error_set(i18n("not valid in current context"));
 	trace(("return NULL;\n"));
 	trace(("}\n"));
-	return 0;
+	return wstring();
     }
 
-    wstring_ty *result = 0;
+    wstring result;
     if (uuid)
     {
-	cstate_ty *cstate_data = change_cstate_get(cp);
+	cstate_ty *cstate_data = cp->cstate_get();
 	if (!cstate_data->delta_uuid)
 	{
-	    sub_context_error_set(scp, i18n("not valid in current context"));
+	    scp->error_set(i18n("not valid in current context"));
 	    trace(("return NULL;\n"));
 	    trace(("}\n"));
-	    return 0;
+	    return wstring();
 	}
 	result = str_to_wstr(cstate_data->delta_uuid);
     }
     else
     {
 	string_ty *s2 = change_version_get(cp);
-	result = str_to_wstr(s2);
+	result = wstring(s2->str_text, s2->str_length);
 	str_free(s2);
     }
 
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

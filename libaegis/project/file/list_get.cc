@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate list_gets
 //
@@ -50,7 +49,7 @@ project_ty::file_list_get(view_path_ty as_view_path)
     if (!file_list[as_view_path])
     {
 	project_ty	*ppp;
-	change_ty	*cp;
+	change::pointer cp;
 	long		j;
 	fstate_src_ty   *fsp;
 	string_list_ty	*wlp;

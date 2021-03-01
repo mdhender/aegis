@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1996, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,75 +13,35 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement the builtin sprintf function
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
 #include <common/ac/string.h>
 
+#include <common/error.h>
+#include <common/nstring/accumulator.h>
+#include <common/trace.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/func/sprintf.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/integer.h>
 #include <libaegis/aer/value/real.h>
 #include <libaegis/aer/value/string.h>
-#include <common/error.h>
-#include <common/mem.h>
 #include <libaegis/sub.h>
-
-//
-// size to grow memory by
-//
-#define QUANTUM 200
 
 //
 // maximum width for numbers
 //
-#define MAX_WIDTH (QUANTUM - 1)
-
-//
-// the buffer for storing results
-//
-static size_t	tmplen;
-static size_t	length;
-static char	*tmp;
+#define MAX_WIDTH 200
 
 //
 // info for cranking through the arguments
 //
-static size_t	ac;
-static size_t	ai;
-static rpt_value_ty **av;
-
-
-//
-// NAME
-//	bigger - grow dynamic memory buffer
-//
-// SYNOPSIS
-//	int bigger(void);
-//
-// DESCRIPTION
-//	The bigger function is used to grow the dynamic memory buffer
-//	used by vmprintf to store the formatting results.
-//	The buffer is increased by QUANTUM bytes.
-//
-// RETURNS
-//	int; zero if failed to realloc memory, non-zero if successful.
-//
-// CAVEATS
-//	The existing buffer is still valid after failure.
-//
-
-static void
-bigger(void)
-{
-    tmplen += QUANTUM;
-    tmp = (char *)mem_change_size(tmp, tmplen);
-}
+static size_t ac;
+static size_t ai;
+static rpt_value::pointer *av;
 
 
 //
@@ -111,6 +70,7 @@ static void
 build_fake(char *fake, size_t fake_len, int flag, int width, int precision,
     int qualifier, int specifier)
 {
+    trace(("%s\n", __PRETTY_FUNCTION__));
     char	    *fp;
 
     fp = fake;
@@ -132,233 +92,206 @@ build_fake(char *fake, size_t fake_len, int flag, int width, int precision,
 }
 
 
-static int
-verify(rpt_expr_ty *ep)
+rpt_func_sprintf::~rpt_func_sprintf()
 {
-    return (ep->nchild >= 1);
+    trace(("%s\n", __PRETTY_FUNCTION__));
 }
 
 
-static rpt_value_ty *
-get_arg(rpt_expr_ty *ep)
+rpt_func_sprintf::rpt_func_sprintf()
 {
+    trace(("%s\n", __PRETTY_FUNCTION__));
+}
+
+
+rpt_func::pointer
+rpt_func_sprintf::create()
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return pointer(new rpt_func_sprintf());
+}
+
+
+const char *
+rpt_func_sprintf::name()
+    const
+{
+    return "sprintf";
+}
+
+
+bool
+rpt_func_sprintf::optimizable()
+    const
+{
+    return true;
+}
+
+
+bool
+rpt_func_sprintf::verify(const rpt_expr::pointer &ep)
+    const
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return (ep->get_nchildren() >= 1);
+}
+
+
+static rpt_value::pointer
+get_arg(const rpt_expr::pointer &ep)
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
     if (ai >= ac)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-	rpt_value_ty	*result;
-
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Function", "sprintf");
-	s = subst_intl(scp, i18n("$function: too few arguments"));
-	sub_context_delete(scp);
-	result = rpt_value_error(ep->pos, s);
-	str_free(s);
-	return result;
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "sprintf");
+	nstring s(sc.subst_intl(i18n("$function: too few arguments")));
+	return rpt_value_error::create(ep->get_pos(), s);
     }
-    return rpt_value_copy(av[ai++]);
+    return av[ai++];
 }
 
 
-static rpt_value_ty *
-get_arg_string(rpt_expr_ty *ep)
+static rpt_value::pointer
+get_arg_string(const rpt_expr::pointer &ep)
 {
-    sub_context_ty  *scp;
-    rpt_value_ty    *vp1;
-    rpt_value_ty    *vp2;
-    string_ty	    *s;
-
-    vp1 = get_arg(ep);
-    assert(vp1->method->type!=rpt_value_type_error);
-    vp2 = rpt_value_stringize(vp1);
-    rpt_value_free(vp1);
-    if (vp2->method->type == rpt_value_type_string)
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    rpt_value::pointer vp1 = get_arg(ep);
+    assert(!vp1->is_an_error());
+    rpt_value::pointer vp2 = rpt_value::stringize(vp1);
+    if (dynamic_cast<rpt_value_string *>(vp2.get()))
 	return vp2;
 
-    scp = sub_context_new();
-    sub_var_set_charstar(scp, "Function", "sprintf");
-    sub_var_set_charstar(scp, "Name", vp2->method->name);
-    sub_var_set_long(scp, "Number", (long)ai);
-    rpt_value_free(vp2);
-    s =
-	subst_intl
+    sub_context_ty sc;
+    sc.var_set_charstar("Function", "sprintf");
+    sc.var_set_charstar("Name", vp2->name());
+    sc.var_set_long("Number", (long)ai);
+    nstring s
+    (
+	sc.subst_intl
 	(
-	    scp,
-    i18n("$function: argument $number: string value required (was given $name)")
-	);
-    sub_context_delete(scp);
-    vp1 = rpt_value_error(ep->pos, s);
-    str_free(s);
-    return vp1;
+            i18n("$function: argument $number: string value required "
+                "(was given $name)")
+	)
+    );
+    return rpt_value_error::create(ep->get_pos(), s);
 }
 
 
-static rpt_value_ty *
-get_arg_integer(rpt_expr_ty *ep, int real_ok)
+static rpt_value::pointer
+get_arg_integer(const rpt_expr::pointer &ep, bool real_ok)
 {
-    sub_context_ty  *scp;
-    rpt_value_ty    *vp1;
-    rpt_value_ty    *vp2;
-    string_ty	    *s;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    rpt_value::pointer vp1 = get_arg(ep);
+    assert(!vp1->is_an_error());
 
-    vp1 = get_arg(ep);
-    assert(vp1->method->type!=rpt_value_type_error);
-    vp2 = rpt_value_arithmetic(vp1);
-    rpt_value_free(vp1);
-    if (vp2->method->type == rpt_value_type_integer)
-	return vp2;
-    if (real_ok && vp2->method->type == rpt_value_type_real)
+    if (real_ok)
     {
-	vp1 = rpt_value_integerize(vp2);
-	if (vp1->method->type == rpt_value_type_integer)
-	{
-	    rpt_value_free(vp2);
-	    return vp1;
-	}
-	// not representable as a long
-	rpt_value_free(vp1);
+        rpt_value::pointer vp2 = rpt_value::integerize(vp1);
+        if (dynamic_cast<rpt_value_integer *>(vp2.get()))
+            return vp2;
     }
-
-    scp = sub_context_new();
-    sub_var_set_charstar(scp, "Function", "sprintf");
-    sub_var_set_charstar(scp, "Name", vp2->method->name);
-    sub_var_set_long(scp, "Number", (long)ai);
-    rpt_value_free(vp2);
-    s =
-	subst_intl
-	(
-	    scp,
-   i18n("$function: argument $number: integer value required (was given $name)")
-	);
-    sub_context_delete(scp);
-    vp1 = rpt_value_error(ep->pos, s);
-    str_free(s);
-    return vp1;
-}
-
-
-static rpt_value_ty *
-get_arg_real(rpt_expr_ty *ep, int integer_ok)
-{
-    sub_context_ty  *scp;
-    rpt_value_ty    *vp1;
-    rpt_value_ty    *vp2;
-    string_ty	    *s;
-
-    vp1 = get_arg(ep);
-    assert(vp1->method->type!=rpt_value_type_error);
-    vp2 = rpt_value_arithmetic(vp1);
-    rpt_value_free(vp1);
-    if (vp2->method->type == rpt_value_type_real)
-	return vp2;
-    if (integer_ok && vp2->method->type == rpt_value_type_integer)
+    else
     {
-	vp1 = rpt_value_realize(vp2);
-	rpt_value_free(vp2);
-	return vp1;
+        rpt_value::pointer vp2 = rpt_value::arithmetic(vp1);
+        if (dynamic_cast<rpt_value_integer *>(vp2.get()))
+            return vp2;
     }
 
-    scp = sub_context_new();
-    sub_var_set_charstar(scp, "Function", "sprintf");
-    sub_var_set_charstar(scp, "Name", vp2->method->name);
-    sub_var_set_long(scp, "Number", (long)ai);
-    rpt_value_free(vp2);
-    s =
-	subst_intl
+    sub_context_ty sc;
+    sc.var_set_charstar("Function", "sprintf");
+    sc.var_set_charstar("Name", vp1->name());
+    sc.var_set_long("Number", (long)ai);
+    nstring s
+    (
+	sc.subst_intl
 	(
-	    scp,
-      i18n("$function: argument $number: real value required (was given $name)")
-	);
-    sub_context_delete(scp);
-    vp1 = rpt_value_error(ep->pos, s);
-    str_free(s);
-    return vp1;
+            i18n("$function: argument $number: integer value required "
+                "(was given $name)")
+	)
+    );
+    return rpt_value_error::create(ep->get_pos(), s);
 }
 
 
-//
-// NAME
-//	run - build a formatted string in dynamic memory
-//
-// SYNOPSIS
-//	char *run(rpt_expr_ty *ep, size_t argc, rpt_value_ty *argv);
-//
-// DESCRIPTION
-//	The run function is used to build a formatted string
-//	in memory.  It understands all of the ANSI standard sprintf
-//	formatting directives.	Except, "%n" is not implemented.
-//
-// ARGUMENTS
-//	ep	- expr calling the function
-//	argc	- number of arguments
-//	argv	- values of the arguments
-//
-// RETURNS
-//	rpt_value_ty *; pointer to value containing formatted string
-//
-
-static rpt_value_ty *
-run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+static rpt_value::pointer
+get_arg_real(const rpt_expr::pointer &ep)
 {
-    sub_context_ty  *scp;
-    char	    *fmt;
-    int		    width;
-    int		    width_set;
-    int		    prec;
-    int		    prec_set;
-    int		    c;
-    string_ty	    *s;
-    int		    flag;
-    char	    fake[QUANTUM - 1];
-    rpt_value_ty    *result;
-    rpt_value_ty    *fmt_vp;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    rpt_value::pointer vp1 = get_arg(ep);
+    assert(!vp1->is_an_error());
+    rpt_value::pointer vp2 = rpt_value::realize(vp1);
+    if (dynamic_cast<rpt_value_real *>(vp2.get()))
+	return vp2;
+
+    sub_context_ty sc;
+    sc.var_set_charstar("Function", "sprintf");
+    sc.var_set_charstar("Name", vp1->name());
+    sc.var_set_long("Number", (long)ai);
+    nstring s
+    (
+	sc.subst_intl
+	(
+            i18n("$function: argument $number: real value required (was "
+                "given $name)")
+	)
+    );
+    return rpt_value_error::create(ep->get_pos(), s);
+}
+
+
+rpt_value::pointer
+rpt_func_sprintf::run(const rpt_expr::pointer &ep, size_t argc,
+    rpt_value::pointer *argv) const
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
 
     //
     // Build the result string in a temporary buffer.
     // Grow the temporary buffer as necessary.
     //
-    // It is important to only make one pass across the variable argument
-    // list.  Behaviour is undefined for more than one pass.
-    //
-    if (!tmplen)
-    {
-	tmplen = 500;
-	tmp = (char *)mem_alloc(tmplen);
-    }
-    length = 0;
+    static nstring_accumulator buffer;
+    buffer.clear();
 
     //
-    // get the format string
+    // It is important to only make one pass across the variable argument
+    // list.  Behaviour is undefined for more than one pass.
     //
     ac = argc;
     ai = 0;
     av = argv;
-    fmt_vp = get_arg_string(ep);
-    if (fmt_vp->method->type == rpt_value_type_error)
-    {
-	fmt_vp = 0;
-	result = fmt_vp;
-	goto done;
-    }
-    assert(fmt_vp->method->type==rpt_value_type_string);
-    fmt = rpt_value_string_query(fmt_vp)->str_text;
 
-    while (*fmt)
+    //
+    // get the format string
+    //
+    rpt_value::pointer fmt_vp = get_arg_string(ep);
+    if (fmt_vp->is_an_error())
+        return fmt_vp;
+    rpt_value_string *fmt_vsp = dynamic_cast<rpt_value_string *>(fmt_vp.get());
+    assert(fmt_vsp);
+    const char *fmt = fmt_vsp->query().c_str();
+
+    //
+    // interpret the format string
+    //
+    for (;;)
     {
-	c = *fmt++;
+	unsigned char c = *fmt++;
+	if (!c)
+	    break;
 	if (c != '%')
 	{
-	    normal:
-	    if (length >= tmplen)
-		bigger();
-	    tmp[length++] = c;
+	    buffer.push_back(c);
 	    continue;
 	}
 	c = *fmt++;
+	if (!c)
+	    break;
 
 	//
 	// get optional flag
 	//
+	int flag = 0;
 	switch (c)
 	{
 	case '+':
@@ -369,50 +302,49 @@ run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 	    flag = c;
 	    c = *fmt++;
 	    break;
-
-	default:
-	    flag = 0;
-	    break;
 	}
 
 	//
 	// get optional width
 	//
-	width = 0;
-	width_set = 0;
+	int width = 0;
+	bool width_set = false;
 	switch (c)
 	{
 	case '*':
-	    result = get_arg_integer(ep, 0);
-	    if (result->method->type == rpt_value_type_error)
-		goto done;
-	    assert(result->method->type==rpt_value_type_integer);
-	    width = rpt_value_integer_query(result);
-	    rpt_value_free(result);
-	    if (width < 0)
-	    {
-		flag = '-';
-		width = -width;
-	    }
-	    if (width > MAX_WIDTH)
-	    {
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Function", "sprintf");
-		sub_var_set_long(scp, "Number", (long)ai);
-		sub_var_set_long(scp, "Value", width);
-		s =
-		    subst_intl
-		    (
-			scp,
-		  i18n("$function: argument $number: width $value out of range")
-		    );
-		sub_context_delete(scp);
-		result = rpt_value_error(ep->pos, s);
-		str_free(s);
-		goto done;
-	    }
-	    c = *fmt++;
-	    width_set = 1;
+            {
+                rpt_value::pointer w = get_arg_integer(ep, false);
+                if (w->is_an_error())
+                    return w;
+
+                rpt_value_integer *wip =
+                    dynamic_cast<rpt_value_integer *>(w.get());
+                assert(wip);
+                width = wip->query();
+                if (width < 0)
+                {
+                    flag = '-';
+                    width = -width;
+                }
+                if (width > MAX_WIDTH)
+                {
+                    sub_context_ty sc;
+                    sc.var_set_charstar("Function", "sprintf");
+                    sc.var_set_long("Number", (long)ai);
+                    sc.var_set_long("Value", width);
+                    nstring s
+                    (
+                        sc.subst_intl
+                        (
+                            i18n("$function: argument $number: width "
+                                "$value out of range")
+                        )
+                    );
+                    return rpt_value_error::create(ep->get_pos(), s);
+                }
+                c = *fmt++;
+                width_set = true;
+            }
 	    break;
 
 	case '0':
@@ -450,22 +382,21 @@ run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 	    }
 	    if (width > MAX_WIDTH)
 	    {
-		scp = sub_context_new();
-		sub_var_set_charstar(scp, "Function", "sprintf");
-		sub_var_set_long(scp, "Number", (long)ai);
-		sub_var_set_long(scp, "Value", width);
-		s =
-		    subst_intl
+		sub_context_ty sc;
+		sc.var_set_charstar("Function", "sprintf");
+		sc.var_set_long("Number", (long)ai);
+		sc.var_set_long("Value", width);
+		nstring s
+                (
+		    sc.subst_intl
 		    (
-			scp,
-		  i18n("$function: argument $number: width $value out of range")
-		    );
-		sub_context_delete(scp);
-		result = rpt_value_error(ep->pos, s);
-		str_free(s);
-		goto done;
+                        i18n("$function: argument $number: width $value "
+                            "out of range")
+		    )
+                );
+		return rpt_value_error::create(ep->get_pos(), s);
 	    }
-	    width_set = 1;
+	    width_set = true;
 	    break;
 
 	default:
@@ -475,43 +406,45 @@ run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 	//
 	// get optional precision
 	//
-	prec = 0;
-	prec_set = 0;
+	int prec = 0;
+	bool prec_set = false;
 	if (c == '.')
 	{
 	    c = *fmt++;
 	    switch (c)
 	    {
 	    default:
-		prec_set = 1;
+		prec_set = true;
 		break;
 
 	    case '*':
-		c = *fmt++;
-		result = get_arg_integer(ep, 0);
-		if (result->method->type == rpt_value_type_error)
-		    goto done;
-		assert(result->method->type==rpt_value_type_integer);
-		prec = rpt_value_integer_query(result);
-		rpt_value_free(result);
-		if (prec < 0 || prec > MAX_WIDTH)
-		{
-		    scp = sub_context_new();
-		    sub_var_set_charstar(scp, "Function", "sprintf");
-		    sub_var_set_long(scp, "Number", (long)ai);
-		    sub_var_set_long(scp, "Value", prec);
-		    s =
-			subst_intl
-			(
-			    scp,
-        i18n("$function: argument $number: precision of $value is out of range")
-			);
-		    sub_context_delete(scp);
-		    result = rpt_value_error(ep->pos, s);
-		    str_free(s);
-		    goto done;
-		}
-		prec_set = 1;
+                {
+                    c = *fmt++;
+                    rpt_value::pointer p = get_arg_integer(ep, false);
+                    if (p->is_an_error())
+                        return p;
+                    rpt_value_integer *pip =
+                        dynamic_cast<rpt_value_integer *>(p.get());
+                    assert(pip);
+                    prec = pip->query();
+                    if (prec < 0 || prec > MAX_WIDTH)
+                    {
+                        sub_context_ty sc;
+                        sc.var_set_charstar("Function", "sprintf");
+                        sc.var_set_long("Number", (long)ai);
+                        sc.var_set_long("Value", prec);
+                        nstring s
+                        (
+                            sc.subst_intl
+                            (
+                                i18n("$function: argument $number: "
+                                    "precision of $value is out of range")
+                            )
+                        );
+                        return rpt_value_error::create(ep->get_pos(), s);
+                    }
+                    prec_set = true;
+                }
 		break;
 
 	    case '0':
@@ -549,22 +482,21 @@ run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 		}
 		if (prec > MAX_WIDTH)
 		{
-		    scp = sub_context_new();
-		    sub_var_set_charstar(scp, "Function", "sprintf");
-		    sub_var_set_long(scp, "Number", (long)ai);
-		    sub_var_set_long(scp, "Value", prec);
-		    s =
-			subst_intl
+		    sub_context_ty sc;
+		    sc.var_set_charstar("Function", "sprintf");
+		    sc.var_set_long("Number", (long)ai);
+		    sc.var_set_long("Value", prec);
+		    nstring s
+                    (
+			sc.subst_intl
 			(
-			    scp,
-        i18n("$function: argument $number: precision of $value is out of range")
-			);
-		    sub_context_delete(scp);
-		    result = rpt_value_error(ep->pos, s);
-		    str_free(s);
-		    goto done;
+                            i18n("$function: argument $number: precision "
+                                "of $value is out of range")
+			)
+                    );
+		    return rpt_value_error::create(ep->get_pos(), s);
 		}
-		prec_set = 1;
+		prec_set = true;
 		break;
 	    }
 	}
@@ -587,76 +519,67 @@ run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 	//
 	// get conversion specifier
 	//
+	if (!c)
+	    break;
 	switch (c)
 	{
 	default:
-	    scp = sub_context_new();
-	    sub_var_set_charstar(scp, "Function", "sprintf");
-	    sub_var_set_format(scp, "Name", "%c", c);
-	    s =
-		subst_intl
-		(
-		    scp,
-		    i18n("$function: unknown format specifier '$name'")
-		);
-	    sub_context_delete(scp);
-	    result = rpt_value_error(ep->pos, s);
-	    str_free(s);
-	    goto done;
+            {
+                sub_context_ty sc;
+                sc.var_set_charstar("Function", "sprintf");
+                sc.var_set_format("Name", "%c", c);
+                nstring s
+                (
+                    sc.subst_intl
+                    (
+                        i18n("$function: unknown format specifier '$name'")
+                    )
+                );
+                return rpt_value_error::create(ep->get_pos(), s);
+            }
 
 	case '%':
-	    goto normal;
+            buffer.push_back(c);
+            continue;
 
 	case 'c':
 	    {
-		long		a;
-		char		num[MAX_WIDTH + 1];
-		size_t		len;
-
-		result = get_arg_integer(ep, 1);
-		if (result->method->type == rpt_value_type_error)
-		    goto done;
-		assert(result->method->type==rpt_value_type_integer);
-		a = rpt_value_integer_query(result);
-		rpt_value_free(result);
+		rpt_value::pointer tmp = get_arg_integer(ep, true);
+		if (tmp->is_an_error())
+		    return tmp;
+                rpt_value_integer *ip =
+                    dynamic_cast<rpt_value_integer *>(tmp.get());
+		assert(ip);
+		long a = ip->query();
 
 		if (!prec_set)
-		    prec = 1;
+		    prec = true;
+                char fake[MAX_WIDTH];
 		build_fake(fake, sizeof(fake), flag, width, prec, 0, c);
+		char num[MAX_WIDTH + 1];
 		snprintf(num, sizeof(num), fake, a);
-		len = strlen(num);
-		assert(len<QUANTUM);
-		if (length + len > tmplen)
-		    bigger();
-		memcpy(tmp + length, num, len);
-		length += len;
+		buffer.push_back(num);
 	    }
 	    break;
 
 	case 'd':
 	case 'i':
 	    {
-		long		a;
-		char		num[MAX_WIDTH + 1];
-		size_t		len;
-
-		result = get_arg_integer(ep, 1);
-		if (result->method->type == rpt_value_type_error)
-		    goto done;
-		assert(result->method->type==rpt_value_type_integer);
-		a = rpt_value_integer_query(result);
-		rpt_value_free(result);
+		rpt_value::pointer tmp = get_arg_integer(ep, true);
+		if (tmp->is_an_error())
+		    return tmp;
+                rpt_value_integer *ip =
+                    dynamic_cast<rpt_value_integer *>(tmp.get());
+		assert(ip);
+		long a = ip->query();
 
 		if (!prec_set)
-		    prec = 1;
+		    prec = true;
+                char fake[MAX_WIDTH];
 		build_fake(fake, sizeof(fake), flag, width, prec, 'l', c);
+		char num[MAX_WIDTH + 1];
 		snprintf(num, sizeof(num), fake, a);
-		len = strlen(num);
-		assert(len<QUANTUM);
-		if (length + len > tmplen)
-		    bigger();
-		memcpy(tmp + length, num, len);
-		length += len;
+		buffer.push_back(num);
 	    }
 	    break;
 
@@ -667,29 +590,22 @@ run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 	case 'F':
 	case 'G':
 	    {
-		double		a;
-		char		num[MAX_WIDTH + 1];
-		size_t		len;
-
-		result = get_arg_real(ep, 1);
-		if (result->method->type == rpt_value_type_error)
-		    goto done;
-		assert(result->method->type==rpt_value_type_real);
-		a = rpt_value_real_query(result);
-		rpt_value_free(result);
+		rpt_value::pointer tmp = get_arg_real(ep);
+		if (tmp->is_an_error())
+		    return tmp;
+                rpt_value_real *rp = dynamic_cast<rpt_value_real *>(tmp.get());
+		assert(rp);
+		double a = rp->query();
 
 		if (!prec_set)
 		    prec = 6;
 		if (prec > MAX_WIDTH)
 		    prec = MAX_WIDTH;
+                char fake[MAX_WIDTH];
 		build_fake(fake, sizeof(fake), flag, width, prec, 0, c);
+		char num[MAX_WIDTH + 1];
 		snprintf(num, sizeof(num), fake, a);
-		len = strlen(num);
-		assert(len<QUANTUM);
-		if (length + len > tmplen)
-		    bigger();
-		memcpy(tmp + length, num, len);
-		length += len;
+		buffer.push_back(num);
 	    }
 	    break;
 
@@ -698,43 +614,35 @@ run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 	case 'x':
 	case 'X':
 	    {
-		unsigned long	a;
-		char		num[MAX_WIDTH + 1];
-		size_t		len;
-
-		result = get_arg_integer(ep, 1);
-		if (result->method->type == rpt_value_type_error)
-		    goto done;
-		assert(result->method->type==rpt_value_type_integer);
-		a = rpt_value_integer_query(result);
-		rpt_value_free(result);
+		rpt_value::pointer tmp = get_arg_integer(ep, true);
+		if (tmp->is_an_error())
+		    return tmp;
+                rpt_value_integer *ip =
+                    dynamic_cast<rpt_value_integer *>(tmp.get());
+		assert(ip);
+		unsigned long a = ip->query();
 
 		if (!prec_set)
-		    prec = 1;
+		    prec = true;
+                char fake[MAX_WIDTH];
 		build_fake(fake, sizeof(fake), flag, width, prec, 'l', c);
+		char num[MAX_WIDTH + 1];
 		snprintf(num, sizeof(num), fake, a);
-		len = strlen(num);
-		assert(len<QUANTUM);
-		if (length + len > tmplen)
-		    bigger();
-		memcpy(tmp + length, num, len);
-		length += len;
+		buffer.push_back(num);
 	    }
 	    break;
 
 	case 's':
 	    {
-		string_ty	*a;
-		size_t		len;
+		rpt_value::pointer tmp = get_arg_string(ep);
+		if (tmp->is_an_error())
+		    return tmp;
+                rpt_value_string *sp =
+                    dynamic_cast<rpt_value_string *>(tmp.get());
+		assert(sp);
+		nstring a(sp->query());
 
-		result = get_arg_string(ep);
-		if (result->method->type == rpt_value_type_error)
-		    goto done;
-		assert(result->method->type==rpt_value_type_string);
-		a = str_copy(rpt_value_string_query(result));
-		rpt_value_free(result);
-
-		len = a->str_length;
+		size_t len = a.size();
 		if (!prec_set)
 		    prec = len;
 		if (len < (size_t)prec)
@@ -744,72 +652,49 @@ run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 		if (width < prec)
 		    width = prec;
 		len = width;
-		while (length + len > tmplen)
-		    bigger();
 		if (flag != '-')
 		{
 		    while (width > prec)
 		    {
-			tmp[length++] = ' ';
+			buffer.push_back(' ');
 			width--;
 		    }
 		}
-		memcpy(tmp + length, a->str_text, prec);
-		length += prec;
+		buffer.push_back(a.c_str(), prec);
 		width -= prec;
 		if (flag == '-')
 		{
 		    while (width > 0)
 		    {
-			tmp[length++] = ' ';
+			buffer.push_back(' ');
 			width--;
 		    }
 		}
-		str_free(a);
 	    }
 	    break;
 	}
     }
+    // assert(buffer.count_nul_characters() == 0);
 
     if (ai < argc)
     {
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Function", "sprintf");
-	sub_var_set_long(scp, "Number1", (long)argc);
-	sub_var_set_long(scp, "Number2", (long)ai);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "sprintf");
+	sc.var_set_long("Number1", (long)argc);
+	sc.var_set_long("Number2", (long)ai);
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-		scp,
-      i18n("$function: too many arguments ($number1 given, only $number2 used)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(ep->pos, s);
-	str_free(s);
-	goto done;
+                i18n("$function: too many arguments ($number1 given, "
+                    "only $number2 used)")
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
 
     //
-    // build return value
+    // all done
     //
-    s = str_n_from_c(tmp, length);
-    result = rpt_value_string(s);
-    str_free(s);
-
-    //
-    // clean up and go home
-    //
-    done:
-    if (fmt_vp)
-	rpt_value_free(fmt_vp);
-    return result;
+    return rpt_value_string::create(buffer.mkstr());
 }
-
-
-rpt_func_ty rpt_func_sprintf =
-{
-    "sprintf",
-    1, // optimizable
-    verify,
-    run
-};

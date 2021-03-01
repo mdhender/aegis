@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface of the change_functor_inventory class
 //
@@ -55,7 +54,7 @@ public:
 	bool include_original_uuid);
 
     // See base class for documentation.
-    void operator()(change_ty *);
+    void operator()(change::pointer );
 
 private:
     /**
@@ -65,7 +64,7 @@ private:
       * supression of change sets you don't want because another change
       * set has subsumed them.
       */
-    void print_one_line(change_ty *, string_ty *);
+    void print_one_line(change::pointer , string_ty *);
 
     /**
       * The pp instance variabel is used to remember the project being listed.

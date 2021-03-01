@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005, 2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -26,37 +25,20 @@
 #include <libaegis/change/attributes.h>
 
 
-static string_ty *
-fixup(string_ty *s)
-{
-    //
-    // We are not using str_trim() because we only want to top and tail
-    // it, not clean up the white space im the middle as well.
-    //
-    const char *ep = s->str_text + s->str_length;
-    while (ep > s->str_text && isspace((unsigned char)ep[-1]))
-	--ep;
-    const char *cp = s->str_text;
-    while (cp < ep && isspace((unsigned char)*cp))
-	++cp;
-    return str_n_from_c(cp, ep - cp);
-}
-
-
 void
 change_attributes_fixup(cattr_ty *cap)
 {
     if (cap->description)
     {
 	string_ty *s = cap->description;
-	cap->description = fixup(s);
+	cap->description = str_snip(s);
 	str_free(s);
     }
 
     if (cap->brief_description)
     {
 	string_ty *s = cap->brief_description;
-	cap->brief_description = fixup(s);
+	cap->brief_description = str_snip(s);
 	str_free(s);
     }
 }

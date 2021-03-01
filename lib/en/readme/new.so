@@ -1,8 +1,5 @@
 .br
 .ne 3i
-.so new.4.22.so
-.br
-.ne 3i
 .so new.4.21.so
 .br
 .ne 3i

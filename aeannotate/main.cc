@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -48,9 +47,9 @@ main(int argc, char **argv)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{ arglex_token_list, list, },
-	{ arglex_token_help, main_help, },
-	{ arglex_token_version, version, },
+	{ arglex_token_list, list, 0 },
+	{ arglex_token_help, main_help, 0 },
+	{ arglex_token_version, version, 0 },
     };
 
     //

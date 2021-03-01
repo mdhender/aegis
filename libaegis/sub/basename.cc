@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -27,7 +26,7 @@
 #include <libaegis/sub/basename.h>
 #include <libaegis/os.h>
 #include <common/trace.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
 
 
 //
@@ -50,41 +49,35 @@
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_basename(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_basename(sub_context_ty *scp, const wstring_list &arg)
 {
-    wstring_ty	    *result;
-    string_ty	    *suffix;
-    string_ty	    *s1;
-    string_ty	    *s2;
-
     trace(("sub_basename()\n{\n"));
-    switch (arg->size())
+    wstring result;
+    switch (arg.size())
     {
     default:
-	sub_context_error_set(scp, i18n("requires one or two arguments"));
-	result = 0;
+	scp->error_set(i18n("requires one or two arguments"));
 	break;
 
     case 2:
-	s1 = wstr_to_str(arg->get(1));
-	s2 = os_basename(s1);
-	str_free(s1);
-	result = str_to_wstr(s2);
-	str_free(s2);
+        {
+            nstring s1 = arg[1].to_nstring();
+            nstring s2 = os_basename(s1);
+            result = wstring(s2);
+        }
 	break;
 
     case 3:
-	s1 = wstr_to_str(arg->get(1));
-        suffix = wstr_to_str(arg->get(2));
-        s2 = os_basename(s1, suffix);
-        result = str_to_wstr(s2);
-        str_free(s1);
-        str_free(s2);
-	str_free(suffix);
+        {
+            nstring s1 = arg[1].to_nstring();
+            nstring suffix = arg[2].to_nstring();
+            nstring s2 = os_basename(s1, suffix);
+            result = wstring(s2);
+        }
 	break;
     }
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

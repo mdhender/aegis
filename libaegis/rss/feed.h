@@ -1,7 +1,7 @@
 //
 //      aegis - project change supervisor
+//      Copyright (C) 2006, 2007 Peter Miller
 //      Copyright (C) 2005 Matthew Lee;
-//      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -14,8 +14,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface of the rss_feed class
 //
@@ -27,7 +27,6 @@
 
 // Forward declarations
 class rss_item;
-struct change_ty;
 struct project_ty;
 
 /**
@@ -54,7 +53,7 @@ public:
       * @param the_file
       *   A pointer to the filename associated with this feed.
       */
-    rss_feed(project_ty *the_project, change_ty *the_change,
+    rss_feed(project_ty *the_project, change::pointer the_change,
 	const nstring &the_file);
 
     /**
@@ -85,6 +84,15 @@ public:
       */
     void print() const;
 
+    /**
+      * The print method is used to print the contents of the feed to
+      * the file named in the constructor.
+      *
+      * @param op
+      *     The output stream in which to write the output.
+      */
+    void print(output_ty *op) const;
+
     void handle_item();
     void handle_item_title(const nstring &value);
     void handle_item_description(const nstring &value);
@@ -112,6 +120,9 @@ public:
       */
     void channel_elements_from_change();
 
+    void title_set(const nstring &rg);
+    void description_set(const nstring &rg);
+
 private:
     /**
       * The project with which this RSS feed is associated.
@@ -121,7 +132,7 @@ private:
     /**
       * The change with which this RSS feed is associated.
       */
-    change_ty *change;
+    change::pointer cp;
 
     /**
       * The filename with which this RSS feed is associated.

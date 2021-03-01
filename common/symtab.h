@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2002-2005 Peter Miller.
-//	All rights reserved.
+//	Copyright (C) 1994, 2002-2007 Peter Miller.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -23,7 +22,7 @@
 #ifndef FMTGEN_SYMTAB_H
 #define FMTGEN_SYMTAB_H
 
-#include <common/str.h>
+#include <common/nstring.h>
 
 class string_list_ty; // forward
 class nstring_list; // forward
@@ -92,8 +91,55 @@ public:
       *
       * \note
       *     This method has O(1) execution time.
+      *     This method will eventually be DEPRECATED
       */
     void *query(string_ty *key) const;
+
+    /**
+      *	The query method may be used to search for a variable.
+      *
+      * \param key
+      *     The row name to search for.
+      *
+      * \returns
+      *     If the variable has been defined, this method returns the
+      *     pointer value assigned.  If the variable has not been
+      *     defined, it returns the NULL pointer.
+      *
+      * \note
+      *     This method has O(1) execution time.
+      */
+    void *query(const nstring &key) const;
+
+    /**
+      *	The query method may be used to search for a variable.
+      *
+      * \param keys
+      *     The row names to search for.  The first found will be returned.
+      *
+      * \returns
+      *     If the variable has been defined, this method returns the
+      *     pointer value assigned.  If the variable has not been
+      *     defined, it returns the NULL pointer.
+      */
+    void *query(const nstring_list &keys) const;
+
+    /**
+      *	The query_fuzzy method may be used to search for a variable.
+      *
+      * \param key
+      *     The row name to search for.
+      *
+      * \returns
+      *     The NULL pointer if there is no row of that name and no row
+      *     with a similar name, otherwise returns a pointer to the most
+      *     similar name.
+      *
+      * \note
+      *     This method has O(n) execution time.
+      *     This method will eventually be DEPRECATED
+      */
+    string_ty *query_fuzzy(string_ty *key) const;
 
     /**
       *	The query_fuzzy method may be used to search for a variable.
@@ -109,7 +155,26 @@ public:
       * \note
       *     This method has O(n) execution time.
       */
-    string_ty *query_fuzzy(string_ty *key) const;
+    nstring query_fuzzy(const nstring &key) const;
+
+    /**
+      * The assign method is used to assign a value to a given variable.
+      *
+      * \param key
+      *     They key (usually a variable name or simialar).
+      * \param value
+      *     The value to be assigned to that name.
+      *
+      * \note
+      *     The key is copied, the value pointed to is not.
+      * \note
+      *     If there is already a key of that name, the old data will be
+      *     discarded, via the reap function, if one has been supplied.
+      * \note
+      *     This method has O(1) execution time.
+      *     This method will eventually be DEPRECATED
+      */
+    void assign(string_ty *key, void *value);
 
     /**
       * The assign method is used to assign a value to a given variable.
@@ -127,7 +192,25 @@ public:
       * \note
       *     This method has O(1) execution time.
       */
-    void assign(string_ty *key, void *value);
+    void assign(const nstring &key, void *value);
+
+    /**
+      * The assign_push function is used to assign a value to a given
+      * variable.  Any previous value will be obscured until this one is
+      * removed with the remove method.
+      *
+      * \param key
+      *     They key (usually a variable name or simialar).
+      * \param value
+      *     The value to be assigned to that name.
+      *
+      * \note
+      *     The key is copied, the value pointed to is not.
+      * \note
+      *     This method has O(1) execution time.
+      *     This method will eventually be DEPRECATED
+      */
+    void assign_push(string_ty *key, void *value);
 
     /**
       * The assign_push function is used to assign a value to a given
@@ -144,7 +227,22 @@ public:
       * \note
       *     This method has O(1) execution time.
       */
-    void assign_push(string_ty *key, void *value);
+    void assign_push(const nstring &key, void *value);
+
+    /**
+      *	The remove method is used to remove a variable from the symbol table.
+      *
+      * \param key
+      *     The name of the row to be removed.
+      *
+      * \note
+      *    The name is freed, the data is reaped.
+      *    (By default, reap does nothing.)
+      * \note
+      *     This method has O(1) execution time.
+      *     This method will eventually be DEPRECATED
+      */
+    void remove(string_ty *key);
 
     /**
       *	The remove method is used to remove a variable from the symbol table.
@@ -158,7 +256,7 @@ public:
       * \note
       *     This method has O(1) execution time.
       */
-    void remove(string_ty *key);
+    void remove(const nstring &key);
 
     /**
       * The dump method is used to dump the contents of the symbol
@@ -188,6 +286,7 @@ public:
       *     duplicates in they list of keys.
       * \note
       *     This method has O(n) execution time.
+      *     This method will eventually be DEPRECATED
       */
     void keys(string_list_ty *result) const;
 
@@ -207,8 +306,8 @@ public:
       */
     void keys(nstring_list &result) const;
 
-    typedef void (*callback_t)(const symtab_ty *stp, string_ty *key, void *data,
-	void *arg);
+    typedef void (*callback_t)(const symtab_ty *stp, const nstring &key,
+        void *data, void *arg);
 
     /**
       * The walk method is used to invoke a func tion for every row of
@@ -263,7 +362,8 @@ private:
 
     struct row_t
     {
-	string_ty *key;
+        row_t() : data(0), overflow(0) { }
+	nstring key;
 	void *data;
 	row_t *overflow;
     };

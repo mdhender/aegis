@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to perform development and integration builds
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/errno.h>
@@ -216,17 +213,17 @@ build_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(build_usage);
+	    user_ty::lock_wait_argument(build_usage);
 	    break;
 
 	case arglex_token_symbolic_links:
 	case arglex_token_symbolic_links_not:
-	    user_symlink_pref_argument(build_usage);
+	    user_ty::symlink_pref_argument(build_usage);
 	    break;
 
 	case arglex_token_base_relative:
 	case arglex_token_current_relative:
-	    user_relative_filename_preference_argument(build_usage);
+	    user_ty::relative_filename_preference_argument(build_usage);
 	    break;
 	}
 	arglex();
@@ -244,7 +241,7 @@ build_main(void)
 	change_cstate_lock_prepare(cid.get_cp());
     project_baseline_read_lock_prepare(cid.get_pp());
     lock_take();
-    cstate_data = change_cstate_get(cid.get_cp());
+    cstate_data = cid.get_cp()->cstate_get();
 
     //
     // Extract the appropriate row of the change table.
@@ -272,11 +269,9 @@ build_main(void)
 	    change_fatal(cid.get_cp(), 0, i18n("bad branch build"));
 	if
 	(
-	    !str_equal
-	    (
-		change_developer_name(cid.get_cp()),
-		user_name(cid.get_up())
-	    )
+            nstring(change_developer_name(cid.get_cp()))
+        !=
+            cid.get_up()->name()
 	)
 	    change_fatal(cid.get_cp(), 0, i18n("not developer"));
 	if (!change_file_nth(cid.get_cp(), (size_t)0, view_path_first))
@@ -286,11 +281,9 @@ build_main(void)
     case cstate_state_being_integrated:
 	if
 	(
-	    !str_equal
-	    (
-		change_integrator_name(cid.get_cp()),
-		user_name(cid.get_up())
-	    )
+            nstring(change_integrator_name(cid.get_cp()))
+        !=
+            cid.get_up()->name()
 	)
 	    change_fatal(cid.get_cp(), 0, i18n("not integrator"));
 	if (partial.nstrings)
@@ -303,16 +296,24 @@ build_main(void)
     (
 	!integrating
     &&
-	!partial.nstrings
-    &&
-	change_file_promote(cid.get_cp())
+	(
+	    cid.get_cp()->run_project_file_command_needed()
+	||
+    	    (
+	       	!partial.nstrings
+    	    &&
+	       	change_file_promote(cid.get_cp())
+    	    )
+	)
     )
     {
 	//
-	// May need to cope with other baseline changes, as well.
-	//
-	trace(("The change_file_promote found somthing to do.\n"));
-	change_run_project_file_command(cid.get_cp(), cid.get_up());
+        // Remember the fact that we are about to run the
+        // project_file_command, but we actually run it outside the
+        // locks, so that it can use the up-to-date lists of change
+        // files and project files.
+        //
+        cid.get_cp()->run_project_file_command_done();
 
 	//
 	// Write out the file state, and then let go of the locks
@@ -324,12 +325,19 @@ build_main(void)
 	commit();
 	lock_release();
 
+        //
+        // Either the project files list changed, or the change's files
+        // list changed (which can change the project files list seen
+        // from this change) or both.
+        //
+        cid.get_cp()->run_project_file_command(cid.get_up());
+
 	trace(("Take the locks again.\n"));
 	change_cstate_lock_prepare(cid.get_cp());
 	project_baseline_read_lock_prepare(cid.get_pp());
 	lock_take();
     }
-    cstate_data = change_cstate_get(cid.get_cp());
+    cstate_data = cid.get_cp()->cstate_get();
 
     //
     // If no build is required, we stop here.
@@ -364,9 +372,8 @@ build_main(void)
 		search_path.nstrings >= 1
 	    &&
 		(
-		    user_relative_filename_preference
+		    cid.get_up()->relative_filename_preference
 		    (
-			cid.get_up(),
 			uconf_relative_filename_preference_base
 		    )
 		==
@@ -409,9 +416,9 @@ build_main(void)
 		s2 = str_copy(s1);
 	    else
 		s2 = os_path_join(base, s1);
-	    user_become(cid.get_up());
+	    cid.get_up()->become_begin();
 	    s1 = os_pathname(s2, 0);
-	    user_become_undo();
+	    cid.get_up()->become_end();
 	    str_free(s2);
 	    s2 = 0;
 	    for (k = 0; k < search_path.nstrings; ++k)
@@ -473,7 +480,6 @@ build_main(void)
     //
     pconf_data = change_pconf_get(cid.get_cp(), 1);
 
-
     //
     // If aeib had a -minimum, then aeb implicitly does
     //
@@ -501,7 +507,7 @@ build_main(void)
     trace(("do the build\n"));
     if (cstate_data->state == cstate_state_being_integrated)
     {
-	user_ty *pup = project_user(cid.get_pp());
+	user_ty::pointer pup = project_user(cid.get_pp());
 	log_open(change_logfile_get(cid.get_cp()), pup, log_style);
 
 	assert(pconf_data->integration_directory_style);
@@ -519,7 +525,6 @@ build_main(void)
 	change_verbose(cid.get_cp(), 0, i18n("integration build complete"));
 
 	change_remove_symlinks_to_baseline(cid.get_cp(), pup, style);
-	user_free(pup);
     }
     else
     {
@@ -548,13 +553,13 @@ build_main(void)
 	    style.derived_file_copy
 	)
 	{
-	    int verify_dflt =
+	    bool verify_dflt =
 		(
 		    style.during_build_only
 		||
-		    change_run_project_file_command_needed(cid.get_cp())
+		    cid.get_cp()->run_project_file_command_needed()
 		);
-	    if (user_symlink_pref(cid.get_up(), verify_dflt))
+	    if (cid.get_up()->symlink_pref(verify_dflt))
 	    {
 		change_create_symlinks_to_baseline
 		(
@@ -569,7 +574,7 @@ build_main(void)
 	    change_verbose(cid.get_cp(), 0, i18n("partial build started"));
 	else
 	    change_verbose(cid.get_cp(), 0, i18n("development build started"));
-	change_run_project_file_command(cid.get_cp(), cid.get_up());
+
 	change_run_development_build_command
 	(
 	    cid.get_cp(),
@@ -622,8 +627,8 @@ build(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, build_help, },
-	{arglex_token_list, build_list, },
+	{arglex_token_help, build_help, 0 },
+	{arglex_token_list, build_list, 0 },
     };
 
     trace(("build()\n{\n"));

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1996, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,418 +13,323 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate increment/decrement expressions
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
 #include <libaegis/aer/expr/incr.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/integer.h>
 #include <libaegis/aer/value/real.h>
 #include <libaegis/aer/value/ref.h>
-#include <common/error.h>
 #include <libaegis/sub.h>
 
 
-static rpt_value_ty *
-inc_pre_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_inc_pre::~rpt_expr_inc_pre()
 {
-    sub_context_ty  *scp;
-    rpt_value_ty    *vp;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *v2a;
-    rpt_value_ty    *result;
-    string_ty	    *s;
+}
 
-    assert(this_thing->nchild==1);
-    vp = rpt_expr_evaluate(this_thing->child[0], 0);
-    if (vp->method->type == rpt_value_type_error)
+
+rpt_expr_inc_pre::rpt_expr_inc_pre(const rpt_expr::pointer &arg)
+{
+    append(arg);
+
+    if (!arg->lvalue())
+	arg->parse_error(i18n("modifiable lvalue required for increment"));
+}
+
+
+rpt_expr::pointer
+rpt_expr_inc_pre::create(const rpt_expr::pointer &arg)
+{
+    return pointer(new rpt_expr_inc_pre(arg));
+}
+
+
+rpt_value::pointer
+rpt_expr_inc_pre::evaluate()
+    const
+{
+    assert(get_nchildren() == 1);
+    rpt_value::pointer vp = nth_child(0)->evaluate(true, false);
+    if (vp->is_an_error())
 	return vp;
-    if (vp->method->type != rpt_value_type_reference)
+    rpt_value_reference *rvrp = dynamic_cast<rpt_value_reference *>(vp.get());
+    if (!rvrp)
     {
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", vp->method->name);
-	rpt_value_free(vp);
-	s =
-	    subst_intl
+        sub_context_ty sc;
+	sc.var_set_charstar("Name", vp->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-		scp,
-	      i18n("modifiable lvalue required for increment (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->child[0]->pos, s);
-	str_free(s);
-	return result;
+                i18n("modifiable lvalue required for increment (was "
+                    "given $name)")
+	    )
+        );
+	return rpt_value_error::create(nth_child(0)->get_pos(), s);
     }
 
-    v2 = rpt_value_reference_get(vp);
-    v2a = rpt_value_arithmetic(v2);
-    rpt_value_free(v2);
+    rpt_value::pointer v2 = rvrp->get();
+    rpt_value::pointer v2a = rpt_value::arithmetic(v2);
 
-    switch (v2a->method->type)
+    rpt_value_integer *v2aip = dynamic_cast<rpt_value_integer *>(v2a.get());
+    if (v2aip)
     {
-    case rpt_value_type_integer:
-	result = rpt_value_integer(1 + rpt_value_integer_query(v2a));
-	break;
-
-    case rpt_value_type_real:
-	result = rpt_value_real(1 + rpt_value_real_query(v2a));
-	break;
-
-    case rpt_value_type_error:
-	assert(0);
-	// fall through...
-
-    default:
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", v2a->method->name);
-	s =
-	    subst_intl
-	    (
-		scp,
-		i18n("arithmetic type required for increment (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->child[0]->pos, s);
-	str_free(s);
-	return result;
+        rpt_value::pointer result =
+            rpt_value_integer::create(1 + v2aip->query());
+        rvrp->set(result);
+        return result;
     }
-    rpt_value_free(v2a);
-    rpt_value_reference_set(vp, result);
-    rpt_value_free(vp);
-    return result;
+
+    rpt_value_real *v2arp = dynamic_cast<rpt_value_real *>(v2a.get());
+    if (v2arp)
+    {
+        rpt_value::pointer result = rpt_value_real::create(1 + v2arp->query());
+        rvrp->set(result);
+        return result;
+    }
+
+    sub_context_ty sc;
+    sc.var_set_charstar("Name", v2->name());
+    nstring s
+    (
+        sc.subst_intl
+        (
+            i18n("arithmetic type required for increment (was given $name)")
+        )
+    );
+    return rpt_value_error::create(nth_child(0)->get_pos(), s);
 }
 
 
-static rpt_expr_method_ty inc_pre_method =
+rpt_expr_dec_pre::~rpt_expr_dec_pre()
 {
-    sizeof(rpt_expr_ty),
-    "++e",
-    0, // construct
-    0, // destruct
-    inc_pre_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_inc_pre(rpt_expr_ty *e)
-{
-    rpt_expr_ty	    *this_thing;
-
-    this_thing = rpt_expr_alloc(&inc_pre_method);
-    rpt_expr_append(this_thing, e);
-    if (!rpt_expr_lvalue(e))
-    {
-	rpt_expr_parse_error
-	(
-	    e,
-	    i18n("modifiable lvalue required for increment")
-	);
-    }
-    return this_thing;
 }
 
 
-static rpt_value_ty *
-dec_pre_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_dec_pre::rpt_expr_dec_pre(const rpt_expr::pointer &arg)
 {
-    sub_context_ty  *scp;
-    rpt_value_ty    *vp;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *v2a;
-    rpt_value_ty    *result;
-    string_ty	    *s;
+    append(arg);
 
-    assert(this_thing->nchild==1);
-    vp = rpt_expr_evaluate(this_thing->child[0], 0);
-    if (vp->method->type == rpt_value_type_error)
+    if (!arg->lvalue())
+	arg->parse_error(i18n("modifiable lvalue required for decrement"));
+}
+
+
+rpt_expr::pointer
+rpt_expr_dec_pre::create(const rpt_expr::pointer &arg)
+{
+    return pointer(new rpt_expr_dec_pre(arg));
+}
+
+
+rpt_value::pointer
+rpt_expr_dec_pre::evaluate()
+    const
+{
+    assert(get_nchildren() == 1);
+    rpt_value::pointer vp = nth_child(0)->evaluate(true, false);
+    if (vp->is_an_error())
 	return vp;
-    if (vp->method->type != rpt_value_type_reference)
+    rpt_value_reference *rvrp = dynamic_cast<rpt_value_reference *>(vp.get());
+    if (!rvrp)
     {
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", vp->method->name);
-	rpt_value_free(vp);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", vp->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-		scp,
-	      i18n("modifiable lvalue required for decrement (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->child[0]->pos, s);
-	str_free(s);
-	return result;
+                i18n("modifiable lvalue required for decrement (was "
+                    "given $name)")
+	    )
+        );
+	return rpt_value_error::create(nth_child(0)->get_pos(), s);
     }
 
-    v2 = rpt_value_reference_get(vp);
-    v2a = rpt_value_arithmetic(v2);
-    rpt_value_free(v2);
+    rpt_value::pointer v2 = rvrp->get();
+    rpt_value::pointer v2a = rpt_value::arithmetic(v2);
 
-    switch (v2a->method->type)
+    rpt_value_integer *v2aip = dynamic_cast<rpt_value_integer *>(v2a.get());
+    if (v2aip)
     {
-    case rpt_value_type_integer:
-	result = rpt_value_integer(rpt_value_integer_query(v2a) - 1);
-	break;
-
-    case rpt_value_type_real:
-	result = rpt_value_real(rpt_value_real_query(v2a) - 1);
-	break;
-
-    case rpt_value_type_error:
-	assert(0);
-	// fall through...
-
-    default:
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", v2a->method->name);
-	s =
-    	    subst_intl
-	    (
-		scp,
-		i18n("arithmetic type required for decrement (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->child[0]->pos, s);
-	str_free(s);
-	return result;
+	rpt_value::pointer result =
+            rpt_value_integer::create(v2aip->query() - 1);
+        rvrp->set(result);
+        return result;
     }
-    rpt_value_free(v2a);
-    rpt_value_reference_set(vp, result);
-    rpt_value_free(vp);
-    return result;
+
+    rpt_value_real *v2arp = dynamic_cast<rpt_value_real *>(v2a.get());
+    if (v2arp)
+    {
+	rpt_value::pointer result = rpt_value_real::create(v2arp->query() - 1);
+        rvrp->set(result);
+        return result;
+    }
+
+    sub_context_ty sc;
+    sc.var_set_charstar("Name", v2a->name());
+    nstring s
+    (
+        sc.subst_intl
+        (
+            i18n("arithmetic type required for decrement (was given $name)")
+        )
+    );
+    return rpt_value_error::create(nth_child(0)->get_pos(), s);
 }
 
 
-static rpt_expr_method_ty dec_pre_method =
+rpt_expr_inc_post::~rpt_expr_inc_post()
 {
-    sizeof(rpt_expr_ty),
-    "--e",
-    0, // construct
-    0, // destruct
-    dec_pre_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_dec_pre(rpt_expr_ty *e)
-{
-    rpt_expr_ty	    *this_thing;
-
-    this_thing = rpt_expr_alloc(&dec_pre_method);
-    rpt_expr_append(this_thing, e);
-    if (!rpt_expr_lvalue(e))
-    {
-	rpt_expr_parse_error
-	(
-	    e,
-	    i18n("modifiable lvalue required for decrement")
-	);
-    }
-    return this_thing;
 }
 
 
-static rpt_value_ty *
-inc_post_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_inc_post::rpt_expr_inc_post(const rpt_expr::pointer &arg)
 {
-    sub_context_ty  *scp;
-    rpt_value_ty    *vp;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *v2a;
-    rpt_value_ty    *result;
-    string_ty	    *s;
+    append(arg);
 
-    assert(this_thing->nchild==1);
-    vp = rpt_expr_evaluate(this_thing->child[0], 0);
-    if (vp->method->type == rpt_value_type_error)
+    if (!arg->lvalue())
+	arg->parse_error(i18n("modifiable lvalue required for increment"));
+}
+
+
+rpt_expr::pointer
+rpt_expr_inc_post::create(const rpt_expr::pointer &arg)
+{
+    return pointer(new rpt_expr_inc_post(arg));
+}
+
+
+rpt_value::pointer
+rpt_expr_inc_post::evaluate()
+    const
+{
+    assert(get_nchildren() == 1);
+    rpt_value::pointer vp = nth_child(0)->evaluate(true, false);
+    if (vp->is_an_error())
 	return vp;
-    if (vp->method->type != rpt_value_type_reference)
+    rpt_value_reference *rvrp = dynamic_cast<rpt_value_reference *>(vp.get());
+    if (!rvrp)
     {
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", vp->method->name);
-	rpt_value_free(vp);
-	s =
-	    subst_intl
+        sub_context_ty sc;
+	sc.var_set_charstar("Name", vp->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-		scp,
-	      i18n("modifiable lvalue required for increment (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->child[0]->pos, s);
-	str_free(s);
-	return result;
+                i18n("modifiable lvalue required for increment (was "
+                    "given $name)")
+	    )
+        );
+	return rpt_value_error::create(nth_child(0)->get_pos(), s);
     }
 
-    v2 = rpt_value_reference_get(vp);
-    v2a = rpt_value_arithmetic(v2);
-    rpt_value_free(v2);
+    rpt_value::pointer v2 = rvrp->get();
+    rpt_value::pointer v2a = rpt_value::arithmetic(v2);
 
-    switch (v2a->method->type)
+    rpt_value_integer *v2aip = dynamic_cast<rpt_value_integer *>(v2a.get());
+    if (v2aip)
     {
-    case rpt_value_type_integer:
-	result = rpt_value_integer(1 + rpt_value_integer_query(v2a));
-	break;
-
-    case rpt_value_type_real:
-	result = rpt_value_real(1 + rpt_value_real_query(v2a));
-	break;
-
-    case rpt_value_type_error:
-	assert(0);
-	// fall through...
-
-    default:
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", v2a->method->name);
-	rpt_value_free(v2a);
-	s =
-	    subst_intl
-	    (
-		scp,
-		i18n("arithmetic type required for increment (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->child[0]->pos, s);
-	str_free(s);
-	return result;
+        rpt_value::pointer result =
+            rpt_value_integer::create(1 + v2aip->query());
+        rvrp->set(result);
+        return v2a;
     }
-    rpt_value_reference_set(vp, result);
-    rpt_value_free(vp);
-    rpt_value_free(result);
-    return v2a;
+
+    rpt_value_real *v2arp = dynamic_cast<rpt_value_real *>(v2a.get());
+    if (v2arp)
+    {
+        rpt_value::pointer result = rpt_value_real::create(1 + v2arp->query());
+        rvrp->set(result);
+        return v2a;
+    }
+
+    sub_context_ty sc;
+    sc.var_set_charstar("Name", v2->name());
+    nstring s
+    (
+        sc.subst_intl
+        (
+            i18n("arithmetic type required for increment (was given $name)")
+        )
+    );
+    return rpt_value_error::create(nth_child(0)->get_pos(), s);
 }
 
 
-static rpt_expr_method_ty inc_post_method =
+rpt_expr_dec_post::~rpt_expr_dec_post()
 {
-    sizeof(rpt_expr_ty),
-    "e++",
-    0, // construct
-    0, // destruct
-    inc_post_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_inc_post(rpt_expr_ty *e)
-{
-    rpt_expr_ty	    *this_thing;
-
-    this_thing = rpt_expr_alloc(&inc_post_method);
-    rpt_expr_append(this_thing, e);
-    if (!rpt_expr_lvalue(e))
-    {
-	rpt_expr_parse_error
-	(
-	    e,
-	    i18n("modifiable lvalue required for increment")
-	);
-    }
-    return this_thing;
 }
 
 
-static rpt_value_ty *
-dec_post_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_dec_post::rpt_expr_dec_post(const rpt_expr::pointer &arg)
 {
-    sub_context_ty  *scp;
-    rpt_value_ty    *vp;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *v2a;
-    rpt_value_ty    *result;
-    string_ty	    *s;
+    append(arg);
 
-    assert(this_thing->nchild==1);
-    vp = rpt_expr_evaluate(this_thing->child[0], 0);
-    if (vp->method->type == rpt_value_type_error)
+    if (!arg->lvalue())
+	arg->parse_error(i18n("modifiable lvalue required for decrement"));
+}
+
+
+rpt_expr::pointer
+rpt_expr_dec_post::create(const rpt_expr::pointer &arg)
+{
+    return pointer(new rpt_expr_dec_post(arg));
+}
+
+
+rpt_value::pointer
+rpt_expr_dec_post::evaluate()
+    const
+{
+    assert(get_nchildren() == 1);
+    rpt_value::pointer vp = nth_child(0)->evaluate(true, false);
+    if (vp->is_an_error())
 	return vp;
-    if (vp->method->type != rpt_value_type_reference)
+    rpt_value_reference *rvrp = dynamic_cast<rpt_value_reference *>(vp.get());
+    if (!rvrp)
     {
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", vp->method->name);
-	rpt_value_free(vp);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", vp->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-		scp,
-	      i18n("modifiable lvalue required for decrement (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->child[0]->pos, s);
-	str_free(s);
-	return result;
+                i18n("modifiable lvalue required for decrement (was "
+                    "given $name)")
+	    )
+        );
+	return rpt_value_error::create(nth_child(0)->get_pos(), s);
     }
 
-    v2 = rpt_value_reference_get(vp);
-    v2a = rpt_value_arithmetic(v2);
-    rpt_value_free(v2);
+    rpt_value::pointer v2 = rvrp->get();
+    rpt_value::pointer v2a = rpt_value::arithmetic(v2);
 
-    switch (v2a->method->type)
+    rpt_value_integer *v2aip = dynamic_cast<rpt_value_integer *>(v2a.get());
+    if (v2aip)
     {
-    case rpt_value_type_integer:
-	result = rpt_value_integer(rpt_value_integer_query(v2a) - 1);
-	break;
-
-    case rpt_value_type_real:
-	result = rpt_value_real(rpt_value_real_query(v2a) - 1);
-	break;
-
-    case rpt_value_type_error:
-	assert(0);
-	// fall through...
-
-    default:
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", v2a->method->name);
-	rpt_value_free(v2a);
-	s =
-	    subst_intl
-	    (
-		scp,
-		i18n("arithmetic type required for decrement (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->child[0]->pos, s);
-	str_free(s);
-	return result;
+        rvrp->set(rpt_value_integer::create(v2aip->query() - 1));
+        return v2a;
     }
-    rpt_value_reference_set(vp, result);
-    rpt_value_free(vp);
-    rpt_value_free(result);
-    return v2a;
-}
 
-
-static rpt_expr_method_ty dec_post_method =
-{
-    sizeof(rpt_expr_ty),
-    "e--",
-    0, // construct
-    0, // destruct
-    dec_post_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_dec_post(rpt_expr_ty *e)
-{
-    rpt_expr_ty	    *this_thing;
-
-    this_thing = rpt_expr_alloc(&dec_post_method);
-    rpt_expr_append(this_thing, e);
-    if (!rpt_expr_lvalue(e))
+    rpt_value_real *v2arp = dynamic_cast<rpt_value_real *>(v2a.get());
+    if (v2arp)
     {
-	rpt_expr_parse_error
-	(
-	    e,
-	    i18n("modifiable lvalue required for decrement")
-	);
+        rvrp->set(rpt_value_real::create(v2arp->query() - 1));
+        return v2a;
     }
-    return this_thing;
+
+    sub_context_ty sc;
+    sc.var_set_charstar("Name", v2a->name());
+    nstring s
+    (
+        sc.subst_intl
+        (
+            i18n("arithmetic type required for decrement (was given $name)")
+        )
+    );
+    return rpt_value_error::create(nth_child(0)->get_pos(), s);
 }

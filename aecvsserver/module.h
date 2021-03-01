@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -324,81 +323,6 @@ private:
     module_ty &operator=(const module_ty &);
 };
 
-
-DEPRECATED inline module
-module_find(string_ty *module_name)
-{
-    return module::find(module_name);
-}
-
-DEPRECATED inline module
-module_find_trim(string_ty *module_name)
-{
-    return module::find_trim(module_name);
-}
-
-/**
-  * The module_delete function is used to release the resources of a
-  * module when you are done with it.
-  */
-DEPRECATED inline void
-module_delete(module_ty *mp)
-{
-    mp->reference_count_down();
-}
-
-DEPRECATED inline void
-module_modified(module_ty *mp, server_ty *sp, string_ty *file_name,
-    file_info_ty *fip, input &contents)
-{
-    mp->modified(sp, file_name, fip, contents);
-}
-
-DEPRECATED inline int
-module_bogus(module_ty *mp)
-{
-    return mp->is_bogus();
-}
-
-DEPRECATED inline string_ty *
-module_name(module_ty *mp)
-{
-    return mp->name();
-}
-
-DEPRECATED inline void
-module_checkout(module_ty *mp, server_ty *sp)
-{
-    return mp->checkout(sp);
-}
-
-DEPRECATED inline int
-module_checkin(module_ty *mp, server_ty *sp, string_ty *client_side,
-    string_ty *server_side)
-{
-    return mp->checkin(sp, client_side, server_side);
-}
-
-DEPRECATED inline int
-module_update(module_ty *mp, server_ty *sp, string_ty *client_side,
-    string_ty *server_side, module_ty::options *opt)
-{
-    return mp->update(sp, client_side, server_side, *opt);
-}
-
-DEPRECATED inline int
-module_add(module_ty *mp, server_ty *sp, string_ty *client_side,
-    string_ty *server_side, module_ty::options *opt)
-{
-    return mp->add(sp, client_side, server_side, *opt);
-}
-
-DEPRECATED inline int
-module_remove(module_ty *mp, server_ty *sp, string_ty *client_side,
-    string_ty *server_side, module_ty::options *opt)
-{
-    return mp->remove(sp, client_side, server_side, *opt);
-}
 
 /**
   * The is_update_prefix function is used to determine if a file

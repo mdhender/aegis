@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -31,6 +30,9 @@ enum
     arglex_token_entire_source_not,
     arglex_token_exclude,
     arglex_token_exclude_auto_tools,
+    arglex_token_exclude_auto_tools_not,
+    arglex_token_exclude_cvs,
+    arglex_token_exclude_cvs_not,
     arglex_token_include_build,
     arglex_token_include_build_not,
     arglex_token_path_prefix_add,

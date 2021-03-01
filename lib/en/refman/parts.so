@@ -45,6 +45,7 @@
 .so ../man1/aelock.1
 .so ../man1/aelpf.1
 .so ../man1/aels.1
+.so ../man1/aemakegen.1
 .so ../man1/aemeasure.1
 .so ../man1/aemt.1
 .so ../man1/aemtu.1

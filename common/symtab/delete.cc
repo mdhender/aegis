@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate deletes
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/symtab.h>
@@ -26,18 +23,24 @@
 void
 symtab_ty::remove(string_ty *key)
 {
-    str_hash_ty index = key->str_hash & hash_mask;
-    row_t **pp = &hash_table[index];
+    remove(nstring(key));
+}
+
+
+void
+symtab_ty::remove(const nstring &key)
+{
+    str_hash_ty idx = key.get_hash() & hash_mask;
+    row_t **pp = &hash_table[idx];
     for (;;)
     {
 	row_t *p = *pp;
 	if (!p)
 	    break;
-	if (str_equal(key, p->key))
+	if (key == p->key)
 	{
 	    if (reap)
 	       	reap(p->data);
-	    str_free(p->key);
 	    *pp = p->overflow;
 	    delete p;
 	    hash_load--;

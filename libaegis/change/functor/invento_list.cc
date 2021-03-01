@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the change_functor_inventory_list class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
@@ -36,7 +33,7 @@
 
 change_functor_inventory_list::~change_functor_inventory_list()
 {
-    col_close(colp);
+    delete colp;
 }
 
 
@@ -48,25 +45,26 @@ change_functor_inventory_list::change_functor_inventory_list(bool arg1,
     uuid_col(0),
     when_col(0)
 {
-    colp = col_open((string_ty *)0);
+    colp = col::open((string_ty *)0);
     string_ty *line1 =
 	str_format("Project \"%s\"", project_name_get(pp)->str_text);
-    col_title(colp, line1->str_text, "Change Set Inventory");
+    colp->title(line1->str_text, "Change Set Inventory");
     str_free(line1);
     line1 = 0;
 
     int left = 0;
-    vers_col = col_create(colp, left, left + VERSION_WIDTH, "Change\n-------");
+    vers_col = colp->create(left, left + VERSION_WIDTH, "Change\n-------");
     left += VERSION_WIDTH + 1;
-    uuid_col = col_create(colp, left, left + UUID_WIDTH, "UUID\n------");
+    uuid_col = colp->create(left, left + UUID_WIDTH, "UUID\n------");
     left += UUID_WIDTH + 1;
     if (option_verbose_get())
-	when_col = col_create(colp, left, 0, "Date and Time\n---------------");
+	when_col = colp->create(left, 0, "Date and Time\n---------------");
 }
 
 
 void
-change_functor_inventory_list::print_one_line(change_ty *cp, string_ty *uuid)
+change_functor_inventory_list::print_one_line(change::pointer cp,
+    string_ty *uuid)
 {
     vers_col->fputs(change_version_get(cp));
     uuid_col->fputs(uuid);
@@ -83,14 +81,14 @@ change_functor_inventory_list::print_one_line(change_ty *cp, string_ty *uuid)
 	strftime(buffer, sizeof(buffer), "%Y-%b-%d %H:%M:%S", theTm);
 	when_col->fputs(buffer);
     }
-    col_eoln(colp);
+    colp->eoln();
 }
 
 
 void
-change_functor_inventory_list::operator()(change_ty *cp)
+change_functor_inventory_list::operator()(change::pointer cp)
 {
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
     if (cstate_data->uuid)
 	print_one_line(cp, cstate_data->uuid);
     if (!cstate_data->attribute)

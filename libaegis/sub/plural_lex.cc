@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -22,18 +21,17 @@
 
 #include <common/ac/string.h>
 
-#include <common/str.h>
-#include <common/stracc.h>
+#include <common/nstring/accumulator.h>
 #include <libaegis/sub/plural_lex.h>
 #include <libaegis/sub/plural_gram.gen.h>
 
 
-static string_ty *text;
-static size_t   pos;
+static nstring text;
+static size_t pos;
 
 
 void
-sub_plural_lex_open(string_ty *s)
+sub_plural_lex_open(const nstring &s)
 {
     text = s;
     pos = 0;
@@ -51,19 +49,18 @@ sub_plural_lex_close(void)
 static int
 lex_getc(void)
 {
-    int		    c;
-
-    if (!text || pos >= text->str_length)
+    int c = 0;
+    if (!text || pos >= text.size())
 	c = 0;
     else
-	c = (unsigned char)text->str_text[pos];
+	c = (unsigned char)text[pos];
     ++pos;
     return c;
 }
 
 
 static void
-lex_getc_undo(int c)
+lex_getc_undo(int)
 {
     if (pos > 0)
 	--pos;
@@ -73,12 +70,9 @@ lex_getc_undo(int c)
 int
 sub_plural_gram_lex(void)
 {
-    int		    c;
-    long	    n;
-
     for (;;)
     {
-	c = lex_getc();
+	int c = lex_getc();
 	switch (c)
 	{
 	case 0:
@@ -127,24 +121,26 @@ sub_plural_gram_lex(void)
 
 	case '0': case '1': case '2': case '3': case '4':
 	case '5': case '6': case '7': case '8': case '9':
-	    n = 0;
-	    for (;;)
-	    {
-		n = n * 10 + c - '0';
-		c = lex_getc();
-		switch (c)
-		{
-		case '0': case '1': case '2': case '3': case '4':
-		case '5': case '6': case '7': case '8': case '9':
-		    continue;
+            {
+                long n = 0;
+                for (;;)
+                {
+                    n = n * 10 + c - '0';
+                    c = lex_getc();
+                    switch (c)
+                    {
+                    case '0': case '1': case '2': case '3': case '4':
+                    case '5': case '6': case '7': case '8': case '9':
+                        continue;
 
-		default:
-		    break;
-		}
-		lex_getc_undo(c);
-		break;
-	    }
-	    sub_plural_gram_lval.lv_number = n;
+                    default:
+                        break;
+                    }
+                    lex_getc_undo(c);
+                    break;
+                }
+                sub_plural_gram_lval.lv_number = n;
+            }
 	    return INTEGER;
 
 	case ':':
@@ -188,9 +184,7 @@ sub_plural_gram_lex(void)
 	case 'o': case 'p': case 'q': case 'r': case 's': case 't': case 'u':
 	case 'v': case 'w': case 'x': case 'y': case 'z':
 	    {
-		static stracc_t sa;
-		string_ty	*s;
-
+		static nstring_accumulator sa;
 		sa.clear();
 		for (;;)
 		{
@@ -223,23 +217,13 @@ sub_plural_gram_lex(void)
 		    }
 		    break;
 		}
-		s = sa.mkstr();
-		if (0 == strcasecmp(s->str_text, "n"))
-		{
-		    str_free(s);
+		nstring s = sa.mkstr();
+		if (0 == strcasecmp(s.c_str(), "n"))
 		    return NUMBER;
-		}
-		if (0 == strcasecmp(s->str_text, "nplurals"))
-		{
-		    str_free(s);
+		if (0 == strcasecmp(s.c_str(), "nplurals"))
 		    return NPLURALS;
-		}
-		if (0 == strcasecmp(s->str_text, "plural"))
-		{
-		    str_free(s);
+		if (0 == strcasecmp(s.c_str(), "plural"))
 		    return PLURAL;
-		}
-		str_free(s);
 	    }
 	    return JUNK;
 

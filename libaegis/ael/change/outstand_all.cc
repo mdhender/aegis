@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate outstand_alls
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/ael/change/inappropriat.h>
@@ -36,7 +33,7 @@
 
 void
 list_outstanding_changes_all(string_ty *project_name, long change_number,
-    string_list_ty *args)
+    string_list_ty *)
 {
     output_ty       *project_col = 0;
     output_ty       *number_col = 0;
@@ -45,7 +42,7 @@ list_outstanding_changes_all(string_ty *project_name, long change_number,
     size_t          j, k;
     string_list_ty  name;
     int             left;
-    col_ty          *colp;
+    col          *colp;
 
     trace(("list_outstanding_changes_all()\n{\n"));
     if (project_name)
@@ -61,25 +58,25 @@ list_outstanding_changes_all(string_ty *project_name, long change_number,
     //
     // create the columns
     //
-    colp = col_open((string_ty *)0);
-    col_title(colp, "List of Outstanding Changes", "for all projects");
+    colp = col::open((string_ty *)0);
+    colp->title("List of Outstanding Changes", "for all projects");
 
     left = 0;
     project_col =
-	col_create(colp, left, left + PROJECT_WIDTH, "Project\n---------");
+	colp->create(left, left + PROJECT_WIDTH, "Project\n---------");
     left += PROJECT_WIDTH + 1;
 
-    number_col = col_create(colp, left, left + CHANGE_WIDTH, "Change\n------");
+    number_col = colp->create(left, left + CHANGE_WIDTH, "Change\n------");
     left += CHANGE_WIDTH + 1;
 
     if (!option_terse_get())
     {
 	state_col =
-	    col_create(colp, left, left + STATE_WIDTH, "State\n-------");
+	    colp->create(left, left + STATE_WIDTH, "State\n-------");
 	left += STATE_WIDTH + 1;
 
 	description_col =
-	    col_create(colp, left, 0, "Description\n-------------");
+	    colp->create(left, 0, "Description\n-------------");
     }
 
     //
@@ -109,7 +106,7 @@ list_outstanding_changes_all(string_ty *project_name, long change_number,
 	for (k = 0; ; ++k)
 	{
 	    cstate_ty       *cstate_data;
-	    change_ty       *cp;
+	    change::pointer cp;
 
 	    //
 	    // make sure the change is not completed
@@ -118,7 +115,7 @@ list_outstanding_changes_all(string_ty *project_name, long change_number,
 		break;
 	    cp = change_alloc(pp, change_number);
 	    change_bind_existing(cp);
-	    cstate_data = change_cstate_get(cp);
+	    cstate_data = cp->cstate_get();
 	    if (cstate_data->state == cstate_state_completed)
 	    {
 		change_free(cp);
@@ -158,7 +155,7 @@ list_outstanding_changes_all(string_ty *project_name, long change_number,
 	    {
 		description_col->fputs(cstate_data->brief_description);
 	    }
-	    col_eoln(colp);
+	    colp->eoln();
 
 	    //
 	    // At some point, will need to recurse
@@ -172,6 +169,6 @@ list_outstanding_changes_all(string_ty *project_name, long change_number,
     //
     // clean up and go home
     //
-    col_close(colp);
+    delete colp;
     trace(("}\n"));
 }

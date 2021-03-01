@@ -1,7 +1,7 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2005 Matthew Lee;
-//      All rights reserved.
+//      Copyright (C) 2005 Matthew Lee
+//      Copyright (C) 2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -14,8 +14,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface of the rss_item class
 //
@@ -23,11 +23,12 @@
 #ifndef LIBAEGIS_RSS_ITEM_H
 #define LIBAEGIS_RSS_ITEM_H
 
+#include <common/nstring.h>
+#include <libaegis/change.h>
+
 // Forward declarations
-class change_ty;
 class output_ty;
 
-#include <common/nstring.h>
 
 /**
   * The rss_item class is used to represent an Item in an RSS feed.
@@ -119,7 +120,7 @@ public:
       * @param cp
       *     The change to take the attributes from.
       */
-    void handle_change(change_ty *cp);
+    void handle_change(change::pointer cp);
 
 private:
     /**

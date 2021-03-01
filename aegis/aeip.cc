@@ -1,8 +1,7 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-2006 Peter Miller;
-//      Copyright (C) 2006 Walter Franzini;
-//      All rights reserved.
+//      Copyright (C) 1991-2007 Peter Miller
+//      Copyright (C) 2006 Walter Franzini
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -15,10 +14,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions for implementing integrate pass
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/errno.h>
@@ -31,7 +28,6 @@
 
 #include <common/env.h>
 #include <common/error.h>
-#include <common/mem.h>
 #include <common/now.h>
 #include <common/nstring/list.h>
 #include <common/progname.h>
@@ -148,7 +144,7 @@ integrate_pass_list(void)
 
 
 static void
-time_map_get(void *p, dir_walk_message_ty message, string_ty *path,
+time_map_get(void *p, dir_walk_message_ty message, string_ty *,
     const struct stat *st)
 {
     time_map_list_ty *tlp;
@@ -156,7 +152,6 @@ time_map_get(void *p, dir_walk_message_ty message, string_ty *path,
     time_t          t;
     long            min;
     long            max;
-    long            j;
 
     //
     // If it's not a file, ignore it.
@@ -193,15 +188,23 @@ time_map_get(void *p, dir_walk_message_ty message, string_ty *path,
     //
     // This is a new time, insert it into the list sorted by time.
     //
+    assert(min >= 0);
     if (tlp->len >= tlp->max)
     {
-        tlp->max += 100;
-        tlp->list =
-            (time_map_ty *)
-            mem_change_size(tlp->list, tlp->max * sizeof(tlp->list[0]));
+        tlp->max = tlp->max * 2 + 16;
+	time_map_ty *new_list = new time_map_ty [tlp->max];
+	for (size_t k = 0; k < size_t(min); ++k)
+	    new_list[k] = tlp->list[k];
+	for (size_t j = min; j < tlp->len; ++j)
+	    new_list[j + 1] = tlp->list[j];
+	delete [] tlp->list;
+	tlp->list = new_list;
     }
-    for (j = tlp->len; j > min; --j)
-        tlp->list[j] = tlp->list[j - 1];
+    else
+    {
+	for (size_t j = tlp->len; j > size_t(min); --j)
+	    tlp->list[j] = tlp->list[j - 1];
+    }
     tlp->len++;
     tp = &tlp->list[min];
     tp->old = st->st_mtime;
@@ -326,6 +329,47 @@ commit_unlink_symlinks(string_ty *path)
 }
 
 
+static bool
+reasonable_number_of_test_correlations(change::pointer cp)
+{
+    size_t nsources = 0;
+    size_t ntests = 0;
+    for (size_t j = 0; ; ++j)
+    {
+	fstate_src_ty *src = change_file_nth(cp, j, view_path_first);
+	if (!src)
+	    break;
+	switch (src->action)
+	{
+	case file_action_create:
+	case file_action_modify:
+	case file_action_transparent:
+	case file_action_insulate:
+	    switch (src->usage)
+	    {
+	    case file_usage_build:
+	    case file_usage_config:
+		break;
+
+	    case file_usage_source:
+		++nsources;
+		break;
+
+	    case file_usage_test:
+	    case file_usage_manual_test:
+		++nsources;
+		break;
+	    }
+	    break;
+
+	case file_action_remove:
+	    break;
+	}
+    }
+    return (nsources * ntests <= 1000);
+}
+
+
 static void
 integrate_pass_main(void)
 {
@@ -344,17 +388,16 @@ integrate_pass_main(void)
     string_ty       *project_name;
     project_ty      *pp;
     long            change_number;
-    change_ty       *cp;
+    change::pointer cp;
     log_style_ty    log_style;
-    user_ty         *up;
-    user_ty         *devup;
-    user_ty         *pup;
+    user_ty::pointer up;
+    user_ty::pointer devup;
+    user_ty::pointer pup;
     int             nerr;
     int             diff_whine;
-    change_ty       *pcp;
+    change::pointer pcp;
     cstate_ty       *p_cstate_data;
     time_map_list_ty tml;
-    time_t          time_final;
 
     trace(("integrate_pass_main()\n{\n"));
     arglex();
@@ -400,7 +443,7 @@ integrate_pass_main(void)
 
         case arglex_token_wait:
         case arglex_token_wait_not:
-            user_lock_wait_argument(integrate_pass_usage);
+            user_ty::lock_wait_argument(integrate_pass_usage);
             break;
 
 	case arglex_token_reason:
@@ -426,7 +469,10 @@ integrate_pass_main(void)
     // locate project data
     //
     if (!project_name)
-        project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -434,14 +480,14 @@ integrate_pass_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
     pup = project_user(pp);
 
     //
     // locate change data
     //
     if (!change_number)
-        change_number = user_default_change(up);
+        change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -457,11 +503,11 @@ integrate_pass_main(void)
     //
     pp->pstate_lock_prepare();
     change_cstate_lock_prepare(cp);
-    user_ustate_lock_prepare(up);
+    up->ustate_lock_prepare();
     project_baseline_write_lock_prepare(pp);
     project_history_lock_prepare(pp);
     lock_take();
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
 
     //
     // It is an error if the change is not in the being_integrated state.
@@ -469,7 +515,7 @@ integrate_pass_main(void)
     //
     if (cstate_data->state != cstate_state_being_integrated)
         change_fatal(cp, 0, i18n("bad ip state"));
-    if (!str_equal(change_integrator_name(cp), user_name(up)))
+    if (nstring(change_integrator_name(cp)) != up->name())
         change_fatal(cp, 0, i18n("not integrator"));
     nerr = 0;
     youngest = 0;
@@ -521,6 +567,16 @@ integrate_pass_main(void)
     // which is run after the name is gone from the database.
     //
     env_set("AEGIS_INTEGRATION_DIRECTORY", id->str_text);
+
+    //
+    // Only update the test correlations if they are reasonable.
+    //
+    // The problem is that for a change with thousands of files and
+    // hundreds of tests, we add multi-megabytes of fundamentally
+    // useless test correlations.  For example, updating copyright
+    // notices after a corporate merger.
+    //
+    bool update_test_correlations = reasonable_number_of_test_correlations(cp);
 
     //
     // Walk the change files, making sure
@@ -872,7 +928,7 @@ integrate_pass_main(void)
                 fstate_src_architecture_times_ty *catp;
                 fstate_src_architecture_times_ty *patp;
                 fstate_src_architecture_times_ty **addr;
-                type_ty         *type_p;
+                meta_type *type_p = 0;
 
                 catp = c_src_data->architecture_times->list[k];
                 addr =
@@ -1002,7 +1058,7 @@ integrate_pass_main(void)
                     absfn = os_path_join(id, c_src_data->file_name);
                 project_become(pp);
                 ok = change_fingerprint_same(c_src_data->file_fp, absfn, 1);
-                project_become_undo();
+                project_become_undo(pp);
                 if (!ok)
                 {
                     sub_context_ty      *scp;
@@ -1065,111 +1121,110 @@ integrate_pass_main(void)
         //
         // update the test correlation
         //
-        switch (c_src_data->usage)
-        {
-        case file_usage_config:
-        case file_usage_build:
-        case file_usage_test:
-        case file_usage_manual_test:
-            break;
+	if (update_test_correlations)
+	{
+	    switch (c_src_data->usage)
+	    {
+	    case file_usage_config:
+	    case file_usage_build:
+	    case file_usage_test:
+	    case file_usage_manual_test:
+		break;
 
-        case file_usage_source:
-            if (change_was_a_branch(cp))
-            {
-                size_t          n;
+	    case file_usage_source:
+		if (change_was_a_branch(cp))
+		{
+		    size_t          n;
 
-                if (!c_src_data->test)
-                    n = 0;
-                else
-                    n = c_src_data->test->length;
-                for (k = 0; k < n; ++k)
-                {
-                    string_ty       *fn;
-                    size_t          m;
+		    if (!c_src_data->test)
+			n = 0;
+		    else
+			n = c_src_data->test->length;
+		    for (k = 0; k < n; ++k)
+		    {
+			string_ty       *fn;
+			size_t          m;
 
-                    if (!p_src_data->test)
-                    {
-                        p_src_data->test =
-                            (fstate_src_test_list_ty *)
-                            fstate_src_test_list_type.alloc();
-                    }
-                    fn = c_src_data->test->list[k];
-                    for (m = 0; m < p_src_data->test->length; ++m)
-                        if (str_equal(p_src_data->test->list[m], fn))
-                            break;
-                    if (m >= p_src_data->test->length)
-                    {
-                        string_ty       **addr_p;
-                        type_ty         *type_p;
+			if (!p_src_data->test)
+			{
+			    p_src_data->test =
+				(fstate_src_test_list_ty *)
+				fstate_src_test_list_type.alloc();
+			}
+			fn = c_src_data->test->list[k];
+			for (m = 0; m < p_src_data->test->length; ++m)
+			    if (str_equal(p_src_data->test->list[m], fn))
+				break;
+			if (m >= p_src_data->test->length)
+			{
+			    meta_type *type_p = 0;
+			    string_ty **addr_p =
+				(string_ty **)
+				fstate_src_test_list_type.list_parse
+				(
+				    p_src_data->test,
+				    &type_p
+				);
+			    assert(type_p==&string_type);
+			    *addr_p = str_copy(fn);
+			}
+		    }
+		}
+		else
+		{
+		    for (k = 0;; ++k)
+		    {
+			fstate_src_ty   *src2;
+			size_t          m;
 
-                        addr_p =
-                            (string_ty **)
-                            fstate_src_test_list_type.list_parse
-                            (
-                                p_src_data->test,
-                                &type_p
-                            );
-                        assert(type_p==&string_type);
-                        *addr_p = str_copy(fn);
-                    }
-                }
-            }
-            else
-            {
-                for (k = 0;; ++k)
-                {
-                    fstate_src_ty   *src2;
-                    size_t          m;
+			src2 = change_file_nth(cp, k, view_path_first);
+			if (!src2)
+			    break;
+			switch (src2->usage)
+			{
+			case file_usage_test:
+			case file_usage_manual_test:
+			    if (!p_src_data->test)
+				p_src_data->test =
+				    (fstate_src_test_list_ty *)
+				    fstate_src_test_list_type.alloc();
+			    for (m = 0; m < p_src_data->test->length; ++m)
+			    {
+				if
+				(
+				    str_equal
+				    (
+					p_src_data->test->list[m],
+					src2->file_name
+				    )
+				)
+				    break;
+			    }
+			    if (m >= p_src_data->test->length)
+			    {
+				meta_type *type_p = 0;
+				string_ty **addr_p =
+				    (string_ty **)
+				    fstate_src_test_list_type.list_parse
+				    (
+					p_src_data->test,
+					&type_p
+				    );
+				assert(type_p==&string_type);
+				*addr_p = str_copy(src2->file_name);
+			    }
+			    break;
 
-                    src2 = change_file_nth(cp, k, view_path_first);
-                    if (!src2)
-                        break;
-                    switch (src2->usage)
-                    {
-                    case file_usage_test:
-                    case file_usage_manual_test:
-                        if (!p_src_data->test)
-                            p_src_data->test =
-                                (fstate_src_test_list_ty *)
-                                fstate_src_test_list_type.alloc();
-                        for (m = 0; m < p_src_data->test->length; ++m)
-                        {
-                            if
-                            (
-                                str_equal
-                                (
-                                    p_src_data->test->list[m],
-                                    src2->file_name
-                                )
-                            )
-                                break;
-                        }
-                        if (m >= p_src_data->test->length)
-                        {
-                            string_ty       **addr_p;
-                            type_ty         *type_p;
-
-                            addr_p =
-                                (string_ty **)
-                                fstate_src_test_list_type.list_parse
-                                (
-                                    p_src_data->test,
-                                    &type_p
-                                );
-                            assert(type_p==&string_type);
-                            *addr_p = str_copy(src2->file_name);
-                        }
-                        break;
-
-                    case file_usage_source:
-                    case file_usage_config:
-                    case file_usage_build:
-                        break;
-                    }
-                }
-            }
-            break;
-        }
+			case file_usage_source:
+			case file_usage_config:
+			case file_usage_build:
+			    break;
+			}
+		    }
+		}
+		break;
+	    }
+	}
     }
 
     //
@@ -1265,7 +1320,7 @@ integrate_pass_main(void)
     // transfer the build and test times into the project,
     // making sure to leave holes for architecture exemptions
     //
-    p_cstate_data = change_cstate_get(pcp);
+    p_cstate_data = pcp->cstate_get();
     p_cstate_data->build_time = cstate_data->build_time;
     p_cstate_data->test_time = cstate_data->test_time;
     p_cstate_data->test_baseline_time = cstate_data->test_baseline_time;
@@ -1291,7 +1346,7 @@ integrate_pass_main(void)
         cstate_architecture_times_ty *catp;
         cstate_architecture_times_ty *patp;
         cstate_architecture_times_ty **addr;
-        type_ty         *type_p;
+        meta_type *type_p = 0;
 
         catp = cstate_data->architecture_times->list[j];
         addr =
@@ -1348,7 +1403,7 @@ integrate_pass_main(void)
     // Remove the change from the list of assigned changes in the user
     // change table (in the user row).
     //
-    user_own_remove(up, project_name_get(pp), change_number);
+    up->own_remove(pp, change_number);
 
     //
     // Add all of the generated (build) files in the project to this
@@ -1365,16 +1420,44 @@ integrate_pass_main(void)
         switch (p_src_data->usage)
         {
         case file_usage_build:
-            c_src_data =
-                change_file_find(cp, p_src_data->file_name, view_path_first);
+            //
+            // If the built project file is already present in the
+            // change set, don't do anything.
+            //
+            c_src_data = change_file_find(cp, p_src_data, view_path_first);
             if (c_src_data)
                 continue;
-            c_src_data = change_file_new(cp, p_src_data->file_name);
+
+            //
+            // If the file is unchanged, don't do anything.
+            //
+            {
+                nstring p1
+                    (
+                        os_path_join
+                        (
+                            change_integration_directory_get(cp, 1),
+                            p_src_data->file_name
+                        )
+                    );
+                assert(!p1.empty());
+                nstring p2(project_file_path(pp, p_src_data));
+                assert(!p2.empty());
+                user_ty::become scoped(up);
+                // make sure the file is there, ignore it if it's not
+                if (!os_exists(p1))
+                    continue;
+                if (!os_exists(p2))
+                    continue;
+                if (!files_are_different(p1, p2))
+                    continue;
+            }
+
+            c_src_data = cp->file_new(p_src_data);
             assert(p_src_data->edit);
             assert(p_src_data->edit->revision);
             c_src_data->edit_origin = history_version_copy(p_src_data->edit);
             c_src_data->action = file_action_modify;
-            change_file_copy_basic_attributes(c_src_data, p_src_data);
 
             //
             // Make sure the branch has them, too, otherwise the code will
@@ -1510,7 +1593,7 @@ integrate_pass_main(void)
             mtime = os_mtime_actual(absfn);
             p_src_data->executable = os_executable(absfn);
             c_src_data->executable = p_src_data->executable;
-            project_become_undo();
+            project_become_undo(pp);
 
             read_only_mode = 0444;
             if (c_src_data->executable)
@@ -1582,7 +1665,7 @@ integrate_pass_main(void)
                 assert(p_src_data->file_fp->oldest>0);
             }
             str_free(absfn);
-            project_become_undo();
+            project_become_undo(pp);
             break;
 
         case file_action_modify:
@@ -1617,7 +1700,7 @@ integrate_pass_main(void)
             mtime = os_mtime_actual(absfn);
             p_src_data->executable = os_executable(absfn);
             c_src_data->executable = p_src_data->executable;
-            project_become_undo();
+            project_become_undo(pp);
 
             read_only_mode = 0444;
             if (c_src_data->executable)
@@ -1687,7 +1770,7 @@ integrate_pass_main(void)
                 assert(p_src_data->file_fp->oldest>0);
             }
             str_free(absfn);
-            project_become_undo();
+            project_become_undo(pp);
             break;
 
         case file_action_remove:
@@ -1882,9 +1965,8 @@ integrate_pass_main(void)
         string_ty       *dir;
 
         dir = project_top_path_get(pp, 0);
-        project_become(pp);
+        user_ty::become scoped(pp->get_user());
         commit_unlink_symlinks(dir);
-        project_become_undo();
     }
 
     //
@@ -1903,8 +1985,11 @@ integrate_pass_main(void)
     commit_rename(pp->baseline_path_get(true), old_baseline);
     commit_rename(new_baseline, pp->baseline_path_get(true));
     commit_symlink(str_from_c("baseline"), new_baseline); // relative!
-    commit_rmdir_tree_bg(old_baseline);
-    project_become_undo();
+    if (os_unthrottle())
+        commit_rmdir_tree_errok(old_baseline);
+    else
+        commit_rmdir_tree_bg(old_baseline);
+    project_become_undo(pp);
     str_free(old_baseline);
 
     //
@@ -1912,17 +1997,20 @@ integrate_pass_main(void)
     //
     if (change_was_a_branch(cp))
     {
-        project_become(pp);
-        commit_rmdir_tree_bg(dev_dir);
-        project_become_undo();
+        user_ty::become scoped(pp->get_user());
+        if (os_unthrottle())
+            commit_rmdir_tree_errok(dev_dir);
+        else
+            commit_rmdir_tree_bg(dev_dir);
     }
     else
     {
-        devup = user_symbolic(pp, dev_name);
-        user_become(devup);
-        commit_rmdir_tree_bg(dev_dir);
-        user_become_undo();
-        user_free(devup);
+        devup = user_ty::create(nstring(dev_name));
+        user_ty::become scoped(devup);
+        if (os_unthrottle())
+            commit_rmdir_tree_errok(dev_dir);
+        else
+            commit_rmdir_tree_bg(dev_dir);
     }
     str_free(dev_dir);
 
@@ -1987,7 +2075,7 @@ integrate_pass_main(void)
         }
 #endif
         dir_walk(id, time_map_set, &tml);
-        project_become_undo();
+        project_become_undo(pp);
 
         //
         // Give the user a chance to re-sync any database associated
@@ -2008,25 +2096,34 @@ integrate_pass_main(void)
         break;
 
     case pconf_build_time_adjust_adjust_and_sleep:
-        time_final = now();
-        if (tml.len > 0 && time_final < tml.list[tml.len - 1].becomes)
+        if (tml.len > 0)
         {
-            long            nsec;
-            sub_context_ty  *scp;
-
-            nsec = tml.list[tml.len - 1].becomes - time_final;
-            scp = sub_context_new();
-            sub_var_set_long(scp, "Number", nsec);
-            error_intl(scp, i18n("throttling $number seconds"));
-            sub_context_delete(scp);
-            os_interrupt_register();
-            sleep(nsec);
-            if (os_interrupt_has_occurred())
+            for (;;)
             {
                 now_clear();
-                time_final = now();
-                if (time_final < tml.list[tml.len - 1].becomes)
-                    goto impatient;
+                time_t time_final = now();
+
+                //
+                // We have to add a second here because if there is
+                // a script which is blocked waiting on the baseline
+                // lock, it is possible for the aeipass to complete and
+                // the script to copy files (etc) and build ALL WITHIN
+                // THE ONE SECOND.  This means that time stamps for
+                // that second can be broken.  This is particularly
+                // evident in Aegis' own test scripts, however the
+                // problem is more general.  The solution is to add a
+                // single second, so that any post-aeipass activity is
+                // guaranteed to be in a later second than the baseline
+                // file stamps.
+                //
+                long nsec = tml.list[tml.len - 1].becomes - time_final + 1;
+                if (nsec <= 0)
+                    break;
+
+                sub_context_ty sc;
+                sc.var_set_long("Number", nsec);
+                sc.error_intl(i18n("throttling $number seconds"));
+                sleep(nsec);
             }
         }
         break;
@@ -2035,19 +2132,23 @@ integrate_pass_main(void)
         //
         // warn the user if some files have been timed into the future
         //
-        time_final = now();
-        if (tml.len > 0 && time_final < tml.list[tml.len - 1].becomes)
+        if (tml.len > 0)
         {
-            sub_context_ty      *scp;
-            long                nsec;
+            time_t time_final = now();
 
-            impatient:
-            scp = sub_context_new();
-            nsec = tml.list[tml.len - 1].becomes - time_final;
-            sub_var_set_long(scp, "Number", nsec);
-            sub_var_optional(scp, "Number");
-            error_intl(scp, i18n("warning: file times in future"));
-            sub_context_delete(scp);
+            //
+            // We don't add one here (see above comment) because it is a
+            // statement about the time stamps, not a calculation of how
+            // long to sleep.
+            //
+            long nsec = tml.list[tml.len - 1].becomes - time_final;
+            if (nsec > 0)
+            {
+                sub_context_ty sc;
+                sc.var_set_long("Number", nsec);
+                sc.var_optional("Number");
+                sc.error_intl(i18n("warning: file times in future"));
+            }
         }
         break;
     }
@@ -2058,7 +2159,7 @@ integrate_pass_main(void)
     // Release advisory locks.
     //
     change_cstate_write(cp);
-    user_ustate_write(up);
+    up->ustate_write();
     pp->pstate_write();
     change_pfs_write(cp); // must be after project_pstate_write
     change_verbose(cp, 0, i18n("discard old directories"));
@@ -2071,7 +2172,7 @@ integrate_pass_main(void)
     // Note that we set the AEGIS_INTEGRATION_DIRECTORY environment
     // variable further back in the code.
     //
-    change_run_integrate_pass_notify_command(cp);
+    cp->run_integrate_pass_notify_command();
 
     //
     // Update the RSS feed file if necessary.
@@ -2083,9 +2184,7 @@ integrate_pass_main(void)
     //
     change_verbose(cp, 0, i18n("integrate pass complete"));
     change_free(cp);
-    user_free(pup);
     project_free(pp);
-    user_free(up);
 
     //
     // Give the tests time to finish removing the old baseline and
@@ -2101,8 +2200,8 @@ integrate_pass(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-        {arglex_token_help, integrate_pass_help, },
-        {arglex_token_list, integrate_pass_list, },
+        { arglex_token_help, integrate_pass_help, 0 },
+        { arglex_token_list, integrate_pass_list, 0 },
     };
 
     trace(("integrate_pass()\n{\n"));

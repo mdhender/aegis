@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -35,8 +34,8 @@ symtab_ty::dump(const char *caption)
 	{
 	    error_raw
 	    (
-	       	"key = \"%s\", data = %08lX",
-	       	p->key->str_text,
+	       	"key = %s, data = %08lX",
+	       	p->key.quote_c().c_str(),
 	       	(long)p->data
 	    );
 	}

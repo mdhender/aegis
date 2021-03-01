@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2005 Peter Miller.
-//	All rights reserved.
+//	Copyright (C) 1994, 2005-2007 Peter Miller.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -26,22 +25,22 @@
 #include <fmtgen/type.h>
 
 /**
-  * The type_time_ty class is used to represent the type of a field
+  * The type_time class is used to represent the type of a field
   * which has time_t type.
   */
-class type_time_ty:
-    public type_ty
+class type_time:
+    public type
 {
 public:
     /**
       * The destructor.
       */
-    virtual ~type_time_ty();
+    virtual ~type_time();
 
     /**
       * The default constructor.
       */
-    type_time_ty();
+    type_time();
 
     // See base class for documentation.
     void gen_include_declarator(const nstring &variable_name, bool is_a_list)
@@ -75,12 +74,12 @@ private:
     /**
       * The copy constructor.  Do not use.
       */
-    type_time_ty(const type_time_ty &);
+    type_time(const type_time &);
 
     /**
       * The assignment operator.  Do not use.
       */
-    type_time_ty &operator=(const type_time_ty &);
+    type_time &operator=(const type_time &);
 };
 
 #endif // FMTGEN_TYPE_TIME_H

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2005, 2006 Peter Miller.
-//	All rights reserved.
+//	Copyright (C) 1994, 2005-2007 Peter Miller.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aegis/aer/func/count.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEGIS_AER_FUNC_COUNT_H
@@ -25,6 +22,58 @@
 
 #include <libaegis/aer/func.h>
 
-extern rpt_func_ty rpt_func_count;
+
+/**
+  * The rpt_func_count class is used to represent the count function,
+  * callable from within the report generator.
+  */
+class rpt_func_count:
+    public rpt_func
+{
+public:
+    /**
+      * The destructor.
+      */
+    virtual ~rpt_func_count();
+
+private:
+    /**
+      * The constructor.  It is private on purpose, use the "create"
+      * class method instead.
+      */
+    rpt_func_count();
+
+public:
+    /**
+      * The create class method is used to create a new dynamically
+      * allocated instance of this class.
+      */
+    static rpt_func::pointer create();
+
+protected:
+    // See base class for documentation.
+    const char *name() const;
+
+    // See base class for documentation.
+    bool optimizable() const;
+
+    // See base class for documentation.
+    bool verify(const rpt_expr::pointer &ep) const;
+
+    // See base class for documentation.
+    rpt_value::pointer run(const rpt_expr::pointer &ep, size_t argc,
+        rpt_value::pointer *argv) const;
+
+private:
+    /**
+      * The copy constructor.  Do not use.
+      */
+    rpt_func_count(const rpt_func_count &);
+
+    /**
+      * The assignment operator.  Do not use.
+      */
+    rpt_func_count &operator=(const rpt_func_count &);
+};
 
 #endif // AEGIS_AER_FUNC_COUNT_H

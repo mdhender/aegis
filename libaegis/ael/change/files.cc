@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
+//	Copyright (C) 2006 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate filess
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/ael/attribu_list.h>
@@ -53,69 +51,86 @@ void
 list_change_files(string_ty *project_name, long change_number,
     string_list_ty *args)
 {
-    project_ty	    *pp;
-    change_ty	    *cp;
-    user_ty	    *up;
-    output_ty	    *usage_col =    0;
-    output_ty	    *action_col =   0;
-    output_ty	    *edit_col =	    0;
-    output_ty	    *file_name_col = 0;
-    int		    j;
-    string_ty	    *line1;
-    int		    left;
-    col_ty	    *colp;
-    symtab_ty       *attr_col_stp = 0;
-
     //
     // locate project data
     //
     trace(("list_change_files()\n{\n"));
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     else
 	project_name = str_copy(project_name);
-    pp = project_alloc(project_name);
+    project_ty *pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
 
     //
     // locate user data
     //
-    up = user_executing(pp);
+    user_ty::pointer up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
-    cp = change_alloc(pp, change_number);
+	change_number = up->default_change(pp);
+    change::pointer cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
+
+    //
+    // List the files.
+    //
+    list_change_files(cp, args);
+}
+
+
+void
+list_change_files(change::pointer cp, string_list_ty *)
+{
+    output_ty *usage_col = 0;
+    output_ty *action_col = 0;
+    output_ty *edit_col = 0;
+    output_ty *file_name_col = 0;
+    int j;
+    int left;
+    col *colp;
+    symtab_ty *attr_col_stp = 0;
+
+    project_ty *pp = cp->pp;
 
     //
     // create the columns
     //
-    colp = col_open((string_ty *)0);
-    line1 =
-	str_format
+    colp = col::open((string_ty *)0);
+    string_ty *line1 =
 	(
-	    "Project \"%s\"  Change %ld",
-	    project_name_get(pp)->str_text,
-	    magic_zero_decode(change_number)
+	    cp->number == TRUNK_CHANGE_NUMBER
+	?
+	    str_format("Project \"%s\", Trunk", pp->name_get()->str_text)
+	:
+	    str_format
+	    (
+		"Project \"%s\"  Change %ld",
+		pp->name_get()->str_text,
+		cp->number
+	    )
 	);
-    col_title(colp, line1->str_text, "List of Change's Files");
+    colp->title(line1->str_text, "List of Change's Files");
     str_free(line1);
 
     left = 0;
     if (!option_terse_get())
     {
-	usage_col = col_create(colp, left, left + USAGE_WIDTH, "Type\n-------");
+	usage_col = colp->create(left, left + USAGE_WIDTH, "Type\n-------");
 	left += USAGE_WIDTH + 1;
 
 	action_col =
-	    col_create(colp, left, left + ACTION_WIDTH, "Action\n--------");
+	    colp->create(left, left + ACTION_WIDTH, "Action\n--------");
 	left += ACTION_WIDTH + 1;
 
-	edit_col = col_create(colp, left, left + EDIT_WIDTH, "Edit\n-------");
+	edit_col = colp->create(left, left + EDIT_WIDTH, "Edit\n-------");
 	left += EDIT_WIDTH + 1;
 
 	if (option_verbose_get())
@@ -154,9 +169,8 @@ list_change_files(string_ty *project_name, long change_number,
 
 				s = ael_build_header(ap->name);
 				op =
-				    col_create
+				    colp->create
 				    (
-					colp,
 					left,
 					left + ATTR_WIDTH,
 					s->str_text
@@ -172,7 +186,7 @@ list_change_files(string_ty *project_name, long change_number,
 	    }
 	}
     }
-    file_name_col = col_create(colp, left, 0, "File Name\n-----------");
+    file_name_col = colp->create(left, 0, "File Name\n-----------");
 
     //
     // list the change's files
@@ -212,14 +226,13 @@ list_change_files(string_ty *project_name, long change_number,
             // files which exist simply to host the locked_by field.
 	    // But if the file has been removed, toss it.
             //
-	    psrc_data =
-		project_file_find(pp, src_data->file_name, view_path_none);
+	    psrc_data = project_file_find(pp, src_data, view_path_none);
 	    if (psrc_data && psrc_data->action == file_action_remove)
 		psrc_data = 0;
 
 	    if
 	    (
-		change_is_being_developed(cp)
+		cp->is_being_developed()
 	    &&
 		!change_file_up_to_date(pp, src_data)
 	    )
@@ -255,13 +268,13 @@ list_change_files(string_ty *project_name, long change_number,
 	file_name_col->fputs(src_data->file_name);
 	if
 	(
-	    change_is_being_developed(cp)
+	    cp->is_being_developed()
 	&&
 	    psrc_data
 	&&
 	    psrc_data->locked_by
 	&&
-	    psrc_data->locked_by != change_number
+	    psrc_data->locked_by != cp->number
 	)
 	{
 	    file_name_col->end_of_line();
@@ -348,7 +361,7 @@ list_change_files(string_ty *project_name, long change_number,
 		}
 	    }
 	}
-	col_eoln(colp);
+	colp->eoln();
     }
 
     //
@@ -356,9 +369,8 @@ list_change_files(string_ty *project_name, long change_number,
     //
     if (attr_col_stp)
 	delete attr_col_stp;
-    col_close(colp);
+    delete colp;
     project_free(pp);
     change_free(cp);
-    user_free(up);
     trace(("}\n"));
 }

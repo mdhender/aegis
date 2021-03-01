@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
+//	Copyright (C) 2006 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate detailss
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/ael/change/details.h>
@@ -25,6 +23,7 @@
 #include <libaegis/ael/formeditnum.h>
 #include <libaegis/aer/func/now.h>
 #include <libaegis/change.h>
+#include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
 #include <libaegis/col.h>
 #include <common/error.h> // for assert
@@ -65,24 +64,24 @@ list_change_details_columns::~list_change_details_columns()
     delete body_col;
     body_col = 0;
 
-    col_close(colp);
+    delete colp;
 }
 
 
 list_change_details_columns::list_change_details_columns()
 {
-    colp = col_open((string_ty *)0);
+    colp = col::open((string_ty *)0);
 
-    head_col = col_create(colp, 0, 0, (const char *)0);
-    body_col = col_create(colp, INDENT_WIDTH, 0, (const char *)0);
+    head_col = colp->create(0, 0, (const char *)0);
+    body_col = colp->create(INDENT_WIDTH, 0, (const char *)0);
 }
 
 
 void
-list_change_details_columns::list(change_ty *cp, bool recurse)
+list_change_details_columns::list(change::pointer cp, bool recurse)
 {
     trace(("list_change_details_columns::list()\n{\n"));
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
 
     //
     // Set the page heading.
@@ -97,7 +96,7 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 		    "Project \"%s\"",
 		    project_name_get(cp->pp)->str_text
 		);
-	    col_title(colp, line1->str_text, "Project Details");
+	    colp->title(line1->str_text, "Project Details");
 	    str_free(line1);
 	}
 	else
@@ -109,7 +108,7 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 		    project_name_get(cp->pp)->str_text,
 		    magic_zero_decode(cp->number)
 		);
-	    col_title(colp, line1->str_text, "Branch Details");
+	    colp->title(line1->str_text, "Branch Details");
 	    str_free(line1);
 	}
     }
@@ -122,7 +121,7 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 		project_name_get(cp->pp)->str_text,
 		magic_zero_decode(cp->number)
 	    );
-	col_title(colp, line1->str_text, "Change Details");
+	colp->title(line1->str_text, "Change Details");
 	str_free(line1);
     }
 
@@ -130,7 +129,7 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
     // Identification.
     //
     head_col->fputs("NAME");
-    col_eoln(colp);
+    colp->eoln();
     body_col->fprintf("Project \"%s\"", project_name_get(cp->pp)->str_text);
     if (cstate_data->delta_number)
 	body_col->fprintf(", Delta %ld", cstate_data->delta_number);
@@ -150,23 +149,23 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
     }
     else
 	body_col->fputc('.');
-    col_eoln(colp);
+    colp->eoln();
 
     //
     // synopsis
     //
-    col_need(colp, 5);
+    colp->need(5);
     head_col->fputs("SUMMARY");
-    col_eoln(colp);
+    colp->eoln();
     body_col->fputs(cstate_data->brief_description);
-    col_eoln(colp);
+    colp->eoln();
 
     //
     // description
     //
-    col_need(colp, 5);
+    colp->need(5);
     head_col->fputs("DESCRIPTION");
-    col_eoln(colp);
+    colp->eoln();
     body_col->fputs(cstate_data->description);
     if (cstate_data->test_exempt || cstate_data->test_baseline_exempt)
     {
@@ -192,26 +191,26 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 	    );
 	}
     }
-    col_eoln(colp);
+    colp->eoln();
 
     //
     // List attributes
     //
     if (cstate_data->attribute && cstate_data->attribute->length)
     {
-	col_need(colp, 5);
+	colp->need(5);
 	head_col->fputs("ATTRIBUTES");
-	col_eoln(colp);
+	colp->eoln();
 
 	//
 	// create the columns
 	//
 	int left = INDENT_WIDTH;
 	output_ty *name_col =
-	    col_create(colp, left, left + ATTR_WIDTH, "Name\n-------");
+	    colp->create(left, left + ATTR_WIDTH, "Name\n-------");
 	left += ATTR_WIDTH + 1;
 	output_ty *value_col =
-	    col_create(colp, left, 0, "Value\n-------");
+	    colp->create(left, 0, "Value\n-------");
 
 	//
 	// list the attributes
@@ -224,7 +223,7 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 		name_col->fputs(ap->name);
 	    if (ap->value)
 		value_col->fputs(ap->value);
-	    col_eoln(colp);
+	    colp->eoln();
 	}
 	delete name_col;
 	delete value_col;
@@ -235,22 +234,22 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
     //
     if (cstate_data->branch && (recurse || option_verbose_get()))
     {
-	col_need(colp, 5);
+	colp->need(5);
 	head_col->fputs("BRANCH CONTENTS");
-	col_eoln(colp);
+	colp->eoln();
 
 	//
 	// create the columns
 	//
 	int left = INDENT_WIDTH;
 	output_ty *number_col =
-	    col_create(colp, left, left + CHANGE_WIDTH, "Change\n-------");
+	    colp->create(left, left + CHANGE_WIDTH, "Change\n-------");
 	left += CHANGE_WIDTH + 1;
 	output_ty *state_col =
-	    col_create(colp, left, left + STATE_WIDTH, "State\n-------");
+	    colp->create(left, left + STATE_WIDTH, "State\n-------");
 	left += STATE_WIDTH + 1;
 	output_ty *description_col =
-	    col_create(colp, left, 0, "Description\n-------------");
+	    colp->create(left, 0, "Description\n-------------");
 
 	//
 	// list the sub changes
@@ -261,17 +260,17 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
             long sub_cn;
 	    if (!project_change_nth(sub_pp, j, &sub_cn))
 		break;
-	    change_ty *sub_cp = change_alloc(sub_pp, sub_cn);
+	    change::pointer sub_cp = change_alloc(sub_pp, sub_cn);
 	    change_bind_existing(sub_cp);
 
-	    cstate_ty *sub_cstate_data = change_cstate_get(sub_cp);
+	    cstate_ty *sub_cstate_data = sub_cp->cstate_get();
 	    number_col->fprintf("%4ld", magic_zero_decode(sub_cn));
 	    state_col->fputs(cstate_state_ename(sub_cstate_data->state));
 	    if (cstate_data->brief_description)
 	    {
 		description_col->fputs(sub_cstate_data->brief_description);
 	    }
-	    col_eoln(colp);
+	    colp->eoln();
 	    change_free(sub_cp);
 	}
 	// project_free(sub_pp);
@@ -279,32 +278,20 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 	delete state_col;
 	delete description_col;
     }
-    col_eoln(colp);
+    colp->eoln();
 
     //
     // architecture
     //
-    col_need(colp, 7);
+    colp->need(7);
     head_col->fprintf
     (
 	"ARCHITECTURE%s",
 	(cstate_data->architecture->length == 1 ? "" : "S")
     );
-    col_eoln(colp);
+    colp->eoln();
     body_col->fputs("This change must ");
-    //
-    // Below We do not use the change_build_required function because
-    // it mandates the presence of the config file, and this does not
-    // happen if the change is a branch without completed changes.
-    //
-    pconf_ty *pconf_data = change_pconf_get(cp, 0);
-    bool build_required = false;
-    if (pconf_data)
-    {
-        static nstring exit_0 = "exit 0";
-        if (nstring(pconf_data->development_build_command) != exit_0)
-            build_required = true;
-    }
+    bool build_required = change_build_required(cp, !change_was_a_branch(cp));
     if (build_required)
 	body_col->fputs("build and ");
     body_col->fputs("test in");
@@ -328,7 +315,7 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 	" architecture%s.",
 	(cstate_data->architecture->length == 1 ? "" : "s")
     );
-    col_eoln(colp);
+    colp->eoln();
 
     if
     (
@@ -338,25 +325,25 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
     )
     {
 	string_list_ty	done;
-	col_need(colp, 5);
+	colp->need(5);
 	int left = INDENT_WIDTH;
 	output_ty *arch_col =
-	    col_create(colp, left, left + ARCH_WIDTH, "arch.\n--------");
+	    colp->create(left, left + ARCH_WIDTH, "arch.\n--------");
 	left += ARCH_WIDTH + 1;
 	output_ty *host_col =
-	    col_create(colp, left, left + HOST_WIDTH, "host\n--------");
+	    colp->create(left, left + HOST_WIDTH, "host\n--------");
 	left += HOST_WIDTH + 1;
 	output_ty *build_col =
-	    col_create(colp, left, left + TIME_WIDTH, "aeb\n---------");
+	    colp->create(left, left + TIME_WIDTH, "aeb\n---------");
 	left += TIME_WIDTH + 1;
 	output_ty *test_col =
-	    col_create(colp, left, left + TIME_WIDTH, "aet\n---------");
+	    colp->create(left, left + TIME_WIDTH, "aet\n---------");
 	left += TIME_WIDTH + 1;
 	output_ty *test_bl_col =
-	    col_create(colp, left, left + TIME_WIDTH, "aet -bl\n---------");
+	    colp->create(left, left + TIME_WIDTH, "aet -bl\n---------");
 	left += TIME_WIDTH + 1;
 	output_ty *test_reg_col =
-	    col_create(colp, left, left + TIME_WIDTH, "aet -reg\n---------");
+	    colp->create(left, left + TIME_WIDTH, "aet -reg\n---------");
 
 	for (size_t j = 0; j < cstate_data->architecture->length; ++j)
 	{
@@ -384,7 +371,7 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 		tp->regression_test_time,
 		cstate_data->regression_test_exempt
 	    );
-	    col_eoln(colp);
+	    colp->eoln();
 	}
 	for (size_t k = 0; k < cstate_data->architecture_times->length; ++k)
 	{
@@ -401,7 +388,7 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 	    showtime(test_col, tp->test_time, true);
 	    showtime(test_bl_col, tp->test_baseline_time, true);
 	    showtime(test_reg_col, tp->regression_test_time, true);
-	    col_eoln(colp);
+	    colp->eoln();
 	}
 
 	if (cstate_data->architecture->length > 1)
@@ -415,7 +402,7 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
     	    (
 		build_col,
 		cstate_data->build_time,
-		!change_build_required(cp)
+		!build_required
 	    );
 	    showtime
 	    (
@@ -435,7 +422,7 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 		cstate_data->regression_test_time,
 		cstate_data->regression_test_exempt
 	    );
-	    col_eoln(colp);
+	    colp->eoln();
 	}
 
 	delete arch_col;
@@ -449,52 +436,52 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
     //
     // cause
     //
-    col_need(colp, 5);
+    colp->need(5);
     head_col->fputs("CAUSE");
-    col_eoln(colp);
+    colp->eoln();
     body_col->fprintf
     (
 	"This change was caused by %s.",
 	change_cause_ename(cstate_data->cause)
     );
-    col_eoln(colp);
+    colp->eoln();
 
     //
     // state
     //
     if (cstate_data->state != cstate_state_completed)
     {
-	col_need(colp, 5);
+	colp->need(5);
 	head_col->fputs("STATE");
-	col_eoln(colp);
+	colp->eoln();
 	body_col->fprintf
 	(
 	    "This change is in the '%s' state.",
 	    cstate_state_ename(cstate_data->state)
 	);
-	col_eoln(colp);
+	colp->eoln();
     }
 
     //
     // files
     //
-    col_need(colp, 5);
+    colp->need(5);
     head_col->fputs("FILES");
-    col_eoln(colp);
+    colp->eoln();
     if (change_file_nth(cp, (size_t)0, view_path_first))
     {
 	int left = INDENT_WIDTH;
 	output_ty *usage_col =
-	    col_create(colp, left, left + USAGE_WIDTH, "Type\n-------");
+	    colp->create(left, left + USAGE_WIDTH, "Type\n-------");
 	left += USAGE_WIDTH + 1;
 	output_ty *action_col =
-	    col_create(colp, left, left + ACTION_WIDTH, "Action\n--------");
+	    colp->create(left, left + ACTION_WIDTH, "Action\n--------");
 	left += ACTION_WIDTH + 1;
 	output_ty *edit_col =
-	    col_create(colp, left, left + EDIT_WIDTH, "Edit\n-------");
+	    colp->create(left, left + EDIT_WIDTH, "Edit\n-------");
 	left += EDIT_WIDTH + 1;
 	output_ty *file_name_col =
-	    col_create(colp, left, 0, "File Name\n-----------");
+	    colp->create(left, 0, "File Name\n-----------");
 
 	for (size_t j = 0;; ++j)
 	{
@@ -521,12 +508,7 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
                 // the version "originally" copied.
 		//
 		psrc_data =
-		    project_file_find
-		    (
-			cp->pp,
-			src_data->file_name,
-			view_path_extreme
-		    );
+		    project_file_find (cp->pp, src_data, view_path_extreme);
 		if (psrc_data && psrc_data->edit)
 		{
 		    assert(psrc_data->edit->revision);
@@ -573,7 +555,7 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 		    break;
 		}
 	    }
-	    col_eoln(colp);
+	    colp->eoln();
 	}
 	delete usage_col;
 	delete action_col;
@@ -583,28 +565,29 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
     else
     {
 	body_col->fputs("This change has no files.");
-	col_eoln(colp);
+	colp->eoln();
     }
 
     //
     // history
     //
-    col_need(colp, 5);
+    colp->need(5);
     head_col->fputs("HISTORY");
-    col_eoln(colp);
+    colp->eoln();
     if (option_verbose_get())
     {
 	int left = INDENT_WIDTH;
 	output_ty *what_col =
-	    col_create(colp, left, left + WHAT_WIDTH, "What\n------");
+	    colp->create(left, left + WHAT_WIDTH, "What\n------");
 	left += WHAT_WIDTH + 1;
 	output_ty *when_col =
-	    col_create(colp, left, left + WHEN_WIDTH, "When\n------");
+	    colp->create(left, left + WHEN_WIDTH, "When\n------");
 	left += WHEN_WIDTH + 1;
 	output_ty *who_col =
-	    col_create(colp, left, left + WHO_WIDTH, "Who\n-----");
+	    colp->create(left, left + WHO_WIDTH, "Who\n-----");
 	left += WHO_WIDTH + 1;
-	output_ty *why_col = col_create(colp, left, 0, "Comment\n---------");
+	output_ty *why_col = colp->create(left, 0, "Comment\n---------");
+	output_ty *wide_why_col = colp->create(12, 0, 0);
 
 	for (size_t j = 0; j < cstate_data->history->length; ++j)
 	{
@@ -616,7 +599,7 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 	    t = history_data->when;
 	    when_col->fputs(ctime(&t));
 	    who_col->fputs(history_data->who);
-	    if (history_data->why)
+	    if (history_data->why && history_data->why->str_length <= 40)
 		why_col->fputs(history_data->why);
 	    if (history_data->what != cstate_history_what_integrate_pass)
 	    {
@@ -636,12 +619,18 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 		    );
 		}
 	    }
-	    col_eoln(colp);
+	    colp->eoln();
+	    if (history_data->why && history_data->why->str_length > 40)
+	    {
+		wide_why_col->fputs(history_data->why);
+		colp->eoln();
+	    }
 	}
 	delete what_col;
 	delete when_col;
 	delete who_col;
 	delete why_col;
+	delete wide_why_col;
     }
     else
     {
@@ -669,7 +658,7 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 		change_integrator_name(cp)->str_text
 	    );
 	}
-	col_eoln(colp);
+	colp->eoln();
     }
 
     //
@@ -684,9 +673,9 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 	    if (!project_change_nth(sub_pp, j, &sub_cn))
 		break;
 
-	    change_ty *sub_cp = change_alloc(sub_pp, sub_cn);
+	    change::pointer sub_cp = change_alloc(sub_pp, sub_cn);
 	    change_bind_existing(sub_cp);
-	    col_eject(colp);
+	    colp->eject();
 	    list(sub_cp, true);
 	    change_free(sub_cp);
 	}
@@ -698,18 +687,18 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 
 void
 list_change_details(string_ty *project_name, long change_number,
-    string_list_ty *args)
+    string_list_ty *)
 {
     project_ty	    *pp;
-    change_ty	    *cp;
-    user_ty	    *up;
+    change::pointer cp;
+    user_ty::pointer up;
 
     //
     // locate project data
     //
     trace(("list_change_details()\n{\n"));
     if (!project_name)
-	project_name = user_default_project();
+	project_name = str_copy(user_ty::create()->default_project().get_ref());
     else
 	project_name = str_copy(project_name);
     pp = project_alloc(project_name);
@@ -719,13 +708,13 @@ list_change_details(string_ty *project_name, long change_number,
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -740,6 +729,5 @@ list_change_details(string_ty *project_name, long change_number,
     //
     change_free(cp);
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }

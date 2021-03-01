@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2000, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate gets
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change.h>
@@ -29,7 +26,7 @@
 
 
 string_ty *
-change_top_path_get(change_ty *cp, int resolve)
+change_top_path_get(change::pointer cp, int resolve)
 {
 	string_ty	*result;
 
@@ -47,7 +44,7 @@ change_top_path_get(change_ty *cp, int resolve)
 		cstate_ty       *cstate_data;
 		string_ty	*dir;
 
-		cstate_data = change_cstate_get(cp);
+		cstate_data = cp->cstate_get();
 		dir = cstate_data->development_directory;
 		if (!dir)
 			change_fatal(cp, 0, i18n("no dev dir"));
@@ -72,7 +69,7 @@ change_top_path_get(change_ty *cp, int resolve)
 					cp->top_path_unresolved,
 					1
 				);
-			change_become_undo();
+			change_become_undo(cp);
 		}
 		result = cp->top_path_resolved;
 	}

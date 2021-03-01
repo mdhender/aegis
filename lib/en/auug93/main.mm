@@ -1,8 +1,7 @@
 .\"
 .\" The is the source of the paper
 .\"	Aegis - A Project Change Supervisor
-.\"	by Peter Miller
-.\"	of the Australian Geological Survey Organisation (AGSO)
+.\"	Copyright (C) 1993, 2006 Peter Miller
 .\"
 .\" This paper appeared in the proceedings of the AUUG'93 conference.
 .\"
@@ -880,8 +879,7 @@ File:;aegis.\*(v).ps.gz;the User Guide
 .P
 Aegis is distributed under the terms and
 conditions of the GNU General Public License.
-Aegis is Copyright \(co \*(Y) Peter Miller;
-All rights reserved.
+Aegis is Copyright \(co \*(Y) Peter Miller
 .P
 This paper is
 Copyright \(co 1993 Australian Geological Survey Organisation.

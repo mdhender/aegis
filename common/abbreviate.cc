@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1998, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 1998, 2002-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -25,7 +24,7 @@
 
 #include <common/abbreviate.h>
 #include <common/error.h>	// for assert
-#include <common/mem.h>
+#include <common/stracc.h>
 #include <common/str_list.h>
 
 
@@ -39,8 +38,6 @@ abbreviate(string_ty *s, size_t max, int keep_last_dot)
     int             j;		// must be signed
     size_t          k;
     size_t          word_max;
-    static char     *buffer;
-    static size_t   buffer_max;
 
     //
     // trivial sanity check
@@ -205,20 +202,16 @@ abbreviate(string_ty *s, size_t max, int keep_last_dot)
     }
 
   reassemble:
-    if (total > buffer_max)
-    {
-	buffer_max = total;
-	buffer = (char *)mem_change_size(buffer, buffer_max);
-    }
-    cp = buffer;
+    static stracc_t ac;
+    ac.clear();
     for (k = 0; k < punct.nstrings; ++k)
     {
-	memcpy(cp, punct.string[k]->str_text, punct.string[k]->str_length);
-	cp += punct.string[k]->str_length;
-	memcpy(cp, word.string[k]->str_text, word.string[k]->str_length);
-	cp += word.string[k]->str_length;
+	string_ty *p = punct.string[k];
+	ac.push_back(p->str_text, p->str_length);
+	p = word.string[k];
+	ac.push_back(p->str_text, p->str_length);
     }
-    return str_n_from_c(buffer, total);
+    return ac.mkstr();
 }
 
 
@@ -232,8 +225,14 @@ nuke_unprintable(string_ty *s)
 
     if (s->str_length > buffer_max)
     {
-	buffer_max = s->str_length;
-	buffer = (char *)mem_change_size(buffer, buffer_max);
+	for (;;)
+	{
+	    buffer_max = buffer_max * 2 + 16;
+	    if (s->str_length <= buffer_max)
+		break;
+	}
+	delete [] buffer;
+	buffer = new char [buffer_max];
     }
     ip = s->str_text;
     op = buffer;

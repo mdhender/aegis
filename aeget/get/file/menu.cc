@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate menus
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -36,7 +33,7 @@
 
 
 void
-get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
+get_file_menu(change::pointer cp, string_ty *filename, string_list_ty *)
 {
     //
     // Emit the page title.
@@ -207,7 +204,7 @@ get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	switch (src->action)
 	{
 	case file_action_create:
-	    if (!change_is_completed(cp))
+	    if (!cp->is_completed())
 	    {
 		printf("<p><dt>Baseline<dd>\n");
 		printf("The file does not yet exist in the baseline.\n");
@@ -236,7 +233,7 @@ get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	}
     }
 
-    if (cp->bogus || change_is_completed(cp))
+    if (cp->bogus || cp->is_completed())
     {
 	printf("<p><dt>");
 	emit_file_href(cp, filename, "diff+detailed");

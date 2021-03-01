@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995, 1996, 1998, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1995, 1996, 1998, 1999, 2002-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 //
 // MANIFEST: wide string manipulation functions
@@ -40,17 +39,14 @@
 #include <common/language.h>
 #include <common/mem.h>
 #include <common/str.h>
+#include <common/trace.h>
 #include <common/wstr.h>
 
 
 static wstring_ty **hash_table;
 static wstr_hash_ty hash_modulus;
-static wstr_hash_ty hash_cutover;
-static wstr_hash_ty hash_cutover_mask;
-static wstr_hash_ty hash_cutover_split_mask;
-static wstr_hash_ty hash_split;
+static wstr_hash_ty hash_mask;
 static wstr_hash_ty hash_load;
-static int      changed;
 
 #define MAX_HASH_LEN 20
 
@@ -115,21 +111,23 @@ hash_generate(const wchar_t *s, size_t n)
 static void
 wstr_initialize(void)
 {
-    wstr_hash_ty    j;
-
     if (hash_modulus)
 	return;
+    trace(("%s\n", __PRETTY_FUNCTION__));
     hash_modulus = 1 << 8;	// MUST be a power of 2
-    hash_cutover = hash_modulus;
-    hash_split = hash_modulus - hash_cutover;
-    hash_cutover_mask = hash_cutover - 1;
-    hash_cutover_split_mask = (hash_cutover * 2) - 1;
+    hash_mask = hash_modulus - 1;
     hash_load = 0;
-    hash_table = (wstring_ty **)mem_alloc(hash_modulus * sizeof(wstring_ty *));
-    for (j = 0; j < hash_modulus; ++j)
+    hash_table = new wstring_ty * [hash_modulus];
+    for (wstr_hash_ty j = 0; j < hash_modulus; ++j)
 	hash_table[j] = 0;
 }
 
+void
+wstr_release(void)
+{
+    delete[] hash_table;
+    hash_table = 0;
+}
 
 //
 // NAME
@@ -151,49 +149,45 @@ wstr_initialize(void)
 static void
 split(void)
 {
-    wstring_ty      *p;
-    wstring_ty      *p2;
-    wstr_hash_ty    idx;
-
+    trace(("split()\n{\n"));
     //
-    // get the list to be split across buckets
+    // double the modulus
     //
-    p = hash_table[hash_split];
-    hash_table[hash_split] = 0;
-
+    // This is subtle.  If we only increase the modulus by one, the
+    // load always hovers around 80%, so we have to do a split for
+    // every insert.  I.e. the malloc burden os O(n) for the lifetime of
+    // the program.  BUT if we double the modulus, the length of time
+    // until the next split also doubles, making the probablity of a
+    // split halve, and sigma(2**-n)=1, so the malloc burden becomes O(1)
+    // for the lifetime of the program.
     //
-    // increase the modulus by one
-    //
-    // FIXME: must double to get O(1) behaviour.
-    //
-    hash_modulus++;
-    hash_table =
-        (wstring_ty **)
-	mem_change_size(hash_table, hash_modulus * sizeof(wstring_ty *));
-    hash_table[hash_modulus - 1] = 0;
-    hash_split = hash_modulus - hash_cutover;
-    if (hash_split >= hash_cutover)
-    {
-	hash_cutover = hash_modulus;
-	hash_split = 0;
-	hash_cutover_mask = hash_cutover - 1;
-	hash_cutover_split_mask = (hash_cutover * 2) - 1;
-    }
+    wstr_hash_ty new_hash_modulus = hash_modulus * 2;
+    wstring_ty **new_hash_table = new wstring_ty * [new_hash_modulus];
+    wstr_hash_ty new_hash_mask = new_hash_modulus - 1;
 
     //
     // now redistribute the list elements
     //
-    while (p)
+    for (wstr_hash_ty idx = 0; idx < hash_modulus; ++idx)
     {
-	p2 = p;
-	p = p->wstr_next;
-
-	idx = p2->wstr_hash & hash_cutover_mask;
-	if (idx < hash_split)
-	    idx = p2->wstr_hash & hash_cutover_split_mask;
-	p2->wstr_next = hash_table[idx];
-	hash_table[idx] = p2;
+	new_hash_table[idx] = 0;
+	new_hash_table[idx + hash_modulus] = 0;
+	wstring_ty *p = hash_table[idx];
+	while (p)
+	{
+	    wstring_ty *p2 = p;
+	    p = p->wstr_next;
+	    assert((p2->wstr_hash & hash_mask) == idx);
+	    wstr_hash_ty new_idx = p2->wstr_hash & new_hash_mask;
+	    p2->wstr_next = new_hash_table[new_idx];
+	    new_hash_table[new_idx] = p2;
+	}
     }
+    delete [] hash_table;
+    hash_table = new_hash_table;
+    hash_modulus = new_hash_modulus;
+    hash_mask = new_hash_mask;
+    trace(("}\n"));
 }
 
 
@@ -274,17 +268,16 @@ wstr_from_wc(const wchar_t *ws)
 wstring_ty *
 wstr_n_from_c(const char *s, size_t length)
 {
-#if __STDC__ >= 1
-    static char     escapes[] = "\aa\bb\ff\nn\rr\tt\vv";
-#else
-    static char     escapes[] = "\bb\ff\nn\rr\tt";
-#endif
-    static wchar_t  *buf;
-    static size_t   bufmax;
-    size_t          remainder;
-    const char      *ip;
-    wchar_t         *op;
+    static wchar_t *buf;
+    static size_t bufmax;
 
+    if (!s && !length)
+    {
+        delete [] buf;
+        buf = 0;
+        bufmax = 0;
+        return 0;
+    }
     //
     // Do the conversion "long hand".  This is because some
     // implementations of the mbstowcs function barf when they see
@@ -299,8 +292,9 @@ wstr_n_from_c(const char *s, size_t length)
 	    if (length <= bufmax)
 		break;
 	}
+	delete [] buf;
 	// the 4 is the longest escape sequence
-	buf = (wchar_t *)mem_change_size(buf, bufmax * sizeof(wchar_t) * 4);
+	buf = new wchar_t [bufmax * sizeof(wchar_t) * 4];
     }
 
     //
@@ -316,25 +310,22 @@ wstr_n_from_c(const char *s, size_t length)
     //
     // scan the string and extract the wide characters
     //
-    ip = s;
-    op = buf;
-    remainder = length;
+    const char *ip = s;
+    wchar_t *op = buf;
+    size_t remainder = length;
     while (remainder > 0)
     {
-	int             n;
-
-	n = mbtowc(op, ip, remainder);
+	int n = mbtowc(op, ip, remainder);
 	if (n == 0)
 	    break;
 	if (n < 0)
 	{
-	    char           *esc;
-
 	    //
 	    // Invalid multi byte sequence, replace the
 	    // first character with a C escape sequence.
 	    //
-	    esc = strchr(escapes, *ip);
+	    static const char escapes[] = "\aa\bb\ff\nn\rr\tt\vv";
+	    const char *esc = strchr(escapes, *ip);
 	    if (esc)
 	    {
 		*op++ = '\\';
@@ -343,7 +334,7 @@ wstr_n_from_c(const char *s, size_t length)
 	    else
 	    {
 		*op++ = '\\';
-		*op++ = '0' + ((*ip >> 6) & 7);
+		*op++ = '0' + ((*ip >> 6) & 3);
 		*op++ = '0' + ((*ip >> 3) & 7);
 		*op++ = '0' + (*ip & 7);
 	    }
@@ -409,6 +400,7 @@ wstr_to_mbs(const wstring_ty *s, char **result_p, size_t *result_length_p)
     char            *op;
     size_t          buflen;
 
+    trace(("%s\n", __PRETTY_FUNCTION__));
     //
     // For reasons I don't understand, the MB_CUR_MAX symbol (wich is
     // defined as a reference to __mb_cur_max) does not get resolved
@@ -443,7 +435,8 @@ wstr_to_mbs(const wstring_ty *s, char **result_p, size_t *result_length_p)
 	    if (buflen <= bufmax)
 		break;
 	}
-	buf = (char *)mem_change_size(buf, bufmax);
+	delete [] buf;
+	buf = new char [bufmax];
     }
 
     //
@@ -536,18 +529,14 @@ wstr_to_mbs(const wstring_ty *s, char **result_p, size_t *result_length_p)
 wstring_ty *
 wstr_n_from_wc(const wchar_t *s, size_t length)
 {
-    wstr_hash_ty    hash;
-    wstr_hash_ty    idx;
-    wstring_ty      *p;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    wstring_ty *p;
 
     if (!hash_modulus)
 	wstr_initialize();
-    hash = hash_generate(s, length);
+    wstr_hash_ty hash = hash_generate(s, length);
 
-    idx = hash & hash_cutover_mask;
-    if (idx < hash_split)
-	idx = hash & hash_cutover_split_mask;
-
+    wstr_hash_ty idx = hash & hash_mask;
     for (p = hash_table[idx]; p; p = p->wstr_next)
     {
 	if
@@ -576,7 +565,6 @@ wstr_n_from_wc(const wchar_t *s, size_t length)
     hash_load++;
     while (hash_load * 10 > hash_modulus * 8)
 	split();
-    ++changed;
     return p;
 }
 
@@ -628,8 +616,7 @@ wstr_copy(wstring_ty *s)
 void
 wstr_free(wstring_ty *s)
 {
-    wstr_hash_ty    idx;
-    wstring_ty      **spp;
+    wstring_ty **spp;
 
     if (!s)
 	return;
@@ -638,21 +625,18 @@ wstr_free(wstring_ty *s)
 	s->wstr_references--;
 	return;
     }
-    ++changed;
 
     //
     // find the hash bucket it was in,
     // and remove it
     //
-    idx = s->wstr_hash & hash_cutover_mask;
-    if (idx < hash_split)
-	idx = s->wstr_hash & hash_cutover_split_mask;
+    wstr_hash_ty idx = s->wstr_hash & hash_mask;
     for (spp = &hash_table[idx]; *spp; spp = &(*spp)->wstr_next)
     {
 	if (*spp == s)
 	{
 	    *spp = s->wstr_next;
-	    free(s);
+	    mem_free(s);
 	    --hash_load;
 	    return;
 	}
@@ -701,7 +685,8 @@ wstr_catenate(const wstring_ty *s1, const wstring_ty *s2)
 	    if (length <= tmplen)
 		break;
 	}
-	tmp = (wchar_t *)mem_change_size(tmp, tmplen * sizeof(wchar_t));
+	delete [] tmp;
+	tmp = new wchar_t [tmplen];
     }
     memcpy(tmp, s1->wstr_text, s1->wstr_length * sizeof(wchar_t));
     memcpy
@@ -751,7 +736,8 @@ wstr_cat_three(const wstring_ty *s1, const wstring_ty *s2, const wstring_ty *s3)
 	    if (length <= tmplen)
 		break;
 	}
-	tmp = (wchar_t *)mem_change_size(tmp, tmplen * sizeof(wchar_t));
+	delete [] tmp;
+	tmp = new wchar_t [tmplen];
     }
     memcpy(tmp, s1->wstr_text, s1->wstr_length * sizeof(wchar_t));
     memcpy
@@ -787,7 +773,8 @@ wstr_capitalize(const wstring_ty *ws)
 	    if (ws->wstr_length <= buflen)
 		break;
 	}
-	buffer = (wchar_t *)mem_change_size(buffer, buflen * sizeof(wchar_t));
+	delete [] buffer;
+	buffer = new wchar_t [buflen];
     }
     language_human();
     prev_was_alpha = 0;
@@ -832,7 +819,8 @@ wstr_to_upper(const wstring_ty *ws)
 	    if (ws->wstr_length <= buflen)
 		break;
 	}
-	buffer = (wchar_t *)mem_change_size(buffer, buflen * sizeof(wchar_t));
+	delete [] buffer;
+	buffer = new wchar_t [buflen];
     }
     language_human();
     for (j = 0; j < ws->wstr_length; ++j)
@@ -864,7 +852,8 @@ wstr_to_lower(const wstring_ty *ws)
 	    if (ws->wstr_length <= buflen)
 		break;
 	}
-	buffer = (wchar_t *)mem_change_size(buffer, buflen * sizeof(wchar_t));
+	delete [] buffer;
+	buffer = new wchar_t [buflen];
     }
     language_human();
     for (j = 0; j < ws->wstr_length; ++j)
@@ -898,7 +887,8 @@ wstr_to_ident(const wstring_ty *ws)
 	    if (ws->wstr_length <= buflen)
 		break;
 	}
-	buffer = (wchar_t *)mem_change_size(buffer, buflen * sizeof(wchar_t));
+	delete [] buffer;
+	buffer = new wchar_t [buflen];
     }
     language_human();
     for (j = 0; j < ws->wstr_length; ++j)

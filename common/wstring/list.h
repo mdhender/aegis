@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -117,16 +116,38 @@ public:
     void clear();
 
     /**
+      * The get is used to obtain the value of the nth element
+      * of a string list.
+      */
+    wstring get(int n) const;
+
+    /**
       * The [] operator is used to obtain the value of the nth element
       * of a string list.
       */
-    wstring operator[](int n) const;
+    wstring operator[](int n) const { return get(n); }
 
     /**
       * The unsplit method is used to form a single string by gluing all
       * of the string list members together.
+      *
+      * @param separator
+      *     what to put between the strings, defaults to a single cpace.
       */
-    wstring unsplit(const char *separator) const;
+    wstring unsplit(const char *separator = 0) const;
+
+    /**
+      * The unsplit method is used to form a single string by gluing all
+      * of the string list members together.
+      *
+      * @param first
+      *     The place to start joining
+      * @param last
+      *     how many to join
+      * @param separator
+      *     what to put between the strings, defaults to a single cpace.
+      */
+    wstring unsplit(size_t first, size_t last, const char *separator = 0) const;
 
 private:
     /**

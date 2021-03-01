@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1997, 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1997, 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,235 +13,175 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate group values
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
 
+#include <common/error.h>
+#include <common/trace.h>
 #include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/group.h>
 #include <libaegis/aer/value/integer.h>
 #include <libaegis/aer/value/list.h>
-#include <libaegis/aer/value/group.h>
 #include <libaegis/aer/value/string.h>
 #include <libaegis/aer/value/struct.h>
-#include <common/error.h>
 #include <libaegis/getgr_cache.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 
 
-static rpt_value_ty *
+rpt_value_group::~rpt_value_group()
+{
+}
+
+
+rpt_value_group::rpt_value_group()
+{
+}
+
+
+rpt_value::pointer
+rpt_value_group::create()
+{
+    static rpt_value::pointer vp;
+    if (!vp)
+        vp = pointer(new rpt_value_group());
+    return vp;
+}
+
+
+static rpt_value::pointer
 gr_to_struct(struct group *gr)
 {
-    rpt_value_ty    *result;
-    string_ty	    *name;
-    string_ty	    *s;
-    rpt_value_ty    *value;
-    long	    j;
-
     trace(("gr_to_struct()\n{\n"));
-    result = rpt_value_struct((struct symtab_ty *)0);
+    rpt_value_struct *p = new rpt_value_struct();
+    rpt_value::pointer result(p);
 
     trace(("gr_name\n"));
-    name = str_from_c("gr_name");
-    s = str_from_c(gr->gr_name);
-    value = rpt_value_string(s);
-    str_free(s);
-    rpt_value_struct__set(result, name, value);
-    str_free(name);
-    assert(value->reference_count==2);
-    rpt_value_free(value);
+    nstring name = "gr_name";
+    rpt_value::pointer value = rpt_value_string::create(gr->gr_name);
+    p->assign(name, value);
 
     trace(("gr_gid\n"));
-    name = str_from_c("gr_gid");
-    value = rpt_value_integer((long)gr->gr_gid);
-    rpt_value_struct__set(result, name, value);
-    str_free(name);
-    assert(value->reference_count==2);
-    rpt_value_free(value);
+    name = "gr_gid";
+    value = rpt_value_integer::create(gr->gr_gid);
+    p->assign(name, value);
 
     trace(("gr_mem\n"));
-    name = str_from_c("gr_mem");
-    value = rpt_value_list();
-    rpt_value_struct__set(result, name, value);
-    str_free(name);
-    assert(value->reference_count==2);
-    for (j = 0; gr->gr_mem[j]; ++j)
+    name = "gr_mem";
+    rpt_value_list *lp = new rpt_value_list();
+    value = rpt_value::pointer(lp);
+    p->assign(name, value);
+    for (size_t j = 0; gr->gr_mem[j]; ++j)
     {
-	rpt_value_ty	*vp;
-
-	name = str_from_c(gr->gr_mem[j]);
-	vp = rpt_value_string(name);
-	str_free(name);
-	rpt_value_list_append(value, vp);
-	assert(vp->reference_count==2);
-	rpt_value_free(vp);
+	rpt_value::pointer vp = rpt_value_string::create(gr->gr_mem[j]);
+	lp->append(vp);
     }
-    assert(value->reference_count==2);
-    rpt_value_free(value);
 
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get()));
     trace(("}\n"));
     return result;
 }
 
 
-static rpt_value_ty *
-lookup(rpt_value_ty *lhs, rpt_value_ty *rhs, int lvalue)
+rpt_value::pointer
+rpt_value_group::lookup(const rpt_value::pointer &rhs, bool)
+    const
 {
-    rpt_value_ty    *rhs2;
-    rpt_value_ty    *result;
-    struct group    *gr;
-
-    trace(("value_group::lookup()\n{\n"));
-    rhs2 = rpt_value_arithmetic(rhs);
-    if (rhs2->method->type == rpt_value_type_integer)
+    trace(("value_group::lookup()\n"));
+    rpt_value::pointer rhs2 = rpt_value::arithmetic(rhs);
+    rpt_value_integer *rhs2ip = dynamic_cast<rpt_value_integer *>(rhs2.get());
+    if (rhs2ip)
     {
-	int		gid;
-
-	gid = rpt_value_integer_query(rhs2);
-	rpt_value_free(rhs2);
-	gr = getgrgid_cached(gid);
+	int gid = rhs2ip->query();
+	struct group *gr = getgrgid_cached(gid);
 	if (gr)
-	    result = gr_to_struct(gr);
-	else
-	{
-	    sub_context_ty  *scp;
-	    string_ty	    *s;
+	    return gr_to_struct(gr);
 
-	    scp = sub_context_new();
-	    sub_var_set_long(scp, "Number", gid);
-	    s = subst_intl(scp, i18n("gid $number unknown"));
-	    sub_context_delete(scp);
-	    result = rpt_value_error((struct rpt_pos_ty *)0, s);
-	    str_free(s);
-	}
+        sub_context_ty sc;
+        sc.var_set_long("Number", gid);
+        nstring s(sc.subst_intl(i18n("gid $number unknown")));
+        return rpt_value_error::create(s);
     }
-    else
+
+    rhs2 = rpt_value::stringize(rhs);
+    rpt_value_string *rhs2sp = dynamic_cast<rpt_value_string *>(rhs2.get());
+    if (rhs2sp)
     {
-	rpt_value_free(rhs2);
-	rhs2 = rpt_value_stringize(rhs);
-	if (rhs2->method->type == rpt_value_type_string)
-	{
-	    string_ty	    *name;
+        nstring gname = rhs2sp->query();
+        struct group *gr = getgrnam_cached(gname);
+        if (gr)
+            return gr_to_struct(gr);
 
-	    name = rpt_value_string_query(rhs2);
-	    gr = getgrnam_cached(name);
-	    if (gr)
-		result = gr_to_struct(gr);
-	    else
-	    {
-		sub_context_ty	*scp;
-		string_ty	*s;
-
-		scp = sub_context_new();
-		sub_var_set_string(scp, "Name", name);
-		s = subst_intl(scp, i18n("group \"$name\" unknown"));
-		sub_context_delete(scp);
-		result = rpt_value_error((struct rpt_pos_ty *)0, s);
-		str_free(s);
-	    }
-	}
-	else
-	{
-	    sub_context_ty  *scp;
-	    string_ty	    *s;
-
-	    scp = sub_context_new();
-	    sub_var_set_charstar(scp, "Name1", "group");
-	    sub_var_set_charstar(scp, "Name2", rhs->method->name);
-	    s = subst_intl(scp, i18n("illegal lookup ($name1[$name2])"));
-	    sub_context_delete(scp);
-	    result = rpt_value_error((struct rpt_pos_ty *)0, s);
-	    str_free(s);
-	}
-	rpt_value_free(rhs2);
+        sub_context_ty sc;
+        sc.var_set_string("Name", gname);
+        nstring s(sc.subst_intl(i18n("group \"$name\" unknown")));
+        return rpt_value_error::create(s);
     }
-    trace(("return %8.8lX;\n", (long)result));
-    trace(("}\n"));
-    return result;
+
+    sub_context_ty sc;
+    sc.var_set_charstar("Name1", name());
+    sc.var_set_charstar("Name2", rhs->name());
+    nstring s(sc.subst_intl(i18n("illegal lookup ($name1[$name2])")));
+    return rpt_value_error::create(s);
 }
 
 
-static rpt_value_ty *
-keys(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_group::keys()
+    const
 {
-    rpt_value_ty    *result;
-    struct group    *gr;
-    string_ty	    *s;
-    rpt_value_ty    *ep;
-
-    result = rpt_value_list();
+    rpt_value_list *p;
+    rpt_value::pointer result(p);
     setgrent();
     for (;;)
     {
-	gr = getgrent();
+	struct group *gr = getgrent();
 	if (!gr)
 	    break;
-
-	s = str_from_c(gr->gr_name);
-	ep = rpt_value_string(s);
-	str_free(s);
-	rpt_value_list_append(result, ep);
-	rpt_value_free(ep);
+        p->append(rpt_value_string::create(gr->gr_name));
     }
     return result;
 }
 
 
-static rpt_value_ty *
-count(rpt_value_ty *vp)
+rpt_value::pointer
+rpt_value_group::count()
+    const
 {
-    struct group    *gr;
-    long	    n;
-
     setgrent();
-    n = 0;
+    long n = 0;
     for (;;)
     {
-	gr = getgrent();
+	struct group *gr = getgrent();
 	if (!gr)
 	    break;
 	++n;
     }
-    return rpt_value_integer(n);
+    return rpt_value_integer::create(n);
 }
 
 
-static const char *
-type_of(rpt_value_ty *this_thing)
+const char *
+rpt_value_group::type_of()
+    const
 {
     return "struct";
 }
 
 
-static rpt_value_method_ty method =
+const char *
+rpt_value_group::name()
+    const
 {
-    sizeof(rpt_value_ty),
-    "group",
-    rpt_value_type_structure,
-    0, // construct
-    0, // destruct
-    0, // arithmetic
-    0, // stringize
-    0, // booleanize
-    lookup,
-    keys,
-    count,
-    type_of,
-    0, // undefer
-};
+    return "group";
+}
 
 
-rpt_value_ty *
-rpt_value_group(void)
+bool
+rpt_value_group::is_a_struct()
+    const
 {
-    static rpt_value_ty *vp;
-
-    if (!vp)
-	vp = rpt_value_alloc(&method);
-    return rpt_value_copy(vp);
+    return true;
 }

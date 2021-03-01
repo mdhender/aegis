@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2006, 2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -26,6 +25,13 @@
 #include <libaegis/change.h>
 #include <libaegis/project.h>
 #include <libaegis/sub.h>
+
+
+void
+project_ty::home_path_set(const nstring &s)
+{
+    home_path_set(s.get_ref());
+}
 
 
 void

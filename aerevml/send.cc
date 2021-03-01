@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the send class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/ctype.h>
@@ -35,6 +32,8 @@
 #include <libaegis/change/signedoffby.h>
 #include <libaegis/compres_algo.h>
 #include <libaegis/cstate.h>
+#include <libaegis/file/event.h>
+#include <libaegis/file/event/list.h>
 #include <libaegis/fstate.h>
 #include <libaegis/help.h>
 #include <libaegis/input/file.h>
@@ -88,7 +87,7 @@ one_more_src(fstate_src_list_ty *file_list, fstate_src_ty *src_data)
 	return;
     }
     assert(file_list);
-    type_ty *type_p = 0;
+    meta_type *type_p = 0;
     fstate_src_ty **dst_data_p =
 	(fstate_src_ty **)fstate_src_list_type.list_parse(file_list, &type_p);
     assert(type_p == &fstate_src_type);
@@ -230,7 +229,7 @@ public:
     }
 
     void
-    operator()(change_ty *cp)
+    operator()(change::pointer cp)
     {
 	change_fatal(cp, 0, i18n("bad patch send state"));
     }
@@ -674,7 +673,7 @@ revml_send(void)
     //
     // Now the <comment> element.
     //
-    cstate_ty *cstate_data = change_cstate_get(cid.get_cp());
+    cstate_ty *cstate_data = cid.get_cp()->cstate_get();
     nstring desc;
     if (description_header)
     {
@@ -700,7 +699,7 @@ revml_send(void)
 	    nstring::format
 	    (
 		"From: %s\nDate: %.24s\n%s\n%s",
-		user_email_address(cid.get_up())->str_text,
+		cid.get_up()->get_email_address().c_str(),
 		ctime(&when),
 		warning.c_str(),
 		cstate_data->description->str_text
@@ -1047,7 +1046,8 @@ revml_send(void)
 		    if (csrc->move)
 		    {
 			project_file_roll_forward *hp = cid.get_historian();
-			file_event_list_ty *orig_felp = hp->get(csrc->move);
+			file_event_list::pointer orig_felp =
+                            hp->get(csrc->move);
 
 			//
 			// It's tempting to say
@@ -1056,12 +1056,11 @@ revml_send(void)
 			// time, so there is no need (or ability) to create a
 			// patch for it.
 			//
-			assert(!orig_felp || orig_felp->length >= 1);
+			assert(!orig_felp || !orig_felp->empty());
 			if (!orig_felp)
 			    break;
 
-			file_event_ty *orig_fep =
-			    &orig_felp->item[orig_felp->length - 1];
+			file_event *orig_fep = orig_felp->back();
 			assert(orig_fep);
 			int temp_unlink = 0;
 			nstring temp =
@@ -1070,7 +1069,7 @@ revml_send(void)
 				project_file_version_path
 				(
 				    cid.get_pp(),
-				    orig_fep->src,
+				    orig_fep->get_src(),
 				    &temp_unlink
 				)
 			    );
@@ -1138,11 +1137,11 @@ revml_send(void)
 	    case file_action_create:
 		{
 		    project_file_roll_forward *hp = cid.get_historian();
-		    file_event_list_ty *felp = hp->get(csrc);
+		    file_event_list::pointer felp = hp->get(csrc);
 
 		    //
 		    // It's tempting to say
-		    //	assert(felp);
+		    //     assert(felp);
 		    // but file file may not yet exist at this point in
 		    // time, so there is no need (or ability) to create a
 		    // patch for it.
@@ -1153,7 +1152,7 @@ revml_send(void)
 			break;
 		    }
 
-		    assert(felp->length >= 1);
+		    assert(!felp->empty());
 
 		    //
                     // Get the orginal file.  We handle the creation
@@ -1161,7 +1160,8 @@ revml_send(void)
 		    //
 		    if (csrc->move)
 		    {
-			file_event_list_ty *orig_felp = hp->get(csrc->move);
+			file_event_list::pointer orig_felp =
+                            hp->get(csrc->move);
 
 			//
 			// It's tempting to say
@@ -1179,17 +1179,17 @@ revml_send(void)
 			// This means you can have a removed file with a
 			// history length of exactly one.
 			//
-			assert(!orig_felp || orig_felp->length >= 1);
-			if (!orig_felp || orig_felp->length < 2)
+			assert(!orig_felp || !orig_felp->empty());
+			if (!orig_felp || orig_felp->size() < 2)
 			{
 			    original = file_revision(dev_null, false);
 			}
 			else
 			{
-			    file_event_ty *orig_fep =
-				&orig_felp->item[orig_felp->length - 2];
+			    file_event *orig_fep =
+				orig_felp->get(orig_felp->size() - 2);
 			    assert(orig_fep);
-			    assert(orig_fep->src);
+			    assert(orig_fep->get_src());
 			    int path_unlink = 0;
 			    nstring path =
 				nstring
@@ -1197,7 +1197,7 @@ revml_send(void)
 				    project_file_version_path
 				    (
 					cid.get_pp(),
-					orig_fep->src,
+					orig_fep->get_src(),
 					&path_unlink
 				    )
 				);
@@ -1210,8 +1210,8 @@ revml_send(void)
 		    //
 		    // Get the input file.
 		    //
-		    file_event_ty *fep = &felp->item[felp->length - 1];
-		    assert(fep->src);
+		    file_event *fep = felp->back();
+		    assert(fep->get_src());
 		    int path_unlink = 0;
 		    nstring path =
 			nstring
@@ -1219,7 +1219,7 @@ revml_send(void)
 			    project_file_version_path
 			    (
 				cid.get_pp(),
-				fep->src,
+				fep->get_src(),
 				&path_unlink
 			    )
 			);
@@ -1240,23 +1240,23 @@ revml_send(void)
 		    }
 
 		    project_file_roll_forward *hp = cid.get_historian();
-		    file_event_list_ty *felp = hp->get(csrc);
+		    file_event_list::pointer felp = hp->get(csrc);
 
 		    //
 		    // It's tempting to say
-		    //	assert(felp);
+		    //     assert(felp);
 		    // but file file may not yet exist at this point in
 		    // time, so there is no need (or ability) to create a
 		    // patch for it.
 		    //
 		    // It is also tempting to say
-		    //	assert(felp->length >= 2);
+		    //     assert(felp->length >= 2);
 		    // except that a file which is created and removed in
 		    // the same branch, will result in only a remove record
 		    // in its parent branch when integrated.
 		    //
-		    assert(!felp || felp->length >= 1);
-		    if (!felp || felp->length < 2)
+		    assert(!felp || !felp->empty());
+		    if (!felp || felp->size() < 2)
 		    {
 			original = file_revision(dev_null, false);
 		    }
@@ -1265,9 +1265,9 @@ revml_send(void)
 			//
 			// Get the orginal file.
 			//
-			file_event_ty *fep = &felp->item[felp->length - 2];
+			file_event *fep = felp->get(felp->size() - 2);
 			assert(fep);
-			assert(fep->src);
+			assert(fep->get_src());
 			int path_unlink = 0;
 			nstring path =
 			    nstring
@@ -1275,7 +1275,7 @@ revml_send(void)
 				project_file_version_path
 				(
 				    cid.get_pp(),
-				    fep->src,
+				    fep->get_src(),
 				    &path_unlink
 				)
 			    );
@@ -1292,16 +1292,16 @@ revml_send(void)
 	    case file_action_modify:
 		{
 		    project_file_roll_forward *hp = cid.get_historian();
-		    file_event_list_ty *felp = hp->get(csrc);
+		    file_event_list::pointer felp = hp->get(csrc);
 
 		    //
 		    // It's tempting to say
-		    //	assert(felp);
+		    //     assert(felp);
 		    // but file file may not yet exist at this point in
 		    // time, so there is no need (or ability) to create a
 		    // patch for it.
 		    //
-		    assert(!felp || felp->length >= 1);
+		    assert(!felp || !felp->empty());
 		    if (!felp)
 		    {
 			original = file_revision(dev_null, false);
@@ -1312,15 +1312,15 @@ revml_send(void)
 		    //
 		    // Get the orginal file.
 		    //
-		    if (felp->length < 2)
+		    if (felp->size() < 2)
 		    {
 			original = file_revision(dev_null, false);
 		    }
 		    else
 		    {
-			file_event_ty *fep = &felp->item[felp->length - 2];
+			file_event *fep = felp->get(felp->size() - 2);
 			assert(fep);
-			assert(fep->src);
+			assert(fep->get_src());
 			int path_unlink = 0;
 			nstring path =
 			    nstring
@@ -1328,7 +1328,7 @@ revml_send(void)
 				project_file_version_path
 				(
 				    cid.get_pp(),
-				    fep->src,
+				    fep->get_src(),
 				    &path_unlink
 				)
 			    );
@@ -1338,9 +1338,9 @@ revml_send(void)
 		    //
 		    // Get the input file.
 		    //
-		    file_event_ty *fep = &felp->item[felp->length - 1];
+		    file_event *fep = felp->back();
 		    assert(fep);
-		    assert(fep->src);
+		    assert(fep->get_src());
 		    int path_unlink = 0;
 		    nstring path =
 			nstring
@@ -1348,7 +1348,7 @@ revml_send(void)
 			    project_file_version_path
 			    (
 				cid.get_pp(),
-				fep->src,
+				fep->get_src(),
 				&path_unlink
 			    )
 			);

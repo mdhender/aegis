@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate function needs
 //
@@ -29,48 +28,26 @@
 
 
 void
-function_needs_one(const char *name, tree_list_ty *args)
+function_needs_one(const char *name, const tree_list &args)
 {
-    sub_context_ty  *scp;
-
-    if (args->length == 1)
+    if (args.size() == 1)
 	return;
 
-    scp = sub_context_new();
-    sub_var_set_charstar(scp, "Name", name);
-    cmdline_lex_error(scp, i18n("function $name requires one argument"));
-    sub_context_delete(scp);
-
-    if (args->length < 1)
-    {
-	tree_ty		*tp;
-
-	tp = tree_this_new();
-	tree_list_append(args, tp);
-	tree_delete(tp);
-    }
+    sub_context_ty sc;
+    sc.var_set_charstar("Name", name);
+    cmdline_lex_error(&sc, i18n("function $name requires one argument"));
 }
 
 
 void
-function_needs_two(const char *name, tree_list_ty *args)
+function_needs_two(const char *name, const tree_list &args)
 {
-    sub_context_ty  *scp;
-
-    if (args->length == 2)
+    if (args.size() == 2)
 	return;
 
+    sub_context_ty  *scp;
     scp = sub_context_new();
     sub_var_set_charstar(scp, "Name", name);
     cmdline_lex_error(scp, i18n("function $name requires two arguments"));
     sub_context_delete(scp);
-
-    while (args->length < 2)
-    {
-	tree_ty		*tp;
-
-	tp = tree_this_new();
-	tree_list_append(args, tp);
-	tree_delete(tp);
-    }
 }

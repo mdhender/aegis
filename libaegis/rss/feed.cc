@@ -1,8 +1,7 @@
 //
 //      aegis - project change supervisor
 //      Copyright (C) 2005 Matthew Lee;
-//      Copyright (C) 2006 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 2006, 2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -15,10 +14,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the rss_feed class
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change.h>
@@ -46,7 +43,7 @@ rss_feed::~rss_feed()
 {
     trace(("rss_feed::~rss_feed()\n{\n"));
     project = 0;
-    change = 0;
+    cp = 0;
 
     while (size())
 	delete pop_back();
@@ -57,10 +54,10 @@ rss_feed::~rss_feed()
 }
 
 
-rss_feed::rss_feed(project_ty *the_project, change_ty *the_change,
+rss_feed::rss_feed(project_ty *the_project, change::pointer the_change,
 	const nstring &the_file) :
     project(the_project),
-    change(the_change),
+    cp(the_change),
     filename(the_file),
     last_build_date(date_string(now())),
     generator(nstring::format("%s %s", progname_get(), version_stamp())),
@@ -75,7 +72,7 @@ rss_feed::rss_feed(project_ty *the_project, change_ty *the_change,
 
 rss_feed::rss_feed(const rss_feed &arg) :
     project(arg.project),
-    change(arg.change),
+    cp(arg.cp),
     filename(arg.filename)
 {
 }
@@ -87,7 +84,7 @@ rss_feed::operator=(const rss_feed &arg)
     if (this != &arg)
     {
         project = arg.project;
-        change = arg.change;
+        cp = arg.cp;
         filename = arg.filename;
     }
     return *this;
@@ -99,7 +96,7 @@ class xml_node_rss_channel_item:
 {
 public:
     xml_node_rss_channel_item(rss_feed *arg) : other(arg) { }
-    void element_begin(const nstring &value) { other->handle_item(); }
+    void element_begin(const nstring &) { other->handle_item(); }
 private:
     rss_feed *other;
 };
@@ -353,10 +350,9 @@ void
 rss_feed::parse()
 {
     trace(("rss_feed::parse()\n{\n"));
-    project_become(project);
+    user_ty::become scoped(project->get_user());
     if (!os_exists(filename))
     {
-	project_become_undo();
 	trace(("}\n"));
 	return;
     }
@@ -403,7 +399,6 @@ rss_feed::parse()
     //
     reader.parse();
     ip.close();
-    project_become_undo();
     trace(("}\n"));
 }
 
@@ -415,12 +410,30 @@ rss_feed::print()
     trace(("rss_feed::print()\n{\n"));
     // Open a temp file for writing.
     nstring out_file_name(os_edit_filename(0));
-    project_become(project);
+    user_ty::become scoped(project->get_user());
     nstring dir(project_rss_path_get(project, 0));
     if (!os_exists(dir))
         os_mkdir(dir, 0755);
     output_ty *op = new output_file(out_file_name, false);
 
+    print(op);
+
+    delete op;
+    op = 0;
+
+    //
+    // Move the temporary output file to the real feed file.
+    //
+    copy_whole_file(out_file_name.get_ref(), filename.get_ref(), 0);
+    os_unlink_errok(out_file_name);
+    trace(("}\n"));
+}
+
+
+void
+rss_feed::print(output_ty *op)
+    const
+{
     op->fputs("<?xml version=\"1.0\"?>\n");
     op->fputs("<rss version=\"2.0\">\n");
     op->fputs("<channel>\n");
@@ -451,16 +464,6 @@ rss_feed::print()
 
     op->fputs("</channel>\n");
     op->fputs("</rss>\n");
-    delete op;
-    op = 0;
-
-    //
-    // Move the temporary output file to the real feed file.
-    //
-    copy_whole_file(out_file_name.get_ref(), filename.get_ref(), 0);
-    os_unlink_errok(out_file_name);
-    project_become_undo();
-    trace(("}\n"));
 }
 
 
@@ -469,13 +472,13 @@ rss_feed::channel_elements_from_project()
 {
     trace(("rss_feed::channel_elements_from_project()\n{\n"));
     title = rss_feed_attribute(project, filename, rss_feed_title);
-    if (title.empty())
+    if (title.empty() && cp)
     {
 	title =
 	    nstring::format
 	    (
 		"Changes in state %s",
-		cstate_state_ename(change->cstate_data->state)
+		cstate_state_ename(cp->cstate_data->state)
 	    );
     }
     nstring projname(project_name_get(project));
@@ -489,9 +492,9 @@ rss_feed::channel_elements_from_project()
     //
     description =
 	rss_feed_attribute(project, filename, rss_feed_description);
-    if (description.empty())
+    if (description.empty() && cp)
     {
-	cstate_ty *cstate_data = change_cstate_get(change);
+	cstate_ty *cstate_data = cp->cstate_get();
 	description =
 	    nstring::format
 	    (
@@ -515,6 +518,21 @@ void
 rss_feed::channel_elements_from_change()
 {
     rss_item *rip = new rss_item();
-    rip->handle_change(change);
+    rip->handle_change(cp);
     push_back(rip);
+}
+
+
+void
+rss_feed::title_set(const nstring &arg)
+{
+    nstring projname(project_name_get(project));
+    title = "Project " + projname + ", " + arg.capitalize();
+}
+
+
+void
+rss_feed::description_set(const nstring &arg)
+{
+    description = arg;
 }

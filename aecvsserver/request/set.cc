@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -44,7 +43,7 @@ request_set::request_set()
 
 
 void
-request_set::run_inner(server_ty *sp, string_ty *arg)
+request_set::run_inner(server_ty *, string_ty *)
     const
 {
     //

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1997, 1999, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1997, 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,46 +13,69 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement the builtin now function
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
+#include <common/now.h>
+#include <common/trace.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/func/now.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/integer.h>
 #include <libaegis/aer/value/real.h>
 #include <libaegis/aer/value/time.h>
-#include <common/error.h>
-#include <common/now.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 
 
-static int
-now_verify(rpt_expr_ty *ep)
+rpt_func_now::~rpt_func_now()
 {
-    return (ep->nchild == 0);
 }
 
 
-static rpt_value_ty *
-now_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func_now::rpt_func_now()
 {
-    assert(argc == 0);
-    return rpt_value_time(now());
 }
 
 
-rpt_func_ty rpt_func_now =
+rpt_func::pointer
+rpt_func_now::create()
 {
-    "now",
-    0, // optimizable
-    now_verify,
-    now_run,
-};
+    return pointer(new rpt_func_now());
+}
+
+
+const char *
+rpt_func_now::name()
+    const
+{
+    return "now";
+}
+
+
+bool
+rpt_func_now::optimizable()
+    const
+{
+    return false;
+}
+
+
+bool
+rpt_func_now::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 0);
+}
+
+
+rpt_value::pointer
+rpt_func_now::run(const rpt_expr::pointer &, size_t, rpt_value::pointer *)
+    const
+{
+    return rpt_value_time::create(now());
+}
 
 
 #define WORKING_DAYS_PER_WEEK 5
@@ -65,10 +87,6 @@ rpt_func_ty rpt_func_now =
 double
 working_days(time_t start, time_t finish)
 {
-    long            working_days_whole;
-    double          working_days_frac;
-    int             wday;
-
     //
     // Flip it end-for-end if they gave it the wrong way round.
     //
@@ -78,9 +96,7 @@ working_days(time_t start, time_t finish)
     trace(("finish = %s", ctime(&finish)));
     if (start > finish)
     {
-	time_t		swap;
-
-	swap = start;
+	time_t swap = start;
 	finish = start;
 	start = swap;
     }
@@ -89,11 +105,11 @@ working_days(time_t start, time_t finish)
     // Get the current week say.
     // Adjust it so that MON=0 thru SUN=6
     //
-    wday = localtime(&start)->tm_wday;
+    int wday = localtime(&start)->tm_wday;
     wday = (wday + 6) % 7;
 
-    working_days_whole = 0;
-    working_days_frac = 0;
+    long working_days_whole = 0;
+    double working_days_frac = 0;
 
     //
     // Treat the first day specially, in case it is a day of the
@@ -124,8 +140,7 @@ working_days(time_t start, time_t finish)
     assert((long)finish - (long)start < SECONDS_PER_WORKING_DAY);
     if (start < finish)
     {
-	working_days_frac =
-	    (finish - start) / (double)SECONDS_PER_WORKING_DAY;
+	working_days_frac = (finish - start) / (double)SECONDS_PER_WORKING_DAY;
     }
 
     //
@@ -138,85 +153,88 @@ working_days(time_t start, time_t finish)
 }
 
 
-static int
-working_days_verify(rpt_expr_ty *ep)
+rpt_func_working_days::~rpt_func_working_days()
 {
-    return (ep->nchild == 2);
 }
 
 
-static rpt_value_ty *
-working_days_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func_working_days::rpt_func_working_days()
 {
-    rpt_value_ty    *t1;
-    rpt_value_ty    *t2;
-    rpt_value_ty    *result;
-
-    assert(argc == 2);
-    t1 = rpt_value_integerize(argv[0]);
-    if (t1->method->type != rpt_value_type_integer)
-    {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	rpt_value_free(t1);
-	sub_var_set_charstar(scp, "Function", "working_days");
-	sub_var_set_long(scp, "Number", 1);
-	sub_var_set_charstar(scp, "Name", argv[0]->method->name);
-	s =
-	    subst_intl
-	    (
-	       	scp,
-      i18n("$function: argument $number: time value required (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(ep->pos, s);
-	str_free(s);
-	return result;
-    }
-
-    t2 = rpt_value_integerize(argv[1]);
-    if (t2->method->type != rpt_value_type_integer)
-    {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	rpt_value_free(t1);
-	rpt_value_free(t2);
-	sub_var_set_charstar(scp, "Function", "working_days");
-	sub_var_set_long(scp, "Number", 2);
-	sub_var_set_charstar(scp, "Name", argv[1]->method->name);
-	s =
-	    subst_intl
-	    (
-	       	scp,
-      i18n("$function: argument $number: time value required (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(ep->pos, s);
-	str_free(s);
-	return result;
-    }
-
-    result =
-	rpt_value_real
-	(
-    	    working_days
-    	    (
-       		rpt_value_integer_query(t1),
-       		rpt_value_integer_query(t2)
-    	    )
-	);
-    return result;
 }
 
 
-rpt_func_ty rpt_func_working_days =
+rpt_func::pointer
+rpt_func_working_days::create()
 {
-    "working_days",
-    1, // optimizable
-    working_days_verify,
-    working_days_run,
-};
+    return pointer(new rpt_func_working_days());
+}
+
+
+const char *
+rpt_func_working_days::name()
+    const
+{
+    return "working_days";
+}
+
+
+bool
+rpt_func_working_days::optimizable()
+    const
+{
+    return true;
+}
+
+
+bool
+rpt_func_working_days::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 2);
+}
+
+
+rpt_value::pointer
+rpt_func_working_days::run(const rpt_expr::pointer &ep, size_t,
+    rpt_value::pointer *argv) const
+{
+    rpt_value::pointer t1 = rpt_value::integerize(argv[0]);
+    rpt_value_integer *t1ip = dynamic_cast<rpt_value_integer *>(t1.get());
+    if (!t1ip)
+    {
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "working_days");
+	sc.var_set_long("Number", 1);
+	sc.var_set_charstar("Name", argv[0]->name());
+	nstring s
+        (
+	    sc.subst_intl
+	    (
+                i18n("$function: argument $number: time value required "
+                    "(was given $name)")
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
+    }
+
+    rpt_value::pointer t2 = rpt_value::integerize(argv[1]);
+    rpt_value_integer *t2ip = dynamic_cast<rpt_value_integer *>(t2.get());
+    if (!t2ip)
+    {
+	sub_context_ty sc;
+	sc.var_set_charstar("Function", "working_days");
+	sc.var_set_long("Number", 2);
+	sc.var_set_charstar("Name", argv[1]->name());
+	nstring s
+        (
+	    sc.subst_intl
+	    (
+                i18n("$function: argument $number: time value required "
+                    "(was given $name)")
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
+    }
+
+    return rpt_value_real::create(working_days(t1ip->query(), t2ip->query()));
+}

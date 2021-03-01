@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the project_change_walk function
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/project/change/walk.h>
@@ -48,7 +45,7 @@ project_change_walk(project_ty *pp, change_functor &func)
 	    if (!project_change_nth(pp, j, &cn))
 		break;
 
-	    change_ty *cp = change_alloc(pp, cn);
+	    change::pointer cp = change_alloc(pp, cn);
 	    change_bind_existing(cp);
 	    time_t when = change_completion_timestamp(cp);
 	    if (change_was_a_branch(cp))
@@ -65,7 +62,7 @@ project_change_walk(project_ty *pp, change_functor &func)
 		    project_free(sub_pp);
 		}
 	    }
-	    else if (all_changes || change_is_completed(cp))
+	    else if (all_changes || cp->is_completed())
 	    {
 		if (when >= earliest && when <= latest)
 		{
@@ -93,7 +90,7 @@ project_change_walk(project_ty *pp, change_functor &func)
 	    if (!project_history_nth(pp, j, &cn, &dn, &name))
 		break;
 
-	    change_ty *cp = change_alloc(pp, cn);
+	    change::pointer cp = change_alloc(pp, cn);
 	    change_bind_existing(cp);
 	    time_t when = change_completion_timestamp(cp);
 	    if (change_was_a_branch(cp))

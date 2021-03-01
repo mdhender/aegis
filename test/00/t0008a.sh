@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1998, 2002, 2004, 2005 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 1991-1998, 2002, 2004-2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -41,7 +40,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	persevere_preference = all; \
 	log_file_preference = never;"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 work=${AEGIS_TMP:-/tmp}/$$
@@ -221,7 +220,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -new_file $workchan/aegis.conf -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/aegis.conf << 'end'
-build_command = "make -f ${s Makefile} PROJECT=$p CHANGE=$c VERSION=$v";
+build_command = "rm -f foo; make -f ${s Makefile} PROJECT=$p CHANGE=$c VERSION=$v";
 link_integration_directory = true;
 
 history_get_command = "aesvt -check-out -edit ${quote $edit} "
@@ -276,9 +275,6 @@ fi
 pass
 end
 if test $? -ne 0 ; then no_result; fi
-
-# make sure time stamps differ
-sleep 1
 
 #
 # build the change
@@ -335,9 +331,6 @@ if test $? -ne 0 ; then cat log; fail; fi
 activity="integrate begin 321"
 $bin/aegis -intbeg 1 -p foo -v -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
-
-# make sure time stamps differ
-sleep 1
 
 #
 # integrate build
@@ -424,9 +417,6 @@ pass
 end
 if test $? -ne 0 ; then no_result; fi
 
-# make sure time stamps differ
-sleep 1
-
 #
 # build the change
 # diff the change
@@ -460,9 +450,6 @@ if test $? -ne 0 ; then cat log; fail; fi
 activity="integrate begin 446"
 $bin/aegis -intbeg -v -c 2 -p foo -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
-
-# make sure time stamps differ
-sleep 1
 
 #
 # build the integration

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate times_finds
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change.h>
@@ -26,7 +23,7 @@
 
 
 cstate_architecture_times_ty *
-change_architecture_times_find(change_ty *cp, string_ty *un)
+change_architecture_times_find(change::pointer cp, string_ty *un)
 {
     cstate_ty       *cstate_data;
     size_t          j;
@@ -38,7 +35,7 @@ change_architecture_times_find(change_ty *cp, string_ty *un)
     trace(("change_architecture_times_find(cp = %8.8lX, un = %8.8lX)\n{\n",
 	(long)cp, (long)un));
     assert(cp->reference_count >= 1);
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     if (!cstate_data->architecture_times)
 	cstate_data->architecture_times =
 	    (cstate_architecture_times_list_ty *)
@@ -50,7 +47,7 @@ change_architecture_times_find(change_ty *cp, string_ty *un)
     }
     if (j >= cstate_data->architecture_times->length)
     {
-	type_ty		*type_p;
+	meta_type		*type_p;
 	cstate_architecture_times_ty **data_p;
 
 	data_p =

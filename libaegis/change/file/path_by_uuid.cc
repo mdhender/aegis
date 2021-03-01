@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate paths
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change/file.h>
@@ -30,7 +27,7 @@
 
 
 string_ty *
-change_file_path_by_uuid(change_ty *cp, string_ty *uuid)
+change_file_path_by_uuid(change::pointer cp, string_ty *uuid)
 {
     trace(("change_file_path_by_uuid(cp = %08lX, uuid = \"%s\")\n{\n",
 	(long)cp, uuid->str_text));
@@ -94,7 +91,7 @@ change_file_path_by_uuid(change_ty *cp, string_ty *uuid)
 	}
     }
 
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
     switch (cstate_data->state)
     {
     case cstate_state_awaiting_development:

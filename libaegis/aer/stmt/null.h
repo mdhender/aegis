@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2002, 2005, 2006 Peter Miller.
-//	All rights reserved.
+//	Copyright (C) 1994, 2002, 2005-2007 Peter Miller.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface definition for aegis/aer/stmt/null.c
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEGIS_AER_STMT_NULL_H
@@ -25,6 +22,47 @@
 
 #include <libaegis/aer/stmt.h>
 
-rpt_stmt_ty *rpt_stmt_null(void);
+/**
+  * The rpt_stmt_nullclass is used to represet a null (empty) statement
+  * in the statement syntax tree.
+  */
+class rpt_stmt_null:
+    public rpt_stmt
+{
+public:
+    /**
+      * The destructor.
+      */
+    virtual ~rpt_stmt_null();
+
+private:
+    /**
+      * The default constructor.  It is private on purpose, use the
+      * "create" class method instead.
+      */
+    rpt_stmt_null();
+
+public:
+    /**
+      * The create class method is used to create new dynamically
+      * allocated isnatnces of this class.
+      */
+    static pointer create();
+
+protected:
+    // See base class for documentation.
+    void run(rpt_stmt_result_ty *) const;
+
+private:
+    /**
+      * The copy constructor.  Do not use.
+      */
+    rpt_stmt_null(const rpt_stmt_null &);
+
+    /**
+      * The assignment operator.  Do not use.
+      */
+    rpt_stmt_null &operator=(const rpt_stmt_null &);
+};
 
 #endif // AEGIS_AER_STMT_NULL_H

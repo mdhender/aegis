@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2004, 2005 Peter Miller.
-//	All rights reserved.
+//	Copyright (C) 1994, 2004-2007 Peter Miller.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,39 +13,64 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to impliment the builtin eject function
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h> // for assert
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/func/eject.h>
 #include <libaegis/aer/func/print.h>
 #include <libaegis/aer/value/void.h>
 #include <libaegis/col.h>
-#include <common/error.h> // for assert
 
-static int
-valid(rpt_expr_ty *ep)
+
+rpt_func_eject::~rpt_func_eject()
 {
-    return (ep->nchild == 0);
 }
 
 
-static rpt_value_ty *
-run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
+rpt_func_eject::rpt_func_eject()
+{
+}
+
+
+rpt_func::pointer
+rpt_func_eject::create()
+{
+    return pointer(new rpt_func_eject());
+}
+
+
+const char *
+rpt_func_eject::name()
+    const
+{
+    return "eject";
+}
+
+
+bool
+rpt_func_eject::optimizable()
+    const
+{
+    return false;
+}
+
+
+bool
+rpt_func_eject::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 0);
+}
+
+
+rpt_value::pointer
+rpt_func_eject::run(const rpt_expr::pointer &, size_t, rpt_value::pointer *)
+    const
 {
     assert(rpt_func_print__colp);
-    col_eject(rpt_func_print__colp);
-    return rpt_value_void();
+    rpt_func_print__colp->eject();
+    return rpt_value_void::create();
 }
-
-
-rpt_func_ty rpt_func_eject =
-{
-    "eject",
-    0, // not optimizable
-    valid,
-    run
-};

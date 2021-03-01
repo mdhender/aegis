@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate specifics
 //
@@ -24,8 +23,7 @@
 
 #include <common/error.h>
 #include <common/trace.h>
-#include <common/wstr.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
 #include <libaegis/attribute.h>
 #include <libaegis/change.h>
 #include <libaegis/pconf.h>
@@ -34,19 +32,16 @@
 #include <libaegis/sub/project/specific.h>
 
 
-static string_ty *
-pconf_project_specific_find(pconf_ty *pconf_data, string_ty *name)
+static nstring
+pconf_project_specific_find(pconf_ty *pconf_data, const nstring &name)
 {
     assert(pconf_data);
-    assert(name);
     attributes_ty *psp =
-	attributes_list_find(pconf_data->project_specific, name->str_text);
-    if (psp)
-    {
-	assert(psp->value);
-	return psp->value;
-    }
-    return 0;
+	attributes_list_find(pconf_data->project_specific, name.c_str());
+    if (!psp)
+        return "";
+    assert(psp->value);
+    return nstring(psp->value);
 }
 
 
@@ -71,52 +66,35 @@ pconf_project_specific_find(pconf_ty *pconf_data, string_ty *name)
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_project_specific(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_project_specific(sub_context_ty *scp, const wstring_list &arg)
 {
-    string_ty	    *name;
-    string_ty	    *value;
-    wstring_ty	    *result;
-    change_ty	    *cp;
-    pconf_ty        *pconf_data;
-
     trace(("sub_project_specific()\n{\n"));
-    cp = sub_context_change_get(scp);
+    wstring result;
+    change::pointer cp = sub_context_change_get(scp);
     if (!cp)
     {
 	project_ty *pp = sub_context_project_get(scp);
 	if (!pp)
 	{
-	    sub_context_error_set(scp, i18n("not valid in current context"));
-	    trace(("return NULL;\n"));
+	    scp->error_set(i18n("not valid in current context"));
 	    trace(("}\n"));
-	    result = 0;
-	    goto done;
+	    return result;
 	}
 	cp = pp->change_get();
     }
-    if (arg->size() != 2)
+    if (arg.size() != 2)
     {
-	sub_context_error_set(scp, i18n("requires one argument"));
-	result = 0;
-	goto done;
+	scp->error_set(i18n("requires one argument"));
+        trace(("}\n"));
+        return result;
     }
 
-    name = wstr_to_str(arg->get(1));
-    pconf_data = change_pconf_get(cp, 0);
-    value = pconf_project_specific_find(pconf_data, name);
-    str_free(name);
-    if (!value)
-    {
-	sub_context_error_set(scp, i18n("unknown substitution variant"));
-	result = 0;
-	goto done;
-    }
-
-    result = str_to_wstr(value);
-
-    done:
-    trace(("return %8.8lX;\n", (long)result));
+    nstring name = arg[1].to_nstring();
+    pconf_ty *pconf_data = change_pconf_get(cp, 0);
+    nstring value(pconf_project_specific_find(pconf_data, name));
+    result = wstring(value);
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

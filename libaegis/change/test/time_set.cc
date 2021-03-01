@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate time_sets
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h> // for assert
@@ -27,7 +24,7 @@
 
 
 void
-change_test_time_set(change_ty *cp, time_t when)
+change_test_time_set(change::pointer cp, time_t when)
 {
     trace(("change_test_time_set(cp = %08lX, when = %ld)\n{\n", (long)cp,
 	(long)when));
@@ -38,61 +35,85 @@ change_test_time_set(change_ty *cp, time_t when)
 
 
 void
-change_test_time_set(change_ty *cp, string_ty *variant, time_t when)
+change_test_time_set(change::pointer cp, string_ty *variant, time_t when)
 {
     trace(("change_test_time_set(cp = %08lX, variant = \"%s\", when = %ld)\n"
 	"{\n", (long)cp, variant->str_text, (long)when));
 
-    //
-    // set the test_time in the architecture variant record
-    //
+    trace(("change_test_time_set(cp = %8.8lX)\n{\n", (long)cp));
     assert(cp->reference_count >= 1);
-    cstate_architecture_times_ty *tp =
-	change_find_architecture_variant(cp, variant);
-    trace_string(tp->variant);
-    tp->test_time = when;
-
-    //
-    // set the test_time in the change state.
-    // figure the oldest time of all variants.
-    // if one is missing, then is zero.
-    //
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    pconf_ty *pconf_data = change_pconf_get(cp, 1);
+    cstate_ty *cstate_data = cp->cstate_get();
+    // set the test_time in the change state - no matter what
     cstate_data->test_time = when;
-    if (!when)
+
+    if (pconf_data->test_covers_all_architectures)
     {
-	trace(("}\n"));
-	return;
+        //
+        // set the test_time in all of the architecture variant records
+	//
+        for (size_t j = 0; j < cstate_data->architecture->length; ++j)
+        {
+            trace(("j = %ld of %ld \"%s\"\n", (long)j,
+                (long)cstate_data->architecture->length,
+                cstate_data->architecture->list[j]->str_text));
+
+	    cstate_architecture_times_ty *tp =
+		cstate_data->architecture_times->list[j];
+            trace(("j = %ld of %ld \"%s\"\n", (long)j,
+                   (long)cstate_data->architecture_times->length,
+                   tp->variant->str_text));
+            tp->test_time = when;
+        }
     }
-    for (size_t j = 0; j < cstate_data->architecture->length; ++j)
+    else
     {
-	trace(("j = %ld of %ld \"%s\"\n", (long)j,
-	    (long)cstate_data->architecture->length,
-	    cstate_data->architecture->list[j]->str_text));
-	size_t k = 0;
-	for (k = 0; k < cstate_data->architecture_times->length; ++k)
-	{
-	    tp = cstate_data->architecture_times->list[k];
-	    trace(("k = %ld of %ld \"%s\"\n", (long)k,
-		(long)cstate_data->architecture_times->length,
-		tp->variant->str_text));
-	    if (str_equal(cstate_data->architecture->list[j], tp->variant))
-		break;
-	}
-	if (k >= cstate_data->architecture_times->length)
-	{
-	    trace(("clear change test time\n"));
-	    cstate_data->test_time = 0;
-	    break;
-	}
-	if (tp->test_time < cstate_data->test_time)
-	{
-	    trace(("shorten change test time\n"));
-	    cstate_data->test_time = tp->test_time;
-	    trace_time(cstate_data->test_time);
-	    if (!cstate_data->test_time)
-		break;
-	}
+        //
+        // set the test_time in the one architecture variant record
+        //
+        cstate_architecture_times_ty *tp =
+            change_find_architecture_variant(cp, variant);
+        trace_string(tp->variant);
+        tp->test_time = when;
+
+        if (when)
+        {
+            // figure the oldest time of all variants.
+            // if one is missing, then is zero.
+            // TODO: why traverse the list nested? Once is enough yes?
+            for (size_t j = 0; j < cstate_data->architecture->length; ++j)
+            {
+                trace(("j = %ld of %ld \"%s\"\n", (long)j,
+                    (long)cstate_data->architecture->length,
+                    cstate_data->architecture->list[j]->str_text));
+
+		size_t k = 0;
+                for (k = 0; k < cstate_data->architecture_times->length; ++k)
+                {
+                    tp = cstate_data->architecture_times->list[k];
+                    trace(("k = %ld of %ld \"%s\"\n", (long)k,
+                        (long)cstate_data->architecture_times->length,
+                        tp->variant->str_text));
+                    if (str_equal(cstate_data->architecture->list[j],
+                                  tp->variant))
+                        break;
+                }
+                if (k >= cstate_data->architecture_times->length)
+                {
+                    trace(("clear change test time\n"));
+                    cstate_data->test_time = 0;
+                    break;
+                }
+                if (tp->test_time < cstate_data->test_time)
+                {
+                    trace(("shorten change test time\n"));
+                    cstate_data->test_time = tp->test_time;
+                    trace_time(cstate_data->test_time);
+                    if (!cstate_data->test_time)
+                        break;
+                }
+            }
+        }
     }
     trace(("}\n"));
 }

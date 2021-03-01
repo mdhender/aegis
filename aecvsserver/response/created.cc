@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -82,8 +81,8 @@ response_created::~response_created()
 }
 
 
-response_created::response_created(string_ty *arg1, string_ty *arg2,
-	input &arg3, int arg4, string_ty *arg5) :
+response_created::response_created(string_ty *arg1, string_ty *, input &arg3,
+        int arg4, string_ty *arg5) :
     client_side(str_copy(arg1)),
     server_side(str_copy(arg1)),
     source(arg3),

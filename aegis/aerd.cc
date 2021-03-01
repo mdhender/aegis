@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1997-1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1995, 1997-1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -106,12 +105,12 @@ static void
 remove_developer_inner(project_ty *pp, string_list_ty *wlp, int strict)
 {
     size_t          j;
-    user_ty         *up;
+    user_ty::pointer up;
 
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // lock the project for change
@@ -122,7 +121,7 @@ remove_developer_inner(project_ty *pp, string_list_ty *wlp, int strict)
     //
     // check they are allowed to do this
     //
-    if (!project_administrator_query(pp, user_name(up)))
+    if (!project_administrator_query(pp, up->name()))
 	project_fatal(pp, 0, i18n("not an administrator"));
 
     //
@@ -130,20 +129,15 @@ remove_developer_inner(project_ty *pp, string_list_ty *wlp, int strict)
     //
     for (j = 0; j < wlp->nstrings; ++j)
     {
-	string_ty	*name;
-
-	name = wlp->string[j];
+	nstring name(wlp->string[j]);
 	if (!project_developer_query(pp, name))
 	{
-	    sub_context_ty  *scp;
-
 	    if (!strict)
 		continue;
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Name", name);
-	    project_fatal(pp, scp, i18n("user \"$name\" is not a developer"));
+	    sub_context_ty sc;
+	    sc.var_set_string("Name", name);
+	    project_fatal(pp, &sc, i18n("user \"$name\" is not a developer"));
 	    // NOTREACHED
-	    sub_context_delete(scp);
 	}
 	project_developer_remove(pp, name);
     }
@@ -167,7 +161,6 @@ remove_developer_inner(project_ty *pp, string_list_ty *wlp, int strict)
 	project_verbose(pp, scp, i18n("remove developer $name complete"));
 	sub_context_delete(scp);
     }
-    user_free(up);
 }
 
 
@@ -224,7 +217,7 @@ remove_developer_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(remove_developer_usage);
+	    user_ty::lock_wait_argument(remove_developer_usage);
 	    break;
 	}
 	arglex();
@@ -239,7 +232,10 @@ remove_developer_main(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -270,8 +266,8 @@ remove_developer(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, remove_developer_help, },
-	{arglex_token_list, remove_developer_list, },
+	{ arglex_token_help, remove_developer_help, 0 },
+	{ arglex_token_list, remove_developer_list, 0 },
     };
 
     trace(("remove_developer()\n{\n"));

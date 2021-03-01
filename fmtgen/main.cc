@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1997, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1995, 1997, 1999, 2002-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -106,7 +105,6 @@ help(void)
 "",
 "COPYRIGHT",
 "	The %s program is Copyright (C) 1990, 1991, 1992, 1993,",
-"	1994, 1995, 1997 Peter Miller;  All rights reserved.",
 "",
 "	The %s program comes with ABSOLUTELY NO WARRANTY; for",
 "	details use the 'aegis -VERSion Warranty' command.  This",

@@ -1,8 +1,8 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
+#	Copyright (C) 2006, 2007 Peter Miller
 #	Copyright (C) 2006 Walter Franzini;
-#	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 #	along with this program; if not, write to the Free Software
 #	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
-# MANIFEST: Test the ??? functionality
+# MANIFEST: Test the list project details functionality
 #
 
 unset AEGIS_PROJECT
@@ -45,7 +45,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	log_file_preference = never; \
 	default_development_directory = \"$work\";"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 # This tells aeintegratq that it is being used by a test.
@@ -97,7 +97,7 @@ pass()
 fail()
 {
 	set +x
-	echo "FAILED test of the ??? functionality ($activity)" 1>&2
+	echo "FAILED test of the list project details functionality ($activity)" 1>&2
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
@@ -106,7 +106,7 @@ fail()
 no_result()
 {
 	set +x
-	echo "NO RESULT when testing the ??? functionality ($activity)" 1>&2
+	echo "NO RESULT when testing the list project details functionality ($activity)" 1>&2
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
@@ -189,8 +189,7 @@ $bin/aegis -ni $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="project details"
-$bin/aegis -list project_details -p $AEGIS_PROJECT > log 2>&1 \
-    -trace get
+$bin/aegis -list project_details -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0; then cat log; fail; fi
 
 #

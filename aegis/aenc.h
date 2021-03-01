@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1993, 1998, 2002, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1993, 1998, 2002, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -24,11 +23,12 @@
 #define AEGIS_AENC_H
 
 #include <common/main.h>
+#include <libaegis/user.h>
 
 void new_change(void);
 
 struct project_ty; // existence
-struct user_ty; // existence
-void new_change_check_permission(struct project_ty *, struct user_ty *);
+
+void new_change_check_permission(project_ty *pp, user_ty::pointer up);
 
 #endif // AEGIS_AENC_H

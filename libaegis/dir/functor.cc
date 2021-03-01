@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -33,13 +32,13 @@ dir_functor::dir_functor()
 }
 
 
-dir_functor::dir_functor(const dir_functor &arg)
+dir_functor::dir_functor(const dir_functor &)
 {
 }
 
 
 dir_functor &
-dir_functor::operator=(const dir_functor &arg)
+dir_functor::operator=(const dir_functor &)
 {
     return *this;
 }

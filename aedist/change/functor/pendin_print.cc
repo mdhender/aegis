@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
+//	Copyright (C) 2006, 2007 Peter Miller
 //	Copyright (C) 2005 Walter Franzini;
-//	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the change_functor_pending_printer class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/ael/column_width.h>
@@ -35,10 +33,10 @@ change_functor_pending_printer::~change_functor_pending_printer()
         project_free(pp);
     size_t sz = remote_inventory->size();
     uuid_col->fprintf("Remote change set%s: %d.", sz == 1 ? "" : "s", sz);
-    col_eoln(colp);
+    colp->eoln();
     uuid_col->fprintf("Pending %d change set%s.", n, (n == 1 ? "" : "s"));
-    col_eoln(colp);
-    col_close(colp);
+    colp->eoln();
+    delete colp;
 }
 
 
@@ -55,32 +53,32 @@ change_functor_pending_printer::change_functor_pending_printer(bool arg1,
     ex_version_list(arg8),
     n(0)
 {
-    colp = col_open(0);
+    colp = col::open(0);
     nstring line1 =
         nstring::format
         (
             "Project \"%s\", Pending Change Set Inventory",
             project_name_get(pp)->str_text
         );
-    col_title(colp, line1.c_str(), arg3.c_str());
+    colp->title(line1.c_str(), arg3.c_str());
 
     int left = 0;
     vers_col =
-        col_create(colp, left, left + VERSION_WIDTH, "Change\n------");
+        colp->create(left, left + VERSION_WIDTH, "Change\n------");
     left += VERSION_WIDTH + 1;
     uuid_col =
-        col_create(colp, left, left + UUID_WIDTH, "UUID\n------");
+        colp->create(left, left + UUID_WIDTH, "UUID\n------");
     left += UUID_WIDTH + 1;
     desc_col =
-        col_create(colp, left, 0, "Description\n-----------");
+        colp->create(left, 0, "Description\n-----------");
 }
 
 
 
 void
-change_functor_pending_printer::operator()(change_ty *cp)
+change_functor_pending_printer::operator()(change::pointer cp)
 {
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
 
     if (cstate_data->uuid)
     {
@@ -112,7 +110,7 @@ change_functor_pending_printer::operator()(change_ty *cp)
             vers_col->fputs(version);
             uuid_col->fputs(uuid);
             desc_col->fputs(nstring(cstate_data->brief_description));
-            col_eoln(colp);
+            colp->eoln();
             ++n;
         }
     }

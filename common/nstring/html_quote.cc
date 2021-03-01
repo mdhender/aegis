@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -190,10 +189,10 @@ at_url2(const char *cp)
 static const char *
 at_email_lhs(const char *cp)
 {
-    if (strchr(LOWER NUMERIC, *cp) == 0)
+    if (strchr(ALPHA NUMERIC, *cp) == 0)
 	return 0;
     ++cp;
-    size_t n = strspn(cp, LOWER NUMERIC ".-");
+    size_t n = strspn(cp, ALPHA NUMERIC ".-");
     return (cp + n);
 }
 
@@ -201,10 +200,10 @@ at_email_lhs(const char *cp)
 static const char *
 at_email_rhs(const char *cp)
 {
-    if (strchr(LOWER NUMERIC, *cp) == 0)
+    if (strchr(ALPHA NUMERIC, *cp) == 0)
 	return 0;
     ++cp;
-    size_t n = strspn(cp, LOWER NUMERIC "-");
+    size_t n = strspn(cp, ALPHA NUMERIC "-");
     return (cp + n);
 }
 

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1996, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,335 +13,274 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate bit manipulation expressions
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
+#include <common/trace.h>
 #include <libaegis/aer/expr/bit.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/integer.h>
-#include <common/error.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 
 
-static rpt_value_ty *
-and_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_and_bit::~rpt_expr_and_bit()
 {
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v1i;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *v2i;
-    rpt_value_ty    *result;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+}
 
-    assert(this_thing->nchild == 2);
-    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (v1->method->type == rpt_value_type_error)
+
+rpt_expr_and_bit::rpt_expr_and_bit(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    append(lhs);
+    append(rhs);
+}
+
+
+rpt_expr::pointer
+rpt_expr_and_bit::create(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return pointer(new rpt_expr_and_bit(lhs, rhs));
+}
+
+
+rpt_value::pointer
+rpt_expr_and_bit::evaluate()
+    const
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    assert(get_nchildren() == 2);
+    rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
+    trace(("v1 is %s\n", v1->name()));
+    if (v1->is_an_error())
 	return v1;
-    v1i = rpt_value_integerize(v1);
-    if (v1i->method->type != rpt_value_type_integer)
+    rpt_value::pointer v1i = rpt_value::integerize(v1);
+    trace(("v1i is %s\n", v1i->name()));
+    rpt_value_integer *v1ip = dynamic_cast<rpt_value_integer *>(v1i.get());
+    if (!v1ip)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	rpt_value_free(v1i);
-	sub_var_set_charstar(scp, "Name", v1->method->name);
-	rpt_value_free(v1);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", v1->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
 		i18n("integer value required for bit and (was given $name)")
-	    );
-	sub_context_delete(scp);
-	assert(this_thing->child[0]->pos);
-	result = rpt_value_error(this_thing->child[0]->pos, s);
-	str_free(s);
+	    )
+        );
+	assert(nth_child(0)->get_pos());
+	rpt_value::pointer result =
+            rpt_value_error::create(nth_child(0)->get_pos(), s);
 	return result;
     }
-    rpt_value_free(v1);
+    trace(("v1ip is %ld\n", v1ip->query()));
 
-    v2 = rpt_expr_evaluate(this_thing->child[1], 1);
-    if (v2->method->type == rpt_value_type_error)
-    {
-	rpt_value_free(v1i);
+    rpt_value::pointer v2 = nth_child(1)->evaluate(true, true);
+    trace(("v2 is %s\n", v2->name()));
+    if (v2->is_an_error())
 	return v2;
-    }
-    v2i = rpt_value_integerize(v2);
-    if (v2i->method->type != rpt_value_type_integer)
+    rpt_value::pointer v2i = rpt_value::integerize(v2);
+    trace(("v2i is %s\n", v2i->name()));
+    rpt_value_integer *v2ip = dynamic_cast<rpt_value_integer *>(v2i.get());
+    if (!v2ip)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	rpt_value_free(v1i);
-	rpt_value_free(v2i);
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", v2->method->name);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", v2->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
 		i18n("integer value required for bit and (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->child[1]->pos, s);
-	str_free(s);
-	rpt_value_free(v2);
+	    )
+        );
+        rpt_value::pointer result =
+            rpt_value_error::create(nth_child(1)->get_pos(), s);
 	return result;
     }
-    rpt_value_free(v2);
+    trace(("v2ip is %ld\n", v2ip->query()));
 
-    result =
-	rpt_value_integer
-	(
-    	    rpt_value_integer_query(v1i) & rpt_value_integer_query(v2i)
-	);
-    rpt_value_free(v1i);
-    rpt_value_free(v2i);
-    return result;
+    return rpt_value_integer::create(v1ip->query() & v2ip->query());
 }
 
 
-static rpt_expr_method_ty and_method =
+rpt_expr_xor_bit::~rpt_expr_xor_bit()
 {
-    sizeof(rpt_expr_ty),
-    "bitwise and",
-    0, // construct
-    0, // destruct
-    and_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_and_bit(rpt_expr_ty *e1, rpt_expr_ty *e2)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&and_method);
-    rpt_expr_append(this_thing, e1);
-    rpt_expr_append(this_thing, e2);
-    return this_thing;
 }
 
 
-static rpt_value_ty *
-xor_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_xor_bit::rpt_expr_xor_bit(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
 {
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v1i;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *v2i;
-    rpt_value_ty    *result;
+    append(lhs);
+    append(rhs);
+}
 
-    assert(this_thing->nchild == 2);
-    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (v1->method->type == rpt_value_type_error)
+
+rpt_expr::pointer
+rpt_expr_xor_bit::create(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
+{
+    return pointer(new rpt_expr_xor_bit(lhs, rhs));
+}
+
+
+rpt_value::pointer
+rpt_expr_xor_bit::evaluate()
+    const
+{
+    assert(get_nchildren() == 2);
+    rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
+    if (v1->is_an_error())
 	return v1;
-    v1i = rpt_value_integerize(v1);
-    if (v1i->method->type != rpt_value_type_integer)
+    rpt_value::pointer v1i = rpt_value::integerize(v1);
+    rpt_value_integer *v1ip = dynamic_cast<rpt_value_integer *>(v1i.get());
+    if (!v1ip)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	rpt_value_free(v1i);
-	sub_var_set_charstar(scp, "Name", v1->method->name);
-	rpt_value_free(v1);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", v1->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
 		i18n("integer value required for bit xor (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->child[0]->pos, s);
-	str_free(s);
+	    )
+        );
+	rpt_value::pointer result =
+            rpt_value_error::create(nth_child(0)->get_pos(), s);
 	return result;
     }
-    rpt_value_free(v1);
 
-    v2 = rpt_expr_evaluate(this_thing->child[1], 1);
-    if (v2->method->type == rpt_value_type_error)
-    {
-	rpt_value_free(v1i);
+    rpt_value::pointer v2 = nth_child(1)->evaluate(true, true);
+    if (v2->is_an_error())
 	return v2;
-    }
-    v2i = rpt_value_integerize(v2);
-    if (v2i->method->type != rpt_value_type_integer)
+    rpt_value::pointer v2i = rpt_value::integerize(v2);
+    rpt_value_integer *v2ip = dynamic_cast<rpt_value_integer *>(v2i.get());
+    if (!v2ip)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	rpt_value_free(v1i);
-	rpt_value_free(v2i);
-	sub_var_set_charstar(scp, "Name", v2->method->name);
-	rpt_value_free(v2);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", v2->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
 		i18n("integer value required for bit xor (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->child[1]->pos, s);
-	str_free(s);
+	    )
+        );
+	rpt_value::pointer result =
+            rpt_value_error::create(nth_child(1)->get_pos(), s);
 	return result;
     }
-    rpt_value_free(v2);
 
-    result =
-	rpt_value_integer
-	(
-    	    rpt_value_integer_query(v1i) ^ rpt_value_integer_query(v2i)
-	);
-    rpt_value_free(v1i);
-    rpt_value_free(v2i);
-    return result;
+    return rpt_value_integer::create(v1ip->query() ^ v2ip->query());
 }
 
 
-static rpt_expr_method_ty xor_method =
+rpt_expr_or_bit::~rpt_expr_or_bit()
 {
-    sizeof(rpt_expr_ty),
-    "bitwise xor",
-    0, // construct
-    0, // destruct
-    xor_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_xor_bit(rpt_expr_ty *e1, rpt_expr_ty *e2)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&xor_method);
-    rpt_expr_append(this_thing, e1);
-    rpt_expr_append(this_thing, e2);
-    return this_thing;
 }
 
 
-static rpt_value_ty *
-or_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_or_bit::rpt_expr_or_bit(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
 {
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v1i;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *v2i;
-    rpt_value_ty    *result;
+    append(lhs);
+    append(rhs);
+}
 
-    assert(this_thing->nchild == 2);
-    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (v1->method->type == rpt_value_type_error)
+
+rpt_expr::pointer
+rpt_expr_or_bit::create(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
+{
+    return pointer(new rpt_expr_or_bit(lhs, rhs));
+}
+
+
+rpt_value::pointer
+rpt_expr_or_bit::evaluate()
+    const
+{
+    assert(get_nchildren() == 2);
+    rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
+    if (v1->is_an_error())
 	return v1;
-    v1i = rpt_value_integerize(v1);
-    if (v1i->method->type != rpt_value_type_integer)
+    rpt_value::pointer v1i = rpt_value::integerize(v1);
+    rpt_value_integer *v1ip = dynamic_cast<rpt_value_integer *>(v1i.get());
+    if (!v1ip)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	rpt_value_free(v1i);
-	sub_var_set_charstar(scp, "Name", v1->method->name);
-	rpt_value_free(v1);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", v1->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
 		i18n("integer value required for bit or (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->child[0]->pos, s);
-	str_free(s);
+	    )
+        );
+        rpt_value::pointer result =
+            rpt_value_error::create(nth_child(0)->get_pos(), s);
 	return result;
     }
-    rpt_value_free(v1);
 
-    v2 = rpt_expr_evaluate(this_thing->child[1], 1);
-    if (v2->method->type == rpt_value_type_error)
-    {
-	rpt_value_free(v1i);
+    rpt_value::pointer v2 = nth_child(1)->evaluate(true, true);
+    if (v2->is_an_error())
 	return v2;
-    }
-    v2i = rpt_value_integerize(v2);
-    if (v2i->method->type != rpt_value_type_integer)
+    rpt_value::pointer v2i = rpt_value::integerize(v2);
+    rpt_value_integer *v2ip = dynamic_cast<rpt_value_integer *>(v2i.get());
+    if (!v2ip)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	rpt_value_free(v1i);
-	rpt_value_free(v2i);
-	sub_var_set_charstar(scp, "Name", v2->method->name);
-	rpt_value_free(v2);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", v2->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
 		i18n("integer value required for bit or (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->child[1]->pos, s);
-	str_free(s);
+	    )
+        );
+        rpt_value::pointer result =
+            rpt_value_error::create(nth_child(1)->get_pos(), s);
 	return result;
     }
-    rpt_value_free(v2);
 
-    result =
-	rpt_value_integer
-	(
-    	    rpt_value_integer_query(v1i) | rpt_value_integer_query(v2i)
-	);
-    rpt_value_free(v1i);
-    rpt_value_free(v2i);
-    return result;
+    return rpt_value_integer::create(v1ip->query() | v2ip->query());
 }
 
 
-static rpt_expr_method_ty or_method =
+rpt_expr_not_bit::~rpt_expr_not_bit()
 {
-    sizeof(rpt_expr_ty),
-    "bitwise or",
-    0, // construct
-    0, // destruct
-    or_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_or_bit(rpt_expr_ty *e1, rpt_expr_ty *e2)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&or_method);
-    rpt_expr_append(this_thing, e1);
-    rpt_expr_append(this_thing, e2);
-    return this_thing;
 }
 
 
-static rpt_value_ty *
-not_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_not_bit::rpt_expr_not_bit(const rpt_expr::pointer &arg)
 {
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *vp;
+    append(arg);
+}
 
+
+rpt_expr::pointer
+rpt_expr_not_bit::create(const rpt_expr::pointer &arg)
+{
+    return pointer(new rpt_expr_not_bit(arg));
+}
+
+
+rpt_value::pointer
+rpt_expr_not_bit::evaluate()
+    const
+{
     //
     // evaluate the argument
     //
     trace(("not::evaluate()\n{\n"));
-    assert(this_thing->nchild == 1);
-    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (v1->method->type == rpt_value_type_error)
+    assert(get_nchildren() == 1);
+    rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
+    if (v1->is_an_error())
     {
 	trace(("}\n"));
 	return v1;
@@ -352,51 +290,22 @@ not_evaluate(rpt_expr_ty *this_thing)
     // coerce the argument to an arithmetic type
     //	(will not give error if can't, will copy instead)
     //
-    v2 = rpt_value_integerize(v1);
-    rpt_value_free(v1);
+    rpt_value::pointer v2 = rpt_value::integerize(v1);
 
     //
     // the type of the result depends on
     // the types of the argument
     //
-    if (v2->method->type == rpt_value_type_integer)
-	vp = rpt_value_integer(~rpt_value_integer_query(v2));
-    else
+    rpt_value_integer *vip = dynamic_cast<rpt_value_integer *>(v2.get());
+    if (!vip)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", v2->method->name);
-	s = subst_intl(scp, i18n("illegal bit not ($name)"));
-	sub_context_delete(scp);
-	vp = rpt_value_error(this_thing->child[0]->pos, s);
-	str_free(s);
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", v2->name());
+	nstring s(sc.subst_intl(i18n("illegal bit not ($name)")));
+	rpt_value::pointer vp =
+            rpt_value_error::create(nth_child(0)->get_pos(), s);
+        return vp;
     }
-    rpt_value_free(v2);
-    trace(("return %08lX;\n", (long)vp));
-    trace(("}\n"));
-    return vp;
-}
 
-
-static rpt_expr_method_ty not_method =
-{
-    sizeof(rpt_expr_ty),
-    "bitwise not",
-    0, // construct
-    0, // destruct
-    not_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_not_bit(rpt_expr_ty *a)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&not_method);
-    rpt_expr_append(this_thing, a);
-    return this_thing;
+    return rpt_value_integer::create(~vip->query());
 }

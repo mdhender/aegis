@@ -1,23 +1,19 @@
 /*
- *	aegis - project change supervisor
- *	Copyright (C) 2000, 2002, 2004 Peter Miller;
- *	All rights reserved.
+ * aegis - project change supervisor
+ * Copyright (C) 2000, 2002, 2004, 2006, 2007 Peter Miller
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or (at
+ * your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: lint.cook
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  ***************************************************************************
 FlexeLint for C/C++ (U32) Ver. 7.50, Copyright Gimpel Software 1985-1997
@@ -202,26 +198,26 @@ if [find_command flint] then
 #endif
 
 flint-flags =
-	;
+        ;
 
 lint.targets: [fromto %0%.cc %0%.lob [match_mask %1/%0%.cc [source_files]]];
 
 %1/%0%.lob: %1/%0%.cc: etc/lint.flags.lnt
 {
     flint
-	[flint-flags]
-	[stringset
-	    [prepost "-I" "/etc/flint" [search_list]]
-	    [prepost "-I" "/%1" [search_list]]
-	    [cc_include_flags]
-	    -I/usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include
-	    -I/usr/include
-	]
-	[resolve etc/lint.flags.lnt]
-	[resolve %0%.cc]
-	"-oo'("[target]")'";
+        [flint-flags]
+        [stringset
+            [prepost "-I" "/etc/flint" [search_list]]
+            [prepost "-I" "/%1" [search_list]]
+            [cc_include_flags]
+            -I/usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include
+            -I/usr/include
+        ]
+        [resolve etc/lint.flags.lnt]
+        [resolve %0%.cc]
+        "-oo'("[target]")'";
     /* I haven't got enuf disk space, and we're not using them anyway,
        so nuke the .lob files */
     cp /dev/null [target]
-	set silent;
+        set silent;
 }

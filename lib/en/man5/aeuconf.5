@@ -1,7 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1996, 1998, 1999, 2002, 2004, 2005 Peter Miller;
-.\"	All rights reserved.
+.\"	Copyright (C) 1991-1996, 1998, 1999, 2002, 2004-2007 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 .\"	GNU General Public License for more details.
 .\"
 .\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: description of aegis user configuration file format
+.\"	along with this program. If not, see
+.\"	<http://www.gnu.org/licenses/>.
 .\"
 .so z_name.so
 .TH aeuconf 5 \*(N) "Reference Manual"
@@ -301,14 +298,23 @@ The name of the attribute.
 By convention, names which start with an upper-case letter will appear
 in listings, and lower-case will not.
 Attribute names are case-insensitive.
-.RE
-.TP 8n
-value = string;
-The value of the attribute.
 .PP
 Arguably, most user attributes which may be altered by the user (and
 some that can't) should be of this form.  Due to an accident of history,
 this is not the case.
+.PP
+The attributes known to Aegis are:
+.TP 8n
+progress-preference
+boolean; true if \f[I]aet\fP(1) should emit progress messages, false if
+not.  Can be overridden with the \fB\-progress\fP and \fB-no-progress\fP
+command line options.
+.PP
+FIXME: there needs to be a \f[I]aesub\fP(5) way to get at these values.
+.RE
+.TP 8n
+value = string;
+The value of the attribute.
 .SH SEE ALSO
 .TP 8n
 .IR aegis (5)

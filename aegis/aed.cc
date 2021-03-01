@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
+//	Copyright (C) 2006 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: difference a change
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -131,9 +129,9 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
     cstate_ty       *cstate2_data;
     size_t          j;
     project_ty      *pp;
-    change_ty       *cp;
-    user_ty         *up;
-    change_ty       *acp;
+    change::pointer cp;
+    user_ty::pointer up;
+    change::pointer acp;
     project_ty      *pp2;
 
     trace(("anticipate()\n{\n"));
@@ -142,7 +140,10 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -158,13 +159,13 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
     acp = change_alloc(pp2, cn2);
@@ -176,8 +177,8 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
     // It is an error if the anticipated change is not awaiting
     // integration or being integrated.
     //
-    cstate_data = change_cstate_get(cp);
-    cstate2_data = change_cstate_get(acp);
+    cstate_data = cp->cstate_get();
+    cstate2_data = acp->cstate_get();
     if
     (
 	change_is_a_branch(cp)
@@ -202,7 +203,7 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
     {
 	change_fatal(acp, 0, i18n("bad anticipate diff"));
     }
-    if (!str_equal(change_developer_name(cp), user_name(up)))
+    if (nstring(change_developer_name(cp)) != up->name())
 	change_fatal(cp, 0, i18n("not developer"));
 
     //
@@ -437,10 +438,9 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 	    output = change_file_path(cp, s1);
 	    assert(output);
 	    input = str_format("%s,B", output->str_text);
-	    user_become(up);
+            user_ty::become scoped(up);
 	    os_rename(output, input);
             undo_rename(input, output);
-            user_become_undo();
         }
 	else
 	{
@@ -467,9 +467,9 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 	    //
 	    original = os_edit_filename(0);
 	    original_unlink = 1;
-	    user_become(up);
+	    up->become_begin();
 	    undo_unlink_errok(original);
-	    user_become_undo();
+	    up->become_end();
 
 	    assert(src1_data->edit);
 	    assert(src1_data->edit->revision);
@@ -492,9 +492,8 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 		input,
 		output
 	    );
-	    user_become(up);
+            user_ty::become scoped(up);
             undo_rename_cancel(input, output);
-	    user_become_undo();
 	}
 	else
 	{
@@ -514,9 +513,8 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 	//
 	if (original_unlink)
 	{
-	    user_become(up);
+            user_ty::become scoped(up);
 	    os_unlink(original);
-	    user_become_undo();
 	}
 
 	//
@@ -542,7 +540,6 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
     change_free(cp);
     change_free(acp);
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -558,7 +555,7 @@ project_file_exists(project_ty *pp, string_ty *filename)
 
 
 static int
-change_file_exists(change_ty *cp, string_ty *filename)
+change_file_exists(change::pointer cp, string_ty *filename)
 {
     fstate_src_ty   *c_src_data;
 
@@ -586,14 +583,14 @@ difference_main(void)
     string_ty       *project_name;
     project_ty      *pp;
     long            change_number;
-    change_ty       *cp;
+    change::pointer cp;
     log_style_ty    log_style;
-    user_ty         *up;
+    user_ty::pointer up;
     long            cn2;
     int             merge_select;
     size_t          mergable_files;
     int             integrating;
-    user_ty         *diff_user_p;
+    user_ty::pointer diff_user_p;
     const char      *branch;
     project_ty      *pp2;
     project_ty      *pp2bl;
@@ -757,12 +754,12 @@ difference_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(difference_usage);
+	    user_ty::lock_wait_argument(difference_usage);
 	    break;
 
 	case arglex_token_base_relative:
 	case arglex_token_current_relative:
-	    user_relative_filename_preference_argument(difference_usage);
+	    user_ty::relative_filename_preference_argument(difference_usage);
 	    break;
 	}
 	arglex();
@@ -816,7 +813,10 @@ difference_main(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -832,13 +832,13 @@ difference_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -857,7 +857,7 @@ difference_main(void)
     // being_integrated state.
     // It is an error if the change is not assigned to the current user.
     //
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     if
     (
 	change_is_a_branch(cp)
@@ -875,12 +875,12 @@ difference_main(void)
     integrating = (cstate_data->state == cstate_state_being_integrated);
     if (integrating)
     {
-	if (!str_equal(change_integrator_name(cp), user_name(up)))
+	if (nstring(change_integrator_name(cp)) != up->name())
 	    change_fatal(cp, 0, i18n("not integrator"));
     }
     else
     {
-	if (!str_equal(change_developer_name(cp), user_name(up)))
+	if (nstring(change_developer_name(cp)) != up->name())
 	    change_fatal(cp, 0, i18n("not developer"));
 
 	//
@@ -890,11 +890,10 @@ difference_main(void)
 	trace(("mark\n"));
 	if (change_file_promote(cp))
 	{
-	    //
-	    // May need to cope with other baseline changes, as well.
-	    //
-	    trace(("The change_file_promote found somthing to do.\n"));
-	    change_run_project_file_command(cp, up);
+	    // remember that we are about to
+            bool recent_integration = cp->run_project_file_command_needed();
+            if (recent_integration)
+                cp->run_project_file_command_done();
 
             //
             // Write out the file state, and then let go of the locks
@@ -905,6 +904,10 @@ difference_main(void)
 	    change_cstate_write(cp);
 	    commit();
 	    lock_release();
+
+            // always done outside locks
+            if (recent_integration)
+                cp->run_project_file_command(up);
 
 	    trace(("Take the locks again.\n"));
 	    change_cstate_lock_prepare(cp);
@@ -955,7 +958,7 @@ difference_main(void)
     else
     {
 	if (merge_select == NOT_SET)
-	    merge_select = user_diff_preference(up);
+	    merge_select = up->diff_preference();
     }
 
     //
@@ -1139,8 +1142,7 @@ difference_main(void)
 	// If the edit numbers match (is up to date)
 	// then do not merge this one.
 	//
-	src2_data =
-	    project_file_find_by_meta(pp2, src1_data, view_path_extreme);
+	src2_data = project_file_find(pp2, src1_data, view_path_extreme);
 	if (!src2_data)
 	    continue;
 	if (change_file_up_to_date(pp2, src1_data))
@@ -1283,8 +1285,7 @@ difference_main(void)
 	    // If the edit numbers match (is up to date)
 	    // then do not merge this one.
 	    //
-	    src2_data =
-		project_file_find_by_meta(pp2, src1_data, view_path_extreme);
+	    src2_data = project_file_find(pp2, src1_data, view_path_extreme);
 	    if (!src2_data)
 	    {
 		//
@@ -1324,10 +1325,9 @@ difference_main(void)
 		trace_string(outname->str_text);
 		curfile = str_format("%s,B", outname->str_text);
 		trace_string(curfile->str_text);
-		user_become(diff_user_p);
+                user_ty::become scoped(diff_user_p);
 		os_rename(outname, curfile);
                 undo_rename(curfile, outname);
-                user_become_undo();
 	    }
 	    else
 	    {
@@ -1341,9 +1341,9 @@ difference_main(void)
 	    // name for temp file
 	    //
 	    original = os_edit_filename(0);
-	    user_become(diff_user_p);
+	    diff_user_p->become_begin();
 	    undo_unlink_errok(original);
-	    user_become_undo();
+	    diff_user_p->become_end();
 
 	    //
 	    // get the version out of history
@@ -1360,7 +1360,7 @@ difference_main(void)
 	    change_file_copy_basic_attributes(reconstruct, src1_data);
 
 	    p_src_data =
-		project_file_find_by_meta(cp->pp, src1_data, view_path_extreme);
+		project_file_find(cp->pp, src1_data, view_path_extreme);
 	    if (!p_src_data)
 	    {
 		//
@@ -1425,9 +1425,8 @@ difference_main(void)
 		    curfile,
 		    outname
 		);
-		user_become(diff_user_p);
+                user_ty::become scoped(diff_user_p);
                 undo_rename_cancel(curfile, outname);
-		user_become_undo();
             }
 	    else
 	    {
@@ -1447,9 +1446,9 @@ difference_main(void)
 	    // Remember to remove the temporary file when
 	    // finished.
 	    //
-	    user_become(diff_user_p);
+	    diff_user_p->become_begin();
 	    os_unlink(original);
-	    user_become_undo();
+	    diff_user_p->become_end();
 	    str_free(original);
 
 	    //
@@ -1599,7 +1598,7 @@ difference_main(void)
             //
 	    // locate the equivalent project file
 	    //
-	    src2_data = project_file_find(pp2bl, s1, view_path_extreme);
+	    src2_data = project_file_find(pp2bl, src1_data, view_path_extreme);
 	    trace(("src2_data = %08lX\n", (long)src2_data));
 	    if (src2_data)
 	    {
@@ -1716,7 +1715,7 @@ difference_main(void)
 	    // eventually, even files being removed and
 	    // created.  Do nothing if we can.
 	    //
-	    user_become(diff_user_p);
+	    diff_user_p->become_begin();
 	    if (integrating)
 	    {
 		ignore =
@@ -1737,7 +1736,7 @@ difference_main(void)
 			0
 		    );
 	    }
-	    user_become_undo();
+	    diff_user_p->become_end();
 	    if (ignore)
 	    {
 		trace(("ignore\n"));
@@ -1807,7 +1806,7 @@ difference_main(void)
 		// remember the new fingerprint
 		//
 		set_fingerprint:
-		user_become(diff_user_p);
+		diff_user_p->become_begin();
 		if (integrating)
 		{
 		    if (!src1_data->idiff_file_fp)
@@ -1833,16 +1832,16 @@ difference_main(void)
 		    src1_data->diff_file_fp->youngest = 0;
 		    change_fingerprint_same(src1_data->diff_file_fp, path_d, 0);
 		}
-		user_become_undo();
+		diff_user_p->become_end();
 		break;
 
 	    case file_action_remove:
 		//
 		// create directory for diff file
 		//
-		user_become(diff_user_p);
+		diff_user_p->become_begin();
 		os_mkdir_between(dd, s1, 02755);
-		user_become_undo();
+		diff_user_p->become_end();
 
 		//
 		// difference the file
@@ -1850,7 +1849,7 @@ difference_main(void)
 		//
 		{
 		    string_ty *original;
-		    string_ty *input;
+		    string_ty *input_file_name;
 		    int org_unlink = 0;
 		    if (src2_data)
 		    {
@@ -1887,17 +1886,17 @@ difference_main(void)
 			change_file_exists(cp, src1_data->move)
 		    )
 		    {
-			input = change_file_path(cp, src1_data->move);
-			assert(input);
+			input_file_name = change_file_path(cp, src1_data->move);
+			assert(input_file_name);
 		    }
 		    else
-			input = str_from_c("/dev/null");
+			input_file_name = str_from_c("/dev/null");
 		    change_run_diff_command
 		    (
 			cp,
 			diff_user_p,
 			original,
-			input,
+			input_file_name,
 			path_d
 		    );
 		    if (org_unlink)
@@ -1908,7 +1907,7 @@ difference_main(void)
 			os_become_undo();
 		    }
 		    str_free(original);
-		    str_free(input);
+		    str_free(input_file_name);
 		}
 		goto set_fingerprint;
 
@@ -1926,8 +1925,12 @@ difference_main(void)
 
 	    case file_action_modify:
 		trace(("%s\n", file_action_ename(src1_data->action)));
-		if (integrating && !src2_data)
+                trace(("src2_data = %08lX\n", (long)src2_data));
+		if (!src2_data)
 		{
+                    integrate_pseudo_create:
+                    assert(integrating);
+
 		    //
                     // If a file is created on the trunk, then is is
                     // possible that the project file pointer is NULL
@@ -1953,10 +1956,17 @@ difference_main(void)
 		// use the diff-command
 		//
 		{
+                    fstate_src_ty *pp2src_data =
+                        project_file_find(pp2bl, s1, view_path_extreme);
+                    if (!pp2src_data)
+                    {
+                        trace(("not in grandparent branch\n"));
+                        goto integrate_pseudo_create;
+                    }
+
 		    trace(("project file path \"%s\"\n", s1->str_text));
-		    string_ty *original;
 		    int org_unlink = 0;
-		    original = project_file_path(pp2bl, s1);
+		    string_ty *original = project_file_path(pp2bl, s1);
 		    trace_string(original->str_text);
 
 		    //
@@ -2020,7 +2030,6 @@ difference_main(void)
     }
     change_free(cp);
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -2030,8 +2039,8 @@ difference(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{ arglex_token_help, difference_help, },
-	{ arglex_token_list, difference_list, },
+	{ arglex_token_help, difference_help, 0 },
+	{ arglex_token_list, difference_list, 0 },
     };
 
     trace(("difference()\n{\n"));

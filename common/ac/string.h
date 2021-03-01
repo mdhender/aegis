@@ -1,21 +1,21 @@
 //
 //	aegis - a project change supervisor
-//	Copyright (C) 1994, 1996, 1997, 2002, 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994, 1996, 1997, 2002, 2004-2007 Peter Miller
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or
+//      modify it under the terms of the GNU General Public License as
+//      published by the Free Software Foundation; either version 2 of
+//      the License, or (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//      You should have received a copy of the GNU General Public
+//      License along with this program; if not, write to the Free
+//      Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+//      Boston, MA 02110-1301 USA.
 //
 // MANIFEST: insulate against <string.h> vs <strings.h> differences
 //
@@ -24,24 +24,6 @@
 #define COMMON_AC_STRING_H
 
 #include <common/config.h>
-
-#if !HAVE_STRCASECMP
-int strcasecmp(const char *, const char *);
-#endif
-
-#if !HAVE_STRNCASECMP
-int strncasecmp(const char *, const char *, size_t);
-#endif
-
-#if !HAVE_DECL_STRSIGNAL
-extern "C" {
-const char *strsignal(int);
-}
-#endif
-
-#if !HAVE_STRVERSCMP
-int strverscmp(const char *, const char *);
-#endif
 
 #if STDC_HEADERS || HAVE_STRING_H
 #  include <string.h>
@@ -52,6 +34,24 @@ int strverscmp(const char *, const char *);
 #else
    // memory.h and strings.h conflict on some systems.
 #  include <strings.h>
+#endif
+
+extern "C" {
+
+#if !HAVE_STRCASECMP
+int strcasecmp(const char *, const char *);
+#endif
+
+#if !HAVE_STRNCASECMP
+int strncasecmp(const char *, const char *, size_t);
+#endif
+
+#if !HAVE_DECL_STRSIGNAL
+const char *strsignal(int);
+#endif
+
+#if !HAVE_STRVERSCMP
+int strverscmp(const char *, const char *);
 #endif
 
 #if !HAVE_STRLCPY
@@ -135,5 +135,16 @@ char *strendcpy(char *dst, const char *src, const char *end);
 #define strcat strcat_is_unsafe__use_strendcat_instead@
 #undef strcpy
 #define strcpy strcpy_is_unsafe__use_strendcpy_instead@
+
+#ifndef HAVE_MEMMEM
+void *memmem(const void *, size_t, const void *, size_t);
+#endif
+void *memmem_replacement(const void *, size_t, const void *, size_t);
+
+// It is possible memmem is present, but severely broken.  See the GNU
+// libc memmem(3) man page for just how broken it can get.
+#define memmem memmem_replacement
+
+}
 
 #endif // COMMON_AC_STRING_H

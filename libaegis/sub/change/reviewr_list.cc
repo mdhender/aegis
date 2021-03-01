@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: implementation of the sub_change_reviewr_list class
 //
@@ -28,18 +27,17 @@
 #include <common/wstr/list.h>
 
 
-wstring_ty *
-sub_change_reviewer_list(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_change_reviewer_list(sub_context_ty *scp, const wstring_list &)
 {
     trace(("sub_change_reviewer_list()\n{\n"));
-    wstring_ty *result = 0;
-    change_ty *cp = sub_context_change_get(scp);
+    wstring result;
+    change::pointer cp = sub_context_change_get(scp);
     if (!cp)
     {
-	sub_context_error_set(scp, i18n("not valid in current context"));
-	trace(("return NULL;\n"));
+	scp->error_set(i18n("not valid in current context"));
 	trace(("}\n"));
-	return 0;
+	return result;
     }
 
     //
@@ -52,16 +50,15 @@ sub_change_reviewer_list(sub_context_ty *scp, wstring_list_ty *arg)
     //
     // Turn the list of reviewer names into a single space-separated string.
     //
-    string_ty *s = reviewers.unsplit(0, reviewers.size(), 0);
+    nstring s(reviewers.unsplit(0, reviewers.size(), 0));
 
     //
     // Turn the narrow character string into a wide character string
     // to form the result of the substitution.
     //
-    result = str_to_wstr(s);
-    str_free(s);
+    result = wstring(s);
 
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

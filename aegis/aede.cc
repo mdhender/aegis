@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-2006 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 1991-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement develop end
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -126,9 +123,7 @@ develop_end_main(void)
     string_ty       *project_name;
     project_ty      *pp;
     long            change_number;
-    change_ty       *cp;
-    user_ty         *up;
-    user_ty         *up_admin;
+    change::pointer cp;
     int             diff_whine;
     time_t          youngest;
     string_ty       *youngest_name;
@@ -171,7 +166,7 @@ develop_end_main(void)
 
         case arglex_token_wait:
         case arglex_token_wait_not:
-            user_lock_wait_argument(develop_end_usage);
+            user_ty::lock_wait_argument(develop_end_usage);
             break;
 
         case arglex_token_signed_off_by:
@@ -202,7 +197,10 @@ develop_end_main(void)
     // locate project data
     //
     if (!project_name)
-        project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -210,14 +208,14 @@ develop_end_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
-    up_admin = 0;
+    user_ty::pointer up = user_ty::create();
+    user_ty::pointer up_admin;
 
     //
     // locate change data
     //
     if (!change_number)
-        change_number = user_default_change(up);
+        change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -229,13 +227,13 @@ develop_end_main(void)
     (
         change_is_a_branch(cp)
     &&
-        !str_equal(change_developer_name(cp), user_name(up))
+        nstring(change_developer_name(cp)) != up->name()
     &&
-        project_administrator_query(pp, user_name(up))
+        project_administrator_query(pp, up->name())
     )
     {
         up_admin = up;
-        up = user_symbolic(pp, change_developer_name(cp));
+        up = user_ty::create(nstring(change_developer_name(cp)));
     }
 
     //
@@ -245,9 +243,9 @@ develop_end_main(void)
     //
     pp->pstate_lock_prepare();
     change_cstate_lock_prepare(cp);
-    user_ustate_lock_prepare(up);
+    up->ustate_lock_prepare();
     lock_take();
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
 
     //
     // It is an error if the change is not in the being_developed state.
@@ -260,7 +258,7 @@ develop_end_main(void)
     //
     if (cstate_data->state != cstate_state_being_developed)
         change_fatal(cp, 0, i18n("bad de state"));
-    if (!str_equal(change_developer_name(cp), user_name(up)))
+    if (nstring(change_developer_name(cp)) != up->name())
         change_fatal(cp, 0, i18n("not developer"));
     if (!change_file_nth(cp, (size_t)0, view_path_first))
         change_fatal(cp, 0, i18n("no files"));
@@ -415,9 +413,9 @@ develop_end_main(void)
                                 c_src_data->file_name
                             );
                         assert(blf);
-                        user_become(up);
+                        up->become_begin();
                         different = files_are_different(path, blf);
-                        user_become_undo();
+                        up->become_end();
                         str_free(blf);
                         str_free(path);
                         if (different)
@@ -472,9 +470,9 @@ develop_end_main(void)
             }
             assert(c_src_data->file_fp->youngest>=0);
             assert(c_src_data->file_fp->oldest>=0);
-            user_become(up);
+            up->become_begin();
             same = change_fingerprint_same(c_src_data->file_fp, path, 0);
-            user_become_undo();
+            up->become_end();
             assert(c_src_data->file_fp->youngest>0);
             assert(c_src_data->file_fp->oldest>0);
             trace(("same = %d\n", same));
@@ -534,10 +532,10 @@ develop_end_main(void)
                 c_src_data->diff_file_fp =
                     (fingerprint_ty *)fingerprint_type.alloc();
             }
-            user_become(up);
+            up->become_begin();
             same_d =
                 change_fingerprint_same(c_src_data->diff_file_fp, path_d, 0);
-            user_become_undo();
+            up->become_end();
             trace(("same_d = %d\n", same_d));
             str_free(path_d);
 
@@ -658,8 +656,7 @@ develop_end_main(void)
             //
             if (!p_src_data)
             {
-                p_src_data = project_file_new(pp, c_src_data->file_name);
-                change_file_copy_basic_attributes(p_src_data, c_src_data);
+                p_src_data = pp->file_new(c_src_data);
                 p_src_data->action = file_action_transparent;
                 p_src_data->about_to_be_created_by = change_number;
                 assert(c_src_data->edit || c_src_data->edit_origin);
@@ -761,8 +758,7 @@ develop_end_main(void)
             //
             if (!p_src_data)
             {
-                p_src_data = project_file_new(pp, c_src_data->file_name);
-                change_file_copy_basic_attributes(p_src_data, c_src_data);
+                p_src_data = pp->file_new(c_src_data);
                 p_src_data->action = file_action_transparent;
                 p_src_data->about_to_be_created_by = change_number;
                 assert(c_src_data->edit || c_src_data->edit_origin);
@@ -872,8 +868,7 @@ develop_end_main(void)
                 // add a new entry to the pstate src list,
                 // and mark it as "about to be created".
                 //
-                p_src_data = project_file_new(pp, c_src_data->file_name);
-                change_file_copy_basic_attributes(p_src_data, c_src_data);
+                p_src_data = pp->file_new(c_src_data);
                 p_src_data->action = file_action_transparent;
                 p_src_data->about_to_be_created_by = change_number;
             }
@@ -959,7 +954,17 @@ develop_end_main(void)
     (
 	change_build_required(cp)
     &&
-        (!cstate_data->build_time || youngest >= cstate_data->build_time)
+        (
+            !cstate_data->build_time
+        ||
+            (
+                os_unthrottle()
+            ?
+                youngest > cstate_data->build_time
+            :
+                youngest >= cstate_data->build_time
+            )
+        )
     )
     {
 	trace(("mark\n"));
@@ -996,7 +1001,17 @@ develop_end_main(void)
     (
         !cstate_data->test_exempt
     &&
-        (!cstate_data->test_time || youngest >= cstate_data->test_time)
+        (
+            !cstate_data->test_time
+        ||
+            (
+                os_unthrottle()
+            ?
+                youngest > cstate_data->test_time
+            :
+                youngest >= cstate_data->test_time
+            )
+        )
     )
     {
         scp = sub_context_new();
@@ -1018,7 +1033,13 @@ develop_end_main(void)
         (
             !cstate_data->test_baseline_time
         ||
-            youngest >= cstate_data->test_baseline_time
+            (
+                os_unthrottle()
+            ?
+                youngest > cstate_data->test_baseline_time
+            :
+                youngest >= cstate_data->test_baseline_time
+            )
         )
     )
     {
@@ -1041,7 +1062,13 @@ develop_end_main(void)
         (
             !cstate_data->regression_test_time
         ||
-            youngest >= cstate_data->regression_test_time
+            (
+                os_unthrottle()
+            ?
+                youngest > cstate_data->regression_test_time
+            :
+                youngest >= cstate_data->regression_test_time
+            )
         )
     )
     {
@@ -1107,8 +1134,8 @@ develop_end_main(void)
 	string_ty *r2 =
             str_format
             (
-                "Forced by administrator \"%s\".",
-                user_name(up_admin)->str_text
+                "Forced by administrator %s.",
+                up_admin->name().quote_c().c_str()
             );
 	if (reason)
 	{
@@ -1137,7 +1164,7 @@ develop_end_main(void)
     // Remove the change from the list of assigned changes in the user
     // change table (in the user row).
     //
-    user_own_remove(up, project_name_get(pp), change_number);
+    up->own_remove(pp, change_number);
 
     //
     // Make the development directory read only.
@@ -1177,7 +1204,7 @@ develop_end_main(void)
     //
     change_cstate_write(cp);
     pp->pstate_write();
-    user_ustate_write(up);
+    up->ustate_write();
     commit();
     lock_release();
 
@@ -1191,11 +1218,11 @@ develop_end_main(void)
 #endif
     case cstate_branch_develop_end_action_goto_being_reviewed:
     case cstate_branch_develop_end_action_goto_awaiting_review:
-	change_run_develop_end_notify_command(cp);
+	cp->run_develop_end_notify_command();
         break;
 
     case cstate_branch_develop_end_action_goto_awaiting_integration:
-	change_run_review_pass_notify_command(cp);
+	cp->run_review_pass_notify_command();
         break;
     }
 
@@ -1210,7 +1237,6 @@ develop_end_main(void)
     change_verbose(cp, 0, i18n("development completed"));
     change_free(cp);
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -1220,8 +1246,8 @@ develop_end(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-        {arglex_token_help, develop_end_help, },
-        {arglex_token_list, develop_end_list, },
+        { arglex_token_help, develop_end_help, 0 },
+        { arglex_token_list, develop_end_list, 0 },
     };
 
     trace(("develop_end()\n{\n"));

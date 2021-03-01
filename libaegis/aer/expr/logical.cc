@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1996, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,236 +13,205 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate logical expressions
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
+#include <common/trace.h>
 #include <libaegis/aer/expr/logical.h>
 #include <libaegis/aer/value/boolean.h>
 #include <libaegis/aer/value/error.h>
-#include <common/error.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 
 
-static rpt_value_ty *
-and_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_and_logical::~rpt_expr_and_logical()
 {
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v1i;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *v2i;
-    rpt_value_ty    *result;
+}
 
+
+rpt_expr_and_logical::rpt_expr_and_logical(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
+{
+    append(lhs);
+    append(rhs);
+}
+
+
+rpt_expr::pointer
+rpt_expr_and_logical::create(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
+{
+    return pointer(new rpt_expr_and_logical(lhs, rhs));
+}
+
+
+rpt_value::pointer
+rpt_expr_and_logical::evaluate()
+    const
+{
     //
     // eveluate the left hand side
     //
-    assert(this_thing->nchild == 2);
-    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (v1->method->type == rpt_value_type_error)
+    assert(get_nchildren() == 2);
+    rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
+    if (v1->is_an_error())
 	return v1;
-    v1i = rpt_value_booleanize(v1);
-    if (v1i->method->type != rpt_value_type_boolean)
+    rpt_value::pointer v1b = rpt_value::booleanize(v1);
+    rpt_value_boolean *v1p = dynamic_cast<rpt_value_boolean *>(v1b.get());
+    if (!v1p)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	rpt_value_free(v1i);
-	sub_var_set_charstar(scp, "Name", v1->method->name);
-	rpt_value_free(v1);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", v1->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
 		i18n("boolean value required for logical and (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->child[0]->pos, s);
-	str_free(s);
-	return result;
+	    )
+        );
+	return rpt_value_error::create(nth_child(0)->get_pos(), s);
     }
-    rpt_value_free(v1);
 
     //
     // short circuit the evaluation if the LHS is false
     //
-    if (!rpt_value_boolean_query(v1i))
-	return v1i;
-    rpt_value_free(v1i);
+    if (!v1p->query())
+	return v1b;
 
     //
     // evaluate the right hand side
     //
-    v2 = rpt_expr_evaluate(this_thing->child[1], 1);
-    if (v2->method->type == rpt_value_type_error)
+    rpt_value::pointer v2 = nth_child(1)->evaluate(true, true);
+    if (v2->is_an_error())
 	return v2;
-    v2i = rpt_value_booleanize(v2);
-    if (v2i->method->type != rpt_value_type_boolean)
+    rpt_value::pointer v2b = rpt_value::booleanize(v2);
+    rpt_value_boolean *v2p = dynamic_cast<rpt_value_boolean *>(v2b.get());
+    if (!v2p)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	rpt_value_free(v2i);
-	sub_var_set_charstar(scp, "Name", v2->method->name);
-	rpt_value_free(v2);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", v2->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
 		i18n("boolean value required for logical and (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->child[1]->pos, s);
-	str_free(s);
-	return result;
+	    )
+        );
+	return rpt_value_error::create(nth_child(1)->get_pos(), s);
     }
-    rpt_value_free(v2);
-    return v2i;
+    return v2b;
 }
 
 
-static rpt_expr_method_ty and_method =
+rpt_expr_or_logical::~rpt_expr_or_logical()
 {
-    sizeof(rpt_expr_ty),
-    "&&",
-    0, // construct
-    0, // destruct
-    and_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_and_logical(rpt_expr_ty *e1, rpt_expr_ty *e2)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&and_method);
-    rpt_expr_append(this_thing, e1);
-    rpt_expr_append(this_thing, e2);
-    return this_thing;
 }
 
 
-static rpt_value_ty *
-or_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_or_logical::rpt_expr_or_logical(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
 {
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v1i;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *v2i;
-    rpt_value_ty    *result;
+    append(lhs);
+    append(rhs);
+}
 
+
+rpt_expr::pointer
+rpt_expr_or_logical::create(const rpt_expr::pointer &lhs,
+    const rpt_expr::pointer &rhs)
+{
+    return pointer(new rpt_expr_or_logical(lhs, rhs));
+}
+
+
+rpt_value::pointer
+rpt_expr_or_logical::evaluate()
+    const
+{
     //
     // evaluate the left hand side
     //
-    assert(this_thing->nchild == 2);
-    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (v1->method->type == rpt_value_type_error)
+    assert(get_nchildren() == 2);
+    rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
+    if (v1->is_an_error())
 	return v1;
-    v1i = rpt_value_booleanize(v1);
-    if (v1i->method->type != rpt_value_type_boolean)
+    rpt_value::pointer v1b = rpt_value::booleanize(v1);
+    rpt_value_boolean *v1p = dynamic_cast<rpt_value_boolean *>(v1b.get());
+    if (!v1p)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	rpt_value_free(v1i);
-	sub_var_set_charstar(scp, "Name", v1->method->name);
-	rpt_value_free(v1);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", v1->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
 		i18n("boolean value required for logical or (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->child[0]->pos, s);
-	str_free(s);
-	return result;
+	    )
+        );
+	return rpt_value_error::create(nth_child(0)->get_pos(), s);
     }
-    rpt_value_free(v1);
 
     //
     // short circuit the evaluation if LHS is true
     //
-    if (rpt_value_boolean_query(v1i))
-	return v1i;
-    rpt_value_free(v1i);
+    if (v1p->query())
+	return v1b;
 
     //
     // evaluate the right hand side
     //
-    v2 = rpt_expr_evaluate(this_thing->child[1], 1);
-    if (v2->method->type == rpt_value_type_error)
+    rpt_value::pointer v2 = nth_child(1)->evaluate(true, true);
+    if (v2->is_an_error())
 	return v2;
-    v2i = rpt_value_booleanize(v2);
-    if (v2i->method->type != rpt_value_type_boolean)
+    rpt_value::pointer v2b = rpt_value::booleanize(v2);
+    rpt_value_boolean *v2p = dynamic_cast<rpt_value_boolean *>(v2b.get());
+    if (!v2p)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	rpt_value_free(v2i);
-	sub_var_set_charstar(scp, "Name", v2->method->name);
-	rpt_value_free(v2);
-	s =
-	    subst_intl
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", v2->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
 		i18n("boolean value required for logical or (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->child[1]->pos, s);
-	str_free(s);
-	return result;
+	    )
+        );
+	return rpt_value_error::create(nth_child(1)->get_pos(), s);
     }
-    rpt_value_free(v2);
-    return v2i;
+    return v2b;
 }
 
 
-static rpt_expr_method_ty or_method =
+rpt_expr_not_logical::~rpt_expr_not_logical()
 {
-    sizeof(rpt_expr_ty),
-    "||",
-    0, // construct
-    0, // destruct
-    or_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_or_logical(rpt_expr_ty *e1, rpt_expr_ty *e2)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&or_method);
-    rpt_expr_append(this_thing, e1);
-    rpt_expr_append(this_thing, e2);
-    return this_thing;
 }
 
 
-static rpt_value_ty *
-not_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_not_logical::rpt_expr_not_logical(const rpt_expr::pointer &arg)
 {
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *vp;
+    append(arg);
+}
 
+
+rpt_expr::pointer
+rpt_expr_not_logical::create(const rpt_expr::pointer &arg)
+{
+    return pointer(new rpt_expr_not_logical(arg));
+}
+
+
+rpt_value::pointer
+rpt_expr_not_logical::evaluate()
+    const
+{
     //
     // evaluate the argument
     //
     trace(("not::evaluate()\n{\n"));
-    assert(this_thing->nchild == 1);
-    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (v1->method->type == rpt_value_type_error)
+    assert(get_nchildren() == 1);
+    rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
+    if (v1->is_an_error())
     {
 	trace(("}\n"));
 	return v1;
@@ -253,71 +221,67 @@ not_evaluate(rpt_expr_ty *this_thing)
     // coerce the argument to boolean type
     //	(will not give error if can't, will copy instead)
     //
-    v2 = rpt_value_booleanize(v1);
-    rpt_value_free(v1);
+    rpt_value::pointer v2 = rpt_value::booleanize(v1);
 
     //
     // the type of the result depends on
     // the types of the argument
     //
-    if (v2->method->type == rpt_value_type_boolean)
-	vp = rpt_value_boolean(!rpt_value_boolean_query(v2));
-    else
+    rpt_value_boolean *v2p = dynamic_cast<rpt_value_boolean *>(v2.get());
+    if (!v2p)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", v2->method->name);
-	s = subst_intl(scp, i18n("illegal logical not ($name)"));
-	sub_context_delete(scp);
-	vp = rpt_value_error(this_thing->child[0]->pos, s);
-	str_free(s);
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", v2->name());
+	nstring s(sc.subst_intl(i18n("illegal logical not ($name)")));
+	rpt_value::pointer result =
+            rpt_value_error::create(nth_child(0)->get_pos(), s);
+        trace(("}\n"));
+        return result;
     }
-    rpt_value_free(v2);
-    trace(("return %08lX;\n", (long)vp));
+
+    rpt_value::pointer result = rpt_value_boolean::create(!v2p->query());
+    trace(("return %08lX;\n", (long)result.get()));
     trace(("}\n"));
-    return vp;
+    return result;
 }
 
 
-static rpt_expr_method_ty not_method =
+rpt_expr_if::~rpt_expr_if()
 {
-    sizeof(rpt_expr_ty),
-    "!e",
-    0, // construct
-    0, // destruct
-    not_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_not_logical(rpt_expr_ty *a)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&not_method);
-    rpt_expr_append(this_thing, a);
-    return this_thing;
+    trace(("%s\n", __PRETTY_FUNCTION__));
 }
 
 
-static rpt_value_ty *
-if_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_if::rpt_expr_if(const rpt_expr::pointer &e1,
+    const rpt_expr::pointer &e2, const rpt_expr::pointer &e3)
 {
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v1b;
-    int		    cond;
-    rpt_value_ty    *result;
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    append(e1);
+    append(e2);
+    append(e3);
+}
 
+
+rpt_expr::pointer
+rpt_expr_if::create(const rpt_expr::pointer &e1, const rpt_expr::pointer &e2,
+    const rpt_expr::pointer &e3)
+{
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    return pointer(new rpt_expr_if(e1, e2, e3));
+}
+
+
+rpt_value::pointer
+rpt_expr_if::evaluate()
+    const
+{
     //
     // evaluate the argument
     //
-    trace(("if::evaluate()\n{\n"));
-    assert(this_thing->nchild == 3);
-    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (v1->method->type == rpt_value_type_error)
+    trace(("rpt_expr_if::evaluate()\n{\n"));
+    assert(get_nchildren() == 3);
+    rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
+    if (v1->is_an_error())
     {
 	trace(("}\n"));
 	return v1;
@@ -327,61 +291,33 @@ if_evaluate(rpt_expr_ty *this_thing)
     // coerce the argument to boolean type
     // (will not give error if can't, will copy instead)
     //
-    v1b = rpt_value_booleanize(v1);
-    rpt_value_free(v1);
-    if (v1b->method->type != rpt_value_type_boolean)
+    rpt_value::pointer v1b = rpt_value::booleanize(v1);
+    trace(("v1b->name() = \"%s\"\n", v1b->name()));
+    rpt_value_boolean *v1p = dynamic_cast<rpt_value_boolean *>(v1b.get());
+    if (!v1p)
     {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", v1b->method->name);
-	rpt_value_free(v1b);
-	s =
-	    subst_intl
+        trace(("mark\n"));
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", v1b->name());
+	nstring s
+        (
+	    sc.subst_intl
 	    (
-	       	scp,
-	      i18n("boolean value required for arithmetic if (was given $name)")
-	    );
-	sub_context_delete(scp);
-	result = rpt_value_error(this_thing->child[0]->pos, s);
-	str_free(s);
+                i18n("boolean value required for arithmetic if (was "
+                    "given $name)")
+	    )
+        );
+	rpt_value::pointer result =
+            rpt_value_error::create(nth_child(0)->get_pos(), s);
 	trace(("}\n"));
 	return result;
     }
 
-    cond = rpt_value_boolean_query(v1b);
-    rpt_value_free(v1b);
-    if (cond)
-	result = rpt_expr_evaluate(this_thing->child[1], 0);
-    else
-	result = rpt_expr_evaluate(this_thing->child[2], 0);
+    trace(("mark\n"));
+    bool cond = v1p->query();
+    rpt_value::pointer result = nth_child(cond ? 1 : 2)->evaluate(true, true);
 
-    trace(("return %08lX;\n", (long)result));
+    trace(("return %08lX;\n", (long)result.get()));
     trace(("}\n"));
     return result;
-}
-
-
-static rpt_expr_method_ty if_method =
-{
-    sizeof(rpt_expr_ty),
-    "arithmetic if",
-    0, // construct
-    0, // destruct
-    if_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_if(rpt_expr_ty *e1, rpt_expr_ty *e2, rpt_expr_ty *e3)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&if_method);
-    rpt_expr_append(this_thing, e1);
-    rpt_expr_append(this_thing, e2);
-    rpt_expr_append(this_thing, e3);
-    return this_thing;
 }

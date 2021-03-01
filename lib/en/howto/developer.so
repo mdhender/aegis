@@ -1,7 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999-2005 Peter Miller;
-.\"	All rights reserved.
+.\"	Copyright (C) 1999-2007 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 .\"	GNU General Public License for more details.
 .\"
 .\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: document describing lib/en/howto/developers
+.\"	along with this program. If not, see
+.\"	<http://www.gnu.org/licenses/>.
 .\"
 .nh 1 "How to Become an Aegis Developer"
 .LP
@@ -66,7 +63,7 @@ http://fhist.sourceforge.net/
 .IP \(bu 2n
 You will need to install \fItardy\fP, for manipulating tarballs.
 .br
-http://www.canb.auug.org.au/\%~millerp/\%tardy.html
+http://miller.emu.id.au/\%pmiller/\%software/\%tardy/
 .IP \(bu 2n
 You will need to install \fIptx\fP(1), for the permuted indexes in the
 documentation.
@@ -101,6 +98,12 @@ http://curl.haxx.se/
 You need UUID generation capability.
 This requirement may be
 satisfied in several different ways depending of your development platform.
+.IP \(bu 2n
+The GNOME libxml2 library (\f[CW]http://xmlsoft.org/\fP) is used to
+parse XML, you will need version 1.8.17 or later.  You do not have to
+install the rest of GNOME as this library is able to be used by itself.
+This package is \fBnot\fP optional, you need it to successfully build
+Aegis.
 .br
 First, on GNU/Linux you could skip this requirement provided that your
 kernel has support for \fI/proc\fP filesystem.  Please note: in order to
@@ -165,11 +168,16 @@ See \f[CW]etc/set-uid-root\fP in the distribution for how to configure
 the \fI/etc/sudoers\fP file.
 .br
 ftp://ftp.sudo.ws/pub/sudo/
+.\" .IP \(bu 2n
+.\" You need ImageMagic installed, for turning \fIaegis.png\fP into
+.\" \fIaegis.xpm\fP because \fIrpm\fP(8) will only accept GIF or XPM icons.
+.\" .br
+.\" http://netpbm.sourceforge.net/
 .IP \(bu 2n
-You need netpbm installed, for turning \fIaegis.png\fP into
-\fIaegis.xpm\fP because \fIrpm\fP(8) will only accept GIF or XPM icons.
+The location box icon is generated using \fIconvert\fP from ImageMagick,
+but the build can cope if you don't have it.
 .br
-http://netpbm.sourceforge.net/
+http://www.imagemagick.org/
 .IP \(bu 2n
 The location box icon is generated using \fIpng2ico\fP but the build
 can cope if you don't have it.
@@ -177,6 +185,8 @@ can cope if you don't have it.
 http://www.winterdrache.de/freeware/png2ico/
 .IP \(bu 2n
 \fIProbably more things I've forgotten.\fP
+.IP \(bu 2n
+Some parts of the build need Perl
 .nh 2 "Create The Aegis Project"
 .LP
 The next thing to do is create an Aegis project to hold the Aegis source.

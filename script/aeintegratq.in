@@ -1,10 +1,9 @@
 #!@PERL@
 #
 #       aeintegratq - aegis integration manager
-#       Copyright (C) 2005 Peter Miller.
+#       Copyright (C) 2005, 2006 Peter Miller.
 #
 #       Copyright (C) 1998-2006 Endocardial Solutions, Inc.
-#       All rights reserved.
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -97,6 +96,8 @@ sub usage
   #  or -ib ""    - request server be determined as host for project baseline
   #  -ip <server> - Specify (remote) server on which ipass be done
   #  or -ip ""    - request server be determined as host for project baseline
+  #  -display <display> - use given X display
+  #  or -display ""     - use display as exists in environment
   #  -k Keep the scripts and report files
   #  -K Keep the temp file even if integration passes
   #  -l Loop to get more changes if available - stops when nothing done
@@ -120,6 +121,7 @@ GetOptions( \%Option,
     "any",
     "ibserver=s",
     "ipserver=s",
+    "display=s",
     "ssh",
     "noaction",
     "keep_scripts",
@@ -160,9 +162,12 @@ hash_option("-R", $Option{Ready},    \%Ready)    if defined($Option{Ready});
  # allow -c <nn> to give a single change with familiar option
 hash_option("-c", $Option{change},   \%Ready)    if defined($Option{change});
 
+$HookPath = $ENV{'HOME'} . "/integration_hooks";
+
   # define some locations for logging and such
 if ( defined( $ENV{'AEGIS_TEST_DIR'} ) ) {
     $LogFile  = "$ENV{'AEGIS_TEST_DIR'}/integrate.log";
+    $HookPath = $ENV{'AEGIS_TEST_DIR'};
 } elsif ( -d "$ComDir/integrations" ) {
     $LogFile  = "$ComDir/integrations/integrate.log";
 }else{
@@ -730,12 +735,26 @@ sub test
                         my $log_message = "$aecmd ($arch $test_host)";
                         &write_log($log_message);
 
+                          # KLUGE: Signal to some tests that this is not being
+                          # KLUGE: run from a console
+                        my $display = "INTEGRATE_SCRIPT";
+			  # Allow a better value to be used
+	                if( defined($Option{display}) )  # -display given
+			{
+			    if( $Option{display} )       # not empty
+			    {
+				$display = $Option{display};
+			    }
+			    else                         # use current value
+			    {       # from environment OR base local display
+				$display = $ENV{DISPLAY} || ":0.0";
+			    }
+			}
+
                           # build up the command line to use.
                         my $cmd = "cd $chdir && "
-                          # KLUGE: Signal to tests that this is not being
-                          # KLUGE: run from a console
-                        . "DISPLAY=INTEGRATE_SCRIPT "
-                        . "$aecmd";
+			    . "DISPLAY=$display "
+			    . "$aecmd";
                           # Ok now run it
                         $errors = &host_cmd($cmd, $test_host, $logf);
 
@@ -847,7 +866,7 @@ sub fail_integration
     if ( ! -s $failf )
     {
           # subset of results logged by process
-        &system_cmd("tail -10 $logf", "$failf");
+        &system_cmd("tail -20 $logf", "$failf");
     }
 
     if ( defined($Precious{$change}) || defined($Precious{"all"}) )
@@ -969,6 +988,14 @@ sub arch_rpt_file
         else
         {
             print("build_covers_all_architectures=false\n");
+        }
+        if ( cs.config.test_covers_all_architectures )
+        {
+            print("test_covers_all_architectures=true\n");
+        }
+        else
+        {
+            print("test_covers_all_architectures=false\n");
         }
         for (arch in cs.architecture)
             print(arch);
@@ -1303,7 +1330,7 @@ sub check_space
     1;
 }
 
-  # look for a "hook" under the integrators home directory
+  # Look for a "hook" under the integrators home directory (HookPath)
   # its name should be <project>.<stage>
   #  or  aeintegratq.end or aeintegratq.fail
   # where project can be either an alias or a canonical name.
@@ -1320,18 +1347,17 @@ sub run_hooks
     my($project, $change, $stage) = @_;
 
     my $errors = 0;
-    my $hookpath = $ENV{'HOME'} . "/integration_hooks";
 
-    if ( -d $hookpath )
+    if ( -d $HookPath )
     {
         my $hookfile;
 	if ( $stage =~ /end|fail/ )
 	{
-	    $hookfile = "$hookpath/$ProgramName.$stage";
+	    $hookfile = "$HookPath/$ProgramName.$stage";
 	}
 	else
 	{
-	    $hookfile = "$hookpath/$project.$stage";
+	    $hookfile = "$HookPath/$project.$stage";
 
 	      # If exists as given use it
 	    unless( -x $hookfile )
@@ -1342,7 +1368,7 @@ sub run_hooks
 
 		while( $cname )
 		{
-		    $hookfile = "$hookpath/"
+		    $hookfile = "$HookPath/"
 			      . "$cname"
 			      . ".$stage";
 
@@ -1480,7 +1506,7 @@ sub check_arch_support
     my($project, $change, $info) = @_;
     my $ok = 0;                 # no go until we find out
 
-    my($covers, @archlist);
+    my($build_covers_all, $test_covers_all, @archlist);
 
       # get architecture of machine we are running on
       # must use aesub since projects can name architectures anything
@@ -1495,9 +1521,11 @@ sub check_arch_support
           # get architecture list required for this change
         @archlist = &aegis_report($project, $change, $info->{"arch_report"});
 
-          # take off the first entry
-          # it is the "build_covers_all_architectures=(true|false)"
-        $covers = shift(@archlist);
+          # take off the first two entries
+          # First is the "build_covers_all_architectures=(true|false)"
+        $build_covers_all = shift(@archlist);
+          # Second is the "test_covers_all_architectures=(true|false)"
+        $test_covers_all = shift(@archlist);
 
         if ( @archlist )
         {
@@ -1516,17 +1544,27 @@ sub check_arch_support
 
     if ( $ok )
     {
-        @{ $info->{"test_archs"} } = @archlist;
 
-        if ( $covers =~ /true/ ) # all in one go?
+        if ( $build_covers_all =~ /true/ ) # all in one go?
         {
               # Take the first architecture which will
               # allow project admins to control on which arch to build
-            @{ $info->{"build_archs"} } = ( shift(@archlist) );
+            @{ $info->{"build_archs"} } = ( $archlist[0] );
         }
         else
         {
             @{ $info->{"build_archs"} } = @archlist;
+        }
+
+        if ( $test_covers_all =~ /true/ ) # all in one go?
+        {
+              # Take the first architecture which will
+              # allow project admins to control on which arch to build
+            @{ $info->{"test_archs"} } = ( $archlist[0] );
+        }
+        else
+        {
+            @{ $info->{"test_archs"} } = @archlist;
         }
     }
     else
@@ -1592,8 +1630,8 @@ sub given_server
 		    if( my( $s ) = m=(\w[^:]+):/\w+= )
 		    {
 			$server = $s;
+			last;
 		    }
-		    last;
 		}
 		close(DF);
 	    }

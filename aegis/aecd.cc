@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1997, 1999-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1997, 1999-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to change directory or determine paths
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -161,7 +158,7 @@ change_directory_main(void)
     // figure out where to go
     //
     string_ty *d = 0;
-    cstate_data = change_cstate_get(cid.get_cp());
+    cstate_data = cid.get_cp()->cstate_get();
     switch (cstate_data->state)
     {
     case cstate_state_awaiting_development:
@@ -204,9 +201,8 @@ change_directory_main(void)
 	string_ty	*tmp;
 
 	tmp = str_format("%s/%s", d->str_text, subdir);
-	user_become(cid.get_up());
+	user_ty::become scoped(cid.get_up());
 	d = os_pathname(tmp, 0);
-	user_become_undo();
 	str_free(tmp);
     }
 
@@ -233,8 +229,8 @@ change_directory(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, change_directory_help, },
-	{arglex_token_list, change_directory_list, },
+	{ arglex_token_help, change_directory_help, 0 },
+	{ arglex_token_list, change_directory_list, 0 },
     };
 
     trace(("change_directory()\n{\n"));

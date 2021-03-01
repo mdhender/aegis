@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,12 +13,13 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate file_historys
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h> // for assert
+#include <common/str_list.h>
+#include <common/trace.h>
 #include <libaegis/ael/change/file_history.h>
 #include <libaegis/ael/column_width.h>
 #include <libaegis/ael/formeditnum.h>
@@ -27,14 +27,13 @@
 #include <libaegis/change/file.h>
 #include <libaegis/change.h>
 #include <libaegis/col.h>
-#include <common/error.h> // for assert
+#include <libaegis/file/event.h>
+#include <libaegis/file/event/list.h>
 #include <libaegis/option.h>
 #include <libaegis/output.h>
 #include <libaegis/project/file.h>
 #include <libaegis/project/file/roll_forward.h>
 #include <libaegis/project.h>
-#include <common/str_list.h>
-#include <common/trace.h>
 #include <libaegis/user.h>
 
 
@@ -42,7 +41,7 @@
 
 
 static bool
-is_a_rename_with_uuid(change_ty *cp, fstate_src_ty *src)
+is_a_rename_with_uuid(change::pointer cp, fstate_src_ty *src)
 {
     if (src->action != file_action_create)
 	return false;
@@ -61,11 +60,11 @@ is_a_rename_with_uuid(change_ty *cp, fstate_src_ty *src)
 
 void
 list_change_file_history(string_ty *project_name, long change_number,
-    string_list_ty *args)
+    string_list_ty *)
 {
     project_ty	    *pp;
-    change_ty	    *cp;
-    user_ty	    *up;
+    change::pointer cp;
+    user_ty::pointer up;
     output_ty	    *usage_col;
     output_ty	    *action_col;
     output_ty	    *when_col;
@@ -73,10 +72,9 @@ list_change_file_history(string_ty *project_name, long change_number,
     int		    j;
     string_ty	    *line1;
     int		    left;
-    col_ty	    *colp;
+    col	    *colp;
     output_ty	    *delta_col;
     output_ty	    *change_col;
-    time_t	    when;
     output_ty	    *description_col;
 
     //
@@ -84,7 +82,10 @@ list_change_file_history(string_ty *project_name, long change_number,
     //
     trace(("list_change_file_history()\n{\n"));
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     else
 	project_name = str_copy(project_name);
     pp = project_alloc(project_name);
@@ -94,13 +95,13 @@ list_change_file_history(string_ty *project_name, long change_number,
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+	change_number = up->default_change(pp);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -109,13 +110,13 @@ list_change_file_history(string_ty *project_name, long change_number,
     //
     // Reconstruct the project file history.
     //
-    when = change_completion_timestamp(cp);
+    time_t when = change_completion_timestamp(cp);
     project_file_roll_forward historian(pp, when, option_verbose_get());
 
     //
     // create the columns
     //
-    colp = col_open((string_ty *)0);
+    colp = col::open((string_ty *)0);
     line1 =
 	str_format
 	(
@@ -123,35 +124,29 @@ list_change_file_history(string_ty *project_name, long change_number,
 	    project_name_get(pp)->str_text,
 	    magic_zero_decode(change_number)
 	);
-    col_title(colp, line1->str_text, "Change File History");
+    colp->title(line1->str_text, "Change File History");
     str_free(line1);
 
-    file_name_col = col_create(colp, 0, 0, "File Name\n-----------");
+    file_name_col = colp->create(0, 0, "File Name\n-----------");
 
     left = 2;
-    usage_col = col_create(colp, left, left + USAGE_WIDTH, 0);
+    usage_col = colp->create(left, left + USAGE_WIDTH, 0);
     left += USAGE_WIDTH + 1;
-    action_col = col_create(colp, left, left + ACTION_WIDTH, 0);
+    action_col = colp->create(left, left + ACTION_WIDTH, 0);
     left += ACTION_WIDTH + 1;
 
     delta_col =
-	col_create(colp, left, left + VERSION_WIDTH, "Delta\n---------");
+	colp->create(left, left + VERSION_WIDTH, "Delta\n---------");
     left += VERSION_WIDTH + 1;
 
     when_col =
-	col_create
-	(
-	    colp,
-	    left,
-	    left + WHEN_WIDTH,
-	    "Date and Time\n---------------"
-	);
+	colp->create(left, left + WHEN_WIDTH, "Date and Time\n---------------");
     left += WHEN_WIDTH + 1;
 
-    change_col = col_create(colp, left, left + CHANGE_WIDTH, "Change\n-------");
+    change_col = colp->create(left, left + CHANGE_WIDTH, "Change\n-------");
     left += CHANGE_WIDTH + 1;
 
-    description_col = col_create(colp, left, 0, "Description\n-------------");
+    description_col = colp->create(left, 0, "Description\n-------------");
 
     //
     // list the change's files' histories
@@ -159,7 +154,7 @@ list_change_file_history(string_ty *project_name, long change_number,
     for (j = 0;; ++j)
     {
 	fstate_src_ty	*src_data;
-	file_event_list_ty *felp;
+	file_event_list::pointer felp;
 	size_t		k;
 	int		usage_track;
 	int		action_track;
@@ -168,7 +163,7 @@ list_change_file_history(string_ty *project_name, long change_number,
 	if (!src_data)
 	    break;
 	assert(src_data->file_name);
-	col_need(colp, 4);
+	colp->need(4);
 
 	string_ty *file_name_track = 0;
 	usage_track = -1;
@@ -177,54 +172,61 @@ list_change_file_history(string_ty *project_name, long change_number,
 	felp = historian.get(src_data);
 	if (felp)
 	{
-	    for (k = 0; k < felp->length; ++k)
+	    for (k = 0; k < felp->size(); ++k)
 	    {
-		file_event_ty	*fep;
+		file_event	*fep;
 		string_ty	*s;
 
-		fep = felp->item + k;
-		assert(fep->src);
+		fep = felp->get(k);
+		assert(fep->get_src());
 
 		//
 		// See if the file's name changed.
 		//
-		if (!str_equal(file_name_track, fep->src->file_name))
+		if (!str_equal(file_name_track, fep->get_src()->file_name))
 		{
-		    file_name_col->fputs(fep->src->file_name->str_text);
-		    col_eoln(colp);
-		    file_name_track = fep->src->file_name;
+		    file_name_col->fputs(fep->get_src()->file_name->str_text);
+		    colp->eoln();
+		    file_name_track = fep->get_src()->file_name;
 		}
 
-		s = change_version_get(fep->cp);
+		s = change_version_get(fep->get_change());
 		delta_col->fputs(s->str_text);
 		str_free(s);
-		change_col->fprintf("%4ld", fep->cp->number);
+		change_col->fprintf("%4ld", fep->get_change()->number);
 
-		if (usage_track != fep->src->usage)
+		if (usage_track != fep->get_src()->usage)
 		{
-		    usage_col->fputs(file_usage_ename(fep->src->usage));
-		    usage_track = fep->src->usage;
+		    usage_col->fputs(file_usage_ename(fep->get_src()->usage));
+		    usage_track = fep->get_src()->usage;
 		    action_track = -1;
 		}
-		if (action_track != fep->src->action)
+		if (action_track != fep->get_src()->action)
 		{
-		    if (is_a_rename_with_uuid(fep->cp, fep->src))
+		    if
+		    (
+			is_a_rename_with_uuid(fep->get_change(), fep->get_src())
+		    )
 		    {
 			action_col->fputs("rename");
 			action_track = -1;
 		    }
 		    else
 		    {
-			action_col->fputs(file_action_ename(fep->src->action));
-			action_track = fep->src->action;
+			action_col->fputs
+			(
+			    file_action_ename(fep->get_src()->action)
+			);
+			action_track = fep->get_src()->action;
 		    }
 		}
-		when_col->fputs(ctime(&fep->when));
+		time_t when3 = fep->get_when();
+		when_col->fputs(ctime(&when3));
 		description_col->fputs
 		(
-		    change_brief_description_get(fep->cp)->str_text
+		    change_brief_description_get(fep->get_change())->str_text
 		);
-		col_eoln(colp);
+		colp->eoln();
 	    }
 	}
 
@@ -232,7 +234,7 @@ list_change_file_history(string_ty *project_name, long change_number,
 	// Now output details of this change, as the "end"
 	// of the history.
 	//
-	if (!change_is_completed(cp))
+	if (!cp->is_completed())
 	{
 	    //
 	    // See if the file's name changed.
@@ -240,7 +242,7 @@ list_change_file_history(string_ty *project_name, long change_number,
 	    if (!str_equal(file_name_track, src_data->file_name))
 	    {
 		file_name_col->fputs(src_data->file_name->str_text);
-		col_eoln(colp);
+		colp->eoln();
 	    }
 
 	    delta_col->fputs(change_version_get(cp)->str_text);
@@ -262,16 +264,15 @@ list_change_file_history(string_ty *project_name, long change_number,
 		}
 	    }
 	    description_col->fputs(change_brief_description_get(cp)->str_text);
-	    col_eoln(colp);
+	    colp->eoln();
 	}
     }
 
     //
     // clean up and go home
     //
-    col_close(colp);
+    delete colp;
     project_free(pp);
     change_free(cp);
-    user_free(up);
     trace(("}\n"));
 }

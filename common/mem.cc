@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1994, 1999, 2002-2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -129,29 +128,6 @@ mem_alloc_clear(size_t n)
 {
     void *cp = mem_alloc(n);
     memset(cp, 0, n);
-    return cp;
-}
-
-
-void *
-mem_change_size(void *cp, size_t n)
-{
-    if (n < 1)
-	n = 1;
-    int old_errno = errno;
-    errno = 0;
-    if (!cp)
-	cp = malloc(n);
-    else
-	cp = realloc(cp, n);
-    if (!cp)
-    {
-	if (!errno)
-	    errno = ENOMEM;
-	nfatal("realloc(%ld)", (long)n);
-    }
-
-    errno = old_errno;
     return cp;
 }
 

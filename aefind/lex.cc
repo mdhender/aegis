@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997-1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997-1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,22 +13,23 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to perform lexical analysis
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdarg.h>
 #include <common/ac/stdio.h>
 #include <common/ac/stdlib.h>
 
-#include <aefind/cmdline.gen.h>
-#include <aefind/lex.h>
 #include <common/progname.h>
 #include <common/trace.h>
 #include <libaegis/arglex2.h>
 #include <libaegis/sub.h>
+
+#include <aefind/lex.h>
+#include <aefind/tree.h>
+#include <aefind/shorthand/stat.h>
+#include <aefind/cmdline.gen.h> // must be last
 
 static arglex_table_ty argtab[] =
 {

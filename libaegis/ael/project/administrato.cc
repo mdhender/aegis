@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -35,7 +34,7 @@
 
 void
 list_administrators(string_ty *project_name, long change_number,
-    string_list_ty *args)
+    string_list_ty *)
 {
     project_ty      *pp;
     output_ty       *login_col = 0;
@@ -43,7 +42,7 @@ list_administrators(string_ty *project_name, long change_number,
     int             j;
     string_ty       *line1;
     int             left;
-    col_ty          *colp;
+    col          *colp;
 
     trace(("list_administrators()\n{\n"));
     if (change_number)
@@ -53,7 +52,10 @@ list_administrators(string_ty *project_name, long change_number,
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     else
 	project_name = str_copy(project_name);
     pp = project_alloc(project_name);
@@ -63,18 +65,18 @@ list_administrators(string_ty *project_name, long change_number,
     //
     // create the columns
     //
-    colp = col_open((string_ty *)0);
+    colp = col::open((string_ty *)0);
     line1 = str_format("Project \"%s\"", project_name_get(pp)->str_text);
-    col_title(colp, line1->str_text, "List of Administrators");
+    colp->title(line1->str_text, "List of Administrators");
     str_free(line1);
 
     left = 0;
-    login_col = col_create(colp, left, left + LOGIN_WIDTH, "User\n------");
+    login_col = colp->create(left, left + LOGIN_WIDTH, "User\n------");
     left += LOGIN_WIDTH + 2;
 
     if (!option_terse_get())
     {
-	name_col = col_create(colp, left, 0, "Full Name\n-----------");
+	name_col = colp->create(left, 0, "Full Name\n-----------");
     }
 
     //
@@ -82,19 +84,19 @@ list_administrators(string_ty *project_name, long change_number,
     //
     for (j = 0; ; ++j)
     {
-	string_ty *logname = project_administrator_nth(pp, j);
-	if (!logname)
+	nstring logname(project_administrator_nth(pp, j));
+	if (logname.empty())
     	    break;
 	login_col->fputs(logname);
 	if (name_col)
-    	    name_col->fputs(user_full_name(logname));
-	col_eoln(colp);
+    	    name_col->fputs(user_ty::full_name(logname));
+	colp->eoln();
     }
 
     //
     // clean up and go home
     //
-    col_close(colp);
+    delete colp;
     project_free(pp);
     trace(("}\n"));
 }

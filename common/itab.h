@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1998, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -48,7 +47,7 @@ struct itab_ty
     itab_key_ty     load;
 };
 
-itab_ty *itab_alloc(int);
+itab_ty *itab_alloc(void);
 void itab_free(itab_ty *);
 void *itab_query(itab_ty *, itab_key_ty);
 void itab_assign(itab_ty *, itab_key_ty, void *);

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate synthesizes
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/error.h>
@@ -66,16 +63,16 @@ extract_year(time_t t)
 
 
 static cstate_history_ty *
-change_history_fake(change_ty *cp, string_ty *who, time_t when)
+change_history_fake(change::pointer cp, string_ty *who, time_t when)
 {
     cstate_ty	    *cstate_data;
     cstate_history_ty *history_data;
     cstate_history_ty **history_data_p;
-    type_ty	    *type_p;
+    meta_type *type_p = 0;
 
     trace(("change_history_fale(cp = %08lX)\n{\n", (long)cp));
     assert(cp->reference_count>=1);
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     assert(cstate_data->history);
     history_data_p =
 	(cstate_history_ty **)
@@ -96,7 +93,7 @@ synthesize(string_ty *project_name, change_set_ty *csp)
 {
     project_ty	    *pp;
     long	    change_number;
-    change_ty	    *cp;
+    change::pointer cp;
     cstate_ty	    *cstate_data;
     fstate_src_ty   *c_src_data;
     fstate_src_ty   *p_src_data;
@@ -120,7 +117,7 @@ synthesize(string_ty *project_name, change_set_ty *csp)
     change_number = project_next_change_number(pp, 1);
     cp = change_alloc(pp, change_number);
     change_bind_new(cp);
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
 
     //
     // Set change attributes.
@@ -159,7 +156,7 @@ synthesize(string_ty *project_name, change_set_ty *csp)
     {
 	change_set_file_ty *csfp = csp->file[j];
 	trace(("%s\n", csfp->filename->str_text));
-	c_src_data = change_file_new(cp, csfp->filename);
+	c_src_data = cp->file_new(csfp->filename);
 
 	c_src_data->action = file_action_modify;
 	switch (csfp->action)
@@ -181,7 +178,7 @@ synthesize(string_ty *project_name, change_set_ty *csp)
 	c_src_data->edit->revision = str_copy(csfp->edit);
 	p_src_data = project_file_find(pp, csfp->filename, view_path_extreme);
 	if (!p_src_data)
-	    p_src_data = project_file_new(pp, csfp->filename);
+	    p_src_data = pp->file_new(csfp->filename);
 	p_src_data->action = file_action_create;
 	switch (csfp->action)
 	{

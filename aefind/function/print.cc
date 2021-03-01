@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,64 +13,94 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate print tree nodes
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
 
+#include <common/str.h>
 #include <libaegis/aer/value/boolean.h>
 #include <libaegis/aer/value/string.h>
+
 #include <aefind/function/needs.h>
 #include <aefind/function/print.h>
-#include <common/str.h>
 #include <aefind/tree/list.h>
 #include <aefind/tree/monadic.h>
 
 
-static rpt_value_ty *
-evaluate(tree_ty *tp, string_ty *path1, string_ty *path2, string_ty *path3,
-    struct stat *st)
+tree_print::~tree_print()
 {
-    tree_monadic_ty *this_thing;
-    rpt_value_ty    *vp;
-    rpt_value_ty    *svp;
-
-    this_thing = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this_thing->arg, path1, path2, path3, st);
-    svp = rpt_value_stringize(vp);
-    rpt_value_free(vp);
-    printf("%s\n", rpt_value_string_query(svp)->str_text);
-    rpt_value_free(svp);
-    return rpt_value_boolean(1);
 }
 
 
-static int
-useful(tree_ty *tp)
+tree_print::tree_print(const tree::pointer &a_arg) :
+    tree_monadic(a_arg)
 {
-    return 1;
 }
 
 
-static tree_method_ty method =
+tree::pointer
+tree_print::create(const tree::pointer &a_arg)
 {
-    sizeof(tree_monadic_ty),
-    "print",
-    tree_monadic_destructor,
-    tree_monadic_print,
-    evaluate,
-    useful,
-    0, // constant
-    0, // optimize
-};
+    return pointer(new tree_print(a_arg));
+}
 
 
-tree_ty *
-function_print(tree_list_ty *args)
+tree::pointer
+tree_print::create_l(const tree_list &args)
 {
     function_needs_one("print", args);
-    return tree_monadic_new(&method, args->item[0]);
+    return create(args[0]);
+}
+
+
+rpt_value::pointer
+tree_print::evaluate(string_ty *path1, string_ty *path2, string_ty *path3,
+    struct stat *st) const
+{
+    rpt_value::pointer vp = get_arg()->evaluate(path1, path2, path3, st);
+    rpt_value::pointer svp = rpt_value::stringize(vp);
+
+    rpt_value_string *ss = dynamic_cast<rpt_value_string *>(svp.get());
+    if (!ss)
+    {
+        // FIXME: shouldn't this be an error?
+        return rpt_value_boolean::create(true);
+    }
+
+    printf("%s\n", ss->query().c_str());
+    return rpt_value_boolean::create(true);
+}
+
+
+tree::pointer
+tree_print::optimize()
+    const
+{
+    return create(get_arg()->optimize());
+}
+
+
+bool
+tree_print::useful()
+    const
+{
+    return true;
+}
+
+
+bool
+tree_print::constant()
+    const
+{
+    return false;
+}
+
+
+const char *
+tree_print::name()
+    const
+{
+    return "print";
 }

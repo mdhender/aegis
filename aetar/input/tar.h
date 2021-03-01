@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002, 2005, 2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -47,8 +46,16 @@ public:
 
     /**
       * The child method is used to obtain the next archive element.
+      *
+      * @param archive_name
+      *     Use to return the name of the file in the archive to the caller.
+      * @param executable
+      *     Use to return the executability of the file to the caller.
+      * @returns
+      *     NULL at end of file, or a valid input instance to read the
+      *     file contents the file contents from.
       */
-    input child(nstring &archive_name);
+    input child(nstring &archive_name, bool &executable);
 
     // See base class for documentation.
     nstring name();

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,15 +13,12 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate deltas
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/trace.h>
-#include <common/wstr.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
 #include <libaegis/change.h>
 #include <libaegis/cstate.h>
 #include <libaegis/sub/change/delta.h>
@@ -48,41 +44,33 @@
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_delta(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_delta(sub_context_ty *scp, const wstring_list &arg)
 {
-    wstring_ty      *result;
-
     trace(("sub_delta()\n{\n"));
-    result = 0;
-    if (arg->size() != 1)
+    wstring result;
+    if (arg.size() != 1)
     {
-	sub_context_error_set(scp, i18n("requires zero arguments"));
+	scp->error_set(i18n("requires zero arguments"));
     }
     else
     {
-	change_ty	*cp;
-
-	cp = sub_context_change_get(scp);
+	change::pointer cp = sub_context_change_get(scp);
 	if (!cp)
 	{
 	    yuck:
-	    sub_context_error_set(scp, i18n("not valid in current context"));
+	    scp->error_set(i18n("not valid in current context"));
 	}
 	else
 	{
-	    cstate_ty       *cstate_data;
-	    string_ty       *s;
-
-	    cstate_data = change_cstate_get(cp);
+	    cstate_ty *cstate_data = cp->cstate_get();
 	    if (cstate_data->state < cstate_state_being_integrated)
-		    goto yuck;
-	    s = str_format("%ld", cstate_data->delta_number);
-	    result = str_to_wstr(s);
-	    str_free(s);
+                goto yuck;
+	    nstring s = nstring::format("%ld", cstate_data->delta_number);
+	    result = wstring(s);
 	}
     }
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

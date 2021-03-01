@@ -2,8 +2,6 @@
  *	aegis - project change supervisor
  *	This file is in the Public Domain, 1995, Peter Miller.
  *
- * MANIFEST: example use of cake in project config file
- *
  * The cake package was published in the comp.sources.unix USENET newsgroup,
  * volume 12, around February 1988, and is thus easily accessible from the many
  * archives around the Internet.

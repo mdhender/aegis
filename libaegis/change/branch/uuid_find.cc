@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate uuid_finds
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change/branch.h>
@@ -26,9 +23,10 @@
 
 
 void
-change_branch_uuid_find(change_ty *cp, string_ty *uuid, change_list_ty &result)
+change_branch_uuid_find(change::pointer cp, string_ty *uuid,
+    change_list_ty &result)
 {
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
     if (cstate_data->uuid && str_leading_prefix(cstate_data->uuid, uuid))
     {
 	result.append(change_copy(cp));
@@ -41,7 +39,7 @@ change_branch_uuid_find(change_ty *cp, string_ty *uuid, change_list_ty &result)
 	for (size_t j = 0; j < cstate_data->branch->change->length; ++j)
 	{
 	    long change_number = cstate_data->branch->change->list[j];
-	    change_ty *cp2 = change_alloc(pp2, change_number);
+	    change::pointer cp2 = change_alloc(pp2, change_number);
 	    change_bind_existing(cp);
 	    change_branch_uuid_find(cp2, uuid, result);
 	    if (uuid->str_length == 36 && result.size())

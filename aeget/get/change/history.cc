@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,17 +13,15 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the get_change_history class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
 
 #include <common/error.h> // for assert
 #include <common/now.h>
-#include <common/symtab.h>
+#include <common/symtab/template.h>
 #include <libaegis/aer/func/now.h> // for working_days
 #include <libaegis/change.h>
 #include <libaegis/cstate.h>
@@ -35,15 +32,8 @@
 #include <aeget/http.h>
 
 
-static void
-user_reaper(void *p)
-{
-    user_free((user_ty *)p);
-}
-
-
 void
-get_change_history(change_ty *cp, string_ty *filename, string_list_ty *)
+get_change_history(change::pointer cp, string_ty *, string_list_ty *)
 {
     //
     // Emit page title.
@@ -70,11 +60,11 @@ get_change_history(change_ty *cp, string_ty *filename, string_list_ty *)
     printf("<div class=\"information\"><table align=center>\n");
     printf("<tr class=\"even-group\"><th>What</th><th>When</th><th>Who</th>");
     printf("<th>Comment</th></tr>\n");
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
     assert(cstate_data);
     assert(cstate_data->history);
-    symtab_ty users;
-    users.set_reap(user_reaper);
+    symtab<user_ty::pointer> users;
+    users.set_reaper();
     int rownum = 0;
     for (size_t j = 0; j < cstate_data->history->length; ++j)
     {
@@ -96,15 +86,18 @@ get_change_history(change_ty *cp, string_ty *filename, string_list_ty *)
 	//
 	printf("<td valign=top>");
 	printf("<a href=\"mailto:");
-	user_ty *up = (user_ty *)users.query(hp->who);
-	if (!up)
+	user_ty::pointer *upp = users.query(hp->who);
+        user_ty::pointer up;
+	if (upp)
+            up = *upp;
+        else
 	{
-	    up = user_symbolic(cp->pp, hp->who);
-	    users.assign(hp->who, up);
+	    up = user_ty::create(nstring(hp->who));
+	    users.assign(nstring(hp->who), up);
 	}
-	html_escape_string(user_email_address(up));
+	html_escape_string(up->get_email_address());
 	printf("\">");
-	html_encode_string(user_name2(up));
+	html_encode_string(up->full_name());
 	printf("</a></td>\n");
 
 	//

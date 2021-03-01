@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,19 +13,20 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate developers
 //
 
+#include <common/nstring.h>
+#include <common/trace.h>
+#include <common/wstring/list.h>
 #include <libaegis/change.h>
 #include <libaegis/sub.h>
 #include <libaegis/sub/change/developer.h>
 #include <libaegis/sub/user.h>
-#include <common/trace.h>
 #include <libaegis/user.h>
-#include <common/wstr/list.h>
 
 
 //
@@ -49,68 +49,44 @@
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_developer(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_developer(sub_context_ty *scp, const wstring_list &arg)
 {
-	wstring_ty	*result;
-	string_ty	*s;
-	change_ty	*cp;
-	user_ty		*up;
-	sub_user_func_ptr func;
-
-	trace(("sub_developer()\n{\n"));
-	cp = sub_context_change_get(scp);
-	if (!cp)
-	{
-		yuck:
-		sub_context_error_set
-		(
-			scp,
-			i18n("not valid in current context")
-		);
-		result = 0;
-	}
-	else if (arg->size() == 1)
-	{
-		s = change_developer_name(cp);
-		if (!s)
-			goto yuck;
-		result = str_to_wstr(s);
-		// do not free s
-	}
-	else if (arg->size() == 2)
-	{
-		s = wstr_to_str(arg->get(1));
-		func = sub_user_func(s);
-		str_free(s);
-		if (!func)
-		{
-			sub_context_error_set
-			(
-				scp,
-				i18n("unknown substitution variant")
-			);
-			result = 0;
-		}
-		else
-		{
-			up = user_symbolic(cp->pp, change_developer_name(cp));
-			s = func(up);
-			result = str_to_wstr(s);
-			user_free(up);
-			// do not str_free(s)
-		}
-	}
-	else
-	{
-		sub_context_error_set
-		(
-			scp,
-			i18n("requires one argument")
-		);
-		result = 0;
-	}
-	trace(("return %8.8lX;\n", (long)result));
-	trace(("}\n"));
-	return result;
+    trace(("sub_developer()\n{\n"));
+    change::pointer cp = sub_context_change_get(scp);
+    wstring result;
+    if (!cp)
+    {
+        yuck:
+        scp->error_set(i18n("not valid in current context"));
+    }
+    else if (arg.size() == 1)
+    {
+        result = wstring(change_developer_name(cp));
+        if (result.empty())
+            goto yuck;
+    }
+    else if (arg.size() == 2)
+    {
+        nstring s = arg[1].to_nstring();
+        sub_user_func_ptr func = sub_user_func(s);
+        if (!func)
+        {
+            scp->error_set(i18n("unknown substitution variant"));
+        }
+        else
+        {
+            nstring login_name(change_developer_name(cp));
+            user_ty::pointer up = user_ty::create(login_name);
+            s = func(up);
+            result = wstring(s);
+        }
+    }
+    else
+    {
+        scp->error_set(i18n("requires one argument"));
+    }
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
+    trace(("}\n"));
+    return result;
 }

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001, 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -54,6 +53,20 @@ symtab_iterator::next(string_ty **key_p, void **data_p)
 {
     assert(key_p);
     assert(data_p);
+    nstring key;
+    void *data = 0;
+    assert(stp);
+    if (!next(key, data))
+        return false;
+    *key_p = key.get_ref();
+    *data_p = data;
+    return true;
+}
+
+
+bool
+symtab_iterator::next(nstring &key, void *&data)
+{
     assert(stp);
     while (rp == 0)
     {
@@ -62,10 +75,9 @@ symtab_iterator::next(string_ty **key_p, void **data_p)
 	rp = stp->hash_table[pos];
 	pos++;
     }
-    assert(rp->key);
-    *key_p = rp->key;
+    key = rp->key;
     assert(rp->data);
-    *data_p = rp->data;
+    data = rp->data;
     rp = rp->overflow;
     return true;
 }

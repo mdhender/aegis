@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate list_gets
 //
@@ -31,7 +30,7 @@
 
 
 string_list_ty *
-change_file_list_get(change_ty *cp, view_path_ty as_view_path)
+change_file_list_get(change::pointer cp, view_path_ty as_view_path)
 {
     trace(("change_file_list_get(cp = %8.8lX, as_view_path = %s)\n{\n",
 	(long)cp, view_path_ename(as_view_path)));
@@ -45,7 +44,7 @@ change_file_list_get(change_ty *cp, view_path_ty as_view_path)
 	string_ty	*key;
 	void		*data;
 	int             top_level;
-	change_ty       *cp2;
+	change::pointer cp2;
 
 	//
 	// Drop all the files into a symbol table.

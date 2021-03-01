@@ -1,99 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001-2003, 2005, 2006 Peter Miller;
-.\"	All rights reserved.
-.\"
-.\"	This program is free software; you can redistribute it and/or modify
-.\"	it under the terms of the GNU General Public License as published by
-.\"	the Free Software Foundation; either version 2 of the License, or
-.\"	(at your option) any later version.
-.\"
-.\"	This program is distributed in the hope that it will be useful,
-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-.\"	GNU General Public License for more details.
-.\"
-.\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: input for archive/aegis.html
-.\"
-.de an-p-footer
-..
-.ad l
-.hy 0
-.so version.so
-<html><head>
-.br
-<link rel="icon" href="favicon.ico" type="image/x-icon">
-.br
-<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-.br
-<title>Aegis Template projects</title></head>
-<body bgcolor="#ffffff"><h1>
-<img src="aegis.png" align=left>
-<img src="aegis.png" align=right>
-<center>Aegis \*(v)<br>Template projects</center></h1>
-So that you can begin to use Aegis rapidly,
-there are some example projects available.
-<br clear=all>
-<table width=80% align=center>
-<tr><th>Filename</th><th>Description</th></tr>
-.br
-<tr><td valign=top>
-.\" make sure there is no newline inserted after any of the hyphens in
-.\" the following!
-.br
-<a href="example-make-rcs.html">
-<tt>example-make-rcs</tt></a>
-</td><td valign=top>
-This template project uses GNU Make for its build tool,
-and RCS for its history tool.
-</td></tr>
-.br
-<tr><td valign=top>
-.\" make sure there is no newline inserted after any of the hyphens in
-.\" the following!
-.br
-<a href="example-cook-aesvt.html">
-<tt>example-cook-aesvt</tt></a>
-</td><td valign=top>
-This template project uses
-.br
-<a href="http://www.canb.auug.org.au/~millerp/cook/">
-Cook</a> for its build tool, and <i>aesvt</i>(1) for its history tool.
-This template project scales better than the Make-RCS example.
-The <i>aesvt</i>(1) program is distributed with Aegis.
-</td></tr>
-.br
-<tr><td valign=top>
-.\" make sure there is no newline inserted after any of the hyphens in
-.\" the following!
-.br
-<a href="example-cook-fhist.html">
-<tt>example-cook-fhist</tt></a>
-</td><td valign=top>
-This template project uses
-.br
-<a href="http://www.canb.auug.org.au/~millerp/cook/">
-Cook</a> for its build tool, and
-.br
-<a href="http://www.canb.auug.org.au/~millerp/fhist.html">FHist</a>
-for its history tool.
-It scales better than the Make-RCS example.
-</td></tr>
-.br
-</table>
-<p>
-These template projects provided a simple but flexible skeleton around
-which you can build many different projects.  Each project links you to
-a page of instructions for how to download the change set and apply it.
-</body></html>
-.\"
-.\"	aegis - project change supervisor
-.\"	Copyright (C) 2001-2003, 2005 Peter Miller;
-.\"	All rights reserved.
+.\"	Copyright (C) 2001-2003, 2005-2007 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -164,8 +71,9 @@ href="eg_oss.html">
     configuration, this example has instructions to get you working with
     your project under Aegis in under 30 minutes.  You will not need to
     change any of your source files.
-    <br><p>
+    <br><p><br>
 </td></tr>
+.\" ------------------------------------------------------------------------
 .br
 <tr><td valign=top align=center><img src="missiku/usr_doc_2.png"><br><p></td>
 <td valign=top>
@@ -183,7 +91,7 @@ href="example-cook-aesvt.html">
     <ul><li>
 	<a
 .nf
-href="http://www.canb.auug.org.au/~millerp/cook/">
+href="http://miller.emu.id.au/pmiller/software/cook/">
 .fi
 	Cook</a> for its build tool, and
     <li>
@@ -191,6 +99,38 @@ href="http://www.canb.auug.org.au/~millerp/cook/">
 	The <i>aesvt</i>(1) program is distributed with Aegis.
     </ul><br><p>
 </td></tr>
+.br
+<tr><td valign=top align=center><img src="missiku/usr_doc_2.png"><br><p></td>
+<td valign=top>
+    <h2><a
+.nf
+href="example-c-plus-plus.html">
+.fi
+    <tt>example-c-plus-plus</tt></a></h2>
+    This template project provides a clean simple development
+    environment which exploits many of Aegis' features to make
+    developers more productive.
+    <p>
+    The example project is written in C++, and uses the new file
+    templates to automagically write the boring bits of new classes.
+    The new file templates produce source files which are all <a
+    href="http://www.gnu.org/copyleft/gpl.html" >GNU GPL</a> licensed.
+    The build system uses GNU Autoconf, and produces ready-to-distribute
+    tarballs.
+    <p>
+    This template project uses
+    <ul><li>
+	<a
+.nf
+href="http://miller.emu.id.au/pmiller/software/cook/">
+.fi
+	Cook</a> for its build tool, and
+    <li>
+	<i>aesvt</i>(1) for its history tool.
+	The <i>aesvt</i>(1) program is distributed with Aegis.
+    </ul><br><p>
+</td></tr>
+.\" ------------------------------------------------------------------------
 .br
 <tr><td valign=top align=center><img src="missiku/usr_doc_2.png"><br><p></td>
 <td valign=top>
@@ -204,12 +144,15 @@ href="example-cook-fhist.html">
     <ul><li>
 	<a
 .nf
-href="http://www.canb.auug.org.au/~millerp/cook/">
+href="http://miller.emu.id.au/pmiller/software/cook/"
 .fi
-	Cook</a> for its build tool, and
+	>Cook</a> for its build tool, and
     <li>
-	<a href="http://www.canb.auug.org.au/~millerp/fhist.html">FHist</a>
-	for its history tool.
+	<a
+.nf
+href="http://fhist.sourceforge.net/"
+.fi
+        >FHist</a> for its history tool.
     </ul><br><p>
 </td></tr>
 .br

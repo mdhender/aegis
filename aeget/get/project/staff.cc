@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate staffs
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -119,11 +116,11 @@ staff_member_find(symtab_ty *stp, string_ty *key)
 
 
 void
-get_project_staff(project_ty *pp, string_ty *fn, string_list_ty *modifier)
+get_project_staff(project_ty *pp, string_ty *, string_list_ty *)
 {
     double          scale;
     cstate_branch_ty *bp;
-    change_ty       *cp;
+    change::pointer cp;
     long            number_of_changes = 0;
     size_t          n;
     cstate_ty       *cstate_data;
@@ -194,7 +191,7 @@ get_project_staff(project_ty *pp, string_ty *fn, string_list_ty *modifier)
     staff_member_constructor(&total);
     staff_member_constructor(&max);
     cp = pp->change_get();
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
     bp = cstate_data->branch;
     assert(bp);
     if (!bp->change)
@@ -211,7 +208,7 @@ get_project_staff(project_ty *pp, string_ty *fn, string_list_ty *modifier)
 	change_number = bp->change->list[n];
 	cp = change_alloc(pp, change_number);
 	change_bind_existing(cp);
-	cstate_data = change_cstate_get(cp);
+	cstate_data = cp->cstate_get();
 
 	hlp = cstate_data->history;
 	if (hlp)
@@ -304,7 +301,7 @@ get_project_staff(project_ty *pp, string_ty *fn, string_list_ty *modifier)
     printf("<th colspan=3>Administrator</th></tr>\n");
     for (n = 0; n < keys.nstrings; ++n)
     {
-	user_ty         *up;
+	user_ty::pointer up;
 	int             width;
 
 	key = keys.string[n];
@@ -316,9 +313,8 @@ get_project_staff(project_ty *pp, string_ty *fn, string_list_ty *modifier)
 	printf("<tr class=\"%s-group\">\n", (j % 6 < 3 ? "odd" : "even"));
 	printf("<td valign=top>\n");
 	printf("<a href=\"mailto:");
-	up = user_symbolic(pp, key);
-	html_escape_string(user_email_address(up));
-	user_free(up);
+	up = user_ty::create(nstring(key));
+	html_escape_string(up->get_email_address());
 	printf("\">");
 	html_encode_string(key);
 	printf("</a></td>\n");

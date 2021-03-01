@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -37,7 +36,7 @@
 #include <libaegis/zero.h>
 
 
-static col_ty	*colp;
+static col	*colp;
 static output_ty *list_locks_name_col;
 static output_ty *list_locks_type_col;
 static output_ty *list_locks_project_col;
@@ -173,7 +172,7 @@ list_locks_callback(lock_walk_found *found)
 
 	if (!user_name_by_uid)
 	{
-	    user_name_by_uid = itab_alloc(100);
+	    user_name_by_uid = itab_alloc();
 	    setpwent();
 	    for (;;)
 	    {
@@ -216,12 +215,12 @@ list_locks_callback(lock_walk_found *found)
     list_locks_process_col->fprintf("%5d", found->pid);
     if (!found->pid_is_local)
 	list_locks_process_col->fputs(" remote");
-    col_eoln(colp);
+    colp->eoln();
 }
 
 
 void
-list_locks(string_ty *project_name, long change_number, string_list_ty *args)
+list_locks(string_ty *project_name, long change_number, string_list_ty *)
 {
     //
     // check for silly arguments
@@ -240,14 +239,14 @@ list_locks(string_ty *project_name, long change_number, string_list_ty *args)
     //
     // open the columns
     //
-    colp = col_open((string_ty *)0);
-    col_title(colp, "List of Locks", gonzo_lockpath_get()->str_text);
-    list_locks_name_col = col_create(colp, 0, 8, "Type\n------");
-    list_locks_type_col = col_create(colp, 9, 19, "Mode\n------");
-    list_locks_project_col = col_create(colp, 20, 32, "Project\n---------");
-    list_locks_change_col = col_create(colp, 33, 40, "Change\n------");
-    list_locks_address_col = col_create(colp, 41, 50, "Address\n--------");
-    list_locks_process_col = col_create(colp, 51, 0, "Process\n--------");
+    colp = col::open((string_ty *)0);
+    colp->title("List of Locks", gonzo_lockpath_get()->str_text);
+    list_locks_name_col = colp->create(0, 8, "Type\n------");
+    list_locks_type_col = colp->create(9, 19, "Mode\n------");
+    list_locks_project_col = colp->create(20, 32, "Project\n---------");
+    list_locks_change_col = colp->create(33, 40, "Change\n------");
+    list_locks_address_col = colp->create(41, 50, "Address\n--------");
+    list_locks_process_col = colp->create(51, 0, "Process\n--------");
     list_locks_count = 0;
 
     //
@@ -258,11 +257,11 @@ list_locks(string_ty *project_name, long change_number, string_list_ty *args)
     {
 	output_ty	*info;
 
-	info = col_create(colp, 4, 0, (const char *)0);
+	info = colp->create(4, 0, (const char *)0);
 	info->fputs("No locks found.");
-	col_eoln(colp);
+	colp->eoln();
     }
-    col_close(colp);
+    delete colp;
 
     //
     // clean up

@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate run_disc_cmds
 //
@@ -32,12 +31,12 @@
 
 
 string_ty *
-change_run_architecture_discriminator_command(change_ty *cp)
+change_run_architecture_discriminator_command(change::pointer cp)
 {
     pconf_ty        *pconf_data;
     string_ty       *the_command;
     string_ty       *dir;
-    user_ty         *up;
+    user_ty::pointer up;
     string_ty       *result;
     static int      loop_detect;
 
@@ -80,18 +79,18 @@ change_run_architecture_discriminator_command(change_ty *cp)
     // Run the command and collect the output.
     //
     dir = change_directory_get(cp, 0);
-    up = user_executing(cp->pp);
-    user_become(up);
-    result =
-	os_execute_slurp
-	(
-	    the_command,
-	    OS_EXEC_FLAG_NO_INPUT | OS_EXEC_FLAG_SILENT,
-	    dir
-	);
-    user_become_undo();
+    up = user_ty::create();
+    {
+        user_ty::become scoped(up);
+        result =
+            os_execute_slurp
+            (
+                the_command,
+                OS_EXEC_FLAG_NO_INPUT | OS_EXEC_FLAG_SILENT,
+                dir
+            );
+    }
     str_free(the_command);
-    user_free(up);
 
     //
     // Only return some output if it isn't empty.

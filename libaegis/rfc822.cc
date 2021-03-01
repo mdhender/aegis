@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005, 2006 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -407,8 +406,8 @@ rfc822::load(input &source, bool maybe_not)
     // Do the end-of-line wrapping transparently.
     //
     trace(("we expect to see a header\n"));
-    input ifp = new input_crlf(source);
-    ifp = new input_822wrap(ifp);
+    input ifp2 = new input_crlf(source);
+    input ifp = new input_822wrap(ifp2);
 
     //
     // We are looking for RFC822 style header lines.
@@ -418,7 +417,7 @@ rfc822::load(input &source, bool maybe_not)
     nstring_accumulator value;
     for (;;)
     {
-	int c = source->getch();
+	int c = ifp->getch();
 	if (c < 0 || c == '\n')
 	    break;
 	name.clear();
@@ -440,7 +439,7 @@ rfc822::load(input &source, bool maybe_not)
 	    case '5': case '6': case '7': case '8': case '9':
 	    case '_': case '-':
 		name.push_back(c);
-		c = source->getch();
+		c = ifp->getch();
 		if (c < 0)
 		    goto malformed;
 		continue;
@@ -455,7 +454,7 @@ rfc822::load(input &source, bool maybe_not)
 	{
 	    malformed:
 	    sub_context_ty sc;
-	    sc.var_set_string("File_Name", source->name());
+	    sc.var_set_string("File_Name", ifp->name());
 	    sc.fatal_intl(i18n("$filename: malformed RFC 822 header line"));
 	    // NOTREACHED
 	}
@@ -467,7 +466,7 @@ rfc822::load(input &source, bool maybe_not)
 	//
 	for (;;)
 	{
-	    c = source->getch();
+	    c = ifp->getch();
 	    if  (c < 0 || c == '\n' || !isspace((unsigned char)c))
 		break;
 	}
@@ -483,7 +482,7 @@ rfc822::load(input &source, bool maybe_not)
 	    if (c == '\n')
 		break;
 	    value.push_back(c);
-	    c = source->getch();
+	    c = ifp->getch();
 	}
 
 	//

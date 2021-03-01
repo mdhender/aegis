@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2003-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: functions to manipulate changes
 //
@@ -42,7 +41,8 @@
 
 
 static void
-project_handoff(change_ty *cp, string_ty *filename, string_list_ty *modifier)
+project_handoff(change::pointer cp, string_ty *filename,
+    string_list_ty *modifier)
 {
     get_project(cp->pp, filename, modifier);
 }
@@ -51,7 +51,7 @@ project_handoff(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 struct table_ty
 {
     const char *name;
-    void (*action)(change_ty *, string_ty *, string_list_ty *);
+    void (*action)(change::pointer , string_ty *, string_list_ty *);
     int hide_me;
 };
 
@@ -66,20 +66,20 @@ static const table_ty table[] =
     { "file", get_file, 1 },
     { "change", get_change, 1 },
 
-    { "aedist", get_change_aedist },
-    { "aepatch", get_change_aepatch },
-    { "aerevml", get_change_aerevml },
-    { "aetar", get_change_aetar },
-    { "download", get_change_download },
-    { "files", get_change_files },
-    { "file-inventory", get_change_file_inventory },
-    { "history", get_change_history },
-    { "menu", get_change_menu },
+    { "aedist", get_change_aedist, 0 },
+    { "aepatch", get_change_aepatch, 0 },
+    { "aerevml", get_change_aerevml, 0 },
+    { "aetar", get_change_aetar, 0 },
+    { "download", get_change_download, 0 },
+    { "files", get_change_files, 0 },
+    { "file-inventory", get_change_file_inventory, 0 },
+    { "history", get_change_history, 0 },
+    { "menu", get_change_menu, 0 },
 };
 
 
 static void
-whine(change_ty *cp, string_list_ty *modifier)
+whine(change::pointer cp, string_list_ty *modifier)
 {
     html_header(0, cp);
     printf("<title>Project ");
@@ -128,7 +128,7 @@ whine(change_ty *cp, string_list_ty *modifier)
 
 
 void
-get_change(change_ty *cp, string_ty *filename, string_list_ty *modifier)
+get_change(change::pointer cp, string_ty *filename, string_list_ty *modifier)
 {
     //
     // Look for the change modifier to report.

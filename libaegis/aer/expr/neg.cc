@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994-1996, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,176 +13,126 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate unary expressions
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
+#include <common/trace.h>
 #include <libaegis/aer/expr/neg.h>
 #include <libaegis/aer/value/boolean.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/integer.h>
 #include <libaegis/aer/value/real.h>
-#include <common/error.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 
 
-static rpt_value_ty *
-neg_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_neg::~rpt_expr_neg()
 {
-    sub_context_ty  *scp;
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *vp;
-    string_ty       *s;
+}
 
+
+rpt_expr_neg::rpt_expr_neg(const rpt_expr::pointer &arg)
+{
+    append(arg);
+}
+
+
+rpt_expr::pointer
+rpt_expr_neg::create(const rpt_expr::pointer &arg)
+{
+    return pointer(new rpt_expr_neg(arg));
+}
+
+
+rpt_value::pointer
+rpt_expr_neg::evaluate()
+    const
+{
     //
     // evaluate the argument
     //
-    trace(("neg::evaluate()\n{\n"));
-    assert(this_thing->nchild == 1);
-    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (v1->method->type == rpt_value_type_error)
-    {
-	trace(("}\n"));
+    trace(("rpt_expr_neg::evaluate()\n"));
+    assert(get_nchildren() == 1);
+    rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
+    if (v1->is_an_error())
 	return v1;
-    }
 
     //
     // coerce the argument to an arithmetic type
     // (will not give error if can't, will copy instead)
     //
-    v2 = rpt_value_arithmetic(v1);
-    rpt_value_free(v1);
+    rpt_value::pointer v2 = rpt_value::arithmetic(v1);
 
     //
     // the type of the result depends on
     // the types of the argument
     //
-    switch (v2->method->type)
-    {
-    case rpt_value_type_real:
-	vp = rpt_value_real(-rpt_value_real_query(v2));
-	trace(("vp = %g real\n", rpt_value_real_query(vp)));
-	break;
+    rpt_value_integer *v2ip = dynamic_cast<rpt_value_integer *>(v2.get());
+    if (v2ip)
+        return rpt_value_integer::create(-v2ip->query());
 
-    case rpt_value_type_integer:
-	vp = rpt_value_integer(-rpt_value_integer_query(v2));
-	trace(("vp = %ld integer\n", rpt_value_integer_query(vp)));
-	break;
+    rpt_value_real *v2rp = dynamic_cast<rpt_value_real *>(v2.get());
+    if (v2rp)
+        return rpt_value_real::create(-v2rp->query());
 
-    default:
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", v2->method->name);
-	s = subst_intl(scp, i18n("illegal negative ($name)"));
-	sub_context_delete(scp);
-	vp = rpt_value_error(this_thing->child[0]->pos, s);
-	str_free(s);
-	break;
-    }
-    rpt_value_free(v2);
-    trace(("return %08lX;\n", (long)vp));
-    trace(("}\n"));
-    return vp;
+    sub_context_ty sc;
+    sc.var_set_charstar("Name", v2->name());
+    nstring s(sc.subst_intl(i18n("illegal negative ($name)")));
+    return rpt_value_error::create(nth_child(0)->get_pos(), s);
 }
 
 
-static rpt_expr_method_ty neg_method =
+rpt_expr_pos::~rpt_expr_pos()
 {
-    sizeof(rpt_expr_ty),
-    "negative",
-    0, // construct
-    0, // destruct
-    neg_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_neg(rpt_expr_ty *a)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&neg_method);
-    rpt_expr_append(this_thing, a);
-    return this_thing;
 }
 
 
-static rpt_value_ty *
-pos_evaluate(rpt_expr_ty *this_thing)
+rpt_expr_pos::rpt_expr_pos(const rpt_expr::pointer &arg)
 {
-    sub_context_ty  *scp;
-    rpt_value_ty    *v1;
-    rpt_value_ty    *v2;
-    rpt_value_ty    *vp;
-    string_ty       *s;
+    append(arg);
+}
 
+
+rpt_expr::pointer
+rpt_expr_pos::create(const rpt_expr::pointer &arg)
+{
+    return pointer(new rpt_expr_pos(arg));
+}
+
+
+rpt_value::pointer
+rpt_expr_pos::evaluate()
+    const
+{
     //
     // evaluate the argument
     //
-    trace(("pos::evaluate()\n{\n"));
-    assert(this_thing->nchild == 1);
-    v1 = rpt_expr_evaluate(this_thing->child[0], 1);
-    if (v1->method->type == rpt_value_type_error)
-    {
-	trace(("}\n"));
+    trace(("pos::evaluate()\n"));
+    assert(get_nchildren() == 1);
+    rpt_value::pointer v1 = nth_child(0)->evaluate(true, true);
+    if (v1->is_an_error())
 	return v1;
-    }
 
     //
     // coerce the argument to an arithmetic type
     //	(will not give error if can't, will copy instead)
     //
-    v2 = rpt_value_arithmetic(v1);
-    rpt_value_free(v1);
+    rpt_value::pointer v2 = rpt_value::arithmetic(v1);
 
     //
-    // the type of the result depends on
-    // the types of the argument
+    // it's an error if it isn't an integer or a real
     //
-    switch (v2->method->type)
-    {
-    case rpt_value_type_real:
-    case rpt_value_type_integer:
-	vp = rpt_value_copy(v2);
-	break;
+    rpt_value_integer *v2ip = dynamic_cast<rpt_value_integer *>(v2.get());
+    if (v2ip)
+        return v2;
 
-    default:
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", v2->method->name);
-	s = subst_intl(scp, i18n("illegal positive ($name)"));
-	sub_context_delete(scp);
-	vp = rpt_value_error(this_thing->child[0]->pos, s);
-	str_free(s);
-	break;
-    }
-    rpt_value_free(v2);
-    trace(("return %08lX;\n", (long)vp));
-    trace(("}\n"));
-    return vp;
-}
+    rpt_value_real *v2rp = dynamic_cast<rpt_value_real *>(v2.get());
+    if (v2rp)
+        return v2;
 
-
-static rpt_expr_method_ty pos_method =
-{
-    sizeof(rpt_expr_ty),
-    "positive",
-    0, // construct
-    0, // destruct
-    pos_evaluate,
-    0, // lvalue
-};
-
-
-rpt_expr_ty *
-rpt_expr_pos(rpt_expr_ty *a)
-{
-    rpt_expr_ty     *this_thing;
-
-    this_thing = rpt_expr_alloc(&pos_method);
-    rpt_expr_append(this_thing, a);
-    return this_thing;
+    sub_context_ty sc;
+    sc.var_set_charstar("Name", v2->name());
+    nstring s(sc.subst_intl(i18n("illegal positive ($name)")));
+    return rpt_value_error::create(nth_child(0)->get_pos(), s);
 }

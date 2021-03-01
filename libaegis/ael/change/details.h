@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2002-2004, 2006, 2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,8 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 // MANIFEST: interface definition for libaegis/ael/change/details.c
 //
@@ -23,8 +22,9 @@
 #ifndef LIBAEGIS_AEL_CHANGE_DETAILS_H
 #define LIBAEGIS_AEL_CHANGE_DETAILS_H
 
-struct change_ty; // forward
-struct col_ty; // forward
+#include <libaegis/change.h>
+
+struct col; // forward
 struct output_ty; // forward
 struct string_ty; // forward
 struct string_list_ty; // forward
@@ -56,10 +56,10 @@ public:
       *     If the change is actually a branch, recusively print the
       *     details of each of the changes on the branch.
       */
-    void list(change_ty *cp, bool recurse);
+    void list(change::pointer cp, bool recurse);
 
 private:
-    col_ty *colp;
+    col *colp;
 
     // general columns
     output_ty	    *head_col;

@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Walter Franzini;
-//	All rights reserved.
+//	Copyright (C) 2004, 2005 Walter Franzini
+//	Copyright (C) 2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the change_functor_invent_build class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/string.h>
@@ -36,7 +34,7 @@ change_functor_inventory_builder::~change_functor_inventory_builder()
 
 
 change_functor_inventory_builder::change_functor_inventory_builder(bool arg1,
-	bool arg2, bool arg3, project_ty *arg4, symtab<change_ty> *arg5) :
+	bool arg2, bool arg3, project_ty *arg4, symtab<change> *arg5) :
     change_functor(arg1, arg2),
     inou(arg3),
     stp(arg5),
@@ -46,9 +44,9 @@ change_functor_inventory_builder::change_functor_inventory_builder(bool arg1,
 
 
 void
-change_functor_inventory_builder::operator()(change_ty *cp)
+change_functor_inventory_builder::operator()(change::pointer cp)
 {
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
     assert(cstate_data);
     time_t cp_ipass_when =
         change_when_get(cp, cstate_history_what_integrate_pass);
@@ -62,7 +60,7 @@ change_functor_inventory_builder::operator()(change_ty *cp)
         // merge point to select, it should generate smaller (logical)
         // conflicts.
         //
-        change_ty *cp2 = stp->query(cstate_data->uuid);
+        change::pointer cp2 = stp->query(cstate_data->uuid);
         if (cp2)
         {
             time_t cp2_ipass_when =
@@ -99,7 +97,7 @@ change_functor_inventory_builder::operator()(change_ty *cp)
             universal_unique_identifier_valid(ap->value)
         )
         {
-            change_ty *cp2 = stp->query(ap->value);
+            change::pointer cp2 = stp->query(ap->value);
             if (cp2)
             {
                 time_t cp2_ipass_when =

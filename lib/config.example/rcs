@@ -2,8 +2,6 @@
  *	aegis - project change supervisor
  *	This file is in the Public Domain, 1995, 1998, 2000, 2002 Peter Miller.
  *
- * MANIFEST: example of using rcs in the project config file
- *
  * The entries for the commands are listed below.  RCS uses a slightly
  * different model than aegis wants, so some maneuvering is required.
  * The command strings in this section assume that the RCS commands ci

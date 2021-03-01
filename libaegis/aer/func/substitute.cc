@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 1999, 2001, 2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1998, 1999, 2001, 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,113 +13,142 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement the subst builtin function
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
+#include <common/error.h>
+#include <common/mem.h>
+#include <common/regula_expre.h>
+#include <common/trace.h>
 #include <libaegis/aer/expr.h>
 #include <libaegis/aer/func/substitute.h>
 #include <libaegis/aer/value/error.h>
 #include <libaegis/aer/value/integer.h>
 #include <libaegis/aer/value/string.h>
-#include <common/error.h>
-#include <common/mem.h>
-#include <common/regula_expre.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 
 
-static int
-verify(rpt_expr_ty *ep)
+rpt_func_substitute::~rpt_func_substitute()
 {
-    return (ep->nchild == 3 || ep->nchild == 4);
 }
 
 
-static rpt_value_ty *
-run(rpt_expr_ty	*ep, size_t argc, rpt_value_ty **argv)
+rpt_func_substitute::rpt_func_substitute()
 {
-    trace(("rpt_func_substitute::run()\n{\n"));
+}
+
+
+rpt_func::pointer
+rpt_func_substitute::create()
+{
+    return pointer(new rpt_func_substitute());
+}
+
+
+const char *
+rpt_func_substitute::name()
+    const
+{
+    return "subst";
+}
+
+
+bool
+rpt_func_substitute::optimizable()
+    const
+{
+    return true;
+}
+
+
+bool
+rpt_func_substitute::verify(const rpt_expr::pointer &ep)
+    const
+{
+    return (ep->get_nchildren() == 3 || ep->get_nchildren() == 4);
+}
+
+
+rpt_value::pointer
+rpt_func_substitute::run(const rpt_expr::pointer &ep, size_t argc,
+    rpt_value::pointer *argv) const
+{
+    trace(("rpt_func_substitute::run()\n"));
     //
     // Get the match pattern.
     //
-    rpt_value_ty *arg = argv[0];
-    assert(arg->method->type != rpt_value_type_error);
-    arg = rpt_value_stringize(arg);
-    if (arg->method->type != rpt_value_type_string)
+    rpt_value::pointer arg = argv[0];
+    assert(!arg->is_an_error());
+    arg = rpt_value::stringize(arg);
+    rpt_value_string *s0p = dynamic_cast<rpt_value_string *>(arg.get());
+    if (!s0p)
     {
 	sub_context_ty sc(__FILE__, __LINE__);
-	rpt_value_free(arg);
 	sc.var_set_charstar("Function", "subst");
 	sc.var_set_long("Number", 1);
-	sc.var_set_charstar("Name", argv[0]->method->name);
-	string_ty *s =
+	sc.var_set_charstar("Name", argv[0]->name());
+	nstring s
+        (
 	    sc.subst_intl
 	    (
-    i18n("$function: argument $number: string value required (was given $name)")
-	    );
-	rpt_value_ty *result = rpt_value_error(ep->pos, s);
-	str_free(s);
-	trace(("}\n"));
-	return result;
+                i18n("$function: argument $number: string value required "
+                    "(was given $name)")
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
-    nstring lhs(str_copy(rpt_value_string_query(arg)));
-    rpt_value_free(arg);
+    nstring lhs(s0p->query());
 
     //
     // Get the replacement pattern.
     //
     arg = argv[1];
-    assert(arg->method->type != rpt_value_type_error);
-    arg = rpt_value_stringize(arg);
-    if (arg->method->type != rpt_value_type_string)
+    assert(!arg->is_an_error());
+    arg = rpt_value::stringize(arg);
+    rpt_value_string *s1p = dynamic_cast<rpt_value_string *>(arg.get());
+    if (!s1p)
     {
 	sub_context_ty sc(__FILE__, __LINE__);
-	rpt_value_free(arg);
 	sc.var_set_charstar("Function", "subst");
 	sc.var_set_long("Number", 2);
-	sc.var_set_charstar("Name", argv[1]->method->name);
-	string_ty *s =
+	sc.var_set_charstar("Name", argv[1]->name());
+	nstring s
+        (
 	    sc.subst_intl
 	    (
-    i18n("$function: argument $number: string value required (was given $name)")
-	    );
-	rpt_value_ty *result = rpt_value_error(ep->pos, s);
-	str_free(s);
-	trace(("}\n"));
-	return result;
+                i18n("$function: argument $number: string value required "
+                    "(was given $name)")
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
-    nstring rhs(str_copy(rpt_value_string_query(arg)));
-    rpt_value_free(arg);
+    nstring rhs(s1p->query());
 
     //
     // Get the string to be worked over.
     //
     arg = argv[2];
-    assert(arg->method->type != rpt_value_type_error);
-    arg = rpt_value_stringize(arg);
-    if (arg->method->type != rpt_value_type_string)
+    assert(!arg->is_an_error());
+    arg = rpt_value::stringize(arg);
+    rpt_value_string *s2p = dynamic_cast<rpt_value_string *>(arg.get());
+    if (!s2p)
     {
 	sub_context_ty sc(__FILE__, __LINE__);
-	rpt_value_free(arg);
 	sc.var_set_charstar("Function", "subst");
 	sc.var_set_long("Number", 3);
-	sc.var_set_charstar("Name", argv[2]->method->name);
-	string_ty *s =
+	sc.var_set_charstar("Name", argv[2]->name());
+	nstring s
+        (
 	    sc.subst_intl
 	    (
-    i18n("$function: argument $number: string value required (was given $name)")
-	    );
-	rpt_value_ty *result = rpt_value_error(ep->pos, s);
-	str_free(s);
-	trace(("}\n"));
-	return result;
+                i18n("$function: argument $number: string value required "
+                    "(was given $name)")
+	    )
+        );
+	return rpt_value_error::create(ep->get_pos(), s);
     }
-    nstring input(str_copy(rpt_value_string_query(arg)));
-    rpt_value_free(arg);
-    arg = 0;
+    nstring input(s2p->query());
 
     //
     // Get the count of how many times to match.
@@ -129,27 +157,26 @@ run(rpt_expr_ty	*ep, size_t argc, rpt_value_ty **argv)
     if (argc >= 4)
     {
 	arg = argv[3];
-	assert(arg->method->type != rpt_value_type_error);
-	arg = rpt_value_integerize(arg);
-	if (arg->method->type != rpt_value_type_integer)
+	assert(!arg->is_an_error());
+	arg = rpt_value::integerize(arg);
+        rpt_value_integer *rip = dynamic_cast<rpt_value_integer *>(arg.get());
+	if (!rip)
 	{
 	    sub_context_ty sc(__FILE__, __LINE__);
-	    rpt_value_free(arg);
 	    sc.var_set_charstar("Function", "subst");
 	    sc.var_set_long("Number", 2);
-	    sc.var_set_charstar("Name", argv[3]->method->name);
-	    string_ty *s =
+	    sc.var_set_charstar("Name", argv[3]->name());
+	    nstring s
+            (
 		sc.subst_intl
 		(
-   i18n("$function: argument $number: integer value required (was given $name)")
-		);
-	    rpt_value_ty *result = rpt_value_error(ep->pos, s);
-	    str_free(s);
-	    trace(("}\n"));
-	    return result;
+                    i18n("$function: argument $number: integer value "
+                        "required (was given $name)")
+		)
+            );
+	    return rpt_value_error::create(ep->get_pos(), s);
 	}
-	count = rpt_value_integer_query(arg);
-	rpt_value_free(arg);
+	count = rip->query();
     }
 
     //
@@ -166,31 +193,16 @@ run(rpt_expr_ty	*ep, size_t argc, rpt_value_ty **argv)
 	// Return an error result.
 	//
 	sub_context_ty sc(__FILE__, __LINE__);
-	rpt_value_free(arg);
 	sc.var_set_charstar("Function", "subst");
 	sc.var_set_long("Number", 1);
 	sc.var_set_charstar("Message", re.strerror());
-	string_ty *s =
-	    sc.subst_intl(i18n("$function: argument $number: $message"));
-	rpt_value_ty *result = rpt_value_error(ep->pos, s);
-	str_free(s);
-	trace(("}\n"));
-	return result;
+	nstring s(sc.subst_intl(i18n("$function: argument $number: $message")));
+	return rpt_value_error::create(ep->get_pos(), s);
     }
 
     //
     // build the result
     //
     trace_nstring(output);
-    trace(("}\n"));
-    return rpt_value_string(output.get_ref());
+    return rpt_value_string::create(output);
 }
-
-
-rpt_func_ty rpt_func_substitute =
-{
-    "subst",
-    1, // optimizable
-    verify,
-    run
-};

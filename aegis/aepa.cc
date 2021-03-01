@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -117,7 +116,10 @@ project_attributes_list(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -132,12 +134,12 @@ project_attributes_list(void)
 
 
 static void
-check_permissions(project_ty *pp, user_ty *up)
+check_permissions(project_ty *pp, user_ty::pointer up)
 {
     //
     // it is an error if the user is not an administrator
     //
-    if (!project_administrator_query(pp, user_name(up)))
+    if (!project_administrator_query(pp, up->name()))
 	project_fatal(pp, 0, i18n("not an administrator"));
 }
 
@@ -145,12 +147,12 @@ check_permissions(project_ty *pp, user_ty *up)
 static void
 change_existing_project_attributes(project_ty *pp, pattr_ty *pattr_data)
 {
-    user_ty  *up;
+    user_ty::pointer up;
 
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // take project lock
@@ -173,7 +175,6 @@ change_existing_project_attributes(project_ty *pp, pattr_ty *pattr_data)
     commit();
     lock_release();
     project_verbose(pp, 0, i18n("project attributes complete"));
-    user_free(up);
 }
 
 
@@ -277,7 +278,7 @@ project_attributes_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(project_attributes_usage);
+	    user_ty::lock_wait_argument(project_attributes_usage);
 	    break;
 	}
 	arglex();
@@ -323,7 +324,10 @@ project_attributes_main(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -333,9 +337,9 @@ project_attributes_main(void)
     //
     if (edit != edit_not_set)
     {
-        user_ty         *up;
+        user_ty::pointer up;
 
-        up = user_executing(pp);
+        up = user_ty::create();
 
 	//
 	// make sure they are allowed to,
@@ -387,8 +391,8 @@ project_attributes(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, project_attributes_help, },
-	{arglex_token_list, project_attributes_list, },
+	{ arglex_token_help, project_attributes_help, 0 },
+	{ arglex_token_list, project_attributes_list, 0 },
     };
 
     trace(("project_attributes()\n{\n"));

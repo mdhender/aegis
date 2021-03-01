@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2004, 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002, 2004-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -32,7 +31,7 @@ symtab_ty::keys(string_list_ty *result)
     result->clear();
     for (str_hash_ty j = 0; j < hash_modulus; ++j)
        	for (row_t *p = hash_table[j]; p; p = p->overflow)
-	    result->push_back(p->key);
+	    result->push_back(p->key.get_ref());
 }
 
 
@@ -43,5 +42,5 @@ symtab_ty::keys(nstring_list &result)
     result.clear();
     for (str_hash_ty j = 0; j < hash_modulus; ++j)
        	for (row_t *p = hash_table[j]; p; p = p->overflow)
-	    result.push_back(nstring(str_copy(p->key)));
+	    result.push_back(p->key);
 }

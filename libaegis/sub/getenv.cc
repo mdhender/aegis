@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -21,12 +20,11 @@
 //
 
 #include <common/error.h>
-#include <common/str_list.h>
-#include <libaegis/sub/getenv.h>
-#include <libaegis/sub.h>
+#include <common/nstring/list.h>
 #include <common/trace.h>
-#include <common/wstr.h>
-#include <common/wstr/list.h>
+#include <common/wstring/list.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/getenv.h>
 
 
 
@@ -50,36 +48,30 @@
 //	or NULL on error, setting suberr appropriately.
 //
 
-wstring_ty *
-sub_getenv(sub_context_ty *scp, wstring_list_ty *arg)
+wstring
+sub_getenv(sub_context_ty *scp, const wstring_list &arg)
 {
-    wstring_ty	    *result;
-
     trace(("sub_getenv()\n{\n"));
-    if (arg->size() < 2)
+    wstring result;
+    if (arg.size() < 2)
     {
-       	sub_context_error_set(scp, i18n("requires one argument"));
-       	result = 0;
+       	scp->error_set(i18n("requires one argument"));
     }
     else
     {
-	string_list_ty results;
-	for (size_t j = 1; j < arg->size(); ++j)
+	nstring_list results;
+	for (size_t j = 1; j < arg.size(); ++j)
 	{
-	    string_ty *name = wstr_to_str(arg->get(j));
-	    const char *value = getenv(name->str_text);
-	    str_free(name);
+	    nstring name = arg[j].to_nstring();
+	    const char *value = getenv(name.c_str());
 	    if (!value)
 		value = "";
-	    string_ty *s = str_from_c(value);
+	    nstring s(value);
 	    results.push_back(s);
-	    str_free(s);
 	}
-	string_ty *s = results.unsplit();
-	result = str_to_wstr(s);
-	str_free(s);
+	result = wstring(results.unsplit());
     }
-    trace(("return %8.8lX;\n", (long)result));
+    trace(("return %8.8lX;\n", (long)result.get_ref()));
     trace(("}\n"));
     return result;
 }

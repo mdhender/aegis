@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1998, 1999, 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1994, 1998, 1999, 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -25,19 +24,19 @@
 #include <fmtgen/type/integer.h>
 
 
-type_integer_ty::~type_integer_ty()
+type_integer::~type_integer()
 {
 }
 
 
-type_integer_ty::type_integer_ty() :
-    type_ty("integer")
+type_integer::type_integer() :
+    type("integer")
 {
 }
 
 
 void
-type_integer_ty::gen_include_declarator(const nstring &variable_name,
+type_integer::gen_include_declarator(const nstring &variable_name,
     bool is_a_list) const
 {
     const char *deref = (is_a_list ? "*" : "");
@@ -46,7 +45,7 @@ type_integer_ty::gen_include_declarator(const nstring &variable_name,
 
 
 void
-type_integer_ty::gen_code_declarator(const nstring &variable_name,
+type_integer::gen_code_declarator(const nstring &variable_name,
     bool is_a_list, int attributes) const
 {
     int show = !!(attributes & ATTRIBUTE_SHOW_IF_DEFAULT);
@@ -66,7 +65,7 @@ type_integer_ty::gen_code_declarator(const nstring &variable_name,
 
 
 void
-type_integer_ty::gen_code_call_xml(const nstring &form_name,
+type_integer::gen_code_call_xml(const nstring &form_name,
     const nstring &member_name, int attributes) const
 {
     int show = !!(attributes & ATTRIBUTE_SHOW_IF_DEFAULT);
@@ -81,8 +80,8 @@ type_integer_ty::gen_code_call_xml(const nstring &form_name,
 
 
 void
-type_integer_ty::gen_free_declarator(const nstring &variable_name,
-    bool is_a_list) const
+type_integer::gen_free_declarator(const nstring &, bool is_a_list)
+    const
 {
     if (is_a_list)
        	indent_printf(";\n");
@@ -90,7 +89,7 @@ type_integer_ty::gen_free_declarator(const nstring &variable_name,
 
 
 nstring
-type_integer_ty::c_name_inner()
+type_integer::c_name_inner()
     const
 {
     return "long";
@@ -98,7 +97,7 @@ type_integer_ty::c_name_inner()
 
 
 bool
-type_integer_ty::has_a_mask()
+type_integer::has_a_mask()
     const
 {
     return true;
@@ -106,7 +105,7 @@ type_integer_ty::has_a_mask()
 
 
 void
-type_integer_ty::gen_code_copy(const nstring &member_name)
+type_integer::gen_code_copy(const nstring &member_name)
     const
 {
     indent_printf
@@ -119,7 +118,7 @@ type_integer_ty::gen_code_copy(const nstring &member_name)
 
 
 void
-type_integer_ty::gen_code_trace(const nstring &vname, const nstring &value)
+type_integer::gen_code_trace(const nstring &vname, const nstring &value)
     const
 {
     indent_printf

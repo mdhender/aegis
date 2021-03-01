@@ -1,8 +1,7 @@
 //
 //      aegis - project change supervisor
 //      Copyright (C) 2005 Matthew Lee;
-//      Copyright (C) 2006 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 2006, 2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -15,8 +14,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 // MANIFEST: implementation of the get_rss class
 //
@@ -28,12 +27,16 @@
 #include <common/libdir.h>
 #include <common/nstring.h>
 #include <common/str_list.h>
+#include <libaegis/change/branch.h>
 #include <libaegis/gif.h>
 #include <libaegis/input/file.h>
+#include <libaegis/input/string.h>
 #include <libaegis/os.h>
 #include <libaegis/output/file.h>
+#include <libaegis/output/memory.h>
 #include <libaegis/project.h>
 #include <libaegis/rss.h>
+#include <libaegis/rss/feed.h>
 
 #include <aeget/emit/project.h>
 #include <aeget/get/rss.h>
@@ -41,20 +44,39 @@
 
 
 static void
-whinge(project_ty *pp, const nstring &filename)
+postprocess(input &ip)
 {
-    html_header(pp, 0);
+    printf("Content-Type: application/rss+xml\n\n");
+    nstring line;
+    while (ip->one_line(line))
+    {
+	//
+        // This line may contain the placeholder.  Replace it with the
+        // real script name.  There may be more than one.
+	//
+	const char *pos = line.c_str();
+	for (;;)
+	{
+	    const char *location =
+		strstr(pos, rss_script_name_placeholder.c_str());
+	    if (0 == location)
+	    {
+                //
+                // The rest of the line does not contain the
+                // placeholder.  Just dump it as-is.
+		//
+		printf("%s\n", pos);
+		break;
+	    }
+	    printf("%.*s", (int)(location - pos), pos);
 
-    printf("<title>Project ");
-    html_encode_string(project_name_get(pp));
-    printf(",\nPuzzlement</title></head><body>\n");
-    html_header_ps(pp, 0);
-    printf("<h1 align=center>");
-    emit_project(pp);
-    printf(",<br>\nPuzzlement</h1>\n");
-    printf("Cannot find file %s\n", filename.c_str());
+	    // Swap the placeholder for the host/scriptname
+	    printf("%s", http_script_name());
 
-    html_footer(pp, 0);
+	    // Move past the placeholder
+	    pos = location + rss_script_name_placeholder.size();
+	}
+    }
 }
 
 
@@ -69,7 +91,8 @@ get_rss(project_ty *pp, string_ty *, string_list_ty *modifier)
     // The file needs to be read from disk, parsed to replace script name
     // placeholders with real script names and dumped to stdout.
     //
-    if (modifier->nstrings >= 1)
+    change::pointer pcp = pp->change_get();
+    if (change_is_a_branch(pcp) && modifier->nstrings >= 1)
     {
         // Read the filename from the second modifier.
         nstring rss_filename(modifier->string[0]->str_text);
@@ -78,7 +101,7 @@ get_rss(project_ty *pp, string_ty *, string_list_ty *modifier)
         nstring path(project_rss_path_get(pp, 1));
         path += "/";
         path += rss_filename;
-        project_become(pp);
+        user_ty::become scoped(pp->get_user());
         bool file_exists = os_exists(path);
 	if (file_exists)
         {
@@ -88,46 +111,38 @@ get_rss(project_ty *pp, string_ty *, string_list_ty *modifier)
 	    assert(ip.is_open());
             if (ip.is_open())
             {
-                printf("Content-Type: application/rss+xml\n\n");
-
-                nstring line;
-                while (ip->one_line(line))
-                {
-		    // This line may contain the placeholder.
-		    // Replace it with the real script name.
-		    // There may be more than one.
-		    const char *pos = line.c_str();
-		    for (;;)
-		    {
-			const char *location =
-			    strstr
-			    (
-				pos,
-				rss_script_name_placeholder.c_str()
-			    );
-			if (0 == location)
-			{
-			    // The rest of the line does not contain the
-			    // placeholder.  Just dump it as-is.
-			    printf("%s\n", pos);
-			    break;
-			}
-			printf("%.*s", (int)(location - pos), pos);
-
-			// Swap the placeholder for the host/scriptname
-			printf("%s", http_script_name());
-
-			// Move past the placeholder
-			pos = location + rss_script_name_placeholder.size();
-		    }
-                }
+		postprocess(ip);
+		ip.close();
+		return;
             }
         }
-        project_become_undo();
-
-        if (!file_exists)
-        {
-            whinge(pp, rss_filename);
-        }
     }
+
+    //
+    // Build a fake feed, and set its description to say what they did wrong.
+    // We write it to a string, so that we can turn it into anf input,
+    // so that the feed can be post-processed to insert the feed script
+    // name.
+    //
+    fprintf(stderr, "%s: %d\n", __FILE__, __LINE__);
+    rss_feed fake(pp, 0, "");
+    fprintf(stderr, "%s: %d\n", __FILE__, __LINE__);
+    fake.channel_elements_from_project();
+    if (modifier->nstrings >= 1)
+	fake.title_set(nstring(modifier->string[0]));
+    else
+	fake.title_set("No Feed Name");
+    if (!change_is_a_branch(pcp))
+	fake.description_set("Not an active branch.");
+    else if (modifier->nstrings >= 1)
+	fake.description_set("No feed of this name.");
+    else
+	fake.description_set("No feed name specified.");
+    output_memory_ty op;
+    fprintf(stderr, "%s: %d\n", __FILE__, __LINE__);
+    fake.print(&op);
+    fprintf(stderr, "%s: %d\n", __FILE__, __LINE__);
+    op.flush();
+    input ip = new input_string(op.mkstr());
+    postprocess(ip);
 }

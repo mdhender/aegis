@@ -1,7 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-1999, 2001-2006 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 1991-1999, 2001-2007 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //      GNU General Public License for more details.
 //
 //      You should have received a copy of the GNU General Public License
-//      along with this program; if not, write to the Free Software
-//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement develop begin
+//      along with this program. If not, see
+//      <http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -129,11 +126,11 @@ develop_begin_main(void)
     string_ty       *project_name;
     project_ty      *pp;
     long            change_number;
-    change_ty       *cp;
-    user_ty         *up;
+    change::pointer cp;
+    user_ty::pointer up;
     pconf_ty        *pconf_data;
     string_ty       *usr;
-    user_ty         *up2;
+    user_ty::pointer up2;
     log_style_ty    log_style;
 
     trace(("develop_begin_main()\n{\n"));
@@ -211,7 +208,7 @@ develop_begin_main(void)
 
         case arglex_token_wait:
         case arglex_token_wait_not:
-            user_lock_wait_argument(develop_begin_usage);
+            user_ty::lock_wait_argument(develop_begin_usage);
             break;
 
 	case arglex_token_reason:
@@ -237,7 +234,10 @@ develop_begin_main(void)
     // locate project data
     //
     if (!project_name)
-        project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -250,20 +250,17 @@ develop_begin_main(void)
     //
     if (usr)
     {
-        up = user_symbolic(pp, usr);
-        up2 = user_executing(pp);
+        up = user_ty::create(nstring(usr));
+        up2 = user_ty::create();
         if (up == up2)
-        {
-            user_free(up2);
-            up2 = 0;
-        }
-        else if (!project_administrator_query(pp, user_name(up2)))
+            up2.reset();
+        else if (!project_administrator_query(pp, up2->name()))
             project_fatal(pp, 0, i18n("not an administrator"));
     }
     else
     {
-        up = user_executing(pp);
-        up2 = 0;
+        up = user_ty::create();
+        up2.reset();
     }
 
     //
@@ -290,7 +287,7 @@ develop_begin_main(void)
     // user table.  The user table row may need to be created.
     // Block while can't get both simultaneously.
     //
-    user_ustate_lock_prepare(up);
+    up->ustate_lock_prepare();
     change_cstate_lock_prepare(cp);
     lock_take();
 
@@ -299,16 +296,16 @@ develop_begin_main(void)
     // It is an error if the change is not in the
     // awaiting_development state.
     //
-    if (!change_is_awaiting_development(cp))
+    if (!cp->is_awaiting_development())
         change_fatal(cp, 0, i18n("bad db state"));
-    if (!project_developer_query(pp, user_name(up)))
+    if (!project_developer_query(pp, up->name()))
     {
         sub_context_ty  *scp;
 
         scp = sub_context_new();
         if (up2)
         {
-            sub_var_set_string(scp, "User", user_name(up));
+            sub_var_set_string(scp, "User", up->name());
             sub_var_optional(scp, "User");
             sub_var_override(scp, "User");
         }
@@ -345,14 +342,14 @@ develop_begin_main(void)
     //
     project_become(pp);
     os_check_path_traversable(devdir);
-    project_become_undo();
+    project_become_undo(pp);
 
     //
     // Set the change data to reflect the current user
     // as developer and move it to the being_developed state.
     // Append another entry to the change history.
     //
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = cp->cstate_get();
     cstate_data->state = cstate_state_being_developed;
     history_data = change_history_new(cp, up);
     history_data->what = cstate_history_what_develop_begin;
@@ -361,8 +358,8 @@ develop_begin_main(void)
         string_ty *r2 =
             str_format
             (
-                "Forced by administrator \"%s\".",
-                user_name(up2)->str_text
+                "Forced by administrator %s.",
+                up2->name().quote_c().c_str()
             );
 	if (reason)
 	{
@@ -379,16 +376,16 @@ develop_begin_main(void)
     //
     // Create the development directory.
     //
-    user_become(up);
+    up->become_begin();
     os_mkdir(devdir, 02755);
     undo_rmdir_errok(devdir);
-    user_become_undo();
+    up->become_end();
 
     //
     // Update user change table to include this change in the list of
     // changes being developed by this user.
     //
-    user_own_add(up, project_name_get(pp), change_number);
+    up->own_add(pp, change_number);
 
     //
     // Clear the time fields.
@@ -400,26 +397,30 @@ develop_begin_main(void)
     // Update user table row.
     // Release advisory write locks.
     //
+    trace(("mark\n"));
     change_cstate_write(cp);
-    user_ustate_write(up);
+    up->ustate_write();
     commit();
     lock_release();
 
     //
     // run the develop begin command
     //
+    trace(("mark\n"));
     log_open(change_logfile_get(cp), up, log_style);
     change_run_develop_begin_command(cp, up);
 
     //
     // run the forced develop begin notify command
     //
+    trace(("mark\n"));
     if (up2)
-        change_run_forced_develop_begin_notify_command(cp, up2);
+        cp->run_forced_develop_begin_notify_command(up2);
 
     //
     // Update the RSS feed file if necessary.
     //
+    trace(("mark\n"));
     rss_add_item_by_change(pp, cp);
 
     //
@@ -428,6 +429,7 @@ develop_begin_main(void)
     // create them now, rather than waiting for the first build.
     // This will present a more uniform interface to the developer.
     //
+    trace(("mark\n"));
     pconf_data = change_pconf_get(cp, 0);
     assert(pconf_data->development_directory_style);
     if (!pconf_data->development_directory_style->during_build_only)
@@ -439,12 +441,10 @@ develop_begin_main(void)
     //
     // verbose success message
     //
+    trace(("mark\n"));
     change_verbose(cp, 0, i18n("develop begin complete"));
     change_free(cp);
     project_free(pp);
-    user_free(up);
-    if (up2)
-        user_free(up2);
     trace(("}\n"));
 }
 
@@ -454,8 +454,8 @@ develop_begin(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-        {arglex_token_help, develop_begin_help, },
-        {arglex_token_list, develop_begin_list, },
+        { arglex_token_help, develop_begin_help, 0 },
+        { arglex_token_list, develop_begin_list, 0 },
     };
 
     trace(("develop_begin()\n{\n"));

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998-2006 Peter Miller
+//	Copyright (C) 1998-2007 Peter Miller
 //      Copyright (C) 2006, 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -14,7 +14,7 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see
+//	along with this program. If not, see
 //	<http://www.gnu.org/licenses/>.
 //
 
@@ -116,9 +116,9 @@ clone_main(void)
     long	    change_number2;
     project_ty	    *pp;
     project_ty	    *pp2;
-    user_ty	    *up;
-    change_ty	    *cp;
-    change_ty	    *cp2;
+    user_ty::pointer up;
+    change::pointer cp;
+    change::pointer cp2;
     cstate_ty       *cstate_data;
     cstate_ty       *cstate_data2;
     cstate_history_ty *history_data;
@@ -219,12 +219,12 @@ clone_main(void)
 
 	case arglex_token_wait:
 	case arglex_token_wait_not:
-	    user_lock_wait_argument(clone_usage);
+	    user_ty::lock_wait_argument(clone_usage);
 	    break;
 
 	case arglex_token_whiteout:
 	case arglex_token_whiteout_not:
-	    user_whiteout_argument(clone_usage);
+	    user_ty::whiteout_argument(clone_usage);
 	    break;
 
 	case arglex_token_output:
@@ -299,7 +299,10 @@ clone_main(void)
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+    {
+        nstring n = user_ty::create()->default_project();
+	project_name = str_copy(n.get_ref());
+    }
     pp = project_alloc(project_name);
     str_free(project_name);
     pp->bind_existing();
@@ -313,14 +316,14 @@ clone_main(void)
     //
     // locate user data
     //
-    up = user_executing(pp);
+    up = user_ty::create();
 
     //
     // Lock the project state file.
     // Block if necessary.
     //
     pp->pstate_lock_prepare();
-    user_ustate_lock_prepare(up);
+    up->ustate_lock_prepare();
     lock_take();
 
     //
@@ -343,7 +346,7 @@ clone_main(void)
     assert(change_number2);
     cp2 = change_alloc(pp2, change_number2);
     change_bind_existing(cp2);
-    cstate_data2 = change_cstate_get(cp2);
+    cstate_data2 = cp2->cstate_get();
 
     //
     // create a new change
@@ -363,7 +366,7 @@ clone_main(void)
     }
     cp = change_alloc(pp, change_number);
     change_bind_new(cp);
-    cstate_data = change_cstate_get(cp);
+    cstate_data = cp->cstate_get();
 
     //
     // copy change attributes from the old change
@@ -471,15 +474,15 @@ clone_main(void)
 	//
 	// Assign the new change to the user.
 	//
-	user_own_add(up, project_name_get(pp), change_number);
+	up->own_add(pp, change_number);
 
 	//
 	// Create the development directory.
 	//
-	user_become(up);
+	up->become_begin();
 	os_mkdir(devdir, 02755);
 	undo_rmdir_bg(devdir);
-	user_become_undo();
+	up->become_end();
 
 	//
 	// add all of the files to the new change
@@ -534,8 +537,7 @@ clone_main(void)
 	    //
 	    // find the file in the project
 	    //
-	    p_src_data =
-                project_file_find(pp, src_data2->file_name, view_path_extreme);
+	    p_src_data = project_file_find(pp, src_data2, view_path_extreme);
 	    if (!p_src_data)
 	    {
 		switch (src_data2->action)
@@ -560,9 +562,8 @@ clone_main(void)
 	    //
 	    // create the file in the new change
 	    //
-	    src_data = change_file_new(cp, src_data2->file_name);
+	    src_data = cp->file_new(src_data2);
 	    src_data->action = src_data2->action;
-	    change_file_copy_basic_attributes(src_data, src_data2);
 	    if (src_data2->move)
 		src_data->move = str_copy(src_data2->move);
 
@@ -574,9 +575,6 @@ clone_main(void)
 		// they have whiteout instead.
 		//
 		change_file_whiteout_write(cp, src_data->file_name, up);
-                assert(p_src_data->edit);
-                assert(p_src_data->edit->revision);
-                src_data->edit_origin = history_version_copy(p_src_data->edit);
 		continue;
 
 	    case file_action_transparent:
@@ -587,13 +585,13 @@ clone_main(void)
 		// construct the paths to the files
 		//
 		from =
-		    project_file_path(pp->parent_get(), src_data2->file_name);
+		    project_file_path(pp->parent_get(), src_data2);
 		to = os_path_join(devdir, src_data2->file_name);
 
 		//
 		// copy the file
 		//
-		user_become(up);
+		up->become_begin();
 		os_mkdir_between(devdir, src_data2->file_name, 02755);
 		if (os_exists(to))
 	    	    os_unlink(to);
@@ -607,7 +605,7 @@ clone_main(void)
 		    mode |= 0111;
 		mode &= ~the_umask;
 		os_chmod(to, mode);
-		user_become_undo();
+		up->become_end();
 
 		//
 		// If possible, use the edit number origin of the project
@@ -664,12 +662,12 @@ clone_main(void)
 		//
 		// make sure there is a directory for it
 		//
-		user_become(up);
+		up->become_begin();
 		os_mkdir_between(devdir, src_data2->file_name, 02755);
 		if (os_exists(to))
 		    os_unlink(to);
 		os_unlink_errok(to);
-		user_become_undo();
+		up->become_end();
 
 		//
 		// get the file from history
@@ -679,13 +677,13 @@ clone_main(void)
 		//
 		// set the file mode
 		//
-		user_become(up);
+		up->become_begin();
 		mode = 0644;
 		if (src_data2->executable)
 		    mode |= 0111;
 		mode &= ~the_umask;
 		os_chmod(to, mode);
-		user_become_undo();
+		up->become_end();
 
 		//
 		// clean up afterwards
@@ -729,7 +727,7 @@ clone_main(void)
 		//
 		// copy the file
 		//
-		user_become(up);
+		up->become_begin();
 		os_mkdir_between(devdir, src_data2->file_name, 02755);
 		if (os_exists(to))
 		    os_unlink(to);
@@ -743,7 +741,7 @@ clone_main(void)
 		    mode |= 0111;
 		mode &= ~the_umask;
 		os_chmod(to, mode);
-		user_become_undo();
+		up->become_end();
 
 		//
 		// clean up afterwards
@@ -782,16 +780,20 @@ clone_main(void)
 	{
 	    string_ty	    *fn;
 
-	    user_become(up);
+	    up->become_begin();
 	    fn = str_from_c(output);
 	    file_from_string(fn, content, 0644);
 	    str_free(fn);
-	    user_become_undo();
+	    up->become_end();
 	}
 	else
 	    cat_string_to_stdout(content);
 	str_free(content);
     }
+
+    // remember that we are about to
+    if (cstate_data2->state >= cstate_state_being_developed)
+	cp->run_project_file_command_done();
 
     //
     // Write the change table row.
@@ -799,7 +801,7 @@ clone_main(void)
     // Release advisory locks.
     //
     pp->pstate_write();
-    user_ustate_write(up);
+    up->ustate_write();
     commit();
     lock_release();
 
@@ -859,16 +861,17 @@ clone_main(void)
 	    }
 	}
 	if (wl_nf.nstrings)
-	    change_run_new_file_command(cp, &wl_nf, up);
+	    cp->run_new_file_command(&wl_nf, up);
 	if (wl_nt.nstrings)
-	    change_run_new_test_command(cp, &wl_nt, up);
+	    cp->run_new_test_command(&wl_nt, up);
 	if (wl_cp.nstrings)
-	    change_run_copy_file_command(cp, &wl_cp, up);
+	    cp->run_copy_file_command(&wl_cp, up);
 	if (wl_rm.nstrings)
-	    change_run_remove_file_command(cp, &wl_rm, up);
+	    cp->run_remove_file_command(&wl_rm, up);
 	if (wl_mt.nstrings)
-	    change_run_make_transparent_command(cp, &wl_mt, up);
-	change_run_project_file_command(cp, up);
+	    cp->run_make_transparent_command(&wl_mt, up);
+
+	cp->run_project_file_command(up);
 
 	//
 	// if symlinks are being used to pander to dumb DMT,
@@ -899,7 +902,6 @@ clone_main(void)
     //
     change_free(cp);
     project_free(pp);
-    user_free(up);
     trace(("}\n"));
 }
 
@@ -909,8 +911,8 @@ aeclone(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, clone_help, },
-	{arglex_token_list, clone_list, },
+	{ arglex_token_help, clone_help, 0 },
+	{ arglex_token_list, clone_list, 0 },
     };
 
     trace(("clone()\n{\n"));

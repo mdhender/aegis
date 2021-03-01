@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: interface of the validation_list class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #ifndef AEDE_POLICY_VALIDATION_LIST_H
@@ -60,7 +57,7 @@ public:
       *     bool; true if all went well, false if a problems was found
       *     (it has been printed already).
       */
-    bool run(change_ty *cp) const;
+    bool run(change::pointer cp) const;
 
     /**
       * The empty method is used to determine whether or not the list

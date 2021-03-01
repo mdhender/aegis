@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1997, 1999, 2001-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1994, 1997, 1999, 2001-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -71,7 +70,7 @@ process(string_ty *dir, const char *nondir, rptidx_where_list_ty *result)
 	    rptidx_where_ty *in;
 	    rptidx_where_ty *out;
 	    rptidx_where_ty **out_p;
-	    type_ty         *type_p;
+	    meta_type         *type_p;
 
 	    in = data->where->list[j];
 	    if (!in->name || !in->filename)
@@ -121,7 +120,7 @@ report_list(void (*usage)(void))
     output_ty       *name_col;
     output_ty       *desc_col;
     output_ty       *path_col;
-    col_ty          *colp;
+    col          *colp;
 
     //
     // read the rest of the command line
@@ -147,11 +146,11 @@ report_list(void (*usage)(void))
     //
     // form the columns for the output
     //
-    colp = col_open((string_ty *)0);
-    col_title(colp, "List of Reports", (char *)0);
-    name_col = col_create(colp, 0, 15, "Name\n------");
-    desc_col = col_create(colp, 16, 47, "Description\n-------------");
-    path_col = col_create(colp, 48, 0, "Script File\n-------------");
+    colp = col::open((string_ty *)0);
+    colp->title("List of Reports", (char *)0);
+    name_col = colp->create(0, 15, "Name\n------");
+    desc_col = colp->create(16, 47, "Description\n-------------");
+    path_col = colp->create(48, 0, "Script File\n-------------");
 
     //
     // name each of the reports
@@ -164,9 +163,9 @@ report_list(void (*usage)(void))
 	name_col->fputs(p->name);
 	desc_col->fputs(p->description);
 	path_col->fputs(p->filename);
-	col_eoln(colp);
+	colp->eoln();
     }
     rptidx_where_list_type.free(result);
-    col_close(colp);
+    delete colp;
     trace(("}\n"));
 }

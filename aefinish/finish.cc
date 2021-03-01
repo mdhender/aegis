@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2006, 2007 Peter Miller
+//	Copyright (C) 2006 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: implementation of the finish class
+//	along with this program. If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -34,8 +32,12 @@
 #include <libaegis/help.h>
 #include <libaegis/os.h>
 #include <libaegis/project/file.h>
+#include <libaegis/user.h>
 
 #include <aefinish/finish.h>
+
+
+static nstring progress_option;
 
 
 void
@@ -53,8 +55,8 @@ static bool
 finish_merge(change_identifier &cid)
 {
     project_ty *pp = cid.get_pp();
-    change_ty *cp = cid.get_cp();
-    if (change_is_being_integrated(cp))
+    change::pointer cp = cid.get_cp();
+    if (cp->is_being_integrated())
 	return false;
 
     //
@@ -117,7 +119,7 @@ finish_merge(change_identifier &cid)
 	// then do not merge this one.
 	//
 	fstate_src_ty *src2_data =
-	    project_file_find_by_meta(pp, src1_data, view_path_extreme);
+	    project_file_find(pp, src1_data, view_path_extreme);
 	if (!src2_data)
 	    continue;
 	if (change_file_up_to_date(pp, src1_data))
@@ -153,7 +155,7 @@ static bool
 finish_diff(change_identifier &cid)
 {
     project_ty *pp = cid.get_pp();
-    change_ty *cp = cid.get_cp();
+    change::pointer cp = cid.get_cp();
 
     //
     // Make sure that we terminate elegantly if no diff is required
@@ -162,7 +164,7 @@ finish_diff(change_identifier &cid)
     if (!change_diff_required(cp))
 	return false;
 
-    bool integrating = change_is_being_integrated(cp);
+    bool integrating = cp->is_being_integrated();
 
     //
     // check each file to see if it needs to be differenced
@@ -187,7 +189,7 @@ finish_diff(change_identifier &cid)
 	// locate the equivalent project file
 	//
 	fstate_src_ty *src2_data =
-	    project_file_find_by_meta(pp, src1_data, view_path_extreme);
+	    project_file_find(pp, src1_data, view_path_extreme);
 	trace(("src2_data = %08lX\n", (long)src2_data));
 	if (src2_data)
 	{
@@ -369,7 +371,7 @@ finish_diff(change_identifier &cid)
 static time_t
 calculate_youngest_file(change_identifier &cid)
 {
-    change_ty *cp = cid.get_cp();
+    change::pointer cp = cid.get_cp();
     time_t youngest = 0;
     for (size_t j = 0;; ++j)
     {
@@ -429,7 +431,7 @@ static bool
 finish_build(change_identifier &cid, time_t youngest)
 {
     project_ty *pp = cid.get_pp();
-    change_ty *cp = cid.get_cp();
+    change::pointer cp = cid.get_cp();
     if (!change_build_required(cp))
 	return false;
 
@@ -440,6 +442,19 @@ finish_build(change_identifier &cid, time_t youngest)
     cstate_architecture_times_ty *tp = change_find_architecture_variant(cp);
     if (!tp->build_time || youngest >= tp->build_time)
     {
+        if (cp->is_being_developed())
+        {
+            //
+            // If the project defines a develop_end_policy_command it is
+            // a good idea to run it here, in case it requires work to
+            // be done to the source files.  By doing it here you don't
+            // spend all the time of building and testing (which could
+            // be time consuming) only to find you forgot to update a
+            // copyright notice.
+            //
+            change_run_develop_end_policy_command(cp, cid.get_up());
+        }
+
 	//
 	// At least one file needs to be differenced.
 	//
@@ -470,8 +485,8 @@ static bool
 finish_test(change_identifier &cid, time_t youngest)
 {
     project_ty *pp = cid.get_pp();
-    change_ty *cp = cid.get_cp();
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    change::pointer cp = cid.get_cp();
+    cstate_ty *cstate_data = cp->cstate_get();
     if (cstate_data->test_exempt)
 	return false;
 
@@ -488,7 +503,7 @@ finish_test(change_identifier &cid, time_t youngest)
 	nstring command = "aegis --test --project="
 	    + nstring(project_name_get(pp)).quote_shell() + " --change="
 	    + nstring::format("%ld", magic_zero_decode(cp->number))
-	    + " --verbose";
+	    + " --verbose" + progress_option;
 	int flags = 0;
 	nstring dd = nstring(change_development_directory_get(cp, 0));
 	os_become_orig();
@@ -512,8 +527,8 @@ static bool
 finish_test_baseline(change_identifier &cid, time_t youngest)
 {
     project_ty *pp = cid.get_pp();
-    change_ty *cp = cid.get_cp();
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    change::pointer cp = cid.get_cp();
+    cstate_ty *cstate_data = cp->cstate_get();
     if (cstate_data->test_baseline_exempt)
 	return false;
 
@@ -530,7 +545,7 @@ finish_test_baseline(change_identifier &cid, time_t youngest)
 	nstring command = "aegis --test --baseline --project="
 	    + nstring(project_name_get(pp)).quote_shell() + " --change="
 	    + nstring::format("%ld", magic_zero_decode(cp->number))
-	    + " --verbose";
+	    + " --verbose" + progress_option;
 	int flags = 0;
 	nstring dd = nstring(change_development_directory_get(cp, 0));
 	os_become_orig();
@@ -554,8 +569,8 @@ static bool
 finish_test_regression(change_identifier &cid, time_t youngest)
 {
     project_ty *pp = cid.get_pp();
-    change_ty *cp = cid.get_cp();
-    cstate_ty *cstate_data = change_cstate_get(cp);
+    change::pointer cp = cid.get_cp();
+    cstate_ty *cstate_data = cp->cstate_get();
     if (cstate_data->regression_test_exempt)
 	return false;
 
@@ -572,7 +587,7 @@ finish_test_regression(change_identifier &cid, time_t youngest)
 	nstring command = "aegis --test --regression --project="
 	    + nstring(project_name_get(pp)).quote_shell() + " --change="
 	    + nstring::format("%ld", magic_zero_decode(cp->number))
-	    + " --verbose";
+	    + " --verbose" + progress_option;
 	int flags = 0;
 	nstring dd = nstring(change_development_directory_get(cp, 0));
 	os_become_orig();
@@ -633,7 +648,7 @@ finish_development(change_identifier &cid)
     work_loop(cid);
 
     project_ty *pp = cid.get_pp();
-    change_ty *cp = cid.get_cp();
+    change::pointer cp = cid.get_cp();
     nstring dd = nstring(change_development_directory_get(cp, 0));
     nstring command = "aegis --develop-end --project="
 	+ nstring(project_name_get(pp)).quote_shell() + " --change="
@@ -662,7 +677,7 @@ finish_integration(change_identifier &cid)
     work_loop(cid);
 
     project_ty *pp = cid.get_pp();
-    change_ty *cp = cid.get_cp();
+    change::pointer cp = cid.get_cp();
     nstring dir = home();
     nstring command = "aegis --integrate-pass --project="
 	+ nstring(project_name_get(pp)).quote_shell() + " --change="
@@ -695,6 +710,14 @@ finish()
 	case arglex_token_number:
 	    cid.command_line_parse(finish_usage);
 	    continue;
+
+	case arglex_token_progress:
+            user_ty::progress_option_clear(finish_usage);
+	    break;
+
+	case arglex_token_progress_not:
+            user_ty::progress_option_clear(finish_usage);
+	    break;
 	}
 	arglex();
     }
@@ -704,7 +727,16 @@ finish()
     //
     cid.command_line_check(finish_usage);
 
-    cstate_ty *cstate_data = change_cstate_get(cid.get_cp());
+    progress_option =
+        (
+            cid.get_up()->progress_get()
+        ?
+            " --progress"
+        :
+            " --no-progress"
+        );
+
+    cstate_ty *cstate_data = cid.get_cp()->cstate_get();
     switch (cstate_data->state)
     {
     case cstate_state_awaiting_development:

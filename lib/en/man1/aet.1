@@ -1,7 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1996-2000, 2002, 2004-2006 Peter Miller;
-.\"	All rights reserved.
+.\"	Copyright (C) 1991-1993, 1996-2000, 2002, 2004-2007 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -14,10 +13,8 @@
 .\"	GNU General Public License for more details.
 .\"
 .\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: manual entry for the 'aegis -Test' command
+.\"	along with this program. If not, see
+.\"	<http://www.gnu.org/licenses/>.
 .\"
 .so z_name.so
 .TH "\*(n) -Test" 1 \*(N) "Reference Manual"
@@ -190,10 +187,16 @@ For example, running out of disk space when creating the test input
 files in the
 .I /tmp
 directory.
+.TP 4n
+Skipped
+A test should exit 77 to indicate that it was skipped.
+This is usually to do with the current architecture not being meaningful.
+Whenever possible, use \[lq]No Result\[rq] instead.
+(The value was chosen for compatibility with other test systems.)
 .PP
-Actually, any exit code other than 0 or 1 will be interpreted as \[lq]no
-result\[rq].  However, always using 0, 1 or 2 means that if a new result
-code is required by a later release of \*(n), your existing tests will
+Actually, any exit code other than 0, 1 or 77 will be interpreted as \[lq]no
+result\[rq].  However, always using 0, 1, 2 or 77 means that if a new result
+code is required by a later release of Aegis your existing tests will
 continue to work.
 .so z_test_corr.so
 .SH OPTIONS

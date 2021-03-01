@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2005, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002, 2005-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -23,10 +22,8 @@
 #ifndef LIBAEGIS_SUB_PLURAL_GRAM_H
 #define LIBAEGIS_SUB_PLURAL_GRAM_H
 
-#include <common/main.h>
+class nstring; // forward
 
-struct string_ty;
-
-unsigned sub_plural_gram(struct string_ty *, unsigned);
+unsigned sub_plural_gram(const nstring &, unsigned);
 
 #endif // LIBAEGIS_SUB_PLURAL_GRAM_H
