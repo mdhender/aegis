@@ -22,6 +22,7 @@
 
 #include <ctype.h>
 #include <stdlib.h>
+#include <string.h>
 #include <pwd.h>
 #include <grp.h>
 #include <unistd.h>
@@ -611,7 +612,7 @@ user_uconf_get(up)
 	lock_sync(up);
 	if (!up->uconf_path)
 		up->uconf_path =
-			str_format("%S/.%src", up->home, option_get_progname());
+			str_format("%S/.%src", up->home, option_progname_get());
 	if (!up->uconf_data)
 	{
 		user_become(up);
@@ -1072,12 +1073,11 @@ user_ustate_lock_prepare(up)
  *	it is a fatal error if there is no default change number
  */
 
-static int is_a_change_number _((char *, long *));
+static long is_a_change_number _((char *));
 
-static int
-is_a_change_number(s, answer)
+static long
+is_a_change_number(s)
 	char		*s;
-	long		*answer;
 {
 	long		n;
 
@@ -1092,9 +1092,29 @@ is_a_change_number(s, answer)
 		++s;
 	if (*s)
 		return 0;
-	*answer = n;
-	return 1;
+	return n;
 }
+
+
+static long project_dot_change _((string_ty *, string_ty *));
+
+static long
+project_dot_change(s, p)
+	string_ty	*s;
+	string_ty	*p;
+{
+	if
+	(
+		s->str_length > p->str_length + 1
+	&&
+		!memcmp(s->str_text, p->str_text, p->str_length)
+	&&
+		s->str_text[p->str_length] == '.'
+	)
+		return is_a_change_number(s->str_text + p->str_length + 1);
+	return 0;
+}
+
 
 long
 user_default_change(up)
@@ -1111,13 +1131,14 @@ user_default_change(up)
 	/*
 	 * check the AEGIS_CHANGE environment variable
 	 */
-	s1 = str_format("%s_change", option_get_progname());
+	s1 = str_format("%s_change", option_progname_get());
 	s2 = str_upcase(s1);
 	str_free(s1);
 	cp = getenv(s2->str_text);
 	if (cp)
 	{
-		if (!is_a_change_number(cp, &change_number))
+		change_number = is_a_change_number(cp);
+		if (!change_number)
 		{
 			fatal
 			(
@@ -1168,6 +1189,51 @@ user_default_change(up)
 	}
 
 	/*
+	 * examine the pathname of the current directory
+	 * to see if we can extract the change number
+	 *
+	 * This only works if the development directory was created
+	 * by aegis, and not specified by the -DIRectory option.
+	 * It doesn't work at all for IntDir or BL.
+	 */
+	if (!change_number)
+	{
+		string_ty	*cwd;
+		wlist		part;
+		long		j;
+
+		/*
+		 * get the current directory
+		 */
+		os_become_orig();
+		cwd = os_curdir();
+		os_become_undo();
+		assert(cwd);
+
+		/*
+		 * break it into file names
+		 */
+		str2wl(&part, cwd, "/");
+		str_free(cwd);
+
+		/*
+		 * search for <proj>.<num>
+		 */
+		for (j = 0; j < part.wl_nwords; ++j)
+		{
+			change_number =
+				project_dot_change
+				(
+					part.wl_word[j],
+					project_name_get(up->pp)
+				);
+			if (change_number)
+				break;
+		}
+		wl_free(&part);
+	}
+
+	/*
 	 * It is an error if no change number has been given.
 	 */
 	if (!change_number)
@@ -1215,7 +1281,7 @@ user_default_project()
 	/*
 	 * from the AEGIS_PROJECT environment variable.
 	 */
-	s1 = str_format("%s_project", option_get_progname());
+	s1 = str_format("%s_project", option_progname_get());
 	s2 = str_upcase(s1);
 	str_free(s1);
 	cp = getenv(s2->str_text);
@@ -1237,6 +1303,12 @@ user_default_project()
 
 	/*
 	 * check the search path, see if we use just one
+	 *
+	 * else check the current dirctory to see if we are within one
+	 *
+	 * This only works if the development directory was created
+	 * by aegis, and not specified by the -DIRectory option.
+	 * It doesn't work at all for IntDir or BL.
 	 */
 	if (!result)
 	{
@@ -1245,6 +1317,52 @@ user_default_project()
 		gonzo_project_list_user(up->name, &name);
 		if (name.wl_nwords == 1)
 			result = str_copy(name.wl_word[0]);
+		else
+		{
+			string_ty	*cwd;
+			wlist		part;
+			long		j;
+			long		k;
+		    
+			/*
+			 * get pathname of the current directory
+			 */
+			os_become_orig();
+			cwd = os_curdir();
+			os_become_undo();
+			assert(cwd);
+
+			/*
+			 * break into pieces
+			 */
+			str2wl(&part, cwd, "/");
+			str_free(cwd);
+
+			/*
+			 * search the path
+			 * looking for <proj>.<num>
+			 */
+			for (j = 0; j < part.wl_nwords && !result; ++j)
+			{
+				for (k = 0; k < name.wl_nwords; ++k)
+				{
+					if
+					(
+						project_dot_change
+						(
+							part.wl_word[j],
+							name.wl_word[k]
+						)
+					)
+					{
+						result =
+						      str_copy(name.wl_word[k]);
+						break;
+					}
+				}
+			}
+			wl_free(&part);
+		}
 		wl_free(&name);
 	}
 

@@ -65,7 +65,7 @@
  * The group will be derived from the relevant entry in /etc/passwd.
  *
  * Do not confuse this with the fact that aegis must be set-uid-root.
- * Aegis MUST be set-uid-root to manipulate file ownersips, etc.
+ * Aegis MUST be set-uid-root to manipulate file ownerships, etc.
  *
  * This string defines the owner of aegis' global files, so that aegis
  * may access them when they are on NFS mounted partitions (when root

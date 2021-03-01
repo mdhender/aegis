@@ -34,7 +34,7 @@ and are search in the order given.
 Appended to this explicit search path are the directories specified
 by the
 .I AEGIS
-enviroment variable (colon separated),
+environment variable (colon separated),
 and finally,
 .I /usr/local/lib/aegis
 is always searched.

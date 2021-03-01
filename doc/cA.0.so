@@ -62,8 +62,8 @@ You must create the project as this user,
 and then use the
 .I aena
 and
-.I anra
-commands to add an appropriate administrator
+.I aera
+commands to add an appropriate administrator,
 and remove the owning user as an administrator.
 After this, the password for the owning user may be disabled,
 because the aegis program will,
@@ -355,7 +355,7 @@ Remember, too, the definition:
 .DS
 \fBaegis\fP (ee.j.iz) \fIn.\fP a protection, a defence.
 .DE
-It is not aways the case that aegis exists to make life "easier" for
+It is not always the case that aegis exists to make life "easier" for
 the software engineers.
 The goal is to have a baseline which always "works",
 where "works" is defined as passing all of its own tests.
@@ -374,7 +374,7 @@ themselves in shipped product.
 All of the "extra work" of integration ensures that the baseline always works,
 and is always self-consistent.
 All of the "extra work" of having a baseline and separate
-developemnt directories allows multiple parallel development,
+development directories allows multiple parallel development,
 with no inter-developer interference;
 and the baseline always works, it is never in an "in-between" state.
 In each case,

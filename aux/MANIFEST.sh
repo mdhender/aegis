@@ -37,8 +37,8 @@ do
 	BUILDING)
 		info="Instructions how to build, test and install aegis"
 		;;
-	ALPHA)
-		info="Warning that aegis is only ALPHA software"
+	BUILDpyr)
+		info="Additional build instructions for Pyramid"
 		;;
 	CHANGES)
 		info="Change history of this release of aegis"
@@ -51,6 +51,9 @@ do
 		;;
 	doc/version.so)
 		info="The patch level of this distribution."
+		;;
+	aux/new.so)
+		info="Include redirection for release notes."
 		;;
 	*)
 		info=`awk '

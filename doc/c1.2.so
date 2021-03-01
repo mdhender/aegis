@@ -25,7 +25,7 @@ So why should you use the aegis program?
 The aegis program uses a particular model of the development of software
 projects.
 This model has a master source (or baseline) of a project,
-consisteng of several (possibly several hundred) files,
+consisting of several (possibly several hundred) files,
 and a team of developers creating changes to be made to this baseline.
 When a change is complete,
 it is integrated with the baseline,

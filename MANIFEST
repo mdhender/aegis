@@ -1,39 +1,101 @@
 
 
 README	Blurb about aegis
-ALPHA	Warning that aegis is only ALPHA software
 BUILDING	Instructions how to build, test and install aegis
-BUILDpyr	
 CHANGES	Change history of this release of aegis
 LICENSE	GNU General Public License
 MANIFEST	This file
 Makefile	Instructions to make(1) how to build and test aegis
-aegis/administ.c	 functions to add and remove administrators
-aegis/administ.h	 interface definition for aegis/administ.c
+aegis/aeb.c	 functions to perform development and integration builds
+aegis/aeb.h	 interface definition for aegis/aeb.c
+aegis/aeca.c	 functions to list and modify change attributes
+aegis/aeca.h	 interface definition for aegis/aeca.c
+aegis/aecd.c	 functions to change directory or determine paths
+aegis/aecd.h	 interface definition for aegis/aecd.c
+aegis/aecp.c	 copy files into a change, and undo
+aegis/aecp.h	 interface definition for aegis/aecp.c
+aegis/aecpu.c	 copy files into a change, and undo
+aegis/aecpu.h	 interface definition for aegis/aecpu.c
+aegis/aed.c	 difference a change
+aegis/aed.h	 interface definition for aegis/diff.c
+aegis/aedb.c	 functions to implement develop begin
+aegis/aedb.h	 interface definition for aegis/aedb.c
+aegis/aedbu.c	 functions to implement develop begin undo
+aegis/aedbu.h	 interface definition for aegis/aedbu.c
+aegis/aede.c	 functions to implement develop end
+aegis/aede.h	 interface definition for aegis/aede.c
+aegis/aedeu.c	 functions to implement develop end undo
+aegis/aedeu.h	 interface definition for aedeu.c
+aegis/aeib.c	 functions for implementing integrate begin
+aegis/aeib.h	 interface definition for aegis/aeib.c
+aegis/aeibu.c	 functions for implementing integrate begin undo
+aegis/aeibu.h	 interface definition for aeibu.c
+aegis/aeif.c	 functions for implementing integrate fail
+aegis/aeif.h	 interface definition for aegis/aeif.c
+aegis/aeip.c	 functions for implementing integrate pass
+aegis/aeip.h	 interface definition for aegis/aeip.c
+aegis/ael.c	 list interesting things about changes and projects
+aegis/ael.h	 interface definition for aegis/ael.c
+aegis/aemv.c	 functions to manipulate mvs
+aegis/aemv.h	 interface definition for aegis/aemv.c
+aegis/aena.c	 functions to implement new administrator
+aegis/aena.h	 interface definition for aegis/aena.c
+aegis/aenc.c	 functions to implement new change
+aegis/aenc.h	 interface definition for aegis/aenc.c
+aegis/aencu.c	 functions to implement new change undo
+aegis/aencu.h	 interface definition for aegis/aencu.c
+aegis/aend.c	 functions to implement new developer
+aegis/aend.h	 interface definition for aegis/aend.c
+aegis/aenf.c	 functions to add or remove a new file to a change
+aegis/aenf.h	 interface definition for aegis/aenf.c
+aegis/aenfu.c	 functions to add or remove a new file to a change
+aegis/aenfu.h	 interface definition for aegis/aenfu.c
+aegis/aeni.c	 functions to implement new integrator
+aegis/aeni.h	 interface definition for aegis/aeni.c
+aegis/aenpr.c	 functions to implement new project
+aegis/aenpr.h	 interface definition for aegis/npr.c
+aegis/aenrls.c	 functions to implement new release
+aegis/aenrls.h	 interface definition for aegis/aenrls.c
+aegis/aenrv.c	 functions to implement new reviewer
+aegis/aenrv.h	 interface definition for aegis/aenrv.c
+aegis/aent.c	 functions to implement new test
+aegis/aent.h	 interface definition for aegis/aent.c
+aegis/aentu.c	 functions to implement new test undo
+aegis/aentu.h	 interface definition for aegis/aentu.c
+aegis/aepa.c	 functions to list and modify project attributes
+aegis/aepa.h	 interface definition for aegis/aepa.c
+aegis/aera.c	 functions to implement remove administrator
+aegis/aera.h	 interface definition for aegis/aera.c
+aegis/aerd.c	 functions to implement remove developer
+aegis/aerd.h	 interface definition for aegis/aerd.c
+aegis/aerf.c	 functions to impliment review fail
+aegis/aerf.h	 interface definition for aegis/aerf.c
+aegis/aeri.c	 functions to implement remove administrator
+aegis/aeri.h	 interface definition for aegis/aeri.c
+aegis/aerm.c	 functions to implement remove file
+aegis/aerm.h	 interface definition for aegis/aerm.c
+aegis/aermpr.c	 functions to implement remove project
+aegis/aermpr.h	 interface definition for aegis/aermpr.c
+aegis/aermu.c	 functions to implement remove file undo
+aegis/aermu.h	 interface definition for aegis/aermu.c
+aegis/aerp.c	 functions to implement review pass
+aegis/aerp.h	 interface definition for aegis/aerp.c
+aegis/aerpu.c	 functions to implement review pass undo
+aegis/aerpu.h	 interface definition for aegis/aerpu.c
+aegis/aerrv.c	 functions to implement remove reviewer
+aegis/aerrv.h	 interface definition for aegis/aerrv.c
+aegis/aet.c	 functions to implement test
+aegis/aet.h	 interface definition for aegis/aet.c
 aegis/arglex2.h	 definitions of command line tokens
-aegis/build.c	 functions to perform development and integration builds
-aegis/build.h	 interface definition for aegis/build.c
 aegis/cattr.def	 change state file contents definition
-aegis/cattr_ed.c	 functions to list and modify change attributes
-aegis/cattr_ed.h	 interface definition for aegis/cattr_ed.c
 aegis/change.c	 functions to manipulate change state data
 aegis/change.h	 interface definition for aegis/change.c
-aegis/chdir.c	 functions to change directory or determine paths
-aegis/chdir.h	 interface definition for aegis/chdir.c
 aegis/col.c	 functions for columnized output
 aegis/col.h	 interface definition for aegis/col.c
 aegis/commit.c	 functions to store and enact file manipulations for commit
 aegis/commit.h	 interface definition for aegis/commit.c
 aegis/common.def	 enumerations common to many aegis file contents
-aegis/copyfile.c	 copy files into a change, and undo
-aegis/copyfile.h	 interface definition for aegis/copyfile.c
 aegis/cstate.def	 change state file contents definition
-aegis/develop1.c	 functions to add and remove developers
-aegis/develop1.h	 interface definition for aegis/develop1.c
-aegis/develop2.c	 functions to enter and leave 'being_developed' state
-aegis/develop2.h	 interface definition for aegis/develop2.c
-aegis/diff.c	 difference a change
-aegis/diff.h	 interface definition for aegis/diff.c
 aegis/dir.c	 functions to walk directory trees
 aegis/dir.h	 interface definition for aegis/dir.c
 aegis/file.c	 functions for pushing files around
@@ -49,31 +111,15 @@ aegis/help.c	 functions to provide consistent treatment of -Help options
 aegis/help.h	 interface definition for aegis/help.c
 aegis/indent.c	 functions to automatically indent output
 aegis/indent.h	 interface definition for aegis/indent.c
-aegis/integra1.c	 functions to add and remove integrators
-aegis/integra1.h	 interface definition for aegis/integra1.c
-aegis/integra2.c	 functions for state transitions to and from being_integrated state
-aegis/integra2.h	 interface definition for aegis/integra2.c
 aegis/io.c	 functions to parse and write fundamental data types
 aegis/io.h	 interface definition for aegis/io.c
 aegis/lex.c	 functions to perform lexical analysis on aegis' data files
 aegis/lex.h	 interface definition for aegis/lex.c
-aegis/list.c	 list interesting things about changes and projects
-aegis/list.h	 interface definition for aegis/list.c
 aegis/lock.c	 functions to lock aegis' data
 aegis/lock.h	 interface definition for aegis/lock.c
 aegis/log.c	 functions to open and close log files
 aegis/log.h	 interface definition for aegis/log.c
 aegis/main.c	 the operating system start-up point
-aegis/new_chan.c	 functions to create and destroy changes
-aegis/new_chan.h	 interface definition for aegis/new_chan.c
-aegis/new_file.c	 functions to add or remove a new file to a change
-aegis/new_file.h	 interface definition for aegis/new_file.c
-aegis/new_proj.c	 functions to create and destroy projects
-aegis/new_proj.h	 interface definition for aegis/new_proj.c
-aegis/new_rele.c	 functions to create a new project out of an old one
-aegis/new_rele.h	 interface definition for aegis/new_rele.c
-aegis/new_test.c	 functions to add and remove new tests to a change
-aegis/new_test.h	 interface definition for aegis/new_test.c
 aegis/os.c	 wrappers around operating system functions
 aegis/os.h	 interface definition for aegis/os.c
 aegis/pager.c	 functions to pipe output through paginator
@@ -81,24 +127,12 @@ aegis/pager.h	 interface definition for aegis/pager.c
 aegis/parse.c	 functions to parse aegis' data files
 aegis/parse.h	 interface definition for aegis/parse.c
 aegis/pattr.def	 project attributes file contents definition
-aegis/pattr_ed.c	 functions to list and modify project attributes
-aegis/pattr_ed.h	 interface definition for aegis/patter_ed.c
 aegis/pconf.def	 project config file contents definition
 aegis/project.c	 functions to manipulate project state data
 aegis/project.h	 interface definition for aegis/project.h
 aegis/pstate.def	 project state file contents definition
-aegis/rem_file.c	 functions to add and remove files to be deleted to a change
-aegis/rem_file.h	 interface definition for aegis/rem_file.c
-aegis/rem_proj.c	 functions to remove projects
-aegis/rem_proj.h	 interface definition for aegis/rem_proj.c
-aegis/review.c	 review a change, pass or fail or undo
-aegis/review.h	 interface definition for aegis/review.c
-aegis/reviewer.c	 functions to add and remove reviewers
-aegis/reviewer.h	 interface definition for aegis/reviewer.c
 aegis/sub.c	 functions to perform command substitutions
 aegis/sub.h	 interface definition for aegis/sub.c
-aegis/test.c	 test a change
-aegis/test.h	 interface definition for aegis/test.c
 aegis/type.c	 functions to manipulate types in aegis' data files
 aegis/type.h	 interface definition for aegis/type.c
 aegis/uconf.def	 user config file contents definition
@@ -109,15 +143,23 @@ aegis/user.h	 interface definition for aegis/user.c
 aegis/ustate.def	 user state file contents definition
 aegis/version.c	 give version information
 aegis/version.h	 interface definition for aegis/version.c
-aux/ALPHA.man	 source for ALPHA file
 aux/BUILDING.man	 source for BUILDING file
-aux/BUILDpyr.man	 source of the BUILDpyr file
+aux/CHANGES.1.0	
+aux/CHANGES.1.1	
+aux/CHANGES.1.2	
+aux/CHANGES.1.3	
+aux/CHANGES.1.4	
+aux/CHANGES.2.0	
 aux/CHANGES.sh	 shell script to create the CHANGES file
 aux/Howto.cook	 instructions to cook(1), how to build project
 aux/MANIFEST.sh	 shell script to generate the MANIFEST file
 aux/Makefile.awk	 helper file for generating the Makefile file
 aux/Makefile.sh	 shell script to generate the Mafile file
 aux/README.man	 source for the README file
+aux/new.1.4.so	 document describing features new to version 1.4
+aux/new.2.0.so	 document describing some of the features new to version 2.0
+aux/new.2.1.so	 document describing new.2.1.so
+aux/new.so	Include redirection for release notes.
 aux/patches.sh	 shell script to generate the patch file
 common/ansi.c	 missing ANSI C library functions
 common/arglex.c	 lexical analysis of command line arguments
@@ -139,16 +181,19 @@ common/word.c	 functions to manipulate lists of strings
 common/word.h	 interface definition for common/word.c
 conf/AIX-3.2	 aegis configuration for AIX 3.2 system
 conf/ConvexOS-10	 aegis configuration for ConvexOS 10
+conf/IRIX-4.0	 aegis configuration for IRIX 4.0 (Silicon Graphics)
+conf/Linux-0.99	 aegis configuration for Linux 0.99
 conf/SCO-2.4	 aegis configuration for SCO 2.4
 conf/SunOS-4.1.1	 aegis configuration for SunOS 4.1.1
 conf/SunOS-4.1.2	 aegis configuration for SunOS 4.1.2
 conf/SunOS-4.1.3	 aegis configuration for SunOS 4.1.3
+conf/SunOS-5.1	 aegis configuration for SunOS 5.1 (Solaris 2.1)
 conf/SysV-4.0	 aegis configuration for generic SVR4 system
 conf/ULTRIX-4.2	 aegis configuration for ULTRIX version 4.2
 conf/apollo	 aegis configuration for apollo domain
 conf/dcosx	 aegis configuration for Pyramid SMP DC/OSx
 conf/dgux-5.4.1	 aegis configuration for dgux 5.4.1
-conf/hpux-8.07	 aegis configuration for generic SVR4 system
+conf/hpux-8.07	 aegis configuration for HP/UX 8.07
 config	 instructions to aegis, per-project configuration
 doc/aegis.ms	 User Guide
 doc/c1.0.so	 User Guide, Introduction
@@ -169,7 +214,7 @@ doc/c3.3.so	 User Guide, The History Tool, Using fhist
 doc/c4.0.so	 User Guide, The Dependency Maintenance Tool
 doc/c4.1.so	 User Guide, The Dependency Maintenance Tool, Requirements
 doc/c4.2.so	 User Guide, The Dependency Maintenance Tool, Cook
-doc/c4.3.so	 User Guiide, The Depenency Maintenance Tool, Other Packages
+doc/c4.3.so	 User Guide, The Dependency Maintenance Tool, Other Packages
 doc/c5.0.so	 User Guide, The Project Attributes
 doc/c6.0.so	 User Guide, Tips and Traps
 doc/c7.0.so	 User Guide, How Aegis Works
@@ -208,6 +253,9 @@ h/stddef.h	 minimal stddef.h substitute
 h/stdlib.h	 minimal stdlib.h substitute
 h/unistd.h	 minimal substitute for unistd.h
 h/utime.h	 minimal replacement for utime.h
+lib/aegis.icon	
+lib/aegis.mask	
+lib/aegis.pgm	 portable graymap of aegis icon
 lib/cshrc	 csh user config for aegis
 lib/de.inews.sh	 command used to notify by usenet that a change is ready for review
 lib/de.sh	 command used to notify by email that a change is ready for review
@@ -240,12 +288,13 @@ man1/aeibu.1	 manual entry for 'aegis -Integrate_Begin_Undo' command
 man1/aeif.1	 manual entry for 'aegis -Integrate_Fail' command
 man1/aeip.1	 manual entry for 'aegis -Integrate_Pass' command
 man1/ael.1	 manual entry for 'aegis -List' command
+man1/aemv.1	 manual entry for aegis -MoVe_file
 man1/aena.1	 manual entry for 'aegis -New_Administrator' command
 man1/aenc.1	 manual entry for 'aegis -New_Change' command
 man1/aencu.1	 manual entry for 'aegis -New_Change_Undo' command
 man1/aend.1	 manual entry for 'aegis -New_Developer' command
 man1/aenf.1	 manual entry for 'aegis -New_File' command
-man1/aenfu.1	 manual entry for 'aegis -New_Fule_Undo' command
+man1/aenfu.1	 manual entry for 'aegis -New_File_Undo' command
 man1/aeni.1	 manual entry for 'aegis -New_Integrator' command
 man1/aenpr.1	 manual entry for 'aegis -New_PRoject' command
 man1/aenrls.1	 manual entry for 'aegis -New_ReLeaSe' command
@@ -274,6 +323,7 @@ man1/o_bld_lk.so	 manual section describing the build lock
 man1/o_change.so	 description of -Change command line option
 man1/o_devdir.so	 description of -Development_Directory command line option
 man1/o_dir.so	 description of -DIRectory command line option
+man1/o_edit.so	 document describing -Edit option
 man1/o_help.so	 description of -Help command line option
 man1/o_indep.so	 description of -INDependent command line option
 man1/o_keep.so	 description of -Keep command line option
@@ -288,6 +338,7 @@ man1/o_overw.so	 description of -OverWriting command line option
 man1/o_page.so	 description of -Page_Length and -Page_Width command line options
 man1/o_project.so	 description of -Project command line option
 man1/o_terse.so	 description of -TERse command line option
+man1/o_unforma.so	 document describing -UNFormatted option
 man1/o_verbose.so	 description of -Verbose command line option
 man1/z_cr.so	 copyright and author parts of section 1 manual entries
 man1/z_exit.so	 exit status part of section 1 manual entries
@@ -309,6 +360,8 @@ man5/aeustate.5	 description of aegis user state file format
 man5/install.sh	 shell script to install section 5 manual entries
 man5/z_cr.so	 copyright and author parts of section 5 manual entries
 man5/z_name.so	 common setup for section 5 manual entries
+script/aegis.synpic	 synpic program to generate aegis icon
+script/xaegis.tcl	 wish script to give aegis a GUI interface
 test/00/t0001a.sh	 test -Help for each function
 test/00/t0002a.sh	 Test core functionality.
 test/00/t0003a.sh	 Test 'aegis -VERSion'
@@ -324,3 +377,6 @@ test/00/t0012a.sh	 Test the aermpr functionality
 test/00/t0013a.sh	 Test the -New_Change_Undo functionality
 test/00/t0014a.sh	 Test the -Develop_Begin_Undo functionality
 test/00/t0015a.sh	 Test the -Integrate_Begin_Undo functionality
+test/00/t0016a.sh	 Test the aemv functionality
+test/00/t0017a.sh	 Test 'aegis -DIFFerence -ANticipate' variant
+test/00/t0018a.sh	 Test the 'aegis -NewFile -Build' command.

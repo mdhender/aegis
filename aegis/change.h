@@ -27,6 +27,12 @@
 #include <cstate.h>
 #include <pconf.h>
 
+/*
+ * Name of the project configuration file,
+ * relative to the baseline/devdir root.
+ */
+#define THE_CONFIG_FILE "config"
+
 struct wlist;
 struct user_ty;
 
@@ -97,6 +103,8 @@ void change_run_diff_command _((change_ty *cp, struct user_ty *up,
 void change_run_diff3_command _((change_ty *cp, struct user_ty *up,
 	string_ty *original, string_ty *most_recent, string_ty *input,
 	string_ty *output));
+void change_run_integrate_begin_command _((change_ty *));
+void change_run_develop_begin_command _((change_ty *, struct user_ty *));
 string_ty *change_file_template _((change_ty *, string_ty *));
 void change_become _((change_ty *));
 void change_become_undo _((void));

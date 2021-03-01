@@ -38,24 +38,42 @@ external_bug
 The change was created in response to
 a bug report
 from outside the development team.
+This repairs existing functionality.
 .TP 8n
 external_enhancement
 .br
 The change was created in response to
 an enhancement request
 from outside the development team.
+This adds new functionality.
+.TP 8n
+external_improvement
+.br
+The change was created in response to
+an improvement request
+from outside the development team.
+This improves existing functionality.
 .TP 8n
 internal_bug
 .br
 The change was created in response to
 a bug report
 from inside the development team.
+This repairs existing functionality.
 .TP 8n
 internal_enhancement
 .br
 The change was created in response to
 an enhancement request
 from inside the development team.
+This adds new functionality.
+.TP 8n
+internal_improvement
+.br
+The change was created in response to
+an improvement request
+from inside the development team.
+This improves existing functionality.
 .TP 8n
 chain
 .br
@@ -78,3 +96,9 @@ to test the change against the baseline before it is changed.
 The test of the baseline is required to fail;
 this is to establish that the test has isolated the bug,
 and that the change has fixed that isolated bug.
+.TP 8n
+regression_test_exempt = boolean;
+.br
+This field is true if it is not necessary
+to perform a full regression test on the change.
+If absent, defaults to true for all causes except improvements.

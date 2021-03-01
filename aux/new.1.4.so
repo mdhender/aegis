@@ -1,0 +1,59 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: document describing features new to version 1.4
+.\"
+.PP
+.if n *
+.if t \(bu
+Support has been added for systems without the
+.I seteuid
+system call,
+or those with crippled implementations.
+.PP
+.if n *
+.if t \(bu
+Most of the unimplemented command variants have been finished.
+These include
+.IR "New Change Undo" ,
+.IR "Develop Begin Undo"
+and
+.IR "ReMove PRoject" .
+Most notable of the exceptions is
+.I -ANticipate
+option for the
+.I -CoPy_file
+and
+.I -DIFFerence
+command.
+.PP
+.if n *
+.if t \(bu
+The User Guide has been added to,
+making it a little more complete.
+It still needs more work, sigh.
+.PP
+.if n *
+.if t \(bu
+The code to handle automounters has been made more robust.
+.PP
+.if n *
+.if t \(bu
+The command substitutions have been vastly improved,
+and are now documented.

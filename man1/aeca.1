@@ -26,10 +26,17 @@
 .SH SYNOPSIS
 .B \*(n)
 .B -Change_Attributes
+.I attr-file
 [
 .IR option ...
 ]
-.I attr-file
+.br
+.B \*(n)
+.B -Change_Attributes
+.B -Edit
+[
+.IR option ...
+]
 .br
 .B \*(n)
 .B -Change_Attributes
@@ -45,20 +52,19 @@
 The
 .I \*(n)
 .I -Change_Attributes
-command is used to
-modify the attributes of a change.
-The best method is to use the
+command is used to set, edit or list the attributes of a change.
+.PP
+The output of the
 .B -List
-option to get a copy of the current attributes (redirect it into a file),
-edit those attributes as you want them,
-and then feed it back as the 
-.IR attr-file .
+variant is suitable for use as input at a later time.
+.PP
 See
 .IR aecattr (5)
-for more information.
+for a description of the file format.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so
+.so o_edit.so
 .so o_help.so
 .so o_list.so
 .so o_project.so

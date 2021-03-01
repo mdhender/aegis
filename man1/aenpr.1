@@ -77,12 +77,19 @@ option to explicitly set the desired location.
 See the
 .B -LIBrary
 option for more information.
+.PP
+The project major version defaults to 1,
+and the minor version defaults to 0,
+unless modified by the version options,
+below.
 .SH OPTIONS
 The following options are understood:
 .so o_dir.so
 .so o_help.so
 .so o_lib.so
 .so o_list.so
+.so o_major.so
+.so o_minor.so
 .so o_terse.so
 .so o_verbose.so
 .so o__rules.so
@@ -101,7 +108,7 @@ It is an error if
 the project directory already exists.
 .br
 It is an error if
-the currrent user does not have suffient permissions to create
+the current user does not have sufficient permissions to create
 the directory specified with the
 .B -DIRectory
 option.

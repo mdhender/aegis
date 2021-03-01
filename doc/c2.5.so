@@ -23,7 +23,7 @@
 .2C
 .nh 2 "What to do Next"
 .LP
-This chapter has given a vicareous view of what using aegis feels like.
+This chapter has given a vicarious view of what using aegis feels like.
 As a next step in getting to know aegis,
 it would be a good idea if you created a project and
 went through this same exercise;
@@ -44,4 +44,11 @@ Try:
 \&.\&.\&.manual entry\&.\&.\&.
 %
 .E)
+.LP
+Note that this example has not demonstrated all of the available functionality.
+One item of particular interest is that tests,
+like any other source file,
+may be copied into a change and modified,
+or even deleted,
+just like any other source file.
 .1C

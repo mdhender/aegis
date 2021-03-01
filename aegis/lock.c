@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <signal.h>
 
 #include <error.h>
 #include <glue.h>
@@ -66,6 +67,7 @@ static	size_t		nplaces;
 static	struct flock	*place;
 static	int		fd = -1;
 static	long		magic;
+static	int	 	quitregd;
 
 
 static void flock_construct _((struct flock *, int type, long start,
@@ -344,7 +346,6 @@ lock_take()
 	int		flags;
 	struct flock	p;
 	int		j, k;
-	static int 	quitregd;
 
 	/*
 	 * get the file descriptor of the lock file
@@ -590,4 +591,195 @@ long
 lock_magic()
 {
 	return magic;
+}
+
+
+static void lock_walk_hunt _((long, long, lock_walk_callback));
+
+static void
+lock_walk_hunt(min, max, callback)
+	long		min;
+	long		max;
+	lock_walk_callback callback;
+{
+	struct flock	flock;
+	int		j;
+	lock_walk_found	found;
+
+	/*
+	 * look for a lock in the given range
+	 */
+	flock.l_type = F_WRLCK;
+	flock.l_whence = SEEK_SET;
+	flock.l_start = min;
+	flock.l_len = max - min;
+	flock.l_pid = 0;
+	gonzo_become();
+	if (glue_fcntl(fd, F_GETLK, &flock))
+		nfatal("getlock \"%s\"", path->str_text);
+	gonzo_become_undo();
+	if (flock.l_type == F_UNLCK)
+		return;
+
+	/*
+	 * aegis only uses byte locks,
+	 * so multi-byte ranges are separate locks
+	 */
+	for (j = 0; j < flock.l_len; ++j)
+	{
+		/*
+		 * figure the name and address
+		 */
+		found.address = flock.l_start + j;
+		found.subset = 0;
+		switch (found.address)
+		{
+		case lock_master:
+			found.name = lock_walk_name_master;
+			break;
+
+		case lock_gstate:
+			found.name = lock_walk_name_gstate;
+			break;
+
+		default:
+			switch ((found.address >> BITS) - 1)
+			{
+			case lock_mux_ustate:
+				found.name = lock_walk_name_ustate;
+				found.subset = found.address & BITS_MASK;
+				break;
+
+			case lock_mux_pstate:
+				found.name = lock_walk_name_ustate;
+				found.subset = found.address & BITS_MASK;
+				break;
+
+			case lock_mux_cstate:
+				found.name = lock_walk_name_cstate;
+				found.subset = found.address & BITS_MASK;
+				break;
+
+			case lock_mux_build:
+				found.name = lock_walk_name_build;
+				found.subset = found.address & BITS_MASK;
+				break;
+
+			default:
+				found.name = lock_walk_name_unknown;
+				break;
+			}
+		}
+
+		/*
+		 * figure the type
+		 */
+		switch (flock.l_type)
+		{
+		case F_RDLCK:
+			found.type = lock_walk_type_shared;
+			break;
+
+		case F_WRLCK:
+			found.type = lock_walk_type_exclusive;
+			break;
+
+		default:
+			found.type = lock_walk_type_unknown;
+			break;
+		}
+
+		/*
+		 * Process holding the lock.
+		 * Workout if it is local or remote.
+		 */
+		found.pid = flock.l_pid;
+		if (kill(found.pid, 0))
+		{
+			switch (errno)
+			{
+			default:
+				fatal("kill(%d, 0)", found.pid);
+
+			case EPERM:
+				found.pid_is_local = 1;
+				break;
+
+			case ESRCH:
+				found.pid_is_local = 0;
+				break;
+			}
+		}
+		else
+			found.pid_is_local = 1;
+
+		/*
+		 * do something with it
+		 */
+		callback(&found);
+	}
+
+	/*
+	 * look for more locks on either side
+	 */
+	if (flock.l_start)
+		lock_walk_hunt(min, flock.l_start, callback);
+	if (flock.l_len)
+		lock_walk_hunt(flock.l_start + flock.l_len, max, callback);
+}
+
+
+void
+lock_walk(callback)
+	lock_walk_callback callback;
+{
+	int	flags;
+	int	fildes;
+
+	trace(("lock_walk()\n{\n"/*}*/));
+	assert(fd < 0);
+	assert(!nplaces);
+	if (!quitregd)
+	{
+		quitregd = 1;
+		quit_register(quitter);
+	}
+	if (!path)
+		path = gonzo_lockpath_get();
+	gonzo_become();
+	fd = glue_open(path->str_text, O_RDWR | O_CREAT | O_TRUNC, 0600);
+	if (fd < 0)
+		nfatal("open(\"%s\")", path->str_text);
+	trace_int(fd);
+
+	/*
+	 * make sure the file is closed when a child exec's
+	 */
+#ifndef CONF_NO_seteuid
+	if (fcntl(fd, F_GETFD, &flags))
+		nfatal("fcntl(\"%s\", F_GETFD)", path->str_text);
+	flags |= 1;
+	if (fcntl(fd, F_SETFD, flags))
+		nfatal("fcntl(\"%s\", F_SETFD, %d)", path->str_text, flags);
+	trace(("mark\n"));
+#endif
+	gonzo_become_undo();
+
+	/*
+	 * chase all of the locks
+	 */
+	lock_walk_hunt(0L, ((lock_mux_MAX + 1) << BITS), callback);
+
+	/*
+	 * close the file
+	 */
+	gonzo_become();
+	trace_int(fd);
+	assert(fd >= 0);
+	assert(path);
+	fildes = fd;
+	fd = -1;
+	glue_close(fildes);
+	gonzo_become_undo();
+	trace((/*{*/"}\n"));
 }

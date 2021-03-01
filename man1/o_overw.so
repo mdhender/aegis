@@ -22,5 +22,5 @@
 .TP 8n
 .B -OverWriting
 This option may be used to force overwriting of files.
-The deafult action is to give and error if an existing file would
+The default action is to give and error if an existing file would
 be overwritten.

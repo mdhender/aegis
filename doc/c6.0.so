@@ -39,7 +39,7 @@ The semantics of C include directives make the
 directive dangerous in a project developed with the aegis program.
 .LP
 Depending on the age of your compiler,
-whether it is ATT traditional C or newer ANSI C,
+whether it is AT&T traditional C or newer ANSI C,
 this form of directive will search first in the current directory and then
 along the search path,
 or in the directory of the including file and then along the search path.
@@ -152,7 +152,7 @@ a more widely understood "magic number" is
 as the first line of the script file.
 .nh 3 "Current Directory"
 .LP
-Tests are always run with the currect directory set to either the
+Tests are always run with the current directory set to either the
 development directory
 change under test when testing a change,
 or the integration directory when integrating a change,
@@ -214,7 +214,7 @@ rather than track and remove all test files which may or may not be created.
 If the program under test invokes pagers on its output,
 a la \fImore\fP(1) et al,
 it should be coded to use the PAGER
-enviroment variable.
+environment variable.
 Tests of such programs should always set PAGER to
 .I cat
 so that tests always behave the same,
@@ -266,6 +266,16 @@ pointing to the baseline.
 Note that the
 .I aecd
 alias is inappropriate in this case.
+.LP
+This can be done automatically for every change,
+by placing the line
+.E(
+develop_begin_command =
+	"ln -s $baseline bl";
+.E)
+into the
+.I config
+file.
 .nh 2 "User Setup"
 .LP
 There are a number of things which users
@@ -277,9 +287,9 @@ This section describes just a few of them.
 The aliases for the various user commands used throughout this manual
 are obtained by appending a line of the form
 .E(
-.ps -3
+.ps -2
 source /usr/local/lib/aegis/cshrc
-.ps +3
+.ps +2
 .E)
 to the
 .I \&.cshrc

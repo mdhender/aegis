@@ -33,6 +33,13 @@
 .br
 .B \*(n)
 .B -Project_Attributes
+.B -Edit
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Project_Attributes
 .B -List
 [
 .IR option ...
@@ -46,18 +53,18 @@ The
 .I \*(n)
 .I -Project_Attributes
 command is used to
-modify the attributes of a project.
-The best method is to use the
+set, edit or list the attributes of a project.
+.PP
+The output of the
 .B -List
-option to get a copy of the current attributes (redirect it into a file),
-edit those attributes as you want them,
-and then feed it back as the 
-.IR attr-file .
+variant is suitable for use as input at a later time.
+.PP
 See
 .IR aepattr (5)
-for more information.
+for a description of the file format.
 .SH OPTIONS
 The following options are understood:
+.so o_edit.so
 .so o_help.so
 .so o_list.so
 .so o_project.so

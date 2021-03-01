@@ -23,12 +23,15 @@
 
 unset AEGIS_PROJECT
 unset AEGIS_CHANGE
+umask 022
+
+USER=${USER:-${LOGNAME:-`whoami`}}
 
 PAGER=cat
 export PAGER
 COLS=65
 export COLS
-work=${AEGIS_TMP-/tmp}/$$
+work=${AEGIS_TMP:-/tmp}/$$
 
 fail()
 {
@@ -222,7 +225,7 @@ example: [obj_files]
 	if [exists [target]] then
 		rm [target]
 			set clearstat;
-	[cc] -o [target] [resolve [obj_files]] -ll -ly -lm;
+	[cc] -o [target] [resolve [obj_files]] -ll -lm;
 }
 TheEnd
 if test $? -ne 0 ; then fail; fi
@@ -333,6 +336,14 @@ main(argc, argv)
 		usage();
 	yyparse();
 	exit(0);
+}
+
+void
+yyerror(s)
+	char	*s;
+{
+	fprintf(stderr, "%s\n", s);
+	exit(1);
 }
 TheEnd
 if test $? -ne 0 ; then fail; fi
@@ -569,6 +580,14 @@ main(argc, argv)
 	}
 	yyparse();
 	exit(0);
+}
+
+void
+yyerror(s)
+	char	*s;
+{
+	fprintf(stderr, "%s\n", s);
+	exit(1);
 }
 TheEnd
 if test $? -ne 0 ; then fail; fi

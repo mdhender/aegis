@@ -58,3 +58,10 @@ test_exempt = boolean;
  * and that the change has fixed that isolated bug.
  */
 test_baseline_exempt = boolean;
+
+/*
+ * This field is true if it is not necessary
+ * to perform a full regression test on the change.
+ * If absent, defaults to true for all causes except improvments.
+ */
+regression_test_exempt = boolean;

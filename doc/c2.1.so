@@ -305,7 +305,7 @@ This tool is also available from the author of aegis.
 .FE
 .LP
 So that reviewers,
-and consciencious developers,
+and conscientious developers,
 may locate and view all of these difference files,
 the command
 .E(
@@ -453,7 +453,7 @@ Portable for aegis' point of view:
 Bourne shell is the most widely available shell.
 Of course,
 if you are writing code to publish on USENET or for FTP,
-portablity
+portability
 of the tests will be important from the developer's point of view also.
 .FE
 (Actually, aegis likes test files not to be executable,
@@ -474,7 +474,7 @@ which is writable;
 it is also easier to clean up after strange errors,
 since you need only throw the directory away,
 rather than track down individual temporary files.
-It mostly protects aginst rogue programs scrambling files
+It mostly protects against rogue programs scrambling files
 in the current directory, too.
 .XP
 \(bu Every test is self-contained.
@@ -490,6 +490,12 @@ in a temporary directory.
 Both forms remove the temporary directory.
 A test is defined as passing if it returns a 0 exit status,
 and failing if it returns anything else.
+.XP
+\(bu
+Tests are treated just like any other source file,
+and are subject to the same process.
+They may be altered in another change,
+or even deleted later if they are no longer useful.
 .LP
 The most important feature to note about this test,
 after ignoring all of the trappings,
@@ -610,8 +616,8 @@ Pat is now free to develop another change,
 possibly for a different project.
 .nh 3 "The Second Change"
 .LP
-The second chnage was created because someone wanted to
-name input and oitput files on the command line,
+The second change was created because someone wanted to
+name input and output files on the command line,
 and called the absence of this feature a bug.
 When Jan arrived for work,
 and lists the changes awaiting development,
@@ -901,7 +907,7 @@ jan%
 .E)
 .LP
 No,
-it wan't enough.
+it wasn't enough.
 Tests must not only pass against a new change,
 but must fail against the project baseline.
 This is to establish,
@@ -946,7 +952,7 @@ jan%
 .E)
 .LP
 Like Pat in the change before,
-Jan will recieve email that this change passed review,
+Jan will receive email that this change passed review,
 and later that it passed integration.
 .nh 3 "The Third and Fourth Changes"
 .LP
@@ -977,10 +983,10 @@ aegis: project "example": change 3: /u/sam/example.003
 sam%
 .E)
 .LP
-A little siniffing around reveals that only the
+A little sniffing around reveals that only the
 .I gram.y
 grammar file needs to be altered,
-so it is compied into the change.
+so it is copied into the change.
 .E(
 sam% \f(CBaecp gram.y\fP
 aegis: project "example": change 3: file "gram.y" copied
@@ -1297,7 +1303,7 @@ pat%
 .E)
 .LP
 To get more information about the change,
-Pat then uases the "change details" listing:
+Pat then uses the "change details" listing:
 .E(
 pat% \f(CBael cd\fP
 Project "example", Change 4
@@ -1339,7 +1345,7 @@ HISTORY
 pat%
 .E)
 .LP
-To add the variables the grammer needs to be extended to understand them,
+To add the variables the grammar needs to be extended to understand them,
 and a new file for remembering and recalling the values of the
 variables needs to be added.
 .E(
@@ -1567,7 +1573,7 @@ Pat now wanders down the hall in search of a reviewer,
 but more of that in the next section.
 .LP
 Some time later,
-Jan returns fram aerobics feeling much improved.
+Jan returns from aerobics feeling much improved.
 All that is required for change 3 is
 to do develop end, or is it?
 .E(
@@ -1597,7 +1603,7 @@ aegis: new 'aegis -Build' required
 jan%
 .E)
 .LP
-This was caused by the conflicty between change 4,
+This was caused by the conflict between change 4,
 which is now integrated,
 and change 3;
 both of which are editing the
@@ -1671,7 +1677,7 @@ expr
 .E)
 This is because most such conflicts are actually working
 on logically separate portions of the file.
-Two diferent areas of the grammar in this case.
+Two different areas of the grammar in this case.
 In practice,
 there is rarely a real conflict,
 and it is usually small enough to detect fairly quickly.
@@ -1741,7 +1747,7 @@ jan%
 .E)
 .LP
 Perform the regression tests, too.
-This is important for a merged chnage,
+This is important for a merged change,
 to make sure you didn't break the functionality
 you merged with.
 .E(
@@ -1788,7 +1794,7 @@ aegis: project "example": change 3: development completed
 jan%
 .E)
 Some time soon
-Jan will recieve email that this change passed review,
+Jan will receive email that this change passed review,
 and later that it passed integration.
 .LP
 Within the scope of a limited example,
@@ -1809,7 +1815,7 @@ l l.
 Command;Description
 _
 aeb;Build
-aeca;Change Attributes
+aeca;edit Change Attributes
 aecd;Change Directory
 aecp;Copy File
 aecpu;Copy File Undo

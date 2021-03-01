@@ -69,6 +69,13 @@ change_file_command = string;
 project_file_command = string;
 
 /*
+ * Executed at develop begin
+ *
+ * All of the substitutions described in aesub(5) are available.
+ */
+develop_begin_command = string;
+
+/*
  * Executed at integrate begin
  *
  * All of the substitutions described in aesub(5) are available.

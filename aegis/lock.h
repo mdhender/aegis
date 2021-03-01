@@ -38,4 +38,39 @@ long lock_magic _((void));
 void lock_prepare_build_read _((struct string_ty *project_name));
 void lock_prepare_build_write _((struct string_ty *project_name));
 
+enum lock_walk_name
+{
+	lock_walk_name_master,
+	lock_walk_name_gstate,
+	lock_walk_name_pstate,
+	lock_walk_name_cstate,
+	lock_walk_name_build,
+	lock_walk_name_ustate,
+	lock_walk_name_unknown
+};
+typedef enum lock_walk_name lock_walk_name;
+
+enum lock_walk_type
+{
+	lock_walk_type_shared,
+	lock_walk_type_exclusive,
+	lock_walk_type_unknown
+};
+typedef enum lock_walk_type lock_walk_type;
+
+typedef struct lock_walk_found lock_walk_found;
+struct lock_walk_found
+{
+	lock_walk_name	name;
+	lock_walk_type	type;
+	long		subset;
+	long		address;
+	int		pid;
+	int		pid_is_local;
+};
+
+typedef void (*lock_walk_callback)_((lock_walk_found *));
+
+void lock_walk _((lock_walk_callback));
+
 #endif /* LOCK_H */

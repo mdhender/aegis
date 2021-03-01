@@ -25,7 +25,7 @@
 The aegis program is far from finished.
 A number of features are known to lacking,
 and several interesting (but as yet unformed) ideas are lurking.
-.nh 3 "Hetrogeneous Environments"
+.nh 3 "Heterogeneous Environments"
 .LP
 There is no support at the current time for
 tracking aspects of development in an heterogeneous environment.
@@ -41,7 +41,7 @@ will be responsible for figuring out which environment it
 is in and building accordingly.
 It is an operating system requirement
 that the baseline and development directories
-are accessable in each environment (facilities such as RFS or NFS are assumed).
+are accessible in each environment (facilities such as RFS or NFS are assumed).
 Note that the baseline will expect to be self-consistent in all
 of the environments simultaneously.
 .LP
@@ -100,7 +100,7 @@ The history,
 however,
 is severed from the original project,
 precluding automatic merging by aegis at a later date.
-It also precludes haveing a single change to be applied
+It also precludes having a single change to be applied
 to more than one branch.
 .LP
 Should better semantics become available,

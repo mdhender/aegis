@@ -29,7 +29,7 @@ because changes can never reach the
 state without several preconditions:
 .LP
 \(bu The change is know to build.
-You know that it compiled sucessfully,
+You know that it compiled successfully,
 so there is no need to search for syntax errors.
 .LP
 \(bu The change has tests,
@@ -82,7 +82,7 @@ for those who prefer the
 .IR less (1)
 command.
 .LP
-Once the change has bben reviewd and found acceptable,
+Once the change has been reviewed and found acceptable,
 it is passed:
 .E(
 robyn% \f(CBaerpass example 1\fP

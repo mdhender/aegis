@@ -22,5 +22,5 @@
 .TP 8n
 \fB-MINOr\fP [ \fInumber\fP ]
 .br
-Specify that the minor version number is to be incrimented,
+Specify that the minor version number is to be incremented,
 or set to the given number if specified.

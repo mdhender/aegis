@@ -219,7 +219,7 @@ undo()
 		break;
 
 	case 2:
-		progname = option_get_progname();
+		progname = option_progname_get();
 		error
 		(
 "A fatal error occurred while attempting to recover \

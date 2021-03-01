@@ -27,7 +27,7 @@ It evolved and grew with time in a real-live software development environment,
 and it has continued to be used and developed.
 Unfortunately,
 this environment was the largest experienced by the author to date,
-and consisted of only about fourty software engineers hammering away
+and consisted of only about forty software engineers hammering away
 at a project.\**
 .FS
 "Unfortunately,"
@@ -97,6 +97,8 @@ and contains all of the the tests.
 The contents and structure of the
 .I test
 directory are also dictated by aegis.
+Tests are treated just like any other source file,
+and are subject to the same process.
 .LP
 The baseline in aegis has one particular attribute:
 it always works.
@@ -112,6 +114,8 @@ You may claim that "works" is comfortably fuzzy,
 but it is not.
 The baseline contains not only the source of a project,
 but also the tests for a project.
+Tests are treated just like any other source file,
+and are subject to the same process.
 A baseline is defined to "work" if and only if it passes all
 of its own tests.
 The aegis program has mandatory testing,
@@ -174,7 +178,10 @@ The baseline is a set of files
 including the source files for a projects,
 and also all derived files (such as generated code,
 binary files from the compiler,
-etc).
+etc),
+and all of the tests.
+Tests are treated just like any other source file,
+and are subject to the same process.
 All files in the baseline are consistent with each other.
 .LP
 Thus the baseline may be considered to the the 
@@ -207,9 +214,12 @@ This means that they may be repaired with an ordinary text editor,
 should remedial action be necessary.
 The format is documented in section 5 of the reference manual.
 Should you wish to perform some query not yet available in aegis,
-the files are readily accessable to members of the appropriate
+the files are readily accessible to members of the appropriate
 .UX
 group.
+.LP
+Tests are treated just like any other source file,
+and are subject to the same process.
 .nh 3 "The Change Mechanism"
 .LP
 Any changes to the baseline are made by atomic increments,
@@ -252,6 +262,19 @@ These tests will either establish that a bug has been fixed
 (in the case of a bug fix)
 or will establish that new functionality works
 (in the case of an enhancement).
+.LP
+Tests are shell scripts,
+and as such are capable of testing anything which has functionality
+accessable from the command line.
+the ability to run background processes allows even client-server
+models to be tested.
+Tests are thus text files, and are treated as source files;
+they may be modified by the same process as any other source file.
+Tests usually need to be revised as a project grows and adapts
+to changing requirements,
+or to be extended as functionality is extended.
+Tests can even be deleted if the functionality they tests has been deleted;
+tests are deleted by the same process as any other source file.
 .nh 3 "Change States"
 .LP
 As a change is developed using aegis,
@@ -307,7 +330,7 @@ against the baseline;
 this is to establish that tests for bug-fixes actually reproduce the bug
 and then demonstrate that it is gone.
 New functionality added by a change
-will naturally fail when testsed in the old baseline,
+will naturally fail when tested in the old baseline,
 because it is not there.
 .LP
 When these conditions are met,
@@ -328,7 +351,7 @@ the lock is not taken,
 either.
 Locking the files at this state transition means that popular files may be
 modified simultaneously in many changes,
-but that only differences to the lastest version are ever submitted for
+but that only differences to the latest version are ever submitted for
 integration.
 The aegis program provides a mechanism,
 described later,
@@ -349,7 +372,7 @@ is not dictated by the aegis program.
 A number of alternative have been observed:
 .LP
 \(bu 
-You may have a single person who coordinates review pannels of,
+You may have a single person who coordinates review panels of,
 say,
 4 peers,
 with this coordinator the only person allowed to sign-off review passes or
@@ -364,7 +387,7 @@ familiar with large portions of the code,
 be allowed to review.
 .LP
 The aegis program enforces that a developer may not review their own code.
-This ensures that at least one other person other than the developer
+This ensures that at least one person other than the developer
 has scrutinized the code,
 and eliminates a rather obvious conflict of interest.
 It is possible to turn this requirement off on a per-project basis,
@@ -379,7 +402,7 @@ it has passed all of the conditions required to reach this state.
 The change compiles,
 it has tests and it passes those tests,
 and the changes are to the current version of the baseline.
-The reviwer may thus concentrate on issues of completeness,
+The reviewer may thus concentrate on issues of completeness,
 design,
 and standards - to name only a few.
 Check lists can be very helpful.
@@ -425,7 +448,7 @@ because aegis is decoupled from the build
 mechanism (this will discussed later).
 .LP
 To advance to the next state,
-the integration copy hust have been compiled,
+the integration copy must have been compiled,
 and the tests included in the change must have been run and passed.
 .LP
 The integrator also has the power of veto.
@@ -454,7 +477,7 @@ and tested once more.
 If a change fails to build or test,
 it is returned to the developer for further work;
 the integrator may also choose to fail it for other reasons.
-If the integartor passes that change,
+If the integrator passes that change,
 the integrated version becomes the new baseline.
 .nh 4 "Completed"
 .LP
@@ -490,7 +513,7 @@ being an administrator,
 except for the possible conflict of interests
 with respect to testing exemptions.
 .LP
-A developer may edit many of the attibutes of a change while it is being
+A developer may edit many of the attributes of a change while it is being
 developed.
 This is mostly useful to update the description of the
 change to say why it was done and what was actually done.
@@ -502,7 +525,7 @@ The role of the reviewer is to check a developer's work.
 This review may
 consist of a peer examining the code,
 or it may be handled by a single
-member of staff setting up and scheduling multi-person review pannels.
+member of staff setting up and scheduling multi-person review panels.
 The aegis program does not mandate what style of review,
 it only
 requires that a reviewer pass or fail each change.
@@ -585,7 +608,7 @@ small teams.
 The baseline is readable by all developers,
 but not writable.
 All updates of the baseline to reflect changes produced by developers
-are performed through the agency of the intergator.
+are performed through the agency of the integrator.
 .nh 4 "Administrator"
 .LP
 The project administrator has the following duties:
@@ -703,7 +726,7 @@ for whatever reason,
 scans the list of changes awaiting
 development.
 Having selected a change,
-the developer then assignes
+the developer then assigns
 that change to herself.
 .LP
 The change is now being developed;
@@ -761,7 +784,7 @@ In preparation for review,
 a change is differenced.
 This usually consists of
 automatically comparing the present contents of the baseline with what
-the change proposes to do to the baeline,
+the change proposes to do to the baseline,
 on a file-by-file basis.
 The
 results of the difference,
@@ -770,7 +793,7 @@ such as
 .I "diff -c"
 output,
 is kept
-in a differnece file,
+in a difference file,
 for examination by the reviewer(s).
 The benefit
 of this procedure is that reviewers may examine these file to see every
@@ -788,7 +811,7 @@ To leave this state,
 the change must have source files,
 it must have tests,
 it
-must have built sucessfully,
+must have built successfully,
 it must have passed all its own tests,
 and
 it must have been differenced.
@@ -803,7 +826,7 @@ change by mistake.
 When the conditions for the end of development
 have been met (the change must have source files,
 it must have tests,
-it must have built sucessfully,
+it must have built successfully,
 it must have passed all its own tests,
 and it must have been
 differenced) the developer may cause the change to leave the being
@@ -819,7 +842,7 @@ and goes hunting for a reviewer.
 Half way down the hall,
 she thinks of something that should have been included.
 .LP
-Iytt is possible for a developer to rescind a
+It is possible for a developer to rescind a
 .I "Develop End"
 to allow further work on a change.
 No reason need be given.
@@ -878,7 +901,7 @@ return a change to the integration queue,
 with out prejudice.
 No reason need be given.
 .LP
-This is usually done when a particulary important change is in the queue,
+This is usually done when a particularly important change is in the queue,
 and the current integration is expected to take a long time.
 .nh 4 "Integrate Pass"
 .LP

@@ -22,7 +22,7 @@
 .nh 2 "Interfacing"
 .LP
 The build commands are accessed from two fields of the
-project configuation file (\fIconfig\fP).
+project configuration file (\fIconfig\fP).
 .nh 3 "diff_command"
 .LP
 This command is used by
@@ -33,7 +33,7 @@ was originally copied from the current version in the baseline\**.
 Or this is logically the case.
 .FE
 .LP
-All of the command sibstitutions described in
+All of the command substitutions described in
 .I aesub (5)
 are available.
 In addition, the following substitutions are also available:
@@ -47,7 +47,7 @@ Usually in the development directory.
 The absolute path name of the file in which to write the difference listing.
 Usually in the development directory.
 .LP
-An exit status of 0 means sucessful,
+An exit status of 0 means successful,
 even of the files differ (and they usually do).
 An exit status which is non-zero means something is wrong.
 .LP
@@ -62,7 +62,7 @@ This command is used by
 to produce a difference listing when file in the development directory
 is out of date compared to the current version in the baseline.
 .LP
-All of the command sibstitutions described in
+All of the command substitutions described in
 .I aesub (5)
 are available.
 In addition, the following substitutions are also available:
@@ -79,6 +79,6 @@ Usually in the development directory.
 The absolute path name of the file in which to write the difference listing.
 Usually in the development directory.
 .LP
-An exit status of 0 means sucessful,
+An exit status of 0 means successful,
 even of the files differ (and they usually do).
 An exit status which is non-zero means something is wrong.

@@ -22,8 +22,8 @@
 .br
 .ne 2i
 .SH COPYRIGHT
-\*(n) version
 .so ../doc/version.so
+\*(n) version \*(V)
 .br
 .if t .ds C) \(co
 .if n .ds C) (C)

@@ -37,7 +37,7 @@ and that
 This is a very simplistic view,
 but it illustrates the fact that aegis has a wider scope than make.
 While CVS covers a subset of the functionality covered by aegis,
-it natuarally does that subset better.
+it naturally does that subset better.
 .LP
 The model used by aegis has a baseline
 .I and
@@ -52,9 +52,9 @@ These source files are available for linking or inclusion,
 the object files available for linking,
 at no extra effort for the developers.
 .LP
-The reporitory is only for history,
+The repository is only for history,
 using the aegis model.  It is used to store everything that has happened,
-so that developers may receraete earlier version when fixing bugs,
+so that developers may recreate earlier version when fixing bugs,
 and aegis may use it for some other purposes.
 .LP
 CVS provides the repository functionality well.
@@ -70,7 +70,7 @@ the history tree.
 This is why aegis only provides branching without the possibility of merging,
 by deriving a whole new project from an existing one;
 thus creating a whole new baseline as well.
-Should a better set of semantics be made aparrent,
+Should a better set of semantics be made apparent,
 this is certainly an area for improvement.
 .LP
 Another aspect of Software Configuration Management (SCM) is
@@ -101,7 +101,7 @@ the definition of the function needs to be recompiled,
 to ensure that it, too, agrees with the prototype,
 and have the interface and 9implementation changed to agree with it.
 This type of consistency checking is provided by aegis,
-but not bu CVS;
+but not by CVS;
 although CVS does not prevent a project implementing this in a different way.
 .LP
 Another aspect of SCM provided by aegis is validation.
@@ -115,20 +115,20 @@ While testing is not a silver bullet,
 and neither is peer review,
 both are vital components producing quality software.
 CVS does not provide validation functionality;
-althoug it does not prevent a project from implementing this in some other way.
+although it does not prevent a project from implementing this in some other way.
 .LP
 The CVS program aims to provide the repository function for SCM,
 and it does this well.
 The
 aegis program aims to provide a baseline,
-to provide a reporitory,
+to provide a repository,
 to provide baseline consistency, and
 to provide baseline change validation.
 There are situations where one is more suited,
 and the other less, and vice versa.
 The tools selected for a project,
 from Gandt charts to assemblers,
-must be chosen for their "fit" with each individuat project.
+must be chosen for their "fit" with each individual project.
 .PP
 Another point to note is that CVS requires RCS;
 whereas aegis may be configured to use almost any history tool.

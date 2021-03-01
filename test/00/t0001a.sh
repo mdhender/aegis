@@ -23,6 +23,9 @@
 
 unset AEGIS_PROJECT
 unset AEGIS_CHANGE
+umask 022
+
+USER=${USER:-${LOGNAME:-`whoami`}}
 
 fail()
 {

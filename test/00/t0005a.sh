@@ -26,10 +26,13 @@
 
 unset AEGIS_PROJECT
 unset AEGIS_CHANGE
+umask 022
+
+USER=${USER:-${LOGNAME:-`whoami`}}
 
 PAGER=cat
 export PAGER
-work=${AEGIS_TMP-/tmp}/$$
+work=${AEGIS_TMP:-/tmp}/$$
 
 fail()
 {
@@ -266,6 +269,7 @@ if test $? -ne 0 ; then fail; fi
 #
 # integrate build
 #
+sleep 1
 ./bin/aegis -build -nl -v -lib $worklib -p foo
 if test $? -ne 0 ; then fail; fi
 
@@ -381,6 +385,7 @@ rm ./fubar
 #
 # build the change
 #
+sleep 1
 ./bin/aegis -build -nl -v -lib $worklib -p foo
 if test $? -ne 0 ; then fail; fi
 

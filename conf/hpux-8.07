@@ -17,13 +17,14 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * MANIFEST: aegis configuration for generic SVR4 system
+ * MANIFEST: aegis configuration for HP/UX 8.07
  */
 
 #ifndef CONF_H
 #define CONF_H
 
 #define HPUX
+
 /*
  * Define this symbol if your system does NOT
  * have the ANSI C strerror system call, and
@@ -34,8 +35,9 @@
 /*
  * Define this symbol if your system does NOT
  * have the POSIX tcgetpgrp system call.
+ *
+#define CONF_NO_tcgetpgrp
  */
-/*#define CONF_NO_tcgetpgrp*/
 
 /*
  * Define this symbol if your system does NOT
@@ -65,7 +67,7 @@
  * The group will be derived from the relevant entry in /etc/passwd.
  *
  * Do not confuse this with the fact that aegis must be set-uid-root.
- * Aegis MUST be set-uid-root to manipulate file ownersips, etc.
+ * Aegis MUST be set-uid-root to manipulate file ownerships, etc.
  *
  * This string defines the owner of aegis' global files, so that aegis
  * may access them when they are on NFS mounted partitions (when root
@@ -116,8 +118,19 @@
  * Define this symbol if your system does NOT
  * have the seteuid system call.
  *
+ * HP/UX does not have this system call in the libraries,
+ * but it can be simulated using an existing system call,
+ * see the CONF_HAS_setresuid define, below.
+ *
 #define CONF_NO_seteuid
  */
+
+/*
+ * Define this symbol if your systems has setresuid,
+ * but does NOT have seteuid.  Similarly for setresgid.
+ * Hopefully, this us unique to HP-UX.
+ */
+#define CONF_HAS_setresuid
 
 /*
  * Define this symbol to be the pathname of your shell.
@@ -135,12 +148,5 @@
  */
 #define AEGIS_MIN_UID 100
 #define AEGIS_MIN_GID 10
-
-/*
- * Define this symbol if your systems has setresuid,
- * but does NOT have seteuid.  Similarly for setresgid.
- * Hopefully, this us unique to HP-UX.
- */
-#define CONF_HAS_setresuid
 
 #endif /* CONF_H */

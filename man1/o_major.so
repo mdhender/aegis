@@ -22,5 +22,5 @@
 .TP 8n
 \fB-MAJor\fP [ \fInumber\fP ]
 .br
-Specify that the major version number is to be incrimented,
+Specify that the major version number is to be incremented,
 or set to the given number if specified.

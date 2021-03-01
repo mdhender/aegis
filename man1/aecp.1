@@ -59,14 +59,18 @@ If the
 .I config
 file was added,
 any diff registration will also be cancelled.
+.PP
+This command may be used to copy tests into a change,
+not just source files.
+Tests are treated just like any other source file,
+and are subject to the same process.
 .SH OPTIONS
 The following options are understood:
-.so o_anticip.so
 .so o_change.so
 .TP 8n
 \fB-Delta\fP \fInumber\fP
 .br
-This optioon may be used to specify a particular
+This option may be used to specify a particular
 delta in the project's history to copy the file from,
 rather than the most current version.
 It is an error if the delta specified does not exist.

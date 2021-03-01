@@ -23,7 +23,7 @@
 .nh 2 "Philosophy"
 .LP
 The philosophy is simple,
-and that makes some of the implemmentation complex.
+and that makes some of the implementation complex.
 .BL
 .LI
 When a change is in the
@@ -95,7 +95,7 @@ The
 .UX
 philosophy of writing small tools for specific tasks with little
 or no overlap.
-Tools should bve written with the expectation of use in
+Tools should be written with the expectation of use in
 pipes or scripts,
 or other combinations.
 .LP

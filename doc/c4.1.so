@@ -22,7 +22,7 @@
 .LP
 When selecting a Dependency Maintenance Tool
 it is important to keep in mind that it must be able to
-cope with a heirachy of parallel source directory trees.
+cope with a hierarchy of parallel source directory trees.
 .LP
 The heart of any DMT is an \fIinference engine\fP.
 This inference engine accepts a \fIgoal\fP of what you want it to construct
@@ -52,9 +52,9 @@ otherwise construct the file in the development directory".
 The presence of a source file in the change makes the copy
 in the baseline out-of-date.
 .LP
-Most DTMs with this capability implement it by using
+Most DMTs with this capability implement it by using
 some sort of search path,
-allowing a hierachy of directories to be scanned with little or
+allowing a hierarchy of directories to be scanned with little or
 no modification to the rules.
 .nh 3 "Dynamic Include File Dependencies"
 .LP
@@ -64,7 +64,7 @@ and all of the sources in the baseline which use that include file
 must be recompiled.
 .LP
 Consider the example given earlier:
-the include file describing the interface definition of a fucntion is
+the include file describing the interface definition of a function is
 copied into a change and edited,
 and so is the source file defining the function.
 It is essential that all source files in the baseline which
@@ -78,7 +78,7 @@ There are two ways of handling include file dependencies:
 and the file can be maintained but suitable programs
 (maintaining it manually never works, that's just human nature).
 .LP
-\(bu They can be determined by the DTM when it is scanning the rules
+\(bu They can be determined by the DMT when it is scanning the rules
 to determine what needs updating.
 .nh 4 "Static File"
 .LP
@@ -117,11 +117,11 @@ are triggered by source files,
 and are unable to manage a case where it is an include file which is changing,
 to include a different set of other include files.
 In this case,
-the inaccurate dependencies file may contain refernces to 
+the inaccurate dependencies file may contain references to 
 the old set of nested include files,
 some of which may no longer exist,
 This causes
-the DMT to incorrcetly generate an error stating that the
+the DMT to incorrectly generate an error stating that the
 old include file is missing,
 when it is actually no longer required.
 .LP

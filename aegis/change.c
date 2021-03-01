@@ -105,21 +105,30 @@ change_copy(cp)
 }
 
 
-static void improve _((change_ty *));
+static void improve _((cstate));
 
 static void
-improve(cp)
-	change_ty	*cp;
+improve(d)
+	cstate		d;
 {
-	trace(("improve(cp = %08lX)\n{\n"/*}*/, cp));
-	if (!cp->cstate_data->history)
-		cp->cstate_data->history =
+	trace(("improve(d = %08lX)\n{\n"/*}*/, (long)d));
+	if (!d->history)
+		d->history =
 			(cstate_history_list)
 			cstate_history_list_type.alloc();
-	if (!cp->cstate_data->src)
-		cp->cstate_data->src =
+	if (!d->src)
+		d->src =
 			(cstate_src_list)
 			cstate_src_list_type.alloc();
+	if (!(d->mask & cstate_regression_test_exempt_mask))
+	{
+		d->regression_test_exempt =
+			(
+				d->cause != change_cause_internal_improvement
+			&&
+				d->cause != change_cause_external_improvement
+			);
+	}
 	trace((/*{*/"}\n"));
 }
 
@@ -233,7 +242,7 @@ change_cstate_get(cp)
 				cp->filename
 			);
 		}
-		improve(cp);
+		improve(cp->cstate_data);
 		if (cp->cstate_data->state == cstate_state_completed)
 		{
 			long	j;
@@ -277,7 +286,7 @@ change_bind_new(cp)
 	assert(!cp->cstate_data);
 	cp->is_a_new_file = 1;
 	cp->cstate_data = (cstate)cstate_type.alloc();
-	improve(cp);
+	improve(cp->cstate_data);
 	trace((/*{*/"}\n"));
 }
 
@@ -802,7 +811,7 @@ change_logfile_get(cp)
 		}
 	
 		cp->logfile =
-			str_format("%S/%s.log", s1, option_get_progname());
+			str_format("%S/%s.log", s1, option_progname_get());
 	}
 	trace(("return \"%s\";\n", cp->logfile->str_text));
 	trace((/*{*/"}\n"));
@@ -875,13 +884,13 @@ change_pconf_path_get(cp)
 	cstate		cstate_data;
 	pstate_src	p_src_data;
 	cstate_src	c_src_data;
-	static string_ty	*file_name;
+	static string_ty *file_name;
 
 	trace(("change_pconf_path_get(cp = %08lX)\n{\n"/*}*/, cp));
 	if (cp->pconf_path)
 		goto ret;
 	if (!file_name)
-		file_name = str_from_c("config");
+		file_name = str_from_c(THE_CONFIG_FILE);
 	cstate_data = change_cstate_get(cp);
 	assert(cstate_data->src);
 	switch (cstate_data->state)
@@ -2138,4 +2147,61 @@ change_run_diff3_command(cp, up, original, most_recent, input, output)
 	user_become_undo();
 	str_free(the_command);
 	trace((/*{*/"}\n"));
+}
+
+
+void
+change_run_develop_begin_command(cp, up)
+	change_ty	*cp;
+	user_ty		*up;
+{
+	pconf		pconf_data;
+	string_ty	*the_command;
+	string_ty	*dir;
+
+	pconf_data = change_pconf_get(cp);
+	if (!pconf_data->develop_begin_command)
+		return;
+
+	the_command = pconf_data->develop_begin_command;
+	the_command = substitute(cp, the_command);
+	dir = change_development_directory_get(cp, 1);
+	user_become(up);
+	os_execute
+	(
+		the_command,
+		OS_EXEC_FLAG_NO_INPUT + OS_EXEC_FLAG_ERROK,
+		dir
+	);
+	user_become_undo();
+	str_free(the_command);
+}
+
+
+void
+change_run_integrate_begin_command(cp)
+	change_ty	*cp;
+{
+	pconf		pconf_data;
+	string_ty	*the_command;
+	string_ty	*dir;
+
+	pconf_data = change_pconf_get(cp);
+	if (!pconf_data->integrate_begin_command)
+		return;
+	sub_var_set("1", "${project}");
+	sub_var_set("2", "${change}");
+	sub_var_set("3", "${version}");
+	the_command = pconf_data->integrate_begin_command;
+	the_command = substitute(cp, the_command);
+	dir = change_integration_directory_get(cp, 1);
+	change_become(cp);
+	os_execute
+	(
+		the_command,
+		OS_EXEC_FLAG_NO_INPUT + OS_EXEC_FLAG_ERROK,
+		dir
+	);
+	change_become_undo();
+	str_free(the_command);
 }

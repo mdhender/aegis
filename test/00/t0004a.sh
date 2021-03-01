@@ -28,8 +28,11 @@
 
 unset AEGIS_PROJECT
 unset AEGIS_CHANGE
+umask 022
 
-work=${AEGIS_TMP-/tmp}/$$
+USER=${USER:-${LOGNAME:-`whoami`}}
+
+work=${AEGIS_TMP:-/tmp}/$$
 
 fail()
 {
@@ -268,6 +271,7 @@ if test $? -ne 0 ; then fail; fi
 #
 # integrate build
 #
+sleep 1
 ./bin/aegis -build -nl -v -lib $worklib -p foo
 if test $? -ne 0 ; then fail; fi
 

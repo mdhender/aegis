@@ -296,7 +296,7 @@ version_usage()
 {
 	char	*progname;
 
-	progname = option_get_progname();
+	progname = option_progname_get();
 	fprintf(stderr, "usage: %s -VERSion [ <info-name> ]\n", progname);
 	fprintf(stderr, "       %s -VERSion -Help\n", progname);
 	quit(1);

@@ -1,0 +1,89 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: manual entry for aegis -MoVe_file
+.\"
+.so z_name.so
+.TH "\*(n) -MoVe_file" 1 \*(N)
+.SH NAME
+\*(n) -MoVe_file \- copy a file into a change
+.SH SYNOPSIS
+.B \*(n)
+.B -MoVe_file
+[
+.IR option ...
+]
+.I old-name
+.I new-name
+.br
+.B \*(n)
+.B -MoVe_file
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -MoVe_file
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -MoVe_file
+command is used to
+copy a file into a change,
+while changing its name at the same time.
+.so z_intuit.so
+.PP
+The named files will be copied from the baseline (\fIold-file\fP) into
+the development directory (\fInew-file\fP),
+and added to the list of files in the change.
+.PP
+This command will cancel any build or test registrations,
+because adding another file logically invalidates them.
+.SH OPTIONS
+The following options are understood:
+.so o_change.so
+.so o_help.so
+.so o_list.so
+.so o_nolog.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aemv '\*(n) -mv \e!* -v'
+sh$	aemv(){\*(n) -mv $* -v}
+.fi
+.SH ERRORS
+It is an error if
+the change is not in the
+.I "being developed"
+state.
+.br
+It is an error if
+the change is not assigned to the current user.
+.br
+It is an error if
+either file is already in the change.
+.so z_exit.so
+.so z_cr.so

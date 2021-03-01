@@ -50,17 +50,50 @@ The
 command is used to
 find differences between the development directory and the baseline.
 The differences will be in files with a "\f(CW,D\fP" suffix.
-The command used to perfom the differences is in the
-project config file (see
+The command used to perform the differences is in the
+project
+.I config
+file (see
 .IR aepconf (5)
 for more information).
 .PP
-If no files are named all files in the change,
-which were added to the change using the
-.I "\*(n) -CoPy_file"
-command,
-will be differenced.
+If no files are named on the command line,
+all files in the change will be differenced.
 .so z_intuit.so
+.SH CONFLICT RESOLUTION
+If the version of a file in the change is not the same
+as the verion of the file in the baseline,
+it is out-of-date;
+some other change has altered the file while this change was being developed.
+.PP
+When a difference is requested for an out-of-date file,
+a merge is performed
+between the common ancestor,
+the verion in the baseline,
+and the version in the development directory.
+The command used to perform the merge is in the
+project
+.I config
+file (see
+.IR aepconf (5)
+for more information).
+.PP
+After the merge is performed
+the version of the file will be changed to be the current version,
+and a new build will be required.
+.PP
+The difference output in the \fI,D\fP files
+contains the result of the merge.
+You should edit them,
+to make sure the automatic merge has produced sensible results,
+and then rename them to be the corresponding source file.
+.PP
+This merge process works most of the time.
+Usually two changes to two logically separate areas of functionality
+will alter two logically separate parts of any files they may
+have in common.
+There are pathological cases where this merge process is spectacularly useless,
+but these are surprizingly rare in practice.
 .SH OPTIONS
 The following options are understood:
 .so o_anticip.so
@@ -81,5 +114,8 @@ sh$	aed(){\*(n) -diff $* -v}
 .fi
 .SH ERRORS
 It is an error if
+the change is not in the
+.I "'being developed'"
+state.
 .so z_exit.so
 .so z_cr.so

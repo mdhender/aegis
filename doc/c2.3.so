@@ -28,7 +28,7 @@ The integrator does not have the ability to alter anything in the change;
 if a change being integrated is defective,
 it is simply failed back to the developer.
 This documented example has no such failures,
-in order to keep it managebly small.
+in order to keep it manageably small.
 .nh 3 "The First Change"
 .LP
 The first change of a project is often the trickiest,
@@ -37,7 +37,7 @@ This example goes smoothly,
 and you may want to consider using the example project
 as a template.
 .LP
-The intergator for this example project is Isa.
+The integrator for this example project is Isa.
 Isa knows there is a change ready for integration
 from the notification which arrived by email.
 .E(
@@ -87,14 +87,14 @@ while in the
 state;
 the extra baseline include is gone.
 This is because the integration directory will shortly be the new baseline,
-and must be entirely internally coinsistent and self-sufficient.
+and must be entirely internally consistent and self-sufficient.
 .LP
 You are probably wondering why this isn't all rolled into the
 one aegis command.
 It is not because there may be some manual process to be
 performed after the build and before the test.
 This may be making a command set-uid-root (as in the case of aegis)
-or it may require some tinkering with the local oracle or ingres database.
+or it may require some tinkering with the local oracle or ingress database.
 Instructions for the integrator may be placed in the
 description field of the change attributes.
 .LP
@@ -113,7 +113,7 @@ Once Isa is happy with the change,
 perhaps after browsing the files,
 Isa then passes the integration,
 causing the history files to be updated
-andf the integration directory becomes the baseline.
+and the integration directory becomes the baseline.
 .E(
 isa% \f(CBaeipass\fP
 aegis: logging to "/projects/example/delta.001/aegis.log"
@@ -137,7 +137,7 @@ isa%
 All of the staff involved,
 will receive email to say that the change has been integrated.
 This notification is a shell script,
-so USENET could be useflly used instead.
+so USENET could be usefully used instead.
 .nh 3 "The Other Changes"
 .LP
 There is no difference to integrating any of the later changes.

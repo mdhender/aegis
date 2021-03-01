@@ -72,6 +72,16 @@ file is extensively commented.
 Read the comments and change what you need to.
 Please read this file carefully.
 .PP
+Be careful in changing the settings if you are using a conf file accurately
+named for your system;
+aegis exersizes functionality unfamiliar to many.
+There are known cases where
+systems have the necessary facilities,
+but they are nowhere documented.
+If you are unsure,
+try it unchanged first,
+and then edit if you find that there are problems.
+.PP
 Another file which may require editing is the
 .I Makefile
 file.
@@ -105,6 +115,9 @@ The appropriate configuration is contained in the
 file.
 Sun seem to be having chronic problems with locking;
 you may need to get the very latest set of locking patches and apply them.
+See also the
+.I tmpfs
+note, below.
 .TP 8n
 ConvexOS 10.0
 .br
@@ -147,17 +160,19 @@ The appropriate configuration is contained in the
 file.
 .TP 8n
 Pyramid SMP DC/OSx 1.0-92b023
-.br
+.RS 8n
 This system is pretty horrendous.
-Read the file
-.I BUILDpyr
-included in this distribution
-for instruction how to configure
-.IR aegis ,
-then follow the rest of the instructions in this file.
+The native
+.I cc
+is known to work,
+but gives a staggering number of warnings, just ignore them.
+.I Gcc
+is also known to work, 
+and gives far fewer stupid warnings.
 The appropriate configuration is contained in the
 .I conf/dcosx
 file.
+.RE
 .TP 8n
 HP-UX A.08.07
 .br
@@ -177,6 +192,38 @@ program works on this system.
 Could another person confirm this, please.
 The appropriate configuration is contained in the
 .I conf/SCO-2.4
+file.
+.TP 8n
+Sun Solaris 2.1
+.br
+The author has been advised that the
+.I aegis
+program works on this system.
+Could another person confirm this, please;
+and tell the author how they did it,
+there seems to be some black magic involved.
+The appropriate configuration is contained in the
+.I conf/SunOS-5.1
+file.
+.TP 8n
+Linux 0.99
+.br
+The author has been advised that the
+.I aegis
+programs works on this system.
+Could another person confirm this, please.
+The appropriate configuration is contained in the
+.I conf/Linux-0.99
+file.
+.TP 8n
+Silicon Graphics IRIX 4.0.5G
+.br
+The author has been advised that the
+.I aegis
+programs works on this system.
+Could another person confirm this, please.
+The appropriate configuration is contained in the
+.I conf/IRIX-4.0
 file.
 .PP
 If the instructions for any of the above systems do not work,
@@ -226,7 +273,7 @@ H = -I/usr/include -Ih
 .RE
 Change this to suit your system and your compiler.
 The "h" directory must be searched last as it is
-intended to suplement your system,
+intended to supplement your system,
 not replace it.
 .PP
 You will need to check the include files in the "h" directory
@@ -269,9 +316,9 @@ and because it is generally useful in others.
 .B cook
 .br
 This is a dependency maintenance tool (DMT).
-An example of a well-known DTM is
+An example of a well-known DMT is
 .IR make (1),
-however this old failthfull is not sufficiently capable
+however this old faithful is not sufficiently capable
 to meet the demands placed on it by the
 .IR aegis
 program, but
@@ -488,6 +535,31 @@ You should test
 as a mortal in both passes,
 rather than as root,
 to be sure the set-uid-root functionality is working correctly.
+.PP
+It is required that
+.I aegis
+run set-uid-root for all of its functionality to be available.
+It is
+.if n NOT
+.if t .B not
+possible to create an "aegis" account and make
+.I aegis
+run set-uid-aegis.
+This is because
+.I aegis
+does things as various different user IDs,
+sometimes as many as 3 in the one command.
+This allows
+.I aegis
+to use UNIX security
+rather than inventing its own,
+and also allows
+.I aegis
+to work across NFS.
+To be able to do these things,
+.I aegis
+must be set-uid-root.
+Believe me, folks, if I could have done it without set-uid-root, I would have!
 .br
 .ne 1i
 .SH INSTALLING AEGIS
@@ -570,7 +642,7 @@ file.
 .SH USER CONFIGURATION
 The
 .I aegis
-command is assumed to be in a generally accessable place,
+command is assumed to be in a generally accessible place,
 otherwise users will need to add the relevant directory to their PATH.
 Users should add
 .RS
@@ -581,10 +653,20 @@ source /usr/local/lib/aegis/cshrc
 to the end of their
 .I .cshrc
 file for the recommended aliases.
-There is a
+.PP
+There is also a
 .I profile
 for users of the Bourne shell
 (it assumes you have a version of the Bourne shell which has functions).
+Users should add
+.RS
+.ft CW
+\&. /usr/local/lib/aegis/profile
+.ft R
+.RE
+to the end of their
+.I .profile
+file for the recommended aliases.
 .PP
 The
 .I /usr/local/lib/aegis/state
@@ -603,7 +685,7 @@ is
 .IR $HOME/lib/aegis .
 Do not create this directory,
 .I aegis
-is finickey and wants to do this itself.
+is finicky and wants to do this itself.
 .PP
 Where projects reside is completely flexible,
 be they system projects or user projects.
@@ -623,10 +705,9 @@ If you do not have this software,
 you will need to substitute commands appropriate to your site.
 .PP
 To print copies of the
-.IR README ,
-.IR BUILDING
+.IR README
 and
-.I ALPHA
+.IR BUILDING
 files,
 the following commands may be used
 .RS
@@ -688,11 +769,26 @@ Some sections of the User Guide are incomplete.
 Feedback on the form and content of this document would be most welcome.
 .br
 .ne 1i
-.SH GETTING HELP
-This is alpha software,
-so things will probably go wrong.
-Thank you for your patience.
+.SH TIME SYNCHRONIZATION
+The
+.I aegis
+program uses time stamps to remember whether various events
+have happened and when.
+If you are using
+.I aegis
+in a networked environment,
+typically a server and dataless workstations,
+you need to make absolutely sure that all of the machines agree about the time.
 .PP
+If possible,
+use the time daemon.
+Otherwise,
+use
+.IR rdate (8)
+via
+.IR cron (8)
+every hour or so.
+.SH GETTING HELP
 If you need assistance with the
 .I aegis
 program,
@@ -716,7 +812,7 @@ aegis version \fIa.b.cccc\fP
 .ft R
 .RE
 command.
-.PP
+.SS Runtime Checking
 In the
 .I common/main.h
 file, the is a define of
@@ -737,6 +833,125 @@ it turns on execution traces in those source files.
 It is usually best to place this on the end of the command line
 so that names of the files to be traced are not confused
 with other file names or strings on the command line.
+.SS Problem Reports
+If you send email to the author,
+please include the following information:
+.TP
+1. The type of UNIX
+.br
+The author will need to know the brand and version of UNIX you are using,
+or if it is not UNIX but something else.
+The output of "uname -sr" is usually sufficient (but not all systems have it).
+.TP
+2. The Version Number
+.br
+In any information you send,
+please include the version number
+reported in the
+.I common/patchlevel.h
+file,
+or \f(CW`aegis -vers`\fP if you can get it to compile.
+.TP
+3. The Archive Site
+.br
+When and where you obtained this version of
+.IR aegis .
+If you tell me nothing else,
+tell me this (and, hopefully, why you did nothing else).
+.TP
+4. Unpacking
+.br
+Did you have problems unpacking
+.IR aegis ?
+This probably isn't a problem with the .tar.Z distribution,
+but you could have obtained a shar format copy.
+.TP
+5. Building
+.br
+Did you have problems building
+.IR aegis ?
+This could have been the instructions included,
+it could have been the Makefile,
+it could have been problems configuring it,
+or anything else.
+.TP
+6. Testing, Non-Set-Uid
+.br
+Did you have problems with the tests?
+You could have had problems running them,
+or some of them could have failed.
+If some tests fail but not others,
+please let me know
+.I which
+ones failed.
+(The -k option to make can be usful in this case.)
+.TP
+7. Testing, Set-Uid-Root
+.br
+Did you have problems with the tests when
+.I aegis
+was set-uid-root?
+You could have had problems running them,
+or some of them could have failed.
+If some tests fail but not others,
+please let me know
+.I which
+ones failed,
+and include the fact that
+.I aegis
+was set-uid-root at the time.
+.TP
+8. Installation
+.br
+Did you have problems installing
+.IR aegis ?
+This could have been the instructions,
+or anything else.
+.PP
+At this point it would probably be a very good idea to print out the
+manual entries and read them carefully.
+You will also want to print a copy of the User Guide;
+if you don't gave groff,
+there should be a PostScript copy at the archive site.
+It is a known flaw that the User Guide is incomplete,
+it is something the author is working on "at this moment".
+.TP
+9. The Example Project
+.br
+After reading the User Guide,
+it is often useful to manually run through the example in chapter 3.
+You will need to do more than one change, hopefully several;
+the first change is not representative of the system.
+Did you manually do the example?
+Did you find flaws in the User Guide or manual entries?
+.TP
+10. Using Aegis
+.br
+Did you have problems using
+.IR aegis ?
+This is a whole can of worms.
+If possible,
+include a shell script similar to the tests which accompany
+.IR aegis ,
+which reproduces the bug.
+Exit code 1 on failure (bug),
+exit code 0 on success (for when bug is fixed).
+.TP
+11. The Source Code
+.br
+Did you read the code?
+Did you write some code?
+If you read the code and found problems,
+fixed them,
+or extended
+.IR aegis ,
+these contributions are most welcome.
+I reserve the right to modify or reject such contributions.
+.PP
+The above list is inclusive,
+not exclusive.
+Any and all feedback is greatly appreciated,
+as is the effort and interest required to produce it.
 .br
 .ne 1i
 .SH LICENSE

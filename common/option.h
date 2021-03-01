@@ -33,17 +33,19 @@
 
 #define MAX_PAGE_WIDTH 2000
 
-void option_set_progname _((char *));
-char *option_get_progname _((void));
+void option_progname_set _((char *));
+char *option_progname_get _((void));
 
-void option_set_verbose _((void));
-int option_get_verbose _((void));
-void option_set_terse _((void));
-int option_get_terse _((void));
+void option_verbose_set _((void));
+int option_verbose_get _((void));
+void option_unformatted_set _((void));
+int option_unformatted_get _((void));
+void option_terse_set _((void));
+int option_terse_get _((void));
 
-void option_set_page_width _((int));
-int option_get_page_width _((void));
-void option_set_page_length _((int));
-int option_get_page_length _((void));
+void option_page_width_set _((int columns));
+int option_page_width_get _((void));
+void option_page_length_set _((int rows));
+int option_page_length_get _((void));
 
 #endif /* OPTION_H */

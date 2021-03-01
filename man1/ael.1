@@ -72,6 +72,14 @@ Changes
 .br
 List the changes of a project.
 .TP 8n
+Default_Change
+.br
+List the default change for the current user.
+.TP 8n
+Default_Project
+.br
+List the default project for the current user.
+.TP 8n
 Developers
 .br
 List the developers of a project.
@@ -83,6 +91,18 @@ List the integrators of a project.
 List_List
 .br
 List all lists available.
+.TP 8n
+Locks
+.br
+List all currently active locks.
+.TP 8n
+Outstanding_Changes
+.br
+List all changes not yet completed.
+.TP 8n
+All_Outstanding_Changes
+.br
+List all changes not yet completed, for all projects.
 .TP 8n
 Project_Files
 .br
@@ -115,10 +135,11 @@ The following options are understood:
 .so o_change.so
 .so o_help.so
 .so o_list.so
+.so o_page.so
 .so o_project.so
 .so o_terse.so
+.so o_unforma.so
 .so o_verbose.so
-.so o_page.so
 .so o__rules.so
 .SH RECOMMENDED ALIAS
 The recommended alias for this command is

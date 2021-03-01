@@ -60,22 +60,22 @@ any major version dot suffix will be removed from the name.
 A major version dot suffix will be appended, and then
 a minor version dot suffix will be appended.
 As an example, "foo.1.0" would become "foo.1.1" assuming
-the default minor version incriment,
-and "foo" would become "foo.1.1" assiming the same minor version incriment.
+the default minor version increment,
+and "foo" would become "foo.1.1" assuming the same minor version increment.
 .PP
 The entire project baseline will be copied.
 The project state will be as if change 1 had already been integrated,
 naming every file (in the old project) as a new file.
 The history files will reflect this.
 No build will be necessary;
-it is assumed that the old baseline was built sucessfully.
+it is assumed that the old baseline was built successfully.
 Change numbers will commence at 2,
 as will build numbers.
 Test numbers will commence where the old project left off
 (because all the earlier test numbers were used by the old project).
 .PP
-The default is for the minor version number to be incrimented.
-If the major version number is incrimented or set,
+The default is for the minor version number to be incremented.
+If the major version number is incremented or set,
 the minor version number will be set to zero if it is not explicitly given.
 .PP
 The pointer to the new project will be added to the first element

@@ -1815,7 +1815,7 @@ percent()
 		error
 		(
 "warning: the percent (%%) substitutions are obsolescent, \
-please use the equilavent dollar ($) substitution"
+please use the equivalent dollar ($) substitution"
 		);
 		warned = 1;
 	}

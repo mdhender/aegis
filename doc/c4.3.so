@@ -17,7 +17,7 @@
 .\"	along with this program; if not, write to the Free Software
 .\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 .\"
-.\" MANIFEST: User Guiide, The Depenency Maintenance Tool, Other Packages
+.\" MANIFEST: User Guide, The Dependency Maintenance Tool, Other Packages
 .\"
 .bp
 .2C
@@ -34,7 +34,7 @@ which comes with most flavors of
 .UX
 is inadequate for both requirements:
 it has no dependency search path,
-and it has no dynamic include file dependecy facility.
+and it has no dynamic include file dependency facility.
 Many also have no ability to include files in the Makefiles,
 and have no ability to collect the output of a shell command.
 .nh 3 "GNU make"
@@ -42,7 +42,7 @@ and have no ability to collect the output of a shell command.
 The version of GNU make evaluated in writing this section was 3.62.
 A later version may be more capable.
 .LP
-The GNU make program hase the dependency search path,
+The GNU make program has the dependency search path,
 in the form of its
 .I VPATH
 variable,

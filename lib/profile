@@ -97,6 +97,10 @@ ael()
 {
 	aegis -l $* -v
 }
+aemv()
+{
+	aegis -mv $* -v
+}
 aena()
 {
 	aegis -na $* -v

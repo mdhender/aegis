@@ -25,6 +25,7 @@
 #include <unistd.h>
 
 #include <error.h>
+#include <option.h>
 #include <os.h>
 #include <pager.h>
 #include <trace.h>
@@ -147,7 +148,16 @@ pager_open()
 	 * if talking to a terminal,
 	 * send the output through a paginator
 	 */
-	if (!os_background() && isatty(0) && isatty(1))
+	if
+	(
+		!option_unformatted_get()
+	&&
+		!os_background()
+	&&
+		isatty(0)
+	&&
+		isatty(1)
+	)
 	{
 		pager = getenv("PAGER");
 		if (!pager || !*pager)

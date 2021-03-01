@@ -69,6 +69,7 @@ static	int	is_a_printer;
 static	char	*title1;
 static	char	*title2;
 static	long	page_time;
+static	int	unf;
 
 
 /*
@@ -118,12 +119,22 @@ col_open(s)
 	page_number = 0;
 	page_line = 0;
 	top_of_page = 1;
-	page_width = option_get_page_width();
-	page_length = option_get_page_length();
+	/* don't use the last column, many terminals are dumb */
+	page_width = option_page_width_get() - 1;
+	page_length = option_page_length_get();
 	is_a_printer = (page_length > PRINTER_THRESHOLD);
 	if (is_a_printer)
+	{
+		/* bottom margin, avoid the perforation */
 		page_length -= 3;
+	}
+	else
+	{
+		/* leave the last line for the pager */
+		page_length--;
+	}
 	time(&page_time);
+	unf = option_unformatted_get();
 	trace((/*{*/"}\n"));
 }
 
@@ -587,13 +598,21 @@ col_emit_char(c)
 		break;
 
 	default:
-		while (((out_col + 8) & -8) <= in_col && out_col + 1 < in_col)
+		if (!unf)
 		{
-			if (filename != pager)
-				glue_fputc('\t', fp);
-			else
-				putc('\t', fp);
-			out_col = (out_col + 8) & -8;
+			while
+			(
+				((out_col + 8) & ~7) <= in_col
+			&&
+				out_col + 1 < in_col
+			)
+			{
+				if (filename != pager)
+					glue_fputc('\t', fp);
+				else
+					putc('\t', fp);
+				out_col = (out_col + 8) & -8;
+			}
 		}
 		while (out_col < in_col)
 		{
@@ -796,6 +815,8 @@ top_of_page_processing()
 	top_of_page = 0;
 	page_number++;
 	page_line = 0;
+	if (unf)
+		return;
 
 	/*
 	 * seek to next page
@@ -935,6 +956,46 @@ col_eoln()
 	}
 
 	/*
+	 * the unformatted variant emits each column
+	 * with a single space between.
+	 * Width specifications will be ignored.
+	 * This is for the convenience of shell scripts.
+	 *
+	 * If a column is wider than 80 characters, it will be trimmed.
+	 * If a column spans several lines, only the first will be printed.
+	 */
+	if (unf)
+	{
+		for (j = 0; j < ncols; ++j)
+		{
+			char	*ep;
+			char	*sp;
+
+			cp = col[j];
+			if (!cp->text || !cp->text_length)
+				continue;
+			sp = cp->text;
+			ep = strchr(sp, '\n');
+			if (!ep)
+				ep = sp + cp->text_length;
+			if (ep - sp > 80)
+				ep = sp + 80;
+			while (sp < ep && isspace(*sp))
+				++sp;
+			while (sp < ep && isspace(ep[-1]))
+				--ep;
+			if (ep <= sp)
+				continue;
+			if (in_col)
+				col_emit_char(' ');
+			while (sp < ep)
+				col_emit_char(*sp++);
+		}
+		col_emit_char('\n');
+		goto cleanup;
+	}
+
+	/*
 	 * do headings if required
 	 *
 	 * Top of page is not enough,
@@ -972,6 +1033,7 @@ col_eoln()
 	/*
 	 * clean up for next time
 	 */
+	cleanup:
 	for (j = 0; j < ncols; ++j)
 	{
 		cp = col[j];

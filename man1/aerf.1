@@ -33,6 +33,13 @@
 .br
 .B \*(n)
 .B -Review_FAIL
+.B -Edit
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Review_FAIL
 .B -List
 [
 .IR option ...
@@ -63,11 +70,12 @@ The
 .I reason-file
 will contain a description of why the change was failed.
 The file is in plain text.
-It is recommened that you only use newline to terminate paragraphs,
+It is recommended that you only use newline to terminate paragraphs,
 as with will result in better formatting in the various listings.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so
+.so o_edit.so
 .so o_help.so
 .so o_list.so
 .so o_project.so

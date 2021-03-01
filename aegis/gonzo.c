@@ -366,7 +366,7 @@ do_tail()
 	 * fetch the environment variable
 	 */
 	trace(("do_tail()\n{\n"/*}*/));
-	s1 = str_from_c(option_get_progname());
+	s1 = str_from_c(option_progname_get());
 	s2 = str_upcase(s1);
 	str_free(s1);
 	cp = getenv(s2->str_text);

@@ -136,13 +136,16 @@ trace_putchar(c)
 
 	if (!page_width)
 	{
-		page_width = option_get_page_width() - 24;
-		if (page_width < 8)
-			page_width = 8;
+		/* don't use last column, many terminals are dumb */
+		page_width = option_page_width_get() - 1;
+		/* allow for progname, filename and line number (8 each) */
+		page_width -= 24;
+		if (page_width < 16)
+			page_width = 16;
 	}
 	if (!cp)
 	{
-		strcpy(buffer, option_get_progname());
+		strcpy(buffer, option_progname_get());
 		cp = buffer + strlen(buffer);
 		if (cp > buffer + 6)
 			cp = buffer + 6;

@@ -137,7 +137,7 @@ it defaults to only the current directory.
 The
 .I resolve
 builtin function of cook
-may be uased to ask cook for the name of the file actually used to resolve dependencies,
+may be used to ask cook for the name of the file actually used to resolve dependencies,
 so that recipe bodies may reference the appropriate file:
 .E(
 example: [object_files]
@@ -233,7 +233,7 @@ once cook has found it on the search list:
 .E)
 .LP
 Only use this last recipe for C sources,
-ther others are only shown so that the derivation of the reciope is clear;
+the others are only shown so that the derivation of the recipe is clear;
 while it is very similar to the original,
 it looks daunting at first.
 .nh 3 "The Recipe for Yacc"
@@ -257,7 +257,7 @@ the recipe for yacc will be given without delay:
 .LP
 This  recipe could be jazzed up to cope with the listing file,
 too,
-if that was deesired,
+if that was desired,
 but this is sufficient to work with the example.
 .LP
 Cook's ability to cope with transitive dependencies will

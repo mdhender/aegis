@@ -24,7 +24,7 @@
 .LP
 The entries for the commands are listed below.
 RCS uses a slightly different model than aegis wants,
-so some manuevering is required.
+so some maneuvering is required.
 The command strings in this section assume that the RCS commands
 .I ci
 and

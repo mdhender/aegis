@@ -11,10 +11,11 @@ H =
 # H =				# SunOS
 # H =				# ConvexOS
 # H =				# dgux
-# H =				# dcosx
+# H =				# dcosx (pyramid)
 # H =				# ULTRIX
 # H =				# hpux
 # H =				# SCO
+# H =				# IRIX
 
 #
 # the name of the compiler to use
@@ -24,10 +25,11 @@ CC = cc
 # CC = cc			# SunOS
 # CC = cc			# ConvexOS
 # CC = cc			# dgux
-# CC = /usr/ucb/cc		# dcosx
+# CC = /usr/ucb/cc		# dcosx (pyramid)
 # CC = cc			# ULTRIX
 # CC = cc			# hpux
 # CC = rcc			# SCO
+# CC = cc			# IRIX
 
 #
 # The compiler flags to use, except for include path.
@@ -38,10 +40,11 @@ CFLAGS = -O
 # CFLAGS = -O			# ConvexOS
 # CFLAGS = -O			# dgux
 # CFLAGS = -O -Wall -ansi	# gcc
-# CFLAGS = -O -Xt -U__STDC__	# dcosx
+# CFLAGS = -O -Xt -U__STDC__	# dcosx (pyramid /usr/ucb/cc is brain-dead)
 # CFLAGS = -O			# ULTRIX
 # CFLAGS = -O			# hpux
 # CFLAGS = -O			# SCO
+# CFLAGS = -O			# IRIX
 
 #
 # which yacc to use
@@ -74,10 +77,11 @@ LIBRARIES =
 # LIBRARIES =			# SunOS
 # LIBRARIES =			# ConvexOS
 # LIBRARIES =			# dgux
-# LIBRARIES = -lucb		# dcosx
+# LIBRARIES = -lucb		# dcosx (pyramid)
 # LIBRARIES =			# ULTRIX
 # LIBRARIES =			# hpux
 # LIBRARIES = -lsocket		# SCO
+# LIBRARIES =			# IRIX
 
 #
 # shell to use to run the tests
@@ -88,11 +92,12 @@ SHELL = /bin/sh
 # SHELL = /bin/sh		# SunOS
 # SHELL = /bin/sh		# ConvexOS
 # SHELL = /bin/sh		# dgux
-# SHELL = /bin/sh		# dcosx
+# SHELL = /bin/sh		# dcosx (pyramid)
 # SHELL = /bin/sh5		# ULTRIX
 # SHELL = /bin/ksh		# apollo
 # SHELL = /bin/sh		# hpux
 # SHELL = /bin/sh		# SCO
+# SHELL = /bin/sh		# IRIX
 
 # You should not need to alter anything below this point.
 #------------------------------------------------------------
@@ -100,28 +105,474 @@ SHELL = /bin/sh
 all: bin/aegis
 
 
-aegis/administ.o: aegis/administ.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/administ.h aegis/commit.h \
+aegis/aeb.o: aegis/aeb.c aegis/aeb.h common/main.h aegis/ael.h \
+		aegis/arglex2.h common/arglex.h aegis/col.h \
+		aegis/commit.h common/str.h common/s-v-arg.h \
+		common/conf.h aegis/change.h aegis/cstate.h \
+		aegis/type.h aegis/parse.h aegis/pconf.h common/error.h \
+		aegis/help.h aegis/lock.h aegis/log.h common/option.h \
+		aegis/os.h aegis/project.h aegis/pstate.h aegis/pattr.h \
+		aegis/sub.h common/trace.h aegis/user.h aegis/ustate.h \
+		aegis/uconf.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aeb.c
+	mv aeb.o aegis/aeb.o
+
+aegis/aeca.o: aegis/aeca.c aegis/aeca.h aegis/cattr.h common/main.h \
+		aegis/type.h common/str.h common/s-v-arg.h \
+		common/conf.h aegis/parse.h aegis/arglex2.h \
+		common/arglex.h aegis/commit.h aegis/change.h \
+		aegis/cstate.h aegis/pconf.h common/error.h \
+		aegis/help.h aegis/lock.h aegis/project.h \
+		aegis/pstate.h aegis/pattr.h common/option.h aegis/os.h \
+		common/trace.h aegis/user.h aegis/ustate.h \
+		aegis/uconf.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aeca.c
+	mv aeca.o aegis/aeca.o
+
+aegis/aecd.o: aegis/aecd.c aegis/aecd.h common/main.h aegis/ael.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/pconf.h common/error.h aegis/help.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/pattr.h common/trace.h \
+		aegis/user.h aegis/ustate.h aegis/uconf.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aecd.c
+	mv aecd.o aegis/aecd.o
+
+aegis/aecp.o: aegis/aecp.c aegis/aecp.h common/main.h aegis/ael.h \
+		aegis/arglex2.h common/arglex.h aegis/commit.h \
 		common/str.h common/s-v-arg.h common/conf.h \
-		common/error.h aegis/help.h aegis/list.h aegis/lock.h \
+		aegis/change.h aegis/cstate.h aegis/type.h \
+		aegis/parse.h aegis/pconf.h common/error.h aegis/file.h \
+		aegis/help.h aegis/lock.h aegis/log.h common/option.h \
+		aegis/os.h aegis/project.h aegis/pstate.h aegis/pattr.h \
+		common/trace.h aegis/undo.h aegis/user.h aegis/ustate.h \
+		aegis/uconf.h common/word.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aecp.c
+	mv aecp.o aegis/aecp.o
+
+aegis/aecpu.o: aegis/aecpu.c aegis/aecpu.h common/main.h aegis/ael.h \
+		aegis/arglex2.h common/arglex.h aegis/commit.h \
+		common/str.h common/s-v-arg.h common/conf.h \
+		aegis/change.h aegis/cstate.h aegis/type.h \
+		aegis/parse.h aegis/pconf.h common/error.h aegis/file.h \
+		aegis/help.h aegis/lock.h aegis/log.h common/option.h \
+		aegis/os.h aegis/project.h aegis/pstate.h aegis/pattr.h \
+		common/trace.h aegis/undo.h aegis/user.h aegis/ustate.h \
+		aegis/uconf.h common/word.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aecpu.c
+	mv aecpu.o aegis/aecpu.o
+
+aegis/aed.o: aegis/aed.c aegis/aed.h common/main.h aegis/ael.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/pconf.h aegis/col.h aegis/commit.h common/error.h \
+		aegis/help.h aegis/lock.h aegis/log.h common/option.h \
+		aegis/os.h aegis/project.h aegis/pstate.h aegis/pattr.h \
+		aegis/sub.h common/trace.h aegis/undo.h aegis/user.h \
+		aegis/ustate.h aegis/uconf.h common/word.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aed.c
+	mv aed.o aegis/aed.o
+
+aegis/aedb.o: aegis/aedb.c aegis/aedb.h common/main.h aegis/ael.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/pconf.h aegis/col.h aegis/commit.h aegis/common.h \
+		aegis/dir.h common/error.h aegis/help.h aegis/lock.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/pattr.h aegis/sub.h common/trace.h \
+		aegis/undo.h aegis/user.h aegis/ustate.h aegis/uconf.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aedb.c
+	mv aedb.o aegis/aedb.o
+
+aegis/aedbu.o: aegis/aedbu.c aegis/aedbu.h common/main.h aegis/ael.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/pconf.h aegis/col.h aegis/commit.h aegis/common.h \
+		aegis/dir.h common/error.h aegis/help.h aegis/lock.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/pattr.h aegis/sub.h common/trace.h \
+		aegis/undo.h aegis/user.h aegis/ustate.h aegis/uconf.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aedbu.c
+	mv aedbu.o aegis/aedbu.o
+
+aegis/aede.o: aegis/aede.c aegis/aede.h common/main.h aegis/ael.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/pconf.h aegis/col.h aegis/commit.h aegis/common.h \
+		aegis/dir.h common/error.h aegis/help.h aegis/lock.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/pattr.h aegis/sub.h common/trace.h \
+		aegis/undo.h aegis/user.h aegis/ustate.h aegis/uconf.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aede.c
+	mv aede.o aegis/aede.o
+
+aegis/aedeu.o: aegis/aedeu.c aegis/aedeu.h common/main.h aegis/ael.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/pconf.h aegis/col.h aegis/commit.h aegis/common.h \
+		aegis/dir.h common/error.h aegis/help.h aegis/lock.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/pattr.h aegis/sub.h common/trace.h \
+		aegis/undo.h aegis/user.h aegis/ustate.h aegis/uconf.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aedeu.c
+	mv aedeu.o aegis/aedeu.o
+
+aegis/aeib.o: aegis/aeib.c aegis/aeib.h common/main.h aegis/ael.h \
+		aegis/arglex2.h common/arglex.h aegis/commit.h \
+		common/str.h common/s-v-arg.h common/conf.h \
+		aegis/change.h aegis/cstate.h aegis/type.h \
+		aegis/parse.h aegis/pconf.h aegis/dir.h common/error.h \
+		aegis/file.h aegis/help.h aegis/lock.h aegis/log.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/pattr.h aegis/sub.h common/trace.h \
+		aegis/undo.h aegis/user.h aegis/ustate.h aegis/uconf.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aeib.c
+	mv aeib.o aegis/aeib.o
+
+aegis/aeibu.o: aegis/aeibu.c aegis/aeibu.h common/main.h aegis/ael.h \
+		aegis/arglex2.h common/arglex.h aegis/commit.h \
+		common/str.h common/s-v-arg.h common/conf.h \
+		aegis/change.h aegis/cstate.h aegis/type.h \
+		aegis/parse.h aegis/pconf.h aegis/dir.h common/error.h \
+		aegis/file.h aegis/help.h aegis/lock.h aegis/log.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/pattr.h aegis/sub.h common/trace.h \
+		aegis/undo.h aegis/user.h aegis/ustate.h aegis/uconf.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aeibu.c
+	mv aeibu.o aegis/aeibu.o
+
+aegis/aeif.o: aegis/aeif.c aegis/aeif.h common/main.h aegis/ael.h \
+		aegis/arglex2.h common/arglex.h aegis/commit.h \
+		common/str.h common/s-v-arg.h common/conf.h \
+		aegis/change.h aegis/cstate.h aegis/type.h \
+		aegis/parse.h aegis/pconf.h aegis/dir.h common/error.h \
+		aegis/file.h aegis/help.h aegis/lock.h aegis/log.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/pattr.h aegis/sub.h common/trace.h \
+		aegis/undo.h aegis/user.h aegis/ustate.h aegis/uconf.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aeif.c
+	mv aeif.o aegis/aeif.o
+
+aegis/aeip.o: aegis/aeip.c aegis/aeip.h common/main.h aegis/ael.h \
+		aegis/arglex2.h common/arglex.h aegis/commit.h \
+		common/str.h common/s-v-arg.h common/conf.h \
+		aegis/change.h aegis/cstate.h aegis/type.h \
+		aegis/parse.h aegis/pconf.h aegis/dir.h common/error.h \
+		aegis/file.h aegis/help.h aegis/lock.h aegis/log.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/pattr.h aegis/sub.h common/trace.h \
+		aegis/undo.h aegis/user.h aegis/ustate.h aegis/uconf.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aeip.c
+	mv aeip.o aegis/aeip.o
+
+aegis/ael.o: aegis/ael.c aegis/ael.h common/main.h aegis/arglex2.h \
+		common/arglex.h aegis/col.h aegis/change.h \
+		aegis/cstate.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/pconf.h common/error.h aegis/gonzo.h \
+		aegis/gstate.h aegis/help.h aegis/lock.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/pattr.h common/trace.h \
+		aegis/user.h aegis/ustate.h aegis/uconf.h common/word.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/ael.c
+	mv ael.o aegis/ael.o
+
+aegis/aemv.o: aegis/aemv.c aegis/ael.h common/main.h aegis/aemv.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/pconf.h aegis/commit.h common/error.h \
+		aegis/file.h aegis/help.h aegis/lock.h aegis/log.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/pattr.h common/trace.h \
+		aegis/user.h aegis/ustate.h aegis/uconf.h common/word.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aemv.c
+	mv aemv.o aegis/aemv.o
+
+aegis/aena.o: aegis/aena.c aegis/aena.h common/main.h aegis/ael.h \
+		aegis/arglex2.h common/arglex.h aegis/commit.h \
+		common/str.h common/s-v-arg.h common/conf.h \
+		common/error.h aegis/help.h aegis/lock.h \
 		common/option.h aegis/os.h aegis/project.h \
 		aegis/pstate.h aegis/type.h aegis/parse.h aegis/pattr.h \
 		common/trace.h aegis/user.h aegis/ustate.h \
 		aegis/uconf.h common/word.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/administ.c
-	mv administ.o aegis/administ.o
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aena.c
+	mv aena.o aegis/aena.o
 
-aegis/build.o: aegis/build.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/build.h aegis/col.h aegis/commit.h \
+aegis/aenc.o: aegis/aenc.c aegis/aeca.h aegis/cattr.h common/main.h \
+		aegis/type.h common/str.h common/s-v-arg.h \
+		common/conf.h aegis/parse.h aegis/aenc.h aegis/ael.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/pconf.h aegis/col.h aegis/commit.h \
+		aegis/common.h common/error.h aegis/help.h aegis/lock.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/pattr.h common/trace.h \
+		aegis/user.h aegis/ustate.h aegis/uconf.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aenc.c
+	mv aenc.o aegis/aenc.o
+
+aegis/aencu.o: aegis/aencu.c aegis/aeca.h aegis/cattr.h common/main.h \
+		aegis/type.h common/str.h common/s-v-arg.h \
+		common/conf.h aegis/parse.h aegis/ael.h aegis/aencu.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/pconf.h aegis/col.h aegis/commit.h \
+		aegis/common.h common/error.h aegis/help.h aegis/lock.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/pattr.h common/trace.h \
+		aegis/user.h aegis/ustate.h aegis/uconf.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aencu.c
+	mv aencu.o aegis/aencu.o
+
+aegis/aend.o: aegis/aend.c aegis/ael.h common/main.h aegis/aend.h \
+		aegis/arglex2.h common/arglex.h aegis/commit.h \
 		common/str.h common/s-v-arg.h common/conf.h \
-		aegis/change.h aegis/cstate.h aegis/type.h \
-		aegis/parse.h aegis/pconf.h common/error.h aegis/help.h \
-		aegis/list.h aegis/lock.h aegis/log.h common/option.h \
+		common/error.h aegis/help.h aegis/lock.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/type.h aegis/parse.h aegis/pattr.h \
+		common/trace.h aegis/user.h aegis/ustate.h \
+		aegis/uconf.h common/word.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aend.c
+	mv aend.o aegis/aend.o
+
+aegis/aenf.o: aegis/aenf.c aegis/ael.h common/main.h aegis/aenf.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/pconf.h aegis/col.h aegis/commit.h common/error.h \
+		aegis/glue.h aegis/help.h aegis/lock.h aegis/log.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/pattr.h common/trace.h \
+		aegis/user.h aegis/ustate.h aegis/uconf.h common/word.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aenf.c
+	mv aenf.o aegis/aenf.o
+
+aegis/aenfu.o: aegis/aenfu.c aegis/ael.h common/main.h aegis/aenfu.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/pconf.h aegis/col.h aegis/commit.h common/error.h \
+		aegis/glue.h aegis/help.h aegis/lock.h aegis/log.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/pattr.h common/trace.h \
+		aegis/user.h aegis/ustate.h aegis/uconf.h common/word.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aenfu.c
+	mv aenfu.o aegis/aenfu.o
+
+aegis/aeni.o: aegis/aeni.c aegis/aeni.h common/main.h aegis/ael.h \
+		aegis/arglex2.h common/arglex.h aegis/commit.h \
+		common/str.h common/s-v-arg.h common/conf.h \
+		common/error.h aegis/help.h aegis/lock.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/type.h aegis/parse.h aegis/pattr.h \
+		common/trace.h aegis/user.h aegis/ustate.h \
+		aegis/uconf.h common/word.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aeni.c
+	mv aeni.o aegis/aeni.o
+
+aegis/aenpr.o: aegis/aenpr.c aegis/ael.h common/main.h aegis/aenpr.h \
+		aegis/arglex2.h common/arglex.h aegis/commit.h \
+		common/str.h common/s-v-arg.h common/conf.h \
+		common/error.h aegis/gonzo.h aegis/gstate.h \
+		aegis/type.h aegis/parse.h aegis/help.h aegis/lock.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/pattr.h common/trace.h \
+		aegis/undo.h aegis/user.h aegis/ustate.h aegis/uconf.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aenpr.c
+	mv aenpr.o aegis/aenpr.o
+
+aegis/aenrls.o: aegis/aenrls.c aegis/ael.h common/main.h aegis/aenrls.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/pconf.h aegis/commit.h aegis/dir.h common/error.h \
+		aegis/file.h aegis/gonzo.h aegis/gstate.h aegis/help.h \
+		aegis/lock.h aegis/log.h common/mem.h common/option.h \
 		aegis/os.h aegis/project.h aegis/pstate.h aegis/pattr.h \
-		aegis/sub.h common/trace.h aegis/user.h aegis/ustate.h \
-		aegis/uconf.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/build.c
-	mv build.o aegis/build.o
+		aegis/sub.h common/trace.h aegis/undo.h aegis/user.h \
+		aegis/ustate.h aegis/uconf.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aenrls.c
+	mv aenrls.o aegis/aenrls.o
+
+aegis/aenrv.o: aegis/aenrv.c aegis/ael.h common/main.h aegis/aenrv.h \
+		aegis/arglex2.h common/arglex.h aegis/commit.h \
+		common/str.h common/s-v-arg.h common/conf.h \
+		common/error.h aegis/help.h aegis/lock.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/type.h aegis/parse.h aegis/pattr.h \
+		common/trace.h aegis/user.h aegis/ustate.h \
+		aegis/uconf.h common/word.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aenrv.c
+	mv aenrv.o aegis/aenrv.o
+
+aegis/aent.o: aegis/aent.c aegis/ael.h common/main.h aegis/aent.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/pconf.h aegis/col.h aegis/commit.h common/error.h \
+		aegis/glue.h aegis/help.h aegis/lock.h common/option.h \
+		aegis/os.h aegis/project.h aegis/pstate.h aegis/pattr.h \
+		common/trace.h aegis/user.h aegis/ustate.h \
+		aegis/uconf.h common/word.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aent.c
+	mv aent.o aegis/aent.o
+
+aegis/aentu.o: aegis/aentu.c aegis/ael.h common/main.h aegis/aentu.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/pconf.h aegis/col.h aegis/commit.h common/error.h \
+		aegis/glue.h aegis/help.h aegis/lock.h common/option.h \
+		aegis/os.h aegis/project.h aegis/pstate.h aegis/pattr.h \
+		common/trace.h aegis/user.h aegis/ustate.h \
+		aegis/uconf.h common/word.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aentu.c
+	mv aentu.o aegis/aentu.o
+
+aegis/aepa.o: aegis/aepa.c aegis/aepa.h common/main.h aegis/arglex2.h \
+		common/arglex.h aegis/commit.h common/str.h \
+		common/s-v-arg.h common/conf.h common/error.h \
+		aegis/help.h aegis/lock.h common/option.h aegis/os.h \
+		aegis/pattr.h aegis/type.h aegis/parse.h \
+		aegis/project.h aegis/pstate.h common/trace.h \
+		aegis/user.h aegis/ustate.h aegis/uconf.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aepa.c
+	mv aepa.o aegis/aepa.o
+
+aegis/aera.o: aegis/aera.c aegis/aera.h common/main.h aegis/ael.h \
+		aegis/arglex2.h common/arglex.h aegis/commit.h \
+		common/str.h common/s-v-arg.h common/conf.h \
+		common/error.h aegis/help.h aegis/lock.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/type.h aegis/parse.h aegis/pattr.h \
+		common/trace.h aegis/user.h aegis/ustate.h \
+		aegis/uconf.h common/word.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aera.c
+	mv aera.o aegis/aera.o
+
+aegis/aerd.o: aegis/aerd.c aegis/ael.h common/main.h aegis/aerd.h \
+		aegis/arglex2.h common/arglex.h aegis/commit.h \
+		common/str.h common/s-v-arg.h common/conf.h \
+		common/error.h aegis/help.h aegis/lock.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/type.h aegis/parse.h aegis/pattr.h \
+		common/trace.h aegis/user.h aegis/ustate.h \
+		aegis/uconf.h common/word.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aerd.c
+	mv aerd.o aegis/aerd.o
+
+aegis/aerf.o: aegis/aerf.c aegis/ael.h common/main.h aegis/aerf.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/pconf.h aegis/commit.h aegis/dir.h common/error.h \
+		aegis/file.h aegis/help.h aegis/lock.h common/mem.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/pattr.h aegis/sub.h common/trace.h \
+		aegis/undo.h aegis/user.h aegis/ustate.h aegis/uconf.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aerf.c
+	mv aerf.o aegis/aerf.o
+
+aegis/aeri.o: aegis/aeri.c aegis/ael.h common/main.h aegis/aeri.h \
+		aegis/arglex2.h common/arglex.h aegis/commit.h \
+		common/str.h common/s-v-arg.h common/conf.h \
+		common/error.h aegis/help.h aegis/lock.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/type.h aegis/parse.h aegis/pattr.h \
+		common/trace.h aegis/user.h aegis/ustate.h \
+		aegis/uconf.h common/word.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aeri.c
+	mv aeri.o aegis/aeri.o
+
+aegis/aerm.o: aegis/aerm.c aegis/ael.h common/main.h aegis/aerm.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/pconf.h aegis/commit.h common/error.h \
+		aegis/help.h aegis/lock.h aegis/log.h common/option.h \
+		aegis/os.h aegis/project.h aegis/pstate.h aegis/pattr.h \
+		common/trace.h aegis/user.h aegis/ustate.h \
+		aegis/uconf.h common/word.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aerm.c
+	mv aerm.o aegis/aerm.o
+
+aegis/aermpr.o: aegis/aermpr.c aegis/ael.h common/main.h aegis/aermpr.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/pconf.h aegis/commit.h common/error.h \
+		aegis/gonzo.h aegis/gstate.h aegis/help.h aegis/lock.h \
+		common/option.h aegis/project.h aegis/pstate.h \
+		aegis/pattr.h common/trace.h aegis/user.h \
+		aegis/ustate.h aegis/uconf.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aermpr.c
+	mv aermpr.o aegis/aermpr.o
+
+aegis/aermu.o: aegis/aermu.c aegis/ael.h common/main.h aegis/aermu.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/pconf.h aegis/commit.h common/error.h \
+		aegis/help.h aegis/lock.h aegis/log.h common/option.h \
+		aegis/os.h aegis/project.h aegis/pstate.h aegis/pattr.h \
+		common/trace.h aegis/user.h aegis/ustate.h \
+		aegis/uconf.h common/word.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aermu.c
+	mv aermu.o aegis/aermu.o
+
+aegis/aerp.o: aegis/aerp.c aegis/ael.h common/main.h aegis/aerp.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/pconf.h aegis/commit.h aegis/dir.h common/error.h \
+		aegis/file.h aegis/help.h aegis/lock.h common/mem.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/pattr.h aegis/sub.h common/trace.h \
+		aegis/undo.h aegis/user.h aegis/ustate.h aegis/uconf.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aerp.c
+	mv aerp.o aegis/aerp.o
+
+aegis/aerpu.o: aegis/aerpu.c aegis/ael.h common/main.h aegis/aerpu.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/pconf.h aegis/commit.h aegis/dir.h common/error.h \
+		aegis/file.h aegis/help.h aegis/lock.h common/mem.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/pattr.h aegis/sub.h common/trace.h \
+		aegis/undo.h aegis/user.h aegis/ustate.h aegis/uconf.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aerpu.c
+	mv aerpu.o aegis/aerpu.o
+
+aegis/aerrv.o: aegis/aerrv.c aegis/ael.h common/main.h aegis/aerrv.h \
+		aegis/arglex2.h common/arglex.h aegis/commit.h \
+		common/str.h common/s-v-arg.h common/conf.h \
+		common/error.h aegis/help.h aegis/lock.h \
+		common/option.h aegis/os.h aegis/project.h \
+		aegis/pstate.h aegis/type.h aegis/parse.h aegis/pattr.h \
+		common/trace.h aegis/user.h aegis/ustate.h \
+		aegis/uconf.h common/word.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aerrv.c
+	mv aerrv.o aegis/aerrv.o
+
+aegis/aet.o: aegis/aet.c aegis/ael.h common/main.h aegis/aet.h \
+		aegis/arglex2.h common/arglex.h aegis/change.h \
+		aegis/cstate.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/pconf.h aegis/commit.h common/error.h \
+		aegis/help.h aegis/lock.h aegis/log.h common/option.h \
+		aegis/os.h aegis/project.h aegis/pstate.h aegis/pattr.h \
+		common/trace.h aegis/user.h aegis/ustate.h \
+		aegis/uconf.h common/word.h 
+	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/aet.c
+	mv aet.o aegis/aet.o
 
 aegis/cattr.c aegis/cattr.h: aegis/cattr.def bin/fmtgen aegis/common.def
 	bin/fmtgen -Iaegis aegis/cattr.def aegis/cattr.c aegis/cattr.h
@@ -133,18 +584,6 @@ aegis/cattr.o: aegis/cattr.c aegis/cattr.h common/main.h aegis/type.h \
 	$(CC) $(CFLAGS) -Iaegis -Icommon $(H) -c aegis/cattr.c
 	mv cattr.o aegis/cattr.o
 
-aegis/cattr_ed.o: aegis/cattr_ed.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/cattr.h aegis/type.h common/str.h \
-		common/s-v-arg.h common/conf.h aegis/parse.h \
-		aegis/cattr_ed.h aegis/commit.h aegis/change.h \
-		aegis/cstate.h aegis/pconf.h common/error.h \
-		aegis/help.h aegis/lock.h aegis/project.h \
-		aegis/pstate.h aegis/pattr.h common/option.h aegis/os.h \
-		common/trace.h aegis/user.h aegis/ustate.h \
-		aegis/uconf.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/cattr_ed.c
-	mv cattr_ed.o aegis/cattr_ed.o
-
 aegis/change.o: aegis/change.c aegis/change.h common/main.h \
 		aegis/cstate.h aegis/type.h common/str.h \
 		common/s-v-arg.h common/conf.h aegis/parse.h \
@@ -155,17 +594,6 @@ aegis/change.o: aegis/change.c aegis/change.h common/main.h \
 		aegis/ustate.h aegis/uconf.h common/word.h 
 	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/change.c
 	mv change.o aegis/change.o
-
-aegis/chdir.o: aegis/chdir.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/chdir.h aegis/change.h \
-		aegis/cstate.h aegis/type.h common/str.h \
-		common/s-v-arg.h common/conf.h aegis/parse.h \
-		aegis/pconf.h common/error.h aegis/help.h aegis/list.h \
-		common/option.h aegis/os.h aegis/project.h \
-		aegis/pstate.h aegis/pattr.h common/trace.h \
-		aegis/user.h aegis/ustate.h aegis/uconf.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/chdir.c
-	mv chdir.o aegis/chdir.o
 
 aegis/col.o: aegis/col.c aegis/col.h common/main.h common/error.h \
 		aegis/glue.h common/conf.h common/mem.h common/option.h \
@@ -192,19 +620,6 @@ aegis/common.o: aegis/common.c aegis/common.h common/main.h \
 	$(CC) $(CFLAGS) -Iaegis -Icommon $(H) -c aegis/common.c
 	mv common.o aegis/common.o
 
-aegis/copyfile.o: aegis/copyfile.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/commit.h common/str.h \
-		common/s-v-arg.h common/conf.h aegis/copyfile.h \
-		aegis/change.h aegis/cstate.h aegis/type.h \
-		aegis/parse.h aegis/pconf.h common/error.h aegis/file.h \
-		aegis/help.h aegis/list.h aegis/lock.h aegis/log.h \
-		common/option.h aegis/os.h aegis/project.h \
-		aegis/pstate.h aegis/pattr.h common/trace.h \
-		aegis/undo.h aegis/user.h aegis/ustate.h aegis/uconf.h \
-		common/word.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/copyfile.c
-	mv copyfile.o aegis/copyfile.o
-
 aegis/cstate.c aegis/cstate.h: aegis/cstate.def bin/fmtgen \
 		aegis/cattr.def aegis/common.def 
 	bin/fmtgen -Iaegis aegis/cstate.def aegis/cstate.c aegis/cstate.h
@@ -216,41 +631,6 @@ aegis/cstate.o: aegis/cstate.c aegis/cstate.h common/main.h \
 		common/trace.h 
 	$(CC) $(CFLAGS) -Iaegis -Icommon $(H) -c aegis/cstate.c
 	mv cstate.o aegis/cstate.o
-
-aegis/develop1.o: aegis/develop1.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/commit.h common/str.h \
-		common/s-v-arg.h common/conf.h aegis/develop1.h \
-		common/error.h aegis/help.h aegis/lock.h aegis/list.h \
-		common/option.h aegis/os.h aegis/project.h \
-		aegis/pstate.h aegis/type.h aegis/parse.h aegis/pattr.h \
-		common/trace.h aegis/user.h aegis/ustate.h \
-		aegis/uconf.h common/word.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/develop1.c
-	mv develop1.o aegis/develop1.o
-
-aegis/develop2.o: aegis/develop2.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/change.h aegis/cstate.h \
-		aegis/type.h common/str.h common/s-v-arg.h \
-		common/conf.h aegis/parse.h aegis/pconf.h aegis/col.h \
-		aegis/commit.h aegis/common.h aegis/develop2.h \
-		aegis/dir.h common/error.h aegis/help.h aegis/list.h \
-		aegis/lock.h common/option.h aegis/os.h aegis/project.h \
-		aegis/pstate.h aegis/pattr.h aegis/sub.h common/trace.h \
-		aegis/undo.h aegis/user.h aegis/ustate.h aegis/uconf.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/develop2.c
-	mv develop2.o aegis/develop2.o
-
-aegis/diff.o: aegis/diff.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/change.h aegis/cstate.h \
-		aegis/type.h common/str.h common/s-v-arg.h \
-		common/conf.h aegis/parse.h aegis/pconf.h aegis/col.h \
-		aegis/commit.h aegis/diff.h common/error.h aegis/help.h \
-		aegis/list.h aegis/lock.h aegis/log.h common/option.h \
-		aegis/os.h aegis/project.h aegis/pstate.h aegis/pattr.h \
-		aegis/sub.h common/trace.h aegis/undo.h aegis/user.h \
-		aegis/ustate.h aegis/uconf.h common/word.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/diff.c
-	mv diff.o aegis/diff.o
 
 aegis/dir.o: aegis/dir.c aegis/dir.h common/main.h common/str.h \
 		common/s-v-arg.h common/conf.h common/error.h \
@@ -320,29 +700,6 @@ aegis/indent.o: aegis/indent.c common/error.h common/main.h \
 	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/indent.c
 	mv indent.o aegis/indent.o
 
-aegis/integra1.o: aegis/integra1.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/commit.h common/str.h \
-		common/s-v-arg.h common/conf.h common/error.h \
-		aegis/help.h aegis/integra1.h aegis/list.h aegis/lock.h \
-		common/option.h aegis/os.h aegis/project.h \
-		aegis/pstate.h aegis/type.h aegis/parse.h aegis/pattr.h \
-		common/trace.h aegis/user.h aegis/ustate.h \
-		aegis/uconf.h common/word.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/integra1.c
-	mv integra1.o aegis/integra1.o
-
-aegis/integra2.o: aegis/integra2.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/commit.h common/str.h \
-		common/s-v-arg.h common/conf.h aegis/change.h \
-		aegis/cstate.h aegis/type.h aegis/parse.h aegis/pconf.h \
-		aegis/dir.h common/error.h aegis/file.h aegis/help.h \
-		aegis/integra2.h aegis/list.h aegis/lock.h aegis/log.h \
-		common/option.h aegis/os.h aegis/project.h \
-		aegis/pstate.h aegis/pattr.h aegis/sub.h common/trace.h \
-		aegis/undo.h aegis/user.h aegis/ustate.h aegis/uconf.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/integra2.c
-	mv integra2.o aegis/integra2.o
-
 aegis/io.o: aegis/io.c aegis/indent.h common/main.h common/str.h \
 		common/s-v-arg.h common/conf.h aegis/io.h aegis/type.h 
 	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/io.c
@@ -353,18 +710,6 @@ aegis/lex.o: aegis/lex.c common/error.h common/main.h aegis/glue.h \
 		aegis/gram.gen.h 
 	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/lex.c
 	mv lex.o aegis/lex.o
-
-aegis/list.o: aegis/list.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/col.h aegis/change.h aegis/cstate.h \
-		aegis/type.h common/str.h common/s-v-arg.h \
-		common/conf.h aegis/parse.h aegis/pconf.h \
-		common/error.h aegis/gonzo.h aegis/gstate.h \
-		aegis/help.h aegis/list.h common/option.h aegis/os.h \
-		aegis/project.h aegis/pstate.h aegis/pattr.h \
-		common/trace.h aegis/user.h aegis/ustate.h \
-		aegis/uconf.h common/word.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/list.c
-	mv list.o aegis/list.o
 
 aegis/lock.o: aegis/lock.c common/error.h common/main.h aegis/glue.h \
 		common/conf.h aegis/gonzo.h aegis/gstate.h aegis/type.h \
@@ -380,80 +725,24 @@ aegis/log.o: aegis/log.c common/error.h common/main.h aegis/log.h \
 	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/log.c
 	mv log.o aegis/log.o
 
-aegis/main.o: aegis/main.c aegis/administ.h common/main.h \
-		aegis/arglex2.h common/arglex.h aegis/build.h \
-		aegis/cattr_ed.h aegis/chdir.h aegis/copyfile.h \
-		aegis/develop1.h aegis/develop2.h aegis/diff.h \
-		common/error.h aegis/help.h aegis/integra1.h \
-		aegis/integra2.h aegis/list.h aegis/log.h \
-		aegis/new_chan.h aegis/new_file.h aegis/new_proj.h \
-		aegis/new_rele.h aegis/new_test.h common/option.h \
-		aegis/os.h common/str.h common/s-v-arg.h common/conf.h \
-		aegis/pattr_ed.h aegis/rem_file.h aegis/rem_proj.h \
-		aegis/review.h aegis/reviewer.h aegis/test.h \
-		common/trace.h aegis/undo.h aegis/version.h 
+aegis/main.o: aegis/main.c aegis/aeb.h common/main.h aegis/aeca.h \
+		aegis/cattr.h aegis/type.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/parse.h \
+		aegis/aecd.h aegis/aecp.h aegis/aecpu.h aegis/aed.h \
+		aegis/aedb.h aegis/aedbu.h aegis/aede.h aegis/aedeu.h \
+		aegis/aeib.h aegis/aeibu.h aegis/aeif.h aegis/aeip.h \
+		aegis/ael.h aegis/aemv.h aegis/aena.h aegis/aenc.h \
+		aegis/aencu.h aegis/aend.h aegis/aenf.h aegis/aenfu.h \
+		aegis/aeni.h aegis/aenpr.h aegis/aenrls.h aegis/aenrv.h \
+		aegis/aent.h aegis/aentu.h aegis/aepa.h aegis/aera.h \
+		aegis/aerd.h aegis/aerf.h aegis/aeri.h aegis/aerm.h \
+		aegis/aermpr.h aegis/aermu.h aegis/aerp.h aegis/aerpu.h \
+		aegis/aerrv.h aegis/aet.h aegis/arglex2.h \
+		common/arglex.h common/error.h aegis/help.h aegis/log.h \
+		common/option.h aegis/os.h common/trace.h aegis/undo.h \
+		aegis/version.h 
 	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/main.c
 	mv main.o aegis/main.o
-
-aegis/new_chan.o: aegis/new_chan.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/cattr.h aegis/type.h common/str.h \
-		common/s-v-arg.h common/conf.h aegis/parse.h \
-		aegis/change.h aegis/cstate.h aegis/pconf.h aegis/col.h \
-		aegis/commit.h aegis/common.h common/error.h \
-		aegis/help.h aegis/list.h aegis/lock.h aegis/new_chan.h \
-		common/option.h aegis/os.h aegis/project.h \
-		aegis/pstate.h aegis/pattr.h common/trace.h \
-		aegis/user.h aegis/ustate.h aegis/uconf.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/new_chan.c
-	mv new_chan.o aegis/new_chan.o
-
-aegis/new_file.o: aegis/new_file.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/change.h aegis/cstate.h \
-		aegis/type.h common/str.h common/s-v-arg.h \
-		common/conf.h aegis/parse.h aegis/pconf.h aegis/col.h \
-		aegis/commit.h common/error.h aegis/glue.h aegis/help.h \
-		aegis/list.h aegis/lock.h aegis/log.h aegis/new_file.h \
-		common/option.h aegis/os.h aegis/project.h \
-		aegis/pstate.h aegis/pattr.h common/trace.h \
-		aegis/user.h aegis/ustate.h aegis/uconf.h common/word.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/new_file.c
-	mv new_file.o aegis/new_file.o
-
-aegis/new_proj.o: aegis/new_proj.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/commit.h common/str.h \
-		common/s-v-arg.h common/conf.h common/error.h \
-		aegis/gonzo.h aegis/gstate.h aegis/type.h aegis/parse.h \
-		aegis/help.h aegis/list.h aegis/lock.h aegis/new_proj.h \
-		common/option.h aegis/os.h aegis/project.h \
-		aegis/pstate.h aegis/pattr.h common/trace.h \
-		aegis/undo.h aegis/user.h aegis/ustate.h aegis/uconf.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/new_proj.c
-	mv new_proj.o aegis/new_proj.o
-
-aegis/new_rele.o: aegis/new_rele.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/change.h aegis/cstate.h \
-		aegis/type.h common/str.h common/s-v-arg.h \
-		common/conf.h aegis/parse.h aegis/pconf.h \
-		aegis/commit.h aegis/dir.h common/error.h aegis/file.h \
-		aegis/gonzo.h aegis/gstate.h aegis/help.h aegis/list.h \
-		aegis/lock.h aegis/log.h common/mem.h aegis/new_rele.h \
-		common/option.h aegis/os.h aegis/project.h \
-		aegis/pstate.h aegis/pattr.h aegis/sub.h common/trace.h \
-		aegis/undo.h aegis/user.h aegis/ustate.h aegis/uconf.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/new_rele.c
-	mv new_rele.o aegis/new_rele.o
-
-aegis/new_test.o: aegis/new_test.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/change.h aegis/cstate.h \
-		aegis/type.h common/str.h common/s-v-arg.h \
-		common/conf.h aegis/parse.h aegis/pconf.h aegis/col.h \
-		aegis/commit.h common/error.h aegis/glue.h aegis/help.h \
-		aegis/list.h aegis/lock.h aegis/new_test.h \
-		common/option.h aegis/os.h aegis/project.h \
-		aegis/pstate.h aegis/pattr.h common/trace.h \
-		aegis/user.h aegis/ustate.h aegis/uconf.h common/word.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/new_test.c
-	mv new_test.o aegis/new_test.o
 
 aegis/os.o: aegis/os.c common/conf.h aegis/dir.h common/main.h \
 		common/str.h common/s-v-arg.h common/error.h \
@@ -462,9 +751,10 @@ aegis/os.o: aegis/os.c common/conf.h aegis/dir.h common/main.h \
 	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/os.c
 	mv os.o aegis/os.o
 
-aegis/pager.o: aegis/pager.c common/error.h common/main.h aegis/os.h \
-		common/str.h common/s-v-arg.h common/conf.h \
-		aegis/pager.h common/trace.h aegis/undo.h 
+aegis/pager.o: aegis/pager.c common/error.h common/main.h \
+		common/option.h aegis/os.h common/str.h \
+		common/s-v-arg.h common/conf.h aegis/pager.h \
+		common/trace.h aegis/undo.h 
 	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/pager.c
 	mv pager.o aegis/pager.o
 
@@ -484,17 +774,6 @@ aegis/pattr.o: aegis/pattr.c aegis/pattr.h common/main.h aegis/type.h \
 		common/mem.h aegis/os.h common/trace.h 
 	$(CC) $(CFLAGS) -Iaegis -Icommon $(H) -c aegis/pattr.c
 	mv pattr.o aegis/pattr.o
-
-aegis/pattr_ed.o: aegis/pattr_ed.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/commit.h common/str.h \
-		common/s-v-arg.h common/conf.h common/error.h \
-		aegis/help.h aegis/lock.h common/option.h aegis/os.h \
-		aegis/pattr.h aegis/type.h aegis/parse.h \
-		aegis/pattr_ed.h aegis/project.h aegis/pstate.h \
-		common/trace.h aegis/user.h aegis/ustate.h \
-		aegis/uconf.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/pattr_ed.c
-	mv pattr_ed.o aegis/pattr_ed.o
 
 aegis/pconf.c aegis/pconf.h: aegis/pconf.def bin/fmtgen aegis/common.def
 	bin/fmtgen -Iaegis aegis/pconf.def aegis/pconf.c aegis/pconf.h
@@ -529,54 +808,6 @@ aegis/pstate.o: aegis/pstate.c aegis/pstate.h common/main.h \
 	$(CC) $(CFLAGS) -Iaegis -Icommon $(H) -c aegis/pstate.c
 	mv pstate.o aegis/pstate.o
 
-aegis/rem_file.o: aegis/rem_file.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/change.h aegis/cstate.h \
-		aegis/type.h common/str.h common/s-v-arg.h \
-		common/conf.h aegis/parse.h aegis/pconf.h \
-		aegis/commit.h common/error.h aegis/help.h aegis/list.h \
-		aegis/lock.h aegis/log.h common/option.h aegis/os.h \
-		aegis/project.h aegis/pstate.h aegis/pattr.h \
-		aegis/rem_file.h common/trace.h aegis/user.h \
-		aegis/ustate.h aegis/uconf.h common/word.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/rem_file.c
-	mv rem_file.o aegis/rem_file.o
-
-aegis/rem_proj.o: aegis/rem_proj.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/change.h aegis/cstate.h \
-		aegis/type.h common/str.h common/s-v-arg.h \
-		common/conf.h aegis/parse.h aegis/pconf.h \
-		aegis/commit.h common/error.h aegis/gonzo.h \
-		aegis/gstate.h aegis/help.h aegis/list.h aegis/lock.h \
-		common/option.h aegis/project.h aegis/pstate.h \
-		aegis/pattr.h aegis/rem_proj.h common/trace.h \
-		aegis/user.h aegis/ustate.h aegis/uconf.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/rem_proj.c
-	mv rem_proj.o aegis/rem_proj.o
-
-aegis/review.o: aegis/review.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/change.h aegis/cstate.h \
-		aegis/type.h common/str.h common/s-v-arg.h \
-		common/conf.h aegis/parse.h aegis/pconf.h \
-		aegis/commit.h aegis/dir.h common/error.h aegis/file.h \
-		aegis/help.h aegis/list.h aegis/lock.h common/mem.h \
-		common/option.h aegis/os.h aegis/project.h \
-		aegis/pstate.h aegis/pattr.h aegis/review.h aegis/sub.h \
-		common/trace.h aegis/undo.h aegis/user.h aegis/ustate.h \
-		aegis/uconf.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/review.c
-	mv review.o aegis/review.o
-
-aegis/reviewer.o: aegis/reviewer.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/commit.h common/str.h \
-		common/s-v-arg.h common/conf.h common/error.h \
-		aegis/help.h aegis/list.h aegis/lock.h common/option.h \
-		aegis/os.h aegis/project.h aegis/pstate.h aegis/type.h \
-		aegis/parse.h aegis/pattr.h aegis/reviewer.h \
-		common/trace.h aegis/user.h aegis/ustate.h \
-		aegis/uconf.h common/word.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/reviewer.c
-	mv reviewer.o aegis/reviewer.o
-
 aegis/sub.o: aegis/sub.c common/arglex.h common/main.h aegis/change.h \
 		aegis/cstate.h aegis/type.h common/str.h \
 		common/s-v-arg.h common/conf.h aegis/parse.h \
@@ -586,18 +817,6 @@ aegis/sub.o: aegis/sub.c common/arglex.h common/main.h aegis/change.h \
 		common/word.h 
 	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/sub.c
 	mv sub.o aegis/sub.o
-
-aegis/test.o: aegis/test.c aegis/arglex2.h common/arglex.h \
-		common/main.h aegis/change.h aegis/cstate.h \
-		aegis/type.h common/str.h common/s-v-arg.h \
-		common/conf.h aegis/parse.h aegis/pconf.h \
-		aegis/commit.h common/error.h aegis/help.h aegis/list.h \
-		aegis/lock.h aegis/log.h common/option.h aegis/os.h \
-		aegis/project.h aegis/pstate.h aegis/pattr.h \
-		aegis/test.h common/trace.h aegis/user.h aegis/ustate.h \
-		aegis/uconf.h common/word.h 
-	$(CC) $(CFLAGS)  -Iaegis -Icommon $(H) -c aegis/test.c
-	mv test.o aegis/test.o
 
 aegis/type.o: aegis/type.c aegis/type.h common/main.h common/str.h \
 		common/s-v-arg.h common/conf.h 
@@ -822,28 +1041,39 @@ t0014a: all test/00/t0014a.sh
 t0015a: all test/00/t0015a.sh
 	$(SHELL) test/00/t0015a.sh
 
+t0016a: all test/00/t0016a.sh
+	$(SHELL) test/00/t0016a.sh
+
+t0017a: all test/00/t0017a.sh
+	$(SHELL) test/00/t0017a.sh
+
+t0018a: all test/00/t0018a.sh
+	$(SHELL) test/00/t0018a.sh
+
 clean:
-	rm -f core bin/fmtgen aegis/administ.o aegis/build.o \
-		aegis/cattr.c aegis/cattr.h aegis/cattr.o \
-		aegis/cattr_ed.o aegis/change.o aegis/chdir.o \
-		aegis/col.o aegis/commit.o aegis/common.c \
-		aegis/common.h aegis/common.o aegis/copyfile.o \
+	rm -f core bin/fmtgen aegis/aeb.o aegis/aeca.o aegis/aecd.o \
+		aegis/aecp.o aegis/aecpu.o aegis/aed.o aegis/aedb.o \
+		aegis/aedbu.o aegis/aede.o aegis/aedeu.o aegis/aeib.o \
+		aegis/aeibu.o aegis/aeif.o aegis/aeip.o aegis/ael.o \
+		aegis/aemv.o aegis/aena.o aegis/aenc.o aegis/aencu.o \
+		aegis/aend.o aegis/aenf.o aegis/aenfu.o aegis/aeni.o \
+		aegis/aenpr.o aegis/aenrls.o aegis/aenrv.o aegis/aent.o \
+		aegis/aentu.o aegis/aepa.o aegis/aera.o aegis/aerd.o \
+		aegis/aerf.o aegis/aeri.o aegis/aerm.o aegis/aermpr.o \
+		aegis/aermu.o aegis/aerp.o aegis/aerpu.o aegis/aerrv.o \
+		aegis/aet.o aegis/cattr.c aegis/cattr.h aegis/cattr.o \
+		aegis/change.o aegis/col.o aegis/commit.o \
+		aegis/common.c aegis/common.h aegis/common.o \
 		aegis/cstate.c aegis/cstate.h aegis/cstate.o \
-		aegis/develop1.o aegis/develop2.o aegis/diff.o \
 		aegis/dir.o aegis/file.o aegis/glue.o aegis/gonzo.o \
 		aegis/gram.gen.c aegis/gram.gen.h aegis/gram.gen.o \
 		aegis/gstate.c aegis/gstate.h aegis/gstate.o \
-		aegis/help.o aegis/indent.o aegis/integra1.o \
-		aegis/integra2.o aegis/io.o aegis/lex.o aegis/list.o \
-		aegis/lock.o aegis/log.o aegis/main.o aegis/new_chan.o \
-		aegis/new_file.o aegis/new_proj.o aegis/new_rele.o \
-		aegis/new_test.o aegis/os.o aegis/pager.o aegis/parse.o \
-		aegis/pattr.c aegis/pattr.h aegis/pattr.o \
-		aegis/pattr_ed.o aegis/pconf.c aegis/pconf.h \
-		aegis/pconf.o aegis/project.o aegis/pstate.c \
-		aegis/pstate.h aegis/pstate.o aegis/rem_file.o \
-		aegis/rem_proj.o aegis/review.o aegis/reviewer.o \
-		aegis/sub.o aegis/test.o aegis/type.o aegis/uconf.c \
+		aegis/help.o aegis/indent.o aegis/io.o aegis/lex.o \
+		aegis/lock.o aegis/log.o aegis/main.o aegis/os.o \
+		aegis/pager.o aegis/parse.o aegis/pattr.c aegis/pattr.h \
+		aegis/pattr.o aegis/pconf.c aegis/pconf.h aegis/pconf.o \
+		aegis/project.o aegis/pstate.c aegis/pstate.h \
+		aegis/pstate.o aegis/sub.o aegis/type.o aegis/uconf.c \
 		aegis/uconf.h aegis/uconf.o aegis/undo.o aegis/user.o \
 		aegis/ustate.c aegis/ustate.h aegis/ustate.o \
 		aegis/version.o common/ansi.o common/arglex.o \
@@ -877,22 +1107,24 @@ bin/fmtgen: $(FmtgenFiles)
 	if test ! -d bin; then mkdir bin; fi; exit 0
 	$(CC) -o bin/fmtgen $(FmtgenFiles) $(LIBRARIES)
 
-AegisFiles = aegis/administ.o aegis/build.o aegis/cattr.o \
-		aegis/cattr_ed.o aegis/change.o aegis/chdir.o \
-		aegis/col.o aegis/commit.o aegis/common.o \
-		aegis/copyfile.o aegis/cstate.o aegis/develop1.o \
-		aegis/develop2.o aegis/diff.o aegis/dir.o aegis/file.o \
+AegisFiles = aegis/aeb.o aegis/aeca.o aegis/aecd.o aegis/aecp.o \
+		aegis/aecpu.o aegis/aed.o aegis/aedb.o aegis/aedbu.o \
+		aegis/aede.o aegis/aedeu.o aegis/aeib.o aegis/aeibu.o \
+		aegis/aeif.o aegis/aeip.o aegis/ael.o aegis/aemv.o \
+		aegis/aena.o aegis/aenc.o aegis/aencu.o aegis/aend.o \
+		aegis/aenf.o aegis/aenfu.o aegis/aeni.o aegis/aenpr.o \
+		aegis/aenrls.o aegis/aenrv.o aegis/aent.o aegis/aentu.o \
+		aegis/aepa.o aegis/aera.o aegis/aerd.o aegis/aerf.o \
+		aegis/aeri.o aegis/aerm.o aegis/aermpr.o aegis/aermu.o \
+		aegis/aerp.o aegis/aerpu.o aegis/aerrv.o aegis/aet.o \
+		aegis/cattr.o aegis/change.o aegis/col.o aegis/commit.o \
+		aegis/common.o aegis/cstate.o aegis/dir.o aegis/file.o \
 		aegis/glue.o aegis/gonzo.o aegis/gram.gen.o \
-		aegis/gstate.o aegis/help.o aegis/indent.o \
-		aegis/integra1.o aegis/integra2.o aegis/io.o \
-		aegis/lex.o aegis/list.o aegis/lock.o aegis/log.o \
-		aegis/main.o aegis/new_chan.o aegis/new_file.o \
-		aegis/new_proj.o aegis/new_rele.o aegis/new_test.o \
+		aegis/gstate.o aegis/help.o aegis/indent.o aegis/io.o \
+		aegis/lex.o aegis/lock.o aegis/log.o aegis/main.o \
 		aegis/os.o aegis/pager.o aegis/parse.o aegis/pattr.o \
-		aegis/pattr_ed.o aegis/pconf.o aegis/project.o \
-		aegis/pstate.o aegis/rem_file.o aegis/rem_proj.o \
-		aegis/review.o aegis/reviewer.o aegis/sub.o \
-		aegis/test.o aegis/type.o aegis/uconf.o aegis/undo.o \
+		aegis/pconf.o aegis/project.o aegis/pstate.o \
+		aegis/sub.o aegis/type.o aegis/uconf.o aegis/undo.o \
 		aegis/user.o aegis/ustate.o aegis/version.o \
 		common/ansi.o common/arglex.o common/error.o \
 		common/mem.o common/option.o common/str.o \
@@ -903,7 +1135,8 @@ bin/aegis: $(AegisFiles)
 	$(CC) -o bin/aegis $(AegisFiles) $(LIBRARIES)
 
 sure: t0001a t0002a t0003a t0004a t0005a t0006a t0007a t0008a t0009a \
-		t0010a t0011a t0012a t0013a t0014a t0015a 
+		t0010a t0011a t0012a t0013a t0014a t0015a t0016a t0017a \
+		t0018a 
 	@echo Passed All Tests
 
 install: all

@@ -62,7 +62,7 @@ It will probably use mail,
 or it could be an in-house bulletin board.
 This field is optional,
 if not present no notification will be given.
-This command could also be used to notify other managament systems,
+This command could also be used to notify other management systems,
 such as progress and defect tracking.
 All of the substitutions described by
 .IR aesub (5)
@@ -76,7 +76,7 @@ It will probably use mail,
 or it could be an in-house bulletin board.
 This field is optional,
 if not present no notification will be given.
-This command could also be used to notify other managament systems,
+This command could also be used to notify other management systems,
 such as progress and defect tracking.
 All of the substitutions described by
 .IR aesub (5)
@@ -89,7 +89,7 @@ It will probably use mail,
 or it could be an in-house bulletin board.
 This field is optional,
 if not present no notification will be given.
-This command could also be used to notify other managament systems,
+This command could also be used to notify other management systems,
 such as progress and defect tracking.
 All of the substitutions described by
 .IR aesub (5)
@@ -102,7 +102,7 @@ It will probably use mail,
 or it could be an in-house bulletin board.
 This field is optional,
 if not present no notification will be given.
-This command could also be used to notify other managament systems,
+This command could also be used to notify other management systems,
 such as progress and defect tracking.
 Defaults to the same action as the \fIdevelop_end_notify_command\fP field.
 All of the substitutions described by
@@ -116,7 +116,7 @@ It will probably use mail,
 or it could be an in-house bulletin board.
 This field is optional,
 if not present no notification will be given.
-This command could also be used to notify other managament systems,
+This command could also be used to notify other management systems,
 such as progress and defect tracking.
 All of the substitutions described by
 .IR aesub (5)
@@ -129,7 +129,7 @@ It will probably use mail,
 or it could be an in-house bulletin board.
 This field is optional,
 if not present no notification will be given.
-This command could also be used to notify other managament systems,
+This command could also be used to notify other management systems,
 such as progress and defect tracking.
 All of the substitutions described by
 .IR aesub (5)
@@ -142,7 +142,7 @@ It will probably use mail,
 or it could be an in-house bulletin board.
 This field is optional,
 if not present no notification will be given.
-This command could also be used to notify other managament systems,
+This command could also be used to notify other management systems,
 such as progress and defect tracking.
 All of the substitutions described by
 .IR aesub (5)
@@ -152,7 +152,7 @@ default_development_directory = string;
 The pathname of where to place new development directories.
 The pathname must be absolute.
 This field is only consulted if
-the field of the same name in the user conf file is not set.
+the field of the same name in the user configuration file is not set.
 .TP 8n
 umask = integer;
 .br

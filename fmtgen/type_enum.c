@@ -51,7 +51,7 @@ gen_include(type, name)
 	indent_putchar('\n');
 	indent_printf("#ifndef %s_DEF\n", name->str_text);
 	indent_printf("#define %s_DEF\n", name->str_text);
-	indent_printf("enum %s\n", name->str_text);
+	indent_printf("enum %s_ty\n", name->str_text);
 	indent_printf("{\n"/*}*/);
 	for (np = type2->list; np; np = np->next)
 	{
@@ -61,15 +61,30 @@ gen_include(type, name)
 		indent_putchar('\n');
 	}
 	indent_printf(/*{*/"};\n");
-	indent_printf("typedef enum %s %s;\n", name->str_text, name->str_text);
+	indent_printf
+	(
+		"typedef enum %s_ty %s_ty;\n",
+		name->str_text,
+		name->str_text
+	);
 	indent_printf("#endif /* %s_DEF */\n", name->str_text);
 
 	indent_putchar('\n');
 	indent_printf("extern type_ty %s_type;\n", name->str_text);
 
 	indent_putchar('\n');
-	indent_printf("void %s_write _((char *, %s));\n", name->str_text, name->str_text);
-	indent_printf("char *%s_ename _((%s));\n", name->str_text, name->str_text);
+	indent_printf
+	(
+		"void %s_write _((char *, %s_ty));\n",
+		name->str_text,
+		name->str_text
+	);
+	indent_printf
+	(
+		"char *%s_ename _((%s_ty));\n",
+		name->str_text,
+		name->str_text
+	);
 }
 
 
@@ -81,10 +96,13 @@ gen_include_declarator(type, name, is_a_list)
 	string_ty	*name;
 	int		is_a_list;
 {
-	char		*deref;
-
-	deref = (is_a_list ? "*" : "");
-	indent_printf("%s\1%s%s;\n", type->name->str_text, deref, name->str_text);
+	indent_printf
+	(
+		"%s_ty\1%s%s;\n",
+		type->name->str_text,
+		(is_a_list ? "*" : ""),
+		name->str_text
+	);
 }
 
 
@@ -116,7 +134,7 @@ gen_code(type, name)
 	indent_printf("char *\n");
 	indent_printf("%s_ename(this)\n", name->str_text);
 	indent_more();
-	indent_printf("%s\1this;\n", name->str_text);
+	indent_printf("%s_ty\1this;\n", name->str_text);
 	indent_less();
 	indent_printf("{\n"/*}*/);
 	indent_printf("static char\1buffer[20];\n\n");
@@ -133,7 +151,7 @@ gen_code(type, name)
 	indent_printf("%s_write(name, this)\n", name->str_text);
 	indent_more();
 	indent_printf("%s\1*name;\n", "char");
-	indent_printf("%s\1this;\n", name->str_text);
+	indent_printf("%s_ty\1this;\n", name->str_text);
 	indent_less();
 	indent_printf("{\n"/*}*/);
 	indent_printf("if (name)\n");
@@ -170,7 +188,7 @@ gen_code(type, name)
 	indent_printf("{\n");
 	indent_printf("if (str_equal(name, %s_f[j]))\n", name->str_text);
 	indent_printf("{\n");
-	indent_printf("*(%s *)addr = j;\n", name->str_text);
+	indent_printf("*(%s_ty *)addr = j;\n", name->str_text);
 	indent_printf("return 0;\n");
 	indent_printf("}\n");
 	indent_printf("}\n");

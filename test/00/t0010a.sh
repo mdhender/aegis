@@ -23,10 +23,13 @@
 
 unset AEGIS_PROJECT
 unset AEGIS_CHANGE
+umask 022
+
+USER=${USER:-${LOGNAME:-`whoami`}}
 
 PAGER=cat
 export PAGER
-work=${AEGIS_TMP-/tmp}/$$
+work=${AEGIS_TMP:-/tmp}/$$
 
 fail()
 {

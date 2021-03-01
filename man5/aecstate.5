@@ -154,7 +154,7 @@ The history records have the form
 .TP 8n
 when = integer;
 .br
-This field records the time the state transition occured.
+This field records the time the state transition occurred.
 .TP 8n
 what = ( ... );
 .br
@@ -233,5 +233,12 @@ states,
 inclusive.
 This field is used to determine if a difference has been done,
 and if the difference file has been tampered with before state transitions.
+.TP 8n
+move = string;
+.br
+To change the name of a file,
+a combination of deleting the old name and creating the new name is used.
+With deleted files, this field is used to say where it went.
+With new files, this field is used to say where it came from.
 .RE
 .so z_cr.so

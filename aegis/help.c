@@ -70,7 +70,7 @@ interpret(fp, text, text_len, prefix)
 	int	j;
 
 	trace(("interpret()\n{\n"/*}*/));
-	progname = option_get_progname();
+	progname = option_progname_get();
 	for (j = 0; j < text_len; ++j)
 	{
 		char	indent[10];
@@ -200,19 +200,19 @@ generic_argument(usage)
 	case arglex_token_page_length:
 		if (arglex() != arglex_token_number)
 			usage();
-		option_set_page_length(arglex_value.alv_number);
+		option_page_length_set(arglex_value.alv_number);
 		arglex();
 		break;
 
 	case arglex_token_page_width:
 		if (arglex() != arglex_token_number)
 			usage();
-		option_set_page_width(arglex_value.alv_number);
+		option_page_width_set(arglex_value.alv_number);
 		arglex();
 		break;
 
 	case arglex_token_terse:
-		option_set_terse();
+		option_terse_set();
 		arglex();
 		break;
 
@@ -230,13 +230,18 @@ generic_argument(usage)
 		(
 "Warning: the -TRace option is only effective when the %s program \
 is compiled using the DEBUG define in the conf/main.h include file.",
-			option_get_progname()
+			option_progname_get()
 		);
 #endif
 		break;
 
+	case arglex_token_unformatted:
+		option_unformatted_set();
+		arglex();
+		break;
+
 	case arglex_token_verbose:
-		option_set_verbose();
+		option_verbose_set();
 		arglex();
 		break;
 	}

@@ -31,7 +31,7 @@ as may the umask.
 All work done by developers (build, difference, etc)
 is all with a default group of the project's group,
 irrespective of the user's default group.
-Directores (when BSD semantics are available) are all created
+Directories (when BSD semantics are available) are all created
 so that their contents default to the correct group.
 This ensures that reviewers and integrators are able to examine the change.
 .LP
@@ -42,7 +42,7 @@ may be excluded, or not, by the appropriate setting of the project umask.
 This umask is used by all aegis actions,
 assuring appropriate default behaviour.
 .LP
-A second aspect of security is to ensure that developers are unable to deliberately decieve aegis.
+A second aspect of security is to ensure that developers are unable to deliberately deceive aegis.
 At develop end,
 all files in the development directory are marked read only,
 aegis notes the time stamps on the files.
@@ -69,7 +69,7 @@ These two assumptions mean that for this "average" project
 aegis can cope with 70 to 80 developers,
 before integrations become a bottleneck.
 .LP
-The more serious bottle neck is the dependency maintenence tool.
+The more serious bottle neck is the dependency maintenance tool.
 Seventy developers can churn out a staggering volume of code.
 It takes a very long time to wade through the file times and the rules,
 just to find the one or two files which changed.

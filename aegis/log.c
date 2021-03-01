@@ -57,8 +57,8 @@ log_open(log, up)
 {
 	static int	already_done;
 	int		fd[2];
-	char		*cmd[3];
 	int		bg;
+	int		append_to_file;
 
 	if (already_done)
 		return;
@@ -70,9 +70,18 @@ log_open(log, up)
 	 * if the logfile exists, unlink it first
 	 * (so that baseline linked to int dir works correctly)
 	 */
+	append_to_file = 0;
 	user_become(up);
 	if (os_exists(log))
-		os_unlink(log);
+	{
+		long	now;
+
+		time(&now);
+		if (now - os_mtime(log) < 30)
+			append_to_file = 1;
+		else
+			os_unlink(log);
+	}
 	user_become_undo();
 
 	/*
@@ -82,8 +91,9 @@ log_open(log, up)
 	bg = os_background();
 	if (bg)
 	{
+		char *mode = (append_to_file ? "a" : "w");
 		user_become(up);
-		if (!freopen(log->str_text, "w", stdout))
+		if (!freopen(log->str_text, mode, stdout))
 			nfatal("%s", log->str_text);
 		user_become_undo();
 	}
@@ -92,6 +102,8 @@ log_open(log, up)
 		int	uid;
 		int	gid;
 		int	um;
+		int	n;
+		char	*cmd[4];
 
 		/*
 		 * list both to a file and to the terminal
@@ -107,9 +119,12 @@ log_open(log, up)
 			undo_cancel();
 			while (os_become_active())
 				os_become_undo();
-			cmd[0] = "tee";
-			cmd[1] = log->str_text;
-			cmd[2] = 0;
+			n = 0;
+			cmd[n++] = "tee";
+			if (append_to_file)
+				cmd[n++] = "-a";
+			cmd[n++] = log->str_text;
+			cmd[n] = 0;
 			close(fd[1]);
 			close(0);
 			if (dup(fd[0]) != 0)

@@ -125,7 +125,7 @@ for more information.
 The 
 .I "\*(n) -Develop_End_Undo"
 command is used to
-recall a change for further deveopment.
+recall a change for further development.
 See
 .IR aedeu (1)
 for more information.
@@ -189,6 +189,17 @@ command is used to
 list interesting things.
 See
 .IR ael (1)
+for more information.
+.TP 8n
+.B -MoVe_file
+.br
+The 
+.I "\*(n) -MoVe_file"
+command is used to
+change the name of a file
+as part of a change.
+See
+.IR aemv (1)
 for more information.
 .TP 8n
 .B -New_Administrator
@@ -268,7 +279,7 @@ The
 command is used to
 create a new project to be watched over by \*(n).
 See
-.IR aenp (1)
+.IR aenpr (1)
 for more information.
 .TP 8n
 .B -New_ReLeaSe
@@ -431,7 +442,7 @@ for more information.
 .B -VERSion
 .br
 The
-.I "\*(n) -VERsion"
+.I "\*(n) -VERSion"
 command is used to
 get copyright and version details.
 See
@@ -444,9 +455,13 @@ the abbreviation is the upper case letters.
 Functions must appear as the first command line argument.
 .SH OPTIONS
 The following options are available to all functions.
-These options may appear anywhere on the command line following the function selector.
-.so o_page.so
+These options may appear anywhere on the command line following
+the function selectors.
 .so o_lib.so
+.so o_page.so
+.so o_terse.so
+.so o_unforma.so
+.so o_verbose.so
 .so o__rules.so
 .so z_exit.so
 .so z_cr.so

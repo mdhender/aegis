@@ -60,7 +60,7 @@ The
 command exits with a status of 0 if the files are identical,
 and a status of 1 if they differ.
 Any other status means something horrible happened.
-The "test" command is used to chnage this to the exit status aegis expects.
+The "test" command is used to change this to the exit status aegis expects.
 .nh 3 "diff3_command"
 .LP
 See the earlier

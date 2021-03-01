@@ -25,35 +25,53 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <administ.h>
+#include <aeb.h>
+#include <aeca.h>
+#include <aecd.h>
+#include <aecp.h>
+#include <aecpu.h>
+#include <aed.h>
+#include <aedb.h>
+#include <aedbu.h>
+#include <aede.h>
+#include <aedeu.h>
+#include <aeib.h>
+#include <aeibu.h>
+#include <aeif.h>
+#include <aeip.h>
+#include <ael.h>
+#include <aemv.h>
+#include <aena.h>
+#include <aenc.h>
+#include <aencu.h>
+#include <aend.h>
+#include <aenf.h>
+#include <aenfu.h>
+#include <aeni.h>
+#include <aenpr.h>
+#include <aenrls.h>
+#include <aenrv.h>
+#include <aent.h>
+#include <aentu.h>
+#include <aepa.h>
+#include <aera.h>
+#include <aerd.h>
+#include <aerf.h>
+#include <aeri.h>
+#include <aerm.h>
+#include <aermpr.h>
+#include <aermu.h>
+#include <aerp.h>
+#include <aerpu.h>
+#include <aerrv.h>
+#include <aet.h>
 #include <arglex2.h>
-#include <build.h>
-#include <cattr_ed.h>
-#include <chdir.h>
-#include <copyfile.h>
-#include <develop1.h>
-#include <develop2.h>
-#include <diff.h>
 #include <error.h>
 #include <help.h>
-#include <integra1.h>
-#include <integra2.h>
-#include <list.h>
 #include <log.h>
-#include <new_chan.h>
-#include <new_file.h>
-#include <new_proj.h>
-#include <new_rele.h>
-#include <new_test.h>
 #include <option.h>
 #include <os.h>
-#include <pattr_ed.h>
-#include <rem_file.h>
-#include <rem_proj.h>
-#include <review.h>
-#include <reviewer.h>
 #include <str.h>
-#include <test.h>
 #include <trace.h>
 #include <undo.h>
 #include <version.h>
@@ -129,6 +147,10 @@ static arglex_table_ty argtab[] =
 		(arglex_token_ty)arglex_token_development_directory,
 	},
 	{
+		"-Edit",
+		(arglex_token_ty)arglex_token_edit,
+	},
+	{
 		"-Force",
 		(arglex_token_ty)arglex_token_force,
 	},
@@ -183,6 +205,10 @@ static arglex_table_ty argtab[] =
 	{
 		"-MINOr",
 		(arglex_token_ty)arglex_token_minor,
+	},
+	{
+		"-MoVe_file",
+		(arglex_token_ty)arglex_token_move_file,
 	},
 	{
 		"-New_Administrator",
@@ -313,6 +339,10 @@ static arglex_table_ty argtab[] =
 		(arglex_token_ty)arglex_token_test,
 	},
 	{
+		"-UNFormatted",
+		(arglex_token_ty)arglex_token_unformatted,
+	},
+	{
 		"-Verbose",
 		(arglex_token_ty)arglex_token_verbose,
 	},
@@ -329,7 +359,7 @@ usage()
 {
 	char	*progname;
 
-	progname = option_get_progname();
+	progname = option_progname_get();
 	fprintf(stderr, "usage: %s <function> [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Help\n", progname);
 	quit(1);
@@ -434,6 +464,11 @@ main_help()
 "		The %s -List command is used to list",
 "		interesting things.  See ael(1) for more",
 "		information.",
+"",
+"	-MoVe_file",
+"		The aegis -MoVe_file command is	used to	change",
+"		the name of a file as part of a	change.	 See",
+"		aemv(1)	for more information.",
 "",
 "	-New_Administrator",
 "		The %s -New_Administrator command is used to",
@@ -587,18 +622,6 @@ main_help()
 "	options may appear anywhere on the command line following",
 "	the function selector.",
 "",
-"	-Page_Length <number>",
-"		This option may be used to set the page length of",
-"		listings.  The default, in order of preference, is",
-"		obtained from the system, from the LINES environment",
-"		variable, or set to 24 lines.",
-"",
-"	-Page_Width <number>",
-"		This option may be used to set the page width of",
-"		listings and error messages.  The default, in order",
-"		of preference, is obtained from the system, from the",
-"		COLS environment variable, or set to 79 characters.",
-"",
 "	-LIBrary <abspath>",
 "		This option may be used to specify a directory to be",
 "		searched for global state files and user state",
@@ -611,6 +634,35 @@ main_help()
 "		/usr/local/lib/aegis is always searched.  All paths",
 "		specified, either on the command line or in the",
 "		AEGIS environment variable, must be absolute.",
+"",
+"	-Page_Length <number>",
+"		This option may be used to set the page length of",
+"		listings.  The default, in order of preference, is",
+"		obtained from the system, from the LINES environment",
+"		variable, or set to 24 lines.",
+"",
+"	-Page_Width <number>",
+"		This option may be used to set the page width of",
+"		listings and error messages.  The default, in order",
+"		of preference, is obtained from the system, from the",
+"		COLS environment variable, or set to 79 characters.",
+"",
+"	-TERse",
+"		This option may be used to cause listings to",
+"		produce the bare minimum of information.  It is",
+"		usually useful for shell scripts.",
+"",
+"	-UNFormatted",
+"		This option may be used with most listings to",
+"		specify that the column formatting is not to be",
+"		performed.  This is useful for shell scripts.",
+"",
+"	-Verbose",
+"		This option may be used to cause aegis to produce",
+"		more output.  By default aegis only produces",
+"		output on errors.  When used with the -List",
+"		option this option causes column headings to be",
+"		added.",
 "",
 "	All options may be abbreviated; the abbreviation is",
 "	documented as the upper case letters, all lower case",
@@ -665,53 +717,184 @@ main(argc, argv)
 	arglex_init(argc, argv, argtab);
 	quit_register(log_quitter);
 	quit_register(undo_quitter);
-	switch (arglex())
+	arglex();
+	for (;;)
 	{
-	default:
-		bad_argument(usage);
-		/* NOTREACHED */
+		switch (arglex_token)
+		{
+		default:
+			generic_argument(usage);
+			continue;
 
-	case arglex_token_build: build(); break;
-	case arglex_token_change_attributes: change_attributes(); break;
-	case arglex_token_change_directory: change_directory(); break;
-	case arglex_token_copy_file: copy_file(); break;
-	case arglex_token_copy_file_undo: copy_file_undo(); break;
-	case arglex_token_develop_begin: develop_begin(); break;
-	case arglex_token_develop_begin_undo: develop_begin_undo(); break;
-	case arglex_token_develop_end: develop_end(); break;
-	case arglex_token_develop_end_undo: develop_end_undo(); break;
-	case arglex_token_difference: difference(); break;
-	case arglex_token_help: main_help(); break;
-	case arglex_token_integrate_begin: integrate_begin(); break;
-	case arglex_token_integrate_begin_undo: integrate_begin_undo(); break;
-	case arglex_token_integrate_fail: integrate_fail(); break;
-	case arglex_token_integrate_pass: integrate_pass(); break;
-	case arglex_token_list: list(); break;
-	case arglex_token_new_administrator: new_administrator(); break;
-	case arglex_token_new_change: new_change(); break;
-	case arglex_token_new_change_undo: new_change_undo(); break;
-	case arglex_token_new_developer: new_developer(); break;
-	case arglex_token_new_file: new_file(); break;
-	case arglex_token_new_file_undo: new_file_undo(); break;
-	case arglex_token_new_integrator: new_integrator(); break;
-	case arglex_token_new_project: new_project(); break;
-	case arglex_token_new_release: new_release(); break;
-	case arglex_token_new_reviewer: new_reviewer(); break;
-	case arglex_token_new_test: new_test(); break;
-	case arglex_token_new_test_undo: new_test_undo(); break;
-	case arglex_token_project_attributes: project_attributes(); break;
-	case arglex_token_remove_administrator: remove_administrator(); break;
-	case arglex_token_remove_developer: remove_developer(); break;
-	case arglex_token_remove_file: remove_file(); break;
-	case arglex_token_remove_file_undo: remove_file_undo(); break;
-	case arglex_token_remove_project: remove_project(); break;
-	case arglex_token_remove_integrator: remove_integrator(); break;
-	case arglex_token_remove_reviewer: remove_reviewer(); break;
-	case arglex_token_review_fail: review_fail(); break;
-	case arglex_token_review_pass: review_pass(); break;
-	case arglex_token_review_pass_undo: review_pass_undo(); break;
-	case arglex_token_test: test(); break;
-	case arglex_token_version: version(); break;
+		case arglex_token_build:
+			build();
+			break;
+
+		case arglex_token_change_attributes:
+			change_attributes();
+			break;
+
+		case arglex_token_change_directory:
+			change_directory();
+			break;
+
+		case arglex_token_copy_file:
+			copy_file();
+			break;
+
+		case arglex_token_copy_file_undo:
+			copy_file_undo();
+			break;
+
+		case arglex_token_develop_begin:
+			develop_begin();
+			break;
+
+		case arglex_token_develop_begin_undo:
+			develop_begin_undo();
+			break;
+
+		case arglex_token_develop_end:
+			develop_end();
+			break;
+
+		case arglex_token_develop_end_undo:
+			develop_end_undo();
+			break;
+
+		case arglex_token_difference:
+			difference();
+			break;
+
+		case arglex_token_help:
+			main_help();
+			break;
+
+		case arglex_token_integrate_begin:
+			integrate_begin();
+			break;
+
+		case arglex_token_integrate_begin_undo:
+			integrate_begin_undo();
+			break;
+
+		case arglex_token_integrate_fail:
+			integrate_fail();
+			break;
+
+		case arglex_token_integrate_pass:
+			integrate_pass();
+			break;
+
+		case arglex_token_list:
+			list();
+			break;
+
+		case arglex_token_move_file:
+			move_file();
+			break;
+
+		case arglex_token_new_administrator:
+			new_administrator();
+			break;
+
+		case arglex_token_new_change:
+			new_change();
+			break;
+
+		case arglex_token_new_change_undo:
+			new_change_undo();
+			break;
+
+		case arglex_token_new_developer:
+			new_developer();
+			break;
+
+		case arglex_token_new_file:
+			new_file();
+			break;
+
+		case arglex_token_new_file_undo:
+			new_file_undo();
+			break;
+
+		case arglex_token_new_integrator:
+			new_integrator();
+			break;
+
+		case arglex_token_new_project:
+			new_project();
+			break;
+
+		case arglex_token_new_release:
+			new_release();
+			break;
+
+		case arglex_token_new_reviewer:
+			new_reviewer();
+			break;
+
+		case arglex_token_new_test:
+			new_test();
+			break;
+
+		case arglex_token_new_test_undo:
+			new_test_undo();
+			break;
+
+		case arglex_token_project_attributes:
+			project_attributes();
+			break;
+
+		case arglex_token_remove_administrator:
+			remove_administrator();
+			break;
+
+		case arglex_token_remove_developer:
+			remove_developer();
+			break;
+
+		case arglex_token_remove_file:
+			remove_file();
+			break;
+
+		case arglex_token_remove_file_undo:
+			remove_file_undo();
+			break;
+
+		case arglex_token_remove_project:
+			remove_project();
+			break;
+
+		case arglex_token_remove_integrator:
+			remove_integrator();
+			break;
+
+		case arglex_token_remove_reviewer:
+			remove_reviewer();
+			break;
+
+		case arglex_token_review_fail:
+			review_fail();
+			break;
+
+		case arglex_token_review_pass:
+			review_pass();
+			break;
+
+		case arglex_token_review_pass_undo:
+			review_pass_undo();
+			break;
+
+		case arglex_token_test:
+			test();
+			break;
+
+		case arglex_token_version:
+			version();
+			break;
+		}
+		break;
 	}
 	quit(0);
 	return 0;

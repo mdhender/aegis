@@ -81,4 +81,8 @@ int os_waitpid_status _((int child, char *cmd));
 
 char *os_shell _((void));
 
+void os_edit _((string_ty *));
+string_ty *os_edit_new _((void));
+string_ty *os_edit_filename _((void));
+
 #endif /* OS_H */

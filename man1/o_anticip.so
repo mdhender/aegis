@@ -21,9 +21,19 @@
 .\"
 .TP 8n
 \fB-ANticipate\fP \fIchange-number\fP
+.br
 This option is used to nominate a source for the reference files,
 rather than the baseline.
 This may be used to synchronize with a change without 
 having to wait for it to arrive in the baseline.
-It is an error if
-the anticipated change is not in the 'awaiting_integration' state.
+It is an error if the anticipated change is not in one of the
+.I "'being reviewed'"
+or
+.I "'awaiting integration'"
+or
+.I "'being integrated'"
+states.
+A merge is always performed,
+because the anticipated change is "about" to make
+any common file out-of-date.
+You will still have to perform a "real" merge later.

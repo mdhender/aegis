@@ -96,8 +96,9 @@ wrap(s)
 
 	if (fflush(stdout) || ferror(stdout))
 		nfatal("(stdout)");
-	page_width = option_get_page_width();
-	progname = option_get_progname();
+	/* don't use last column, many terminals are dumb */
+	page_width = option_page_width_get() - 1;
+	progname = option_progname_get();
 	first_line = 1;
 	while (*s)
 	{
@@ -458,7 +459,7 @@ verbose(s sva_last)
 	sva_init(ap, s);
 	vsprintf(buffer, s, ap);
 	va_end(ap);
-	if (option_get_verbose())
+	if (option_verbose_get())
 		wrap(buffer);
 }
 
@@ -619,7 +620,7 @@ quit(n)
 		(
 			stderr,
 			"%s: incorrectly handled error while quitting (bug)\n",
-			option_get_progname()
+			option_progname_get()
 		);
 		exit(1);
 	}

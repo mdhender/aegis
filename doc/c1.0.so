@@ -58,8 +58,8 @@ Jean Florence Pelham
 1905 \(em 1992
 Always in our hearts.
 .sp 1i
-This document describes aegis version
 .so version.so
+This document describes aegis version \*(v)
 .br
 and was prepared \*(DY.
 .br
@@ -95,7 +95,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 The aegis program is a CASE tool with a difference.
 In the spirit of the
 .UX
-Opertaing System,
+Operating System,
 the aegis program is a small component designed to work with other programs.
 .LP
 Many CASE systems attempt to provide everything,

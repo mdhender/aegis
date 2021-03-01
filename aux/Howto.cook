@@ -73,7 +73,6 @@ if [match_mask %1C%2 [version]] then
 vs_file = common/patchlevel.h;
 change_files =
 	[collect aegis -l chafil -ter -p [project] -c [change]]
-	[vs_file] doc/version.so
 	;
 project_files =
 	[collect aegis -l profil -ter -p [project] -c [change]]
@@ -96,6 +95,14 @@ fmtgen_obj =
 	[common_obj]
 	;
 fmtgen_obj = [stringset [fmtgen_obj] - [vs_file]];
+
+source_files_build =
+	[collect ( aegis -l pf -p [project] -c [change] -unf ';'
+		aegis -l cf -p [project] -c [change] -unf )
+		| awk "'/^build/{print $NF}'" ]
+	;
+source_files_non_build =
+	[stringset [source_files] - [source_files_build]];
 
 /*
  * how to compile C sources
@@ -177,7 +184,7 @@ yacc_flags = ;
 		rm %1/%2.gen.h
 			set clearstat;
 	[yacc] -d [yacc_flags] [resolve %1/%2.y];
-	sed "'s/[yY][yY]/%2_/g'" < y.tab.c > %1/%2.gen.c;
+	sed "'s/[yY][yY]/%2_/g'" < y.tab.c | sed '1d' > %1/%2.gen.c;
 	rm y.tab.c;
 	sed "'s/[yY][yY]/%2_/g'" < y.tab.h > %1/%2.gen.h;
 	rm y.tab.h;
@@ -190,7 +197,7 @@ yacc_flags = ;
 /*
  * The default recipe
  */
-all = doc.targets bin/aegis;
+all = doc.targets bin/aegis bin/xaegis;
 
 /*
  * Integration builds also make the shar files for distribution.
@@ -208,6 +215,15 @@ all: [all]
 		echo "	chown root bin/aegis";
 		echo "	chmod u+s bin/aegis";
 	}
+}
+
+bin/%: script/%.tcl
+{
+	if [not [exists bin]] then
+		mkdir bin
+			set clearstat;
+	cp [resolve [need]] [target];
+	chmod a+rx,og-w [target];
 }
 
 
@@ -261,7 +277,6 @@ bin/%: [%_obj]
 		[resolve %1/%2.def] %1/%2.c %1/%2.h;
 }
 
-
 /*
  * The version stamp is to be updated for every 
  * integration and development build.
@@ -297,9 +312,36 @@ if [not [exists doc/version.so]] then
 	if [not [exists doc]] then
 		mkdir doc
 			set clearstat;
-	echo \"[version]\" > doc/version.so
+	echo \".ds V) [version]\" > doc/version.so
 		set clearstat;
+	echo \"[version]\"
+		| awk -F. "'{print \".ds v) \"$1\".\"$2}'"
+		>> doc/version.so;
+	aegis -list version -p [project] -c [change]
+		| awk -F'\'"\'' "'/previous/{print $2}'"
+		| awk -F. "'{print \".ds w) \"$1\".\"$2}'"
+		>> doc/version.so;
 	cooktime -m 2-Jan-70 doc/version.so;
+}
+
+#ifndef baseline
+
+if [exists aux/new.so] then
+	rm aux/new.so
+		set clearstat;
+
+#endif
+
+if [not [exists aux/new.so]] then
+{
+	if [not [exists aux]] then
+		mkdir aux
+			set clearstat;
+	echo \"[version]\"
+		| awk -F. "'{print \".so new.\"$1\".\"$2\".so\"}'"
+		> aux/new.so
+		set clearstat;
+	cooktime -m 2-Jan-70 aux/new.so;
 }
 
 /*
@@ -308,12 +350,12 @@ if [not [exists doc/version.so]] then
  * of constructing a useful development build Makefile.
  */
 
-Makefile: aux/Makefile.sh aux/Makefile.awk [source_files]
+Makefile: aux/Makefile.sh aux/Makefile.awk [source_files_non_build]
 {
 	if [exists Makefile] then
 		rm Makefile
 			set clearstat;
-	sh [resolve aux/Makefile.sh [source_files]]
+	sh [resolve aux/Makefile.sh [source_files_non_build]]
 		| gawk -f [resolve aux/Makefile.awk] > Makefile;
 }
 
@@ -367,8 +409,7 @@ doc/%.ps.Z: doc/%.ms: [collect c_incl -r -eia [prepost "-I" "/doc"
  * specials
  */
 
-special = [fromto aux/%.man % [match_mask aux/%.man [source_files]]];
-special: [special];
+special: [fromto aux/%.man % [match_mask aux/%.man [source_files]]];
 
 %: aux/%.man: [collect c_incl -r -eia [prepost "-I" "/aux" [search_list]]
 	[resolve aux/%.man]]
@@ -381,15 +422,7 @@ special: [special];
 }
 
 
-source_file_order =
-	README
-	[sort
-		[stringset
-			Makefile CHANGES MANIFEST [special] [source_files]
-		-
-			README
-		]
-	];
+source_file_order = README [sort [stringset [source_files] - README]];
 
 archive/Part01.Z: [source_file_order]
 {
@@ -419,7 +452,7 @@ archive/[project].tar.Z: [source_file_order]
 		rm archive/[project].tar
 			set clearstat;
 	tar cf - [resolve [source_file_order]] | tardy -unu 0 -gnu 0
-	-una Peter -gna Miller -p [project] -ms 0644 -mc 022
+	-una Peter -gna Miller -p [project] -ms 0644 -mc 07022 -now
 		> archive/[project].tar;
 	compress -v archive/[project].tar;
 }

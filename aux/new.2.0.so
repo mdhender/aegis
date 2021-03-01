@@ -1,0 +1,89 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: document describing some of the features new to version 2.0
+.\"
+.PP
+.if n *
+.if t \(bu
+A new command
+has been added to facilitate changing the name of a file as
+part of a change.
+See
+.IR aemv (1)
+for more information.
+.PP
+.if n *
+.if t \(bu
+It is now possible to list the locks currently held.
+See
+.IR ael (1)
+for more information.
+.PP
+.if n *
+.if t \(bu
+If no other defaulting mechanism is specified,
+aegis will now attempt to guess the project name and change number
+from the pathname of the current directory.
+This only works from within development directories.
+.PP
+.if n *
+.if t \(bu
+The
+.IR aenc ,
+.IR aeca ,
+.IR aerfail ,
+.I aeifail
+and
+.I aepa
+commands now accept a
+.B -Edit
+command line argument.
+See the relevant manual pages for more information.
+.PP
+.if n *
+.if t \(bu
+The
+.I aenpr
+command now understands the
+.B -MAJor
+and
+.B -MINOr
+options,
+allowing the initial version of a project
+to be something other than 1.0.
+.PP
+.if n *
+.if t \(bu
+The
+.I aed
+command now understands the
+.B -ANticipate
+option.
+See
+.IR aed (1)
+for more information.
+.PP
+.if n *
+.if t \(bu
+It is now possible to list all the outstanding changes of a project,
+or of all projects.
+See
+.IR ael (1)
+for more information.

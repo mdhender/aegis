@@ -45,6 +45,7 @@ enum
 	arglex_token_development_directory,
 	arglex_token_difference,
 	arglex_token_directory,
+	arglex_token_edit,
 	arglex_token_force,
 	arglex_token_independent,
 	arglex_token_integrate_begin,
@@ -58,6 +59,7 @@ enum
 	arglex_token_manual,
 	arglex_token_minimum,
 	arglex_token_minor,
+	arglex_token_move_file,
 	arglex_token_new_administrator,
 	arglex_token_new_change,
 	arglex_token_new_change_undo,
@@ -90,6 +92,7 @@ enum
 	arglex_token_review_pass_undo,
 	arglex_token_terse,
 	arglex_token_test,
+	arglex_token_unformatted,
 	arglex_token_verbose,
 	arglex_token_library
 };

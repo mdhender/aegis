@@ -1,0 +1,91 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1993 Peter Miller.
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * MANIFEST: synpic program to generate aegis icon
+ */
+
+const black = color(0, 0, 0);
+const white = color(1, 1, 1);
+const skin = looks(white * 0.8);
+
+looks
+pt(h)
+	hit	h;
+{
+	if (h.osi.x ^ 2 + h.osi.y ^ 2 >= (31/32) ^ 2)
+		return looks(black);
+	return skin;
+}
+
+void
+main()
+{
+	const pi = 4 * atan(1);
+	scalar j;
+	const studs = 7;
+	const stud_rad = 0.1;
+	const stud_placement = 0.7;
+	const thick = 0.1;
+
+	ellipsoid
+	(
+		point(0, 0, 0),
+		point(1, 0, 0),
+		point(0, 0, 1),
+		point(0, thick, 0),
+		pt
+	);
+	background(white);
+	ellipsoid
+	(
+		point(0, -0.1, 0),
+		vector(stud_rad, 0, 0),
+		vector(0, stud_rad, 0),
+		vector(0, 0, stud_rad),
+		skin
+	);
+	for (j = 0; j < studs; j = j+ 1)
+	{
+		scalar ang;
+		ang = j*(2*pi/studs)+pi/2;
+		ellipsoid
+		(
+			point
+			(
+				cos(ang) * stud_placement,
+				-thick * sqrt(1 - stud_placement ^ 2),
+				sin(ang) * stud_placement
+			),
+			vector(stud_rad, 0, 0),
+			vector(0, stud_rad, 0),
+			vector(0, 0, stud_rad),
+			skin
+		);
+	}
+	light(vector(0.4, 1, -0.4), white);
+	view
+	(
+		vector(0, 1, 0),
+		point(-1, -4, -1),
+		vector(2, 0, 0),
+		vector(0, 0, 2)
+	);
+	image_size(64, 64);
+	jittered_sampling(4);
+}

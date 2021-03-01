@@ -72,7 +72,7 @@ arglex_init(ac, av, tp)
 	char		**av;
 	arglex_table_ty	*tp;
 {
-	option_set_progname(av[0]);
+	option_progname_set(av[0]);
 	argc = ac - 1;
 	argv = av + 1;
 	utable = tp;

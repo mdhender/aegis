@@ -559,7 +559,14 @@ os_pathname(path, resolve)
 				/*
 				 * probably not a symbolic link
 				 */
-				if (errno != EINVAL && errno != ENOENT)
+				if
+				(
+					errno != ENXIO
+				&&
+					errno != EINVAL
+				&& 
+					errno != ENOENT
+				)
 					nfatal("readlink(\"%s\")", s->str_text);
 				str_free(s);
 			}
@@ -1095,9 +1102,9 @@ os_execute_slurp(cmd, flags, dir)
 	string_ty	*s2;
 
 	trace(("os_execute_slurp()\n{\n"/*}*/));
-	s1 = str_format("/tmp/%s.%d", option_get_progname(), getpid());
+	s1 = os_edit_filename();
 	trace_string(s1->str_text);
-	s2 = str_format("%S > %S", cmd, s1);
+	s2 = str_format("( %S ) > %S", cmd, s1);
 	os_execute(s2, flags, dir);
 	str_free(s2);
 	s2 = read_whole_file(s1->str_text);
@@ -1301,8 +1308,17 @@ tcgetpgrp(fd)
 {
 	int		result;
 
+#ifdef TIOCGETPGRP
 	if (ioctl(fd, TIOCGETPGRP, &result))
-		return -1;
+		result = -1;
+#else
+#ifdef TIOCGPGRP
+        if (ioctl(fd, TIOCGPGRP, &result))
+		result = -1;
+#else
+	result = -1;
+#endif
+#endif
 	return result;
 }
 
@@ -1473,4 +1489,76 @@ os_shell()
 
 	assert(shell[0] == '/');
 	return shell;
+}
+
+
+void
+os_edit(filename)
+	string_ty	*filename;
+{
+	string_ty	*cmd;
+	string_ty	*cwd;
+	char		*editor;
+
+	/*
+	 * make sure we are in a position to edit
+	 */
+	if (os_background())
+		fatal("may not use -Edit in the background");
+
+	/*
+	 * find the editor to use
+	 */
+	editor = getenv("EDITOR");
+	if (!editor)
+		editor = "vi";
+
+	/*
+	 * edit the file
+	 */
+	cmd = str_format("%s %S", editor, filename);
+	cwd = os_curdir();
+	assert(cwd);
+	os_execute(cmd, OS_EXEC_FLAG_INPUT | OS_EXEC_FLAG_ERROK, cwd);
+	str_free(cmd);
+	str_free(cwd);
+}
+
+
+string_ty *
+os_edit_new()
+{
+	string_ty	*filename;
+	string_ty	*result;
+	FILE		*fp;
+
+	filename = os_edit_filename();
+	os_become_orig();
+	fp = glue_fopen(filename->str_text, "w");
+	if (!fp)
+		fatal("create %s", filename->str_text);
+	glue_fclose(fp);
+	os_edit(filename);
+	result = read_whole_file(filename->str_text);
+	os_unlink(filename);
+	os_become_undo();
+	return result;
+}
+
+
+string_ty *
+os_edit_filename()
+{
+	static int num;
+	char buffer[20];
+
+	sprintf(buffer, "%d-%d", getpid(), ++num);
+	return
+		str_format
+		(
+			"/tmp/%.*s-%s",
+			13 - (int)strlen(buffer),
+			option_progname_get(),
+			buffer
+		);
 }

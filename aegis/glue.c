@@ -1938,7 +1938,8 @@ glue_fcntl(fd, cmd, data)
 	int		result;
 
 	trace(("glue_fcntl()\n{\n"/*}*/));
-	assert(cmd == F_SETLKW || cmd == F_SETLK || cmd == F_UNLCK);
+	assert(cmd == F_SETLKW || cmd == F_SETLK || cmd == F_UNLCK ||
+		cmd == F_GETLK);
 	pp = proxy_find();
 	putc(command_fcntl, pp->command);
 	put_int(pp->command, fd);
@@ -1967,6 +1968,8 @@ glue_read_whole_dir(path, data_p, data_len_p)
 	static char	*data;
 	static long	data_max;
 	long		data_len;
+	proxy_ty	*pp;
+	int		result;
 
 	trace(("glue_read_whole_dir(path = \"%s\")\n{\n"/*}*/, path));
 	pp = proxy_find();

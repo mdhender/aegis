@@ -29,7 +29,7 @@ also comes with two other utilities,
 .I fcomp
 and
 .I fmerge ,
-which use the same minimal diference algorithm.
+which use the same minimal difference algorithm.
 .nh 3 "diff_command"
 .LP
 See the earlier

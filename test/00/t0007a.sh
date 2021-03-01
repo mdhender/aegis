@@ -26,10 +26,13 @@
 
 unset AEGIS_PROJECT
 unset AEGIS_CHANGE
+umask 022
+
+USER=${USER:-${LOGNAME:-`whoami`}}
 
 PAGER=cat
 export PAGER
-work=${AEGIS_TMP-/tmp}/$$
+work=${AEGIS_TMP:-/tmp}/$$
 
 here=`pwd`
 if test $? -ne 0 ; then exit 1; fi
@@ -285,6 +288,7 @@ if test $? -ne 0 ; then fail; fi
 #
 # integrate build
 #
+sleep 1
 $here/bin/aegis -build -nl -lib $worklib -p foo > /dev/null 2>&1
 if test $? -ne 0 ; then fail; fi
 $here/bin/aegis -test -nl -lib $worklib -p foo > /dev/null 2>&1

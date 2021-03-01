@@ -40,13 +40,10 @@ bl=`aegis -cd -bl -p $project`
 # These files are generated
 # so we don't have an older version in history
 #
-weird="README ALPHA BUILDING CHANGES MANIFEST Makefile"
+weird="README BUILDING CHANGES MANIFEST Makefile doc/version.so aux/new.so"
 echo "#! /bin/sh"
 echo "#"
 echo "# This is a self-applying patch in a shell script."
-echo "# It has this form because some of the files are generated,"
-echo "# and thus no history is available for them;"
-echo "# they need to be deleted before the patch is applied."
 echo "#"
 echo "# Change directory to the appropriate place"
 echo "# before applying running this shell script."
@@ -79,47 +76,33 @@ diff -c $tmp common/patchlevel.h | sed '1,2d'
 set -e
 
 #
-# fake patches for the generated files
-#
-for f in $weird
-do
-	echo "Index: $f"
-	set +e
-	if [ -f $f ]
-	then
-		fn=$f
-	else
-		fn=$bl/$f
-	fi
-	diff -c /dev/null $fn | sed '1,2d'
-	set -e
-done
-
-#
 # get a list of files from aegis
 #
-files=`(aegis -l pf -p $project -c $change -ter; aegis -l cf -p $project -c $change -ter) | sort`
+files=`(aegis -l pf -p $project -c $change -ter; aegis -l cf -p $project -c $change -ter) | sort -u`
 
 #
 # get the diff listing for each file
 #
 for f in $files
 do
-	aegis -cp $f -delta 1 -output $tmp -p $project -c $change
-	set +e
-	if [ -f $f ]
+	if [ "$f" != "common/patchlevel.h" ]
 	then
-		fn=$f
-	else
-		fn=$bl/$f
-	fi
-	if diff -c $tmp $fn > $tmp2 2> /dev/null
-	then
-		set -e
-	else
-		set -e
-		echo "Index: $f"
-		sed '1,2d' < $tmp2
+		aegis -cp $f -delta 1 -output $tmp -p $project -c $change
+		set +e
+		if [ -f $f ]
+		then
+			fn=$f
+		else
+			fn=$bl/$f
+		fi
+		if diff -c $tmp $fn > $tmp2 2> /dev/null
+		then
+			set -e
+		else
+			set -e
+			echo "Index: $f"
+			sed '1,2d' < $tmp2
+		fi
 	fi
 done
 echo "fubar"

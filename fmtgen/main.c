@@ -40,7 +40,7 @@ usage()
 {
 	char	*progname;
 
-	progname = option_get_progname();
+	progname = option_progname_get();
 	fprintf(stderr, "usage: %s [ <option>... ] <file.def> <file.c> <file.h>\n", progname);
 	fprintf(stderr, "       %s -Help\n", progname);
 	exit(1);
@@ -123,7 +123,7 @@ help()
 	char	**cpp;
 	char	*progname;
 
-	progname = option_get_progname();
+	progname = option_progname_get();
 	for (cpp = text; *cpp; ++cpp)
 	{
 		printf(*cpp, progname);

@@ -500,7 +500,7 @@ strftime(buf, max, fmt, tm)
 
 #endif /* CONF_NO_strftime */
 
-#ifdef CONF_HAS_seuid
+#ifdef CONF_HAS_setresuid
 
 int
 seteuid(x)
@@ -514,6 +514,24 @@ setegid(x)
 	int	x;
 {
 	return setresgid(-1, x, -1);
+}
+
+#endif
+
+#ifdef CONF_HAS_setreuid
+
+int
+seteuid(x)
+	int	x;
+{
+	return setreuid(-1, x);
+}
+
+int
+setegid(x)
+	int	x;
+{
+	return setregid(-1, x);
 }
 
 #endif

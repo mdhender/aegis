@@ -94,6 +94,13 @@ test_baseline_time = integer;
 
 /*
  * This field records the time the last successful
+ * 'aegis -Test -Regression' command was run.
+ * It is only present in the 'being_developed' and 'being_integrated' states.
+ */
+regression_test_time = integer;
+
+/*
+ * This field records the time the last successful
  * 'aegis -Build' command was run.
  * It is only present in the 'being_developed' and 'being_integrated' states.
  */
@@ -203,5 +210,13 @@ src =
 		 */
 		diff_time = integer; /* time() */
 		diff_file_time = integer; /* time() */
+
+		/*
+		 * To change the name of a file,
+		 * a combination of aerm and aenf are used.
+		 * With deleted files, this field is used to say where it went.
+		 * With new files, this field is used to say where it came from.
+		 */
+		move = string;
 	}
 ];

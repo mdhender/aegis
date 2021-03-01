@@ -67,6 +67,18 @@ See
 for more information.
 .SH OPTIONS
 The following options are understood
+.TP 8n
+.B -Build
+.br
+This option may be used to specify that the file is constructed
+during a build (often only an integrate build),
+so that history of it may be kept.
+This is useful for generating patch files,
+where a history of generated files is important.
+Files created in this way may not be copied into a change,
+though they may be deleted.
+Avoid using files of this type,
+if at all possible.
 .so o_change.so
 .so o_help.so
 .so o_list.so

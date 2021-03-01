@@ -173,8 +173,11 @@ file_template =
 \n\
 unset AEGIS_PROJECT\n\
 unset AEGIS_CHANGE\n\
+umask 022\n\
 \n\
-work=$${AEGIS_TMP-/tmp}/$$$$\n\
+USER=$${USER:-$${LOGNAME:-`whoami`}}\n\
+\n\
+work=$${AEGIS_TMP:-/tmp}/$$$$\n\
 PAGER=cat\n\
 export PAGER\n\
 \n\
@@ -372,3 +375,5 @@ program will only exit with a status of 0 if there are no errors.\n\
 #\n";
 	}
 ];
+
+develop_begin_command = "ln -s $baseline bl";
