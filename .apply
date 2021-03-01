@@ -1,0 +1,73 @@
+#!/bin/bash
+
+rm -rf /tmp/aegis.repository
+mkdir /tmp/aegis.repository || exit 2
+cp LICENSE /tmp/aegis.repository/ || exit 2
+cp apply.sh /tmp/aegis.repository/.apply || exit 2
+
+cd /tmp/aegis.repository || exit 2
+git init . || exit 2
+git add .apply LICENSE || exit 2
+git commit -m "initial commit" || exit 2
+git branch -M main || exit 2
+cd - || exit 2
+
+for tarball in				\
+	aegis-1993.03.30-01.004a	\
+	aegis-1993.03.30-01.004b	\
+	aegis-1993.08.20-02.001a	\
+	aegis-1993.08.20-02.001b	\
+	aegis-1994-08-11-02.001		\
+	aegis-1995.03.13-02.003		\
+	aegis-1998.10.02-03.008		\
+	aegis-1999.05.02-03.015		\
+	aegis-1999.10.19-03.020		\
+	aegis-2002.02.25-04.002a	\
+	aegis-2002.02.25-04.002b	\
+	aegis-2002.08.12-04.007		\
+	aegis-2002.08.22-04.008		\
+	aegis-2002.10.23-04.009		\
+	aegis-2003.04.05-04.011		\
+	aegis-2003.11.16-04.015		\
+	aegis-2004.01.15-04.016		\
+	aegis-2004.06.02-04.017		\
+	aegis-2004.06.10-04.018		\
+	aegis-2004.09.30-04.019		\
+	aegis-2005.01.28-04.020		\
+	aegis-2005.11.10-04.021		\
+	aegis-2006.03.29-04.022		\
+	aegis-2007.04.14-04.022.01	\
+	aegis-2007.10.18-04.022.02	\
+	aegis-2007.08.13-04.023		\
+	aegis-2008.03.09-04.024		\
+	aegis-2008.09.24-04.024.01	\
+	aegis-2009.06.25-04.024.02	\
+	aegis-2010.03.08-04.024.03	\
+	aegis-2012.11.26-04.025.D505	\
+	aegis-2012.11.26-04.025.D506	\
+	aegis-2012.11.26-04.025.D507	\
+	aegis-2012.11.27-04.025.D508	\
+	aegis-2012.11.29-04.025.D509	\
+	aegis-2012.12.04-04.025.D510	\
+	aegis-2012.12.04-04.025
+do
+	echo "info: applying tarball ${tarball}..."
+	rm -r /tmp/aegis.repository/*
+
+	cp -p src/${tarball}/.source /tmp/aegis.repository/ || exit 2
+	cp -pR src/${tarball}/* /tmp/aegis.repository/ || exit 2
+	cd /tmp/aegis.repository || exit 2
+
+	cp ~/tarballs/LICENSE . || exit 2
+	if [ -f LICENSE.openssl ]; then
+		rm -f LICENSE.openssl
+		cp ~/tarballs/openssl.LICENSE . || exit 2
+	fi
+
+	git add . || exit 2
+	git commit -m "import tarball ${tarball}" || exit 2
+
+	cd - || exit 2
+done
+
+exit 0
