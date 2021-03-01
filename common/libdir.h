@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2002-2004, 2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1997, 1999, 2002-2004, 2006, 2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -32,6 +31,7 @@ const char *configured_prefix(void);
 const char *configured_bindir(void);
 const char *configured_comdir(void);
 const char *configured_datadir(void);
+const char *configured_datarootdir(void);
 const char *configured_libdir(void);
 const char *configured_nlsdir(void);
 const char *configured_mandir(void);

@@ -409,7 +409,7 @@ change_owner_main(void)
     //
     // remove the old development directory
     //
-    if (user_delete_file_query(up, old_dd, 1))
+    if (user_delete_file_query(up, old_dd, true, true))
     {
 	change_verbose(cp, 0, i18n("remove old development directory"));
 	user_become(up1);

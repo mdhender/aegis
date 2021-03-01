@@ -1,6 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 2004-2006 Peter Miller;
+//	Copyright (C) 2006 Walter Franzini;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -130,5 +131,23 @@ void attributes_list_append(attributes_list_ty *alp, const char *name,
   */
 void attributes_list_append_unique(attributes_list_ty *alp, const char *name,
     string_ty *value);
+
+/**
+  * The attributes_list_append_unique function is used to add a specific
+  * attribute name and value pair to the end of an attribute list
+  * <b>if</b> that name and value pair is not already present.  It is
+  * possible to get duplicate attributes with the same name by using
+  * this function; use the attributes_list_insert function if you don't
+  * want duplicates.
+  *
+  * \param alp
+  *     The attribute list to be searched.
+  * \param name
+  *     The name of the attribute to append; not case sensitive.
+  * \param value
+  *     The value of the attribute to be set.
+  */
+void attributes_list_append_unique(attributes_list_ty *alp, const char *name,
+    const char *value);
 
 #endif // LIBAEGIS_ATTRIBUTE_H

@@ -29,6 +29,7 @@
 #include <libaegis/col.h>
 #include <common/error.h> // for assert
 #include <common/now.h>
+#include <common/nstring.h>
 #include <libaegis/option.h>
 #include <libaegis/output.h>
 #include <libaegis/project.h>
@@ -257,7 +258,7 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 	project_ty *sub_pp = cp->pp->bind_branch(cp);
 	for (size_t j = 0;; ++j)
 	{
-	    long sub_cn;
+            long sub_cn;
 	    if (!project_change_nth(sub_pp, j, &sub_cn))
 		break;
 	    change_ty *sub_cp = change_alloc(sub_pp, sub_cn);
@@ -291,7 +292,20 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
     );
     col_eoln(colp);
     body_col->fputs("This change must ");
-    if (change_build_required(cp))
+    //
+    // Below We do not use the change_build_required function because
+    // it mandates the presence of the config file, and this does not
+    // happen if the change is a branch without completed changes.
+    //
+    pconf_ty *pconf_data = change_pconf_get(cp, 0);
+    bool build_required = false;
+    if (pconf_data)
+    {
+        static nstring exit_0 = "exit 0";
+        if (nstring(pconf_data->development_build_command) != exit_0)
+            build_required = true;
+    }
+    if (build_required)
 	body_col->fputs("build and ");
     body_col->fputs("test in");
     if (cstate_data->architecture->length > 1)
@@ -356,7 +370,7 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 	    done.push_back(tp->variant);
 	    if (tp->node)
 		host_col->fputs(tp->node);
-	    showtime(build_col, tp->build_time, !change_build_required(cp));
+	    showtime(build_col, tp->build_time, !build_required);
 	    showtime(test_col, tp->test_time, cstate_data->test_exempt);
 	    showtime
 	    (

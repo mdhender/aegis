@@ -192,7 +192,7 @@ remove_project_main(void)
     //
     // remove the project directory
     //
-    if (user_delete_file_query(up, pp->home_path_get(), 1))
+    if (user_delete_file_query(up, pp->home_path_get(), true, -1))
     {
 	project_verbose(pp, 0, i18n("remove project directory"));
 	project_become(pp);

@@ -27,8 +27,6 @@
 
 #include <libaegis/input.h>
 
-#ifdef HAVE_LIBCURL
-
 /**
   * The input_curl class is used to represent an input obtained via
   * libcurl.
@@ -109,8 +107,8 @@ private:
     int progress_buflen;
     int progress_cleanup;
 #if (LIBCURL_VERSION_NUM < 0x070b01)
-    nstring *proxy;
-    nstring *userpass;
+    nstring proxy;
+    nstring userpass;
 #endif
 
     long read_data(void *data, size_t len);
@@ -153,5 +151,4 @@ input_curl_looks_likely(struct string_ty *fn)
     return input_curl::looks_likely(nstring(fn));
 }
 
-#endif // HAVE_LIBCURL
 #endif // LIBAEGIS_INPUT_CURL_H

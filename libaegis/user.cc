@@ -2332,14 +2332,14 @@ user_delete_file_argument(void (*usage)(void))
 }
 
 
-static int
-ask(string_ty *filename, int isdir)
+static bool
+ask(string_ty *filename, bool isdir)
 {
     struct table_ty
     {
 	const char      *name;
 	del_pref        set;
-	int             result;
+	bool            result;
     };
 
     //
@@ -2350,14 +2350,14 @@ ask(string_ty *filename, int isdir)
     //
     static table_ty table[] =
     {
-	{ "No", del_pref_unset, 0, },
-	{ "False", del_pref_unset, 0, },
-	{ "Never", del_pref_keep, 0, },
-	{ "None", del_pref_keep, 0, },
-	{ "Yes", del_pref_unset, 1, },
-	{ "True", del_pref_unset, 1, },
-	{ "All", del_pref_keep_not, 1, },
-	{ "Always", del_pref_keep_not, 1, },
+	{ "No", del_pref_unset, false, },
+	{ "False", del_pref_unset, false, },
+	{ "Never", del_pref_keep, false, },
+	{ "None", del_pref_keep, false, },
+	{ "Yes", del_pref_unset, true, },
+	{ "True", del_pref_unset, true, },
+	{ "All", del_pref_keep_not, true, },
+	{ "Always", del_pref_keep_not, true, },
     };
     table_ty	    *tp;
     char	    buffer[100];
@@ -2399,34 +2399,47 @@ ask(string_ty *filename, int isdir)
 }
 
 
-int
-user_delete_file_query(user_ty *up, string_ty *filename, int isdir)
+bool
+user_delete_file_query(user_ty *up, string_ty *filename, bool isdir,
+    int default_preference)
 {
-    int		    result;
-
     //
     // if the preference was not set on the command line,
     // read it fron the user config file
     //
-    trace(("user_delete_file_query()\n{\n"));
+    trace(("user_delete_file_query(up = %08lX, filename = \"%s\", "
+	"isdir = %d, dflt = %d)\n{\n", (long)up, filename->str_text, isdir,
+	default_preference));
     if (cmd_line_pref == del_pref_unset)
     {
-	uconf_ty	*uconf_data;
-
-	uconf_data = user_uconf_get(up);
-	switch (uconf_data->delete_file_preference)
+	trace(("mark\n"));
+	if (default_preference > 0)
 	{
-	default:
+	    // delete, keep not
 	    cmd_line_pref = del_pref_keep_not;
-	    break;
-
-	case uconf_delete_file_preference_interactive:
-	    cmd_line_pref = del_pref_interactive;
-	    break;
-
-	case uconf_delete_file_preference_keep:
+	}
+	else if (default_preference == 0)
+	{
+	    // delete not, keep
 	    cmd_line_pref = del_pref_keep;
-	    break;
+	}
+	else
+	{
+	    uconf_ty *uconf_data = user_uconf_get(up);
+	    switch (uconf_data->delete_file_preference)
+	    {
+	    default:
+		cmd_line_pref = del_pref_keep_not;
+		break;
+
+	    case uconf_delete_file_preference_interactive:
+		cmd_line_pref = del_pref_interactive;
+		break;
+
+	    case uconf_delete_file_preference_keep:
+		cmd_line_pref = del_pref_keep;
+		break;
+	    }
 	}
     }
 
@@ -2440,15 +2453,19 @@ user_delete_file_query(user_ty *up, string_ty *filename, int isdir)
     &&
 	(!isatty(0) || os_background())
     )
+    {
+	trace(("mark\n"));
 	cmd_line_pref = del_pref_keep_not;
+    }
 
     //
     // figure the result
     //
+    bool result = true;
     switch (cmd_line_pref)
     {
-    default:
-	result = 1;
+    case del_pref_unset:
+    case del_pref_keep_not:
 	break;
 
     case del_pref_interactive:
@@ -2456,7 +2473,7 @@ user_delete_file_query(user_ty *up, string_ty *filename, int isdir)
 	break;
 
     case del_pref_keep:
-	result = 0;
+	result = false;
 	break;
     }
     trace(("return %d;\n", result));

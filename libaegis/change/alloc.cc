@@ -62,6 +62,7 @@ change_alloc(project_ty *pp, long number)
     cp->lock_magic = 0;
     cp->logfile = 0;
     cp->pconf_data = 0;
+    cp->project_specific_setenv_performed = false;
     for (n = 0; n < SIZEOF(cp->file_list); ++n)
             cp->file_list[n] = 0;
     trace(("return %08lX;\n", (long)cp));

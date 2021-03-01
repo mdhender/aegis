@@ -4,6 +4,7 @@
 #
 #       tkaer - changeset review manager
 #       Copyright (C) 2000, 2001 Scott Finneran
+#       Copyright (C) 2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -39,6 +40,7 @@ exec wish $0 -- ${1+"$@"}
 set bindir @bindir@
 set libdir @libdir@
 set datadir @datadir@
+set datarootdir @datarootdir@
 
 wm title . tkaer
 wm iconname . tkaer

@@ -42,14 +42,14 @@
 
 
 static void
-pconf_improve(change_ty *cp)
+pconf_improve(change_ty *cp, bool required)
 {
     pconf_ty        *d;
     sub_context_ty  *scp;
     size_t          j;
 
     d = cp->pconf_data;
-    if (!d->build_command)
+    if (required && !d->build_command)
     {
 	assert(d->errpos);
 	scp = sub_context_new();
@@ -64,7 +64,7 @@ pconf_improve(change_ty *cp)
 	// NOTREACHED
 	sub_context_delete(scp);
     }
-    if (!d->development_build_command)
+    if (!d->development_build_command && d->build_command)
 	d->development_build_command = str_copy(d->build_command);
 
     // This field is obsolete.
@@ -144,7 +144,7 @@ pconf_improve(change_ty *cp)
 	//
 	d->remove_symlinks_after_integration_build = true;
     }
-    if (!d->history_get_command)
+    if (required && !d->history_get_command)
     {
 	assert(d->errpos);
 	scp = sub_context_new();
@@ -161,7 +161,7 @@ pconf_improve(change_ty *cp)
     }
     if (!d->history_put_command && d->history_create_command)
 	d->history_put_command = str_copy(d->history_create_command);
-    if (!d->history_put_command)
+    if (required && !d->history_put_command)
     {
 	assert(d->errpos);
 	scp = sub_context_new();
@@ -176,7 +176,7 @@ pconf_improve(change_ty *cp)
 	// NOTREACHED
 	sub_context_delete(scp);
     }
-    if (!d->history_query_command)
+    if (required && !d->history_query_command)
     {
 	assert(d->errpos);
 	scp = sub_context_new();
@@ -191,7 +191,7 @@ pconf_improve(change_ty *cp)
 	// NOTREACHED
 	sub_context_delete(scp);
     }
-    if (!d->diff_command)
+    if (required && !d->diff_command)
     {
 	assert(d->errpos);
 	scp = sub_context_new();
@@ -206,7 +206,7 @@ pconf_improve(change_ty *cp)
 	// NOTREACHED
 	sub_context_delete(scp);
     }
-    if (!d->diff3_command && !d->merge_command)
+    if (required && !d->diff3_command && !d->merge_command)
     {
 	assert(d->errpos);
 	scp = sub_context_new();
@@ -907,8 +907,7 @@ change_pconf_get(change_ty *cp, int required)
 	pconf_improve_more(cp);
     }
 
-    if (required)
-        pconf_improve(cp);
+    pconf_improve(cp, required);
 
     trace(("return %08lX;\n", (long)cp->pconf_data));
     trace(("}\n"));

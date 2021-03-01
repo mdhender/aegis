@@ -1,8 +1,8 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997, 1999-2005 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 1997, 1999-2006 Peter Miller
+#	Copyright (C) 2006, 2007 Walter Franzini
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ echo 'Summary: project change supervisor'
 echo 'Name: aegis'
 echo "Version: ${version}"
 echo 'Release: 1'
-echo 'Copyright: GPL'
+echo 'License: GPL'
 echo 'Group: Development/Version Control'
 echo "Source: http://www.canb.auug.org.au/~millerp/aegis-${version}.tar.gz"
 echo 'URL: http://www.canb.auug.org.au/~millerp/aegis.html'
@@ -46,7 +46,7 @@ echo 'Icon: aegis.xpm'
 #
 echo 'BuildPrereq: bison, curl-devel, diffutils, gawk, gettext >= 0.11.4'
 echo 'BuildPrereq: groff >= 1.15, perl, libxml2-devel >= 1.8.17, tk'
-echo 'BuildPrereq: zlib-devel'
+echo 'BuildPrereq: zlib-devel, bzip2-devel'
 
 prefix=/usr
 #
@@ -83,10 +83,23 @@ Aegis documentation in PostScript format.
 %prep
 fubar
 
+#
+# Following the FHS we must install man pages under /usr/share/man.
+# We use that directory if it already exists, otherwise the old Aegis
+# behaviour (/usr/man) is preserved.
+# Note: this apply to the system used to create the spec file.
+#
+if test -d $prefix/share/man
+then
+    mandir=$prefix/share/man
+else
+    mandir=$prefix/man
+fi
+
 echo '%setup'
 echo ''
 echo '%build'
-echo "./configure --sysconfdir=/etc --prefix=$prefix"
+echo "%configure --sysconfdir=/etc --prefix=$prefix --mandir=$mandir"
 echo 'make'
 echo ''
 echo '%install'
@@ -95,11 +108,14 @@ echo 'make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install'
 #
 # remember things for the %files section
 #
-files_ro=
+files_ro="$prefix/share/aegis/icon/64x64.png \
+    $prefix/share/aegis/icon/aegis.gif \
+    $prefix/share/aegis/icon/bigger.png \
+    $prefix/share/aegis/icon/rss.gif"
 files_rx=
 txtdocs=
 psdocs=
-dirs=$prefix/com/aegis
+dirs="$prefix/com/aegis $prefix/share/aegis/icon"
 name=`echo dir_${prefix} | sed 's/[^a-zA-Z0-9]/_/g'`
 eval "${name}=yes"
 eval "${name}_share=yes"
@@ -191,7 +207,7 @@ do
 		case $file in
 		lib/en/*)
 			stem2=`echo $file | sed 's|^lib/en/||'`
-			dst="$prefix/man/${stem2}*"
+			dst="$mandir/${stem2}*"
 			files_ro="$files_ro $dst"
 			remember_dir `dirname $dst`
 			;;

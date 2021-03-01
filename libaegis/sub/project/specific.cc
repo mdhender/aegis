@@ -29,6 +29,7 @@
 #include <libaegis/attribute.h>
 #include <libaegis/change.h>
 #include <libaegis/pconf.h>
+#include <libaegis/project.h>
 #include <libaegis/sub.h>
 #include <libaegis/sub/project/specific.h>
 
@@ -83,9 +84,16 @@ sub_project_specific(sub_context_ty *scp, wstring_list_ty *arg)
     cp = sub_context_change_get(scp);
     if (!cp)
     {
-	sub_context_error_set(scp, i18n("not valid in current context"));
-	result = 0;
-	goto done;
+	project_ty *pp = sub_context_project_get(scp);
+	if (!pp)
+	{
+	    sub_context_error_set(scp, i18n("not valid in current context"));
+	    trace(("return NULL;\n"));
+	    trace(("}\n"));
+	    result = 0;
+	    goto done;
+	}
+	cp = pp->change_get();
     }
     if (arg->size() != 2)
     {

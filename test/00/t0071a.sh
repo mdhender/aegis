@@ -1,8 +1,8 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997-2006 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 1997-2006 Peter Miller
+#	Copyright (C) 2007 Walter Franzini
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -135,11 +135,11 @@ export AEGIS_PATH
 #
 # test the aeclone functionality
 #
-activity="new project 122"
+activity="new project 138"
 $bin/aegis -npr test -version '' -v -dir $work/test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="project attributes 126"
+activity="project attributes 142"
 cat > paf << 'fubar'
 developer_may_review = true;
 developer_may_integrate = true;
@@ -150,7 +150,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 137"
+activity="staff 153"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -158,7 +158,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ni $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new change 145"
+activity="new change 161"
 cat > caf << 'fubar'
 brief_description = "one";
 cause = internal_enhancement;
@@ -168,11 +168,11 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 155"
+activity="develop begin 171"
 $bin/aegis -db 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 159"
+activity="new file 175"
 $bin/aegis -nf $work/test.C010/aegis.conf $work/test.C010/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $work/test.C010/aegis.conf << 'fubar'
@@ -194,57 +194,57 @@ if test $? -ne 0 ; then no_result; fi
 echo hello > $work/test.C010/fred
 if test $? -ne 0 ; then no_result; fi
 
-activity="new test 181"
+activity="new test 197"
 $bin/aegis -nt -v > log 2>&1
 echo exit 0 > $work/test.C010/test/00/t0001a.sh
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -ca -f caf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 188"
+activity="build 204"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 192"
+activity="diff 208"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="test 196"
+activity="test 212"
 $bin/aegis -test -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 200"
+activity="develop end 216"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 204"
+activity="review pass 220"
 $bin/aegis -rpass 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 208"
+activity="integrate begin 224"
 $bin/aegis -ib 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 212"
+activity="integrate build 228"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 216"
+activity="integrate diff 232"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate test 220"
+activity="integrate test 236"
 $bin/aegis -test -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 224"
+activity="integrate pass 240"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change a file
 #
-activity="new change 231"
+activity="new change 247"
 cat > caf << 'fubar'
 brief_description = "two";
 cause = internal_enhancement;
@@ -253,54 +253,58 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 240"
+activity="develop begin 256"
 $bin/aegis -db 11 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="copy file 244"
+activity="copy file 260"
 $bin/aegis -cp $work/test.C011/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 echo "fred mark 2" > $work/test.C011/fred
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 251"
+activity="build 267"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 255"
+activity="diff 271"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 259"
+activity="set the change's UUID 275"
+$bin/aegis -cattr -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccdddddead > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="develop end 279"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 263"
+activity="review pass 283"
 $bin/aegis -rpass 11 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 267"
+activity="integrate begin 287"
 $bin/aegis -ib 11 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 271"
+activity="integrate build 291"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 275"
+activity="integrate diff 295"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 279"
+activity="integrate pass 299"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="clone 283"
+activity="clone 303"
 $bin/aegis -clone 11 -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="check change file state 287"
+activity="check change file state 307"
 cat > ok << 'fubar'
 src =
 [
@@ -320,7 +324,7 @@ fubar
 if test $? -ne 0 ; then no_result; fi
 check_it ok $work/test/info/change/0/012.fs
 
-activity="check change state 307"
+activity="check change state 327"
 cat > ok << 'fubar'
 brief_description = "two (clone of D002)";
 description = "two";
@@ -335,6 +339,13 @@ architecture =
 copyright_years =
 [
 	YYYY,
+];
+attribute =
+[
+	{
+		name = "original-UUID";
+		value = "aaaaaaaa-bbbb-4bbb-8ccc-ccccdddddead";
+	},
 ];
 state = being_developed;
 development_directory = ".../test.C012";
@@ -356,7 +367,7 @@ fubar
 if test $? -ne 0 ; then no_result; fi
 check_it ok $work/test/info/change/0/012
 
-activity="check project state 343"
+activity="check project state 370"
 cat > ok << 'fubar'
 brief_description = "The \"test\" program.";
 description = "The \"test\" program.";
@@ -443,11 +454,11 @@ fubar
 if test $? -ne 0 ; then no_result; fi
 check_it ok $work/test/info/trunk
 
-activity="build 435"
+activity="build 457"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 439"
+activity="develop end 461"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 1 ; then cat log; no_result; fi
 

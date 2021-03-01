@@ -309,7 +309,7 @@ integrate_begin_undo_main(void)
     //
     // remove the integration directory on success
     //
-    if (user_delete_file_query(up, dir, 1))
+    if (user_delete_file_query(up, dir, true, true))
     {
         change_verbose(cp, 0, i18n("remove integration directory"));
         project_become(pp);

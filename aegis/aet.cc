@@ -1322,7 +1322,7 @@ test_main(void)
 	{
 	    batch_result_ty *rp = &brlp->item[j];
 	    if (!rp->architecture)
-		rp->architecture = change_architecture_name(cp, 1);
+		rp->architecture = str_copy(change_architecture_name(cp, 1));
 	    trace(("rp->filename = \"%s\"\n", rp->file_name->str_text));
 	    trace(("rp->exit_status = %d\n", rp->exit_status));
 	    trace(("rp->architecture = \"%s\"\n", rp->architecture->str_text));
@@ -1399,7 +1399,6 @@ test_main(void)
 		case 0:
 		    if (baseline_flag)
 		    {
-			trace(("mark\n"));
 			change_file_test_baseline_time_clear
 			(
 			    cp,
@@ -1409,7 +1408,6 @@ test_main(void)
 		    }
 		    else
 		    {
-			trace(("mark\n"));
 			change_file_test_time_set
 			(
 			    cp,
@@ -1423,7 +1421,6 @@ test_main(void)
 		case 1:
 		    if (baseline_flag)
 		    {
-			trace(("mark\n"));
 			change_file_test_baseline_time_set
 			(
 			    cp,
@@ -1434,7 +1431,6 @@ test_main(void)
 		    }
 		    else
 		    {
-			trace(("mark\n"));
 			change_file_test_time_clear
 		       	(
 			    cp,
@@ -1447,7 +1443,6 @@ test_main(void)
 		default:
 		    if (baseline_flag)
 		    {
-			trace(("mark\n"));
 			change_file_test_baseline_time_clear
 			(
 			    cp,
@@ -1457,7 +1452,6 @@ test_main(void)
 		    }
 		    else
 		    {
-			trace(("mark\n"));
 			change_file_test_time_clear
 			(
 			    cp,

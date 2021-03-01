@@ -1,6 +1,7 @@
 //
 //      aegis - project change supervisor
 //      Copyright (C) 1991-2006 Peter Miller;
+//      Copyright (C) 2006 Walter Franzini;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -32,6 +33,7 @@
 #include <common/error.h>
 #include <common/mem.h>
 #include <common/now.h>
+#include <common/nstring/list.h>
 #include <common/progname.h>
 #include <common/quit.h>
 #include <common/str_list.h>
@@ -530,6 +532,7 @@ integrate_pass_main(void)
     pcp = pp->change_get();
     diff_whine = 0;
     pconf_ty *pconf_data = change_pconf_get(cp, 0);
+    nstring_list removed_file;
     for (j = 0;; ++j)
     {
         fstate_src_ty   *c_src_data;
@@ -575,6 +578,7 @@ integrate_pass_main(void)
 		if (j != 0 || change_file_nth(cp, 1, view_path_first))
 		{
 		    change_file_remove(cp, c_src_data->file_name);
+                    removed_file.push_back(nstring(c_src_data->file_name));
 		    --j;
 		    continue;
 		}
@@ -696,7 +700,14 @@ integrate_pass_main(void)
             str_free(p_src_data->uuid);
             p_src_data->uuid = 0;
         }
-        if (!c_src_data->uuid && c_src_data->action == file_action_create)
+        if
+        (
+            !c_src_data->uuid
+        &&
+            c_src_data->action == file_action_create
+        &&
+            !change_was_a_branch(cp)
+        )
             c_src_data->uuid = universal_unique_identifier();
         if (c_src_data->uuid)
             p_src_data->uuid = str_copy(c_src_data->uuid);
@@ -1783,6 +1794,19 @@ integrate_pass_main(void)
                     history_version_copy(p_src_data->edit);
             }
         }
+    }
+
+    //
+    // Unlock the files removed because unchanged.
+    //
+    for (size_t i = 0; i < removed_file.size(); ++i)
+    {
+        fstate_src_ty   *p_src_data =
+            change_file_find(pcp, removed_file[i], view_path_first);
+        if (!p_src_data)
+            continue;
+
+        p_src_data->locked_by = 0;
     }
     quit_unregister(aborter);
     change_run_history_transaction_end_command(cp);

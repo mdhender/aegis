@@ -29,6 +29,9 @@ unset AEGIS
 unset LINES
 unset COLS
 umask 022
+unset LANGUAGE
+LANG=C
+export LANG
 
 USER=${USER:-${LOGNAME:-`whoami`}}
 
@@ -68,7 +71,7 @@ check_it()
                 -e 's/value = ".*"/value = "UUID"/' \
 		< $2 > $work/sed.out
 	if test $? -ne 0; then no_result; fi
-	diff -u $1 $work/sed.out
+	diff $1 $work/sed.out
 	if test $? -ne 0; then fail; fi
 }
 
@@ -364,7 +367,6 @@ if test $? -ne 0 ; then no_result; fi
 # build a distribution set
 #
 activity="send the change 355"
-ulimit -c unlimited
 $bin/aedist -send -ndh -c 2 -o test.ae \
     --entire-source > log 2>&1
 if test $? -ne 0 ; then fail; fi
@@ -438,7 +440,6 @@ foo: main.o test2.o
 EOF
 if test $? -ne 0 ; then cat log; no_result; fi
 
-ulimit -c unlimited
 $bin/aedist -send -entire_source -ndh -c 2 -o $work/c2.ae > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -459,7 +460,7 @@ $work/c2.d/src/test2.c
 EOF
 if test $? -ne 0 ; then cat log; no_result; fi
 
-find $work/c2.d -type f -print | sort > test.out
+find $work/c2.d -type f -print | LANG=C sort > test.out
 if test $? -ne 0 ; then cat log; no_result; fi
 
 diff $work/test.ok $work/test.out
@@ -672,7 +673,6 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # build a distribution set
 #
 activity="send the archive 663"
-ulimit -c unlimited
 $bin/aedist -send -ndh -bl -o c3.ae \
     --entire-source -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi

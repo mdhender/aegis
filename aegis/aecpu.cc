@@ -633,7 +633,7 @@ copy_file_undo_main(void)
 	// delete the file if it exists
 	// and the users wants us to
 	//
-	if (exists && user_delete_file_query(up, s1, 0))
+	if (exists && user_delete_file_query(up, s1, false, -1))
 	{
 	    //
             // This is not as robust in the face of

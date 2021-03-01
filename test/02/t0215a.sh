@@ -2,6 +2,7 @@
 #
 #	aegis - project change supervisor
 #	Copyright (C) 2005 Peter Miller;
+#	Copyright (C) 2006 Walter Franzini;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -110,6 +111,23 @@ no_result()
 	rm -rf $work
 	exit 2
 }
+
+check_it()
+{
+	sed	-e "s|$work|...|g" \
+		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
+		-e "s/\"$USER\"/\"USER\"/g" \
+		-e 's/uuid = ".*"/uuid = "UUID"/' \
+		-e 's/19[0-9][0-9]/YYYY/' \
+		-e 's/20[0-9][0-9]/YYYY/' \
+		-e 's/node = ".*"/node = "NODE"/' \
+		-e 's/crypto = ".*"/crypto = "GUNK"/' \
+		< $2 > $work/sed.out
+	if test $? -ne 0; then no_result; fi
+	diff $1 $work/sed.out
+	if test $? -ne 0; then fail; fi
+}
+
 trap \"no_result\" 1 2 3 15
 
 activity="create test directory 99"
@@ -296,6 +314,125 @@ if test $? -ne 0 ; then no_result; fi
 
 diff test.ok test.out
 if test $? -ne 0 ; then fail; fi
+
+activity="check 002.fs"
+cat > ok <<EOF
+src =
+[
+	{
+		file_name = "barney";
+		uuid = "UUID";
+		action = modify;
+		edit =
+		{
+			revision = "2";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1";
+			encoding = none;
+		};
+		usage = source;
+	},
+];
+EOF
+if test $? -ne 0; then no_result; fi
+
+check_it ok $work/proj.dir/info/change/0/002.fs
+
+activity="check 002.pfs"
+cat > ok <<EOF
+src =
+[
+	{
+		file_name = "aegis.conf";
+		uuid = "UUID";
+		action = create;
+		edit =
+		{
+			revision = "1";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1";
+			encoding = none;
+		};
+		usage = config;
+		file_fp =
+		{
+			youngest = TIME;
+			oldest = TIME;
+			crypto = "GUNK";
+		};
+		diff_file_fp =
+		{
+			youngest = TIME;
+			oldest = TIME;
+			crypto = "GUNK";
+		};
+	},
+	{
+		file_name = "barney";
+		uuid = "UUID";
+		action = create;
+		edit =
+		{
+			revision = "2";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "2";
+			encoding = none;
+		};
+		usage = source;
+		file_fp =
+		{
+			youngest = TIME;
+			oldest = TIME;
+			crypto = "GUNK";
+		};
+		diff_file_fp =
+		{
+			youngest = TIME;
+			oldest = TIME;
+			crypto = "GUNK";
+		};
+	},
+	{
+		file_name = "fred";
+		uuid = "UUID";
+		action = create;
+		edit =
+		{
+			revision = "1";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1";
+			encoding = none;
+		};
+		usage = source;
+		file_fp =
+		{
+			youngest = TIME;
+			oldest = TIME;
+			crypto = "GUNK";
+		};
+		diff_file_fp =
+		{
+			youngest = TIME;
+			oldest = TIME;
+			crypto = "GUNK";
+		};
+	},
+];
+EOF
+
+check_it ok $work/proj.dir/info/change/0/002.pfs
 
 #
 # Only definite negatives are possible.

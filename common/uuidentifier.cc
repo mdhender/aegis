@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller
+//	Copyright (C) 2005, 2006 Peter Miller
 //	Copyright (C) 2004 Walter Franzini;
 //	All rights reserved.
 //
@@ -96,6 +96,7 @@ make_uuid(void)
 	goto failed;
     assert(NULL != vp);
     string_ty *s1 = str_n_from_c((char *)vp, UUID_LEN_STR);
+    uuid_destroy(uuid);
     free(vp);
     string_ty *s2 = str_downcase(s1);
     str_free(s1);

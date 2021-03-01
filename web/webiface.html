@@ -199,6 +199,249 @@ cd
 rm xxx.tgz
 </pre>
 .fi
+</blockquote>
+The tarball is about 15MB so the upload time isn't too bad.
+<li>
+<a name="num7">Now upload your project.</a>
+I use <i>rsync</i> for efficient differential
+uploads.  The directory needs to be inside the chroot jail, but outside
+the <i>htdocs</i> directory.
+The instructions assume it is in the
+<tt >/home/groups/<i >p</i>/<i >pr</i>/<i >project</i>/<i >project</i></tt>
+directory.
+You need the whole project tree, but you can leave out derived files
+in the baselines (<i>e.g.</i> <tt>.o</tt> files, <tt>.a</tt> files and
+executables).
+<li>
+Edit <tt >/home/groups/<i >p</i>/<i >pr</i>/<i >project</i>/com/aegis/state</tt>
+to point at the project tree.
+Something like <blockquote>
+<pre>where =
+.nf
+[
+  {
+    project_name = "<i>project</i>";
+    directory = "/home/groups/<i >p</i>/<i >pr</i>/<i >project</i>/<i
+    >project</i>";
+  },
+.fi
+];</pre></blockquote>
+<li>
+</ol>
+If this takes off, I'll ask the SourceForge people to install it, so
+that most of these instructions are unnecessary.
+</body></html>
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2002-2005 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: input for archive/webiface.html
+.\"
+.de an-p-footer
+..
+.ad l
+.hy 0
+.so version.so
+<html><head>
+.br
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+.br
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+.br
+<title>Aegis Web Interface</title></head>
+<body bgcolor="#ffffff"><h1>
+<img src="aegis.png" align=left>
+<img src="aegis.png" align=right>
+<center>Aegis \*(v)<br>Web Interface</center></h1>
+Aegis has a read-only web interface to its database.  There is a page
+which uses Aegis' own web interface to look at Aegis' own development
+(because Aegis is developed using Aegis).  If you have Apache installed
+when Aegis is configured and built, this interface (to your projects,
+not this one) will be installed for you at your site, too.
+.br
+<p>
+The <a
+.br
+href="/cgi-bin/aeget">
+top-level view</a>
+is of all SourceForge projects being managed by Aegis.
+You can drill down to everything else from this point.
+(See also the old <a
+.br
+href="/cgi-bin/aegis.cgi?">
+.br
+aegis.cgi</a> interface.)
+.br
+<p>
+The <a
+.br
+href="/cgi-bin/aeget/aegis.\*(v)/?menu">
+.br
+project</a> page.  Every project (and each branch) has one.  In this
+case you will be taken to the one for Aegis \*(v).
+(See also the old <a
+.br
+href="/cgi-bin/aegis.cgi?file@proj_menu+project@aegis.\*(v)">
+.br
+aegis.cgi</a> interface.)
+.br
+<p>
+The <a
+.br
+href="/cgi-bin/aeget/aegis.\*(v)/?changes+completed">
+.br
+completed changes</a>
+page lists all of the completed changes to date (on the development branch).
+This is the bleeding edge.
+The <i>Download</i> links are only of interest to Aegis developers, but
+they demonstrate <i>how</i> an Internet project (or a global VPN project)
+could distribute change sets.  Click on the change number for more
+information about each change.
+(See also the old <a
+.br
+href="/cgi-bin/aegis.cgi?file@proj_hstry+project@aegis.\*(v)">
+.br
+aegis.cgi</a> interface.)
+.br
+</table>
+.br
+<hr>
+<h2 align=center> SourceForge </h2>
+Is your project hosted at
+<a href="http://sourceforge.net"><img
+.br
+src="http://sourceforge.net/sflogo.php?group_id=224&amp;type=1"
+.br
+width="88" height="31" border="0" alt="SourceForge.net Logo" align=right>
+SourceForge</a>?
+.br
+<ol><li>
+If so, there is <b>no need</b> for you
+to compile Aegis to run on SourceForge, because <i>it is already there</i>.
+<li>
+You will need to <a href="#num7">upload your project tree</a>, as
+mentioned in the instructions below.
+<li>
+Send email to <a href="mailto:millerp@canb.auug.org.au">Peter Miller</a>
+he will add a project pointer and your project will appear in the
+<a href="/cgi-bin/aeget">list of projects</a>.
+</ol>
+.br
+<hr>
+<h2 align=center> SourceForge Hack </h2>
+.br
+This section contains instructions for building and installing the CGI
+interface like the one that runs at <tt>sourceforge.net</tt>, but on
+your own server.  You need an externally accessable server, outside your
+firewall, to host an Internet accessable Aegis project in this way.
+<p>
+You then update the external tree using <i>rsync</i> or similar, either
+weekly or at integrate pass, or something.
+.br
+<p>
+Using the Aegis web interface like the one on SourceForge is a little
+different than
+at your own site, due to the chroot jail that is used.  (Change these
+instructions to suit the name of your project.)  You wont be able to
+compile on SourceForge, so do it on a Linux PC elsewhere.
+<ol>
+<li>
+Configure with <i>./configure
+.br
+--prefix=/home/groups/a/ae/aegis
+.br
+--with-no-aegis-configured</i>
+<li>
+Edit the generated Makefile,
+<ul>
+<li>add <tt>-DSOURCE_FORGE_HACK</tt> to the CXXFLAGS variable;
+<li>add <tt>-static</tt> to the LDFLAGS variable, to make sure the right
+version of the libraries statically linked into the executables.
+</ul>
+<li>
+Now you can <i>make</i> as normal.
+<li>
+You can use the RPM_BUILD_ROOT setting of the Makefile, or you can
+<i>mkdir -p /home/groups/a/ae/aegis/cgi-bin</i>
+<li>
+When you <i>make install</i>, you will then need to cull the install
+tree of unneccessary files.
+You only need
+<i>bin/ae_diff2htm</i>,
+<i>bin/aedist</i>,
+<i>bin/aeget</i>,
+<i>bin/aegis</i>,
+<i>bin/aegis.cgi</i>,
+<i>bin/aepatch</i>,
+<i>bin/aerect</i>,
+<i>bin/aereport</i>,
+<i>bin/aetar</i>,
+and the
+<i>share/en/html</i> tree.
+The rest can be removed.
+<blockquote>
+.nf
+<pre>cd /home/groups/a/ae/aegis
+mkdir -m755 cgi-bin
+for f in \
+    aeannotate aebuffy aecomp aecomplete ae-cvs-ci aecvsserver     \
+    aeedit aefind aeget.instal aegis.cgi.i aeimport aeintegratq    \
+    aels aemeasure aepromptcmd ae-sccs-put aesub aexml tkaeca      \
+    tkaegis tkaenc tkaepa tkaer xaegis
+do
+    rm bin/$f
+done
+strip bin/*
+rm -r com lib man etc
+mkdir -p share-new/en
+mv share/en/html share-new/en
+rm -r share
+mv share-new share</pre>
+.fi
+</blockquote>
+<li>
+You will need to create a couple of shell scripts in the <i>cgi-bin</i>
+directory to set the command search PATH and then invoke <i>aeget</i>
+or <i>aegis.cgi</i> as appropriate.
+<blockquote>
+.nf
+<pre>#!/bin/sh
+cmd=`basename $0`
+bin=/home/groups/a/ae/aegis/bin
+PATH=${bin}:$PATH
+export PATH
+exec $bin/$cmd "$@"
+.fi
+</blockquote>
+<li>
+Total size is about 50MB (shared libraries would <i>really</i> help).
+Make a tarball, <i>scp</i> it to SourceForge, unpack at the other end.
+<blockquote>
+.nf
+<pre>tar czf xxx.tgz bin cgi-bin share
+scp xxx.tgz aegis.sourceforge.net:.
+ssh aegis.sourceforge.net
+cd /home/groups/a/ae/aegis
+tar xf ~/xxx.tgz
+cd
+rm xxx.tgz
+</pre>
+.fi
     </blockquote>
     The tarball is about 15MB so the upload time isn't too bad.
     <li>

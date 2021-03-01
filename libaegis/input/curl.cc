@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -76,10 +76,6 @@ input_curl::~input_curl()
     curl_buffer_position = 0;
     curl_buffer_length = 0;
     curl_buffer_maximum = 0;
-#if (LIBCURL_VERSION_NUM < 0x070b01)
-    delete userpass;
-    delete proxy;
-#endif
 }
 
 
@@ -155,18 +151,18 @@ input_curl::input_curl(const nstring &arg) :
             os_become_undo();
             url proxy_url(http_proxy);
             os_become(uid, gid, umask);
-            userpass = new nstring(proxy_url.get_userpass());
-            proxy = new nstring(proxy_url.reassemble(true));
-            if (!userpass->empty())
+            userpass = proxy_url.get_userpass();
+            proxy = proxy_url.reassemble(true);
+            if (!userpass.empty())
             {
                 curl_easy_setopt
                 (
                     handle,
                     CURLOPT_PROXYUSERPWD,
-                    userpass->c_str()
+                    userpass.c_str()
                 );
             }
-            curl_easy_setopt(handle, CURLOPT_PROXY, proxy->c_str());
+            curl_easy_setopt(handle, CURLOPT_PROXY, proxy.c_str());
         }
     }
 #endif

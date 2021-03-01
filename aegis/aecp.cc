@@ -788,7 +788,7 @@ delete_file_p(user_ty *up, string_ty *filename)
     int             result;
 
     user_become_undo();
-    result = user_delete_file_query(up, filename, 0);
+    result = user_delete_file_query(up, filename, false, true);
     user_become(up);
     return result;
 }

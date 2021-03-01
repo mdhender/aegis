@@ -225,8 +225,15 @@ main(int argc, char **argv)
     if (change_number > 0)
     {
 	//
+	// locate user data
+	//
+	user_ty *up = user_executing(pp);
+
+	//
 	// locate change data
 	//
+	if (!change_number)
+	    change_number = user_default_change(up);
 	cp = change_alloc(pp, change_number);
 	change_bind_existing(cp);
     }

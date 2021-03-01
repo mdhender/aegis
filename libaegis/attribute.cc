@@ -1,6 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 2004-2006 Peter Miller;
+//	Copyright (C) 2006 Walter Franzini;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -157,4 +158,40 @@ attributes_list_append_unique(attributes_list_ty *alp, const char *name,
     // append it to the end of the list.
     //
     attributes_list_append(alp, name, value->str_text);
+}
+
+void
+attributes_list_append_unique(attributes_list_ty *alp, const char *name,
+    const char *value)
+{
+    assert(alp);
+    if (!alp)
+	return;
+
+    //
+    // If this exact name and value is already present,
+    // return without doing anything.
+    //
+    for (size_t j = 0; j < alp->length; ++j)
+    {
+	attributes_ty *ap = alp->list[j];
+	assert(ap);
+	assert(ap->name);
+	assert(ap->value);
+	if
+	(
+	    0 == strcasecmp(ap->name->str_text, name)
+	&&
+	    strcmp(ap->value->str_text, value)
+	)
+	{
+	    return;
+	}
+    }
+
+    //
+    // Now that we know it is a unique pair,
+    // append it to the end of the list.
+    //
+    attributes_list_append(alp, name, value);
 }

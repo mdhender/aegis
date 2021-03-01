@@ -514,7 +514,7 @@ new_file_undo_main(void)
 	user_become(up);
 	exists = os_exists(s2);
 	user_become_undo();
-	if (exists && user_delete_file_query(up, s1, 0))
+	if (exists && user_delete_file_query(up, s1, false, -1))
 	{
 	    //
             // This is not as robust in the face of errors as using

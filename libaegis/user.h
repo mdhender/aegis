@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1992-2000, 2002-2005 Peter Miller;
+//	Copyright (C) 1992-2000, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -94,7 +94,25 @@ int user_gid_check(string_ty *);
 void user_become(user_ty *);
 void user_become_undo(void);
 
-int user_delete_file_query(user_ty *, string_ty *, int);
+/**
+  * The user_delete_file_query function is used to determine whether a
+  * file should be deleted or not.
+  *
+  * @param up
+  *     The user in question
+  * @param filename
+  *     The name of the file to be deleted
+  * @param isdir
+  *     whether the file is a directory (true) or a regular file (false).
+  * @param default_preference
+  *     If the user gave no preference on the command line, use this instead.
+  *     1 -> true, 0 -> false, -1 -> look in .aegisrc
+  * @returns
+  *     true if the file should be deleted, or false if it should not.
+  */
+bool user_delete_file_query(user_ty *up, string_ty *filename, bool isdir,
+    int default_preference);
+
 void user_delete_file_argument(void (*)(void));
 
 int user_diff_preference(user_ty *);

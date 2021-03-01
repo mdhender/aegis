@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -42,9 +41,17 @@ change_run_develop_begin_undo_command(change_ty *cp, user_ty *up)
 
     the_command = pconf_data->develop_begin_undo_command;
     the_command = substitute(0, cp, the_command);
-    dir = os_curdir();
+
     change_env_set(cp, 0);
     user_become(up);
+
+    //
+    // The reason this code calls os_curdir and instead of calling
+    // change_development_directory_get is that the development
+    // directory is gone by the time this is called.
+    //
+    dir = os_curdir();
+
     os_execute(the_command, OS_EXEC_FLAG_NO_INPUT + OS_EXEC_FLAG_ERROK, dir);
     user_become_undo();
     str_free(the_command);

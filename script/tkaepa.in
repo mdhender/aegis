@@ -2,8 +2,7 @@
 #-*-tcl-*-
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001, 2002, 2005 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 2001, 2002, 2005-2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -29,6 +28,7 @@ exec wish $0 ${1+"$@"}
 set bindir @bindir@
 set libdir @libdir@
 set datadir @datadir@
+set datarootdir @datarootdir@
 
 wm title . Aepa
 wm iconname . Aepa

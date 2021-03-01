@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1999, 2001-2006 Peter Miller
+//      Copyright (C) 2006 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -25,29 +25,30 @@
 #include <common/ac/stdlib.h>
 #include <common/ac/string.h>
 
-#include <libaegis/ael/project/projects.h>
 #include <aegis/aenpr.h>
-#include <libaegis/arglex2.h>
+#include <common/error.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/trace.h>
+#include <common/str_list.h>
+#include <libaegis/ael/project/projects.h>
 #include <libaegis/arglex/project.h>
+#include <libaegis/arglex2.h>
 #include <libaegis/change.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/commit.h>
-#include <common/error.h>
 #include <libaegis/gonzo.h>
 #include <libaegis/help.h>
 #include <libaegis/io.h>
 #include <libaegis/lock.h>
 #include <libaegis/os.h>
-#include <common/progname.h>
 #include <libaegis/project.h>
+#include <libaegis/project/history.h>
 #include <libaegis/project/pattr/edit.h>
 #include <libaegis/project/pattr/get.h>
 #include <libaegis/project/pattr/set.h>
 #include <libaegis/project/verbose.h>
-#include <libaegis/project/history.h>
-#include <common/quit.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
 #include <libaegis/undo.h>
 #include <libaegis/user.h>
 
@@ -84,6 +85,49 @@ new_project_list(void)
     while (arglex_token != arglex_token_eoln)
 	generic_argument(new_project_usage);
     list_projects(0, 0, 0);
+}
+
+
+static void
+new_administrator_add(project_ty *pp, user_ty *candidate)
+{
+    assert(pp);
+    assert(candidate);
+
+    trace(("new_administrator_add(\"%s\", \"%s\")\n{\n",
+           pp->name_get()->str_text, user_name(candidate)->str_text));
+
+    //
+    // make sure user exists
+    //
+    if (!user_uid_check(user_name(candidate)))
+        fatal_user_too_privileged(user_name(candidate));
+
+    string_list_ty wlp;
+    pp->list_inner(wlp);
+    for (size_t j = 0; j < wlp.size(); ++j)
+    {
+        trace(("branch = %s;\n", wlp.string[j]->str_text));
+        project_ty *branch = project_alloc(wlp.string[j]);
+
+        branch->bind_existing();
+
+        //
+        // Add the administrator to the current project.
+        //
+        if (!project_administrator_query(branch, user_name(candidate)))
+        {
+            project_administrator_add(branch, user_name(candidate));
+
+            //
+            // write the project state
+            //	    (the trunk change state is implicitly written)
+            branch->pstate_write();
+        }
+        project_free(branch);
+    }
+    trace(("return;\n"));
+    trace(("}\n"));
 }
 
 
@@ -499,7 +543,7 @@ new_project_main(void)
 	if (gonzo_project_home_path_from_name(project_name))
 	{
 	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Name", pp->name);
+	    sub_var_set_string(scp, "Name", pp->name_get());
 	    fatal_intl(scp, i18n("project $name exists"));
 	    // NOTREACHED
 	    sub_context_delete(scp);
@@ -583,26 +627,33 @@ new_project_main(void)
     // create each of the branches
     //
     ppp = pp;
-    for (j = 0; !keep && j < version_number_length; ++j)
+    if (keep)
     {
-	trace(("ppp = %8.8lX\n", (long)ppp));
-	long change_number = magic_zero_encode(version_number[j]);
-	trace(("change_number = %ld;\n", change_number));
-	ppp = project_new_branch(ppp, up, change_number);
-	version_pp[j] = ppp;
+        new_administrator_add(pp, up);
     }
+    else
+    {
+        for (j = 0; j < version_number_length; ++j)
+        {
+            trace(("ppp = %8.8lX\n", (long)ppp));
+            long change_number = magic_zero_encode(version_number[j]);
+            trace(("change_number = %ld;\n", change_number));
+            ppp = project_new_branch(ppp, up, change_number);
+            version_pp[j] = ppp;
+        }
 
-    //
-    // write the project state
-    //	    (the trunk change state is implicitly written)
-    //
-    // Write each of the branch state.	You must write *after* the
-    // next branch down is created, because creating a branch alters
-    // pstate.
-    //
-    pp->pstate_write();
-    for (j = 0; j < version_number_length; ++j)
-	version_pp[j]->pstate_write();
+        //
+        // write the project state
+        //	    (the trunk change state is implicitly written)
+        //
+        // Write each of the branch state.	You must write *after* the
+        // next branch down is created, because creating a branch alters
+        // pstate.
+        //
+        pp->pstate_write();
+        for (j = 0; j < version_number_length; ++j)
+            version_pp[j]->pstate_write();
+    }
     gonzo_gstate_write();
 
     //

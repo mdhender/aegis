@@ -30,6 +30,22 @@ unset LINES
 unset COLS
 umask 022
 
+#
+# This test doesn't work for HP/UX
+#
+system=`uname -s`
+case "$system" in
+*HP?UX*)
+    echo ''
+    echo '	This test is not meaningful for HP/UX'
+    echo '	It is declared to pass by default.'
+    echo ''
+    exit 0
+    ;;
+*)
+    ;;
+esac
+
 USER=${USER:-${LOGNAME:-`whoami`}}
 
 work=${AEGIS_TMP:-/tmp}/$$

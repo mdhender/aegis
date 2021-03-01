@@ -31,6 +31,9 @@ project_file_path(project_ty *pp, fstate_src_ty *src)
 {
     trace(("project_file_path(pp = %8.8lX, src = %08lX)\n{\n", (long)pp,
 	(long)src));
+    trace(("pp->name_get() = \"%s\"\n", pp->name_get()->str_text));
+    trace(("src->file_name = \"%s\"\n",
+	((src && src->file_name) ? src->file_name->str_text : "")));
     project_ty *ppp = pp;
     for (ppp = pp; ppp; ppp = (ppp->is_a_trunk() ? 0 : ppp->parent_get()))
     {
@@ -75,8 +78,16 @@ project_file_path(project_ty *pp, fstate_src_ty *src)
 	trace(("}\n"));
 	return result;
     }
-    this_is_a_bug();
-    trace(("return NULL;\n"));
+
+    //
+    // We failed to find the file by UUID, so now we look again by
+    // name.  This situation can arrise when two branches independently
+    // create the name file (by name), and then a cross branch merge is
+    // attempted.
+    //
+    string_ty *result = project_file_path(pp, src->file_name);
+    assert(result);
+    trace(("return \"%s\";\n", result->str_text));
     trace(("}\n"));
-    return 0;
+    return result;
 }

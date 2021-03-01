@@ -109,7 +109,7 @@ check_it()
 		-e 's/crypto = ".*"/crypto = "GUNK"/' \
 		< $2 > $work/sed.out
 	if test $? -ne 0; then no_result; fi
-	diff -U1000 $1 $work/sed.out
+	diff $1 $work/sed.out
 	if test $? -ne 0; then fail; fi
 }
 

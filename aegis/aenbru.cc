@@ -261,7 +261,7 @@ new_branch_undo_main(void)
     // remove the development directory
     //
     dd = change_top_path_get(cp, 1);
-    if (user_delete_file_query(up, dd, 1))
+    if (user_delete_file_query(up, dd, true, true))
     {
 	change_verbose(cp, 0, i18n("remove development directory"));
 	project_become(pp);

@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 1999-2006 Peter Miller;
-//	Copyright (C) 2004, 2005 Walter Franzini;
+//	Copyright (C) 2004, 2005, 2007 Walter Franzini;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -79,13 +79,24 @@ have_it_already(cstate_ty *change_set, fstate_src_ty *src_data)
     if (!change_set->src)
 	return false;
 
-    // first we look by uuid
+    //
+    // first we look by uuid, we *must* use also the name in order to
+    // properly handle renames.  With renames we have 2 entries with
+    // the same UUID.
+    //
     if (src_data->uuid)
     {
 	for (j = 0; j < change_set->src->length; ++j)
 	{
 	    dst_data = change_set->src->list[j];
-	    if (dst_data->uuid && str_equal(dst_data->uuid, src_data->uuid))
+	    if
+            (
+                dst_data->uuid
+            &&
+                str_equal(dst_data->uuid, src_data->uuid)
+            &&
+                str_equal(dst_data->file_name, src_data->file_name)
+            )
 		return true;
 	}
     }
@@ -1345,7 +1356,7 @@ send_main(void)
 		src_data = pp->file_nth(j, view_path_simple);
 		if (!src_data)
 		    break;
-		if
+                if
 		(
 		    attributes_list_find_boolean
 		    (
@@ -1425,7 +1436,7 @@ send_main(void)
         //
         // A renamed to C
         //
-        trace_int_unsigned(change_set->src->length);
+        trace(("%ld\n",(long)change_set->src->length));
         for (size_t i = 0; i < change_set->src->length; ++i)
         {
             if (!change_set->src->list[i])

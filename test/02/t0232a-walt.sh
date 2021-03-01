@@ -2,6 +2,7 @@
 #
 #	aegis - project change supervisor
 #	Copyright (C) 2005 Walter Franzini;
+#	Copyright (C) 2006 Peter Miller
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -85,7 +86,7 @@ check_it()
 		-e 's/uuid = ".*"/uuid = "UUID"/' \
 		< $2 > $work/sed.out
 	if test $? -ne 0; then no_result; fi
-	diff -U10 $1 $work/sed.out
+	diff $1 $work/sed.out
 	if test $? -ne 0; then fail; fi
 }
 

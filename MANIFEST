@@ -815,6 +815,7 @@ common/ac/dce/rpc.cc	functions to manipulate rpcs
 common/ac/dce/rpc.h	interface definition for common/ac/dce/rpc.c
 common/ac/dirent.h	insulate against <dirent.h> vs <ndir.h> differences
 common/ac/errno.h	insulate against <errno.h> differences
+common/ac/execinfo.h	interface of the ac_execinfo class
 common/ac/fcntl.h	insulate against <fcntl.h> vs <sys/file.h> differences
 common/ac/grp.h	insulate against <grp.h> vagueries
 common/ac/libintl.cc	implement missing functions from <libintl.h>
@@ -976,6 +977,7 @@ common/str/identifier.cc	functions to manipulate identifiers
 common/str/lead_prefix.cc	functions to manipulate lead_prefixs
 common/str/quote.cc	functions to manipulate quotes
 common/str/replace.cc	implementation of the str_replace class
+common/str/trail_suffix.cc	implementation of the str_trailing_suffix function
 common/str/traili_suffi.cc	implementation of the str_traili_suffi class
 common/str/trim.cc	functions to manipulate trims
 common/str/upcase.cc	functions to manipulate upcases
@@ -2188,6 +2190,8 @@ libaegis/change/pconf/copyri_owner.cc	implementation of the change_ty::pconf_cop
 libaegis/change/pconf/get.cc	functions to manipulate gets
 libaegis/change/pfs.cc	implementation of the change_pfs class
 libaegis/change/pfs.h	interface of the change_pfs class
+libaegis/change/project_specifi/setenv/performe_get.cc	implementation of the
+libaegis/change/project_specifi/setenv/performe_set.cc	implementation of the
 libaegis/change/reviewer/already.cc	implementation of the change_reviewer_already class
 libaegis/change/reviewer/list.cc	implementation of the change_reviewer_list class
 libaegis/change/reviewer/name.cc	functions to manipulate reviewe_names
@@ -3136,14 +3140,27 @@ test/02/t0222a-pmil.sh	Test the ae-repo-ci functionality
 test/02/t0223a-pmil.sh	Test the html_quote href functionality
 test/02/t0224a-walt.sh	Test the aedist functionality
 test/02/t0225a-pmil.sh	Test the bzip2 functionality
+test/02/t0226a-pmil.sh	Test the aesub functionality
 test/02/t0227a-walt.sh	Test the cpio functionality
 test/02/t0228a-matt.sh	Test the aeget/?rssicon functionality
 test/02/t0229a-matt.sh	Test the rss_item functionality
+test/02/t0230a-pmil.sh	Test the aedbu functionality
 test/02/t0230a-walt.sh	Test the aedist -rec functionality
 test/02/t0231a-walt.sh	Test the aedist -rec functionality
 test/02/t0232a-walt.sh	Test the aedist functionality
 test/02/t0233a-walt.sh	Test aeipass vs. missing history_create_command
 test/02/t0234a-walt.sh	Test the aem -gp functionality
+test/02/t0235a-walt.sh	Test the ??? functionality
+test/02/t0237a-walt.sh	Test the aenf promotion functionality
+test/02/t0240a-walt.sh	Test the aeannotate functionality
+test/02/t0241a-walt.sh	Test the aeipass functionality
+test/02/t0244a-walt.sh	Test the aenpr -keep functionality
+test/02/t0247a-walt.sh	Test the aedist -rec functionality
+test/02/t0249a-walt.sh	Test the setenv:* functionality
+test/02/t0250a-ras.sh	Test the tricky symlink functionality
+test/02/t0251a-walt.sh	Test aedist branch move functionality
+test/02/t0252a-walt.sh	Test the aem functionality
+test/02/t0253a-walt.sh	Test the aedist -rec functionality
 test/activity.awk	Renumber activity lines in tests
 test/activity.sh	shell script to manipulate activitys
 test_base64/main.cc	functions to manipulate mains
@@ -3193,7 +3210,6 @@ web/translate.html	translate.html
 web/webiface.html	input for archive/webiface.html
 web/windowsnt.html	input for archive/aegis.html
 web/year2000.html	input for archive/aegis.html
-etc/CHANGES.txt	Change history of the project
 po/aegis.pot	English localization
 po/aegis.de.po	German localization
 po/aegis.en.po	English localization

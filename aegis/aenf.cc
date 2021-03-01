@@ -1,6 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 1991-2006 Peter Miller;
+//	Copyright (C) 2006 Walter Franzini;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -767,8 +768,16 @@ new_file_main(void)
 	    {
 		if (uuid)
 		    duplicate_option_by_name(arglex_token_uuid, new_file_usage);
-		uuid = src_data->uuid;
-		src_data->uuid = 0;
+		//
+		// If the file is moved and not removed we cannot
+		// reassign the UUID because this lead to duplicate
+		// UUIDs.
+		//
+                if (!src_data->move)
+                {
+                    uuid = src_data->uuid;
+                    src_data->uuid = 0;
+                }
 	    }
 	    change_file_remove(cp, s1);
 	}

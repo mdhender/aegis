@@ -1,7 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1996, 1999 Peter Miller;
-.\"	All rights reserved.
+.\"	Copyright (C) 1996, 1999, 2006, 2007 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -24,4 +23,5 @@
 .ds B) @bindir@
 .ds L) @libdir@
 .ds D) @datadir@
+.ds datarootdir @datarootdir@
 .ds S) @sharedstatedir@

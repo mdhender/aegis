@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2003-2006 Peter Miller
+//	Copyright (C) 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -39,7 +39,12 @@ change_env_set(change_ty *cp, int with_arch)
     // if specified.
     //
     pconf_ty *pconf_data = change_pconf_get(cp, 0);
-    if (pconf_data->project_specific)
+    if
+    (
+        pconf_data->project_specific
+    &&
+        !cp->project_specific_setenv_performed_get()
+    )
     {
 	for (size_t j = 0; j < pconf_data->project_specific->length; ++j)
 	{
@@ -66,6 +71,7 @@ change_env_set(change_ty *cp, int with_arch)
 		    env_unset(name);
 	    }
 	}
+        cp->project_specific_setenv_performed_set();
     }
 
     //

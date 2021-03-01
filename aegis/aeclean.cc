@@ -216,7 +216,7 @@ clean_out_the_garbage(void *p, dir_walk_message_ty msg, string_ty *path,
 	if (sip->verbose)
 	    error_raw("rm %S", s1);
 	if (delete_me)
-	    delete_me = user_delete_file_query(sip->up, s1, 0);
+	    delete_me = user_delete_file_query(sip->up, s1, false, true);
 	user_become(sip->up);
 	if (delete_me)
 	    os_unlink_errok(path);
@@ -301,7 +301,7 @@ clean_out_the_garbage(void *p, dir_walk_message_ty msg, string_ty *path,
 	{
 	    if (sip->verbose)
 		error_raw("rm %S", s1);
-	    delete_me = user_delete_file_query(sip->up, s1, 0);
+	    delete_me = user_delete_file_query(sip->up, s1, false, true);
 	}
 	user_become(sip->up);
 

@@ -629,7 +629,10 @@ error_intl(sub_context_ty *scp, const char *message)
 	scp->error_intl(message);
 }
 
-inline void NORETURN
+inline void
+fatal_intl(sub_context_ty *, const char *) NORETURN;
+
+inline void
 fatal_intl(sub_context_ty *scp, const char *message)
 {
     if (!scp)

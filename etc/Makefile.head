@@ -94,6 +94,7 @@ exec_prefix = @exec_prefix@
 # This is where documents are parked.
 #
 datadir = @datadir@
+datarootdir = @datarootdir@
 
 #
 # where to put the data directories

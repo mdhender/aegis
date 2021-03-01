@@ -94,6 +94,7 @@ exec_prefix = @exec_prefix@
 # This is where documents are parked.
 #
 datadir = @datadir@
+datarootdir = @datarootdir@
 
 #
 # where to put the data directories
@@ -4060,21 +4061,22 @@ aegis/aeclone.$(OBJEXT): aegis/aeclone.cc common/ac/stdio.h \
 		libaegis/arglex2.h common/arglex.h \
 		libaegis/arglex/change.h common/str.h common/ac/stddef.h \
 		common/ac/stdarg.h libaegis/arglex/project.h \
-		libaegis/change.h libaegis/cstate.h common/ac/time.h \
-		libaegis/meta_lex.h libaegis/meta_parse.h \
-		libaegis/meta_type.h libaegis/fstate.h libaegis/pconf.h \
-		libaegis/view_path.h libaegis/zero.h \
-		libaegis/change/branch.h libaegis/change/file.h \
-		libaegis/commit.h common/error.h libaegis/file.h \
-		common/nstring.h libaegis/help.h libaegis/lock.h \
-		libaegis/os.h common/progname.h libaegis/project.h \
-		libaegis/pattr.h libaegis/pstate.h \
+		libaegis/change/attributes.h libaegis/change.h \
+		libaegis/cstate.h common/ac/time.h libaegis/meta_lex.h \
+		libaegis/meta_parse.h libaegis/meta_type.h \
+		libaegis/fstate.h libaegis/pconf.h libaegis/view_path.h \
+		libaegis/zero.h libaegis/change/branch.h \
+		libaegis/change/file.h libaegis/commit.h common/error.h \
+		libaegis/file.h common/nstring.h libaegis/help.h \
+		libaegis/lock.h libaegis/os.h common/progname.h \
+		libaegis/project.h libaegis/pattr.h libaegis/pstate.h \
 		libaegis/project/file.h libaegis/project/history.h \
 		common/quit.h common/quit/action.h common/str_list.h \
 		libaegis/sub.h libaegis/sub/diversion/stack.h \
 		libaegis/sub/diversion.h common/trace.h libaegis/undo.h \
 		libaegis/quit/action/undo.h libaegis/user.h \
-		libaegis/output.h libaegis/uconf.h libaegis/ustate.h
+		libaegis/output.h libaegis/uconf.h libaegis/ustate.h \
+		common/uuidentifier.h
 	$(CXX) -I. $(CXXFLAGS) -c aegis/aeclone.cc
 	mv aeclone.$(OBJEXT) $@
 
@@ -4404,13 +4406,14 @@ aegis/aeip.$(OBJEXT): aegis/aeip.cc common/ac/errno.h common/config.h \
 		common/ac/sys/types.h common/ac/unistd.h common/env.h \
 		common/main.h common/error.h common/mem.h \
 		common/ac/stddef.h common/now.h common/ac/time.h \
-		common/progname.h common/quit.h common/quit/action.h \
-		common/str_list.h common/str.h common/ac/stdarg.h \
-		common/trace.h common/uuidentifier.h common/nstring.h \
-		libaegis/ael/change/by_state.h libaegis/arglex2.h \
-		common/arglex.h libaegis/arglex/change.h \
-		libaegis/arglex/project.h libaegis/change/branch.h \
-		libaegis/change.h libaegis/cstate.h libaegis/meta_lex.h \
+		common/nstring/list.h common/nstring.h common/str.h \
+		common/ac/stdarg.h common/str_list.h common/progname.h \
+		common/quit.h common/quit/action.h common/trace.h \
+		common/uuidentifier.h libaegis/ael/change/by_state.h \
+		libaegis/arglex2.h common/arglex.h \
+		libaegis/arglex/change.h libaegis/arglex/project.h \
+		libaegis/change/branch.h libaegis/change.h \
+		libaegis/cstate.h libaegis/meta_lex.h \
 		libaegis/meta_parse.h libaegis/meta_type.h \
 		libaegis/fstate.h libaegis/pconf.h libaegis/view_path.h \
 		libaegis/zero.h libaegis/change/file.h \
@@ -4784,27 +4787,28 @@ aegis/aenpa.$(OBJEXT): aegis/aenpa.cc common/ac/stdio.h common/config.h \
 
 aegis/aenpr.$(OBJEXT): aegis/aenpr.cc common/ac/ctype.h common/config.h \
 		common/config.messy.h common/ac/stdio.h \
-		common/ac/stdlib.h common/ac/string.h \
-		libaegis/ael/project/projects.h common/main.h \
-		aegis/aenpr.h libaegis/arglex2.h common/arglex.h \
-		libaegis/arglex/project.h common/str.h common/ac/stddef.h \
-		common/ac/stdarg.h libaegis/change.h libaegis/cstate.h \
+		common/ac/stdlib.h common/ac/string.h aegis/aenpr.h \
+		common/main.h common/error.h common/progname.h \
+		common/quit.h common/quit/action.h common/trace.h \
+		common/ac/stddef.h common/str_list.h common/str.h \
+		common/ac/stdarg.h libaegis/ael/project/projects.h \
+		libaegis/arglex/project.h libaegis/arglex2.h \
+		common/arglex.h libaegis/change.h libaegis/cstate.h \
 		common/ac/time.h libaegis/meta_lex.h \
 		libaegis/meta_parse.h libaegis/meta_type.h \
 		libaegis/fstate.h libaegis/pconf.h libaegis/view_path.h \
 		libaegis/zero.h libaegis/change/branch.h \
-		libaegis/commit.h common/error.h libaegis/gonzo.h \
-		libaegis/gstate.h libaegis/help.h libaegis/io.h \
-		libaegis/lock.h libaegis/os.h common/nstring.h \
-		common/progname.h libaegis/project.h libaegis/pattr.h \
-		libaegis/pstate.h libaegis/project/pattr/edit.h \
+		libaegis/commit.h libaegis/gonzo.h libaegis/gstate.h \
+		libaegis/help.h libaegis/io.h libaegis/lock.h \
+		libaegis/os.h common/nstring.h libaegis/project.h \
+		libaegis/pattr.h libaegis/pstate.h \
+		libaegis/project/history.h libaegis/project/pattr/edit.h \
 		libaegis/project/pattr/get.h libaegis/project/pattr/set.h \
-		libaegis/project/verbose.h libaegis/project/history.h \
-		common/quit.h common/quit/action.h libaegis/sub.h \
+		libaegis/project/verbose.h libaegis/sub.h \
 		libaegis/sub/diversion/stack.h libaegis/sub/diversion.h \
-		common/trace.h libaegis/undo.h \
-		libaegis/quit/action/undo.h libaegis/user.h \
-		libaegis/output.h libaegis/uconf.h libaegis/ustate.h
+		libaegis/undo.h libaegis/quit/action/undo.h \
+		libaegis/user.h libaegis/output.h libaegis/uconf.h \
+		libaegis/ustate.h
 	$(CXX) -I. $(CXXFLAGS) -c aegis/aenpr.cc
 	mv aenpr.$(OBJEXT) $@
 
@@ -7138,6 +7142,13 @@ common/str/replace.$(OBJEXT): common/str/replace.cc common/ac/string.h \
 		common/stracc.h
 	$(CXX) -I. $(CXXFLAGS) -c common/str/replace.cc
 	mv replace.$(OBJEXT) $@
+
+common/str/trail_suffix.$(OBJEXT): common/str/trail_suffix.cc \
+		common/ac/string.h common/config.h common/config.messy.h \
+		common/str.h common/ac/stddef.h common/ac/stdarg.h \
+		common/main.h
+	$(CXX) -I. $(CXXFLAGS) -c common/str/trail_suffix.cc
+	mv trail_suffix.$(OBJEXT) $@
 
 common/str/traili_suffi.$(OBJEXT): common/str/traili_suffi.cc \
 		common/ac/string.h common/config.h common/config.messy.h \
@@ -12043,11 +12054,12 @@ libaegis/ael/change/details.$(OBJEXT): libaegis/ael/change/details.cc \
 		libaegis/aer/func.h libaegis/change.h libaegis/cstate.h \
 		libaegis/pconf.h libaegis/view_path.h libaegis/zero.h \
 		libaegis/change/file.h libaegis/col.h common/error.h \
-		common/now.h libaegis/option.h libaegis/output.h \
-		libaegis/project.h libaegis/pattr.h libaegis/pstate.h \
-		libaegis/project/file.h libaegis/project/history.h \
-		common/str_list.h common/trace.h libaegis/user.h \
-		libaegis/uconf.h libaegis/ustate.h
+		common/now.h common/nstring.h libaegis/option.h \
+		libaegis/output.h libaegis/project.h libaegis/pattr.h \
+		libaegis/pstate.h libaegis/project/file.h \
+		libaegis/project/history.h common/str_list.h \
+		common/trace.h libaegis/user.h libaegis/uconf.h \
+		libaegis/ustate.h
 	$(CXX) -I. $(CXXFLAGS) -c libaegis/ael/change/details.cc
 	mv details.$(OBJEXT) $@
 
@@ -15760,18 +15772,20 @@ libaegis/change/file/source.$(OBJEXT): libaegis/change/file/source.cc \
 	mv source.$(OBJEXT) $@
 
 libaegis/change/file/template.$(OBJEXT): libaegis/change/file/template.cc \
-		libaegis/change.h common/main.h libaegis/cstate.h \
-		common/ac/time.h common/config.h common/config.messy.h \
-		common/str.h common/ac/stddef.h common/ac/stdarg.h \
-		libaegis/meta_lex.h libaegis/meta_parse.h \
-		libaegis/meta_type.h libaegis/fstate.h libaegis/pconf.h \
-		libaegis/view_path.h libaegis/zero.h \
-		libaegis/change/env_set.h libaegis/change/file.h \
-		common/error.h libaegis/file.h common/nstring.h \
-		common/gmatch.h libaegis/os.h libaegis/sub.h \
+		common/error.h common/main.h common/gmatch.h \
+		common/trace.h common/ac/stddef.h common/config.h \
+		common/config.messy.h libaegis/change/env_set.h \
+		libaegis/change/file.h libaegis/change.h \
+		libaegis/cstate.h common/ac/time.h common/str.h \
+		common/ac/stdarg.h libaegis/meta_lex.h \
+		libaegis/meta_parse.h libaegis/meta_type.h \
+		libaegis/fstate.h libaegis/pconf.h libaegis/view_path.h \
+		libaegis/zero.h libaegis/file.h common/nstring.h \
+		libaegis/os.h libaegis/project/file.h libaegis/project.h \
+		libaegis/pattr.h libaegis/pstate.h libaegis/sub.h \
 		libaegis/sub/diversion/stack.h libaegis/sub/diversion.h \
-		common/trace.h libaegis/user.h libaegis/output.h \
-		libaegis/uconf.h libaegis/ustate.h
+		libaegis/user.h libaegis/output.h libaegis/uconf.h \
+		libaegis/ustate.h
 	$(CXX) -I. $(CXXFLAGS) -c libaegis/change/file/template.cc
 	mv template.$(OBJEXT) $@
 
@@ -16819,6 +16833,30 @@ libaegis/change/pfs.$(OBJEXT): libaegis/change/pfs.cc \
 		libaegis/pstate.h libaegis/commit.h
 	$(CXX) -I. $(CXXFLAGS) -c libaegis/change/pfs.cc
 	mv pfs.$(OBJEXT) $@
+
+libaegis/change/project_specifi/setenv/performe_get.$(OBJEXT): \
+		libaegis/change/project_specifi/setenv/performe_get.cc \
+		libaegis/change.h common/main.h libaegis/cstate.h \
+		common/ac/time.h common/config.h common/config.messy.h \
+		common/str.h common/ac/stddef.h common/ac/stdarg.h \
+		libaegis/meta_lex.h libaegis/meta_parse.h \
+		libaegis/meta_type.h libaegis/fstate.h libaegis/pconf.h \
+		libaegis/view_path.h libaegis/zero.h
+	$(CXX) -I. $(CXXFLAGS) -c \
+		libaegis/change/project_specifi/setenv/performe_get.cc
+	mv performe_get.$(OBJEXT) $@
+
+libaegis/change/project_specifi/setenv/performe_set.$(OBJEXT): \
+		libaegis/change/project_specifi/setenv/performe_set.cc \
+		libaegis/change.h common/main.h libaegis/cstate.h \
+		common/ac/time.h common/config.h common/config.messy.h \
+		common/str.h common/ac/stddef.h common/ac/stdarg.h \
+		libaegis/meta_lex.h libaegis/meta_parse.h \
+		libaegis/meta_type.h libaegis/fstate.h libaegis/pconf.h \
+		libaegis/view_path.h libaegis/zero.h
+	$(CXX) -I. $(CXXFLAGS) -c \
+		libaegis/change/project_specifi/setenv/performe_set.cc
+	mv performe_set.$(OBJEXT) $@
 
 libaegis/change/reviewer/already.$(OBJEXT): \
 		libaegis/change/reviewer/already.cc libaegis/change.h \
@@ -20014,17 +20052,17 @@ libaegis/project/file/roll_forward.$(OBJEXT): \
 		common/main.h common/mem.h common/ac/stddef.h \
 		common/config.h common/config.messy.h common/now.h \
 		common/ac/time.h common/str_list.h common/str.h \
-		common/ac/stdarg.h common/trace.h \
-		libaegis/change/branch.h libaegis/change.h \
-		libaegis/cstate.h libaegis/meta_lex.h \
+		common/ac/stdarg.h common/trace.h common/uuidentifier.h \
+		common/nstring.h libaegis/change/branch.h \
+		libaegis/change.h libaegis/cstate.h libaegis/meta_lex.h \
 		libaegis/meta_parse.h libaegis/meta_type.h \
 		libaegis/fstate.h libaegis/pconf.h libaegis/view_path.h \
 		libaegis/zero.h libaegis/change/file.h \
 		libaegis/change/list.h \
 		libaegis/project/file/roll_forward.h \
-		common/symtab/template.h common/nstring.h \
-		common/nstring/list.h common/symtab.h libaegis/project.h \
-		libaegis/pattr.h libaegis/pstate.h libaegis/sub.h \
+		common/symtab/template.h common/nstring/list.h \
+		common/symtab.h libaegis/project.h libaegis/pattr.h \
+		libaegis/pstate.h libaegis/sub.h \
 		libaegis/sub/diversion/stack.h libaegis/sub/diversion.h
 	$(CXX) -I. $(CXXFLAGS) -c libaegis/project/file/roll_forward.cc
 	mv roll_forward.$(OBJEXT) $@
@@ -21605,7 +21643,8 @@ libaegis/sub/project/specific.$(OBJEXT): libaegis/sub/project/specific.cc \
 		libaegis/meta_parse.h libaegis/meta_type.h \
 		libaegis/change.h libaegis/cstate.h common/ac/time.h \
 		libaegis/fstate.h libaegis/pconf.h libaegis/view_path.h \
-		libaegis/zero.h libaegis/sub.h \
+		libaegis/zero.h libaegis/project.h libaegis/pattr.h \
+		libaegis/pstate.h libaegis/sub.h \
 		libaegis/sub/diversion/stack.h libaegis/sub/diversion.h \
 		libaegis/sub/project/specific.h
 	$(CXX) -I. $(CXXFLAGS) -c libaegis/sub/project/specific.cc
@@ -23135,6 +23174,10 @@ test/02/t0225a-pmil.ES: test/02/t0225a-pmil.sh all-bin etc/test.sh
 	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
 		test/02/t0225a-pmil.sh test/02/t0225a-pmil.ES
 
+test/02/t0226a-pmil.ES: test/02/t0226a-pmil.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0226a-pmil.sh test/02/t0226a-pmil.ES
+
 test/02/t0227a-walt.ES: test/02/t0227a-walt.sh all-bin etc/test.sh
 	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
 		test/02/t0227a-walt.sh test/02/t0227a-walt.ES
@@ -23146,6 +23189,10 @@ test/02/t0228a-matt.ES: test/02/t0228a-matt.sh all-bin etc/test.sh
 test/02/t0229a-matt.ES: test/02/t0229a-matt.sh all-bin etc/test.sh
 	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
 		test/02/t0229a-matt.sh test/02/t0229a-matt.ES
+
+test/02/t0230a-pmil.ES: test/02/t0230a-pmil.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0230a-pmil.sh test/02/t0230a-pmil.ES
 
 test/02/t0230a-walt.ES: test/02/t0230a-walt.sh all-bin etc/test.sh
 	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
@@ -23166,6 +23213,50 @@ test/02/t0233a-walt.ES: test/02/t0233a-walt.sh all-bin etc/test.sh
 test/02/t0234a-walt.ES: test/02/t0234a-walt.sh all-bin etc/test.sh
 	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
 		test/02/t0234a-walt.sh test/02/t0234a-walt.ES
+
+test/02/t0235a-walt.ES: test/02/t0235a-walt.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0235a-walt.sh test/02/t0235a-walt.ES
+
+test/02/t0237a-walt.ES: test/02/t0237a-walt.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0237a-walt.sh test/02/t0237a-walt.ES
+
+test/02/t0240a-walt.ES: test/02/t0240a-walt.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0240a-walt.sh test/02/t0240a-walt.ES
+
+test/02/t0241a-walt.ES: test/02/t0241a-walt.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0241a-walt.sh test/02/t0241a-walt.ES
+
+test/02/t0244a-walt.ES: test/02/t0244a-walt.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0244a-walt.sh test/02/t0244a-walt.ES
+
+test/02/t0247a-walt.ES: test/02/t0247a-walt.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0247a-walt.sh test/02/t0247a-walt.ES
+
+test/02/t0249a-walt.ES: test/02/t0249a-walt.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0249a-walt.sh test/02/t0249a-walt.ES
+
+test/02/t0250a-ras.ES: test/02/t0250a-ras.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0250a-ras.sh test/02/t0250a-ras.ES
+
+test/02/t0251a-walt.ES: test/02/t0251a-walt.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0251a-walt.sh test/02/t0251a-walt.ES
+
+test/02/t0252a-walt.ES: test/02/t0252a-walt.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0252a-walt.sh test/02/t0252a-walt.ES
+
+test/02/t0253a-walt.ES: test/02/t0253a-walt.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0253a-walt.sh test/02/t0253a-walt.ES
 
 test_base64/main.$(OBJEXT): test_base64/main.cc common/ac/stdio.h \
 		common/config.h common/config.messy.h common/ac/stdlib.h \
@@ -24539,6 +24630,7 @@ CommonFiles = common/abbreviate.$(OBJEXT) common/ac/bzlib.$(OBJEXT) \
 		common/str/identifier.$(OBJEXT) \
 		common/str/lead_prefix.$(OBJEXT) \
 		common/str/quote.$(OBJEXT) common/str/replace.$(OBJEXT) \
+		common/str/trail_suffix.$(OBJEXT) \
 		common/str/traili_suffi.$(OBJEXT) \
 		common/str/trim.$(OBJEXT) common/str/upcase.$(OBJEXT) \
 		common/str_list/appelistuniq.$(OBJEXT) \
@@ -24955,6 +25047,8 @@ LibAegisFiles = libaegis/adler32.$(OBJEXT) \
 		libaegis/change/pconf/copyri_owner.$(OBJEXT) \
 		libaegis/change/pconf/get.$(OBJEXT) \
 		libaegis/change/pfs.$(OBJEXT) \
+		libaegis/change/project_specifi/setenv/performe_get.$(OBJEXT) \
+		libaegis/change/project_specifi/setenv/performe_set.$(OBJEXT) \
 		libaegis/change/reviewer/already.$(OBJEXT) \
 		libaegis/change/reviewer/list.$(OBJEXT) \
 		libaegis/change/reviewer/name.$(OBJEXT) \
@@ -25452,6 +25546,7 @@ LibAegisFiles = libaegis/adler32.$(OBJEXT) \
 		common/str/identifier.$(OBJEXT) \
 		common/str/lead_prefix.$(OBJEXT) \
 		common/str/quote.$(OBJEXT) common/str/replace.$(OBJEXT) \
+		common/str/trail_suffix.$(OBJEXT) \
 		common/str/traili_suffi.$(OBJEXT) \
 		common/str/trim.$(OBJEXT) common/str/upcase.$(OBJEXT) \
 		common/str_list/appelistuniq.$(OBJEXT) \
@@ -26287,11 +26382,17 @@ TestFiles = test/00/t0001a.ES test/00/t0002a-jerr.ES test/00/t0002a.ES \
 		test/02/t0220a-walt.ES test/02/t0221a-pmil.ES \
 		test/02/t0221a-walt.ES test/02/t0222a-pmil.ES \
 		test/02/t0223a-pmil.ES test/02/t0224a-walt.ES \
-		test/02/t0225a-pmil.ES test/02/t0227a-walt.ES \
-		test/02/t0228a-matt.ES test/02/t0229a-matt.ES \
+		test/02/t0225a-pmil.ES test/02/t0226a-pmil.ES \
+		test/02/t0227a-walt.ES test/02/t0228a-matt.ES \
+		test/02/t0229a-matt.ES test/02/t0230a-pmil.ES \
 		test/02/t0230a-walt.ES test/02/t0231a-walt.ES \
 		test/02/t0232a-walt.ES test/02/t0233a-walt.ES \
-		test/02/t0234a-walt.ES
+		test/02/t0234a-walt.ES test/02/t0235a-walt.ES \
+		test/02/t0237a-walt.ES test/02/t0240a-walt.ES \
+		test/02/t0241a-walt.ES test/02/t0244a-walt.ES \
+		test/02/t0247a-walt.ES test/02/t0249a-walt.ES \
+		test/02/t0250a-ras.ES test/02/t0251a-walt.ES \
+		test/02/t0252a-walt.ES test/02/t0253a-walt.ES
 
 clean-obj:
 	rm -f core
@@ -26828,6 +26929,7 @@ clean-obj:
 	rm -f common/str/lead_prefix.$(OBJEXT)
 	rm -f common/str/quote.$(OBJEXT)
 	rm -f common/str/replace.$(OBJEXT)
+	rm -f common/str/trail_suffix.$(OBJEXT)
 	rm -f common/str/traili_suffi.$(OBJEXT)
 	rm -f common/str/trim.$(OBJEXT)
 	rm -f common/str/upcase.$(OBJEXT)
@@ -27357,6 +27459,10 @@ clean-obj:
 	rm -f libaegis/change/pconf/copyri_owner.$(OBJEXT)
 	rm -f libaegis/change/pconf/get.$(OBJEXT)
 	rm -f libaegis/change/pfs.$(OBJEXT)
+	rm -f \
+		libaegis/change/project_specifi/setenv/performe_get.$(OBJEXT)
+	rm -f \
+		libaegis/change/project_specifi/setenv/performe_set.$(OBJEXT)
 	rm -f libaegis/change/reviewer/already.$(OBJEXT)
 	rm -f libaegis/change/reviewer/list.$(OBJEXT)
 	rm -f libaegis/change/reviewer/name.$(OBJEXT)
@@ -28083,14 +28189,27 @@ clean-obj:
 	rm -f test/02/t0223a-pmil.ES
 	rm -f test/02/t0224a-walt.ES
 	rm -f test/02/t0225a-pmil.ES
+	rm -f test/02/t0226a-pmil.ES
 	rm -f test/02/t0227a-walt.ES
 	rm -f test/02/t0228a-matt.ES
 	rm -f test/02/t0229a-matt.ES
+	rm -f test/02/t0230a-pmil.ES
 	rm -f test/02/t0230a-walt.ES
 	rm -f test/02/t0231a-walt.ES
 	rm -f test/02/t0232a-walt.ES
 	rm -f test/02/t0233a-walt.ES
 	rm -f test/02/t0234a-walt.ES
+	rm -f test/02/t0235a-walt.ES
+	rm -f test/02/t0237a-walt.ES
+	rm -f test/02/t0240a-walt.ES
+	rm -f test/02/t0241a-walt.ES
+	rm -f test/02/t0244a-walt.ES
+	rm -f test/02/t0247a-walt.ES
+	rm -f test/02/t0249a-walt.ES
+	rm -f test/02/t0250a-ras.ES
+	rm -f test/02/t0251a-walt.ES
+	rm -f test/02/t0252a-walt.ES
+	rm -f test/02/t0253a-walt.ES
 	rm -f test_base64/main.$(OBJEXT)
 	rm -f test_cfn/main.$(OBJEXT)
 	rm -f test_cpio/main.$(OBJEXT)

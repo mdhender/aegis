@@ -194,6 +194,15 @@ version_shorter = [unsplit "." [word 1 [version_shorter]]
 project_short = [fromto %.[version_short] % [project]];
 project_minus = [project_short]-[version_short];
 
+project_is_dev_version = [expr [word 2 [split "." [version_short] 0 0]] '%' 2];
+function print project_is_dev_version \= [project_is_dev_version];
+project_version_other =
+    [unsplit "."
+	[word 1 [split "." [version_short] 0 0]]
+	[expr [word 2 [split "." [version_short] 0 0]] '^' 1]
+    ];
+function print project_version_other \= [project_version_other];
+
 /*
  * use GNU awk if present
  */

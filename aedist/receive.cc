@@ -1,8 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2006 Peter Miller;
-//	Copyright (C) 2005, 2006 Walter Franzini;
-//	All rights reserved.
+//	Copyright (C) 1999-2006 Peter Miller
+//	Copyright (C) 2005-2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -79,7 +78,7 @@ move_xargs(string_ty *project_name, long change_number, string_list_ty *files,
         (
             "aegis --move-file --project=%s --change=%ld%s --verbose",
             project_name->str_text,
-            change_number,
+            magic_zero_decode(change_number),
             trace_options.c_str()
         );
 
@@ -93,25 +92,47 @@ move_xargs(string_ty *project_name, long change_number, string_list_ty *files,
 
 static void
 change_uuid_set(const nstring &project_name, long change_number,
-                const nstring &uuid, const nstring &trace_options,
-                const nstring &dd)
+    const nstring &uuid, const nstring &trace_options, const nstring &dd)
 {
     nstring s =
         nstring::format
         (
             "aegis --change-attr --uuid %s -change=%ld --project=%s%s",
             uuid.quote_shell().c_str(),
-            change_number,
+            magic_zero_decode(change_number),
+            project_name.c_str(),
+            trace_options.c_str()
+        );
+    nstring s2 =
+        nstring::format
+        (
+            "aegis -change-attr original-UUID=%s "
+            "-change=%ld -project=%s%s",
+            uuid.quote_shell().c_str(),
+            magic_zero_decode(change_number),
             project_name.c_str(),
             trace_options.c_str()
         );
     os_become_orig();
-    os_execute
-    (
-        s.get_ref(),
-        OS_EXEC_FLAG_INPUT | OS_EXEC_FLAG_ERROK,
-        dd.get_ref()
-    );
+    int err =
+        os_execute_retcode
+        (
+            s.get_ref(),
+            OS_EXEC_FLAG_INPUT,
+            dd.get_ref()
+        );
+    //
+    // If we failed to set the change's UUID then we save its value
+    // using the user defined attribute original-UUID.  It's bad to
+    // throw away UUIDs.
+    //
+    if (err)
+        os_execute
+        (
+            s2.get_ref(),
+            OS_EXEC_FLAG_INPUT | OS_EXEC_FLAG_ERROK,
+            dd.get_ref()
+        );
     os_become_undo();
 }
 
@@ -465,10 +486,12 @@ receive_main(void)
     // "aegis --new-change" command, if any.
     //
     nstring reason;
+    bool remote = false;
     if (cpio_p->is_remote())
     {
 	reason =
     	    " --reason=" + ("Downloaded from " + cpio_p->name()).quote_shell();
+        remote = true;
     }
 
     //
@@ -753,6 +776,19 @@ receive_main(void)
     }
     if (change_set->attribute)
 	cattr_data->attribute = attributes_list_copy(change_set->attribute);
+    if (remote)
+    {
+        if (!cattr_data->attribute)
+            cattr_data->attribute =
+                (attributes_list_ty *)attributes_list_type.alloc();
+        attributes_list_insert
+	(
+	    cattr_data->attribute,
+	    "foreign-copyright",
+	    "true"
+	);
+    }
+
     os_become_orig();
     cattr_write_file(attribute_file_name, cattr_data, 0);
     os_become_undo();
@@ -771,7 +807,7 @@ receive_main(void)
 	nstring::format
 	(
 	    "aegis --new-change %ld --project=%s --file=%s --verbose%s%s",
-	    change_number,
+	    magic_zero_decode(change_number),
 	    project_name->str_text,
 	    attribute_file_name->str_text,
 	    reason.c_str(),
@@ -787,7 +823,7 @@ receive_main(void)
 	nstring::format
 	(
 	    "aegis --develop-begin %ld --project %s --verbose%s%s",
-	    change_number,
+	    magic_zero_decode(change_number),
 	    project_name->str_text,
 	    (devdir ? devdir->str_text : ""),
             trace_options.c_str()
@@ -849,11 +885,27 @@ receive_main(void)
 	case file_action_remove:
 	    if (src2->action != file_action_create)
 	    {
-		// Something really weird happened.
-		trace(("not a move\n"));
-		assert(0);
-		str_free(src1->move);
-		src1->move = 0;
+                //
+                // Something happened to the file after the rename.
+		// This can occur when the change is a branch.
+                //
+	        trace(("corresponds to %s \"%s\"\n",
+		       file_action_ename(src2->action),
+		       src2->file_name->str_text));
+		trace(("not a simple move\n"));
+                //
+		// If the target was later removed we short-circuit.
+		// This is needed because some versions of aedist -send
+		// erroneously represent (rename -> remove) by
+		// (rename <--> rename).
+		// This solution is wrong if a change_set can contain
+		// a chain, but the sender supposedly collapses chains.
+                //
+		if (src2->action == file_action_remove)
+		{
+		  str_free(src1->move);
+		  src1->move = 0;
+		}
 	    }
 	    break;
 
@@ -863,12 +915,12 @@ receive_main(void)
 #ifdef DEBUG
 	default:
 #endif
-	    assert(0);
 	    //
             // None of these actions are supposed to have the move field
             // set.
 	    //
 	    trace(("not a move\n"));
+	    assert(0);
 	    str_free(src1->move);
 	    src1->move = 0;
 	    break;
@@ -882,6 +934,7 @@ receive_main(void)
     trace(("adjust file actions\n"));
     bool need_to_test = false;
     could_have_a_trojan = 0;
+    symtab<nstring> old_name;
     for (j = 0; j < change_set->src->length; ++j)
     {
 	cstate_src_ty   *src_data;
@@ -890,7 +943,7 @@ receive_main(void)
         src_data = change_set->src->list[j];
         assert(src_data);
         assert(src_data->file_name);
-	trace(("%d %s %s\n", j, src_data->file_name->str_text,
+	trace(("%ld %s %s\n", (long) j, src_data->file_name->str_text,
 	    file_action_ename(src_data->action)));
 	p_src_data =
 	    project_file_find_by_meta2(pp, src_data, view_path_extreme);
@@ -978,18 +1031,20 @@ receive_main(void)
 			//
                         // The file has already been renamed, so there
                         // is no need to remove it, but instead we turn
-                        // the create half into a modify action.
+                        // the target half into a modify action if it is
+			// just a create action.
 			//
 			trace(("rename becomes modify\n"));
 			cstate_src_ty *src2 =
 			    find_src(change_set, src_data->move);
-			assert(src2);
-			assert(src2->action == file_action_create);
-			assert(src2->move);
-			assert(str_equal(src2->move,src_data->file_name));
-			str_free(src2->move);
-			src2->move = 0;
-			src2->action = file_action_modify;
+			if (src2 && (src2->action == file_action_create))
+			{
+			    assert(src2->move);
+			    assert(str_equal(src2->move,src_data->file_name));
+			    str_free(src2->move);
+			    src2->move = 0;
+			    src2->action = file_action_modify;
+			}
 			goto nuke_and_skip;
 		    }
 
@@ -1013,8 +1068,15 @@ receive_main(void)
 		//
 		// Update the file name in the incoming change set to
 		// match the file name in the project.
+		// Save the old file name, we will use it to look into
+		// the archive.
 		//
 		trace(("file name changed\n"));
+                old_name.assign
+                (
+                    nstring(p_src_data->file_name),
+                    nstring(src_data->file_name)
+                );
 		str_free(src_data->file_name);
 		src_data->file_name = str_copy(p_src_data->file_name);
 	    }
@@ -1032,6 +1094,15 @@ receive_main(void)
 	    if (!str_equal(src_data->file_name, p_src_data->file_name))
 	    {
 		trace(("file name changed\n"));
+                //
+                // Save the old file name, we will use it to look into
+                // the archive.
+                //
+                old_name.assign
+                (
+                    nstring(p_src_data->file_name),
+                    nstring(src_data->file_name)
+                );
 		str_free(src_data->file_name);
 		src_data->file_name = str_copy(p_src_data->file_name);
 	    }
@@ -1044,21 +1115,31 @@ receive_main(void)
 	    if (src_data->move)
 	    {
 		//
+		// Is the file missing from the repository?
 		// Has the rename already happened?
 		//
 		trace(("create half or rename\n"));
 		if
 		(
-		    p_src_data
-		&&
+		    !p_src_data
+		||
 		    str_equal(src_data->file_name, p_src_data->file_name)
 		)
 		{
 		    //
-		    // Alter the file action to modify the file.
+		    // Alter the file action.
 		    //
-		    trace(("rename becomes modify\n"));
-		    src_data->action = file_action_modify;
+                    if (p_src_data)
+                    {
+                        trace(("rename becomes modify\n"));
+                        src_data->action = file_action_modify;
+                    }
+                    else
+                    {
+                        trace(("rename becomes create\n"));
+                        src_data->action = file_action_create;
+                    }
+
 
 		    //
                     // Nuke the remove half of the rename.
@@ -1083,6 +1164,8 @@ receive_main(void)
 		    assert(m < change_set->src->length);
 		    for (size_t k = m + 1; k < change_set->src->length; ++k)
 			change_set->src->list[k - 1] = change_set->src->list[k];
+                    str_free(src_data->move);
+                    src_data->move = 0;
                     //
                     // We need to go back one step only if the remove
                     // half was before the current file.
@@ -1125,6 +1208,15 @@ receive_main(void)
 		    if (!str_equal(src_data->file_name, p_src_data->file_name))
 		    {
 			trace(("file name changed\n"));
+                        //
+                        // Save the old file name, we will use it to
+                        // look into the archive.
+                        //
+                        old_name.assign
+                        (
+                            nstring(p_src_data->file_name),
+                            nstring(src_data->file_name)
+                        );
 			str_free(src_data->file_name);
 			src_data->file_name = str_copy(p_src_data->file_name);
 		    }
@@ -1165,6 +1257,15 @@ receive_main(void)
 		if (!str_equal(src_data->file_name, p_src_data->file_name))
 		{
 		    trace(("file name changed\n"));
+                    //
+                    // Save the old file name, we will use it to look
+                    // into the archive.
+                    //
+                    old_name.assign
+                    (
+                        nstring(p_src_data->file_name),
+                        nstring(src_data->file_name)
+                    );
 		    str_free(src_data->file_name);
 		    src_data->file_name = str_copy(p_src_data->file_name);
 		}
@@ -1288,7 +1389,7 @@ receive_main(void)
 	    (
 		"aegis --remove-file --project=%s --change=%ld%s --verbose",
 		project_name->str_text,
-		change_number,
+		magic_zero_decode(change_number),
                 trace_options.c_str()
 	    );
 	os_xargs(s.get_ref(), &files_source, dd);
@@ -1475,9 +1576,9 @@ receive_main(void)
                 nstring::format
                 (
                     "aegis --copy-file --project=%s --change=%ld%s "
-                    "--verbose%s",
+			"--verbose%s",
                     project_name->str_text,
-                    change_number,
+                    magic_zero_decode(change_number),
                     trace_options.c_str(),
                     origin[c].c_str()
                 );
@@ -1565,7 +1666,7 @@ receive_main(void)
 		"aegis --new-file --build --project=%s --change=%ld%s "
 		    "--verbose --no-template",
 		project_name->str_text,
-		change_number,
+		magic_zero_decode(change_number),
                 trace_options.c_str()
 	    );
 	os_xargs(s.get_ref(), &files_build, dd);
@@ -1578,7 +1679,7 @@ receive_main(void)
 		"aegis --new-test --automatic --project=%s --change=%ld%s "
 		    "--verbose --no-template",
 		project_name->str_text,
-		change_number,
+		magic_zero_decode(change_number),
                 trace_options.c_str()
 	    );
 	os_xargs(s.get_ref(), &files_test_auto, dd);
@@ -1591,7 +1692,7 @@ receive_main(void)
 		"aegis --new-test --manual --project=%s --change=%ld%s "
 		    "--verbose --no-template",
 		project_name->str_text,
-		change_number,
+		magic_zero_decode(change_number),
                 trace_options.c_str()
 	    );
 	os_xargs(s.get_ref(), &files_test_manual, dd);
@@ -1616,7 +1717,7 @@ receive_main(void)
 		"aegis --new-file --project=%s --change=%ld%s --verbose "
 		    "--no-template",
 		project_name->str_text,
-		change_number,
+		magic_zero_decode(change_number),
                 trace_options.c_str()
 	    );
 	os_xargs(s.get_ref(), &files_source, dd);
@@ -1637,7 +1738,7 @@ receive_main(void)
 		"aegis --new-file --config --project=%s --change=%ld%s "
 		    "--verbose --no-template",
 		project_name->str_text,
-		change_number,
+		magic_zero_decode(change_number),
                 trace_options.c_str()
 	    );
 	os_xargs(s.get_ref(), &files_config, dd);
@@ -1698,6 +1799,14 @@ receive_main(void)
 	    break;
 	}
 	assert(src_data->file_name);
+
+        //
+        // If the file in the change set has been renamed to match the
+        // local project we must look in the archive using the old
+        // name, not the new one.
+        //
+        nstring *old = old_name.query(src_data->file_name);
+
 	switch (src_data->usage)
 	{
 	case file_usage_build:
@@ -1719,12 +1828,20 @@ receive_main(void)
 	    missing_file
 	    (
 		cpio_p,
-		nstring::format("src/%s", src_data->file_name->str_text)
+		nstring::format
+                (
+                    "patch/%s",
+                    old ? old->c_str() : src_data->file_name->str_text
+                )
 	    );
        	}
 	assert(archive_name);
 	need_whole_source = 1;
-	s = nstring::format("patch/%s", src_data->file_name->str_text);
+
+        if (!old)
+            s = nstring::format("patch/%s", src_data->file_name->str_text);
+        else
+            s = nstring::format("patch/%s", old->c_str());
 	if (archive_name == s)
 	{
 	    bool patch_is_empty = (ifp->length() == 0);
@@ -1822,12 +1939,19 @@ receive_main(void)
 		missing_file
 		(
 	    	    cpio_p,
-	    	    nstring::format("src/%s", src_data->file_name->str_text)
+	    	    nstring::format
+                    (
+                        "src/%s",
+                        old ? old->c_str() : src_data->file_name->str_text
+                    )
 		);
 	    }
 	    assert(archive_name);
 	}
-	s = nstring::format("src/%s", src_data->file_name->str_text);
+        if (!old)
+            s = nstring::format("src/%s", src_data->file_name->str_text);
+        else
+            s = nstring::format("src/%s", old->c_str());
 	if (archive_name != s)
 	    wrong_file(ifp, s);
 	if (need_whole_source)
@@ -1839,6 +1963,16 @@ receive_main(void)
 	ofp = 0;
 	ifp.close();
     }
+
+    //
+    // should be at end of input
+    //
+    archive_name.clear();
+    ifp = cpio_p->child(archive_name);
+    if (ifp.is_open())
+	cpio_p->fatal_error("archive too long");
+    delete cpio_p;
+    cpio_p = 0;
     os_become_undo();
 
     //
@@ -1874,7 +2008,7 @@ receive_main(void)
 		(
 		    "aegis --file-attributes --change=%ld --project=%s "
 			"--file=%s --verbose %s --base-rel%s",
-		    change_number,
+		    magic_zero_decode(change_number),
 		    project_name->str_text,
 		    attribute_file_name->str_text,
 		    s2->str_text,
@@ -1888,7 +2022,7 @@ receive_main(void)
 	switch (src_data->action)
 	{
 	case file_action_create:
-	    if (src_data->uuid && !src_data->move)
+	    if (ignore_uuid <= 0 && src_data->uuid && !src_data->move)
 	    {
 		//
                 // The incoming change set specifies a UUID for this
@@ -1901,7 +2035,7 @@ receive_main(void)
 			"aegis --file-attributes --uuid %s --change=%ld "
 			    "--project=%s --verbose %s --base-rel%s",
 			src_data->uuid->str_text,
-			change_number,
+			magic_zero_decode(change_number),
 			project_name->str_text,
 			qfn->str_text,
 			trace_options.c_str()
@@ -1997,18 +2131,6 @@ receive_main(void)
     change_free(cp);
     cp = 0;
 
-    //
-    // should be at end of input
-    //
-    os_become_orig();
-    archive_name.clear();
-    ifp = cpio_p->child(archive_name);
-    if (ifp.is_open())
-	cpio_p->fatal_error("archive too long");
-    delete cpio_p;
-    cpio_p = 0;
-    os_become_undo();
-
 
     //
     // If the change could have a trojan horse in it, stop here with
@@ -2059,7 +2181,7 @@ receive_main(void)
 	    nstring::format
 	    (
 		"aegis --change-attr --fix-arch --change=%ld --project=%s%s",
-		change_number,
+		magic_zero_decode(change_number),
 		project_name->str_text,
                 trace_options.c_str()
 	    );
@@ -2076,7 +2198,7 @@ receive_main(void)
 	nstring::format
 	(
 	    "aegis --diff --only-merge --change=%ld --project=%s --verbose",
-	    change_number,
+	    magic_zero_decode(change_number),
 	    project_name->str_text
         );
     os_become_orig();
@@ -2097,6 +2219,7 @@ receive_main(void)
     // because it is no longer the same change set.
     //
     if (change_set->uuid)
+    {
         change_uuid_set
         (
             (nstring)project_name,
@@ -2105,6 +2228,7 @@ receive_main(void)
             trace_options,
             (nstring)dd
         );
+    }
 
     //
     // If we are receiving a change set with an UUID, and the user has
@@ -2132,7 +2256,7 @@ receive_main(void)
 	    (
 		"aegis --copy-file-undo --unchanged --change=%ld --project=%s "
 		    "--verbose%s",
-		change_number,
+		magic_zero_decode(change_number),
 		project_name->str_text,
                 trace_options.c_str()
 	    );
@@ -2158,7 +2282,7 @@ receive_main(void)
 		(
 		    "aegis --develop-begin-undo --change=%ld --project=%s "
 			"--verbose%s",
-		    change_number,
+		    magic_zero_decode(change_number),
 		    project_name->str_text,
                     trace_options.c_str()
 		);
@@ -2173,7 +2297,7 @@ receive_main(void)
 		(
 		    "aegis --new-change-undo --change=%ld --project=%s "
 			"--verbose%s",
-		    change_number,
+		    magic_zero_decode(change_number),
 		    project_name->str_text,
                     trace_options.c_str()
 		);
@@ -2195,7 +2319,7 @@ receive_main(void)
 	nstring::format
 	(
 	    "aegis --diff --no-merge --change=%ld --project=%s --verbose%s",
-	    change_number,
+	    magic_zero_decode(change_number),
 	    project_name->str_text,
             trace_options.c_str()
 	);
@@ -2232,7 +2356,7 @@ receive_main(void)
 	nstring::format
 	(
 	    "aegis --build --change=%ld --project=%s --verbose%s",
-	    change_number,
+	    magic_zero_decode(change_number),
 	    project_name->str_text,
             trace_options.c_str()
 	);
@@ -2262,7 +2386,7 @@ receive_main(void)
 	    nstring::format
 	    (
 		"aegis --test --change=%ld --project=%s --verbose%s",
-		change_number,
+		magic_zero_decode(change_number),
 		project_name->str_text,
                 trace_options.c_str()
 	    );
@@ -2276,8 +2400,8 @@ receive_main(void)
 	    nstring::format
 	    (
 		"aegis --test --baseline --change=%ld --project=%s "
-                "--verbose%s",
-		change_number,
+		    "--verbose%s",
+		magic_zero_decode(change_number),
 		project_name->str_text,
                 trace_options.c_str()
 	    );
@@ -2293,8 +2417,8 @@ receive_main(void)
 	    nstring::format
 	    (
 		"aegis --test --regression --change=%ld --project=%s "
-                "--verbose%s",
-		change_number,
+		    "--verbose%s",
+		magic_zero_decode(change_number),
 		project_name->str_text,
                 trace_options.c_str()
 	    );
@@ -2315,7 +2439,7 @@ receive_main(void)
 	nstring::format
 	(
 	    "aegis --develop-end --change=%ld --project=%s --verbose%s",
-	    change_number,
+	    magic_zero_decode(change_number),
 	    project_name->str_text,
             trace_options.c_str()
 	);

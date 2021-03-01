@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1998-2006 Peter Miller
+//      Copyright (C) 2006, 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #include <libaegis/arglex2.h>
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
+#include <libaegis/change/attributes.h>
 #include <libaegis/change.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
@@ -47,6 +48,7 @@
 #include <common/trace.h>
 #include <libaegis/undo.h>
 #include <libaegis/user.h>
+#include <common/uuidentifier.h>
 
 
 static void
@@ -395,6 +397,26 @@ clone_main(void)
     change_copyright_years_merge(cp, cp2);
 
     //
+    // Copy also the user defined attributes in the new change.
+    //
+    if (cstate_data2->attribute)
+        cstate_data->attribute =
+            attributes_list_clone(cstate_data2->attribute);
+
+    //
+    // Copy the UUID into a user defined attribute.
+    //
+    if (cstate_data2->uuid)
+    {
+        change_attributes_append
+        (
+            cstate_data,
+            ORIGINAL_UUID,
+            cstate_data2->uuid->str_text
+        );
+    }
+
+    //
     // add to history for change creation
     //
     cstate_data->state = cstate_state_awaiting_development;
@@ -515,7 +537,7 @@ clone_main(void)
 	    // find the file in the project
 	    //
 	    p_src_data =
-		project_file_find(pp, src_data2->file_name, view_path_extreme);
+                project_file_find(pp, src_data2->file_name, view_path_extreme);
 	    if (!p_src_data)
 	    {
 		switch (src_data2->action)

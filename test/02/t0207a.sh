@@ -125,7 +125,7 @@ cat > test.ok << 'fubar'
 Checksum: 635375101
 Content-Length: 40
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Version: 1
 
 This is some text to check the checkin.
@@ -139,7 +139,9 @@ test $? -eq 0 || fail
 gunzip < test.in,svt > test.out.messy
 test $? -eq 0 || fail
 
-sed -e '/Date:/d' -e '/User:/d' test.out.messy > test.out
+sed -e '/Date:/d' -e '/User:/d' \
+	-e 's@Content-Type: text/plain.*@Content-Type: text/plain@' \
+	test.out.messy > test.out
 test $? -eq 0 || no_result
 
 diff test.ok test.out

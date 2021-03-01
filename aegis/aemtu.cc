@@ -518,7 +518,7 @@ make_transparent_undo_main(void)
 	// delete the file if it exists
 	// and the user wants us to
 	//
-	if (exists && user_delete_file_query(up, s1, 0))
+	if (exists && user_delete_file_query(up, s1, false, true))
 	{
 	    //
 	    // This is not as robust in the face of

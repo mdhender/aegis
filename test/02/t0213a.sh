@@ -209,7 +209,7 @@ if test $? -ne 0 ; then no_result; fi
 
 activity="build 192"
 $bin/aegis -b -v > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
+if test $? -ne 0 ; then cat log; fail; fi
 
 activity="diff 196"
 $bin/aegis -diff -v > log 2>&1

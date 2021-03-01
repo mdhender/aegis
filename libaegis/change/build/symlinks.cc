@@ -783,7 +783,54 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
 	    }
 	    goto done;
 	}
-	if (p_src)
+	bool file_restored = false;
+	if
+	(
+	    (
+		sip->style->derived_file_link
+	    ||
+		sip->style->derived_file_symlink
+	    ||
+		sip->style->derived_file_copy
+	    )
+	&&
+	    p_src
+	&&
+	    (p_src->action == file_action_remove)
+	)
+	{
+	    //
+            // Ralph Smith: If the visible file is shallower than the
+            // removal, then it has presumably been restored as a
+            // derived file.  If it is stale, the user gets to deal with
+            // it.
+	    //
+	    // Can't use project_file_path() for a removed file.
+	    // Is there a simpler way to do this?
+	    //
+	    int rem_depth = 1;
+	    bool looking = true;
+            project_ty *ptmp;
+	    fstate_src_ty *tmp_src;
+	    for
+	    (
+		ptmp = pp->is_a_trunk() ? 0 : pp->parent_get();
+		ptmp && looking;
+		ptmp = (ptmp->is_a_trunk() ? 0 : ptmp->parent_get())
+	    )
+	    {
+		tmp_src = project_file_find(ptmp, path_rel, view_path_simple);
+		if (tmp_src && tmp_src->action == file_action_remove)
+		    rem_depth++;
+		else
+		    looking = false;
+	    }
+	    trace(("rem_depth: %d\n",rem_depth));
+	    if (rem_depth >= depth)
+		file_restored = true;
+	}
+
+	if (p_src && !file_restored)
 	{
 	    //
             // There is no file in the development directory, there is

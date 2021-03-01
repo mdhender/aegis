@@ -77,8 +77,30 @@ AC_CHECK_FUNC(setsockopt, ,
 	AC_CHECK_LIB(socket, setsockopt))
 AC_CHECK_LIB(m, main)
 AC_CHECK_LIB(rx, main)
-AC_CHECK_LIB(z, main)
-AC_CHECK_LIB(bz2, BZ2_bzopen)
+AC_CHECK_LIB(z, main, ,
+  [
+    AC_MSG_RESULT([
+        You must have the zlib compression library (http://www.zlib.net/)
+        installed in order to build Aegis.  Please install zlib, and
+        then re-run this ./configure script.  If you are using a package
+        based install, you will need the zlib-devel package in addition
+        to the zlib package.
+    ])
+    exit 1
+  ]
+)
+AC_CHECK_LIB(bz2, BZ2_bzopen, ,
+  [
+    AC_MSG_RESULT([
+        You must have the BZip2 compression library (http://www.bzip.org/)
+        installed in order to build Aegis.  Please install the bzip2
+        library, and then re-run this ./configure script.  If you are
+        using a package based install, you will need the bzip2-devel
+        package in addition to the bzip2 package.
+    ])
+    exit 1
+  ]
+)
 AC_CHECK_LIB(crypt, crypt)
 AC_CHECK_LIB(magic, magic_file)
 dnl The -lclu library is for OSF/1 clustering
@@ -595,6 +617,7 @@ test "x$prefix" = xNONE && prefix="${ac_default_prefix-/usr/local}"
 test "x$exec_prefix" = xNONE && exec_prefix="$prefix"
 eval "bindir=$bindir"
 eval "datadir=$datadir"
+eval "datarootdir=$datarootdir"
 eval "libdir=$libdir"
 eval "mandir=$mandir"
 eval "sharedstatedir=$sharedstatedir"
@@ -603,6 +626,13 @@ case "$datadir" in
 	;;
 *)
 	datadir="${datadir}/aegis"
+	;;
+esac
+case "$datarootdir" in
+*/aegis/* | */aegis )
+	;;
+*)
+	datarootdir="${datarootdir}/aegis"
 	;;
 esac
 case "$libdir" in

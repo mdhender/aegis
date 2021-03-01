@@ -1,7 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1996, 1999, 2001-2004 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 1991-1996, 1999, 2001-2004, 2006, 2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -43,6 +42,7 @@ if ( ! $?MANPATH ) then
     setenv MANPATH "`@MANPATH_PROG@`"
 endif
 setenv MANPATH ${MANPATH}:@mandir@:@datadir@
+# setenv MANPATH ${MANPATH}:@mandir@:@datadir@:@datarootdir@
 
 #
 # Set the AEGIS_AUTOMOUNT_POINTS environment variable to the names

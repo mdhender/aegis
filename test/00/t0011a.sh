@@ -1,8 +1,8 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1998, 2002-2006 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 1991-1998, 2002-2007 Peter Miller
+#	Copyright (C) 2007 Walter Franzini
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -59,6 +59,17 @@ else
 	exit 0
 fi
 
+if type lex > /dev/null 2>&1
+then
+	:
+else
+	echo ''
+	echo ' The "lex" program is not in your command search PATH.'
+	echo ' This test is therefore -assumed- to pass.'
+	echo ''
+	exit 0
+fi
+
 here=`pwd`
 if test $? -ne 0 ; then exit 2; fi
 
@@ -110,7 +121,7 @@ pass()
 trap "no_result" 1 2 3 15
 
 #
-# some variable to make things earier to read
+# some variable to make things easier to read
 #
 worklib=$work/lib
 workproj=$work/example.proj

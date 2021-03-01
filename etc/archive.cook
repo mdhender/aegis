@@ -1,6 +1,7 @@
 /*
  *	aegis - project change supervisor
  *	Copyright (C) 1997-2006 Peter Miller;
+ *	Copyright (C) 2007 Walter Franzini;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,6 +31,12 @@ integration-build-targets +=
 	html-targets
 	lib/en/release/release.txt
 	;
+if [not [project_is_dev_version]] then
+{
+    integration-build-targets +=
+	archive/[project_version_other]/aegis-[project_version_other].tar.gz;
+}
+
 rpm-arch = noarch;
 if [find_command tardy] then
 {
@@ -218,11 +225,19 @@ source_file_order =
 /*
  * For the primary build, when making a release,
  * add the full changes list.
- */
-if [matches %1.D%2 [version]] then
-if [in [fromto %1.D%2 %2 [version]] 001 002] then
-if [matches linux%1 [arch]] then
+ *
+ * This target is disabled until we fix the time safe problem: it make
+ * ael pd fails and we cannot even end the first delta.  So we cannot
+ * end the 2nd and so on.
+ *
+ * Uncomment the following statement to reenable the target.
+
+ if [matches %1.D%2 [version]] then
+ if [in [fromto %1.D%2 %2 [version]] 001 002] then
+ if [matches linux%1 [arch]] then
     source_file_order += etc/CHANGES.txt;
+
+ */
 
 etc/CHANGES.txt: [arch]/bin/aegis
 {
@@ -289,20 +304,6 @@ MANIFEST: [arch]/bin/aemanifest(exists)
     chmod a+r [target];
 }
 
-archive/Part.01.gz: [source_file_order]
-	set shallow
-{
-	parts = [glob "archive/Part*"];
-	if [parts] then
-		rm [parts]
-			set clearstat;
-	/* assumes shar.3.49 available */
-	shar -n[project_short] -a -c -oarchive/Part -L200
-		-s "'Peter Miller <millerp@canb.auug.org.au>'"
-		[resolve [source_file_order]];
-	gzip -9 -v archive/Part*;
-}
-
 archive/[project_minus].tar.gz: [source_file_order]
 	set shallow
 {
@@ -317,20 +318,6 @@ archive/[project_minus].tar.gz: [source_file_order]
 	gzip -9 -v archive/[project_minus].tar;
 }
 
-patch_files = [fromto %0% %0%,P [source_files] etc/CHANGES.[version_short]];
-patch_files = [vs_file],P [stringset [patch_files] - [vs_file],P];
-
-archive/[project_minus].patch.gz: [patch_files]
-	set shallow
-{
-	if [exists archive/[project_short].patch] then
-		rm archive/[project_short].patch
-			set clearstat;
-	sh [resolve etc/patches.sh] [resolve [patch_files]]
-		> archive/[project_short].patch;
-	gzip -9 -v archive/[project_short].patch;
-}
-
 [project_short].spec: etc/spec.sh [source_files]
 {
 	version\=[version_short]
@@ -341,28 +328,6 @@ archive/[project_minus].spec: [project_short].spec
 	set shallow
 {
 	cp [resolve [need]] [target];
-}
-
-[vs_file],P: [vs_file]
-{
-	echo "Index:" [vs_file] > [target];
-	prev =
-		[collect
-			aegis -list version -p [project] -c [change]
-			| [awk] -F"'\"'" "'/previous/{print $2}'"
-		];
-	echo "'Prereq: \""[prev]"\"'" >> [target];
-	echo "'#define PATCHLEVEL \""[prev]"\"'" |
-	diff -c - [vs_file] | sed '1,2d' >> [target];
-}
-
-%0%,P: %0%
-	if [exists [resolve %0%]]
-{
-	aegis -cp %0% -delta 1 -output patch.orig -p [project] -c [change]
-		|| cp /dev/null patch.orig;
-	sh [resolve etc/patch.fil.sh] patch.orig [resolve %0%] %0% > [target];
-	rm patch.orig;
 }
 
 lib/%0%: lib/%0%.uue: [arch]/bin/test_base64
@@ -575,5 +540,17 @@ archive/eg_oss_%.ae: web/eg_oss_%.sh
 	aegis.conf.d/history\=[resolve lib/config.example/aesvt]
 	aegis.conf.d/merge\=[resolve lib/config.example/merge]
 	> [target]
+	;
+}
+
+
+archive/[project_version_other]/aegis-[project_version_other].tar.gz:
+    set shallow
+{
+    rm -rf archive/[project_version_other];
+    mkdir archive/[project_version_other];
+    cp -r
+	[collect aegis -cd -bl -p aegis.[project_version_other]]/archive/.
+	archive/[project_version_other]/.
 	;
 }

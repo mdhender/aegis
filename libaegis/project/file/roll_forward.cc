@@ -1,6 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 2001-2006 Peter Miller;
+//      Copyright (C) 2006 Walter Franzini;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -25,6 +26,7 @@
 #include <common/now.h>
 #include <common/str_list.h>
 #include <common/trace.h>
+#include <common/uuidentifier.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
 #include <libaegis/change.h>
@@ -54,7 +56,6 @@ file_event_list_new(void)
     trace(("}\n"));
     return felp;
 }
-
 
 static void
 file_event_list_append(file_event_list_ty *felp, time_t when, change_ty	*cp,
@@ -87,6 +88,30 @@ file_event_list_append(file_event_list_ty *felp, time_t when, change_ty	*cp,
     fep->cp = cp;
     fep->src = src;
     trace(("}\n"));
+}
+
+static void
+file_event_list_append(file_event_list_ty *head, file_event_list_ty *tail)
+{
+    assert(head);
+    if (!head)
+        return;
+
+    assert(tail);
+    if (!tail)
+        return;
+
+    for (size_t j = 0; j < tail->length; ++j)
+    {
+
+        file_event_list_append
+        (
+            head,
+            tail->item[j].when,
+            change_copy(tail->item[j].cp),
+            fstate_src_copy(tail->item[j].src)
+        );
+    }
 }
 
 
@@ -1050,6 +1075,49 @@ project_file_roll_forward::get(const nstring &filename)
     }
     assert(!uuid_to_felp.empty());
     file_event_list_ty *result = uuid_to_felp.query(uuid);
+
+    //
+    // Due to a bug in the aeipass code it is possible for the file
+    // event list to miss a creation event.  We need to detect this
+    // condition and fix it.
+    //
+    bool file_action_create_missing = true;
+    for (size_t j = 0; j < result->length; ++j)
+    {
+        file_event_ty *fep = &result->item[j];
+        assert(fep);
+        fstate_src_ty *fstate_src = fep->src;
+        assert(fstate_src);
+        if (fstate_src->action != file_action_create)
+            continue;
+
+        file_action_create_missing = false;
+        break;
+    }
+
+    if (result->length > 0 && file_action_create_missing)
+    {
+        //
+        // If the uuid string really contain an UUID we need to look
+        // for the event list bound to the file_name.
+        //
+        if (universal_unique_identifier_valid(uuid))
+        {
+            file_event_list_ty *felp2 = uuid_to_felp.query(filename);
+            assert(felp2);
+
+            file_event_list_append(felp2, result);
+
+            file_event_list_ty *tmp1 = file_event_list_new();
+            file_event_list_append(tmp1, felp2);
+            file_event_list_ty *tmp2 = file_event_list_new();
+            file_event_list_append(tmp2, felp2);
+            uuid_to_felp.assign(uuid, tmp1);
+            uuid_to_felp.assign(filename, tmp2);
+            result = uuid_to_felp.query(uuid);
+        }
+    }
+
 #ifdef DEBUG
     if (result)
     {
